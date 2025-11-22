@@ -4,12 +4,10 @@
 --	1	2	3	4	5	6	7	8	9	0	1
 
 separate ( EXPANDER )
---with DIANA_NODE_ATTR_CLASS_NAMES;
---use  DIANA_NODE_ATTR_CLASS_NAMES;
 
-				-----
-package body			UTILS
-is				-----
+					-----
+	package body			UTILS
+is					-----
 
  
   INACTIVE	: BOOLEAN renames TRUE;
@@ -18,38 +16,38 @@ is				-----
   FS		: FILE_TYPE;
 
 
-			--^^^^^^^^^^^^--
-  procedure		OPEN_OUTPUT_FILE		( FILE_NAME :STRING )
-  is			----------------
+			--================--
+  procedure		  OPEN_OUTPUT_FILE		( FILE_NAME :STRING )
+  is			--================--
 
   begin
     CREATE ( FS, OUT_FILE, FILE_NAME( FILE_NAME'FIRST .. FILE_NAME'LAST-4 ) & ".FINC" );				-- FASM INCLUDE
     SET_OUTPUT ( FS );										-- CODAGE SUR SORTIE STANDARD
     INT_LABEL := 1;
 
-  end	OPEN_OUTPUT_FILE;
-	----------------
+  end	  OPEN_OUTPUT_FILE;
+	--================--
 
 
-			--^^^^^^^^^^^^^--
-  procedure		CLOSE_OUTPUT_FILE
-  is			-----------------
+			--=================--
+  procedure		  CLOSE_OUTPUT_FILE
+  is			--=================--
 
   begin
     SET_OUTPUT ( STANDARD_OUTPUT );
     CLOSE ( FS );
 
-  end	CLOSE_OUTPUT_FILE;
-	-----------------
+  end	  CLOSE_OUTPUT_FILE;
+	--=================--
 
 
   package INT_IO	is new INTEGER_IO ( INTEGER ); use INT_IO;
   package LBL_IO	is new INTEGER_IO ( LABEL_TYPE ); use LBL_IO;
 
 
-			--^^^^^--
-  function		NEW_LABEL						return LABEL_TYPE
-  is			---------
+			--=========--
+  function		  NEW_LABEL						return LABEL_TYPE
+  is			--=========--
 
     LBL	: LABEL_TYPE	:= INT_LABEL;
 
@@ -57,13 +55,13 @@ is				-----
     INT_LABEL := INT_LABEL + 1;
     return LBL;
 
-  end	NEW_LABEL;
-	---------
+  end	  NEW_LABEL;
+	--=========--
 
 
-			--^^^^^--
-  function		NEW_LABEL						return STRING
-  is			---------
+			--=========--
+  function		  NEW_LABEL						return STRING
+  is			--=========--
 
     LSTR	:constant STRING	:= LABEL_TYPE'IMAGE( INT_LABEL );
 
@@ -71,26 +69,26 @@ is				-----
     INT_LABEL := INT_LABEL + 1;
     return 'L' & LSTR( LSTR'FIRST+1 .. LSTR'LAST );
 
-  end	NEW_LABEL;
-	---------
+  end	  NEW_LABEL;
+	--=========--
 
 
-			--^^^^^--
-  function		LABEL_STR			( LBL : LABEL_TYPE )	return STRING
-  is			---------
+			--=========--
+  function		  LABEL_STR			( LBL : LABEL_TYPE )	return STRING
+  is			--=========--
 
     LSTR	:constant STRING	:= LABEL_TYPE'IMAGE( LBL );
 
   begin
     return 'L' & LSTR( LSTR'FIRST+1 .. LSTR'LAST );
 
-  end	LABEL_STR;
-	---------
+  end	  LABEL_STR;
+	--=========--
 
 
-			--^^^^^--
-  procedure		INC_LEVEL
-  is			---------
+			--=========--
+  procedure		  INC_LEVEL
+  is			--=========--
   begin
     CUR_LEVEL := CUR_LEVEL + 1;
 
@@ -99,13 +97,13 @@ is				-----
 --   exception
 --     when CONSTRAINT_ERROR => raise STATIC_LEVEL_OVERFLOW;
 
-  end	INC_LEVEL;
-	--=====--
+  end	  INC_LEVEL;
+	--=========--
 
 
-			--^^^^^--
-  procedure		DEC_LEVEL
-  is			---------
+			--=========--
+  procedure		  DEC_LEVEL
+  is			--=========--
 
   begin
     CUR_LEVEL := CUR_LEVEL - 1;
@@ -115,13 +113,13 @@ is				-----
 --   exception
 --     when CONSTRAINT_ERROR => raise STATIC_LEVEL_UNDERFLOW;
 -- 
-  end	DEC_LEVEL;
-	---------
+  end	  DEC_LEVEL;
+	--=========--
 
 
-			--^^^^^--
-  function		TYPE_SIZE			( TYPE_SPEC :TREE )		return NATURAL
-  is			---------
+			--=========--
+  function		  TYPE_SIZE		( TYPE_SPEC :TREE )		return NATURAL
+  is			--=========--
 
   begin
     case TYPE_SPEC.TY is
@@ -135,14 +133,14 @@ is				-----
     end case;
     return 0;
 
-  end	TYPE_SIZE;
-	---------
+  end	  TYPE_SIZE;
+	--=========--
 
 
 
-			--^^^^^^^^^^^^^--
-  function		CODE_DATA_TYPE_OF		( EXP_OR_TYPE_SPEC :TREE )	return CHARACTER
-  is			-----------------
+			--=================--
+  function		  CODE_DATA_TYPE_OF		( EXP_OR_TYPE_SPEC :TREE )	return CHARACTER
+  is			--=================--
 
   begin
     if  EXP_OR_TYPE_SPEC.TY in CLASS_EXP  then
@@ -200,13 +198,13 @@ is				-----
       raise PROGRAM_ERROR;
     end if;
 
-  end	CODE_DATA_TYPE_OF;
-   	-----------------
+  end	  CODE_DATA_TYPE_OF;
+   	--=================--
 
 
-			--^^^^^^^^^^^^^^^^--
-  function		NUMBER_OF_DIMENSIONS	( EXP :TREE )	return NATURAL
-  is			--------------------
+			--====================--
+  function		  NUMBER_OF_DIMENSIONS	( EXP :TREE )	return NATURAL
+  is			--====================--
 
   begin
     if  EXP.TY in CLASS_CONSTRAINED  then
@@ -223,25 +221,25 @@ is				-----
       raise PROGRAM_ERROR;
     end if;
 
-  end	NUMBER_OF_DIMENSIONS;
-	--------------------
+  end	  NUMBER_OF_DIMENSIONS;
+	--====================--
 
 
-			--^^^^^^^--
-  function		CONSTRAINED		( TYPE_SPEC :TREE )		return BOOLEAN
-  is			-----------
+			--===========--
+  function		  CONSTRAINED		( TYPE_SPEC :TREE )		return BOOLEAN
+  is			--===========--
 
   begin
     return not ( TYPE_SPEC.TY in CLASS_UNCONSTRAINED );
 
-  end	CONSTRAINED;
-	--=======--
+  end	  CONSTRAINED;
+	--===========--
 
 
 
-			--^^^^^^^^^^--
-  procedure		LOAD_TYPE_SIZE		( TYPE_SPEC :TREE )
-  is			--------------
+			--==============--
+  procedure		  LOAD_TYPE_SIZE		( TYPE_SPEC :TREE )
+  is			--==============--
 
   begin
     if  CONSTRAINED( TYPE_SPEC )  then
@@ -253,13 +251,13 @@ is				-----
 
     end if;
 
-  end	LOAD_TYPE_SIZE;
-	--------------
+  end	  LOAD_TYPE_SIZE;
+	--==============--
 
 
-			--^^^^^^^^^--
-  function		OPER_SIZ_CHAR		( DEFN :TREE )		return CHARACTER
-  is			-------------
+			--=============--
+  function		  OPER_SIZ_CHAR		( DEFN :TREE )		return CHARACTER
+  is			--=============--
 
     SIZ		: NATURAL		:= DI( CD_IMPL_SIZE, DEFN );
 
@@ -271,13 +269,13 @@ is				-----
     else return 'v';
     end if;
 
-  end	OPER_SIZ_CHAR;
-	-------------
+  end	  OPER_SIZ_CHAR;
+	--=============--
 
 
-			--^^^^^^^^^--
-  function		EXP_TYPE_CHAR		( EXP :TREE )	return CHARACTER
-  is			-------------
+			--=============--
+  function		  EXP_TYPE_CHAR		( EXP :TREE )	return CHARACTER
+  is			--=============--
 
     SIZ		: NATURAL		:= DI( CD_IMPL_SIZE, D( SM_EXP_TYPE, EXP ) );
 
@@ -289,13 +287,13 @@ is				-----
     else return 'v';
     end if;
 
-  end	EXP_TYPE_CHAR;
-	-------------
+  end	  EXP_TYPE_CHAR;
+	--=============--
 
 
-			--^^^^--
-  procedure		LOAD_MEM			( DEFN :TREE )
-  is			--------
+			--========--
+  procedure		  LOAD_MEM			( DEFN :TREE )
+  is			--========--
 
   begin
     if  DEFN.TY in CLASS_PARAM_NAME  then								-- in_id in_out_id out_id
@@ -335,13 +333,13 @@ is				-----
 
     end if;
 
-  end	LOAD_MEM;
-	--------
+  end	  LOAD_MEM;
+	--========--
 
 
-			--^--
-  procedure		STORE			( DEST_DEFN	:TREE )
-  is			-----
+			--=====--
+  procedure		  STORE			( DEST_DEFN	:TREE )
+  is			--=====--
 
     SIZ_CHAR	: CHARACTER	:= OPER_SIZ_CHAR( D( SM_OBJ_TYPE, DEST_DEFN ) );
 
@@ -352,13 +350,13 @@ is				-----
       PUT_LINE( tab & "S" & SIZ_CHAR & ' ' & INTEGER'IMAGE( DI( CD_LEVEL, DEST_DEFN ) ) & ',' & tab & PRINT_NAME( D( LX_SYMREP, DEST_DEFN ) ) & "_disp" );
     end if;
 
-  end	STORE; 
-	-----
+  end	  STORE;
+	--=====--
 
 
-			--^--
-  function		TAB50			return STRING
-  is			-----
+			--=====--
+  function		  TAB50			return STRING
+  is			--=====--
 
     NTABS		: INTEGER		:= (50 - NATURAL(TEXT_IO.COL) ) / 10;
 
@@ -371,12 +369,12 @@ is				-----
       return ESPACEMENT;
     end;
 
-  end	TAB50;
-	-----
+  end	  TAB50;
+	--=====--
 
 
 			--^--
-  function		IMAGE			( I : NATURAL )	return STRING
+  function		  IMAGE			( I : NATURAL )	return STRING
   is			-----
 
     STR	:constant STRING	:= NATURAL'IMAGE( I );
@@ -384,13 +382,13 @@ is				-----
   begin
     return STR( STR'FIRST+1 .. STR'LAST );
 
-  end	IMAGE;
-	-----
+  end	  IMAGE;
+	--=====--
 
 
-			--^^^^^^^^--
-  procedure		REGIONS_PATH		( ID : TREE; WITH_DOT :BOOLEAN := TRUE )
-  is			------------
+			--============--
+  procedure		  REGIONS_PATH		( ID : TREE; WITH_DOT :BOOLEAN := TRUE )
+  is			--============--
 
     REGION	: TREE		:= D( XD_REGION, ID );
     RGN_NAME	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, REGION ) );
@@ -409,10 +407,11 @@ is				-----
 
     end if;
 
-  end	REGIONS_PATH;
-	------------
+  end	  REGIONS_PATH;
+	--============--
 
 
+	-----
 end	UTILS;
 	-----
 

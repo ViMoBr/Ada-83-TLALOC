@@ -177,6 +177,14 @@ separate ( EXPANDER )
 
 
 		-----------------------
+  procedure	CODE_SELECT_ALTERNATIVE	( SELECT_ALTERNATIVE :TREE )
+  is
+  begin
+    null;
+  end;
+
+
+		-----------------------
   procedure	CODE_TEST_CLAUSE_ELEM_S	( TEST_CLAUSE_ELEM_S :TREE; STM_END_LBL :STRING )
   is
     TEST_CLAUSE_ELEM_SEQ	: SEQ_TYPE	:= LIST( TEST_CLAUSE_ELEM_S );
@@ -490,6 +498,15 @@ null;
     end;
   end	CODE_RAISE;
 	----------
+
+
+			---------------
+  procedure		CODE_ENTRY_CALL	( ENTRY_CALL :TREE )
+  is
+  begin
+    null;
+  end	CODE_ENTRY_CALL;
+	---------------
 
 
 				-------------

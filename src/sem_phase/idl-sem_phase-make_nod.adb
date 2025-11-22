@@ -394,19 +394,12 @@ is					--------
     D( DA.XD_NOT_EQUAL, NODE, XD_NOT_EQUAL );
          return NODE;
   end	MAKE_OPERATOR_ID;
-   
-  function	MAKE_package_ID
-		    ( LX_SRCPOS :TREE := TREE_VOID;
-		    LX_SYMREP :TREE := TREE_VOID;
-		    SM_FIRST :TREE := TREE_VOID;
-		    SM_SPEC :TREE := TREE_VOID;
-		    SM_UNIT_DESC :TREE := TREE_VOID;
-		    SM_ADDRESS :TREE := TREE_VOID;
-		    XD_REGION :TREE := TREE_VOID;
-		    XD_STUB :TREE := TREE_VOID;
-		    XD_body :TREE := TREE_VOID )
-		    return TREE is
-         NODE :TREE := MAKE( DN_package_ID );
+
+  function	MAKE_PACKAGE_ID	( LX_SRCPOS, LX_SYMREP, SM_FIRST :TREE := TREE_VOID;
+				  SM_SPEC, SM_UNIT_DESC, SM_ADDRESS :TREE := TREE_VOID;
+				  XD_REGION, XD_STUB, XD_BODY :TREE := TREE_VOID )
+					return TREE is
+    NODE		: TREE	:= MAKE( DN_PACKAGE_ID );
   begin
     D( DA.LX_SRCPOS, NODE, LX_SRCPOS );
     D( DA.LX_SYMREP, NODE, LX_SYMREP );
@@ -416,10 +409,11 @@ is					--------
     D( DA.SM_ADDRESS, NODE, SM_ADDRESS );
     D( DA.XD_REGION, NODE, XD_REGION );
     D( DA.XD_STUB, NODE, XD_STUB );
-    D( DA.XD_body, NODE, XD_body );
-         return NODE;
-  end	MAKE_package_ID;
-   
+    D( DA.XD_BODY, NODE, XD_BODY );
+    DB( DA.CD_COMPILED, NODE, FALSE );
+    return NODE;
+  end	MAKE_PACKAGE_ID;
+
   function	MAKE_GENERIC_ID
 		    ( LX_SRCPOS :TREE := TREE_VOID;
 		    LX_SYMREP :TREE := TREE_VOID;

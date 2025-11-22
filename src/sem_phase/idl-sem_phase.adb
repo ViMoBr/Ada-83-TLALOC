@@ -875,17 +875,10 @@ is					---------
                 XD_NOT_EQUAL: TREE := TREE_VOID)
                 return TREE;
       
-          function MAKE_PACKAGE_ID
-                ( LX_SRCPOS: TREE := TREE_VOID;
-                LX_SYMREP: TREE := TREE_VOID;
-                SM_FIRST: TREE := TREE_VOID;
-                SM_SPEC: TREE := TREE_VOID;
-                SM_UNIT_DESC: TREE := TREE_VOID;
-                SM_ADDRESS: TREE := TREE_VOID;
-                XD_REGION: TREE := TREE_VOID;
-                XD_STUB: TREE := TREE_VOID;
-                XD_BODY: TREE := TREE_VOID)
-                return TREE;
+          function MAKE_PACKAGE_ID ( LX_SRCPOS, LX_SYMREP, SM_FIRST :TREE := TREE_VOID;
+				SM_SPEC, SM_UNIT_DESC, SM_ADDRESS :TREE := TREE_VOID;
+				  XD_REGION, XD_STUB, XD_BODY :TREE := TREE_VOID)
+		return TREE;
       
           function MAKE_GENERIC_ID
                 ( LX_SRCPOS: TREE := TREE_VOID;

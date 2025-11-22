@@ -131,7 +131,7 @@ end	START_LIB_PHASE;
       elsif  LIB_CHAR = 'P'  then							--| LIGNE CHEMIN DE LA LIBRAIRIE (PATH)
         SKIP_LINE( FCTL );								--| SAUTER (INUTILE ICI)
 
-      elsif  LIB_CHAR = 'S'  or  LIB_CHAR = 'U'  then						--| LIGNE U OU S (UNITE OU UNITE SEPAREE
+      elsif  LIB_CHAR = 'S'  or  LIB_CHAR = 'U'  then					--| LIGNE U OU S (UNITE OU UNITE SEPAREE
         GET      ( FCTL, DUMMY_CHAR );							--| PASSER LE BLANC
         GET_LINE ( FCTL, LIB_SHORT, LIB_SHORT_LENGTH );					--| LIRE LE NOM COURT
         GET_LINE ( FCTL, LIB_TEXT_1, LIB_TEXT_1_LENGTH );					--| LIRE LE NOM D'UNITE (SI PAS SEPAREE) OU LE NOM DE PARENTE (SI UNITE SEPAREE)

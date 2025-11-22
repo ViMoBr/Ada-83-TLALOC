@@ -10,18 +10,21 @@ separate ( EXPANDER )
 				----------
 is
 
+  THE_COMPILATION_UNIT	: TREE;
 
   package CODI	renames EXPANDER.UTILS;
   use CODI;
 
 
-				--=================--
-  procedure			CODE_COMPILATION_UNIT	( COMPILATION_UNIT :TREE )
-  is
+			--=====================--
+  procedure		  CODE_COMPILATION_UNIT	( COMPILATION_UNIT :TREE )
+  is			--=====================--
+
     UNIT_ALL_DECL		: TREE	:= D( AS_ALL_DECL, COMPILATION_UNIT );
   begin
     CODI.CUR_LEVEL      := 0;
     CODI.ENCLOSING_BODY := TREE_VOID;
+    THE_COMPILATION_UNIT := COMPILATION_UNIT;
 
     CODE_WITH_CONTEXT( D( AS_CONTEXT_ELEM_S, COMPILATION_UNIT ) );
 
@@ -46,7 +49,7 @@ is
       CODE_PACKAGE_BODY( UNIT_ALL_DECL );
 
     when  DN_SUBUNIT		=>
-      CODE_SUBUNIT( UNIT_ALL_DECL );
+      CODE_SUBUNIT_BODY( D( AS_SUBUNIT_BODY, UNIT_ALL_DECL )  );
 
     when others			=> raise PROGRAM_ERROR;
     end case;
@@ -56,9 +59,10 @@ is
 
 
 
-				-----------------
-  procedure			CODE_WITH_CONTEXT		( CONTEXT_ELEM_S :TREE )
-  is
+			-----------------
+  procedure		CODE_WITH_CONTEXT		( CONTEXT_ELEM_S :TREE )
+  is			-----------------
+
     CONTEXT_ELEM_SEQ	: SEQ_TYPE	:= LIST( CONTEXT_ELEM_S );
     CONTEXT_ELEM		: TREE;
 		-----------------
@@ -112,15 +116,17 @@ is
 
 
 
-				--------------------
-  procedure			CODE_SUBPROGRAM_BODY	( SUBPROGRAM_BODY :TREE )
-  is
+			--------------------
+  procedure		CODE_SUBPROGRAM_BODY	( SUBPROGRAM_BODY :TREE )
+  is			--------------------
+
     LBL			: LABEL_TYPE;
     SOURCE_NAME		: TREE		:= D( AS_SOURCE_NAME, SUBPROGRAM_BODY );
     SUB_NAME		:constant STRING	:= PRINT_NAME( D( LX_SYMREP, SOURCE_NAME ) );
     DECL_ID		: TREE		:= D( SM_FIRST, SOURCE_NAME );
     SAVE_ENCLOSING		: TREE		:= ENCLOSING_BODY;
     SAVE_NO_SUB_PARAM	: BOOLEAN		:= CODI.NO_SUBP_PARAMS;
+    SUB_BODY		: TREE		:= D( AS_BODY, SUBPROGRAM_BODY );
   begin
 
     INC_LEVEL;
@@ -142,33 +148,41 @@ is
       PUT_LINE( "if defined " & SUB_NAME & '_' & LABEL_STR( LBL ) & '_' );
     end if;
 
-    PUT( "PRO" & tab & SUB_NAME & '_' & LABEL_STR( LBL ) );
-    if  CODI.DEBUG  then PUT( tab50 & ";---------- PRO " & SUB_NAME ); end if;
-    NEW_LINE;
+    if  SUB_BODY.TY = DN_STUB  then
+      declare
+        UNIT_FILE_NAME	:constant STRING	:= PRINT_NAME( D( XD_LIB_NAME, THE_COMPILATION_UNIT ) );
+      begin
+        PUT_LINE( "include '" & UNIT_FILE_NAME( UNIT_FILE_NAME'FIRST .. UNIT_FILE_NAME'LAST-4 )  & '-' & SUB_NAME & ".FINC'" );
+      end;
+    else
+      PUT( "PRO" & tab & SUB_NAME & '_' & LABEL_STR( LBL ) );
+      if  CODI.DEBUG  then PUT( tab50 & ";---------- PRO " & SUB_NAME ); end if;
+      NEW_LINE;
 
-    DECLARATIONS.CODE_HEADER( D( SM_SPEC, SOURCE_NAME ) );
+      DECLARATIONS.CODE_HEADER( D( SM_SPEC, SOURCE_NAME ) );
 
-    ENCLOSING_BODY := SUBPROGRAM_BODY;
+      ENCLOSING_BODY := SUBPROGRAM_BODY;
 
-    CODE_BODY( D( AS_BODY, SUBPROGRAM_BODY ) );
+      CODE_BLOCK_BODY( SUB_BODY );
 
-    PUT_LINE( "ret_lbl:" );
-    PUT_LINE( tab & "UNLINK" & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL ) );
+      PUT_LINE( "ret_lbl:" );
+      PUT_LINE( tab & "UNLINK" & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL ) );
 
-    PUT( tab & "RTD" );
-    if  CODI.NO_SUBP_PARAMS = FALSE  then  PUT( tab & "(prm_siz" );
-      if  SOURCE_NAME.TY = DN_FUNCTION_ID  then
-        PUT( INTEGER'IMAGE( - STACK_ELEMENT_SIZE ) );							-- POUR UNE FONCTION NE PAS LIBERER LE RESULTAT
+      PUT( tab & "RTD" );
+      if  CODI.NO_SUBP_PARAMS = FALSE  then  PUT( tab & "(prm_siz" );
+        if  SOURCE_NAME.TY = DN_FUNCTION_ID  then
+          PUT( INTEGER'IMAGE( - STACK_ELEMENT_SIZE ) );							-- POUR UNE FONCTION NE PAS LIBERER LE RESULTAT
+        end if;
+        PUT( ')' );
       end if;
-      PUT( ')' );
-    end if;
-    CODI.NO_SUBP_PARAMS := SAVE_NO_SUB_PARAM;
-    NEW_LINE;
-    PUT_LINE( "excep:" );
+      CODI.NO_SUBP_PARAMS := SAVE_NO_SUB_PARAM;
+      NEW_LINE;
+      PUT_LINE( "excep:" );
 
-    PUT( "endPRO" );
-    if  CODI.DEBUG  then PUT( tab50 & ";---------- end PRO " & SUB_NAME); end if;
-    NEW_LINE;
+      PUT( "endPRO" );
+      if  CODI.DEBUG  then PUT( tab50 & ";---------- end PRO " & SUB_NAME); end if;
+      NEW_LINE;
+    end if;
 
     DEC_LEVEL;
     ENCLOSING_BODY := SAVE_ENCLOSING;
@@ -181,13 +195,16 @@ is
 
 
 
-				-----------------
-  procedure			CODE_PACKAGE_BODY		( PACKAGE_BODY :TREE )
-  is
+			-----------------
+  procedure		CODE_PACKAGE_BODY		( PACKAGE_BODY :TREE )
+  is			-----------------
+
     PACK_ID	: TREE		:= D( AS_SOURCE_NAME, PACKAGE_BODY );
     PACK_NAME	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, PACK_ID ) );
     PACK_DEF	: TREE		:= D( SM_FIRST, PACK_ID );
+    PACK_BODY	: TREE		:= D( AS_BODY, PACKAGE_BODY );
     CAS_NORMAL	: BOOLEAN		:= PACK_NAME /= "STANDARD" and PACK_NAME /= "_STANDRD";
+
   begin
     if  PACK_DEF.TY = DN_GENERIC_ID  then
       IN_GENERIC_BODY := TRUE;
@@ -223,7 +240,7 @@ is
 
       DECLARATIONS.CODE_PACKAGE_SPEC( D( SM_SPEC, PACK_ID ) );						-- POUR LES EMPLACEMENTS DES VARS DE SPEC DE GENERIQUE
       ENCLOSING_BODY := PACKAGE_BODY;
-      CODE_BODY( D( AS_BODY, PACKAGE_BODY ) );								-- POUR LES VARS ET LES SUBS DU CORPS DE GENERIQUE
+      CODE_BLOCK_BODY( PACK_BODY );									-- POUR LES VARS ET LES SUBS DU CORPS DE GENERIQUE
 
       PUT( "end namespace " );
       if  CODI.DEBUG  then
@@ -234,28 +251,40 @@ is
 
     else
 
-      if  CAS_NORMAL  then
-        PUT_LINE( PACK_NAME & " = " & "'" & PACK_NAME & "'" );
-        PUT( "namespace " & PACK_NAME );
-        if  CODI.DEBUG  then PUT( tab50 & ";---------- PACKAGE" ); end if;
+      if  PACK_BODY.TY = DN_STUB  then
+        declare
+	UNIT_FILE_NAME	:constant STRING	:= PRINT_NAME( D( XD_LIB_NAME, THE_COMPILATION_UNIT ) );
+        begin
+	PUT_LINE( "include '" & UNIT_FILE_NAME( UNIT_FILE_NAME'FIRST .. UNIT_FILE_NAME'LAST-4 )
+		& '-' & PACK_NAME & ".FINC'" );
+        end;
+
+      else
+        if  CAS_NORMAL  then
+	PUT_LINE( PACK_NAME & " = " & "'" & PACK_NAME & "'" );
+	PUT( "namespace " & PACK_NAME );
+	if  CODI.DEBUG  then PUT( tab50 & ";---------- PACKAGE" ); end if;
+	NEW_LINE;
+        end if;
+
+--if  ENCLOSING_BODY /= TREE_VOID then
+        PUT( "elab_spec:" );
+        if  CODI.DEBUG  then PUT_LINE( tab50 & ";    SPEC ELAB" ); end if;
+        NEW_LINE;
+
+        DECLARATIONS.CODE_PACKAGE_SPEC( D( SM_SPEC, PACK_ID ) );
+--end if;
+        ENCLOSING_BODY := PACKAGE_BODY;
+        CODE_BLOCK_BODY( PACK_BODY );
+
+        if  CAS_NORMAL  then
+	PUT( "end namespace " );
+	if  CODI.DEBUG
+	then  PUT_LINE( tab50 & ";---------- end package BDY " & PACK_NAME );
+	end if;
+        end if;
         NEW_LINE;
       end if;
-
-      PUT( "elab_spec:" );
-      if  CODI.DEBUG  then PUT_LINE( tab50 & ";    SPEC ELAB" ); end if;
-      NEW_LINE;
-
-      DECLARATIONS.CODE_PACKAGE_SPEC( D( SM_SPEC, PACK_ID ) );
-      ENCLOSING_BODY := PACKAGE_BODY;
-      CODE_BODY( D( AS_BODY, PACKAGE_BODY ) );
-
-      if  CAS_NORMAL  then
-        PUT( "end namespace " );
-        if  CODI.DEBUG
-        then  PUT_LINE( tab50 & ";---------- end package BDY " & PACK_NAME );
-        end if;
-      end if;
-      NEW_LINE;
 
     end if;
 
@@ -264,26 +293,33 @@ is
 
 
 
-				---------
-  procedure			CODE_BODY		( ADA_BODY :TREE )
+			--===============--
+  procedure		  CODE_BLOCK_BODY	( BLOCK_BODY :TREE )
+  is			--===============--
+
+
+			-----------
+  procedure		CODE_ITEM_S		( ITEM_S :TREE )
   is
+    ITEM_SEQ	: SEQ_TYPE	:= LIST ( ITEM_S );
+    ITEM		: TREE;
   begin
+    while  not IS_EMPTY( ITEM_SEQ )  loop
+      POP( ITEM_SEQ, ITEM );
 
-    if  ADA_BODY.TY = DN_BLOCK_BODY
-    then  CODE_BLOCK_BODY( ADA_BODY );
+      if  ITEM.TY in CLASS_DECL
+      then  DECLARATIONS.CODE_DECL( ITEM );
 
-    elsif  ADA_BODY.TY = DN_STUB
-    then  CODE_STUB( ADA_BODY );
-    end if;
+      elsif  ITEM.TY in CLASS_SUBUNIT_BODY
+      then  CODE_SUBUNIT_BODY( ITEM );
 
-  end	CODE_BODY;
-	---------
+      end if;
 
+    end loop;
 
+  end	CODE_ITEM_S;
+	-----------
 
-				--===========--
-  procedure			CODE_BLOCK_BODY	( BLOCK_BODY :TREE )
-  is
   begin
     DI( CD_LEVEL, BLOCK_BODY, INTEGER( CODI.CUR_LEVEL ) );
 
@@ -332,7 +368,7 @@ is
     INSTRUCTIONS.CODE_STM_S( D( AS_STM_S, BLOCK_BODY ) );
 
     if  not IS_EMPTY( LIST( D( AS_ALTERNATIVE_S, BLOCK_BODY ) ) )
-    then  CODE_ALTERNATIVE_S( D( AS_ALTERNATIVE_S, BLOCK_BODY ) );
+    then  CODE_EXCEPTIONS_ALTERNATIVE_S( D( AS_ALTERNATIVE_S, BLOCK_BODY ) );
     end if;
 
   end	CODE_BLOCK_BODY;
@@ -340,20 +376,9 @@ is
 
 
 
-		------------
-  procedure	CODE_SUBUNIT		( SUBUNIT :TREE )
-  is
-  begin
-    CODE_SUBUNIT_BODY( D( AS_SUBUNIT_BODY, SUBUNIT ) );
-
-  end	CODE_SUBUNIT;
-	------------
-
-
-
 			-----------------
   procedure		CODE_SUBUNIT_BODY		( SUBUNIT_BODY :TREE )
-  is
+  is			-----------------
   begin
 
     if  SUBUNIT_BODY.TY = DN_SUBPROGRAM_BODY
@@ -371,8 +396,9 @@ is
 	-----------------
 
 
-				--------------
-  procedure			CODE_TASK_BODY ( TASK_BODY :TREE )
+
+			--------------
+  procedure		CODE_TASK_BODY ( TASK_BODY :TREE )
   is
   begin
     null;
@@ -381,28 +407,81 @@ is
 
 
 
-				-----------
-  procedure			CODE_ITEM_S		( ITEM_S :TREE )
-  is
-    ITEM_SEQ	: SEQ_TYPE	:= LIST ( ITEM_S );
-    ITEM		: TREE;
-  begin
-    while  not IS_EMPTY( ITEM_SEQ )  loop
-      POP( ITEM_SEQ, ITEM );
+		----------------------------------------------------
+		--	E X C E P T I O N S   H A N D L E R S	--
 
-      if  ITEM.TY in CLASS_DECL
-      then  DECLARATIONS.CODE_DECL( ITEM );
 
-      elsif  ITEM.TY in CLASS_SUBUNIT_BODY
-      then  CODE_SUBUNIT_BODY( ITEM );
+			-----------------------------
+  procedure		CODE_EXCEPTIONS_ALTERNATIVE_S		( ALTERNATIVE_S :TREE )
+  is			-----------------------------
 
+    ALTERNATIVE_SEQ		: SEQ_TYPE	:= LIST ( ALTERNATIVE_S );
+    ALTERNATIVE_ELEM	: TREE;
+
+		----------------
+    procedure	CODE_ALTERNATIVE	( ALTERNATIVE :TREE )
+    is
+
+      SKIP_LBL		:constant STRING	:= NEW_LABEL;
+      HANDLER_BEGIN_LBL	:constant STRING	:= NEW_LABEL;
+      CHOICE_S		: TREE		:= D( AS_CHOICE_S, ALTERNATIVE );
+      CHOICE_SEQ		: SEQ_TYPE	:= LIST( CHOICE_S );
+      CHOICE		: TREE;
+
+    begin
+--      DI( CD_LABEL, CHOICE_S, INTEGER ( HANDLER_BEGIN_LBL ) );
+
+			-------------
+			CODE_CHOICE_S:
+      begin
+        while not IS_EMPTY( CHOICE_SEQ ) loop
+	POP( CHOICE_SEQ, CHOICE );
+
+	if CHOICE.TY = DN_CHOICE_EXP
+	then  PUT_LINE( "; CHOICE_EXP in EXCEPTIONS todo" );	-- CODE_CHOICE_EXP ( CHOICE );
+
+	elsif CHOICE.TY = DN_CHOICE_OTHERS
+	then  PUT_LINE( "; CHOICE_OTHERS in EXCEPTIONS todo" );	-- CODE_CHOICE_OTHERS ( CHOICE );
+
+	elsif CHOICE.TY = DN_CHOICE_RANGE
+	then  PUT_LINE( "; ANOMALIE : CHOICE_RANGE in EXCEPTIONS" );
+	end if;
+
+	if not CHOICE_OTHERS_FLAG then
+	  null;	-- EMIT( JMPT, LABEL_TYPE( DI( CD_LABEL, CHOICE_S ) ), COMMENT=> "TRAITE EXCEPTION" );
+	end if;
+        end loop;
+      end			CODE_CHOICE_S;
+			-------------
+
+      if not  UTILS.CHOICE_OTHERS_FLAG
+      then
+        PUT_LINE( tab & "BRA" & tab & SKIP_LBL );
+        PUT_LINE( HANDLER_BEGIN_LBL & ':' );
+      end if;
+      INSTRUCTIONS.CODE_STM_S( D( AS_STM_S, ALTERNATIVE ) );
+      if not  UTILS.CHOICE_OTHERS_FLAG
+      then
+        PUT_LINE( SKIP_LBL & ':' );
       end if;
 
+    end	CODE_ALTERNATIVE;
+	----------------
+
+  begin
+    while not IS_EMPTY( ALTERNATIVE_SEQ ) loop
+      POP( ALTERNATIVE_SEQ, ALTERNATIVE_ELEM );
+
+      if ALTERNATIVE_ELEM.TY = DN_ALTERNATIVE
+      then  CODE_ALTERNATIVE( ALTERNATIVE_ELEM );
+
+      elsif ALTERNATIVE_ELEM.TY = DN_ALTERNATIVE_PRAGMA
+      then  PUT_LINE( "ANOMALIE : DN_ALTERNATIVE_PRAGMA in EXCEPTIONS" );
+      end if;
     end loop;
 
-  end	CODE_ITEM_S;
-	-----------
-
+  end	CODE_EXCEPTIONS_ALTERNATIVE_S;
+	-----------------------------
 
 
 	----------

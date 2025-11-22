@@ -28,6 +28,8 @@ is
   ---	-----------
   package body TYPES_DECLS is separate;
 
+  procedure CODE_REP	( REP :TREE );
+  procedure CODE_USE_PRAGMA	( USE_PRAGMA :TREE );
 
 
 			--=========--
@@ -104,146 +106,6 @@ is
 
 
 
-			--===================--
-  procedure		CODE_SUBPROG_ENTRY_DECL	( SUBPROG_ENTRY_DECL :TREE )
-
-  is
-    SOURCE_NAME	: TREE        := D( AS_SOURCE_NAME, SUBPROG_ENTRY_DECL );
-  begin
-    if  not (SOURCE_NAME.TY in CLASS_SUBPROG_NAME)  then
-      PUT_LINE( "ANOMALIE : CODE_GEN.DECLARATIONS.CODE_SUBPROG_ENTRY_DECL ; SOURCE_NAME.TY pas dans CLASS_SUBPROG_NAME" );
-      raise PROGRAM_ERROR;
-    else
-      if  CODI.IN_SPEC_UNIT
-      then DB( CD_COMPILED, SOURCE_NAME, TRUE );
-      else
-        if  not IN_GENERIC_INSTANTIATION  and then  DB( CD_COMPILED, SOURCE_NAME )  then
-          return;
-        end if;
-      end if;
-    end if;
-
-    INC_LEVEL;
-    declare
-      HEADER	: TREE	        := D( AS_HEADER, SUBPROG_ENTRY_DECL );
-      LBL		: LABEL_TYPE	:= NEW_LABEL;
-    begin
-
-      if  CODI.IN_SPEC_UNIT  or else  not DB( CD_COMPILED, SOURCE_NAME )
-      then  DI( CD_LABEL, SOURCE_NAME, INTEGER( LBL ) );
-      end if;
- --     if  not DB( CD_COMPILED, SOURCE_NAME )  then DI( CD_LABEL, SOURCE_NAME, INTEGER( LBL ) ); end if;
-
-      DI( CD_LEVEL, SOURCE_NAME, INTEGER( CODI.CUR_LEVEL ) );
-      DB( CD_COMPILED, SOURCE_NAME, TRUE );
-
-      if  not IN_GENERIC_INSTANTIATION  then CODI.OUTPUT_CODE := FALSE; end if;					-- ne pas coder les parametres (le body fera ca)
-
-      if  IN_GENERIC_INSTANTIATION  then
-        declare
-	SOURCE_NAME	: TREE		:= D( AS_SOURCE_NAME, SUBPROG_ENTRY_DECL );
-	SUB_NAME		:constant STRING	:= PRINT_NAME( D( LX_SYMREP, SOURCE_NAME ) );
-	LBL		: LABEL_TYPE	:= LABEL_TYPE( DI( CD_LABEL, SOURCE_NAME ) );
-        begin
-	PUT_LINE( "if defined " & SUB_NAME & '_' & LABEL_STR( LBL ) & '_' );
-	PUT( "PRO" & tab & SUB_NAME & '_' & LABEL_STR( LBL ) );
-	if  CODI.DEBUG  then PUT( tab50 & ";---------- PRO " & SUB_NAME ); end if;
-	NEW_LINE;
-	CODE_HEADER( HEADER );
-
-	PUT_LINE( "ELB" & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL ) );
-	PUT_LINE( "begin:" );
-
-	PUT_LINE( tab & "LVA" & tab & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL ) & ", GFP_disp" );
-
-	declare
-	  PRM_SECTIONS_S	: SEQ_TYPE	:= LIST( D( AS_PARAM_S, D( SM_SPEC, SOURCE_NAME ) ) );
-
-	  procedure INVERSE_RECURSE_PRM_SECTIONS ( REMAIN_SECTIONS :in out SEQ_TYPE )
-	  is
-	    PRM_SECTION		: TREE;
-	  begin
-	    if  IS_EMPTY( REMAIN_SECTIONS )  then return; end if;
-	    POP( REMAIN_SECTIONS, PRM_SECTION );
-	    INVERSE_RECURSE_PRM_SECTIONS( REMAIN_SECTIONS );
-
-	    declare
-	      NAME_S		: SEQ_TYPE	:= LIST( D( AS_SOURCE_NAME_S, PRM_SECTION ) );
-
-	      procedure INVERSE_RECURSE_NAMES ( NAMES :in out SEQ_TYPE )
-	      is
-	        NAME	: TREE;
-	      begin
-	        if  IS_EMPTY( NAMES )  then return; end if;
-	        POP( NAMES, NAME );
-	        INVERSE_RECURSE_NAMES( NAMES );
-	        PUT_LINE( tab & "Lq" & tab & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL )
-		        & ", -" & PRINT_NAME( D( LX_SYMREP, NAME ) ) & "_ofs" );
-	      end	INVERSE_RECURSE_NAMES;
-
-	    begin
-	      INVERSE_RECURSE_NAMES( NAME_S );
-	    end;
-	  end	INVERSE_RECURSE_PRM_SECTIONS;
-
-	begin
-	  INVERSE_RECURSE_PRM_SECTIONS( PRM_SECTIONS_S );
-	end;
-
-	PUT( tab & "CALL" & tab );
-	REGIONS_PATH( D( SM_DEFN, CODI.INSTANTIATION_MODEL_NAME ) );
-
-	PUT( PRINT_NAME( D( LX_SYMREP, CODI.INSTANTIATION_MODEL_NAME ) ) & ". ," );
-	declare
-	  MODEL_DECL	: TREE;
-	begin
-	  while  not( IS_EMPTY( CODI.GENERIC_MODEL_DECL_SEQ ) )  loop
-	    POP( CODI.GENERIC_MODEL_DECL_SEQ, MODEL_DECL );
-	    if  MODEL_DECL.TY = DN_SUBPROG_ENTRY_DECL  then
-	      declare
-	        NAME	: TREE	:= D( AS_SOURCE_NAME, MODEL_DECL );
-	        LBL	: INTEGER	:= DI( CD_LABEL, NAME );
-	      begin
-	        PUT_LINE( PRINT_NAME( D( LX_SYMREP, NAME ) ) & "_L" & IMAGE( LBL ) );
-	        exit;
-	      end;
-	    end if;
-	  end loop;
- 	end;
-
-	PUT_LINE( tab & "UNLINK" & tab & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL ) );
-	PUT_LINE( tab & "RTD" & tab & "prm_siz" );
-
-	PUT( "endPRO" );
-	if  CODI.DEBUG  then PUT( tab50 & ";---------- end PRO " & SUB_NAME); end if;
-	NEW_LINE;
-	PUT_LINE( "end if" );
-        end;
-
-      else
-        CODI.OUTPUT_CODE := FALSE;						-- ne pas coder les parametres (le body fera ca)
-        CODE_HEADER( HEADER );
-        CODI.OUTPUT_CODE := TRUE;
-      end if;
-
-      if  SOURCE_NAME.TY = DN_FUNCTION_ID or SOURCE_NAME.TY = DN_OPERATOR_ID  then
-        declare
-          USED_OBJECT_ID	: TREE := D( AS_NAME, HEADER );
-          RESULT_TYPE_ID	: TREE := D( SM_DEFN, USED_OBJECT_ID );
-          RESULT_TYPE_SPEC	: TREE := D( SM_TYPE_SPEC, RESULT_TYPE_ID );
-        begin
-null;
---          DI( CD_RESULT_SIZE, SOURCE_NAME, DI( CD_IMPL_SIZE, RESULT_TYPE_SPEC ) );
-        end;
-      end if;
-    end;
-    DEC_LEVEL;
-
-   end	CODE_SUBPROG_ENTRY_DECL;
-	--===================--
-
-
-
 			--=======--
   procedure		CODE_HEADER		( HEADER :TREE )
   is
@@ -259,8 +121,8 @@ null;
 
     end if;
 
-  end	CODE_HEADER;
-	--=======--
+  end	  CODE_HEADER;
+	--===========--
 
 
 			------------
@@ -386,10 +248,42 @@ null;
   begin
     CODE_DECL_S( D( AS_DECL_S1, PACKAGE_SPEC ) );
     CODE_DECL_S( D( AS_DECL_S2, PACKAGE_SPEC ) );
-
   end	CODE_PACKAGE_SPEC;
 	-----------------
 
+
+			-------------------
+  procedure		CODE_EXCEPTION_DECL		( EXCEPTION_DECL :TREE )
+  is			-------------------
+
+		------------------
+    procedure	CODE_SOURCE_NAME_S		( SOURCE_NAME_S :TREE )
+    is
+
+      SOURCE_NAME_SEQ	: SEQ_TYPE	:= LIST( SOURCE_NAME_S );
+      SOURCE_NAME		: TREE;
+
+    begin
+      while  not IS_EMPTY( SOURCE_NAME_SEQ )  loop
+        POP( SOURCE_NAME_SEQ, SOURCE_NAME );
+      end loop;
+
+    end	CODE_SOURCE_NAME_S;
+	------------------
+
+  begin
+    CODE_SOURCE_NAME_S( D( AS_SOURCE_NAME_S, EXCEPTION_DECL ) );
+
+  end	CODE_EXCEPTION_DECL;
+	-------------------
+
+
+
+		----------------------------------------------------
+
+  		--	DECL . ID_S_DECL .  E X P _ D E C L	--
+
+		----------------------------------------------------
 
 
 			-------------
@@ -439,41 +333,6 @@ null;
     null;
   end	CODE_NUMBER_DECL;
 	----------------
-
-
-			-------------------
-  procedure		CODE_EXCEPTION_DECL		( EXCEPTION_DECL :TREE )
-  is			-------------------
-
-			------------------
-    procedure		CODE_SOURCE_NAME_S		( SOURCE_NAME_S :TREE )
-    is
-
-      SOURCE_NAME_SEQ	: SEQ_TYPE	:= LIST( SOURCE_NAME_S );
-      SOURCE_NAME		: TREE;
-
-    begin
-      while  not IS_EMPTY( SOURCE_NAME_SEQ )  loop
-        POP( SOURCE_NAME_SEQ, SOURCE_NAME );
-
-        if  SOURCE_NAME.TY		in CLASS_OBJECT_NAME	then CODE_OBJECT_NAME  ( SOURCE_NAME );
-        elsif  SOURCE_NAME.TY 	in CLASS_TYPE_NAME		then CODE_TYPE_NAME    ( SOURCE_NAME );
-        elsif  SOURCE_NAME.TY	in CLASS_UNIT_NAME		then CODE_UNIT_NAME    ( SOURCE_NAME );
-        elsif  SOURCE_NAME.TY	in CLASS_LABEL_NAME		then CODE_LABEL_NAME   ( SOURCE_NAME );
-        elsif  SOURCE_NAME.TY	=  DN_ENTRY_ID		then CODE_ENTRY_ID     ( SOURCE_NAME );
-        elsif  SOURCE_NAME.TY	=  DN_EXCEPTION_ID		then CODE_EXCEPTION_ID ( SOURCE_NAME );
-        end if;
-
-      end loop;
-
-    end	CODE_SOURCE_NAME_S;
-	------------------
-
-  begin
-    CODE_SOURCE_NAME_S( D( AS_SOURCE_NAME_S, EXCEPTION_DECL ) );
-
-  end	CODE_EXCEPTION_DECL;
-	-------------------
 
 
 
@@ -779,38 +638,38 @@ null;--     LOAD_TYPE_SIZE( TYPE_SPEC  );
 
 
 
-  procedure CODE_INIT_OBJECT_NAME ( INIT_OBJECT_NAME :TREE ) is
-  begin
+--  procedure CODE_INIT_OBJECT_NAME ( INIT_OBJECT_NAME :TREE ) is
+--  begin
 
-    if INIT_OBJECT_NAME.TY = DN_NUMBER_ID then
-      CODE_NUMBER_ID ( INIT_OBJECT_NAME );
+--    if INIT_OBJECT_NAME.TY = DN_NUMBER_ID then
+--      CODE_NUMBER_ID ( INIT_OBJECT_NAME );
 
-    elsif INIT_OBJECT_NAME.TY in CLASS_VC_NAME then
-      CODE_VC_NAME ( INIT_OBJECT_NAME );
+--    elsif INIT_OBJECT_NAME.TY in CLASS_VC_NAME then
+--      CODE_VC_NAME ( INIT_OBJECT_NAME );
 
-    elsif INIT_OBJECT_NAME.TY in CLASS_COMP_NAME then
-      CODE_COMP_NAME ( INIT_OBJECT_NAME );
+--    elsif INIT_OBJECT_NAME.TY in CLASS_COMP_NAME then
+--      CODE_COMP_NAME ( INIT_OBJECT_NAME );
 
-    elsif INIT_OBJECT_NAME.TY in CLASS_PARAM_NAME then
-      CODE_PARAM_NAME ( INIT_OBJECT_NAME );
+--    elsif INIT_OBJECT_NAME.TY in CLASS_PARAM_NAME then
+--      CODE_PARAM_NAME ( INIT_OBJECT_NAME );
 
-    end if;
-  end;
+--    end if;
+--  end;
 
-  procedure CODE_OBJECT_NAME ( OBJECT_NAME :TREE ) is
-  begin
+--  procedure CODE_OBJECT_NAME ( OBJECT_NAME :TREE ) is
+--  begin
 
-    if OBJECT_NAME.TY = DN_ITERATION_ID then
-      CODE_ITERATION_ID ( OBJECT_NAME );
+--    if OBJECT_NAME.TY = DN_ITERATION_ID then
+--      CODE_ITERATION_ID ( OBJECT_NAME );
 
-    elsif OBJECT_NAME.TY in CLASS_INIT_OBJECT_NAME then
-      CODE_INIT_OBJECT_NAME ( OBJECT_NAME );
+--    elsif OBJECT_NAME.TY in CLASS_INIT_OBJECT_NAME then
+--      CODE_INIT_OBJECT_NAME ( OBJECT_NAME );
 
-    elsif OBJECT_NAME.TY in CLASS_ENUM_LITERAL then
-      CODE_ENUM_LITERAL ( OBJECT_NAME );
+--    elsif OBJECT_NAME.TY in CLASS_ENUM_LITERAL then
+--      CODE_ENUM_LITERAL ( OBJECT_NAME );
 
-    end if;
-  end;
+--    end if;
+--  end;
 
 
 
@@ -845,6 +704,79 @@ null;--     LOAD_TYPE_SIZE( TYPE_SPEC  );
 
     end if;
   end	CODE_SIMPLE_RENAME_DECL;
+
+
+
+ procedure CODE_NAMED_REP	( NAMED_REP :TREE );
+ procedure CODE_RECORD_REP	( RECORD_REP :TREE );
+
+			--------
+ procedure		CODE_REP		( REP :TREE )
+ is
+  begin
+
+    if REP.TY in CLASS_NAMED_REP
+    then  CODE_NAMED_REP ( REP );
+
+    elsif REP.TY = DN_RECORD_REP
+    then  CODE_RECORD_REP ( REP );
+
+    end if;
+  end	CODE_REP;
+	--------
+
+
+			--------------
+  procedure		CODE_NAMED_REP	( NAMED_REP :TREE )
+  is
+  begin
+
+    if NAMED_REP.TY = DN_ADDRESS
+    then null; -- CODE_ADDRESS ( NAMED_REP );
+
+    elsif NAMED_REP.TY = DN_LENGTH_ENUM_REP
+    then null; -- CODE_LENGTH_ENUM_REP ( NAMED_REP );
+
+    end if;
+  end	CODE_NAMED_REP;
+	--------------
+
+
+
+			---------------
+  procedure		CODE_RECORD_REP	( RECORD_REP :TREE )
+  is
+  begin
+    null;	-- CODE_ALIGNMENT_CLAUSE ( D ( AS_ALIGNMENT_CLAUSE, RECORD_REP ) );
+  end	CODE_RECORD_REP;
+	---------------
+
+
+			----------------------------------------------------
+
+  			--	DECL . ID_DECL .  U N I T _ D E C L	--
+
+			----------------------------------------------------
+
+
+  procedure CODE_NON_GENERIC_DECL	( NON_GENERIC_DECL :TREE );
+
+		--------------
+  procedure	CODE_UNIT_DECL		( UNIT_DECL :TREE )
+  is
+  begin
+
+    if UNIT_DECL.TY = DN_GENERIC_DECL
+    then  CODE_GENERIC_DECL ( UNIT_DECL );
+
+    elsif UNIT_DECL.TY in CLASS_NON_GENERIC_DECL
+    then  CODE_NON_GENERIC_DECL ( UNIT_DECL );
+
+    end if;
+
+  end	CODE_UNIT_DECL;
+	--------------
+
 
 
   			--=============--
@@ -885,40 +817,167 @@ null;--     LOAD_TYPE_SIZE( TYPE_SPEC  );
 	--=============--
 
 
-  procedure CODE_NON_GENERIC_DECL	( NON_GENERIC_DECL :TREE );
 
-  --|-------------------------------------------------------------------------------------------
-  procedure CODE_UNIT_DECL ( UNIT_DECL :TREE ) is
-  begin
-
-    if UNIT_DECL.TY = DN_GENERIC_DECL then
-      CODE_GENERIC_DECL ( UNIT_DECL );
-
-    elsif UNIT_DECL.TY in CLASS_NON_GENERIC_DECL then
-      CODE_NON_GENERIC_DECL ( UNIT_DECL );
-
-    end if;
-  end;
-
-
+			---------------------
   procedure		CODE_NON_GENERIC_DECL	( NON_GENERIC_DECL :TREE )
   is
   begin
-    if NON_GENERIC_DECL.TY = DN_SUBPROG_ENTRY_DECL
-    then
-      CODE_SUBPROG_ENTRY_DECL( NON_GENERIC_DECL );
+
+    if  NON_GENERIC_DECL.TY = DN_SUBPROG_ENTRY_DECL
+    then  CODE_SUBPROG_ENTRY_DECL( NON_GENERIC_DECL );
 
     elsif NON_GENERIC_DECL.TY = DN_PACKAGE_DECL
-    then
-      CODE_PACKAGE_DECL( NON_GENERIC_DECL );
+    then  CODE_PACKAGE_DECL( NON_GENERIC_DECL );
+
     end if;
-  end;
+  end	CODE_NON_GENERIC_DECL;
+	---------------------
 
 
 
-				--=============--
-  procedure			CODE_PACKAGE_DECL		( PACKAGE_DECL :TREE )
-  is
+			--=======================--
+  procedure		  CODE_SUBPROG_ENTRY_DECL	( SUBPROG_ENTRY_DECL :TREE )
+  is			--=======================--
+
+    SOURCE_NAME	: TREE        := D( AS_SOURCE_NAME, SUBPROG_ENTRY_DECL );
+  begin
+    if  not (SOURCE_NAME.TY in CLASS_SUBPROG_NAME)  then
+      PUT_LINE( "ANOMALIE : EXPANDER.DECLARATIONS.CODE_SUBPROG_ENTRY_DECL ; SOURCE_NAME.TY pas dans CLASS_SUBPROG_NAME" );
+      raise PROGRAM_ERROR;
+    else
+      if  CODI.IN_SPEC_UNIT
+      then DB( CD_COMPILED, SOURCE_NAME, TRUE );
+      else
+        if  not IN_GENERIC_INSTANTIATION  and then  DB( CD_COMPILED, SOURCE_NAME )  then
+          return;
+        end if;
+      end if;
+    end if;
+
+    INC_LEVEL;
+    declare
+      HEADER	: TREE	        := D( AS_HEADER, SUBPROG_ENTRY_DECL );
+      LBL		: LABEL_TYPE	:= NEW_LABEL;
+    begin
+
+      if  CODI.IN_SPEC_UNIT  or else  not DB( CD_COMPILED, SOURCE_NAME )
+      then  DI( CD_LABEL, SOURCE_NAME, INTEGER( LBL ) );
+      end if;
+ --     if  not DB( CD_COMPILED, SOURCE_NAME )  then DI( CD_LABEL, SOURCE_NAME, INTEGER( LBL ) ); end if;
+
+      DI( CD_LEVEL, SOURCE_NAME, INTEGER( CODI.CUR_LEVEL ) );
+      DB( CD_COMPILED, SOURCE_NAME, TRUE );
+
+      if  not IN_GENERIC_INSTANTIATION  then CODI.OUTPUT_CODE := FALSE; end if;					-- ne pas coder les parametres (le body fera ca)
+
+      if  IN_GENERIC_INSTANTIATION  then
+        declare
+	SOURCE_NAME	: TREE		:= D( AS_SOURCE_NAME, SUBPROG_ENTRY_DECL );
+	SUB_NAME		:constant STRING	:= PRINT_NAME( D( LX_SYMREP, SOURCE_NAME ) );
+	LBL		: LABEL_TYPE	:= LABEL_TYPE( DI( CD_LABEL, SOURCE_NAME ) );
+        begin
+	PUT_LINE( "if defined " & SUB_NAME & '_' & LABEL_STR( LBL ) & '_' );
+	PUT( "PRO" & tab & SUB_NAME & '_' & LABEL_STR( LBL ) );
+	if  CODI.DEBUG  then PUT( tab50 & ";---------- PRO " & SUB_NAME ); end if;
+	NEW_LINE;
+	CODE_HEADER( HEADER );
+
+	PUT_LINE( "ELB" & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL ) );
+	PUT_LINE( "begin:" );
+
+	PUT_LINE( tab & "LVA" & tab & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL ) & ", GFP_disp" );
+
+	declare
+	  PRM_SECTIONS_S	: SEQ_TYPE	:= LIST( D( AS_PARAM_S, D( SM_SPEC, SOURCE_NAME ) ) );
+
+	  procedure INVERSE_RECURSE_PRM_SECTIONS ( REMAIN_SECTIONS :in out SEQ_TYPE )
+	  is
+	    PRM_SECTION		: TREE;
+	  begin
+	    if  IS_EMPTY( REMAIN_SECTIONS )  then return; end if;
+	    POP( REMAIN_SECTIONS, PRM_SECTION );
+	    INVERSE_RECURSE_PRM_SECTIONS( REMAIN_SECTIONS );
+
+	    declare
+	      NAME_S		: SEQ_TYPE	:= LIST( D( AS_SOURCE_NAME_S, PRM_SECTION ) );
+
+	      procedure INVERSE_RECURSE_NAMES ( NAMES :in out SEQ_TYPE )
+	      is
+	        NAME	: TREE;
+	      begin
+	        if  IS_EMPTY( NAMES )  then return; end if;
+	        POP( NAMES, NAME );
+	        INVERSE_RECURSE_NAMES( NAMES );
+	        PUT_LINE( tab & "Lq" & tab & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL )
+		        & ", -" & PRINT_NAME( D( LX_SYMREP, NAME ) ) & "_ofs" );
+	      end	INVERSE_RECURSE_NAMES;
+
+	    begin
+	      INVERSE_RECURSE_NAMES( NAME_S );
+	    end;
+	  end	INVERSE_RECURSE_PRM_SECTIONS;
+
+	begin
+	  INVERSE_RECURSE_PRM_SECTIONS( PRM_SECTIONS_S );
+	end;
+
+	PUT( tab & "CALL" & tab );
+	REGIONS_PATH( D( SM_DEFN, CODI.INSTANTIATION_MODEL_NAME ) );
+
+	PUT( PRINT_NAME( D( LX_SYMREP, CODI.INSTANTIATION_MODEL_NAME ) ) & ". ," );
+	declare
+	  MODEL_DECL	: TREE;
+	begin
+	  while  not( IS_EMPTY( CODI.GENERIC_MODEL_DECL_SEQ ) )  loop
+	    POP( CODI.GENERIC_MODEL_DECL_SEQ, MODEL_DECL );
+	    if  MODEL_DECL.TY = DN_SUBPROG_ENTRY_DECL  then
+	      declare
+	        NAME	: TREE	:= D( AS_SOURCE_NAME, MODEL_DECL );
+	        LBL	: INTEGER	:= DI( CD_LABEL, NAME );
+	      begin
+	        PUT_LINE( PRINT_NAME( D( LX_SYMREP, NAME ) ) & "_L" & IMAGE( LBL ) );
+	        exit;
+	      end;
+	    end if;
+	  end loop;
+ 	end;
+
+	PUT_LINE( tab & "UNLINK" & tab & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL ) );
+	PUT_LINE( tab & "RTD" & tab & "prm_siz" );
+
+	PUT( "endPRO" );
+	if  CODI.DEBUG  then PUT( tab50 & ";---------- end PRO " & SUB_NAME); end if;
+	NEW_LINE;
+	PUT_LINE( "end if" );
+        end;
+
+      else
+        CODI.OUTPUT_CODE := FALSE;						-- ne pas coder les parametres (le body fera ca)
+        CODE_HEADER( HEADER );
+        CODI.OUTPUT_CODE := TRUE;
+      end if;
+
+      if  SOURCE_NAME.TY = DN_FUNCTION_ID or SOURCE_NAME.TY = DN_OPERATOR_ID  then
+        declare
+          USED_OBJECT_ID	: TREE := D( AS_NAME, HEADER );
+          RESULT_TYPE_ID	: TREE := D( SM_DEFN, USED_OBJECT_ID );
+          RESULT_TYPE_SPEC	: TREE := D( SM_TYPE_SPEC, RESULT_TYPE_ID );
+        begin
+null;
+--          DI( CD_RESULT_SIZE, SOURCE_NAME, DI( CD_IMPL_SIZE, RESULT_TYPE_SPEC ) );
+        end;
+      end if;
+    end;
+    DEC_LEVEL;
+
+   end	  CODE_SUBPROG_ENTRY_DECL;
+	--=======================--
+
+
+
+			--=================--
+  procedure		  CODE_PACKAGE_DECL		( PACKAGE_DECL :TREE )
+  is			--=================--
 
     PACK_ID		: TREE			:= D( AS_SOURCE_NAME, PACKAGE_DECL );
     PACK_NAME		:constant STRING		:= PRINT_NAME( D( LX_SYMREP, PACK_ID ) );
@@ -997,13 +1056,30 @@ null;--     LOAD_TYPE_SIZE( TYPE_SPEC  );
 
     if  CAS_NORMAL  then
       PUT_LINE( "end namespace" );
+DB( CD_COMPILED, D( AS_SOURCE_NAME, PACKAGE_DECL ), TRUE );
     end if;
     if  CODI.DEBUG  then  NEW_LINE; end if;
 
     CODI.NO_SUBP_PARAMS := SAVE_NO_SUB_PARAM;
 
-  end	CODE_PACKAGE_DECL;
-	--=============--
+  end	  CODE_PACKAGE_DECL;
+	--=================--
+
+
+			---------------
+  procedure		CODE_USE_PRAGMA	( USE_PRAGMA :TREE )
+  is
+  begin
+
+    if USE_PRAGMA.TY = DN_USE
+    then null;	-- CODE_USE ( USE_PRAGMA );
+
+    elsif USE_PRAGMA.TY = DN_PRAGMA
+    then null;	-- CODE_PRAGMA ( USE_PRAGMA );
+
+    end if;
+  end	CODE_USE_PRAGMA;
+	---------------
 
 
 	------------
