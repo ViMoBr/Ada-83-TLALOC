@@ -314,7 +314,6 @@ end	UTILS;
 
 
 
-  --|-------------------------------------------------------------------------------------------
   procedure CODE_CONTEXT_PRAGMA ( CONTEXT_PRAGMA :TREE ) is
   begin
     null;
@@ -329,187 +328,17 @@ end	UTILS;
 
 
 
-  --|-------------------------------------------------------------------------------------------
---  procedure CODE_CONSTANT_DECL ( CONSTANT_DECL :TREE ) is
---  begin
---    null;
---  end;
-
-  --|-------------------------------------------------------------------------------------------
---  procedure CODE_VARIABLE_DECL ( VARIABLE_DECL :TREE ) is
---  begin
---    null;
---  end;
-
-  --|-------------------------------------------------------------------------------------------
-
-  --|-------------------------------------------------------------------------------------------
-
-  --|-------------------------------------------------------------------------------------------
---  procedure CODE_DSCRMT_DECL_S ( DSCRMT_DECL_S :TREE ) is
---  begin
---    declare
---      DSCRMT_DECL_SEQ : SEQ_TYPE := LIST ( DSCRMT_DECL_S );
---      DSCRMT_DECL : TREE;
---    begin
---      while not IS_EMPTY ( DSCRMT_DECL_SEQ ) loop
---        POP ( DSCRMT_DECL_SEQ, DSCRMT_DECL );
---      CODE_DSCRMT_DECL ( DSCRMT_DECL );
---    end loop;
---    end;
---  end;
-
-  --|-------------------------------------------------------------------------------------------
---  procedure CODE_DSCRMT_DECL ( DSCRMT_DECL :TREE ) is
---  begin
---    null;
---  end;
-
-  --|-------------------------------------------------------------------------------------------
   procedure CODE_DERIVED_SUBPROG ( DERIVED_SUBPROG :TREE ) is
   begin
     null;
   end;
 
-  --|-------------------------------------------------------------------------------------------
+
+
   procedure CODE_IMPLICIT_NOT_EQ ( IMPLICIT_NOT_EQ :TREE ) is
   begin
     null;
   end;
-
-
-  --|-------------------------------------------------------------------------------------------
-
-  --|-------------------------------------------------------------------------------------------
-
-  --|-------------------------------------------------------------------------------------------
-
-  --|-------------------------------------------------------------------------------------------
-
-
-  --|-------------------------------------------------------------------------------------------
---  procedure CODE_UNIT_KIND ( UNIT_KIND :TREE ) is
---  begin
-
---    if UNIT_KIND.TY in CLASS_RENAME_INSTANT then
---      CODE_RENAME_INSTANT ( UNIT_KIND );
-
---    elsif UNIT_KIND.TY in CLASS_GENERIC_PARAM then
---      CODE_GENERIC_PARAM ( UNIT_KIND );
-
---    end if;
---  end;
-
-  --|-------------------------------------------------------------------------------------------
---  procedure CODE_RENAME_INSTANT ( RENAME_INSTANT :TREE ) is
---  begin
-
---    if RENAME_INSTANT.TY = DN_RENAMES_UNIT then
---      CODE_RENAMES_UNIT ( RENAME_INSTANT );
-
---    elsif RENAME_INSTANT.TY = DN_INSTANTIATION then
---      CODE_INSTANTIATION ( RENAME_INSTANT );
-
---    end if;
---  end;
-
-  --|-------------------------------------------------------------------------------------------
---  procedure CODE_RENAMES_UNIT ( RENAMES_UNIT :TREE ) is
---  begin
---    null;
---  end;
-
-  --|-------------------------------------------------------------------------------------------
---  procedure CODE_INSTANTIATION ( INSTANTIATION :TREE ) is
---  begin
---    null;
---  end;
-
-  --|-------------------------------------------------------------------------------------------
---  procedure CODE_GENERIC_PARAM ( GENERIC_PARAM :TREE ) is
---  begin
-
---    if GENERIC_PARAM.TY = DN_NAME_DEFAULT then
---      CODE_NAME_DEFAULT ( GENERIC_PARAM );
-
---    elsif GENERIC_PARAM.TY = DN_BOX_DEFAULT then
---      CODE_BOX_DEFAULT ( GENERIC_PARAM );
-
---    elsif GENERIC_PARAM.TY = DN_NO_DEFAULT then
---      CODE_NO_DEFAULT ( GENERIC_PARAM );
-
---    end if;
---  end;
-
-  --|-------------------------------------------------------------------------------------------
---  procedure CODE_NAME_DEFAULT ( NAME_DEFAULT :TREE ) is
---  begin
---    null;
---  end;
-
-  --|-------------------------------------------------------------------------------------------
---  procedure CODE_BOX_DEFAULT ( BOX_DEFAULT :TREE ) is
---  begin
---    null;
---  end;
-
-  --|-------------------------------------------------------------------------------------------
---  procedure CODE_NO_DEFAULT ( NO_DEFAULT :TREE ) is
---  begin
---    null;
---  end;
-
-
-
-  --|-------------------------------------------------------------------------------------------
---  procedure CODE_CHARACTER_ID ( CHARACTER_ID :TREE ) is
---  begin
---    null;
---  end;
-
-  --|-------------------------------------------------------------------------------------------
---  procedure CODE_FORMAL_INTEGER_DEF ( FORMAL_INTEGER_DEF :TREE ) is
---  begin
---    null;
---  end;
-
-  --|-------------------------------------------------------------------------------------------
---  procedure CODE_FORMAL_FIXED_DEF ( FORMAL_FIXED_DEF :TREE ) is
---  begin
---    null;
---  end;
-
-  --|-------------------------------------------------------------------------------------------
---  procedure CODE_FORMAL_FLOAT_DEF ( FORMAL_FLOAT_DEF :TREE ) is
---  begin
---    null;
---  end;
-
-  --|-------------------------------------------------------------------------------------------
---  procedure CODE_FORMAL_DSCRT_DEF ( FORMAL_DSCRT_DEF :TREE ) is
---  begin
---    null;
---  end;
-
-  --|-------------------------------------------------------------------------------------------
---  procedure CODE_PRIVATE_DEF ( PRIVATE_DEF :TREE ) is
---  begin
---    null;
---  end;
-
-  --|-------------------------------------------------------------------------------------------
---  procedure CODE_L_PRIVATE_DEF ( L_PRIVATE_DEF :TREE ) is
---  begin
---    null;
---  end;
-
-
-
-  --|-------------------------------------------------------------------------------------------
---  procedure CODE_CONSTRAINED_DEF ( CONSTRAINED_DEF, TYPE_DECL :TREE ) is
---  begin
---null;
---  end;
 
 
 			-----------------------
@@ -523,120 +352,6 @@ end	UTILS;
 
   end	CODE_SUBTYPE_INDICATION;
 	-----------------------
-
-
-
---  procedure CODE_ACCESS_DEF ( ACCESS_DEF, TYPE_DECL :TREE )
---  is
---    TYPE_ID	: TREE		:= D( AS_SOURCE_NAME, TYPE_DECL );
---    TYPE_SPEC	: TREE		:= D( SM_TYPE_SPEC, TYPE_ID );
---  begin
---    null;
---  end;
-
-
-
---  procedure CODE_DERIVED_DEF ( DERIVED_DEF :TREE ) is
---  begin
---    null;
---  end;
-
-
---  procedure			CODE_ITERATION_ID		( ITERATION_ID :TREE )
---  is
---  begin
---    null;
---  end	CODE_ITERATION_ID;
-
-
-
---  procedure CODE_NUMBER_ID ( NUMBER_ID :TREE ) is
---  begin
---    null;
---  end;
-
-
-
---  procedure CODE_TYPE_NAME ( TYPE_NAME :TREE ) is
---  begin
-
---    if TYPE_NAME.TY = DN_TYPE_ID then
---      CODE_TYPE_ID ( TYPE_NAME );
-
---    elsif TYPE_NAME.TY = DN_SUBTYPE_ID then
---      CODE_SUBTYPE_ID ( TYPE_NAME );
-
---    elsif TYPE_NAME.TY = DN_PRIVATE_TYPE_ID then
---      CODE_PRIVATE_TYPE_ID ( TYPE_NAME );
-
---    elsif TYPE_NAME.TY = DN_L_PRIVATE_TYPE_ID then
---      CODE_L_PRIVATE_TYPE_ID ( TYPE_NAME );
-
---    end if;
---  end;
-
-
-
---  procedure CODE_TYPE_ID ( TYPE_ID :TREE ) is
---  begin
---    null;
---  end;
-
-
-
---  procedure CODE_SUBTYPE_ID ( SUBTYPE_ID :TREE ) is
---  begin
---    null;
---  end;
-
-
-
---  procedure CODE_COMP_NAME ( COMP_NAME :TREE ) is
---  begin
-
---    if COMP_NAME.TY = DN_COMPONENT_ID then
---      CODE_COMPONENT_ID ( COMP_NAME );
-
---    elsif COMP_NAME.TY = DN_DISCRIMINANT_ID then
---      CODE_DISCRIMINANT_ID ( COMP_NAME );
-
---    end if;
---  end;
-
-
-
---  procedure CODE_COMPONENT_ID ( COMPONENT_ID :TREE ) is
---  begin
---    null;
---  end;
-
-
-
---  procedure CODE_DISCRIMINANT_ID ( DISCRIMINANT_ID :TREE ) is
---  begin
---    null;
---  end;
-
-
-
---  procedure CODE_LABEL_NAME ( LABEL_NAME :TREE ) is
---  begin
-
---    if LABEL_NAME.TY = DN_LABEL_ID then
---      CODE_LABEL_ID ( LABEL_NAME );
-
---    elsif LABEL_NAME.TY = DN_BLOCK_LOOP_ID then
---      CODE_BLOCK_LOOP_ID ( LABEL_NAME );
-
---    end if;
---  end;
-
-
-
---  procedure CODE_LABEL_ID ( LABEL_ID :TREE ) is
---  begin
---    null;
---  end;
 
 
 
@@ -691,78 +406,6 @@ null;--      GEN_PUSH_DATA ( A, 0, LEVEL_NUM(DI( CD_LEVEL, ADRESSE )), DI( CD_VA
 
 
 
---  procedure CODE_BLOCK_LOOP_ID ( BLOCK_LOOP_ID :TREE ) is
---  begin
---    null;
---  end;
-
-
-  --|-------------------------------------------------------------------------------------------
---  procedure CODE_SUBPROG_NAME ( SUBPROG_NAME :TREE ) is
---  begin
-
---    if SUBPROG_NAME.TY = DN_PROCEDURE_ID then
---      CODE_PROCEDURE_ID ( SUBPROG_NAME );
-
---    elsif SUBPROG_NAME.TY = DN_FUNCTION_ID then
---      CODE_FUNCTION_ID ( SUBPROG_NAME );
-
---    elsif SUBPROG_NAME.TY = DN_OPERATOR_ID then
---      CODE_OPERATOR_ID ( SUBPROG_NAME );
-
---    end if;
---  end;
-
-  --|-------------------------------------------------------------------------------------------
---  procedure CODE_PROCEDURE_ID ( PROCEDURE_ID :TREE ) is
---  begin
---    null;
---  end;
-
-  --|-------------------------------------------------------------------------------------------
---  procedure CODE_FUNCTION_ID ( FUNCTION_ID :TREE ) is
---  begin
---    null;
---  end;
-
-  --|-------------------------------------------------------------------------------------------
---  procedure CODE_OPERATOR_ID ( OPERATOR_ID :TREE ) is
---  begin
---    null;
---  end;
-
-  --|-------------------------------------------------------------------------------------------
---  procedure CODE_PRIVATE_TYPE_ID ( PRIVATE_TYPE_ID :TREE ) is
---  begin
---    null;
---  end;
-
-  --|-------------------------------------------------------------------------------------------
---  procedure CODE_L_PRIVATE_TYPE_ID ( L_PRIVATE_TYPE_ID :TREE ) is
---  begin
---    null;
---  end;
-
-
---  procedure CODE_TASK_BODY_ID ( TASK_BODY_ID :TREE ) is
---  begin
---    null;
---  end;
-
-
-
---  procedure CODE_ENTRY_ID ( ENTRY_ID :TREE ) is
---  begin
---    null;
---  end;
-
-
-
-
-
-  --|-------------------------------------------------------------------------------------------
-
-  --|-------------------------------------------------------------------------------------------
   procedure CODE_SELECT_ALT_PRAGMA ( SELECT_ALT_PRAGMA :TREE ) is
   begin
     null;
@@ -782,12 +425,6 @@ PUT_LINE( "; EXL" & tab & LBL );
     end;
   end;
 
-
-
---  procedure CODE_GENERIC_ID ( GENERIC_ID :TREE ) is
---  begin
---    null;
---  end;
 
 
   procedure DBGSTOP is begin null; end;
