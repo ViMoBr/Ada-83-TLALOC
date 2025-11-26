@@ -1,17 +1,17 @@
 # TLALOC - Ada 83 Compiler
 
 ```
-        |
-     \\ | //
-   \\ u ^ u //       /-------_______------\
- \ )Y|Y|Y|Y|Y( /     |  T  h e            |
-   / /o o o\ \       |  L  o n e s o m e  |
-  \|H|H|H|H|H|/      |  A  d a            |
- G))  Q   Q  ((G     |  L  o v i n g      |
-  / \   "   / \      |  O  l't i m e r    |
- /_/  \V¨V/  \_\     |  C  o m p i l e r  |
-     \vvvvv/         \-------______-------/
-   \ooooooooo/
+                            |
+                         \\ | //
+                       \\ u ^ u //                 /-------_______------\
+                     \ )Y|Y|Y|Y|Y( /               |  T  h e            |
+                       / /o o o\ \                 |  L  o n e s o m e  |
+                      \|H|H|H|H|H|/                |  A  d a            |
+                     G))  Q   Q  ((G               |  L  o v i n g      |
+                      / \   "   / \                |  O  l't i m e r    |
+                     /_/  \V¨V/  \_\               |  C  o m p i l e r  |
+                         \vvvvv/                   \-------______-------/
+                       \ooooooooo/
 ```
 
 **Preserving the legacy of Ada 83 (MIL-STD-1815A-1983)**
@@ -37,7 +37,7 @@ TLALOC is an experimental compiler that preserves this heritage by implementing 
 ## ✨ Features
 
 - **📜 Full Ada 83 Compliance**: Implements MIL-STD-1815A-1983 standard
-- **🌳 DIANA Representation**: Descriptive Intermediate Attributed Notation for Ada
+- **🌳 DIANA 86 Representation**: Descriptive Intermediate Attributed Notation for Ada
 - **🔧 Modern Toolchain**: Built with GNAT 13.3.0, generates FASM assembly
 - **📚 Separate Compilation**: Full library management with `.DCL`, `.BDY`, `.SUB` files
 - **🐛 Debug-Friendly**: Multiple compilation phases with inspection options
@@ -56,13 +56,9 @@ Source Code (.ada)
         ↓
    [SEM_PHASE]  ──→  Semantic Analysis (65% of compiler)
         ↓
-   [EXPANDER]   ──→  LLIR/FASM Generation
-        ↓
-   [WRITE_LIB]  ──→  Library Output (.DCL/.BDY/.SUB)
-        ↓
-    FASM (fasmg)
-        ↓
-   ELF Executable
+   [EXPANDER]   ──→  LLIR/FASM Generation  ─────────────→  FASM (fasmg)
+        ↓                                                     ↓      
+   [WRITE_LIB]  ──→  Library Output (.DCL/.BDY/.SUB)          ELF Executable
 ```
 
 ### Key Components
@@ -92,45 +88,16 @@ Source Code (.ada)
 git clone https://github.com/ViMoBr/Ada83_TLALOC.git
 cd Ada83_TLALOC
 
-# Build the compiler
-cd src
-gnatmake ada_comp
+# Recompile the compiler
+make_ada_comp.sh
 
-# Create a project directory
-mkdir my_project
-cd my_project
-mkdir ADA__LIB  # Compilation library directory
 ```
 
-### Your First Program
+### First Program
 
-Create `hello.ada`:
+Use instructions with an available simple file :
+[Test with "dis_bonjour.adb" ](Ada 83 'TLALOC' COMPILER QUICKSTART)
 
-```ada
-with TEXT_IO;
-procedure HELLO is
-begin
-   TEXT_IO.PUT_LINE("Hello from Ada 83!");
-end HELLO;
-```
-
-Compile and run:
-
-```bash
-# Compile (assuming a83.sh wrapper script exists)
-./a83.sh ./my_project hello.ada w
-
-# Or use ada_comp directly
-./ada_comp ./my_project hello.ada w
-
-# The generated .fas file will be in your project directory
-fasmg hello.fas hello
-
-# Run
-./hello
-```
-
----
 
 ## 📖 Compilation Options
 
@@ -305,7 +272,8 @@ TLALOC preserves this heritage by providing a working implementation of the orig
 - **Vincent Morin**: Project maintainer and primary developer
 - **Jelle Hermsen**: Ada 83 Memory website collaboration
 - **Ada Community**: For keeping the Ada legacy alive
-- **Historical Compilers**: GNAT, DEC Ada, Verdix Ada - inspirations for this work
+- **Historical Compilers**: DEC Ada, Verdix Ada, Alsys Adaworld, Ada/Ed, Ada-minus - inspirations for this work
+- **Current Compiler**: GNAT with -gnat83 flag
 
 ---
 
@@ -338,11 +306,8 @@ Made with ❤️ for Ada and software heritage preservation
 <<<<<<< HEAD
 </div>
 
-=======
->>>>>>> f8b1cb088163283d6cf363e0e03c206ff7c51728
 
-
-# ADA 83 'TLALOC' COMPILER QUICKSTART
+# Ada 83 'TLALOC' COMPILER QUICKSTART
 
 THIS IS AN EXPERIMENTAL ADA 83 COMPILER WORK IN PROGRESS, PLEASE BE INDULGENT.
 
