@@ -1,17 +1,23 @@
 graph DIANA_Classes {
   layout=osage;
+  fontname="Verdana"; fontsize=9;
   pack=10;
   packmode=array_tu2;
-  sep=10;
-//size=3,20;
-  ratio=expand;
-  node [shape=box];
+  sep=5;
 
-  subgraph cluster_top_grp1 { label=""; sortv=0; peripheries=0;
+  node [
+    shape=box,
+    fontname="Liberation Sans",
+    fontsize=11,
+    height=0,
+    width=0,
+    margin=0.04,
+    fixedsize=false,
+    peripheries=1
+  ];
+  subgraph cluster_top_grp1				{ label=""; sortv=0; peripheries=0;
 
-    subgraph cluster_STANDARD_IDL {
-      label="STANDARD_IDL"; sortv=0; peripheries=1;
-    
+    subgraph cluster_STANDARD_IDL			{ label="STANDARD_IDL"; sortv=0; peripheries=1;
       root
       txtrep
       num_val
@@ -23,69 +29,70 @@ graph DIANA_Classes {
       hash
       void
     
-      subgraph cluster_BOOLEAN {
-        label="BOOLEAN";
+      subgraph cluster_BOOLEAN			{ label="BOOLEAN";
         false
         true
       }
     }
     trou_post_standard_idl  [label=""; sortv=1; invis=true; peripheries=0;]
 
-    subgraph cluster_TYPE_SPEC {
-      label="TYPE_SPEC";sortv=2; peripheries=1;
+			// TYPE_SPEC
+    subgraph cluster_TYPE_SPEC			{ label="TYPE_SPEC";sortv=2; peripheries=1;
 
-      incomplete
-      universal_integer
-      universal_fixed
-      universal_real
+      subgraph cluster_group_universal			{ label=""; sortv=0; peripheries=0;
+        subgraph cluster_group_universal_1		{ label=""; sortv=0; peripheries=0;
+        universal_integer	[sortv=0]
+        universal_fixed	[sortv=1]
+        }
 
-      subgraph cluster_DERIVABLE_SPEC {
-        label="DERIVABLE_SPEC";
+        subgraph cluster_group_universal_2		{ label=""; sortv=1; peripheries=0;
+	universal_real	[sortv=0]
+	incomplete	[sortv=1]
+        }
+      }
+      trou_post_group_universal  [label=""; sortv=1; invis=true; peripheries=0;]
 
-        subgraph cluster_FULL_TYPE_SPEC {
-	label="FULL_TYPE_SPEC";
+      subgraph cluster_DERIVABLE_SPEC			{ label="DERIVABLE_SPEC"; sortv=2;
 
-	task_spec
+        subgraph cluster_FULL_TYPE_SPEC			{ label="FULL_TYPE_SPEC"; sortv=0;
 
-	subgraph cluster_NON_TASK {
-	  label="NON_TASK";
+	subgraph cluster_NON_TASK			{ label="NON_TASK"; sortv=0;
 
-	  subgraph cluster_SCALAR {
-	    label="SCALAR";
+	  subgraph cluster_SCALAR			{ label="SCALAR";
 
-	    enumeration
-	    Integer
-
-	    subgraph cluster_REAL {
-	      label="REAL";
+	    subgraph cluster_group_discrete		{ label=""; sortv=0; peripheries=0;
+	      enumeration	[sortv=0;]
+	      Integer	[sortv=1;]
+	    }
+	    subgraph cluster_REAL			{ label="REAL";
 	      float
  	      fixed
 	    }
 	  }
 
-	  subgraph cluster_UNCONSTRAINED {
-	    label="UNCONSTRAINED";
-
+	  subgraph cluster_UNCONSTRAINED		{ label="UNCONSTRAINED";
 	    access
 
-	    subgraph cluster_UNCONSTRAINED_COMPOSITE {
-	      label="UNCONSTRAINED_COMPOSITE";
+	    subgraph cluster_UNCONSTRAINED_COMPOSITE	{ label="UNCONSTRAINED_COMPOSITE";
 	      array
 	      record
 	    }
 	  }
 
-	  subgraph cluster_CONSTRAINED {
-	    label="CONSTRAINED";
+	  subgraph cluster_CONSTRAINED		{ label="CONSTRAINED";
 	    constrained_array
 	    constrained_record
 	    constrained_access
 	  }
 	}
-        }
+          trou_post_non_task  [label=""; sortv=1; invis=true; peripheries=0;]
 
-        subgraph cluster_PRIVATE_SPEC {
-	label="PRIVATE_SPEC";
+	task_spec	[sortv=2]
+
+        }
+        trou_post_full_type_spec  [label=""; sortv=1; invis=true; peripheries=0;]
+
+        subgraph cluster_PRIVATE_SPEC			{ label="PRIVATE_SPEC"; sortv=2;
 	private
 	l_private
         }
@@ -93,9 +100,7 @@ graph DIANA_Classes {
     }
     trou_post_type_spec  [label=""; sortv=3; invis=true; peripheries=0;]
 
-    subgraph cluster_NON_DIANA {
-      label="NON_DIANA"; sortv=4; peripheries=1;
-
+    subgraph cluster_NON_DIANA			{ label="NON_DIANA"; sortv=4; peripheries=1;
       user_root
       real_val
       trans_with
