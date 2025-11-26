@@ -335,8 +335,11 @@ See [LICENSE](LICENSE) file for details.
 
 Made with ❤️ for Ada and software heritage preservation
 
+<<<<<<< HEAD
 </div>
 
+=======
+>>>>>>> f8b1cb088163283d6cf363e0e03c206ff7c51728
 
 
 # ADA 83 'TLALOC' COMPILER QUICKSTART

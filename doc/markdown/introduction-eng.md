@@ -19,7 +19,7 @@ module.adb --> |------------|
                | LIB_PHASE  |
 $$$.TMP <----> | SEM_PHASE  |
                | ERR_PHASE  |
-               | CODE_GEN   | --> MODULE.FINC                 (intermediate code to be passed through the FASMG assembler with a launcher file module.fas)
+               | EXPANDER   | --> MODULE.FINC                 (intermediate code to be passed through the FASMG assembler with a launcher file module.fas)
                | WRITE_LIB  | --> MODULE.DCL / .BDY / .SUB    (library unit, DIANA withable)
                |------------|
 ```
@@ -48,12 +48,12 @@ The stop option letter can be:
 - M/m we stop after the semantic phase (**SEM_PHASE**) the **DIANA** structure has been augmented with semantic nodes
 - C the macro-code is generated but the library is not written (allows to test the code generation without touching the library)
 - w the library is written but the macro-code generation is bypassed (allows to store the result of semantic compilation without being confronted with a coding bug during the development of the **CODE_GEN** part).
-- W the library is written and the macro-code generation is done.
+- W the library is written and the macro-code generation is done (normal compilation).
 
 A letter option U (ugly), P (pretty) or A (all) performs a print of the **DIANA** structure present in the working file the
  **$$$.TMP** (present in the library folder **ADA__LIB** of the project).
 The file **"$$$.TMP"** is however inaccessible after an option **w** or **W** which destroys this file (it is modified and becomes unusable at the end of this ultimate operation), but any stop before the **WRITE_LIB** phase leaves the **$$$.TMP** accessible.
-The print of **$$$.TMP** post **SEM_PHASE** is crucial for the development of **CODE_GEN**.
+The print of **$$$.TMP** post **SEM_PHASE** is crucial for the development of **EXPANDER**.
 
 IMPORTANT NOTE: As it is possible to stop during the compilation process, **DIANA** files that do not contain certain coding information can be put in the library and cause errors if they are used during a coding operation.
 To avoid this kind of artificial error, it must be ensured that any file used in a coding operation has also been passed through the coding phase. This normally reduces to using the **W** option. But in the development phase of the code generator, it is useful to be able to stop where you want (at your own risk, normally at this stage you should know what you are doing!).
@@ -219,14 +219,14 @@ It is separated from the **IDL** module.
 
 <br></br>
 
-### 1.5 MACRO ASSEMBLY CODE GENERATION PHASE (CODE_GEN) ###
+### 1.5 MACRO ASSEMBLY CODE GENERATION PHASE (EXPANDER) ###
 
 From the **DIANA** tree verified both syntactically and semantically, a form of intermediate machine code independent of the target hardware is elaborated.
 The first validated Ada 83 compiler targeted a stack machine interpreter. The only source accessible in C language is that of Ada-Ed.
 A later project conducted in Poland (see the doc/Thèses_Pologne folder) used an intermediate stack machine code, but with the intention of translating it into 386 machine assembler (A.Wierzinska's thesis). The translator from **DIANA** to "A-Code", an extension of the traditional P-Code of Pascal for Ada, was built by M.Cierniak and can serve as an example.
 However, current processors (2024) are register machines and the most modern code optimizers, such as LLVM or simpler substitutes such as QUBE, work on a representation in 3-address operations and an SSA (Single Static Assignment) approach. the question therefore arises as to whether it is not judicious to aim for an intermediate code of this kind, easier to translate into assembler for example for RISC-V which has the advantage of being a modern and "clean" specification compared to Amd/Intel x86 processor very burdened by its history and the constraints of compatibility.
 
-The choice made for now is a median path where a stack machine macro-code is written by the **CODE_GEN** phase for assembly with **FASMG**. The stack machine has no optimized code, but the direct native code produced give some decent level of performance.
+The choice made for now is a median path where a stack machine macro-code is written by the **EXPANDER** phase for assembly with **FASMG**. The stack machine has no optimized code, but the direct native code produced give some decent level of performance.
 
 <br></br>
 
