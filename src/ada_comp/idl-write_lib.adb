@@ -1,3 +1,21 @@
+--------------------------------------------------------------------------------
+-- TLALOC (The Lonesome Ada Loving Ol'timer Compiler) Strict Ada 83 Compiler
+-- Copyright (C) 2024-2026 Vincent MORIN - Université de Bretagne Occidentale
+--
+-- This program is free software: you can redistribute it and/or modify
+-- it under the terms of the GNU General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or
+-- (at your option) any later version.
+--
+-- This program is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+-- GNU General Public License for more details.
+--
+-- You should have received a copy of the GNU General Public License
+-- along with this program. If not, see <https://www.gnu.org/licenses/>.
+--------------------------------------------------------------------------------
+
 --|     Quelques explications sont nécessaires sur cette procédure qui n'est pas très longue mais
 --| dont le fonctionnement par changement de signe des références de page dans la version d'origine
 --| de Peregrine Systems n'est pas très clair.
@@ -16,8 +34,10 @@
 --|     - On fait une recopie des pages de l'unité à sauvegarder afin de former une seule plage de
 --| pages à sauvegarder dans le fichier de compilation de l'unité
 
---	Vincent MORIN	Universite de Bretagne Occidentale	janvier 2025	Licence CC BY-SA 4.0
---	1	2	3	4	5	6	7	8	9	10	11	12
+------------------------------------------------------------------------------------------------------------------------
+--	Vincent MORIN	Universite de Bretagne Occidentale	janvier 2025
+------------------------------------------------------------------------------------------------------------------------
+--	1	2	3	4	5	6	7	8	9	A	B	C
 
 
 with SEQUENTIAL_IO;
@@ -261,4 +281,5 @@ begin
 end	WRITE_LIB;
 	---------
 
---	1	2	3	4	5	6	7	8	9	10	11	12
+--	1	2	3	4	5	6	7	8	9	A	B	C
+------------------------------------------------------------------------------------------------------------------------
