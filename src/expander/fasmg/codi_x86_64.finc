@@ -1,4 +1,23 @@
-;	1	2	3	4	5	6	7	8	9	10	11
+;------------------------------------------------------------------------------
+; TLALOC (The Lonesome Ada Loving Ol'timer Compiler) Strict Ada 83 Compiler
+; Copyright (C) 2024-2026 Vincent MORIN - Université de Bretagne Occidentale
+;
+; This program is free software: you can redistribute it and/or modify
+; it under the terms of the GNU General Public License as published by
+; the Free Software Foundation, either version 3 of the License, or
+; (at your option) any later version.
+;
+; This program is distributed in the hope that it will be useful,
+; but WITHOUT ANY WARRANTY; without even the implied warranty of
+; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+; GNU General Public License for more details.
+;
+; You should have received a copy of the GNU General Public License
+; along with this program. If not, see <https://www.gnu.org/licenses/>.
+;------------------------------------------------------------------------------
+
+;-----------------------------------------------------------------------------------------------------------------------
+;	1	2	3	4	5	6	7	8	9	A	B	C
 
 
 ;				          |
@@ -35,26 +54,35 @@ end macro
 
 
 	; sur processeur x86 64 les mouvements de pile se font en 64 bits (qword)
-	; mais on a choisi de faire les operations arithmetiques en 32 bits pour rester comme sur une architecture 32 bits
+	; mais on a choisi de faire les operations arithmetiques en 32 bits pour rester comme sur une
+	; architecture 32 bits
 
-	; QUANT A LA PILE : ON A DECIDE DE LA FAIRE CROITRE VERS LES ADRESSES HAUTES CAR LE SENS HABITUEL DESCENDANT EST INGERABLE POUR CERTAINES VARIABLES LOCALES STRUCTUREES
-	; Donc pas possible d'utiliser les push et pop du processeur, on utilise le RBP comme pointeur de pile avec des LEA pour le mettre a jour en essayant de recouvrir les operations
+	; QUANT A LA PILE : ON A DECIDE DE LA FAIRE CROITRE VERS LES ADRESSES HAUTES CAR LE SENS HABITUEL DESCENDANT
+	; EST INGERABLE POUR CERTAINES VARIABLES LOCALES STRUCTUREES
+	; Donc pas possible d'utiliser les push et pop du processeur, on utilise le RBP comme pointeur de pile avec
+	; des LEA pour le mettre a jour en essayant de recouvrir les operations
 	; d'acces memoire et de mise a jour du pointeur de pile RBP.
 	; Le ESP reste tout en bas de pile pour gerer une micro-pile descendante des adresses de CALL/RET uniquement.
 	; Attention : le EBP pointe sur la derniere valeur empilee comme qword
-	; AUTRE PROBLEME DE PILE : Les variables dont on connaît la taille a la compilation s'accomodent bien a la pile usuelle, les offsets sont determine a la compilation
-	; MAIS, si l'on a comme en Ada des variables (tableau par exemple) dont la taille n'est connue qu'a l'execution (indices eux-memes variables)
-	; on ne peut pas mettre ces variables sur la pile normale. Mettre ces variables dans le tas n'est pas tres satisfaisant car la gestion de la desallocation va poser probleme.
-	; On invente donc la Co-Pile qui est une suite de blocs alloues dynamiquement pour un niveau d'execution et qui est desallouee a la maniere de la pile usuelle.
+	; AUTRE PROBLEME DE PILE : Les variables dont on connaît la taille a la compilation s'accomodent bien a
+	; la pile usuelle, les offsets sont determine a la compilation
+	; MAIS, si l'on a comme en Ada des variables (tableau par exemple) dont la taille n'est connue qu'a
+	; l'execution (indices eux-memes variables)
+	; on ne peut pas mettre ces variables sur la pile normale. Mettre ces variables dans le tas n'est pas tres
+	; satisfaisant car la gestion de la desallocation va poser probleme.
+	; On invente donc la Co-Pile qui est une suite de blocs alloues dynamiquement pour un niveau d'execution
+	; et qui est desallouee a la maniere de la pile usuelle.
 	; De la sorte, il n'y a pas de melange avec les allocations de taille statique.
-	; r14 est le pointeur de sommet de Co-Pile (l'analogue de RBP pour la pile standard, ou de RSP pour la micro-pile des retours/bricolages locaux en assembleur.
+	; r14 est le pointeur de sommet de Co-Pile (l'analogue de RBP pour la pile standard, ou de RSP pour la
+	; micro-pile des retours/bricolages locaux en assembleur.
 
 	; R15 pointeur de base display des frame pointers
 	; R14 pointeur de haut de co-pile (lieu d'allocation)
 	; R13 pointeur de debut de chaine de frame de co-pile (pour desallocation)
 	; R12 pointeur post haut de tas (zone de tas allouée sur la pile en début d'exécution expansion vers le bas)
 	; R11 pointeur de bloc tas libre (pointe un doublet de quadwords : taille/adresse bloc suivant.
-	;     gestion simple du tas : taille positive = bloc libre ; taille négative = bloc réservé data pointée après le quadword de taille.
+	;     gestion simple du tas : taille positive = bloc libre ; taille négative = bloc réservé data pointée
+	; après le quadword de taille.
 
 
 ;.......................................................................................................................
