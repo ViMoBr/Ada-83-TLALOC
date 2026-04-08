@@ -12,16 +12,8 @@ is					-------
 
   DEFAULT_INPUT		: FILE_TYPE;
   DEFAULT_OUTPUT		: FILE_TYPE;
---  DEFAULT_OUTPUT_X		: FILE_TYPE_X	:= new FILE_TYPE_BLK;
-
-			----------
---  procedure		SET_OUTPUT_X	( FILE :in FILE_TYPE_X )
---  is			----------
---  begin
---    DEFAULT_OUTPUT_X.all := FILE.all;
-
---  end	SET_OUTPUT_X;
-	----------
+  STD_INPUT		: FILE_TYPE;
+  STD_OUTPUT		: FILE_TYPE;
 
 			--   F I L E   M A N A G E M E N T
 
@@ -194,7 +186,7 @@ is					-------
 			-------
   function		IS_OPEN		( FILE :in FILE_TYPE )		return BOOLEAN
   is			-------
-  begin null;
+  begin
     return FILE.ID = -1;
   end	IS_OPEN;
 	-------
@@ -205,6 +197,7 @@ is					-------
   procedure		SET_INPUT		( FILE :in FILE_TYPE )
   is			---------
   begin null;
+    DEFAULT_INPUT := FILE;
 
   end	SET_INPUT;
 	---------
@@ -212,7 +205,8 @@ is					-------
 			----------
   procedure		SET_OUTPUT	( FILE :in FILE_TYPE )
   is			----------
-  begin null;
+  begin
+    DEFAULT_OUTPUT := FILE;
 
   end	SET_OUTPUT;
 	----------
@@ -220,7 +214,8 @@ is					-------
 			--------------
   function		STANDARD_INPUT					return FILE_TYPE
   is			--------------
-  begin null;
+  begin
+    return STD_INPUT;
 
   end	STANDARD_INPUT;
 	--------------
@@ -228,7 +223,8 @@ is					-------
 			---------------
   function		STANDARD_OUTPUT					return FILE_TYPE
   is			---------------
-  begin null;
+  begin
+    return STD_OUTPUT;
 
   end	STANDARD_OUTPUT;
 	---------------
@@ -236,7 +232,8 @@ is					-------
 			-------------
   function		CURRENT_INPUT					return FILE_TYPE
   is			-------------
-  begin null;
+  begin
+    return DEFAULT_INPUT;
 
   end	CURRENT_INPUT;
 	-------------
@@ -244,7 +241,8 @@ is					-------
 			--------------
   function		CURRENT_OUTPUT					return FILE_TYPE
   is			--------------
-  begin null;
+  begin
+    return DEFAULT_OUTPUT;
 
   end	CURRENT_OUTPUT;
 	--------------
@@ -341,14 +339,14 @@ is					-------
   procedure		NEW_LINE		( SPACING :in POSITIVE_COUNT := 1 )
   is			--------
   begin
-    PUT( ASCII.CR );
+    PUT( DEFAULT_OUTPUT, ASCII.CR );
     STDOUT_COL := 1;										-- LRM 14.3.4(3) col := 1
     for  N in 1 .. SPACING  loop
-      PUT( ASCII.LF );
+      PUT( DEFAULT_OUTPUT, ASCII.LF );
     end loop;
     STDOUT_LINE := STDOUT_LINE + SPACING;
     if  STDOUT_LINE > STDOUT_PAGE_LENGTH  then
-      PUT( ASCII.FF );
+      PUT( DEFAULT_OUTPUT, ASCII.FF );
       STDOUT_PAGE := STDOUT_PAGE + 1;
       STDOUT_LINE := 1;
     end if;
@@ -572,7 +570,12 @@ is					-------
     end	WRITE_SYSTEM_CALL;
 	-----------------
   begin
-    ERR_CODE := WRITE_SYSTEM_CALL( FILE.ID );
+    if  FILE.ID = -1  then
+      ASM_OP_2'( OPCODE => LB, LVL => 1, OFS => -16 );
+      ASM_OP_0'( OPCODE => SYS_PUT_CHAR );
+    else
+      ERR_CODE := WRITE_SYSTEM_CALL( FILE.ID );
+    end if;
 
   end	PUT;
 	----
@@ -581,8 +584,7 @@ is					-------
   procedure		PUT		( ITEM :in CHARACTER )
   is			---
   begin
-    ASM_OP_2'( OPCODE => LB, LVL => 1, OFS => -8 );
-    ASM_OP_0'( OPCODE => SYS_PUT_CHAR );
+    PUT( DEFAULT_OUTPUT, ITEM );
 
   end	PUT;
 	----
@@ -592,7 +594,7 @@ is					-------
 
 			---
   procedure		GET		( FILE :in FILE_TYPE; ITEM :out STRING )
-  is			--
+  is			---
   begin null;
 
   end	GET;
@@ -624,7 +626,12 @@ is					-------
     end	WRITE_SYSTEM_CALL;
 	-----------------
   begin
-    ERR_CODE := WRITE_SYSTEM_CALL( FILE.ID, ITEM'LENGTH );
+    if  FILE.ID = -1  then
+      ASM_OP_2'( OPCODE => LA, LVL => 1, OFS => -16 );
+      ASM_OP_0'( OPCODE => SYS_PUT_STR );
+    else
+      ERR_CODE := WRITE_SYSTEM_CALL( FILE.ID, ITEM'LENGTH );
+    end if;
 
   end	PUT;
 	----
@@ -633,8 +640,7 @@ is					-------
   procedure		PUT		( ITEM :in STRING )
   is			---
   begin
-    ASM_OP_2'( OPCODE => LA, LVL => 1, OFS => -8 );
-    ASM_OP_0'( OPCODE => SYS_PUT_STR );
+    PUT( DEFAULT_OUTPUT, ITEM );
 
   end	PUT;
 	----
@@ -675,8 +681,8 @@ is					-------
   procedure		PUT_LINE		( ITEM :in STRING )
   is			--------
   begin
-    PUT( ITEM );
-    NEW_LINE;
+    PUT( DEFAULT_OUTPUT, ITEM );
+    NEW_LINE( DEFAULT_OUTPUT );
 
   end	PUT_LINE;
 	--------

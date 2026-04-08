@@ -538,25 +538,37 @@ put_line( "; adresse component id" );
 
 	  if  NAME.TY = DN_USED_OBJECT_ID  then
 
-	    if  D( SM_EXP_TYPE, DESIGNATOR ).TY in CLASS_SCALAR  and  IS_SOURCE  then
-	      PUT( tab & "LI" & OPER_SIZ_CHAR( D( SM_EXP_TYPE, DESIGNATOR ) ) );
-
-	    else
-	      PUT( tab & "LIVa " );
-
-	    end if;
-
-	    PUT( tab & IMAGE( DI( CD_LEVEL, D( SM_DEFN, NAME ) ) ) & ", " );
-
 	    if  D( SM_DEFN, NAME ).TY in  CLASS_PARAM_NAME  then
-	      PUT( '-' & PRINT_NAME( D(LX_SYMREP, NAME ) ) & "_ofs, " );
+				-- Parameter : doublet address on stack
+				-- Need extra dereference to get _disp
+	      PUT_LINE( tab & "La "
+		& IMAGE( DI( CD_LEVEL, D( SM_DEFN, NAME ) ) ) & ", "
+		& '-' & PRINT_NAME( D(LX_SYMREP, NAME ) ) & "_ofs" );
+
+	      if  D( SM_EXP_TYPE, DESIGNATOR ).TY in CLASS_SCALAR  and  IS_SOURCE  then
+	        PUT( tab & "LI" & OPER_SIZ_CHAR( D( SM_EXP_TYPE, DESIGNATOR ) ) );
+	      else
+	        PUT( tab & "LIVa " );
+	      end if;
+	      PUT( tab & "-1, 0, " );
+	      REGIONS_PATH( DESIGNATOR_DEFN );
+	      PUT_LINE( DESIGNATOR_STR );
 
 	    else
+				-- Local/package variable : _disp in frame
+				-- One dereference is enough
+	      if  D( SM_EXP_TYPE, DESIGNATOR ).TY in CLASS_SCALAR  and  IS_SOURCE  then
+	        PUT( tab & "LI" & OPER_SIZ_CHAR( D( SM_EXP_TYPE, DESIGNATOR ) ) );
+	      else
+	        PUT( tab & "LIVa " );
+	      end if;
+
+	      PUT( tab & IMAGE( DI( CD_LEVEL, D( SM_DEFN, NAME ) ) ) & ", " );
 	      PUT( PRINT_NAME( D(LX_SYMREP, NAME ) ) & "_disp, " );
+	      REGIONS_PATH( DESIGNATOR_DEFN );
+	      PUT_LINE( DESIGNATOR_STR );
 
 	    end if;
-	    REGIONS_PATH( DESIGNATOR_DEFN );
-	    PUT_LINE( DESIGNATOR_STR );
 
 	  else
 	    PUT( tab & "LVa " & tab & ", " );

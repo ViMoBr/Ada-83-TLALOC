@@ -592,7 +592,7 @@ null;--     LOAD_TYPE_SIZE( TYPE_SPEC  );
         PUT( tab & "LVA" & tab & LVL_STR & ", " );
         REGIONS_PATH( TYPE_NAME );
         PUT_LINE( TYPE_NAME_STR & ".SIZ" );
-        PUT( tab & "Sa" & tab & LVL_STR & ", " & VC_STR & "__u" );
+        PUT_LINE( tab & "Sa" & tab & LVL_STR & ", " & VC_STR & "__u" );
 
         DI( CD_LEVEL,     VC_NAME, INTEGER( LVL ) );
         DB( CD_COMPILED,  VC_NAME, TRUE );
@@ -605,6 +605,44 @@ null;--     LOAD_TYPE_SIZE( TYPE_SPEC  );
 	  while not IS_EMPTY( GENERAL_ASSOC_SEQ ) loop
 	    POP( GENERAL_ASSOC_SEQ, COMP_EXP );
 	    EXPRESSIONS.CODE_EXP( COMP_EXP );
+	  end loop;
+	end;
+
+        else
+				-- No explicit aggregate : initialize
+				-- fields that have default values
+	declare
+	  COMP_DECL_S	: SEQ_TYPE	:= LIST( D( AS_DECL_S,
+				    D( SM_COMP_LIST, TYPE_SPEC ) ) );
+	  COMP_DECL	: TREE;
+	begin
+	  while  not IS_EMPTY( COMP_DECL_S )  loop
+	    POP( COMP_DECL_S, COMP_DECL );
+	    declare
+	      COMP_ID_S	: SEQ_TYPE	:= LIST( D( AS_SOURCE_NAME_S, COMP_DECL ) );
+	      COMP_ID	: TREE;
+	    begin
+	      while  not IS_EMPTY( COMP_ID_S )  loop
+	        POP( COMP_ID_S, COMP_ID );
+	        declare
+		FIELD_INIT	: TREE		:= D( SM_INIT_EXP, COMP_ID );
+		COMP_TYPE	: TREE		:= D( SM_OBJ_TYPE, COMP_ID );
+		COMP_STR	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, COMP_ID ) );
+	        begin
+		if  FIELD_INIT /= TREE_VOID  then
+		  PUT( tab & "LIVa "
+		    & LVL_STR & ", "
+		    & VC_STR & "_disp, " );
+		  CODI.REGIONS_PATH( TYPE_NAME );
+		  PUT_LINE( TYPE_NAME_STR & "."
+		    & COMP_STR );
+		  EXPRESSIONS.CODE_EXP( FIELD_INIT );
+		  PUT_LINE( tab & "S"
+		    & CODI.OPER_SIZ_CHAR( COMP_TYPE ) );
+		end if;
+	        end;
+	      end loop;
+	    end;
 	  end loop;
 	end;
         end if;

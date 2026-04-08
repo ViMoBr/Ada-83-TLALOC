@@ -3,7 +3,7 @@ TEXT_IO = 'TEXT_IO'
 namespace TEXT_IO				;---------- PACKAGE
 elab_spec:				;    SPEC ELAB
 
-; CODE_GEN.DECLARATIONS.CODE_TYPE_DECL : TYPE_SPEC.TY (DN_L_PRIVATE NON FAIT POUR ) FILE_TYPE
+; CODE_TYPE_DECL : skip PRIVATE FILE_TYPE (deferred to full type)
 FILE_MODE = 'FILE_MODE'
 namespace FILE_MODE				; FILE_MODE ENUMERATION TYPE INFO
 CST SIZ, d, 8
@@ -104,35 +104,8 @@ STATOFS LINE_LENGTH, 4
 STATOFS PAGE, 4
 STATOFS LINE, 4
 STATOFS COL, 4
-STATOFS IS_DEFAULT_IO, 0
-end virtual
-end namespace
-
-; CODE_GEN.DECLARATIONS.CODE_TYPE_DECL : TYPE_SPEC.TY (DN_INCOMPLETE NON FAIT POUR ) FILE_TYPE_BLK
-FILE_TYPE_BLK = 'FILE_TYPE_BLK'
-namespace FILE_TYPE_BLK			; FILE_TYPE_BLK RECORD TYPE INFO
-VAR SIZ, d
-USEINFO 0, ID, 	LVA	0, STANDARD.INTEGER.SIZ
-USEINFO 0, NAME, 	LVA	0, STANDARD.TEXT_IO.FILE_NAME_BUFFER.SIZ
-USEINFO 0, NAME_LEN, 	LVA	0, STANDARD.POSITIVE.SIZ
-USEINFO 0, MODE, 	LCA	STANDARD.TEXT_IO.FILE_MODE.SIZ
-USEINFO 0, PAGE_LENGTH, 	LVA	0, STANDARD.TEXT_IO.POSITIVE_COUNT.SIZ
-USEINFO 0, LINE_LENGTH, 	LVA	0, STANDARD.TEXT_IO.POSITIVE_COUNT.SIZ
-USEINFO 0, PAGE, 	LVA	0, STANDARD.TEXT_IO.POSITIVE_COUNT.SIZ
-USEINFO 0, LINE, 	LVA	0, STANDARD.TEXT_IO.POSITIVE_COUNT.SIZ
-USEINFO 0, COL, 	LVA	0, STANDARD.TEXT_IO.POSITIVE_COUNT.SIZ
-USEINFO 0, IS_DEFAULT_IO, 	LCA	STANDARD.BOOLEAN.SIZ
-virtual at 0
-STATOFS ID, 4
-STATOFS NAME, 256
-STATOFS NAME_LEN, 4
-STATOFS MODE, 1
-STATOFS PAGE_LENGTH, 4
-STATOFS LINE_LENGTH, 4
-STATOFS PAGE, 4
-STATOFS LINE, 4
-STATOFS COL, 4
-STATOFS IS_DEFAULT_IO, 0
+STATOFS IS_DEFAULT_IO, 1
+size = $
 end virtual
 end namespace
 
@@ -164,6 +137,14 @@ VAR DEFAULT_INPUT__dat, STANDARD.TEXT_IO.FILE_TYPE.size
 	Sa	0, DEFAULT_INPUT_disp			; record fin
 	LVA	0, STANDARD.TEXT_IO.FILE_TYPE.SIZ
 	Sa	0, DEFAULT_INPUT__u
+	LIVa 0, DEFAULT_INPUT_disp, STANDARD.TEXT_IO.FILE_TYPE.ID
+	LI	1
+	NEG
+	Sd
+	LIVa 0, DEFAULT_INPUT_disp, STANDARD.TEXT_IO.FILE_TYPE.IS_DEFAULT_IO
+	LI	0
+	Sb
+
 VAR DEFAULT_OUTPUT_disp, q			; variable record : pointeur aux data record
 VAR DEFAULT_OUTPUT__u, q			; variable record : pointeur aux useinfo
 VAR DEFAULT_OUTPUT__dat, STANDARD.TEXT_IO.FILE_TYPE.size
@@ -171,6 +152,44 @@ VAR DEFAULT_OUTPUT__dat, STANDARD.TEXT_IO.FILE_TYPE.size
 	Sa	0, DEFAULT_OUTPUT_disp			; record fin
 	LVA	0, STANDARD.TEXT_IO.FILE_TYPE.SIZ
 	Sa	0, DEFAULT_OUTPUT__u
+	LIVa 0, DEFAULT_OUTPUT_disp, STANDARD.TEXT_IO.FILE_TYPE.ID
+	LI	1
+	NEG
+	Sd
+	LIVa 0, DEFAULT_OUTPUT_disp, STANDARD.TEXT_IO.FILE_TYPE.IS_DEFAULT_IO
+	LI	0
+	Sb
+
+VAR STD_INPUT_disp, q			; variable record : pointeur aux data record
+VAR STD_INPUT__u, q				; variable record : pointeur aux useinfo
+VAR STD_INPUT__dat, STANDARD.TEXT_IO.FILE_TYPE.size
+	LVA	0, STD_INPUT__dat
+	Sa	0, STD_INPUT_disp			; record fin
+	LVA	0, STANDARD.TEXT_IO.FILE_TYPE.SIZ
+	Sa	0, STD_INPUT__u
+	LIVa 0, STD_INPUT_disp, STANDARD.TEXT_IO.FILE_TYPE.ID
+	LI	1
+	NEG
+	Sd
+	LIVa 0, STD_INPUT_disp, STANDARD.TEXT_IO.FILE_TYPE.IS_DEFAULT_IO
+	LI	0
+	Sb
+
+VAR STD_OUTPUT_disp, q			; variable record : pointeur aux data record
+VAR STD_OUTPUT__u, q			; variable record : pointeur aux useinfo
+VAR STD_OUTPUT__dat, STANDARD.TEXT_IO.FILE_TYPE.size
+	LVA	0, STD_OUTPUT__dat
+	Sa	0, STD_OUTPUT_disp			; record fin
+	LVA	0, STANDARD.TEXT_IO.FILE_TYPE.SIZ
+	Sa	0, STD_OUTPUT__u
+	LIVa 0, STD_OUTPUT_disp, STANDARD.TEXT_IO.FILE_TYPE.ID
+	LI	1
+	NEG
+	Sd
+	LIVa 0, STD_OUTPUT_disp, STANDARD.TEXT_IO.FILE_TYPE.IS_DEFAULT_IO
+	LI	0
+	Sb
+
 
 if defined CREATE_L1_
 PRO	CREATE_L1				;---------- PRO CREATE
@@ -213,10 +232,12 @@ begin:					;---------- BDY INSTRUCTIONS
 	LI	0
 	CGE
 	BF	L3
-	LIVa 	1, -FILE_ofs, STANDARD.TEXT_IO.FILE_TYPE.ID
+	La 1, -FILE_ofs
+	LIVa 	-1, 0, STANDARD.TEXT_IO.FILE_TYPE.ID
 	Ld  1,	ERR_OR_ID_disp
 	Sd
-	LIVa 	1, -FILE_ofs, STANDARD.TEXT_IO.FILE_TYPE.NAME
+	La 1, -FILE_ofs
+	LIVa 	-1, 0, STANDARD.TEXT_IO.FILE_TYPE.NAME
 	LVA	1, -NAME_ofs
 	LIa	, , 8
 	Ld	, STRING.LST_1
@@ -233,7 +254,8 @@ begin:					;---------- BDY INSTRUCTIONS
 	La  1,	-NAME_ofs
 	La
 	BLKMOV
-	LIVa 	1, -FILE_ofs, STANDARD.TEXT_IO.FILE_TYPE.NAME_LEN
+	La 1, -FILE_ofs
+	LIVa 	-1, 0, STANDARD.TEXT_IO.FILE_TYPE.NAME_LEN
 	LVA	1, -NAME_ofs
 	LIa	, , 8
 	Ld	, STRING.LST_1
@@ -243,22 +265,28 @@ begin:					;---------- BDY INSTRUCTIONS
 	Ld	, STRING.FST_1
 	SUB
 	Sd
-	LIVa 	1, -FILE_ofs, STANDARD.TEXT_IO.FILE_TYPE.MODE
+	La 1, -FILE_ofs
+	LIVa 	-1, 0, STANDARD.TEXT_IO.FILE_TYPE.MODE
 	Lb  1,	-MODE_ofs
 	Sb
-	LIVa 	1, -FILE_ofs, STANDARD.TEXT_IO.FILE_TYPE.PAGE_LENGTH
+	La 1, -FILE_ofs
+	LIVa 	-1, 0, STANDARD.TEXT_IO.FILE_TYPE.PAGE_LENGTH
 	Ld  0,	STDOUT_PAGE_LENGTH_disp
 	Sd
-	LIVa 	1, -FILE_ofs, STANDARD.TEXT_IO.FILE_TYPE.LINE_LENGTH
+	La 1, -FILE_ofs
+	LIVa 	-1, 0, STANDARD.TEXT_IO.FILE_TYPE.LINE_LENGTH
 	Ld  0,	STDOUT_LINE_LENGTH_disp
 	Sd
-	LIVa 	1, -FILE_ofs, STANDARD.TEXT_IO.FILE_TYPE.PAGE
+	La 1, -FILE_ofs
+	LIVa 	-1, 0, STANDARD.TEXT_IO.FILE_TYPE.PAGE
 	LI	1
 	Sd
-	LIVa 	1, -FILE_ofs, STANDARD.TEXT_IO.FILE_TYPE.LINE
+	La 1, -FILE_ofs
+	LIVa 	-1, 0, STANDARD.TEXT_IO.FILE_TYPE.LINE
 	LI	1
 	Sd
-	LIVa 	1, -FILE_ofs, STANDARD.TEXT_IO.FILE_TYPE.COL
+	La 1, -FILE_ofs
+	LIVa 	-1, 0, STANDARD.TEXT_IO.FILE_TYPE.COL
 	LI	1
 	Sd
 	BRA	L2
@@ -312,12 +340,14 @@ begin:					;---------- BDY INSTRUCTIONS
 	LI	0
 	CGE
 	BF	L6
-	LIVa 	1, -FILE_ofs, STANDARD.TEXT_IO.FILE_TYPE.ID
+	La 1, -FILE_ofs
+	LIVa 	-1, 0, STANDARD.TEXT_IO.FILE_TYPE.ID
 	LI	0					; lieu resultat sur pile
 	La  1,	-NAME_ofs
 	CALL	STANDARD.TEXT_IO.OPEN_L2. ,OPEN_SYSTEM_CALL_L4
 	Sd
-	LIVa 	1, -FILE_ofs, STANDARD.TEXT_IO.FILE_TYPE.NAME
+	La 1, -FILE_ofs
+	LIVa 	-1, 0, STANDARD.TEXT_IO.FILE_TYPE.NAME
 	LVA	1, -NAME_ofs
 	LIa	, , 8
 	Ld	, STRING.LST_1
@@ -334,7 +364,8 @@ begin:					;---------- BDY INSTRUCTIONS
 	La  1,	-NAME_ofs
 	La
 	BLKMOV
-	LIVa 	1, -FILE_ofs, STANDARD.TEXT_IO.FILE_TYPE.NAME_LEN
+	La 1, -FILE_ofs
+	LIVa 	-1, 0, STANDARD.TEXT_IO.FILE_TYPE.NAME_LEN
 	LVA	1, -NAME_ofs
 	LIa	, , 8
 	Ld	, STRING.LST_1
@@ -344,22 +375,28 @@ begin:					;---------- BDY INSTRUCTIONS
 	Ld	, STRING.FST_1
 	SUB
 	Sd
-	LIVa 	1, -FILE_ofs, STANDARD.TEXT_IO.FILE_TYPE.MODE
+	La 1, -FILE_ofs
+	LIVa 	-1, 0, STANDARD.TEXT_IO.FILE_TYPE.MODE
 	Lb  1,	-MODE_ofs
 	Sb
-	LIVa 	1, -FILE_ofs, STANDARD.TEXT_IO.FILE_TYPE.PAGE_LENGTH
+	La 1, -FILE_ofs
+	LIVa 	-1, 0, STANDARD.TEXT_IO.FILE_TYPE.PAGE_LENGTH
 	Ld  0,	STDOUT_PAGE_LENGTH_disp
 	Sd
-	LIVa 	1, -FILE_ofs, STANDARD.TEXT_IO.FILE_TYPE.LINE_LENGTH
+	La 1, -FILE_ofs
+	LIVa 	-1, 0, STANDARD.TEXT_IO.FILE_TYPE.LINE_LENGTH
 	Ld  0,	STDOUT_LINE_LENGTH_disp
 	Sd
-	LIVa 	1, -FILE_ofs, STANDARD.TEXT_IO.FILE_TYPE.PAGE
+	La 1, -FILE_ofs
+	LIVa 	-1, 0, STANDARD.TEXT_IO.FILE_TYPE.PAGE
 	LI	1
 	Sd
-	LIVa 	1, -FILE_ofs, STANDARD.TEXT_IO.FILE_TYPE.LINE
+	La 1, -FILE_ofs
+	LIVa 	-1, 0, STANDARD.TEXT_IO.FILE_TYPE.LINE
 	LI	1
 	Sd
-	LIVa 	1, -FILE_ofs, STANDARD.TEXT_IO.FILE_TYPE.COL
+	La 1, -FILE_ofs
+	LIVa 	-1, 0, STANDARD.TEXT_IO.FILE_TYPE.COL
 	LI	1
 	Sd
 	BRA	L5
@@ -401,10 +438,12 @@ end if
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 	LI	0					; lieu resultat sur pile
-	LId	1, -FILE_ofs, STANDARD.TEXT_IO.FILE_TYPE.ID
+	La 1, -FILE_ofs
+	LId	-1, 0, STANDARD.TEXT_IO.FILE_TYPE.ID
 	CALL	STANDARD.TEXT_IO.CLOSE_L3. ,CLOSE_SYSTEM_CALL_L7
 	Sd  1,	ERR_CODE_disp
-	LIVa 	1, -FILE_ofs, STANDARD.TEXT_IO.FILE_TYPE.ID
+	La 1, -FILE_ofs
+	LIVa 	-1, 0, STANDARD.TEXT_IO.FILE_TYPE.ID
 	LI	1
 	NEG
 	Sd
@@ -444,22 +483,24 @@ end if
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 	LI	0					; lieu resultat sur pile
-	LIVa 	1, -FILE_ofs, STANDARD.TEXT_IO.FILE_TYPE.NAME
-namespace ANON_148_37			; ensemble doublet @data/@info pour slice anonyme source
-VAR ANON_148_37_disp, q
-VAR ANON_148_37__u, q
+	La 1, -FILE_ofs
+	LIVa 	-1, 0, STANDARD.TEXT_IO.FILE_TYPE.NAME
+namespace ANON_140_37			; ensemble doublet @data/@info pour slice anonyme source
+VAR ANON_140_37_disp, q
+VAR ANON_140_37__u, q
 VAR SIZ, d
 VAR COMP_SIZ, d
 VAR FST_1, d
 VAR LST_1, d
-	Sa	1, ANON_148_37_disp
+	Sa	1, ANON_140_37_disp
 	LVA	1, SIZ
-	Sa	1, ANON_148_37__u
+	Sa	1, ANON_140_37__u
 	LI	1
 	Sd	1, COMP_SIZ
 	LI	1
 	Sd	1, FST_1
-	LId	1, -FILE_ofs, STANDARD.TEXT_IO.FILE_TYPE.NAME_LEN
+	La 1, -FILE_ofs
+	LId	-1, 0, STANDARD.TEXT_IO.FILE_TYPE.NAME_LEN
 	Sd	1, LST_1
 	Ld	1, LST_1
 	INC
@@ -468,7 +509,7 @@ VAR LST_1, d
 	LI	1
 	MUL
 	Sd	1, SIZ
-	LVA	1, ANON_148_37_disp
+	LVA	1, ANON_140_37_disp
 end namespace
 	CALL	STANDARD.TEXT_IO.DELETE_L4. ,DELETE_SYSTEM_CALL_L8
 	Sd  1,	ERR_CODE_disp
@@ -536,8 +577,10 @@ endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-	LIVa 	1, -FILE_ofs, STANDARD.TEXT_IO.FILE_TYPE.NAME
-	LId	1, -FILE_ofs, STANDARD.TEXT_IO.FILE_TYPE.NAME_LEN
+	La 1, -FILE_ofs
+	LIVa 	-1, 0, STANDARD.TEXT_IO.FILE_TYPE.NAME
+	La 1, -FILE_ofs
+	LId	-1, 0, STANDARD.TEXT_IO.FILE_TYPE.NAME_LEN
 	INC
 	LI	1
 	SUB
@@ -593,6 +636,10 @@ endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
+	LVa  0,	DEFAULT_INPUT_disp
+	LI	STANDARD.TEXT_IO.FILE_TYPE.size
+	La  1,	-FILE_ofs
+	BLKMOV
 ret_lbl:
 	UNLINK 1
 	RTD	(prm_siz)
@@ -608,6 +655,10 @@ endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
+	LVa  0,	DEFAULT_OUTPUT_disp
+	LI	STANDARD.TEXT_IO.FILE_TYPE.size
+	La  1,	-FILE_ofs
+	BLKMOV
 ret_lbl:
 	UNLINK 1
 	RTD	(prm_siz)
@@ -620,6 +671,7 @@ PRO	STANDARD_INPUT_L13			;---------- PRO STANDARD_INPUT
 ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
+	BRA ret_lbl
 ret_lbl:
 	UNLINK 1
 	RTD
@@ -632,6 +684,7 @@ PRO	STANDARD_OUTPUT_L14			;---------- PRO STANDARD_OUTPUT
 ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
+	BRA ret_lbl
 ret_lbl:
 	UNLINK 1
 	RTD
@@ -644,6 +697,7 @@ PRO	CURRENT_INPUT_L15			;---------- PRO CURRENT_INPUT
 ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
+	BRA ret_lbl
 ret_lbl:
 	UNLINK 1
 	RTD
@@ -656,6 +710,7 @@ PRO	CURRENT_OUTPUT_L16			;---------- PRO CURRENT_OUTPUT
 ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
+	BRA ret_lbl
 ret_lbl:
 	UNLINK 1
 	RTD
@@ -672,7 +727,8 @@ endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-	LIVa 	1, -FILE_ofs, STANDARD.TEXT_IO.FILE_TYPE.LINE_LENGTH
+	La 1, -FILE_ofs
+	LIVa 	-1, 0, STANDARD.TEXT_IO.FILE_TYPE.LINE_LENGTH
 	Ld  1,	-TO_ofs
 	Sd
 ret_lbl:
@@ -708,7 +764,8 @@ endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-	LIVa 	1, -FILE_ofs, STANDARD.TEXT_IO.FILE_TYPE.PAGE_LENGTH
+	La 1, -FILE_ofs
+	LIVa 	-1, 0, STANDARD.TEXT_IO.FILE_TYPE.PAGE_LENGTH
 	Ld  1,	-TO_ofs
 	Sd
 ret_lbl:
@@ -744,7 +801,8 @@ endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-	LId	1, -FILE_ofs, STANDARD.TEXT_IO.FILE_TYPE.LINE_LENGTH
+	La 1, -FILE_ofs
+	LId	-1, 0, STANDARD.TEXT_IO.FILE_TYPE.LINE_LENGTH
 	Sd  1,	-result__ofs
 	BRA ret_lbl
 ret_lbl:
@@ -778,7 +836,8 @@ endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-	LId	1, -FILE_ofs, STANDARD.TEXT_IO.FILE_TYPE.PAGE_LENGTH
+	La 1, -FILE_ofs
+	LId	-1, 0, STANDARD.TEXT_IO.FILE_TYPE.PAGE_LENGTH
 	Sd  1,	-result__ofs
 	BRA ret_lbl
 ret_lbl:
@@ -815,7 +874,8 @@ begin:					;---------- BDY INSTRUCTIONS
 	LI	 13
 	La  1,	-FILE_ofs
 	CALL	STANDARD.TEXT_IO. ,PUT_L51
-	LIVa 	1, -FILE_ofs, STANDARD.TEXT_IO.FILE_TYPE.COL
+	La 1, -FILE_ofs
+	LIVa 	-1, 0, STANDARD.TEXT_IO.FILE_TYPE.COL
 	LI	1
 	Sd
 VAR	NL10_disp, d				; compteur boucle LOOP__1
@@ -841,25 +901,32 @@ LOOP__1:					; corps boucle LOOP__1
 	Sd  1,	NL10_disp
 	BRA	LOOP__1				; iteration suivante LOOP__1
 L9:					; post loop LOOP__1
-	LIVa 	1, -FILE_ofs, STANDARD.TEXT_IO.FILE_TYPE.LINE
-	LId	1, -FILE_ofs, STANDARD.TEXT_IO.FILE_TYPE.LINE
+	La 1, -FILE_ofs
+	LIVa 	-1, 0, STANDARD.TEXT_IO.FILE_TYPE.LINE
+	La 1, -FILE_ofs
+	LId	-1, 0, STANDARD.TEXT_IO.FILE_TYPE.LINE
 	Ld  1,	-SPACING_ofs
 	ADD
 	Sd
 					; debut if
-	LId	1, -FILE_ofs, STANDARD.TEXT_IO.FILE_TYPE.LINE
-	LId	1, -FILE_ofs, STANDARD.TEXT_IO.FILE_TYPE.PAGE_LENGTH
+	La 1, -FILE_ofs
+	LId	-1, 0, STANDARD.TEXT_IO.FILE_TYPE.LINE
+	La 1, -FILE_ofs
+	LId	-1, 0, STANDARD.TEXT_IO.FILE_TYPE.PAGE_LENGTH
 	CGT
 	BF	L12
 	LI	 12
 	La  1,	-FILE_ofs
 	CALL	STANDARD.TEXT_IO. ,PUT_L51
-	LIVa 	1, -FILE_ofs, STANDARD.TEXT_IO.FILE_TYPE.PAGE
-	LId	1, -FILE_ofs, STANDARD.TEXT_IO.FILE_TYPE.PAGE
+	La 1, -FILE_ofs
+	LIVa 	-1, 0, STANDARD.TEXT_IO.FILE_TYPE.PAGE
+	La 1, -FILE_ofs
+	LId	-1, 0, STANDARD.TEXT_IO.FILE_TYPE.PAGE
 	LI	1
 	ADD
 	Sd
-	LIVa 	1, -FILE_ofs, STANDARD.TEXT_IO.FILE_TYPE.LINE
+	La 1, -FILE_ofs
+	LIVa 	-1, 0, STANDARD.TEXT_IO.FILE_TYPE.LINE
 	LI	1
 	Sd
 	BRA	L11
@@ -881,7 +948,8 @@ ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 	LI	 13
-	CALL	STANDARD.TEXT_IO. ,PUT_L52
+	LVa  0,	DEFAULT_OUTPUT_disp
+	CALL	STANDARD.TEXT_IO. ,PUT_L51
 	LI	1
 	Sd  0,	STDOUT_COL_disp
 VAR	NL14_disp, d				; compteur boucle LOOP__2
@@ -896,7 +964,8 @@ VAR	LMT_NL14_disp, d			; limite boucle LOOP__2
 	BT	L13
 LOOP__2:					; corps boucle LOOP__2
 	LI	 10
-	CALL	STANDARD.TEXT_IO. ,PUT_L52
+	LVa  0,	DEFAULT_OUTPUT_disp
+	CALL	STANDARD.TEXT_IO. ,PUT_L51
 	Ld  1,	NL14_disp				; test de sortie LOOP__2
 	Ld  1,	LMT_NL14_disp
 	CEQ
@@ -916,7 +985,8 @@ L13:					; post loop LOOP__2
 	CGT
 	BF	L16
 	LI	 12
-	CALL	STANDARD.TEXT_IO. ,PUT_L52
+	LVa  0,	DEFAULT_OUTPUT_disp
+	CALL	STANDARD.TEXT_IO. ,PUT_L51
 	Ld  0,	STDOUT_PAGE_disp
 	LI	1
 	ADD
@@ -1115,7 +1185,8 @@ endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-	LIVa 	1, -FILE_ofs, STANDARD.TEXT_IO.FILE_TYPE.COL
+	La 1, -FILE_ofs
+	LIVa 	-1, 0, STANDARD.TEXT_IO.FILE_TYPE.COL
 	Ld  1,	-TO_ofs
 	Sd
 ret_lbl:
@@ -1151,7 +1222,8 @@ endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-	LIVa 	1, -FILE_ofs, STANDARD.TEXT_IO.FILE_TYPE.LINE
+	La 1, -FILE_ofs
+	LIVa 	-1, 0, STANDARD.TEXT_IO.FILE_TYPE.LINE
 	Ld  1,	-TO_ofs
 	Sd
 ret_lbl:
@@ -1187,7 +1259,8 @@ endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-	LId	1, -FILE_ofs, STANDARD.TEXT_IO.FILE_TYPE.COL
+	La 1, -FILE_ofs
+	LId	-1, 0, STANDARD.TEXT_IO.FILE_TYPE.COL
 	Sd  1,	-result__ofs
 	BRA ret_lbl
 ret_lbl:
@@ -1221,7 +1294,8 @@ endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-	LId	1, -FILE_ofs, STANDARD.TEXT_IO.FILE_TYPE.LINE
+	La 1, -FILE_ofs
+	LId	-1, 0, STANDARD.TEXT_IO.FILE_TYPE.LINE
 	Sd  1,	-result__ofs
 	BRA ret_lbl
 ret_lbl:
@@ -1255,7 +1329,8 @@ endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-	LId	1, -FILE_ofs, STANDARD.TEXT_IO.FILE_TYPE.PAGE
+	La 1, -FILE_ofs
+	LId	-1, 0, STANDARD.TEXT_IO.FILE_TYPE.PAGE
 	Sd  1,	-result__ofs
 	BRA ret_lbl
 ret_lbl:
@@ -1344,10 +1419,23 @@ endPRO					;---------- end PRO WRITE_SYSTEM_CALL
 end if
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
+					; debut if
+	La 1, -FILE_ofs
+	LId	-1, 0, STANDARD.TEXT_IO.FILE_TYPE.ID
+	LI	1
+	NEG
+	CEQ
+	BF	L19
+	LB 1,	-16
+	SYS_PUT_CHAR
+	BRA	L18
+L19:
 	LI	0					; lieu resultat sur pile
-	LId	1, -FILE_ofs, STANDARD.TEXT_IO.FILE_TYPE.ID
+	La 1, -FILE_ofs
+	LId	-1, 0, STANDARD.TEXT_IO.FILE_TYPE.ID
 	CALL	STANDARD.TEXT_IO.PUT_L51. ,WRITE_SYSTEM_CALL_L17
 	Sd  1,	ERR_CODE_disp
+L18:					; post if
 ret_lbl:
 	UNLINK 1
 	RTD	(prm_siz)
@@ -1363,8 +1451,9 @@ endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-	LB 1,	-8
-	SYS_PUT_CHAR
+	Lb  1,	-ITEM_ofs
+	LVa  0,	DEFAULT_OUTPUT_disp
+	CALL	STANDARD.TEXT_IO. ,PUT_L51
 ret_lbl:
 	UNLINK 1
 	RTD	(prm_siz)
@@ -1413,8 +1502,8 @@ ELB 1					;    BODY ELAB
 VAR ERR_CODE_disp, d			; variable entiere
 
 
-if defined WRITE_SYSTEM_CALL_L18_
-PRO	WRITE_SYSTEM_CALL_L18			;---------- PRO WRITE_SYSTEM_CALL
+if defined WRITE_SYSTEM_CALL_L20_
+PRO	WRITE_SYSTEM_CALL_L20			;---------- PRO WRITE_SYSTEM_CALL
 PRMS					;    debut parametrage
 	PRM result__ofs				; resutat de fonction
 	PRM FILE_ID_ofs				; in
@@ -1435,6 +1524,17 @@ endPRO					;---------- end PRO WRITE_SYSTEM_CALL
 end if
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
+					; debut if
+	La 1, -FILE_ofs
+	LId	-1, 0, STANDARD.TEXT_IO.FILE_TYPE.ID
+	LI	1
+	NEG
+	CEQ
+	BF	L22
+	LA 1,	-16
+	SYS_PUT_STR
+	BRA	L21
+L22:
 	LI	0					; lieu resultat sur pile
 	LVA	1, -ITEM_ofs
 	LIa	, , 8
@@ -1444,9 +1544,11 @@ begin:					;---------- BDY INSTRUCTIONS
 	LIa	, , 8
 	Ld	, STRING.FST_1
 	SUB
-	LId	1, -FILE_ofs, STANDARD.TEXT_IO.FILE_TYPE.ID
-	CALL	STANDARD.TEXT_IO.PUT_L55. ,WRITE_SYSTEM_CALL_L18
+	La 1, -FILE_ofs
+	LId	-1, 0, STANDARD.TEXT_IO.FILE_TYPE.ID
+	CALL	STANDARD.TEXT_IO.PUT_L55. ,WRITE_SYSTEM_CALL_L20
 	Sd  1,	ERR_CODE_disp
+L21:					; post if
 ret_lbl:
 	UNLINK 1
 	RTD	(prm_siz)
@@ -1462,8 +1564,9 @@ endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-	LA 1,	-8
-	SYS_PUT_STR
+	La  1,	-ITEM_ofs
+	LVa  0,	DEFAULT_OUTPUT_disp
+	CALL	STANDARD.TEXT_IO. ,PUT_L55
 ret_lbl:
 	UNLINK 1
 	RTD	(prm_siz)
@@ -1538,9 +1641,11 @@ ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 	La  1,	-ITEM_ofs
-	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	LVa  0,	DEFAULT_OUTPUT_disp
+	CALL	STANDARD.TEXT_IO. ,PUT_L55
 	LI	1
-	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
+	LVa  0,	DEFAULT_OUTPUT_disp
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L25
 ret_lbl:
 	UNLINK 1
 	RTD	(prm_siz)
@@ -1640,22 +1745,22 @@ begin:					;---------- BDY INSTRUCTIONS
 	LVA  1,	LEN_disp
 	LVA  1,	CHN_disp
 	CALL	STANDARD.TEXT_IO. ,GET_LINE_L58
-VAR	IL20_disp, d				; compteur boucle LOOP__3
+VAR	IL24_disp, d				; compteur boucle LOOP__3
 	LI	1
-	Sd  1,	IL20_disp
-VAR	LMT_IL20_disp, d			; limite boucle LOOP__3
+	Sd  1,	IL24_disp
+VAR	LMT_IL24_disp, d			; limite boucle LOOP__3
 	Ld  1,	LEN_disp
-	Sd  1,	LMT_IL20_disp
-	Ld  1,	IL20_disp				; test null range LOOP__3
-	Ld  1,	LMT_IL20_disp
+	Sd  1,	LMT_IL24_disp
+	Ld  1,	IL24_disp				; test null range LOOP__3
+	Ld  1,	LMT_IL24_disp
 	CGT
-	BT	L19
+	BT	L23
 LOOP__3:					; corps boucle LOOP__3
 	LI	10
 	Ld  1,	VAL_disp
 	MUL
 	La	 1, CHN_disp				; array data start address on stack
-	Ld	1, IL20_disp
+	Ld	1, IL24_disp
 	LId	1, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	1, CHN__u, STANDARD.STRING.COMP_SIZ
@@ -1666,15 +1771,15 @@ LOOP__3:					; corps boucle LOOP__3
 	LI	48
 	SUB
 	Sd  1,	VAL_disp
-	Ld  1,	IL20_disp				; test de sortie LOOP__3
-	Ld  1,	LMT_IL20_disp
+	Ld  1,	IL24_disp				; test de sortie LOOP__3
+	Ld  1,	LMT_IL24_disp
 	CEQ
-	BT	L19
-	Ld  1,	IL20_disp				; mise a jour compteur LOOP__3
+	BT	L23
+	Ld  1,	IL24_disp				; mise a jour compteur LOOP__3
 	INC
-	Sd  1,	IL20_disp
+	Sd  1,	IL24_disp
 	BRA	LOOP__3				; iteration suivante LOOP__3
-L19:					; post loop LOOP__3
+L23:					; post loop LOOP__3
 	Ld  1,	VAL_disp
 	SId  1,	-ITEM_ofs
 	LVa  1,	CHN_disp

@@ -880,6 +880,13 @@ null;
 	DEFN	: TREE		:= D( SM_DEFN, DST_NAME );
 
         begin
+				-- Resolve private to full type
+	  if  NAME_TYPE.TY = DN_L_PRIVATE
+	  or  NAME_TYPE.TY = DN_PRIVATE
+	  then
+	    NAME_TYPE := D( SM_TYPE_SPEC, NAME_TYPE );
+	  end if;
+
           if  NAME_TYPE.TY = DN_ACCESS  then								-- OBJET ASSIGNE DE TYPE ACCES
 	  EXPRESSIONS.CODE_EXP( SRC_EXP );
 	  CODI.STORE( DEFN );
@@ -900,6 +907,15 @@ null;
 	elsif  NAME_TYPE.TY = DN_INTEGER  then								-- OBJET ASSIGNE ENTIER
 	  EXPRESSIONS.CODE_EXP( SRC_EXP );
             CODI.STORE( DEFN );
+
+	elsif  NAME_TYPE.TY = DN_RECORD  then								-- OBJET ASSIGNE RECORD
+	  CODI.LOAD_MEM( DEFN );									-- @DST (adresse du record destination)
+	  PUT( tab & "LI" & tab );
+	  CODI.REGIONS_PATH( D( XD_SOURCE_NAME, NAME_TYPE ) );
+	  PUT_LINE( PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, NAME_TYPE ) ) ) & ".size" );	-- LEN (taille en octets, calculee par FASM)
+	  EXPRESSIONS.CODE_EXP( SRC_EXP );								-- @SRC (adresse du record source)
+	  PUT_LINE( tab & "BLKMOV" );									-- COPY_BLOCK  @DST LEN @SRC
+
           end if;
 
         end;

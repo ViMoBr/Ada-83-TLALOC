@@ -132,16 +132,60 @@ end if
 					;---------- end generic package instantiation NAT_IO
 end namespace
 
+VAR F_disp, q				; variable record : pointeur aux data record
+VAR F__u, q				; variable record : pointeur aux useinfo
+VAR F__dat, STANDARD.TEXT_IO.FILE_TYPE.size
+	LVA	1, F__dat
+	Sa	1, F_disp				; record fin
+	LVA	1, STANDARD.TEXT_IO.FILE_TYPE.SIZ
+	Sa	1, F__u
+	LIVa 1, F_disp, STANDARD.TEXT_IO.FILE_TYPE.ID
+	LI	1
+	NEG
+	Sd
+	LIVa 1, F_disp, STANDARD.TEXT_IO.FILE_TYPE.IS_DEFAULT_IO
+	LI	0
+	Sb
+
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-STR STR_L7, 'Entrez un nombre entier : '	; constante string='Entrez un nombre entier : '
+STR STR_L7, 'STRING TEST '			; constante string='STRING TEST '
 	LCA	STR_L7.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	LI	33
+	CALL	STANDARD.TEXT_IO. ,PUT_L52
+	LI	1
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
+STR STR_L8, ''				; constante string=''
+	LCA	STR_L8.data_ptr
+STR STR_L9, 'test.txt'			; constante string='test.txt'
+	LCA	STR_L9.data_ptr
+	LI  1
+	LVA  1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,CREATE_L1
+	LI	128
+	LVa  1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,SET_LINE_LENGTH_L17
+	LVa  1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,SET_OUTPUT_L12
+STR STR_L10, 'bonjour fichier défaut'		; constante string='bonjour fichier défaut'
+	LCA	STR_L10.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	LI	2
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
+STR STR_L11, 'au revoir fichier défaut'	; constante string='au revoir fichier défaut'
+	LCA	STR_L11.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	LVA  1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,CLOSE_L3
+STR STR_L12, 'Entrez un nombre entier : '	; constante string='Entrez un nombre entier : '
+	LCA	STR_L12.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
 	LI	0
 	LVA  1,	L_disp
 	CALL	STANDARD.STRING_TEST_L1.NAT_IO. ,GET_L62
-STR STR_L8, 'Merci'				; constante string='Merci'
-	LCA	STR_L8.data_ptr
+STR STR_L13, 'Merci'			; constante string='Merci'
+	LCA	STR_L13.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
 ret_lbl:
 	UNLINK 1

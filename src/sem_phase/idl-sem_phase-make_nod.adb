@@ -2618,7 +2618,8 @@ is					--------
     D( DA.XD_SOURCE_NAME, NODE, XD_SOURCE_NAME );
     D( DA.XD_STUB, NODE, XD_STUB );
     D( DA.XD_body, NODE, XD_body );
-         return NODE;
+    DB( DA.CD_COMPILED, NODE, FALSE );
+    return NODE;
   end	MAKE_TASK_SPEC;
    
   function	MAKE_ENUMERATION
@@ -2638,7 +2639,8 @@ is					--------
     D( DA.SM_RANGE, NODE, SM_RANGE );
     D( DA.SM_LITERAL_S, NODE, SM_LITERAL_S );
     D( DA.XD_SOURCE_NAME, NODE, XD_SOURCE_NAME );
-         DI (DA.CD_IMPL_SIZE, NODE, CD_IMPL_SIZE );
+    DI (DA.CD_IMPL_SIZE, NODE, CD_IMPL_SIZE );
+    DB( DA.CD_COMPILED, NODE, FALSE );
          return NODE;
   end	MAKE_ENUMERATION;
       --|-------------------------------------------------------------------------------------------
@@ -2653,7 +2655,8 @@ is					--------
     D( DA.SM_BASE_TYPE, NODE, SM_BASE_TYPE );
     D( DA.SM_RANGE, NODE, SM_RANGE );
     D( DA.XD_SOURCE_NAME, NODE, XD_SOURCE_NAME );
-         DI (DA.CD_IMPL_SIZE, NODE, CD_IMPL_SIZE );
+    DI (DA.CD_IMPL_SIZE, NODE, CD_IMPL_SIZE );
+    DB( DA.CD_COMPILED, NODE, FALSE );
          return NODE;
   end;
       --|-------------------------------------------------------------------------------------------
@@ -2675,7 +2678,8 @@ is					--------
     D( DA.SM_RANGE, NODE, SM_RANGE );
     D( DA.SM_ACCURACY, NODE, SM_ACCURACY );
     D( DA.XD_SOURCE_NAME, NODE, XD_SOURCE_NAME );
-         DI (DA.CD_IMPL_SIZE, NODE, CD_IMPL_SIZE );
+    DI (DA.CD_IMPL_SIZE, NODE, CD_IMPL_SIZE );
+    DB( DA.CD_COMPILED, NODE, FALSE );
          return NODE;
   end	MAKE_FLOAT;
    
@@ -2697,9 +2701,10 @@ is					--------
     D( DA.SM_RANGE, NODE, SM_RANGE );
     D( DA.SM_ACCURACY, NODE, SM_ACCURACY );
     D( DA.XD_SOURCE_NAME, NODE, XD_SOURCE_NAME );
-         DI (DA.CD_IMPL_SIZE, NODE, CD_IMPL_SIZE );
+    DI (DA.CD_IMPL_SIZE, NODE, CD_IMPL_SIZE );
     D( DA.CD_IMPL_SMALL, NODE, CD_IMPL_SMALL );
-         return NODE;
+    DB( DA.CD_COMPILED, NODE, FALSE );
+    return NODE;
   end	MAKE_FIXED;
    
   function	MAKE_ARRAY
@@ -2724,7 +2729,8 @@ is					--------
     D( DA.SM_INDEX_S, NODE, SM_INDEX_S );
     D( DA.SM_COMP_TYPE, NODE, SM_COMP_TYPE );
     D( DA.XD_SOURCE_NAME, NODE, XD_SOURCE_NAME );
-         return NODE;
+    DB( DA.CD_COMPILED, NODE, FALSE );
+    return NODE;
   end	MAKE_ARRAY;
    
   function	MAKE_RECORD
@@ -2751,6 +2757,7 @@ is					--------
     D( DA.SM_COMP_LIST, NODE, SM_COMP_LIST );
     D( DA.SM_REPRESENTATION, NODE, SM_REPRESENTATION );
     D( DA.XD_SOURCE_NAME, NODE, XD_SOURCE_NAME );
+    DB( DA.CD_COMPILED, NODE, FALSE );
          return NODE;
   end	MAKE_RECORD;
    
@@ -2776,7 +2783,8 @@ is					--------
     D( DA.SM_DESIG_TYPE, NODE, SM_DESIG_TYPE );
     D( DA.SM_MASTER, NODE, SM_MASTER );
     D( DA.XD_SOURCE_NAME, NODE, XD_SOURCE_NAME );
-         return NODE;
+    DB( DA.CD_COMPILED, NODE, FALSE );
+    return NODE;
   end	MAKE_ACCESS;
    
   function	MAKE_CONSTRAINED_ARRAY

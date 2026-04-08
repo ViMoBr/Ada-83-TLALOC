@@ -327,7 +327,7 @@ is					-----
 
      else												-- variable non scalaire
         PUT( tab & "LVa " & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' & tab );
-        PUT_LINE( PRINT_NAME( D( LX_SYMREP, DEFN ) )  & "_disp" );
+        PUT_LINE( PRINT_NAME( D( LX_SYMREP, DEFN ) )  & "_disp" );			-- adresse du doublet (disp, useinfo)
 
      end if;
 

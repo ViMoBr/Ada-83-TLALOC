@@ -41,6 +41,32 @@ is
     elsif  TYPE_SPEC.TY = DN_ACCESS		then  CODE_ACCESS_DECL	     ( TYPE_DECL );
 
     elsif  TYPE_SPEC.TY = DN_CONSTRAINED_ARRAY	then  CODE_CONSTRAINED_ARRAY_DECL  ( TYPE_DECL );
+
+				-- PRIVATE / LIMITED PRIVATE TYPES
+				-- Nothing to generate here; the full
+				-- type declaration in the private part
+				-- will be processed normally.
+
+    elsif  TYPE_SPEC.TY = DN_PRIVATE
+    or     TYPE_SPEC.TY = DN_L_PRIVATE
+    then
+      if  CODI.DEBUG  then
+	PUT_LINE( "; CODE_TYPE_DECL : skip PRIVATE "
+		& PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) )
+		& " (deferred to full type)" );
+      end if;
+
+				-- INCOMPLETE TYPES
+				-- Same: deferred to full type.
+
+    elsif  TYPE_SPEC.TY = DN_INCOMPLETE
+    then
+      if  CODI.DEBUG  then
+	PUT_LINE( "; CODE_TYPE_DECL : skip INCOMPLETE "
+		& PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) )
+		& " (deferred to full type)" );
+      end if;
+
     else
       PUT_LINE( "; CODE_GEN.DECLARATIONS.CODE_TYPE_DECL : TYPE_SPEC.TY ("
 		& NODE_NAME'IMAGE( TYPE_SPEC.TY ) & " NON FAIT POUR ) "
@@ -180,6 +206,14 @@ is
     STATIC_SIZE		: NATURAL			:= 0;
 
   begin
+				-- Resolve private/incomplete to full type
+    if  TYPE_SPEC.TY = DN_L_PRIVATE
+    or  TYPE_SPEC.TY = DN_PRIVATE
+    then
+      TYPE_SPEC := D( SM_TYPE_SPEC, TYPE_SPEC );
+    elsif  TYPE_SPEC.TY = DN_INCOMPLETE  then
+      TYPE_SPEC := D( XD_FULL_TYPE_SPEC, TYPE_SPEC );
+    end if;
     DI( CD_LEVEL,     TYPE_SPEC, INTEGER( CODI.CUR_LEVEL ) );
     DB( CD_COMPILED,  TYPE_SPEC, TRUE );
 
@@ -347,6 +381,9 @@ is
 	  begin
 	    if  IS_STATIC  then
 	      COMP_SIZE := DI( CD_IMPL_SIZE, COMP_TYPE );
+	      if  COMP_SIZE < CODI.STORAGE_UNIT  then
+	        COMP_SIZE := CODI.STORAGE_UNIT;
+	      end if;
 	      PUT_LINE( "STATOFS " & COMP_ID_STR
 		    & ',' & INTEGER'IMAGE( COMP_SIZE / CODI.STORAGE_UNIT ) );
 	      STATIC_SIZE := STATIC_SIZE + COMP_SIZE;
@@ -359,6 +396,7 @@ is
       end loop;
 
       if  IS_STATIC  then
+        PUT_LINE( "size = $" );
         PUT_LINE( "end virtual" );
         DI( CD_IMPL_SIZE, TYPE_SPEC, STATIC_SIZE );
       end if;
