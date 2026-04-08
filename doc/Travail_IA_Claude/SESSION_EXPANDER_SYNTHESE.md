@@ -198,3 +198,12 @@ Pour travailler sur l'EXPANDER :
 Le cas test concret pour valider : un programme Ada 83 simple qui
 déclare un record, l'initialise, accède à ses champs, et le passe
 en paramètre à une procédure.
+
+## 6. Points attaqués avec Claude/Opus le 8 avril 2026
+
+- Types privés/incomplets : résolus (différés au full type)
+- Affectation de record complet : BLKMOV fonctionnel
+- Initialisation des champs par défaut : opérationnelle
+- Convention doublet : double déréférencement pour les paramètres clarifié
+- Bug BOOLEAN CD_IMPL_SIZE = 1 : contourné par arrondi à l'octet
+- make_nod : CD_COMPILED initialisé à FALSE
