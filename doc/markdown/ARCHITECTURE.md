@@ -5,9 +5,9 @@ Il est destiné aux développeurs travaillant sur le code du compilateur
 et aux personnes souhaitant comprendre son fonctionnement en profondeur.
 
 Pour l'introduction générale et le contexte historique, voir
-[go_ahead-eng.md](markdown/go_ahead-eng.md).
+[go_ahead-eng.md](./go_ahead-eng.md).
 Pour l'introduction technique, voir
-[introduction-eng.md](markdown/introduction-eng.md).
+[introduction-eng.md](./introduction-eng.md).
 
 
 ## 1. Vue d'ensemble
@@ -64,7 +64,7 @@ selon l'option fournie (S, L, M, C, W, w, U, P, A).
 DIANA (Descriptive Intermediate Attributed Notation for Ada) est une
 représentation standardisée de programmes Ada sous forme de graphe de
 nœuds typés portant des attributs. Voir la spécification de référence :
-[DIANA-Ref-Manual-1986-rev4.pdf](DIANA-Ref-Manual-1986-rev4.pdf).
+[DIANA-Ref-Manual-1986-rev4.pdf](../DIANA-Ref-Manual-1986-rev4.pdf).
 
 Le graphe DIANA est stocké dans un fichier temporaire `$$$.TMP` situé
 dans le répertoire `ADA__LIB` du projet. Ce fichier utilise un système
