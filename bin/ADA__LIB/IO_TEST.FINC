@@ -1,0 +1,1326 @@
+include 'TEXT_IO.FINC'
+PRO	IO_TEST_L1				;---------- PRO IO_TEST
+ELB 1					;    BODY ELAB
+VAR F_disp, q				; variable record : pointeur aux data record
+VAR F__u, q				; variable record : pointeur aux useinfo
+VAR F__dat, STANDARD.TEXT_IO.FILE_TYPE.size
+	LVA	1, F__dat
+	Sa	1, F_disp				; record fin
+	LVA	1, STANDARD.TEXT_IO.FILE_TYPE.SIZ
+	Sa	1, F__u
+	LIVa 1, F_disp, STANDARD.TEXT_IO.FILE_TYPE.ID
+	LI	1
+	NEG
+	Sd
+	LIVa 1, F_disp, STANDARD.TEXT_IO.FILE_TYPE.IS_OPENED
+	LI	0
+	Sb
+	LIVa 1, F_disp, STANDARD.TEXT_IO.FILE_TYPE.IS_DEFAULT_IO
+	LI	0
+	Sb
+	LIVa 1, F_disp, STANDARD.TEXT_IO.FILE_TYPE.LOOK_AHEAD
+	LI	 0
+	Sb
+	LIVa 1, F_disp, STANDARD.TEXT_IO.FILE_TYPE.HAS_LOOK_AHEAD
+	LI	0
+	Sb
+	LIVa 1, F_disp, STANDARD.TEXT_IO.FILE_TYPE.AT_END_OF_FILE
+	LI	0
+	Sb
+
+VAR G_disp, q				; variable record : pointeur aux data record
+VAR G__u, q				; variable record : pointeur aux useinfo
+VAR G__dat, STANDARD.TEXT_IO.FILE_TYPE.size
+	LVA	1, G__dat
+	Sa	1, G_disp				; record fin
+	LVA	1, STANDARD.TEXT_IO.FILE_TYPE.SIZ
+	Sa	1, G__u
+	LIVa 1, G_disp, STANDARD.TEXT_IO.FILE_TYPE.ID
+	LI	1
+	NEG
+	Sd
+	LIVa 1, G_disp, STANDARD.TEXT_IO.FILE_TYPE.IS_OPENED
+	LI	0
+	Sb
+	LIVa 1, G_disp, STANDARD.TEXT_IO.FILE_TYPE.IS_DEFAULT_IO
+	LI	0
+	Sb
+	LIVa 1, G_disp, STANDARD.TEXT_IO.FILE_TYPE.LOOK_AHEAD
+	LI	 0
+	Sb
+	LIVa 1, G_disp, STANDARD.TEXT_IO.FILE_TYPE.HAS_LOOK_AHEAD
+	LI	0
+	Sb
+	LIVa 1, G_disp, STANDARD.TEXT_IO.FILE_TYPE.AT_END_OF_FILE
+	LI	0
+	Sb
+
+VAR CH_disp, b				; variable bool char
+
+STRING = 'STRING'
+namespace STRING				; array var constrained array type info
+VAR SIZ, d
+  namespace info
+VAR COMP_SIZ, d
+VAR FST_1, d
+VAR LST_1, d
+	LI	1
+	Sd	1, COMP_SIZ
+	Ld	1, COMP_SIZ
+	LI	1
+	Sd	1, FST_1
+	LI	80
+	Sd	1, LST_1
+	Ld	1, LST_1
+	INC
+	Ld	1, FST_1
+	SUB
+	MUL
+	Sd	1, SIZ
+  end namespace
+  virtual at 4
+COMP_SIZ = $
+	rd 1 
+FST_1 = $
+	rd 1 
+LST_1 = $
+	rd 1 
+  end virtual
+end namespace
+
+VAR BUF_disp, q				; variable array : pointeur aux data
+VAR BUF__u, q				; variable array : useinfo pointeur au rec info
+	Ld	1, STRING.SIZ
+	CO_VAR
+	Sa	1, BUF_disp				; array data ptr at _disp
+	LVA 1, STRING.SIZ
+	Sa	1, BUF__u				; array info ptr at __u
+
+VAR LAST_disp, d				; variable entiere
+
+INT_IO = 'INT_IO'
+namespace INT_IO				;---------- GENERIC PACKAGE INSTANTIATION
+elab_spec:				;    SPEC ELAB
+
+VAR GFP_disp, q
+VAR DEFAULT_WIDTH_disp, d			; variable entiere
+	Sd  1,	DEFAULT_WIDTH_disp
+
+VAR DEFAULT_BASE_disp, d			; variable entiere
+	LI	10
+	Sd  1,	DEFAULT_BASE_disp
+
+if defined GET_L61_
+PRO	GET_L61				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM ITEM_ofs				; out
+	PRM WIDTH_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 2, GFP_disp
+	Lq	 2, -WIDTH_ofs
+	Lq	 2, -ITEM_ofs
+	Lq	 2, -FILE_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,GET_L61
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO GET
+end if
+if defined GET_L62_
+PRO	GET_L62				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM ITEM_ofs				; out
+	PRM WIDTH_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 2, GFP_disp
+	Lq	 2, -WIDTH_ofs
+	Lq	 2, -ITEM_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,GET_L62
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO GET
+end if
+if defined PUT_L63_
+PRO	PUT_L63				;---------- PRO PUT
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM ITEM_ofs				; in
+	PRM WIDTH_ofs				; in
+	PRM BASE_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 2, GFP_disp
+	Lq	 2, -BASE_ofs
+	Lq	 2, -WIDTH_ofs
+	Lq	 2, -ITEM_ofs
+	Lq	 2, -FILE_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,PUT_L63
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO PUT
+end if
+if defined PUT_L64_
+PRO	PUT_L64				;---------- PRO PUT
+PRMS					;    debut parametrage
+	PRM ITEM_ofs				; in
+	PRM WIDTH_ofs				; in
+	PRM BASE_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 2, GFP_disp
+	Lq	 2, -BASE_ofs
+	Lq	 2, -WIDTH_ofs
+	Lq	 2, -ITEM_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,PUT_L64
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO PUT
+end if
+if defined GET_L65_
+PRO	GET_L65				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM FROM_ofs				; in
+	PRM ITEM_ofs				; out
+	PRM LAST_ofs				; out
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 2, GFP_disp
+	Lq	 2, -LAST_ofs
+	Lq	 2, -ITEM_ofs
+	Lq	 2, -FROM_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,GET_L65
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO GET
+end if
+if defined PUT_L66_
+PRO	PUT_L66				;---------- PRO PUT
+PRMS					;    debut parametrage
+	PRM TO_ofs				; out
+	PRM ITEM_ofs				; in
+	PRM BASE_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 2, GFP_disp
+	Lq	 2, -BASE_ofs
+	Lq	 2, -ITEM_ofs
+	Lq	 2, -TO_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,PUT_L66
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO PUT
+end if
+					;---------- end generic package instantiation INT_IO
+end namespace
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+STR STR_L8, '=== 1. Ecriture fichier ==='	; constante string='=== 1. Ecriture fichier ==='
+	LCA	STR_L8.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+STR STR_L9, ''				; constante string=''
+	LCA	STR_L9.data_ptr
+STR STR_L10, 'io_test.dat'			; constante string='io_test.dat'
+	LCA	STR_L10.data_ptr
+	LI  1
+	LVA  1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,CREATE_L1
+STR STR_L11, 'Ligne un'			; constante string='Ligne un'
+	LCA	STR_L11.data_ptr
+	LVa 1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,PUT_L55
+	LI	1
+	LVa 1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L25
+STR STR_L12, 'Ligne deux'			; constante string='Ligne deux'
+	LCA	STR_L12.data_ptr
+	LVa 1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,PUT_L55
+	LI	1
+	LVa 1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L25
+STR STR_L13, '42'				; constante string='42'
+	LCA	STR_L13.data_ptr
+	LVa 1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,PUT_L55
+	LI	1
+	LVa 1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L25
+	LVA  1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,CLOSE_L3
+STR STR_L14, 'Fichier io_test.dat cree.'	; constante string='Fichier io_test.dat cree.'
+	LCA	STR_L14.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+STR STR_L15, '=== 2. Relecture fichier ==='	; constante string='=== 2. Relecture fichier ==='
+	LCA	STR_L15.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+STR STR_L16, ''				; constante string=''
+	LCA	STR_L16.data_ptr
+STR STR_L17, 'io_test.dat'			; constante string='io_test.dat'
+	LCA	STR_L17.data_ptr
+	LI  0
+	LVA  1,	G_disp
+	CALL	STANDARD.TEXT_IO. ,OPEN_L2
+	LVA  1,	LAST_disp
+	LVA  1,	BUF_disp
+	LVa 1,	G_disp
+	CALL	STANDARD.TEXT_IO. ,GET_LINE_L57
+STR STR_L18, 'Lu ligne 1 : ['			; constante string='Lu ligne 1 : ['
+	LCA	STR_L18.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	La 1, BUF_disp
+	LI	1
+	LId	1, BUF__u, STRING.FST_1
+	SUB
+	LI	1
+	MUL
+	ADD
+namespace ANON_34_8				; ensemble doublet @data/@info pour slice anonyme source
+VAR ANON_34_8_disp, q
+VAR ANON_34_8__u, q
+VAR SIZ, d
+VAR COMP_SIZ, d
+VAR FST_1, d
+VAR LST_1, d
+	Sa	1, ANON_34_8_disp
+	LVA	1, SIZ
+	Sa	1, ANON_34_8__u
+	LI	1
+	Sd	1, COMP_SIZ
+	LI	1
+	Sd	1, FST_1
+	Ld 1,	LAST_disp
+	Sd	1, LST_1
+	Ld	1, LST_1
+	INC
+	Ld	1, FST_1
+	SUB
+	LI	1
+	MUL
+	Sd	1, SIZ
+	LVA	1, ANON_34_8_disp
+end namespace
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+STR STR_L19, ']'				; constante string=']'
+	LCA	STR_L19.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	LVA  1,	LAST_disp
+	LVA  1,	BUF_disp
+	LVa 1,	G_disp
+	CALL	STANDARD.TEXT_IO. ,GET_LINE_L57
+STR STR_L20, 'Lu ligne 2 : ['			; constante string='Lu ligne 2 : ['
+	LCA	STR_L20.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	La 1, BUF_disp
+	LI	1
+	LId	1, BUF__u, STRING.FST_1
+	SUB
+	LI	1
+	MUL
+	ADD
+namespace ANON_39_8				; ensemble doublet @data/@info pour slice anonyme source
+VAR ANON_39_8_disp, q
+VAR ANON_39_8__u, q
+VAR SIZ, d
+VAR COMP_SIZ, d
+VAR FST_1, d
+VAR LST_1, d
+	Sa	1, ANON_39_8_disp
+	LVA	1, SIZ
+	Sa	1, ANON_39_8__u
+	LI	1
+	Sd	1, COMP_SIZ
+	LI	1
+	Sd	1, FST_1
+	Ld 1,	LAST_disp
+	Sd	1, LST_1
+	Ld	1, LST_1
+	INC
+	Ld	1, FST_1
+	SUB
+	LI	1
+	MUL
+	Sd	1, SIZ
+	LVA	1, ANON_39_8_disp
+end namespace
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+STR STR_L21, ']'				; constante string=']'
+	LCA	STR_L21.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	LVA  1,	LAST_disp
+	LVA  1,	BUF_disp
+	LVa 1,	G_disp
+	CALL	STANDARD.TEXT_IO. ,GET_LINE_L57
+STR STR_L22, 'Lu ligne 3 : ['			; constante string='Lu ligne 3 : ['
+	LCA	STR_L22.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	La 1, BUF_disp
+	LI	1
+	LId	1, BUF__u, STRING.FST_1
+	SUB
+	LI	1
+	MUL
+	ADD
+namespace ANON_44_8				; ensemble doublet @data/@info pour slice anonyme source
+VAR ANON_44_8_disp, q
+VAR ANON_44_8__u, q
+VAR SIZ, d
+VAR COMP_SIZ, d
+VAR FST_1, d
+VAR LST_1, d
+	Sa	1, ANON_44_8_disp
+	LVA	1, SIZ
+	Sa	1, ANON_44_8__u
+	LI	1
+	Sd	1, COMP_SIZ
+	LI	1
+	Sd	1, FST_1
+	Ld 1,	LAST_disp
+	Sd	1, LST_1
+	Ld	1, LST_1
+	INC
+	Ld	1, FST_1
+	SUB
+	LI	1
+	MUL
+	Sd	1, SIZ
+	LVA	1, ANON_44_8_disp
+end namespace
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+STR STR_L23, ']'				; constante string=']'
+	LCA	STR_L23.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	LVA  1,	G_disp
+	CALL	STANDARD.TEXT_IO. ,CLOSE_L3
+STR STR_L24, '=== 3. SET_OUTPUT fichier ==='	; constante string='=== 3. SET_OUTPUT fichier ==='
+	LCA	STR_L24.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+STR STR_L25, ''				; constante string=''
+	LCA	STR_L25.data_ptr
+STR STR_L26, 'io_def.dat'			; constante string='io_def.dat'
+	LCA	STR_L26.data_ptr
+	LI  1
+	LVA  1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,CREATE_L1
+	LVa 1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,SET_OUTPUT_L12
+STR STR_L27, 'Ceci va dans io_def.dat'		; constante string='Ceci va dans io_def.dat'
+	LCA	STR_L27.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+STR STR_L28, 'Valeur = '			; constante string='Valeur = '
+	LCA	STR_L28.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	Ld 1,	STANDARD.IO_TEST_L1.INT_IO.DEFAULT_BASE_disp
+	Ld 1,	STANDARD.IO_TEST_L1.INT_IO.DEFAULT_WIDTH_disp
+	LI	999
+	CALL	STANDARD.IO_TEST_L1.INT_IO. ,PUT_L64
+	LI	1
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
+	LI	0					; lieu resultat sur pile
+	CALL	STANDARD.TEXT_IO. ,STANDARD_OUTPUT_L14
+	CALL	STANDARD.TEXT_IO. ,SET_OUTPUT_L12
+	LVA  1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,CLOSE_L3
+STR STR_L29, 'Retour console apres SET_OUTPUT.'	; constante string='Retour console apres SET_OUTPUT.'
+	LCA	STR_L29.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+STR STR_L30, '=== 4. Relecture io_def.dat ==='	; constante string='=== 4. Relecture io_def.dat ==='
+	LCA	STR_L30.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+STR STR_L31, ''				; constante string=''
+	LCA	STR_L31.data_ptr
+STR STR_L32, 'io_def.dat'			; constante string='io_def.dat'
+	LCA	STR_L32.data_ptr
+	LI  0
+	LVA  1,	G_disp
+	CALL	STANDARD.TEXT_IO. ,OPEN_L2
+	LVA  1,	LAST_disp
+	LVA  1,	BUF_disp
+	LVa 1,	G_disp
+	CALL	STANDARD.TEXT_IO. ,GET_LINE_L57
+STR STR_L33, 'Lu : ['			; constante string='Lu : ['
+	LCA	STR_L33.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	La 1, BUF_disp
+	LI	1
+	LId	1, BUF__u, STRING.FST_1
+	SUB
+	LI	1
+	MUL
+	ADD
+namespace ANON_65_8				; ensemble doublet @data/@info pour slice anonyme source
+VAR ANON_65_8_disp, q
+VAR ANON_65_8__u, q
+VAR SIZ, d
+VAR COMP_SIZ, d
+VAR FST_1, d
+VAR LST_1, d
+	Sa	1, ANON_65_8_disp
+	LVA	1, SIZ
+	Sa	1, ANON_65_8__u
+	LI	1
+	Sd	1, COMP_SIZ
+	LI	1
+	Sd	1, FST_1
+	Ld 1,	LAST_disp
+	Sd	1, LST_1
+	Ld	1, LST_1
+	INC
+	Ld	1, FST_1
+	SUB
+	LI	1
+	MUL
+	Sd	1, SIZ
+	LVA	1, ANON_65_8_disp
+end namespace
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+STR STR_L34, ']'				; constante string=']'
+	LCA	STR_L34.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	LVA  1,	LAST_disp
+	LVA  1,	BUF_disp
+	LVa 1,	G_disp
+	CALL	STANDARD.TEXT_IO. ,GET_LINE_L57
+STR STR_L35, 'Lu : ['			; constante string='Lu : ['
+	LCA	STR_L35.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	La 1, BUF_disp
+	LI	1
+	LId	1, BUF__u, STRING.FST_1
+	SUB
+	LI	1
+	MUL
+	ADD
+namespace ANON_69_8				; ensemble doublet @data/@info pour slice anonyme source
+VAR ANON_69_8_disp, q
+VAR ANON_69_8__u, q
+VAR SIZ, d
+VAR COMP_SIZ, d
+VAR FST_1, d
+VAR LST_1, d
+	Sa	1, ANON_69_8_disp
+	LVA	1, SIZ
+	Sa	1, ANON_69_8__u
+	LI	1
+	Sd	1, COMP_SIZ
+	LI	1
+	Sd	1, FST_1
+	Ld 1,	LAST_disp
+	Sd	1, LST_1
+	Ld	1, LST_1
+	INC
+	Ld	1, FST_1
+	SUB
+	LI	1
+	MUL
+	Sd	1, SIZ
+	LVA	1, ANON_69_8_disp
+end namespace
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+STR STR_L36, ']'				; constante string=']'
+	LCA	STR_L36.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	LVA  1,	G_disp
+	CALL	STANDARD.TEXT_IO. ,CLOSE_L3
+STR STR_L37, '=== 5. INTEGER_IO bases ==='	; constante string='=== 5. INTEGER_IO bases ==='
+	LCA	STR_L37.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+STR STR_L38, 'Decimal  255 = '		; constante string='Decimal  255 = '
+	LCA	STR_L38.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	Ld 1,	STANDARD.IO_TEST_L1.INT_IO.DEFAULT_BASE_disp
+	Ld 1,	STANDARD.IO_TEST_L1.INT_IO.DEFAULT_WIDTH_disp
+	LI	255
+	CALL	STANDARD.IO_TEST_L1.INT_IO. ,PUT_L64
+	LI	1
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
+STR STR_L39, 'Hex      255 = '		; constante string='Hex      255 = '
+	LCA	STR_L39.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	LI	16
+	Ld 1,	STANDARD.IO_TEST_L1.INT_IO.DEFAULT_WIDTH_disp
+	LI	255
+	CALL	STANDARD.IO_TEST_L1.INT_IO. ,PUT_L64
+	LI	1
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
+STR STR_L40, 'Binaire   10 = '		; constante string='Binaire   10 = '
+	LCA	STR_L40.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	LI	2
+	Ld 1,	STANDARD.IO_TEST_L1.INT_IO.DEFAULT_WIDTH_disp
+	LI	10
+	CALL	STANDARD.IO_TEST_L1.INT_IO. ,PUT_L64
+	LI	1
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
+STR STR_L41, 'Octal    255 = '		; constante string='Octal    255 = '
+	LCA	STR_L41.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	LI	8
+	Ld 1,	STANDARD.IO_TEST_L1.INT_IO.DEFAULT_WIDTH_disp
+	LI	255
+	CALL	STANDARD.IO_TEST_L1.INT_IO. ,PUT_L64
+	LI	1
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
+STR STR_L42, 'Negatif  -42 = '		; constante string='Negatif  -42 = '
+	LCA	STR_L42.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	Ld 1,	STANDARD.IO_TEST_L1.INT_IO.DEFAULT_BASE_disp
+	Ld 1,	STANDARD.IO_TEST_L1.INT_IO.DEFAULT_WIDTH_disp
+	LI	42
+	NEG
+	CALL	STANDARD.IO_TEST_L1.INT_IO. ,PUT_L64
+	LI	1
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
+STR STR_L43, 'Neg hex  -26 = '		; constante string='Neg hex  -26 = '
+	LCA	STR_L43.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	LI	16
+	Ld 1,	STANDARD.IO_TEST_L1.INT_IO.DEFAULT_WIDTH_disp
+	LI	26
+	NEG
+	CALL	STANDARD.IO_TEST_L1.INT_IO. ,PUT_L64
+	LI	1
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
+STR STR_L44, 'Width 10     = ['		; constante string='Width 10     = ['
+	LCA	STR_L44.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	Ld 1,	STANDARD.IO_TEST_L1.INT_IO.DEFAULT_BASE_disp
+	LI	10
+	LI	7
+	CALL	STANDARD.IO_TEST_L1.INT_IO. ,PUT_L64
+STR STR_L45, ']'				; constante string=']'
+	LCA	STR_L45.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+STR STR_L46, 'Zero         = '		; constante string='Zero         = '
+	LCA	STR_L46.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	Ld 1,	STANDARD.IO_TEST_L1.INT_IO.DEFAULT_BASE_disp
+	Ld 1,	STANDARD.IO_TEST_L1.INT_IO.DEFAULT_WIDTH_disp
+	LI	0
+	CALL	STANDARD.IO_TEST_L1.INT_IO. ,PUT_L64
+	LI	1
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
+STR STR_L47, 'Zero hex     = '		; constante string='Zero hex     = '
+	LCA	STR_L47.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	LI	16
+	Ld 1,	STANDARD.IO_TEST_L1.INT_IO.DEFAULT_WIDTH_disp
+	LI	0
+	CALL	STANDARD.IO_TEST_L1.INT_IO. ,PUT_L64
+	LI	1
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
+STR STR_L48, '=== 6. INTEGER_IO dans fichier ==='	; constante string='=== 6. INTEGER_IO dans fichier ==='
+	LCA	STR_L48.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+STR STR_L49, ''				; constante string=''
+	LCA	STR_L49.data_ptr
+STR STR_L50, 'io_int.dat'			; constante string='io_int.dat'
+	LCA	STR_L50.data_ptr
+	LI  1
+	LVA  1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,CREATE_L1
+	Ld 1,	STANDARD.IO_TEST_L1.INT_IO.DEFAULT_BASE_disp
+	Ld 1,	STANDARD.IO_TEST_L1.INT_IO.DEFAULT_WIDTH_disp
+	LI	12345
+	LVa 1,	F_disp
+	CALL	STANDARD.IO_TEST_L1.INT_IO. ,PUT_L63
+	LI	1
+	LVa 1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L25
+	LI	16
+	Ld 1,	STANDARD.IO_TEST_L1.INT_IO.DEFAULT_WIDTH_disp
+	LI	67
+	NEG
+	LVa 1,	F_disp
+	CALL	STANDARD.IO_TEST_L1.INT_IO. ,PUT_L63
+	LI	1
+	LVa 1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L25
+	LVA  1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,CLOSE_L3
+STR STR_L51, ''				; constante string=''
+	LCA	STR_L51.data_ptr
+STR STR_L52, 'io_int.dat'			; constante string='io_int.dat'
+	LCA	STR_L52.data_ptr
+	LI  0
+	LVA  1,	G_disp
+	CALL	STANDARD.TEXT_IO. ,OPEN_L2
+	LVA  1,	LAST_disp
+	LVA  1,	BUF_disp
+	LVa 1,	G_disp
+	CALL	STANDARD.TEXT_IO. ,GET_LINE_L57
+STR STR_L53, 'Lu entier fichier : ['		; constante string='Lu entier fichier : ['
+	LCA	STR_L53.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	La 1, BUF_disp
+	LI	1
+	LId	1, BUF__u, STRING.FST_1
+	SUB
+	LI	1
+	MUL
+	ADD
+namespace ANON_97_8				; ensemble doublet @data/@info pour slice anonyme source
+VAR ANON_97_8_disp, q
+VAR ANON_97_8__u, q
+VAR SIZ, d
+VAR COMP_SIZ, d
+VAR FST_1, d
+VAR LST_1, d
+	Sa	1, ANON_97_8_disp
+	LVA	1, SIZ
+	Sa	1, ANON_97_8__u
+	LI	1
+	Sd	1, COMP_SIZ
+	LI	1
+	Sd	1, FST_1
+	Ld 1,	LAST_disp
+	Sd	1, LST_1
+	Ld	1, LST_1
+	INC
+	Ld	1, FST_1
+	SUB
+	LI	1
+	MUL
+	Sd	1, SIZ
+	LVA	1, ANON_97_8_disp
+end namespace
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+STR STR_L54, ']'				; constante string=']'
+	LCA	STR_L54.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	LVA  1,	LAST_disp
+	LVA  1,	BUF_disp
+	LVa 1,	G_disp
+	CALL	STANDARD.TEXT_IO. ,GET_LINE_L57
+STR STR_L55, 'Lu entier fichier : ['		; constante string='Lu entier fichier : ['
+	LCA	STR_L55.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	La 1, BUF_disp
+	LI	1
+	LId	1, BUF__u, STRING.FST_1
+	SUB
+	LI	1
+	MUL
+	ADD
+namespace ANON_101_8			; ensemble doublet @data/@info pour slice anonyme source
+VAR ANON_101_8_disp, q
+VAR ANON_101_8__u, q
+VAR SIZ, d
+VAR COMP_SIZ, d
+VAR FST_1, d
+VAR LST_1, d
+	Sa	1, ANON_101_8_disp
+	LVA	1, SIZ
+	Sa	1, ANON_101_8__u
+	LI	1
+	Sd	1, COMP_SIZ
+	LI	1
+	Sd	1, FST_1
+	Ld 1,	LAST_disp
+	Sd	1, LST_1
+	Ld	1, LST_1
+	INC
+	Ld	1, FST_1
+	SUB
+	LI	1
+	MUL
+	Sd	1, SIZ
+	LVA	1, ANON_101_8_disp
+end namespace
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+STR STR_L56, ']'				; constante string=']'
+	LCA	STR_L56.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	LVA  1,	G_disp
+	CALL	STANDARD.TEXT_IO. ,CLOSE_L3
+STR STR_L57, '=== 7. RESET fichier ==='		; constante string='=== 7. RESET fichier ==='
+	LCA	STR_L57.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+STR STR_L58, ''				; constante string=''
+	LCA	STR_L58.data_ptr
+STR STR_L59, 'io_reset.dat'			; constante string='io_reset.dat'
+	LCA	STR_L59.data_ptr
+	LI  1
+	LVA  1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,CREATE_L1
+STR STR_L60, 'Premiere ligne'			; constante string='Premiere ligne'
+	LCA	STR_L60.data_ptr
+	LVa 1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L59
+STR STR_L61, 'Deuxieme ligne'			; constante string='Deuxieme ligne'
+	LCA	STR_L61.data_ptr
+	LVa 1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L59
+STR STR_L62, 'Troisieme ligne'		; constante string='Troisieme ligne'
+	LCA	STR_L62.data_ptr
+	LVa 1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L59
+	LI  0
+	LVA  1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,RESET_L5
+	LVA  1,	LAST_disp
+	LVA  1,	BUF_disp
+	LVa 1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,GET_LINE_L57
+STR STR_L63, 'Apres RESET lu : ['		; constante string='Apres RESET lu : ['
+	LCA	STR_L63.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	La 1, BUF_disp
+	LI	1
+	LId	1, BUF__u, STRING.FST_1
+	SUB
+	LI	1
+	MUL
+	ADD
+namespace ANON_114_8			; ensemble doublet @data/@info pour slice anonyme source
+VAR ANON_114_8_disp, q
+VAR ANON_114_8__u, q
+VAR SIZ, d
+VAR COMP_SIZ, d
+VAR FST_1, d
+VAR LST_1, d
+	Sa	1, ANON_114_8_disp
+	LVA	1, SIZ
+	Sa	1, ANON_114_8__u
+	LI	1
+	Sd	1, COMP_SIZ
+	LI	1
+	Sd	1, FST_1
+	Ld 1,	LAST_disp
+	Sd	1, LST_1
+	Ld	1, LST_1
+	INC
+	Ld	1, FST_1
+	SUB
+	LI	1
+	MUL
+	Sd	1, SIZ
+	LVA	1, ANON_114_8_disp
+end namespace
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+STR STR_L64, ']'				; constante string=']'
+	LCA	STR_L64.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	LVA  1,	LAST_disp
+	LVA  1,	BUF_disp
+	LVa 1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,GET_LINE_L57
+STR STR_L65, 'Apres RESET lu : ['		; constante string='Apres RESET lu : ['
+	LCA	STR_L65.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	La 1, BUF_disp
+	LI	1
+	LId	1, BUF__u, STRING.FST_1
+	SUB
+	LI	1
+	MUL
+	ADD
+namespace ANON_118_8			; ensemble doublet @data/@info pour slice anonyme source
+VAR ANON_118_8_disp, q
+VAR ANON_118_8__u, q
+VAR SIZ, d
+VAR COMP_SIZ, d
+VAR FST_1, d
+VAR LST_1, d
+	Sa	1, ANON_118_8_disp
+	LVA	1, SIZ
+	Sa	1, ANON_118_8__u
+	LI	1
+	Sd	1, COMP_SIZ
+	LI	1
+	Sd	1, FST_1
+	Ld 1,	LAST_disp
+	Sd	1, LST_1
+	Ld	1, LST_1
+	INC
+	Ld	1, FST_1
+	SUB
+	LI	1
+	MUL
+	Sd	1, SIZ
+	LVA	1, ANON_118_8_disp
+end namespace
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+STR STR_L66, ']'				; constante string=']'
+	LCA	STR_L66.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	LVA  1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,CLOSE_L3
+STR STR_L67, '=== 8. SKIP_LINE ==='		; constante string='=== 8. SKIP_LINE ==='
+	LCA	STR_L67.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+STR STR_L68, ''				; constante string=''
+	LCA	STR_L68.data_ptr
+STR STR_L69, 'io_skip.dat'			; constante string='io_skip.dat'
+	LCA	STR_L69.data_ptr
+	LI  1
+	LVA  1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,CREATE_L1
+STR STR_L70, 'Ligne A'			; constante string='Ligne A'
+	LCA	STR_L70.data_ptr
+	LVa 1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L59
+STR STR_L71, 'Ligne B'			; constante string='Ligne B'
+	LCA	STR_L71.data_ptr
+	LVa 1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L59
+STR STR_L72, 'Ligne C'			; constante string='Ligne C'
+	LCA	STR_L72.data_ptr
+	LVa 1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L59
+STR STR_L73, 'Ligne D'			; constante string='Ligne D'
+	LCA	STR_L73.data_ptr
+	LVa 1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L59
+	LI  0
+	LVA  1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,RESET_L5
+	LI	1
+	LVa 1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,SKIP_LINE_L27
+	LVA  1,	LAST_disp
+	LVA  1,	BUF_disp
+	LVa 1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,GET_LINE_L57
+STR STR_L74, 'Apres SKIP 1 lu : ['		; constante string='Apres SKIP 1 lu : ['
+	LCA	STR_L74.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	La 1, BUF_disp
+	LI	1
+	LId	1, BUF__u, STRING.FST_1
+	SUB
+	LI	1
+	MUL
+	ADD
+namespace ANON_133_8			; ensemble doublet @data/@info pour slice anonyme source
+VAR ANON_133_8_disp, q
+VAR ANON_133_8__u, q
+VAR SIZ, d
+VAR COMP_SIZ, d
+VAR FST_1, d
+VAR LST_1, d
+	Sa	1, ANON_133_8_disp
+	LVA	1, SIZ
+	Sa	1, ANON_133_8__u
+	LI	1
+	Sd	1, COMP_SIZ
+	LI	1
+	Sd	1, FST_1
+	Ld 1,	LAST_disp
+	Sd	1, LST_1
+	Ld	1, LST_1
+	INC
+	Ld	1, FST_1
+	SUB
+	LI	1
+	MUL
+	Sd	1, SIZ
+	LVA	1, ANON_133_8_disp
+end namespace
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+STR STR_L75, ']'				; constante string=']'
+	LCA	STR_L75.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	LI	1
+	LVa 1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,SKIP_LINE_L27
+	LVA  1,	LAST_disp
+	LVA  1,	BUF_disp
+	LVa 1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,GET_LINE_L57
+STR STR_L76, 'Apres SKIP 1 lu : ['		; constante string='Apres SKIP 1 lu : ['
+	LCA	STR_L76.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	La 1, BUF_disp
+	LI	1
+	LId	1, BUF__u, STRING.FST_1
+	SUB
+	LI	1
+	MUL
+	ADD
+namespace ANON_138_8			; ensemble doublet @data/@info pour slice anonyme source
+VAR ANON_138_8_disp, q
+VAR ANON_138_8__u, q
+VAR SIZ, d
+VAR COMP_SIZ, d
+VAR FST_1, d
+VAR LST_1, d
+	Sa	1, ANON_138_8_disp
+	LVA	1, SIZ
+	Sa	1, ANON_138_8__u
+	LI	1
+	Sd	1, COMP_SIZ
+	LI	1
+	Sd	1, FST_1
+	Ld 1,	LAST_disp
+	Sd	1, LST_1
+	Ld	1, LST_1
+	INC
+	Ld	1, FST_1
+	SUB
+	LI	1
+	MUL
+	Sd	1, SIZ
+	LVA	1, ANON_138_8_disp
+end namespace
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+STR STR_L77, ']'				; constante string=']'
+	LCA	STR_L77.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	LVA  1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,CLOSE_L3
+STR STR_L78, '=== 9. NEW_PAGE ==='		; constante string='=== 9. NEW_PAGE ==='
+	LCA	STR_L78.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+STR STR_L79, ''				; constante string=''
+	LCA	STR_L79.data_ptr
+STR STR_L80, 'io_page.dat'			; constante string='io_page.dat'
+	LCA	STR_L80.data_ptr
+	LI  1
+	LVA  1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,CREATE_L1
+STR STR_L81, 'Page 1 contenu'			; constante string='Page 1 contenu'
+	LCA	STR_L81.data_ptr
+	LVa 1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L59
+	LVa 1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,NEW_PAGE_L31
+STR STR_L82, 'Page 2 contenu'			; constante string='Page 2 contenu'
+	LCA	STR_L82.data_ptr
+	LVa 1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L59
+	LVA  1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,CLOSE_L3
+STR STR_L83, ''				; constante string=''
+	LCA	STR_L83.data_ptr
+STR STR_L84, 'io_page.dat'			; constante string='io_page.dat'
+	LCA	STR_L84.data_ptr
+	LI  0
+	LVA  1,	G_disp
+	CALL	STANDARD.TEXT_IO. ,OPEN_L2
+	LVA  1,	LAST_disp
+	LVA  1,	BUF_disp
+	LVa 1,	G_disp
+	CALL	STANDARD.TEXT_IO. ,GET_LINE_L57
+STR STR_L85, 'Page 1 : ['			; constante string='Page 1 : ['
+	LCA	STR_L85.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	La 1, BUF_disp
+	LI	1
+	LId	1, BUF__u, STRING.FST_1
+	SUB
+	LI	1
+	MUL
+	ADD
+namespace ANON_152_8			; ensemble doublet @data/@info pour slice anonyme source
+VAR ANON_152_8_disp, q
+VAR ANON_152_8__u, q
+VAR SIZ, d
+VAR COMP_SIZ, d
+VAR FST_1, d
+VAR LST_1, d
+	Sa	1, ANON_152_8_disp
+	LVA	1, SIZ
+	Sa	1, ANON_152_8__u
+	LI	1
+	Sd	1, COMP_SIZ
+	LI	1
+	Sd	1, FST_1
+	Ld 1,	LAST_disp
+	Sd	1, LST_1
+	Ld	1, LST_1
+	INC
+	Ld	1, FST_1
+	SUB
+	LI	1
+	MUL
+	Sd	1, SIZ
+	LVA	1, ANON_152_8_disp
+end namespace
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+STR STR_L86, ']'				; constante string=']'
+	LCA	STR_L86.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	LVa 1,	G_disp
+	CALL	STANDARD.TEXT_IO. ,SKIP_PAGE_L33
+	LVA  1,	LAST_disp
+	LVA  1,	BUF_disp
+	LVa 1,	G_disp
+	CALL	STANDARD.TEXT_IO. ,GET_LINE_L57
+STR STR_L87, 'Page 2 : ['			; constante string='Page 2 : ['
+	LCA	STR_L87.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	La 1, BUF_disp
+	LI	1
+	LId	1, BUF__u, STRING.FST_1
+	SUB
+	LI	1
+	MUL
+	ADD
+namespace ANON_157_8			; ensemble doublet @data/@info pour slice anonyme source
+VAR ANON_157_8_disp, q
+VAR ANON_157_8__u, q
+VAR SIZ, d
+VAR COMP_SIZ, d
+VAR FST_1, d
+VAR LST_1, d
+	Sa	1, ANON_157_8_disp
+	LVA	1, SIZ
+	Sa	1, ANON_157_8__u
+	LI	1
+	Sd	1, COMP_SIZ
+	LI	1
+	Sd	1, FST_1
+	Ld 1,	LAST_disp
+	Sd	1, LST_1
+	Ld	1, LST_1
+	INC
+	Ld	1, FST_1
+	SUB
+	LI	1
+	MUL
+	Sd	1, SIZ
+	LVA	1, ANON_157_8_disp
+end namespace
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+STR STR_L88, ']'				; constante string=']'
+	LCA	STR_L88.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	LVA  1,	G_disp
+	CALL	STANDARD.TEXT_IO. ,CLOSE_L3
+STR STR_L89, '=== 10. END_OF_FILE ==='		; constante string='=== 10. END_OF_FILE ==='
+	LCA	STR_L89.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+STR STR_L90, ''				; constante string=''
+	LCA	STR_L90.data_ptr
+STR STR_L91, 'io_eof.dat'			; constante string='io_eof.dat'
+	LCA	STR_L91.data_ptr
+	LI  1
+	LVA  1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,CREATE_L1
+STR STR_L92, 'Alpha'			; constante string='Alpha'
+	LCA	STR_L92.data_ptr
+	LVa 1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L59
+STR STR_L93, 'Beta'				; constante string='Beta'
+	LCA	STR_L93.data_ptr
+	LVa 1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L59
+STR STR_L94, 'Gamma'			; constante string='Gamma'
+	LCA	STR_L94.data_ptr
+	LVa 1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L59
+	LI  0
+	LVA  1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,RESET_L5
+	LVA  1,	LAST_disp
+	LVA  1,	BUF_disp
+	LVa 1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,GET_LINE_L57
+STR STR_L95, 'Lu 1 : ['			; constante string='Lu 1 : ['
+	LCA	STR_L95.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	La 1, BUF_disp
+	LI	1
+	LId	1, BUF__u, STRING.FST_1
+	SUB
+	LI	1
+	MUL
+	ADD
+namespace ANON_170_8			; ensemble doublet @data/@info pour slice anonyme source
+VAR ANON_170_8_disp, q
+VAR ANON_170_8__u, q
+VAR SIZ, d
+VAR COMP_SIZ, d
+VAR FST_1, d
+VAR LST_1, d
+	Sa	1, ANON_170_8_disp
+	LVA	1, SIZ
+	Sa	1, ANON_170_8__u
+	LI	1
+	Sd	1, COMP_SIZ
+	LI	1
+	Sd	1, FST_1
+	Ld 1,	LAST_disp
+	Sd	1, LST_1
+	Ld	1, LST_1
+	INC
+	Ld	1, FST_1
+	SUB
+	LI	1
+	MUL
+	Sd	1, SIZ
+	LVA	1, ANON_170_8_disp
+end namespace
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+STR STR_L96, ']'				; constante string=']'
+	LCA	STR_L96.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	LVA  1,	LAST_disp
+	LVA  1,	BUF_disp
+	LVa 1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,GET_LINE_L57
+STR STR_L97, 'Lu 2 : ['			; constante string='Lu 2 : ['
+	LCA	STR_L97.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	La 1, BUF_disp
+	LI	1
+	LId	1, BUF__u, STRING.FST_1
+	SUB
+	LI	1
+	MUL
+	ADD
+namespace ANON_174_8			; ensemble doublet @data/@info pour slice anonyme source
+VAR ANON_174_8_disp, q
+VAR ANON_174_8__u, q
+VAR SIZ, d
+VAR COMP_SIZ, d
+VAR FST_1, d
+VAR LST_1, d
+	Sa	1, ANON_174_8_disp
+	LVA	1, SIZ
+	Sa	1, ANON_174_8__u
+	LI	1
+	Sd	1, COMP_SIZ
+	LI	1
+	Sd	1, FST_1
+	Ld 1,	LAST_disp
+	Sd	1, LST_1
+	Ld	1, LST_1
+	INC
+	Ld	1, FST_1
+	SUB
+	LI	1
+	MUL
+	Sd	1, SIZ
+	LVA	1, ANON_174_8_disp
+end namespace
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+STR STR_L98, ']'				; constante string=']'
+	LCA	STR_L98.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	LVA  1,	LAST_disp
+	LVA  1,	BUF_disp
+	LVa 1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,GET_LINE_L57
+STR STR_L99, 'Lu 3 : ['			; constante string='Lu 3 : ['
+	LCA	STR_L99.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	La 1, BUF_disp
+	LI	1
+	LId	1, BUF__u, STRING.FST_1
+	SUB
+	LI	1
+	MUL
+	ADD
+namespace ANON_178_8			; ensemble doublet @data/@info pour slice anonyme source
+VAR ANON_178_8_disp, q
+VAR ANON_178_8__u, q
+VAR SIZ, d
+VAR COMP_SIZ, d
+VAR FST_1, d
+VAR LST_1, d
+	Sa	1, ANON_178_8_disp
+	LVA	1, SIZ
+	Sa	1, ANON_178_8__u
+	LI	1
+	Sd	1, COMP_SIZ
+	LI	1
+	Sd	1, FST_1
+	Ld 1,	LAST_disp
+	Sd	1, LST_1
+	Ld	1, LST_1
+	INC
+	Ld	1, FST_1
+	SUB
+	LI	1
+	MUL
+	Sd	1, SIZ
+	LVA	1, ANON_178_8_disp
+end namespace
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+STR STR_L100, ']'				; constante string=']'
+	LCA	STR_L100.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+STR STR_L101, 'Lecture directe ok.'		; constante string='Lecture directe ok.'
+	LCA	STR_L101.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+STR STR_L102, '=== 11. END_OF_FILE boucle ==='	; constante string='=== 11. END_OF_FILE boucle ==='
+	LCA	STR_L102.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	LI  0
+	LVA  1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,RESET_L5
+LOOP__1:
+	LI	0					; lieu resultat sur pile
+	LVa 1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,END_OF_FILE_L37
+	LI	1
+	OUX
+	BF	L103
+	LVA  1,	LAST_disp
+	LVA  1,	BUF_disp
+	LVa 1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,GET_LINE_L57
+STR STR_L104, 'EOF lu : ['			; constante string='EOF lu : ['
+	LCA	STR_L104.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	La 1, BUF_disp
+	LI	1
+	LId	1, BUF__u, STRING.FST_1
+	SUB
+	LI	1
+	MUL
+	ADD
+namespace ANON_188_10			; ensemble doublet @data/@info pour slice anonyme source
+VAR ANON_188_10_disp, q
+VAR ANON_188_10__u, q
+VAR SIZ, d
+VAR COMP_SIZ, d
+VAR FST_1, d
+VAR LST_1, d
+	Sa	1, ANON_188_10_disp
+	LVA	1, SIZ
+	Sa	1, ANON_188_10__u
+	LI	1
+	Sd	1, COMP_SIZ
+	LI	1
+	Sd	1, FST_1
+	Ld 1,	LAST_disp
+	Sd	1, LST_1
+	Ld	1, LST_1
+	INC
+	Ld	1, FST_1
+	SUB
+	LI	1
+	MUL
+	Sd	1, SIZ
+	LVA	1, ANON_188_10_disp
+end namespace
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+STR STR_L105, ']'				; constante string=']'
+	LCA	STR_L105.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	BRA	LOOP__1
+L103:					; post loop LOOP__1
+STR STR_L106, 'EOF atteint.'			; constante string='EOF atteint.'
+	LCA	STR_L106.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	LVA  1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,CLOSE_L3
+STR STR_L107, '=== Fin du test ==='		; constante string='=== Fin du test ==='
+	LCA	STR_L107.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+ret_lbl:
+	UNLINK 1
+	RTD
+excep:
+endPRO					;---------- end PRO IO_TEST

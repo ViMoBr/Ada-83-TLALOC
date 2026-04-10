@@ -375,28 +375,45 @@ null;--        declare
 
     declare
     ARRAY_NAME		:constant STRING		:= PRINT_NAME( D( LX_SYMREP, NAME ) );
+    ARRAY_DEFN		: TREE			:= D( SM_DEFN, NAME );
     EXP_TYPE		: TREE			:= D( SM_EXP_TYPE, NAME );
     EXP_TYPE_NAME		: TREE			:= D( XD_SOURCE_NAME, EXP_TYPE );
     TYPE_NAME_STR		:constant STRING		:= PRINT_NAME( D( LX_SYMREP, EXP_TYPE_NAME ) );
     ARRAY_LVL		: INTEGER			:= 0;
     INDEX_NUM		: INTEGER			:= 1;
+    IS_PARAM		: BOOLEAN			:= FALSE;
 		-----
       procedure	INDEX	( EXP :TREE )
       is		-----
 
-        LID_CHN		:constant STRING	:= tab & "LId" & tab & IMAGE( ARRAY_LVL )
-					   & ", " & ARRAY_NAME & "__u";
         INDEX_NUM_IMG	:constant STRING	:= IMAGE( INDEX_NUM );
+        LVL_IMG		:constant STRING	:= IMAGE( ARRAY_LVL );
 
       begin
         CODE_EXP( EXP );
-        PUT( LID_CHN & ", " );
+
+        -- Charger FST_n depuis useinfo
+        if  IS_PARAM  then
+          PUT_LINE( tab & "LVa" & tab & LVL_IMG & ", -" & ARRAY_NAME & "_ofs" );
+          PUT_LINE( tab & "LIa" & tab & ", ," & INTEGER'IMAGE( CODI.ADDR_SIZE ) );
+          PUT( tab & "Ld" & tab & ", " );
+        else
+          PUT( tab & "LId" & tab & LVL_IMG & ", " & ARRAY_NAME & "__u" & ", " );
+        end if;
         REGIONS_PATH( EXP_TYPE_NAME );
         PUT( TYPE_NAME_STR & ".FST_" & INDEX_NUM_IMG );
         if  CODI.DEBUG  then PUT( tab50 & "; (index - FST_" & INDEX_NUM_IMG & ") * SIZ_" & INDEX_NUM_IMG ); end if;
         NEW_LINE;
         PUT_LINE( tab & "SUB" );
-        PUT( LID_CHN & ", " );
+
+        -- Charger COMP_SIZ depuis useinfo
+        if  IS_PARAM  then
+          PUT_LINE( tab & "LVa" & tab & LVL_IMG & ", -" & ARRAY_NAME & "_ofs" );
+          PUT_LINE( tab & "LIa" & tab & ", ," & INTEGER'IMAGE( CODI.ADDR_SIZE ) );
+          PUT( tab & "Ld" & tab & ", " );
+        else
+          PUT( tab & "LId" & tab & LVL_IMG & ", " & ARRAY_NAME & "__u" & ", " );
+        end if;
         REGIONS_PATH( EXP_TYPE_NAME );
         PUT_LINE( TYPE_NAME_STR & ".COMP_SIZ" );
         PUT_LINE( tab & "MUL" );
@@ -408,9 +425,18 @@ null;--        declare
       	-----
 
     begin
-      if D( SM_DEFN, NAME ).TY /= DN_COMPONENT_ID  then
-        ARRAY_LVL := DI( CD_LEVEL, D( SM_DEFN, NAME ) );
-        PUT(  tab & "La" & tab & INTEGER'IMAGE( ARRAY_LVL ) & ", " & ARRAY_NAME & "_disp" );			-- EMPILE L ADRESSE DE BASE DU CONTENU DE TABLEAU
+      if ARRAY_DEFN.TY /= DN_COMPONENT_ID  then
+        ARRAY_LVL := DI( CD_LEVEL, ARRAY_DEFN );
+
+        if  ARRAY_DEFN.TY in CLASS_PARAM_NAME  then
+          -- Parametre composite : charger ptr_data via le doublet
+          IS_PARAM := TRUE;
+          PUT_LINE( tab & "LVa" & tab & IMAGE( ARRAY_LVL ) & ", -" & ARRAY_NAME & "_ofs" );
+          PUT(  tab & "LIa" & tab & ", , 0" );
+        else
+          -- Variable locale : acces direct a _disp dans le frame
+          PUT(  tab & "La" & tab & INTEGER'IMAGE( ARRAY_LVL ) & ", " & ARRAY_NAME & "_disp" );
+        end if;
         if  CODI.DEBUG  then PUT( tab50 & "; array data start address on stack" ); end if;
         NEW_LINE;
 
@@ -445,6 +471,31 @@ put_line( "; adresse component id" );
   begin
     if  NAME.TY = DN_SELECTED  then
       CODE_SELECTED( NAME );
+
+    elsif  NAME.TY = DN_USED_OBJECT_ID  then
+      declare
+	DEFN		: TREE		:= D( SM_DEFN, NAME );
+	DEFN_LVL	: INTEGER		:= DI( CD_LEVEL, DEFN );
+	DEFN_STR	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, DEFN ) );
+      begin
+				-- Adresse de debut des donnees du tableau
+	PUT_LINE( tab & "La " & IMAGE( DEFN_LVL )
+		& ", " & DEFN_STR & "_disp" );
+				-- Ajuster par offset du debut du slice
+				-- @slice = @data + (EXP1 - FST_1) * COMP_SIZ
+	CODE_EXP( D( AS_EXP1, DISCRETE_RANGE ) );
+	PUT_LINE( tab & "LId" & tab & IMAGE( DEFN_LVL )
+		& ", " & DEFN_STR & "__u"
+		& ", " & PRINT_NAME( D( LX_SYMREP,
+		    D( XD_SOURCE_NAME, SLICE_TYPE ) ) )
+		& ".FST_1" );
+	PUT_LINE( tab & "SUB" );
+	PUT_LINE( tab & "LI" & tab
+		& IMAGE( COMP_SIZE / CODI.STORAGE_UNIT ) );
+	PUT_LINE( tab & "MUL" );
+	PUT_LINE( tab & "ADD" );
+      end;
+
     else
       PUT_LINE( "; CODE_SLICE : NAME.TY A FAIRE : " & NODE_NAME'IMAGE( NAME.TY ) );
     end if;
@@ -550,7 +601,7 @@ put_line( "; adresse component id" );
 	      else
 	        PUT( tab & "LIVa " );
 	      end if;
-	      PUT( tab & "-1, 0, " );
+	      PUT( tab & ", 0, " );
 	      REGIONS_PATH( DESIGNATOR_DEFN );
 	      PUT_LINE( DESIGNATOR_STR );
 
@@ -674,23 +725,48 @@ put_line( "; adresse component id" );
         then
 	declare
 	  ARRAY_LVL	: INTEGER		:= DI( CD_LEVEL, PREFIX_DEFN );
+	  PREFIX_TYPE	: TREE		:= D( SM_EXP_TYPE, PREFIX_NAME );
+	  TYPE_STR	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, PREFIX_TYPE ) ) );
 	  DIM_EXP		: TREE		:= D( AS_EXP, ATTRIBUTE );
 	  NUM_DIM		: INTEGER		:= 1;
 	begin
 	  if DIM_EXP /= TREE_VOID then
 	    NUM_DIM := DI( SM_VALUE, DIM_EXP );
 	  end if;
-	  PUT( tab & "LId" & tab & IMAGE( ARRAY_LVL ) & ", " & CHN_PREFIX & "__u" & ", " & CHN_PREFIX );
+	  PUT( tab & "LId" & tab & IMAGE( ARRAY_LVL ) & ", " & CHN_PREFIX & "__u" & ", " & TYPE_STR );
 	  if  IS_LAST  then
 	    PUT( ".LST_"  );
 	  else
 	    PUT( ".FST_" );
 	  end if;
 	  PUT_LINE( IMAGE( NUM_DIM ) );
-
---	  PUT_LINE( tab & "LId" & tab & IMAGE( ARRAY_LVL ) & ", " & CHN_PREFIX & "_disp" & ','
---		    & INTEGER'IMAGE( 8 + 12*(NUM_DIM-1) + ATTR_VAL_OFS ) );
 	end;
+
+        elsif  D( SM_EXP_TYPE, PREFIX_NAME ).TY = DN_ARRAY
+         and  PREFIX_DEFN.TY in CLASS_PARAM_NAME
+        then
+	-- Parametre array : acces useinfo via le doublet
+	declare
+	  ARRAY_LVL	: INTEGER		:= DI( CD_LEVEL, PREFIX_DEFN );
+	  PREFIX_TYPE	: TREE		:= D( SM_EXP_TYPE, PREFIX_NAME );
+	  TYPE_STR	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, PREFIX_TYPE ) ) );
+	  DIM_EXP		: TREE		:= D( AS_EXP, ATTRIBUTE );
+	  NUM_DIM		: INTEGER		:= 1;
+	begin
+	  if DIM_EXP /= TREE_VOID then
+	    NUM_DIM := DI( SM_VALUE, DIM_EXP );
+	  end if;
+	  PUT_LINE( tab & "LVa" & tab & IMAGE( ARRAY_LVL ) & ", -" & CHN_PREFIX & "_ofs" );
+	  PUT_LINE( tab & "LIa" & tab & ", ," & INTEGER'IMAGE( CODI.ADDR_SIZE ) );
+	  PUT( tab & "Ld" & tab & ", " & TYPE_STR );
+	  if  IS_LAST  then
+	    PUT( ".LST_"  );
+	  else
+	    PUT( ".FST_" );
+	  end if;
+	  PUT_LINE( IMAGE( NUM_DIM ) );
+	end;
+
         end if;
 
       elsif  PREFIX_NAME.TY = DN_USED_NAME_ID  then			-- UN NOM DE TYPE
@@ -838,7 +914,9 @@ put_line( "; adresse component id" );
     is
       DEFN		: TREE		:= D( SM_DEFN,		NAME );
     begin
-    if DEFN.TY = DN_BLTN_OPERATOR_ID then
+    if DEFN.TY = DN_BLTN_OPERATOR_ID
+    or DEFN.TY = DN_OPERATOR_ID
+    then
       declare
         OP_STR		:constant STRING	:= PRINT_NAME( D( LX_SYMREP, DEFN ) );
         PRM_S		: SEQ_TYPE	:= LIST( PARAMS );
@@ -853,12 +931,14 @@ put_line( "; adresse component id" );
         elsif OP_STR = """-""" then  PUT_LINE( ASCII.HT & "SUB" );
         elsif OP_STR = """*""" then  PUT_LINE( ASCII.HT & "MUL" );
         elsif OP_STR = """/""" then  PUT_LINE( ASCII.HT & "DIV" );
+        elsif OP_STR = """MOD""" then  PUT_LINE( ASCII.HT & "MODI" );
+        elsif OP_STR = """REM""" then  PUT_LINE( ASCII.HT & "REMI" );
         elsif OP_STR = """=""" then  PUT_LINE( ASCII.HT & "CEQ" );
         elsif OP_STR = """>""" then  PUT_LINE( ASCII.HT & "CGT" );
         elsif OP_STR = """<""" then  PUT_LINE( ASCII.HT & "CLT" );
         elsif OP_STR = """/=""" then  PUT_LINE( ASCII.HT & "CNE" );
         elsif OP_STR = """>=""" then  PUT_LINE( ASCII.HT & "CGE" );
-        elsif OP_STR = """<=""" then  PUT_LINE( ASCII.HT & "CIE" );
+        elsif OP_STR = """<=""" then  PUT_LINE( ASCII.HT & "CLE" );
         elsif OP_STR = """**""" then
 	if  PRM_1.TY = DN_NUMERIC_LITERAL and then DI( SM_VALUE, PRM_1 ) = 2  then
 	  PUT_LINE( tab & "DEC" );
@@ -873,8 +953,17 @@ put_line( "; adresse component id" );
         if OP_STR = """ABS""" then
 	PUT_LINE( tab & "ABS" );
         end if;
+        if OP_STR = """NOT""" then
+	PUT_LINE( tab & "LI" & tab & "1" );
+	PUT_LINE( tab & "OUX" );
+        end if;
       end;
 
+    else
+      PUT_LINE( "; CODE_DN_BLTN_OPERATOR_ID : DEFN.TY="
+	      & NODE_NAME'IMAGE( DEFN.TY )
+	      & " NON TRAITE POUR "
+	      & PRINT_NAME( D( LX_SYMREP, DEFN ) ) );
     end if;
     end	CODE_DN_BLTN_OPERATOR_ID;
     	------------------------
@@ -1000,8 +1089,44 @@ put_line( "; adresse component id" );
   				---------------
   procedure			CODE_CONVERSION		( CONVERSION :TREE )
   is				---------------
+
+    SRC_EXP		: TREE		:= D( AS_EXP,      CONVERSION );
+    TARGET_TYPE	: TREE		:= D( SM_EXP_TYPE, CONVERSION );
+    VAL		: TREE		:= D( SM_VALUE,    CONVERSION );
+
   begin
-    null;
+    -- Si la valeur est connue statiquement, emettre un LI direct
+    if  VAL /= TREE_VOID
+    and then  ( ( VAL.PT = HI  and then  VAL.NOTY = DN_NUM_VAL )
+                or else  VAL.TY = DN_NUM_VAL )
+    then
+      if  VAL.PT = HI  then
+        PUT_LINE( tab & "LI" & tab & IMAGE( DI( SM_VALUE, CONVERSION ) ) );
+      else
+        PUT_LINE( tab & "LI" & tab & PRINT_NUM( VAL ) );
+      end if;
+
+    else
+      -- Conversion dynamique : generer le code de l'expression source.
+      -- Pour entier<->entier, entier<->enum, enum<->enum : meme representation, pas d'instruction de conversion.
+      -- Pour float<->entier : a faire (CVTSI2SD / CVTTSD2SI).
+      CODE_EXP( SRC_EXP );
+
+      if  TARGET_TYPE /= TREE_VOID  and then  TARGET_TYPE.TY in CLASS_TYPE_SPEC  then
+        case  TARGET_TYPE.TY  is
+        when DN_INTEGER | DN_ENUMERATION =>
+          null;								-- no-op : meme representation
+
+        when DN_FLOAT | DN_FIXED =>
+          PUT_LINE( "; CODE_CONVERSION : FLOAT/FIXED TARGET A FAIRE" );
+
+        when others =>
+          null;
+        end case;
+      end if;
+
+    end if;
+
   end	CODE_CONVERSION;
 	---------------
 
@@ -1009,8 +1134,28 @@ put_line( "; adresse component id" );
 				--------------
   procedure			CODE_QUALIFIED		( QUALIFIED :TREE )
   is				--------------
+
+    SRC_EXP		: TREE		:= D( AS_EXP,      QUALIFIED );
+    VAL		: TREE		:= D( SM_VALUE,    QUALIFIED );
+
   begin
-    null;
+    -- Si la valeur est connue statiquement, emettre un LI direct
+    if  VAL /= TREE_VOID
+    and then  ( ( VAL.PT = HI  and then  VAL.NOTY = DN_NUM_VAL )
+                or else  VAL.TY = DN_NUM_VAL )
+    then
+      if  VAL.PT = HI  then
+        PUT_LINE( tab & "LI" & tab & IMAGE( DI( SM_VALUE, QUALIFIED ) ) );
+      else
+        PUT_LINE( tab & "LI" & tab & PRINT_NUM( VAL ) );
+      end if;
+
+    else
+      -- Expression qualifiee dynamique : generer le code de l'expression
+      CODE_EXP( SRC_EXP );
+
+    end if;
+
   end	CODE_QUALIFIED;
 	--------------
 
@@ -1045,11 +1190,11 @@ put_line( "; adresse component id" );
     =>
       LOAD_MEM( CONSTANT_ID );
 
-    when DN_RECORD =>
-      PUT_LINE( "; CODE_VC_ID : RECORD LOAD ADDRESS" );
+    when DN_RECORD | DN_L_PRIVATE =>
+      LOAD_MEM( CONSTANT_ID );
 
-    when DN_ARRAY =>
-      PUT_LINE( "; CODE_VC_ID : ARRAY LOAD ADDRESS" );
+    when DN_ARRAY | DN_CONSTRAINED_ARRAY =>
+      LOAD_MEM( CONSTANT_ID );
 
     when others
     =>

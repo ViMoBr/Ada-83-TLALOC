@@ -308,6 +308,7 @@ private
 			  ID		: INTEGER		:= -1;
 			  NAME		: FILE_NAME_BUFFER;
 			  NAME_LEN	: POSITIVE;
+			  IS_OPENED	: BOOLEAN		:= FALSE;
 			  MODE		: FILE_MODE;
 			  PAGE_LENGTH,
 			  LINE_LENGTH,
@@ -315,6 +316,9 @@ private
 			  LINE,
 			  COL		: POSITIVE_COUNT;
 			  IS_DEFAULT_IO	: BOOLEAN		:= FALSE;
+			  LOOK_AHEAD	: CHARACTER		:= ASCII.NUL;
+			  HAS_LOOK_AHEAD	: BOOLEAN		:= FALSE;
+			  AT_END_OF_FILE	: BOOLEAN		:= FALSE;
 			end record;
 
 	-------

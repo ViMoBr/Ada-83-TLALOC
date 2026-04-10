@@ -319,15 +319,30 @@ is					-----
       if  D( SM_OBJ_TYPE, DEFN ).TY in CLASS_SCALAR  then
         declare
 	SIZ_CHAR	: CHARACTER	:= OPER_SIZ_CHAR( D( SM_OBJ_TYPE, DEFN ) );
+	DEFN_LVL	: INTEGER		:= DI( CD_LEVEL, DEFN );
 
         begin
-	PUT( tab & "L" & SIZ_CHAR & ' ' & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' & tab );
-	PUT_LINE( PRINT_NAME( D( LX_SYMREP, DEFN ) ) & "_disp" );						-- deplacement de variable locale
+	PUT( tab & "L" & SIZ_CHAR & ' ' & IMAGE( DEFN_LVL ) & ',' & tab );
+	if  DEFN_LVL >= INTEGER( CUR_LEVEL )
+	and then  D( XD_REGION, DEFN ).TY = DN_PACKAGE_ID
+	then
+	  REGIONS_PATH( DEFN );
+	end if;
+	PUT_LINE( PRINT_NAME( D( LX_SYMREP, DEFN ) ) & "_disp" );
         end;
 
      else												-- variable non scalaire
-        PUT( tab & "LVa " & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' & tab );
-        PUT_LINE( PRINT_NAME( D( LX_SYMREP, DEFN ) )  & "_disp" );			-- adresse du doublet (disp, useinfo)
+        declare
+	DEFN_LVL	: INTEGER		:= DI( CD_LEVEL, DEFN );
+        begin
+	PUT( tab & "LVa " & IMAGE( DEFN_LVL ) & ',' & tab );
+	if  DEFN_LVL >= INTEGER( CUR_LEVEL )
+	and then  D( XD_REGION, DEFN ).TY = DN_PACKAGE_ID
+	then
+	  REGIONS_PATH( DEFN );
+	end if;
+	PUT_LINE( PRINT_NAME( D( LX_SYMREP, DEFN ) )  & "_disp" );
+        end;
 
      end if;
 

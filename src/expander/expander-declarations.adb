@@ -134,17 +134,14 @@ is
       PARAM		: TREE;
     begin
       CODI.NO_SUBP_PARAMS := IS_EMPTY( PARAM_SEQ );
-      if  CODI.NO_SUBP_PARAMS  then return; end if;
+      if  CODI.NO_SUBP_PARAMS and not FOR_FUNCTION  then
+        return;
+      end if;
 
       if  CODI.OUTPUT_CODE  then
         PUT( "PRMS" );
         if  CODI.DEBUG  then  PUT( tab50 & ";    debut parametrage" ); end if;
         NEW_LINE;
-        if  FOR_FUNCTION  then
-	PUT( tab & "PRM result__ofs" );
-	if  CODI.DEBUG  then  PUT( tab50 & "; resutat de fonction" ); end if;
-	NEW_LINE;
-        end if;
       end if;
 
       while  not IS_EMPTY( PARAM_SEQ )  loop
@@ -153,6 +150,11 @@ is
       end loop;
 
       if  CODI.OUTPUT_CODE  then
+        if  FOR_FUNCTION  then
+	PUT( tab & "PRM result__ofs" );
+	if  CODI.DEBUG  then  PUT( tab50 & "; resultat de fonction" ); end if;
+	NEW_LINE;
+        end if;
         if  CODI.IN_GENERIC_BODY  then
 	PUT_LINE( tab & "PRM GFP_ofs" );
         end if;

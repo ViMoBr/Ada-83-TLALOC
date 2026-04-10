@@ -332,6 +332,7 @@ is					--------
     D( DA.XD_REGION, NODE, XD_REGION );
     D( DA.XD_STUB, NODE, XD_STUB );
     D( DA.XD_body, NODE, XD_body );
+    DB( DA.CD_COMPILED, NODE, FALSE );
          return NODE;
   end	MAKE_PROCEDURE_ID;
    
@@ -361,6 +362,7 @@ is					--------
     D( DA.XD_REGION, NODE, XD_REGION );
     D( DA.XD_STUB, NODE, XD_STUB );
     D( DA.XD_body, NODE, XD_body );
+    DB( DA.CD_COMPILED, NODE, FALSE );
          return NODE;
   end	MAKE_FUNCTION_ID;
    
@@ -392,6 +394,7 @@ is					--------
     D( DA.XD_STUB, NODE, XD_STUB );
     D( DA.XD_body, NODE, XD_body );
     D( DA.XD_NOT_EQUAL, NODE, XD_NOT_EQUAL );
+    DB( DA.CD_COMPILED, NODE, FALSE );
          return NODE;
   end	MAKE_OPERATOR_ID;
 

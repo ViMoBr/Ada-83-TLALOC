@@ -678,13 +678,31 @@ macro			DIV?
   PUSH_RAX
 end macro
 ;			----
-macro			REM?
+macro			REMI?					; A rem B   (reste division tronquee, signe du dividende)
 ;			----
-  POP_RBX
-  POP_RAX
-  db 0x48, 0x31, 0xD2						; xor rdx, rdx
-  db 0x48, 0xF7, 0xFB						; idiv rbx
-  PUSH_RDX
+  POP_RBX								; depiler B (diviseur) dans RBX
+  POP_RAX								; depiler A (dividende) dans RAX
+  db 0x48, 0x99							; cqo   (sign-extend RAX into RDX:RAX)
+  db 0x48, 0xF7, 0xFB						; idiv rbx   (RAX=quotient, RDX=reste)
+  db 0x48, 0x89, 0xD0						; mov rax, rdx   (resultat = reste)
+  PUSH_RAX
+end macro
+;			----
+macro			MODI?					; A mod B   (modulo mathematique, signe du diviseur)
+;			----
+  POP_RBX								; depiler B (diviseur) dans RBX
+  POP_RAX								; depiler A (dividende) dans RAX
+  db 0x48, 0x99							; cqo   (sign-extend RAX into RDX:RAX)
+  db 0x48, 0xF7, 0xFB						; idiv rbx   (RAX=quotient, RDX=reste)
+  db 0x48, 0x89, 0xD0						; mov rax, rdx   (resultat = reste)
+  db 0x48, 0x85, 0xC0						; test rax, rax   (reste = 0 ?)
+  db 0x74, 0x0B							; jz done   (si reste=0, pas d ajustement)
+  db 0x48, 0x89, 0xC1						; mov rcx, rax   (copie reste dans rcx)
+  db 0x48, 0x31, 0xD9						; xor rcx, rbx   (test si signes differents)
+  db 0x79, 0x03							; jns done   (meme signe, pas d ajustement)
+  db 0x48, 0x01, 0xD8						; add rax, rbx   (ajuster : reste += diviseur)
+; done:
+  PUSH_RAX
 end macro
 ;			----
 macro			SAR?					; decalage arithmetique droit
@@ -698,6 +716,20 @@ end macro
 ;				C O M P A R A I S O N S
 ;-----------------------------------------------------------------------------------------------------------------------
 
+;			----
+macro			CEQ?
+;			----
+  POP_RBX
+  db 0x48, 0x39, 0x5D, 0x00						; cmp [rbp], rbx   (NXT > TOP ?)
+  db 0x0F, 0x94, 0x45, 0x00						; sete [rbp]
+end macro
+;			----
+macro			CNE?					; A /= B   A empile puis B
+;			----
+  POP_RBX								; depiler le B dans RBX
+  db 0x48, 0x39, 0x5D, 0x00						; cmp [rbp], rbx   (comparer avec A, calcule A-B)
+  db 0x0F, 0x95, 0x45, 0x00						; setne [rbp]
+end macro
 ;			----
 macro			CGT?					; A > B A empile puis B (note pour avoir "A less than B" intervertir A et B)
 ;			----
@@ -713,11 +745,18 @@ macro			CGE?					; A >= B A empile puis B (note pour avoir "A less or equal than
   db 0x0F, 0x9D, 0x45, 0x00						; setge [rbp]
 end macro
 ;			----
-macro			CEQ?
+macro			CLT?					; A < B   A empile puis B
 ;			----
-  POP_RBX
-  db 0x48, 0x39, 0x5D, 0x00						; cmp [rbp], rbx   (NXT > TOP ?)
-  db 0x0F, 0x94, 0x45, 0x00						; sete [rbp]
+  POP_RBX								; depiler le B dans RBX
+  db 0x48, 0x39, 0x5D, 0x00						; cmp [rbp], rbx   (comparer avec A, calcule A-B)
+  db 0x0F, 0x9C, 0x45, 0x00						; setl [rbp]
+end macro
+;			----
+macro			CLE?					; A <= B   A empile puis B
+;			----
+  POP_RBX								; depiler le B dans RBX
+  db 0x48, 0x39, 0x5D, 0x00						; cmp [rbp], rbx   (comparer avec A, calcule A-B)
+  db 0x0F, 0x9E, 0x45, 0x00						; setle [rbp]
 end macro
 
 

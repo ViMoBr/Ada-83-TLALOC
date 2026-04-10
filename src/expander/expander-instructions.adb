@@ -280,7 +280,7 @@ separate ( EXPANDER )
     elsif  ITERATION.TY = DN_WHILE  then
       PUT_LINE( LOOP_LBL_STR & ':' );
       EXPRESSIONS.CODE_EXP( D( AS_EXP, ITERATION ) );
-      PUT_LINE( tab & "BRZ" & tab & LABEL_STR( AFTER_LOOP_LBL ) );
+      PUT_LINE( tab & "BF" & tab & LABEL_STR( AFTER_LOOP_LBL ) );
       CODE_STM_S( LOOP_STM_S );
       PUT_LINE( tab & "BRA" & tab & LOOP_LBL_STR );
 
@@ -695,6 +695,18 @@ null;
             EXPRESSIONS.CODE_EXP( EXP );
 --            EMIT( SLD, CODI.CODE_DATA_TYPE_OF ( EXP ), INTEGER( LEVEL_NUM( ENCLOSING_LEVEL) - CODI.CUR_LEVEL ), RESULT_OFFSET );
 	elsif  EXPR_TYPE.TY = DN_INTEGER  then
+	  EXPRESSIONS.CODE_EXP( EXP );
+	  PUT_LINE( tab & "S" & CODI.EXP_TYPE_CHAR( EXP ) & ' ' & INTEGER'IMAGE( CODI.CUR_LEVEL ) & ',' & tab & "-result__ofs" );
+
+	elsif  EXPR_TYPE.TY = DN_RECORD
+	or     EXPR_TYPE.TY = DN_L_PRIVATE
+	or     EXPR_TYPE.TY = DN_PRIVATE
+	then
+				-- Return address of the doublet
+	  EXPRESSIONS.CODE_EXP( EXP );
+	  PUT_LINE( tab & "Sa " & INTEGER'IMAGE( CODI.CUR_LEVEL ) & ',' & tab & "-result__ofs" );
+
+	elsif  EXPR_TYPE.TY = DN_ENUMERATION  then
 	  EXPRESSIONS.CODE_EXP( EXP );
 	  PUT_LINE( tab & "S" & CODI.EXP_TYPE_CHAR( EXP ) & ' ' & INTEGER'IMAGE( CODI.CUR_LEVEL ) & ',' & tab & "-result__ofs" );
 

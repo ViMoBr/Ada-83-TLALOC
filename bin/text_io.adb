@@ -44,6 +44,7 @@ is					-------
       FILE.ID := ERR_OR_ID;
       FILE.NAME( 1 .. NAME'LENGTH ) := NAME;
       FILE.NAME_LEN := NAME'LENGTH;
+      FILE.IS_OPENED := TRUE;
       FILE.MODE := MODE;
       FILE.PAGE_LENGTH := STDOUT_PAGE_LENGTH;
       FILE.LINE_LENGTH := STDOUT_LINE_LENGTH;
@@ -83,6 +84,7 @@ is					-------
       FILE.ID := OPEN_SYSTEM_CALL( NAME );
       FILE.NAME( 1 .. NAME'LENGTH ) := NAME;
       FILE.NAME_LEN := NAME'LENGTH;
+      FILE.IS_OPENED := TRUE;
       FILE.MODE := MODE;
       FILE.PAGE_LENGTH := STDOUT_PAGE_LENGTH;
       FILE.LINE_LENGTH := STDOUT_LINE_LENGTH;
@@ -107,6 +109,7 @@ is					-------
     begin
       ASM_OP_2'( OPCODE => Ld, LVL => 2, OFS => -8 );
       ASM_OP_0'( OPCODE => SYS_FILE_CLOSE );
+      ASM_OP_2'( OPCODE => SD, LVL => 2, OFS => -16 );			-- Retour du resultat syscall
 
     end	CLOSE_SYSTEM_CALL;
     -----------------
@@ -114,6 +117,7 @@ is					-------
   begin
     ERR_CODE := CLOSE_SYSTEM_CALL( FILE.ID );
     FILE.ID := -1;
+    FILE.IS_OPENED := FALSE;
 
   end	CLOSE;
 	-----
@@ -132,12 +136,14 @@ is					-------
     begin
       ASM_OP_2'( OPCODE => La, LVL => 2, OFS => -8 );
       ASM_OP_0'( OPCODE => SYS_FILE_DELETE );
+      ASM_OP_2'( OPCODE => SD, LVL => 2, OFS => -16 );			-- Retour du resultat syscall
 
     end	DELETE_SYSTEM_CALL;
 	------------------
 
   begin
     ERR_CODE := DELETE_SYSTEM_CALL( FILE.NAME( 1 .. FILE.NAME_LEN ) );
+    FILE.IS_OPENED := FALSE;
 
   end	DELETE;
 	------
@@ -146,7 +152,30 @@ is					-------
 			-----
   procedure		RESET		( FILE :in out FILE_TYPE; MODE :in FILE_MODE )
   is			-----
-  begin null;
+
+    ERR_CODE	: INTEGER;
+
+		--------------
+    function	SEEK_SYSTEM_CALL	( FILE_ID :in INTEGER )		return INTEGER
+    is		--------------
+    begin
+      ASM_OP_1'( OPCODE => LI, VAL => 0 );				-- OFFSET = 0 (debut du fichier)
+      ASM_OP_2'( OPCODE => Ld, LVL => 2, OFS => -8 );			-- FILE_ID
+      ASM_OP_0'( OPCODE => SYS_FILE_SET_POS );
+      ASM_OP_2'( OPCODE => SD, LVL => 2, OFS => -16 );			-- Retour du resultat syscall
+
+    end	SEEK_SYSTEM_CALL;
+	--------------
+
+  begin
+    if  FILE.IS_OPENED = FALSE  then raise STATUS_ERROR; end if;
+    ERR_CODE := SEEK_SYSTEM_CALL( FILE.ID );
+    FILE.MODE := MODE;
+    FILE.PAGE := 1;
+    FILE.LINE := 1;
+    FILE.COL  := 1;
+    FILE.AT_END_OF_FILE := FALSE;
+    FILE.HAS_LOOK_AHEAD := FALSE;
 
   end	RESET;
 	-----
@@ -154,7 +183,9 @@ is					-------
 			-----
   procedure		RESET		( FILE :in out FILE_TYPE )
   is			-----
-  begin null;
+  begin
+    if  FILE.IS_OPENED = FALSE  then raise STATUS_ERROR; end if;
+    RESET( FILE, FILE.MODE );
 
   end	RESET;
 	-----
@@ -163,7 +194,9 @@ is					-------
   function		MODE		( FILE :in FILE_TYPE )		return FILE_MODE
   is			----
   begin
+    if  FILE.IS_OPENED = FALSE  then raise STATUS_ERROR; end if;
     return FILE.MODE;
+
   end	MODE;
 	----
 
@@ -171,7 +204,9 @@ is					-------
   function		NAME		( FILE :in FILE_TYPE )		return STRING
   is			----
   begin
+    if  FILE.IS_OPENED = FALSE  then raise STATUS_ERROR; end if;
     return FILE.NAME( 1 .. FILE.NAME_LEN );
+
   end	NAME;
 	----
 
@@ -179,7 +214,9 @@ is					-------
   function		FORM		( FILE :in FILE_TYPE )		return STRING
   is			----
   begin
+    if  FILE.IS_OPENED = FALSE  then raise STATUS_ERROR; end if;
     return "";
+
   end	FORM;
 	----
 
@@ -187,16 +224,20 @@ is					-------
   function		IS_OPEN		( FILE :in FILE_TYPE )		return BOOLEAN
   is			-------
   begin
-    return FILE.ID = -1;
+    return FILE.IS_OPENED;
+
   end	IS_OPEN;
 	-------
+
 
            -- Control of default input and output files
 
 			---------
   procedure		SET_INPUT		( FILE :in FILE_TYPE )
   is			---------
-  begin null;
+  begin
+    if  FILE.IS_OPENED = FALSE  then raise STATUS_ERROR; end if;
+    if  FILE.MODE /= IN_FILE  then raise MODE_ERROR; end if;
     DEFAULT_INPUT := FILE;
 
   end	SET_INPUT;
@@ -206,6 +247,8 @@ is					-------
   procedure		SET_OUTPUT	( FILE :in FILE_TYPE )
   is			----------
   begin
+    if  FILE.IS_OPENED = FALSE  then raise STATUS_ERROR; end if;
+    if  FILE.MODE /= OUT_FILE  then raise MODE_ERROR; end if;
     DEFAULT_OUTPUT := FILE;
 
   end	SET_OUTPUT;
@@ -253,15 +296,19 @@ is					-------
   procedure		SET_LINE_LENGTH	( FILE :in FILE_TYPE; TO :in COUNT )
   is			---------------
   begin
+    if  FILE.IS_OPENED = FALSE  then raise STATUS_ERROR; end if;
+    if  FILE.MODE /= OUT_FILE  then raise MODE_ERROR; end if;
     FILE.LINE_LENGTH := TO;
+
   end	SET_LINE_LENGTH;
 	---------------
 
 			---------------
-  procedure		SET_LINE_LENGTH	( TO   :in COUNT)
+  procedure		SET_LINE_LENGTH	( TO :in COUNT)
   is			---------------
   begin
-    STDOUT_LINE_LENGTH := TO;
+    SET_LINE_LENGTH( DEFAULT_OUTPUT, TO );
+
   end	SET_LINE_LENGTH;
 	---------------
 
@@ -269,15 +316,18 @@ is					-------
   procedure		SET_PAGE_LENGTH	( FILE :in FILE_TYPE; TO :in COUNT )
   is			---------------
   begin
+    if  FILE.IS_OPENED = FALSE  then raise STATUS_ERROR; end if;
+    if  FILE.MODE /= OUT_FILE  then raise MODE_ERROR; end if;
     FILE.PAGE_LENGTH := TO;
   end	SET_PAGE_LENGTH;
 	---------------
 
 			---------------
-  procedure		SET_PAGE_LENGTH	( TO   :in COUNT)
+  procedure		SET_PAGE_LENGTH	( TO :in COUNT)
   is			---------------
   begin
-    STDOUT_PAGE_LENGTH := TO;
+    SET_PAGE_LENGTH( DEFAULT_OUTPUT, TO );
+
   end	SET_PAGE_LENGTH;
 	---------------
 
@@ -285,7 +335,10 @@ is					-------
   function		LINE_LENGTH	( FILE :in FILE_TYPE )		return COUNT
   is			-----------
   begin
+    if  FILE.IS_OPENED = FALSE  then raise STATUS_ERROR; end if;
+    if  FILE.MODE /= OUT_FILE  then raise MODE_ERROR; end if;
     return FILE.LINE_LENGTH;
+
   end	LINE_LENGTH;
 	-----------
 
@@ -293,7 +346,8 @@ is					-------
   function		LINE_LENGTH					return COUNT
   is			-----------
   begin
-    return STDOUT_LINE_LENGTH;
+    return LINE_LENGTH( DEFAULT_OUTPUT );
+
   end	LINE_LENGTH;
 	-----------
 
@@ -301,7 +355,10 @@ is					-------
   function		PAGE_LENGTH	( FILE :in FILE_TYPE )		return COUNT
   is			-----------
   begin
+    if  FILE.IS_OPENED = FALSE  then raise STATUS_ERROR; end if;
+    if  FILE.MODE /= OUT_FILE  then raise MODE_ERROR; end if;
     return FILE.PAGE_LENGTH;
+
   end	PAGE_LENGTH;
 	-----------
 
@@ -309,9 +366,11 @@ is					-------
   function		PAGE_LENGTH					return COUNT
   is			-----------
   begin
-    return STDOUT_PAGE_LENGTH;
+    return PAGE_LENGTH( DEFAULT_OUTPUT );
+
   end	PAGE_LENGTH;
 	-----------
+
 
            -- Column, Line, and Page Control
 
@@ -320,6 +379,9 @@ is					-------
 					  SPACING :in POSITIVE_COUNT := 1 )
   is			--------
   begin
+    if  FILE.IS_OPENED = FALSE  then raise STATUS_ERROR; end if;
+    if  FILE.MODE /= OUT_FILE  then raise MODE_ERROR; end if;
+
     PUT( FILE, ASCII.CR );
     FILE.COL := 1;											-- LRM 14.3.4(3) col := 1
     for  N in 1 .. SPACING  loop
@@ -339,27 +401,34 @@ is					-------
   procedure		NEW_LINE		( SPACING :in POSITIVE_COUNT := 1 )
   is			--------
   begin
-    PUT( DEFAULT_OUTPUT, ASCII.CR );
-    STDOUT_COL := 1;										-- LRM 14.3.4(3) col := 1
-    for  N in 1 .. SPACING  loop
-      PUT( DEFAULT_OUTPUT, ASCII.LF );
-    end loop;
-    STDOUT_LINE := STDOUT_LINE + SPACING;
-    if  STDOUT_LINE > STDOUT_PAGE_LENGTH  then
-      PUT( DEFAULT_OUTPUT, ASCII.FF );
-      STDOUT_PAGE := STDOUT_PAGE + 1;
-      STDOUT_LINE := 1;
-    end if;
+    NEW_LINE( DEFAULT_OUTPUT, SPACING );
 
   end	NEW_LINE;
 	--------
 
 			---------
-  procedure		SKIP_LINE		( FILE    :in FILE_TYPE;
-					  SPACING :in POSITIVE_COUNT := 1 )
+  procedure		SKIP_LINE		( FILE	:in FILE_TYPE;
+					  SPACING	:in POSITIVE_COUNT := 1 )
   is			---------
+
+    CH		: CHARACTER;
+    LINES_SKIPPED	: COUNT		:= 0;
+
   begin
-    null;
+    if  FILE.IS_OPENED = FALSE  then raise STATUS_ERROR; end if;
+    if  FILE.MODE /= IN_FILE  then raise MODE_ERROR; end if;
+
+    loop
+      exit when  FILE.AT_END_OF_FILE;
+      GET( FILE, CH );
+      exit when  FILE.AT_END_OF_FILE;
+      if  CH = ASCII.LF  then
+        LINES_SKIPPED := LINES_SKIPPED + 1;
+        FILE.LINE := FILE.LINE + 1;
+        FILE.COL := 1;
+        exit when  LINES_SKIPPED >= SPACING;
+      end if;
+    end loop;
 
   end	SKIP_LINE;
 	---------
@@ -368,7 +437,7 @@ is					-------
   procedure		SKIP_LINE		( SPACING :in POSITIVE_COUNT := 1 )
   is			---------
   begin
-    STDOUT_LINE := STDOUT_LINE + SPACING;
+    SKIP_LINE( DEFAULT_INPUT, SPACING );
 
   end	SKIP_LINE;
 	---------
@@ -376,7 +445,25 @@ is					-------
 			-----------
   function		END_OF_LINE	( FILE :in FILE_TYPE)		return BOOLEAN
   is			-----------
-  begin null;
+
+    CH	: CHARACTER;
+
+  begin
+    if  FILE.IS_OPENED = FALSE  then raise STATUS_ERROR; end if;
+    if  FILE.MODE /= IN_FILE  then raise MODE_ERROR; end if;
+    if  FILE.AT_END_OF_FILE  then return TRUE; end if;
+    if  FILE.HAS_LOOK_AHEAD  then
+      return FILE.LOOK_AHEAD = ASCII.LF;
+    end if;
+    -- Tenter de lire un caractere
+    GET( FILE, CH );
+    if  FILE.AT_END_OF_FILE  then
+      return TRUE;
+    else
+      FILE.LOOK_AHEAD := CH;
+      FILE.HAS_LOOK_AHEAD := TRUE;
+      return CH = ASCII.LF;
+    end if;
 
   end	END_OF_LINE;
 	-----------
@@ -385,6 +472,7 @@ is					-------
   function		END_OF_LINE					return BOOLEAN
   is			-----------
   begin null;
+    return END_OF_LINE( DEFAULT_INPUT );
 
   end	END_OF_LINE;
 	-----------
@@ -392,14 +480,23 @@ is					-------
 			--------
   procedure		NEW_PAGE		( FILE :in FILE_TYPE )
   is			--------
-  begin null;
+  begin
+    if  FILE.IS_OPENED = FALSE  then raise STATUS_ERROR; end if;
+    if  FILE.MODE /= OUT_FILE  then raise MODE_ERROR; end if;
+    if  FILE.COL /= 1  then
+      NEW_LINE( FILE );
+    end if;
+    PUT( FILE, ASCII.FF );
+    FILE.PAGE := FILE.PAGE + 1;
+    FILE.LINE := 1;
 
   end	NEW_PAGE;
 	--------
 			--------
   procedure		NEW_PAGE
   is			--------
-  begin null;
+  begin
+    NEW_PAGE( DEFAULT_OUTPUT );
 
   end	NEW_PAGE;
 	----
@@ -407,7 +504,25 @@ is					-------
 			---------
   procedure		SKIP_PAGE		( FILE :in FILE_TYPE )
   is			---------
-  begin null;
+
+    CH	: CHARACTER;
+
+  begin
+    if  FILE.IS_OPENED = FALSE  then raise STATUS_ERROR; end if;
+    if  FILE.MODE /= IN_FILE  then raise MODE_ERROR; end if;
+    loop
+      exit when  FILE.AT_END_OF_FILE;
+      GET( FILE, CH );
+      exit when  FILE.AT_END_OF_FILE;
+      if  CH = ASCII.LF  then
+        FILE.LINE := FILE.LINE + 1;
+        FILE.COL := 1;
+      end if;
+      exit when  CH = ASCII.FF;
+    end loop;
+    FILE.PAGE := FILE.PAGE + 1;
+    FILE.LINE := 1;
+    FILE.COL := 1;
 
   end	SKIP_PAGE;
 	---------
@@ -415,7 +530,8 @@ is					-------
 			---------
   procedure		SKIP_PAGE
   is			---------
-  begin null;
+  begin
+    SKIP_PAGE( DEFAULT_INPUT );
 
   end	SKIP_PAGE;
 	---------
@@ -423,7 +539,25 @@ is					-------
 			-----------
   function		END_OF_PAGE	( FILE :in FILE_TYPE ) 		return BOOLEAN
   is			-----------
-  begin null;
+
+    CH	: CHARACTER;
+
+  begin
+    if  FILE.IS_OPENED = FALSE  then raise STATUS_ERROR; end if;
+    if  FILE.MODE /= IN_FILE  then raise MODE_ERROR; end if;
+    if  FILE.AT_END_OF_FILE  then return TRUE; end if;
+    if  FILE.HAS_LOOK_AHEAD  then
+      return FILE.LOOK_AHEAD = ASCII.FF;
+    end if;
+    -- Tenter de lire un caractere
+    GET( FILE, CH );
+    if  FILE.AT_END_OF_FILE  then
+      return TRUE;
+    else
+      FILE.LOOK_AHEAD := CH;
+      FILE.HAS_LOOK_AHEAD := TRUE;
+      return CH = ASCII.FF;
+    end if;
 
   end	END_OF_PAGE;
 	-----------
@@ -431,7 +565,8 @@ is					-------
 			-----------
   function		END_OF_PAGE 					return BOOLEAN
   is			-----------
-  begin null;
+  begin
+    return END_OF_PAGE( DEFAULT_INPUT );
 
   end	END_OF_PAGE;
 	-----------
@@ -439,7 +574,23 @@ is					-------
 			-----------
   function		END_OF_FILE	( FILE :in FILE_TYPE )		return BOOLEAN
   is			-----------
-  begin null;
+
+    CH	: CHARACTER;
+
+  begin
+    if  FILE.IS_OPENED = FALSE  then raise STATUS_ERROR; end if;
+    if  FILE.MODE /= IN_FILE  then raise MODE_ERROR; end if;
+    if  FILE.AT_END_OF_FILE  then return TRUE; end if;
+    if  FILE.HAS_LOOK_AHEAD  then return FALSE; end if;
+    -- Tenter de lire un caractere
+    GET( FILE, CH );
+    if  FILE.AT_END_OF_FILE  then
+      return TRUE;
+    else
+      FILE.LOOK_AHEAD := CH;
+      FILE.HAS_LOOK_AHEAD := TRUE;
+      return FALSE;
+    end if;
 
   end	END_OF_FILE;
 	-----------
@@ -447,7 +598,8 @@ is					-------
 			-----------
   function		END_OF_FILE					return BOOLEAN
   is			-----------
-  begin null;
+  begin
+    return END_OF_FILE( DEFAULT_INPUT );
 
   end	END_OF_FILE;
 	-----------
@@ -456,39 +608,59 @@ is					-------
   procedure		SET_COL		( FILE :in FILE_TYPE; TO :in POSITIVE_COUNT )
   is			-------
   begin
-    FILE.COL := TO;
+    if  FILE.IS_OPENED = FALSE  then raise STATUS_ERROR; end if;
+
+-- A FINIR LRM 14.3.4 (28-33)
+    if  FILE.MODE /= IN_FILE  then
+      FILE.COL := TO;
+    else
+      FILE.COL := TO;
+    end if;
+
   end	SET_COL;
 	-------
 
 			-------
-  procedure		SET_COL		( TO   :in POSITIVE_COUNT )
+  procedure		SET_COL		( TO :in POSITIVE_COUNT )
   is			-------
   begin
-    STDOUT_COL := TO;
+    SET_COL( DEFAULT_OUTPUT, TO );
+
   end	SET_COL;
 	-------
 
 			--------
-  procedure 		SET_LINE		(FILE :in FILE_TYPE; TO :in POSITIVE_COUNT )
+  procedure 		SET_LINE		( FILE :in FILE_TYPE; TO :in POSITIVE_COUNT )
   is			--------
   begin
-    FILE.LINE := TO;
+    if  FILE.IS_OPENED = FALSE  then raise STATUS_ERROR; end if;
+
+-- A FINIR LRM 14.3.4 (35-40)
+    if  FILE.MODE /= IN_FILE  then
+      FILE.LINE := TO;
+    else
+      FILE.LINE := TO;
+    end if;
+
   end	SET_LINE;
 	--------
 
 			--------
-  procedure		SET_LINE		(TO   :in POSITIVE_COUNT )
+  procedure		SET_LINE		( TO :in POSITIVE_COUNT )
   is			--------
   begin
-    STDOUT_LINE := TO;
+    SET_LINE( DEFAULT_OUTPUT, TO );
+
   end	SET_LINE;
 	--------
 
 			---
-  function		COL		(FILE :in FILE_TYPE )		return POSITIVE_COUNT
+  function		COL		( FILE :in FILE_TYPE )		return POSITIVE_COUNT
   is			---
   begin
+    if  FILE.COL > COUNT'LAST  then raise LAYOUT_ERROR; end if;
     return FILE.COL;
+
   end	COL;
 	---
 
@@ -496,7 +668,8 @@ is					-------
   function		COL						return POSITIVE_COUNT
   is			---
   begin
-    return STDOUT_COL;
+    return COL( DEFAULT_OUTPUT );
+
   end	COL;
 	---
 
@@ -504,31 +677,37 @@ is					-------
   function		LINE		( FILE :in FILE_TYPE )		return POSITIVE_COUNT
   is			----
   begin
+    if  FILE.LINE > COUNT'LAST  then raise LAYOUT_ERROR; end if;
     return FILE.LINE;
+
   end	LINE;
 	----
 
 			----
   function		LINE						return POSITIVE_COUNT
   is			----
-  begin null;
-    return STDOUT_LINE;
+  begin
+    return LINE( DEFAULT_OUTPUT );
+
   end	LINE;
 	----
 
 			----
-  function		PAGE		(FILE :in FILE_TYPE )		return POSITIVE_COUNT
+  function		PAGE		( FILE :in FILE_TYPE )		return POSITIVE_COUNT
   is			----
-  begin null;
+  begin
+    if  FILE.PAGE > COUNT'LAST  then raise LAYOUT_ERROR; end if;
     return FILE.PAGE;
+
   end	PAGE;
 	----
 
 			----
   function		PAGE 						return POSITIVE_COUNT
   is			----
-  begin null;
-    return STDOUT_PAGE;
+  begin
+    return PAGE( DEFAULT_OUTPUT );
+
   end	PAGE;
 	----
 
@@ -537,7 +716,36 @@ is					-------
 			---
   procedure		GET		( FILE :in FILE_TYPE; ITEM :out CHARACTER )
   is			---
-  begin null;
+
+    BYTES_READ	: INTEGER;
+
+		----------------
+    function	READ_SYSTEM_CALL		( FILE_ID :in INTEGER )		return INTEGER
+    is		----------------
+    begin
+      ASM_OP_1'( OPCODE => LI, VAL => 1 );								-- push LENGTH = 1 octet (immediat)
+      ASM_OP_2'( OPCODE => La, LVL => 1, OFS => -16 );							-- push @ITEM : charge l'adresse destination (out param GET level 1 offset -16)
+      ASM_OP_2'( OPCODE => Ld, LVL => 2, OFS => -8 );							-- push FILE_ID (in param READ_SYSTEM_CALL level 2 offset -8)
+      ASM_OP_0'( OPCODE => SYS_FILE_READ );								-- (-8) FILE_ID ; (-16) @ITEM ; (-24) LENGTH
+      ASM_OP_2'( OPCODE => SD, LVL => 2, OFS => -16 );							-- Retour du BYTES_READ
+
+    end	READ_SYSTEM_CALL;
+	-----------------
+
+  begin
+    if  FILE.HAS_LOOK_AHEAD  then
+      ITEM := FILE.LOOK_AHEAD;
+      FILE.HAS_LOOK_AHEAD := FALSE;
+    elsif  FILE.ID = -1  then										-- standard console input
+      ASM_OP_2'( OPCODE => La, LVL => 1, OFS => -16 );							-- push @ITEM : charge l'adresse destination (out param GET level 1 offset -16)
+      ASM_OP_0'( OPCODE => SYS_GET_CHAR );								-- get console char
+    else
+      BYTES_READ := READ_SYSTEM_CALL( FILE.ID );								-- general file
+      if  BYTES_READ = 0  then
+        FILE.AT_END_OF_FILE := TRUE;
+        ITEM := ASCII.NUL;
+      end if;
+    end if;
 
   end	GET;
 	----
@@ -546,8 +754,7 @@ is					-------
   procedure		GET		( ITEM :out CHARACTER )
   is			---
   begin
-    ASM_OP_2'( OPCODE => LA, LVL => 1, OFS => -8 );
-    ASM_OP_0'( OPCODE => SYS_GET_CHAR );
+    GET( DEFAULT_INPUT, ITEM );
 
   end	GET;
 	----
@@ -562,19 +769,20 @@ is					-------
     function	WRITE_SYSTEM_CALL		( ID : INTEGER )		return INTEGER
     is		-----------------
     begin
-      ASM_OP_1'( OPCODE => LI, VAL => 1 );					-- LENGTH en -24
-      ASM_OP_2'( OPCODE => LVa, LVL => 1, OFS => -16 );				-- @CHAR sur parametre de PUT
-      ASM_OP_2'( OPCODE => Ld, LVL => 2, OFS => -8 );				-- ID
-      ASM_OP_0'( OPCODE => SYS_FILE_WRITE );
+      ASM_OP_1'( OPCODE => LI,  VAL => 1 );								-- push LENGTH en -24
+      ASM_OP_2'( OPCODE => LVa, LVL => 1, OFS => -16 );							-- push @CHAR (in param PUT level 1 offset -16)
+      ASM_OP_2'( OPCODE => Ld,  LVL => 2, OFS => -8 );							-- ID  (in param WRITE_SYSTEM_CALL level 2 offset -8)
+      ASM_OP_0'( OPCODE => SYS_FILE_WRITE );								-- (-8) FILE_ID ; (-16) @ITEM ; (-24) LENGTH
+      ASM_OP_2'( OPCODE => SD,  LVL => 2, OFS => -16 );							-- Retour du resultat syscall
 
     end	WRITE_SYSTEM_CALL;
 	-----------------
   begin
-    if  FILE.ID = -1  then
+    if  FILE.ID = -1  then										-- standard console output
       ASM_OP_2'( OPCODE => LB, LVL => 1, OFS => -16 );
       ASM_OP_0'( OPCODE => SYS_PUT_CHAR );
     else
-      ERR_CODE := WRITE_SYSTEM_CALL( FILE.ID );
+      ERR_CODE := WRITE_SYSTEM_CALL( FILE.ID );								-- general file
     end if;
 
   end	PUT;
@@ -595,7 +803,30 @@ is					-------
 			---
   procedure		GET		( FILE :in FILE_TYPE; ITEM :out STRING )
   is			---
-  begin null;
+
+    BYTES_READ	: INTEGER;
+
+		-----------------
+    function	READ_SYSTEM_CALL		( FILE_ID :INTEGER; LENGTH :POSITIVE )		return INTEGER
+    is		-----------------
+    begin
+      ASM_OP_2'( OPCODE => Ld, LVL => 2, OFS => -16 );			-- LENGTH
+      ASM_OP_2'( OPCODE => LIa, LVL => 1, OFS => -16 );			-- @CHARS : adresse des donnees de ITEM (2e param de GET)
+      ASM_OP_2'( OPCODE => Ld, LVL => 2, OFS => -8 );			-- FILE_ID
+      ASM_OP_0'( OPCODE => SYS_FILE_READ );
+      ASM_OP_2'( OPCODE => SD, LVL => 2, OFS => -24 );			-- Retour du BYTES_READ
+
+    end	READ_SYSTEM_CALL;
+	-----------------
+
+  begin
+    if  FILE.ID = -1  then
+      for  I  in  ITEM'FIRST .. ITEM'LAST  loop
+        GET( FILE, ITEM( I ) );
+      end loop;
+    else
+      BYTES_READ := READ_SYSTEM_CALL( FILE.ID, ITEM'LENGTH );
+    end if;
 
   end	GET;
 	----
@@ -603,7 +834,8 @@ is					-------
 			---
   procedure		GET		( ITEM :out STRING )
   is			---
-  begin null;
+  begin
+    GET( DEFAULT_INPUT, ITEM );
 
   end	GET;
 	----
@@ -618,10 +850,11 @@ is					-------
     function	WRITE_SYSTEM_CALL		( FILE_ID :INTEGER; LENGTH :POSITIVE )		return INTEGER
     is		-----------------
     begin
-      ASM_OP_2'( OPCODE => Ld, LVL => 2, OFS => -16 );				-- LENGTH en -16
-      ASM_OP_2'( OPCODE => LIa, LVL => 1, OFS => -16 );				-- @CHARS sur parametre ITEM de PUT
-      ASM_OP_2'( OPCODE => Ld, LVL => 2, OFS => -8 );				-- ID
+      ASM_OP_2'( OPCODE => Ld, LVL => 2, OFS => -16 );							-- LENGTH en -16
+      ASM_OP_2'( OPCODE => LIa, LVL => 1, OFS => -16 );							-- @CHARS sur parametre ITEM de PUT
+      ASM_OP_2'( OPCODE => Ld, LVL => 2, OFS => -8 );							-- ID
       ASM_OP_0'( OPCODE => SYS_FILE_WRITE );
+      ASM_OP_2'( OPCODE => SD, LVL => 2, OFS => -24 );							-- Retour du resultat syscall
 
     end	WRITE_SYSTEM_CALL;
 	-----------------
@@ -634,7 +867,7 @@ is					-------
     end if;
 
   end	PUT;
-	----
+	---
 
 			---
   procedure		PUT		( ITEM :in STRING )
@@ -651,18 +884,33 @@ is					-------
 					  LAST :out NATURAL
 					)
   is			--------
-  begin null;
+
+    CH	: CHARACTER;
+    POS	: NATURAL		:= ITEM'FIRST;
+
+  begin
+    LAST := ITEM'FIRST - 1;
+    loop
+      exit when  POS > ITEM'LAST;
+      exit when  FILE.AT_END_OF_FILE;
+      GET( FILE, CH );
+      exit when  FILE.AT_END_OF_FILE;
+      exit when  CH = ASCII.LF;
+      if  CH /= ASCII.CR  then
+        ITEM( POS ) := CH;
+        LAST := POS;
+        POS := POS + 1;
+      end if;
+    end loop;
 
   end	GET_LINE;
 	--------
 
 			--------
-  procedure		GET_LINE		( ITEM :out STRING;   LAST :out NATURAL )
+  procedure		GET_LINE		( ITEM :out STRING; LAST :out NATURAL )
   is			--------
   begin
-    ASM_OP_2'( OPCODE => LA, LVL => 1, OFS => -16 );		-- adresse de LAST
-    ASM_OP_2'( OPCODE => LA, LVL => 1, OFS => -8 );		-- adresse du descripteur de la chaine ITEM
-    ASM_OP_0'( OPCODE => SYS_GET_STR );
+    GET_LINE( DEFAULT_INPUT, ITEM, LAST );
 
   end	GET_LINE;
 	--------
@@ -700,7 +948,38 @@ is					-------
 					  WIDTH :in FIELD := 0
 					)
     is			---
-    begin null;
+
+      CHN	: STRING( 1 .. 40 );
+      LEN	: NATURAL		:= 0;
+      VAL	: NUM		:= 0;
+      NEG	: BOOLEAN		:= FALSE;
+      I	: NATURAL;
+
+    begin
+      GET_LINE( FILE, CHN, LEN );
+      -- Sauter les espaces de tete
+      I := 1;
+      while  I <= LEN  and then  CHN( I ) = ' '  loop
+        I := I + 1;
+      end loop;
+      -- Signe optionnel
+      if  I <= LEN  and then  CHN( I ) = '-'  then
+        NEG := TRUE;
+        I := I + 1;
+      elsif  I <= LEN  and then  CHN( I ) = '+'  then
+        I := I + 1;
+      end if;
+      -- Digits
+      while  I <= LEN  loop
+        exit when  CHN( I ) < '0'  or  CHN( I ) > '9';
+        VAL := 10 * VAL + NUM( CHARACTER'POS( CHN( I ) ) - CHARACTER'POS( '0' ) );
+        I := I + 1;
+      end loop;
+      if  NEG  then
+        ITEM := -VAL;
+      else
+        ITEM := VAL;
+      end if;
 
     end	GET;
 	----
@@ -730,7 +1009,79 @@ is					-------
 					  BASE  :in NUMBER_BASE	:= DEFAULT_BASE
 					)
     is			---
-    begin null;
+
+      VAL		: NUM			:= ITEM;
+      STR		: STRING( 1 .. 68 );
+      POS		: POSITIVE		:= STR'LAST;
+      IS_NEGATIVE	: BOOLEAN			:= ITEM < 0;
+      DIGIT	: INTEGER;
+      DLEN		: NATURAL;		-- longueur digits
+      TLEN		: NATURAL;		-- longueur totale formatee
+
+    begin
+      if  IS_NEGATIVE  then
+        VAL := -ITEM;
+      end if;
+
+      -- Conversion digit par digit dans la base demandee (droite a gauche dans STR)
+      loop
+        DIGIT := INTEGER( VAL mod NUM( BASE ) );
+        if  DIGIT < 10  then
+          STR( POS ) := CHARACTER'VAL( CHARACTER'POS( '0' ) + DIGIT );
+        else
+          STR( POS ) := CHARACTER'VAL( CHARACTER'POS( 'A' ) + DIGIT - 10 );
+        end if;
+        VAL := VAL / NUM( BASE );
+        exit when  VAL = 0;
+        POS := POS - 1;
+      end loop;
+
+      -- STR( POS .. STR'LAST ) contient les digits
+
+      -- Calcul de la longueur totale formatee
+      DLEN := STR'LAST - POS + 1;
+      TLEN := DLEN;
+      if  IS_NEGATIVE  then
+        TLEN := TLEN + 1;					-- pour le '-'
+      end if;
+      if  BASE /= 10  then
+        if  BASE >= 10  then
+          TLEN := TLEN + 4;				-- "NN#" + "#" = 2+1+1
+        else
+          TLEN := TLEN + 3;				-- "N#" + "#"  = 1+1+1
+        end if;
+      end if;
+
+      -- Padding a gauche avec des espaces
+      if  WIDTH > TLEN  then
+        for  I in 1 .. WIDTH - TLEN  loop
+          PUT( FILE, ' ' );
+        end loop;
+      end if;
+
+      -- Signe
+      if  IS_NEGATIVE  then
+        PUT( FILE, '-' );
+      end if;
+
+      -- Prefixe base
+      if  BASE /= 10  then
+        if  BASE >= 10  then
+          PUT( FILE, '1' );
+          PUT( FILE, CHARACTER'VAL( CHARACTER'POS( '0' ) + BASE - 10 ) );
+        else
+          PUT( FILE, CHARACTER'VAL( CHARACTER'POS( '0' ) + BASE ) );
+        end if;
+        PUT( FILE, '#' );
+      end if;
+
+      -- Digits
+      PUT( FILE, STR( POS .. STR'LAST ) );
+
+      -- Suffixe base
+      if  BASE /= 10  then
+        PUT( FILE, '#' );
+      end if;
 
     end	PUT;
 	----
@@ -741,38 +1092,8 @@ is					-------
 					  BASE  :in NUMBER_BASE	:= DEFAULT_BASE
 					)
     is			---
-
-      QUOTIENT, RESTE	: NUM;
-      STR			: STRING( 1 .. 68 );
-      INDEX		: POSITIVE		:= STR'LAST;
-      MIN_WIDTH		: POSITIVE;
-
     begin
-      null;
---    if BASE /= 10 then STR( STR'LAST ) := '#'; INDEX := INDEX - 1; end if;
-
---    loop
---      RESTE := ITEM mod NUM( BASE );
---      if RESTE < 10 then
---        STR( INDEX ) := CHARACTER'VAL( CHARACTER'POS( '0' ) + RESTE );
---      else 
---        STR( INDEX ) := CHARACTER'VAL( CHARACTER'POS( 'A' ) + RESTE - 10 );
---      end if;
---      QUOTIENT := ITEM / NUM( BASE );
---      exit when QUOTIENT = 0;
---      INDEX := INDEX - 1;
---    end loop;
-
---    if BASE /= 10 then
---      STR( INDEX ) := '#'; INDEX := INDEX - 1;
---      STR( INDEX ) := CHARACTER'VAL( CHARACTER'POS( '0' ) + BASE mod 10 ); INDEX := INDEX - 1;
---      if BASE >= 10 then STR( INDEX ) := '1'; INDEX := INDEX - 1; end if;
---    end if;
-
---    if ITEM < 0 then STR( INDEX ) := '-'; end if;
---    MIN_WIDTH := STR'LAST - INDEX - 1;
-
---    if WIDTH > MIN_WIDTH then null; end if;
+      PUT( DEFAULT_OUTPUT, ITEM, WIDTH, BASE );
 
     end	PUT;
 	----
@@ -1028,6 +1349,22 @@ is					-------
   end	ENUMERATION_IO;
 	--------------
 
+begin
+  STD_INPUT.NAME_LEN	:= 0;
+  STD_INPUT.MODE		:= IN_FILE;
+  STD_INPUT.PAGE_LENGTH	:= 72;
+  STD_INPUT.LINE_LENGTH	:= 256;
+  STD_INPUT.PAGE := 1;
+  STD_INPUT.LINE := 1;
+  STD_INPUT.COL  := 1;
 
- end	TEXT_IO;
+  STD_OUTPUT.NAME_LEN	:= 0;
+  STD_OUTPUT.MODE		:= OUT_FILE;
+  STD_OUTPUT.PAGE_LENGTH	:= 72;
+  STD_OUTPUT.LINE_LENGTH	:= 256;
+  STD_OUTPUT.PAGE := 1;
+  STD_OUTPUT.LINE := 1;
+  STD_OUTPUT.COL  := 1;
+
+end	TEXT_IO;
 	-------
