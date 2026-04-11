@@ -186,8 +186,22 @@ is
 			---------------
   procedure		CODE_FLOAT_DECL		( TYPE_DECL :TREE )
   is			---------------
+
+    TYPE_ID		: TREE		:= D( AS_SOURCE_NAME, TYPE_DECL );
+    TYPE_STR		:constant STRING	:= PRINT_NAME( D( LX_SYMREP, TYPE_ID ) );
+    FLOAT_SPEC	: TREE		:= D( SM_TYPE_SPEC, TYPE_ID );
   begin
-    null;
+    DI( CD_LEVEL,     FLOAT_SPEC, INTEGER( CODI.CUR_LEVEL ) );
+    DB( CD_COMPILED,  FLOAT_SPEC, TRUE );
+
+    PUT_LINE( TYPE_STR & " = '" & TYPE_STR & "'" );
+    PUT( "namespace " & TYPE_STR );
+    if  CODI.DEBUG  then  PUT( tab50 & "; " & TYPE_STR & " FLOAT TYPE INFO" ); end if;
+    NEW_LINE;
+    PUT_LINE( "CST SIZ, d," & INTEGER'IMAGE( DI( CD_IMPL_SIZE, FLOAT_SPEC ) ) );
+    PUT_LINE( "end namespace" );
+    if  CODI.DEBUG  then NEW_LINE; end if;
+
   end	CODE_FLOAT_DECL;
   	---------------
 

@@ -1,0 +1,193 @@
+include 'TEXT_IO.FINC'
+PRO	FT_L1					;---------- PRO FT
+ELB 1					;    BODY ELAB
+FIO = 'FIO'
+namespace FIO				;---------- GENERIC PACKAGE INSTANTIATION
+elab_spec:				;    SPEC ELAB
+
+VAR GFP_disp, q
+VAR DEFAULT_FORE_disp, d			; variable entiere
+	LI	2
+	Sd  1,	DEFAULT_FORE_disp
+
+VAR DEFAULT_AFT_disp, d			; variable entiere
+	LI	6
+	LI	1
+	SUB
+	Sd  1,	DEFAULT_AFT_disp
+
+VAR DEFAULT_EXP_disp, d			; variable entiere
+	LI	3
+	Sd  1,	DEFAULT_EXP_disp
+
+if defined GET_L67_
+PRO	GET_L67				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM ITEM_ofs				; out
+	PRM WIDTH_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 2, GFP_disp
+	Lq	 2, -WIDTH_ofs
+	Lq	 2, -ITEM_ofs
+	Lq	 2, -FILE_ofs
+	CALL	STANDARD.TEXT_IO.FLOAT_IO. ,GET_L67
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO GET
+end if
+if defined GET_L68_
+PRO	GET_L68				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM ITEM_ofs				; out
+	PRM WIDTH_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 2, GFP_disp
+	Lq	 2, -WIDTH_ofs
+	Lq	 2, -ITEM_ofs
+	CALL	STANDARD.TEXT_IO.FLOAT_IO. ,GET_L68
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO GET
+end if
+if defined PUT_L69_
+PRO	PUT_L69				;---------- PRO PUT
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM ITEM_ofs				; in
+	PRM FORE_ofs				; in
+	PRM AFT_ofs				; in
+	PRM EXP_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 2, GFP_disp
+	Lq	 2, -EXP_ofs
+	Lq	 2, -AFT_ofs
+	Lq	 2, -FORE_ofs
+	Lq	 2, -ITEM_ofs
+	Lq	 2, -FILE_ofs
+	CALL	STANDARD.TEXT_IO.FLOAT_IO. ,PUT_L69
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO PUT
+end if
+if defined PUT_L70_
+PRO	PUT_L70				;---------- PRO PUT
+PRMS					;    debut parametrage
+	PRM ITEM_ofs				; in
+	PRM FORE_ofs				; in
+	PRM AFT_ofs				; in
+	PRM EXP_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 2, GFP_disp
+	Lq	 2, -EXP_ofs
+	Lq	 2, -AFT_ofs
+	Lq	 2, -FORE_ofs
+	Lq	 2, -ITEM_ofs
+	CALL	STANDARD.TEXT_IO.FLOAT_IO. ,PUT_L70
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO PUT
+end if
+if defined GET_L71_
+PRO	GET_L71				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM FROM_ofs				; in
+	PRM ITEM_ofs				; out
+	PRM LAST_ofs				; out
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 2, GFP_disp
+	Lq	 2, -LAST_ofs
+	Lq	 2, -ITEM_ofs
+	Lq	 2, -FROM_ofs
+	CALL	STANDARD.TEXT_IO.FLOAT_IO. ,GET_L71
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO GET
+end if
+if defined PUT_L72_
+PRO	PUT_L72				;---------- PRO PUT
+PRMS					;    debut parametrage
+	PRM TO_ofs				; out
+	PRM ITEM_ofs				; in
+	PRM AFT_ofs				; in
+	PRM EXP_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 2, GFP_disp
+	Lq	 2, -EXP_ofs
+	Lq	 2, -AFT_ofs
+	Lq	 2, -ITEM_ofs
+	Lq	 2, -TO_ofs
+	CALL	STANDARD.TEXT_IO.FLOAT_IO. ,PUT_L72
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO PUT
+end if
+					;---------- end generic package instantiation FIO
+end namespace
+
+VAR X_disp, q				; variable flottante
+	LIF	3.14159
+	Sq  1,	X_disp
+
+VAR Y_disp, q				; variable flottante
+	LIF	3.14159
+	FNEG
+	Sq  1,	Y_disp
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+					; debut if
+	Lq 1,	X_disp
+	LIF	0.0
+	FCGT
+	BF	L9
+STR STR_L10, 'X= '				; constante string='X= '
+	LCA	STR_L10.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	Ld 1,	STANDARD.FT_L1.FIO.DEFAULT_EXP_disp
+	Ld 1,	STANDARD.FT_L1.FIO.DEFAULT_AFT_disp
+	Ld 1,	STANDARD.FT_L1.FIO.DEFAULT_FORE_disp
+	Lq 1,	X_disp
+	CALL	STANDARD.FT_L1.FIO. ,PUT_L70
+STR STR_L11, ' X est positif'			; constante string=' X est positif'
+	LCA	STR_L11.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	BRA	L8
+L9:
+L8:					; post if
+					; debut if
+	Lq 1,	Y_disp
+	LIF	0.0
+	FCLT
+	BF	L13
+STR STR_L14, 'Y= '				; constante string='Y= '
+	LCA	STR_L14.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	Ld 1,	STANDARD.FT_L1.FIO.DEFAULT_EXP_disp
+	Ld 1,	STANDARD.FT_L1.FIO.DEFAULT_AFT_disp
+	Ld 1,	STANDARD.FT_L1.FIO.DEFAULT_FORE_disp
+	Lq 1,	Y_disp
+	CALL	STANDARD.FT_L1.FIO. ,PUT_L70
+STR STR_L15, ' Y est negatif'			; constante string=' Y est negatif'
+	LCA	STR_L15.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	BRA	L12
+L13:
+L12:					; post if
+ret_lbl:
+	UNLINK 1
+	RTD
+excep:
+endPRO					;---------- end PRO FT

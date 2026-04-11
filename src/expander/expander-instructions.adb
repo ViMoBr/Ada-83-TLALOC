@@ -858,7 +858,7 @@ null;
         when DN_ACCESS =>
           PUT_LINE( tab & "Sa" );
 
-        when DN_ENUMERATION | DN_INTEGER =>
+        when DN_ENUMERATION | DN_INTEGER | DN_FLOAT =>
           PUT_LINE( tab & "S" & CODI.OPER_SIZ_CHAR( TYPE_SPEC ) );
 
 --        when DN_UNIVERSAL_INTEGER =>
@@ -919,6 +919,10 @@ null;
 	elsif  NAME_TYPE.TY = DN_INTEGER  then								-- OBJET ASSIGNE ENTIER
 	  EXPRESSIONS.CODE_EXP( SRC_EXP );
             CODI.STORE( DEFN );
+
+	elsif  NAME_TYPE.TY = DN_FLOAT  then								-- OBJET ASSIGNE FLOTTANT
+	  EXPRESSIONS.CODE_EXP( SRC_EXP );
+	  CODI.STORE( DEFN );
 
 	elsif  NAME_TYPE.TY = DN_RECORD  then								-- OBJET ASSIGNE RECORD
 	  CODI.LOAD_MEM( DEFN );									-- @DST (adresse du record destination)

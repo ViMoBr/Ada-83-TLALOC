@@ -845,7 +845,42 @@ put_line( "; adresse component id" );
       end if;
     when  'D' =>
       if  CHN_ATTR( 2 ) = 'E'  then null;			-- DELTA
-      else null;						-- DIGITS
+      else							-- DIGITS
+        declare
+          PREFIX_DEFN	: TREE	:= D( SM_DEFN, PREFIX_NAME );
+          TYPE_SPEC	: TREE	:= TREE_VOID;
+          ACCURACY	: TREE;
+        begin
+          -- Chercher le TYPE_SPEC du prefix, quel que soit le type de noeud
+          if  PREFIX_DEFN.TY = DN_TYPE_ID
+          or  PREFIX_DEFN.TY = DN_SUBTYPE_ID
+          then
+            TYPE_SPEC := D( SM_TYPE_SPEC, PREFIX_DEFN );
+          end if;
+
+          -- Traverser private/constrained vers le type reel
+          if  TYPE_SPEC /= TREE_VOID  then
+            if  TYPE_SPEC.TY = DN_L_PRIVATE  or  TYPE_SPEC.TY = DN_PRIVATE  then
+              TYPE_SPEC := D( SM_TYPE_SPEC, TYPE_SPEC );
+            end if;
+          end if;
+
+          -- Extraire SM_ACCURACY du DN_FLOAT
+          if  TYPE_SPEC /= TREE_VOID  and then  TYPE_SPEC.TY = DN_FLOAT  then
+            ACCURACY := D( SM_ACCURACY, TYPE_SPEC );
+            if  ACCURACY /= TREE_VOID  then
+              if  ACCURACY.PT = HI  then
+                PUT_LINE( tab & "LI" & tab & IMAGE( NATURAL( ACCURACY.ABSS ) ) );
+              else
+                PUT_LINE( tab & "LI" & tab & PRINT_NUM( ACCURACY ) );
+              end if;
+            else
+              PUT_LINE( tab & "LI" & tab & "6" );		-- defaut Ada 83 pour FLOAT
+            end if;
+          else
+            PUT_LINE( tab & "LI" & tab & "6" );		-- defaut Ada 83 pour FLOAT
+          end if;
+        end;
       end if;
     when  'E' =>
       if  CHN_ATTR( 2 ) = 'M'  then null;			-- EMAX
@@ -921,37 +956,65 @@ put_line( "; adresse component id" );
         OP_STR		:constant STRING	:= PRINT_NAME( D( LX_SYMREP, DEFN ) );
         PRM_S		: SEQ_TYPE	:= LIST( PARAMS );
         PRM_1, PRM_2	: TREE;
+        RES_TYPE		: TREE		:= D( SM_EXP_TYPE, FUNCTION_CALL );
+        IS_FLOAT		: BOOLEAN		:= RES_TYPE /= TREE_VOID
+					   and then RES_TYPE.TY = DN_FLOAT;
       begin
         POP( PRM_S, PRM_1 );
         CODE_EXP( PRM_1 );
         if IS_EMPTY( PRM_S ) then goto UNARY; end if;
         POP( PRM_S, PRM_2 );
         CODE_EXP( PRM_2 );
-        if OP_STR = """+""" then  PUT_LINE( ASCII.HT & "ADD" );
-        elsif OP_STR = """-""" then  PUT_LINE( ASCII.HT & "SUB" );
-        elsif OP_STR = """*""" then  PUT_LINE( ASCII.HT & "MUL" );
-        elsif OP_STR = """/""" then  PUT_LINE( ASCII.HT & "DIV" );
-        elsif OP_STR = """MOD""" then  PUT_LINE( ASCII.HT & "MODI" );
-        elsif OP_STR = """REM""" then  PUT_LINE( ASCII.HT & "REMI" );
-        elsif OP_STR = """=""" then  PUT_LINE( ASCII.HT & "CEQ" );
-        elsif OP_STR = """>""" then  PUT_LINE( ASCII.HT & "CGT" );
-        elsif OP_STR = """<""" then  PUT_LINE( ASCII.HT & "CLT" );
-        elsif OP_STR = """/=""" then  PUT_LINE( ASCII.HT & "CNE" );
-        elsif OP_STR = """>=""" then  PUT_LINE( ASCII.HT & "CGE" );
-        elsif OP_STR = """<=""" then  PUT_LINE( ASCII.HT & "CLE" );
+
+        -- Pour les comparaisons le type resultat est BOOLEAN,
+        -- il faut tester le type du premier operande
+        if  not IS_FLOAT  then
+          declare
+            PRM_TYPE	: TREE	:= D( SM_EXP_TYPE, PRM_1 );
+          begin
+            IS_FLOAT := PRM_TYPE /= TREE_VOID and then PRM_TYPE.TY = DN_FLOAT;
+          end;
+        end if;
+
+        if    OP_STR = """+"""   then
+	if IS_FLOAT then PUT_LINE( tab & "FADD" ); else PUT_LINE( tab & "ADD" ); end if;
+        elsif OP_STR = """-"""   then
+	if IS_FLOAT then PUT_LINE( tab & "FSUB" ); else PUT_LINE( tab & "SUB" ); end if;
+        elsif OP_STR = """*"""   then
+	if IS_FLOAT then PUT_LINE( tab & "FMUL" ); else PUT_LINE( tab & "MUL" ); end if;
+        elsif OP_STR = """/"""   then
+	if IS_FLOAT then PUT_LINE( tab & "FDIV" ); else PUT_LINE( tab & "DIV" ); end if;
+        elsif OP_STR = """MOD""" then  PUT_LINE( tab & "MODI" );
+        elsif OP_STR = """REM""" then  PUT_LINE( tab & "REMI" );
+        elsif OP_STR = """="""   then
+	if IS_FLOAT then PUT_LINE( tab & "FCEQ" ); else PUT_LINE( tab & "CEQ" ); end if;
+        elsif OP_STR = """>"""   then
+	if IS_FLOAT then PUT_LINE( tab & "FCGT" ); else PUT_LINE( tab & "CGT" ); end if;
+        elsif OP_STR = """<"""   then
+	if IS_FLOAT then PUT_LINE( tab & "FCLT" ); else PUT_LINE( tab & "CLT" ); end if;
+        elsif OP_STR = """/="""  then
+	if IS_FLOAT then PUT_LINE( tab & "FCNE" ); else PUT_LINE( tab & "CNE" ); end if;
+        elsif OP_STR = """>=""" then
+	if IS_FLOAT then PUT_LINE( tab & "FCGE" ); else PUT_LINE( tab & "CGE" ); end if;
+        elsif OP_STR = """<=""" then
+	if IS_FLOAT then PUT_LINE( tab & "FCLE" ); else PUT_LINE( tab & "CLE" ); end if;
         elsif OP_STR = """**""" then
-	if  PRM_1.TY = DN_NUMERIC_LITERAL and then DI( SM_VALUE, PRM_1 ) = 2  then
+	if  IS_FLOAT  then
+	  PUT_LINE( tab & "FEXP" );
+	elsif  PRM_1.TY = DN_NUMERIC_LITERAL and then DI( SM_VALUE, PRM_1 ) = 2  then
 	  PUT_LINE( tab & "DEC" );
 	  PUT_LINE( tab & "SHL" );
 	else
-	  PUT_LINE( "; CODE_DN_BLTN_OPERATOR_ID : EXPONENTIATION DE BASE /= 2 A FAIRE" );
+	  PUT_LINE( "; CODE_DN_BLTN_OPERATOR_ID : EXP ENTIERE GENERALE A FAIRE" );
 	end if;
         end if;
         return;
 <<UNARY>>
-        if OP_STR = """-""" then PUT_LINE( tab & "NEG" ); end if;
+        if OP_STR = """-""" then
+          if IS_FLOAT then PUT_LINE( tab & "FNEG" ); else PUT_LINE( tab & "NEG" ); end if;
+        end if;
         if OP_STR = """ABS""" then
-	PUT_LINE( tab & "ABS" );
+          if IS_FLOAT then PUT_LINE( tab & "FABS" ); else PUT_LINE( tab & "ABS" ); end if;
         end if;
         if OP_STR = """NOT""" then
 	PUT_LINE( tab & "LI" & tab & "1" );
@@ -1105,6 +1168,10 @@ put_line( "; adresse component id" );
       else
         PUT_LINE( tab & "LI" & tab & PRINT_NUM( VAL ) );
       end if;
+      -- Si la cible est flottante, convertir l'entier statique en double
+      if  TARGET_TYPE /= TREE_VOID  and then  TARGET_TYPE.TY = DN_FLOAT  then
+        PUT_LINE( tab & "CVTIF" );
+      end if;
 
     else
       -- Conversion dynamique : generer le code de l'expression source.
@@ -1115,10 +1182,26 @@ put_line( "; adresse component id" );
       if  TARGET_TYPE /= TREE_VOID  and then  TARGET_TYPE.TY in CLASS_TYPE_SPEC  then
         case  TARGET_TYPE.TY  is
         when DN_INTEGER | DN_ENUMERATION =>
-          null;								-- no-op : meme representation
+          -- Verifier si la source est flottante (conversion float -> entier)
+          declare
+            SRC_TYPE	: TREE	:= D( SM_EXP_TYPE, SRC_EXP );
+          begin
+            if  SRC_TYPE /= TREE_VOID  and then  SRC_TYPE.TY = DN_FLOAT  then
+              PUT_LINE( tab & "CVTFI" );				-- conversion double IEEE 754 -> entier (troncature)
+            end if;
+            -- entier->entier, enum->entier : no-op, meme representation
+          end;
 
-        when DN_FLOAT | DN_FIXED =>
-          PUT_LINE( "; CODE_CONVERSION : FLOAT/FIXED TARGET A FAIRE" );
+        when DN_FLOAT =>
+          -- Si la source n'est pas deja flottante, convertir entier -> float
+          declare
+            SRC_TYPE	: TREE	:= D( SM_EXP_TYPE, SRC_EXP );
+          begin
+            if  SRC_TYPE = TREE_VOID  or else  SRC_TYPE.TY /= DN_FLOAT  then
+              PUT_LINE( tab & "CVTIF" );				-- conversion entier signe 64 -> double IEEE 754
+            end if;
+            -- float->float : no-op, meme representation IEEE 754 double
+          end;
 
         when others =>
           null;

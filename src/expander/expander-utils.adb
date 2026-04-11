@@ -126,6 +126,7 @@ is					-----
     when DN_ACCESS			=> return ADDR_SIZE;
     when DN_ARRAY			=> return 2 * ADDR_SIZE;
     when DN_ENUMERATION | DN_INTEGER	=> return INTG_SIZE;
+    when DN_FLOAT			=> return ADDR_SIZE;			-- 8 octets = 64 bits IEEE 754 double
     when DN_L_PRIVATE		=> return TYPE_SIZE( D( SM_TYPE_SPEC, TYPE_SPEC ) );
     when others =>
       PUT_LINE( "CODAGE_INTERMEDIAIRE.TYPE_SIZE : TYPE_SPEC.TY ILLICITE " & NODE_NAME'IMAGE( TYPE_SPEC.TY ) );
@@ -262,6 +263,9 @@ is					-----
     SIZ		: NATURAL		:= DI( CD_IMPL_SIZE, DEFN );
 
   begin
+    -- Les flottants sont toujours en double IEEE 754 = 64 bits = qword
+    if  DEFN.TY = DN_FLOAT  then return 'q'; end if;
+
     if     SIZ <= 8		then return 'b';
     elsif  SIZ <= 16	then return 'w';
     elsif  SIZ <= 32	then return 'd';
@@ -277,9 +281,13 @@ is					-----
   function		  EXP_TYPE_CHAR		( EXP :TREE )	return CHARACTER
   is			--=============--
 
-    SIZ		: NATURAL		:= DI( CD_IMPL_SIZE, D( SM_EXP_TYPE, EXP ) );
+    EXP_TYPE	: TREE		:= D( SM_EXP_TYPE, EXP );
+    SIZ		: NATURAL		:= DI( CD_IMPL_SIZE, EXP_TYPE );
 
   begin
+    -- Les flottants sont toujours en double IEEE 754 = 64 bits = qword
+    if  EXP_TYPE.TY = DN_FLOAT  then return 'q'; end if;
+
     if     SIZ <= 8		then return 'b';
     elsif  SIZ <= 16	then return 'w';
     elsif  SIZ <= 32	then return 'd';

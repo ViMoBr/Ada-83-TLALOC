@@ -714,65 +714,74 @@ end macro
 ;-----------------------------------------------------------------------------------------------------------------------
 
 ;  Convention : les flottants IEEE 754 double 64 bits transitent par la pile entiere (qword)
-;  Les macros flottantes utilisent movsd (F2 0F 10/11) pour les transferts pile <-> xmm.
-;  movsd est toujours 64 bits, sans ambiguite movd/movq.
+;  Les macros flottantes depilent les operandes dans RAX/RBX, les transferent dans xmm0/xmm1,
+;  effectuent l'operation SSE2, et rempilent le resultat via RAX.
 ;  Sur ARM : vadd.f64 / vsub.f64 / vmul.f64 / vdiv.f64   Sur RISC-V : fadd.d / fsub.d / fmul.d / fdiv.d
 
 ;			-----
 macro			FADD?
 ;			-----
-  db 0xF2, 0x0F, 0x10, 0x4D, 0x00					; movsd xmm1, [rbp]		(B = TOS dans xmm1)
-  DROP									; descendre pile (consommer B)
-  db 0xF2, 0x0F, 0x10, 0x45, 0x00					; movsd xmm0, [rbp]		(A = nouveau TOS dans xmm0)
+  POP_RAX								; depiler B (second operande)
+  db 0x66, 0x48, 0x0F, 0x6E, 0xC8					; movq xmm1, rax		(B dans xmm1)
+  db 0x48, 0x8B, 0x45, 0x00						; mov rax, [rbp]		(A = premier operande, reste en place)
+  db 0x66, 0x48, 0x0F, 0x6E, 0xC0					; movq xmm0, rax		(A dans xmm0)
   db 0xF2, 0x0F, 0x58, 0xC1						; addsd xmm0, xmm1		(xmm0 = A + B)
-  db 0xF2, 0x0F, 0x11, 0x45, 0x00					; movsd [rbp], xmm0		(ecraser A par le resultat)
+  db 0x66, 0x48, 0x0F, 0x7E, 0xC0					; movq rax, xmm0		(resultat dans rax)
+  db 0x48, 0x89, 0x45, 0x00						; mov [rbp], rax		(ecraser A par le resultat)
 end macro
 ;			-----
 macro			FSUB?
 ;			-----
-  db 0xF2, 0x0F, 0x10, 0x4D, 0x00					; movsd xmm1, [rbp]		(B = TOS)
-  DROP
-  db 0xF2, 0x0F, 0x10, 0x45, 0x00					; movsd xmm0, [rbp]		(A)
+  POP_RAX								; depiler B (second operande)
+  db 0x66, 0x48, 0x0F, 0x6E, 0xC8					; movq xmm1, rax		(B dans xmm1)
+  db 0x48, 0x8B, 0x45, 0x00						; mov rax, [rbp]		(A)
+  db 0x66, 0x48, 0x0F, 0x6E, 0xC0					; movq xmm0, rax		(A dans xmm0)
   db 0xF2, 0x0F, 0x5C, 0xC1						; subsd xmm0, xmm1		(xmm0 = A - B)
-  db 0xF2, 0x0F, 0x11, 0x45, 0x00					; movsd [rbp], xmm0
+  db 0x66, 0x48, 0x0F, 0x7E, 0xC0					; movq rax, xmm0
+  db 0x48, 0x89, 0x45, 0x00						; mov [rbp], rax
 end macro
 ;			-----
 macro			FMUL?
 ;			-----
-  db 0xF2, 0x0F, 0x10, 0x4D, 0x00					; movsd xmm1, [rbp]		(B = TOS)
-  DROP
-  db 0xF2, 0x0F, 0x10, 0x45, 0x00					; movsd xmm0, [rbp]		(A)
+  POP_RAX								; depiler B
+  db 0x66, 0x48, 0x0F, 0x6E, 0xC8					; movq xmm1, rax		(B dans xmm1)
+  db 0x48, 0x8B, 0x45, 0x00						; mov rax, [rbp]		(A)
+  db 0x66, 0x48, 0x0F, 0x6E, 0xC0					; movq xmm0, rax		(A dans xmm0)
   db 0xF2, 0x0F, 0x59, 0xC1						; mulsd xmm0, xmm1		(xmm0 = A * B)
-  db 0xF2, 0x0F, 0x11, 0x45, 0x00					; movsd [rbp], xmm0
+  db 0x66, 0x48, 0x0F, 0x7E, 0xC0					; movq rax, xmm0
+  db 0x48, 0x89, 0x45, 0x00						; mov [rbp], rax
 end macro
 ;			-----
 macro			FDIV?
 ;			-----
-  db 0xF2, 0x0F, 0x10, 0x4D, 0x00					; movsd xmm1, [rbp]		(B = TOS = diviseur)
-  DROP
-  db 0xF2, 0x0F, 0x10, 0x45, 0x00					; movsd xmm0, [rbp]		(A = dividende)
+  POP_RAX								; depiler B (diviseur)
+  db 0x66, 0x48, 0x0F, 0x6E, 0xC8					; movq xmm1, rax		(B dans xmm1)
+  db 0x48, 0x8B, 0x45, 0x00						; mov rax, [rbp]		(A = dividende)
+  db 0x66, 0x48, 0x0F, 0x6E, 0xC0					; movq xmm0, rax		(A dans xmm0)
   db 0xF2, 0x0F, 0x5E, 0xC1						; divsd xmm0, xmm1		(xmm0 = A / B)
-  db 0xF2, 0x0F, 0x11, 0x45, 0x00					; movsd [rbp], xmm0
+  db 0x66, 0x48, 0x0F, 0x7E, 0xC0					; movq rax, xmm0
+  db 0x48, 0x89, 0x45, 0x00						; mov [rbp], rax
 end macro
 ;			-----
-macro			FNEG?						; negation flottante : complement du bit de signe IEEE 754 (bit 63)
+macro			FNEG?					; negation flottante : complement du bit de signe IEEE 754 (bit 63)
 ;			-----
-  db 0x80, 0x75, 0x07, 0x80						; xor byte ptr [rbp+7], 0x80	(complementer bit 7 de l'octet haut = bit 63 du qword = signe IEEE 754)
+  db 0x48, 0x0F, 0xBA, 0x7D, 0x00, 0x3F					; btc qword ptr [rbp], 63	(complement bit 63 = signe)
 end macro
 ;			-----
-macro			FABS?						; valeur absolue flottante : mise a zero du bit de signe IEEE 754 (bit 63)
+macro			FABS?					; valeur absolue flottante : mise a zero du bit de signe IEEE 754 (bit 63)
 ;			-----
-  db 0x80, 0x65, 0x07, 0x7F						; and byte ptr [rbp+7], 0x7F	(effacer bit 7 de l'octet haut = bit 63 du qword = signe IEEE 754)
+  db 0x48, 0x0F, 0xBA, 0x75, 0x00, 0x3F					; btr qword ptr [rbp], 63	(clear bit 63 = signe)
 end macro
 
 ;			-----
-macro			FEXP?						; exponentiation flottante A ** B  (B entier positif sur la pile)
+macro			FEXP?					; exponentiation flottante A ** B  (B entier positif sur la pile)
 ;			-----
   POP_RCX								; depiler N (exposant entier)
-  db 0xF2, 0x0F, 0x10, 0x45, 0x00					; movsd xmm0, [rbp]		(xmm0 = base)
-									; charger 1.0 dans xmm1 (accumulateur)
+  db 0x48, 0x8B, 0x45, 0x00						; mov rax, [rbp]		(A = base flottante)
+  db 0x66, 0x48, 0x0F, 0x6E, 0xC0					; movq xmm0, rax		(xmm0 = base)
+								; charger 1.0 dans xmm1 (accumulateur)
   db 0x48, 0xB8							; movabs rax, imm64
-  dq 1.0								; 1.0 en IEEE 754
+  dq double 1.0							; 1.0 en IEEE 754
   db 0x66, 0x48, 0x0F, 0x6E, 0xC8					; movq xmm1, rax		(xmm1 = 1.0 accumulateur)
   db 0x48, 0x85, 0xC9						; test rcx, rcx		(N = 0 ?)
   db 0x74, 0x09							; jz done			(si N=0, resultat = 1.0, sauter 9 octets)
@@ -781,7 +790,8 @@ macro			FEXP?						; exponentiation flottante A ** B  (B entier positif sur la p
   db 0x48, 0xFF, 0xC9						; dec rcx
   db 0x75, 0xF7							; jnz loop_exp		(boucler N fois)
 ; done:
-  db 0xF2, 0x0F, 0x11, 0x4D, 0x00					; movsd [rbp], xmm1		(ecraser TOS par le resultat)
+  db 0x66, 0x48, 0x0F, 0x7E, 0xC8					; movq rax, xmm1		(resultat)
+  db 0x48, 0x89, 0x45, 0x00						; mov [rbp], rax		(ecraser TOS)
 end macro
 
 
@@ -790,17 +800,19 @@ end macro
 ;-----------------------------------------------------------------------------------------------------------------------
 
 ;			------
-macro			CVTIF?						; Conversion entier signe 64 bits -> double IEEE 754
+macro			CVTIF?					; Conversion entier signe 64 bits -> double IEEE 754
 ;			------
   db 0x48, 0x8B, 0x45, 0x00						; mov rax, [rbp]		(entier signe depuis la pile)
-  db 0xF2, 0x48, 0x0F, 0x2A, 0xC0					; cvtsi2sd xmm0, rax		(convertir entier -> double)
-  db 0xF2, 0x0F, 0x11, 0x45, 0x00					; movsd [rbp], xmm0		(ecraser l'entier par le double)
+  db 0xF2, 0x48, 0x0F, 0x2A, 0xC0					; cvtsi2sd xmm0, rax	(convertir entier -> double)
+  db 0x66, 0x48, 0x0F, 0x7E, 0xC0					; movq rax, xmm0		(double dans rax)
+  db 0x48, 0x89, 0x45, 0x00						; mov [rbp], rax		(ecraser l'entier par le double)
 end macro
 ;			------
-macro			CVTFI?						; Conversion double IEEE 754 -> entier signe 64 bits (troncature vers zero)
+macro			CVTFI?					; Conversion double IEEE 754 -> entier signe 64 bits (troncature vers zero)
 ;			------
-  db 0xF2, 0x0F, 0x10, 0x45, 0x00					; movsd xmm0, [rbp]		(double depuis la pile dans xmm0)
-  db 0xF2, 0x48, 0x0F, 0x2C, 0xC0					; cvttsd2si rax, xmm0		(convertir double -> entier avec troncature)
+  db 0x48, 0x8B, 0x45, 0x00						; mov rax, [rbp]		(double depuis la pile)
+  db 0x66, 0x48, 0x0F, 0x6E, 0xC0					; movq xmm0, rax		(dans xmm0)
+  db 0xF2, 0x48, 0x0F, 0x2C, 0xC0					; cvttsd2si rax, xmm0	(convertir double -> entier avec troncature)
   db 0x48, 0x89, 0x45, 0x00						; mov [rbp], rax		(ecraser le double par l'entier)
 end macro
 
@@ -865,62 +877,62 @@ end macro
 ;  Sur ARM : vcmp.f64 + vmrs APSR   Sur RISC-V : feq.d / flt.d / fle.d
 
 ;			-----
-macro			FCEQ?						; A = B  flottant
+macro			FCEQ?					; A = B  flottant
 ;			-----
-  db 0xF2, 0x0F, 0x10, 0x4D, 0x00					; movsd xmm1, [rbp]		(B = TOS)
-  DROP
-  db 0xF2, 0x0F, 0x10, 0x45, 0x00					; movsd xmm0, [rbp]		(A)
+  POP_RAX								; depiler B
+  db 0x66, 0x48, 0x0F, 0x6E, 0xC8					; movq xmm1, rax		(B dans xmm1)
+  db 0x66, 0x48, 0x0F, 0x6E, 0x45, 0x00					; movq xmm0, [rbp]		(A dans xmm0)
   db 0x66, 0x0F, 0x2E, 0xC1						; ucomisd xmm0, xmm1
-  db 0x0F, 0x94, 0x45, 0x00						; sete [rbp]			(ZF=1 si egal)
-  db 0x0F, 0x9B, 0xC0						; setnp al			(PF=0 si pas NaN)
+  db 0x0F, 0x94, 0x45, 0x00						; sete [rbp]		(ZF=1 si egal, byte result)
+  db 0x0F, 0x9B, 0xC0						; setnp al		(PF=0 si pas NaN)
   db 0x20, 0x45, 0x00						; and [rbp], al		(result = equal ET pas NaN)
 end macro
 ;			-----
-macro			FCNE?						; A /= B  flottant
+macro			FCNE?					; A /= B  flottant
 ;			-----
-  db 0xF2, 0x0F, 0x10, 0x4D, 0x00					; movsd xmm1, [rbp]		(B = TOS)
-  DROP
-  db 0xF2, 0x0F, 0x10, 0x45, 0x00					; movsd xmm0, [rbp]		(A)
+  POP_RAX								; depiler B
+  db 0x66, 0x48, 0x0F, 0x6E, 0xC8					; movq xmm1, rax		(B dans xmm1)
+  db 0x66, 0x48, 0x0F, 0x6E, 0x45, 0x00					; movq xmm0, [rbp]		(A dans xmm0)
   db 0x66, 0x0F, 0x2E, 0xC1						; ucomisd xmm0, xmm1
-  db 0x0F, 0x95, 0x45, 0x00						; setne [rbp]			(ZF=0 si different)
-  db 0x0F, 0x9A, 0xC0						; setp al			(PF=1 si NaN)
-  db 0x08, 0x45, 0x00						; or [rbp], al			(result = different OU NaN)
+  db 0x0F, 0x95, 0x45, 0x00						; setne [rbp]		(ZF=0 si different)
+  db 0x0F, 0x9A, 0xC0						; setp al			(PF=1 si NaN => NaN/=x est True)
+  db 0x08, 0x45, 0x00						; or [rbp], al		(result = different OU NaN)
 end macro
 ;			-----
-macro			FCGT?						; A > B  flottant
+macro			FCGT?					; A > B  flottant
 ;			-----
-  db 0xF2, 0x0F, 0x10, 0x4D, 0x00					; movsd xmm1, [rbp]		(B = TOS)
-  DROP
-  db 0xF2, 0x0F, 0x10, 0x45, 0x00					; movsd xmm0, [rbp]		(A)
+  POP_RAX								; depiler B
+  db 0x66, 0x48, 0x0F, 0x6E, 0xC8					; movq xmm1, rax		(B dans xmm1)
+  db 0x66, 0x48, 0x0F, 0x6E, 0x45, 0x00					; movq xmm0, [rbp]		(A dans xmm0)
   db 0x66, 0x0F, 0x2E, 0xC1						; ucomisd xmm0, xmm1
-  db 0x0F, 0x97, 0x45, 0x00						; seta [rbp]			(A above B)
+  db 0x0F, 0x97, 0x45, 0x00						; seta [rbp]		(CF=0 et ZF=0 : above = strictement superieur)
 end macro
 ;			-----
-macro			FCGE?						; A >= B  flottant
+macro			FCGE?					; A >= B  flottant
 ;			-----
-  db 0xF2, 0x0F, 0x10, 0x4D, 0x00					; movsd xmm1, [rbp]		(B = TOS)
-  DROP
-  db 0xF2, 0x0F, 0x10, 0x45, 0x00					; movsd xmm0, [rbp]		(A)
+  POP_RAX								; depiler B
+  db 0x66, 0x48, 0x0F, 0x6E, 0xC8					; movq xmm1, rax		(B dans xmm1)
+  db 0x66, 0x48, 0x0F, 0x6E, 0x45, 0x00					; movq xmm0, [rbp]		(A dans xmm0)
   db 0x66, 0x0F, 0x2E, 0xC1						; ucomisd xmm0, xmm1
-  db 0x0F, 0x93, 0x45, 0x00						; setae [rbp]			(A above or equal B)
+  db 0x0F, 0x93, 0x45, 0x00						; setae [rbp]		(CF=0 : above or equal)
 end macro
 ;			-----
-macro			FCLT?						; A < B  flottant
+macro			FCLT?					; A < B  flottant
 ;			-----
-  db 0xF2, 0x0F, 0x10, 0x4D, 0x00					; movsd xmm1, [rbp]		(B = TOS)
-  DROP
-  db 0xF2, 0x0F, 0x10, 0x45, 0x00					; movsd xmm0, [rbp]		(A)
-  db 0x66, 0x0F, 0x2E, 0xC8						; ucomisd xmm1, xmm0		(INVERSER : B vs A)
-  db 0x0F, 0x97, 0x45, 0x00						; seta [rbp]			(B above A = A below B)
+  POP_RAX								; depiler B
+  db 0x66, 0x48, 0x0F, 0x6E, 0xC8					; movq xmm1, rax		(B dans xmm1)
+  db 0x66, 0x48, 0x0F, 0x6E, 0x45, 0x00					; movq xmm0, [rbp]		(A dans xmm0)
+  db 0x66, 0x0F, 0x2E, 0xC8						; ucomisd xmm1, xmm0	(INVERSER : comparer B vs A)
+  db 0x0F, 0x97, 0x45, 0x00						; seta [rbp]		(B above A = A below B)
 end macro
 ;			-----
-macro			FCLE?						; A <= B  flottant
+macro			FCLE?					; A <= B  flottant
 ;			-----
-  db 0xF2, 0x0F, 0x10, 0x4D, 0x00					; movsd xmm1, [rbp]		(B = TOS)
-  DROP
-  db 0xF2, 0x0F, 0x10, 0x45, 0x00					; movsd xmm0, [rbp]		(A)
-  db 0x66, 0x0F, 0x2E, 0xC8						; ucomisd xmm1, xmm0		(INVERSER : B vs A)
-  db 0x0F, 0x93, 0x45, 0x00						; setae [rbp]			(B above or equal A = A below or equal B)
+  POP_RAX								; depiler B
+  db 0x66, 0x48, 0x0F, 0x6E, 0xC8					; movq xmm1, rax		(B dans xmm1)
+  db 0x66, 0x48, 0x0F, 0x6E, 0x45, 0x00					; movq xmm0, [rbp]		(A dans xmm0)
+  db 0x66, 0x0F, 0x2E, 0xC8						; ucomisd xmm1, xmm0	(INVERSER : comparer B vs A)
+  db 0x0F, 0x93, 0x45, 0x00						; setae [rbp]		(B above or equal A = A below or equal B)
 end macro
 
 

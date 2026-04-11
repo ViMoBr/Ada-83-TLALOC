@@ -1136,73 +1136,7 @@ is					-------
 					  WIDTH :in FIELD		:= 0
 					)
     is			---
-
-      CHN	: STRING( 1 .. 80 );
-      LEN	: NATURAL		:= 0;
-      VAL	: NUM		:= 0.0;
-      FRAC	: NUM		:= 0.1;
-      NEG	: BOOLEAN		:= FALSE;
-      I	: NATURAL;
-      IN_FRAC	: BOOLEAN		:= FALSE;
-      IN_EXP	: BOOLEAN		:= FALSE;
-      EXP_VAL	: INTEGER		:= 0;
-      EXP_NEG	: BOOLEAN		:= FALSE;
-
-    begin
-      GET_LINE( FILE, CHN, LEN );
-      I := 1;
-      -- Sauter les espaces de tete
-      while  I <= LEN  and then  CHN( I ) = ' '  loop
-        I := I + 1;
-      end loop;
-      -- Signe optionnel
-      if  I <= LEN  and then  CHN( I ) = '-'  then
-        NEG := TRUE;
-        I := I + 1;
-      elsif  I <= LEN  and then  CHN( I ) = '+'  then
-        I := I + 1;
-      end if;
-      -- Partie entiere et fractionnaire
-      while  I <= LEN  loop
-        if  CHN( I ) = '.'  then
-          IN_FRAC := TRUE;
-        elsif  CHN( I ) = 'E'  or  CHN( I ) = 'e'  then
-          IN_EXP := TRUE;
-          I := I + 1;
-          if  I <= LEN  and then  CHN( I ) = '-'  then
-            EXP_NEG := TRUE;
-            I := I + 1;
-          elsif  I <= LEN  and then  CHN( I ) = '+'  then
-            I := I + 1;
-          end if;
-          while  I <= LEN  and then  CHN( I ) >= '0'  and then  CHN( I ) <= '9'  loop
-            EXP_VAL := 10 * EXP_VAL + CHARACTER'POS( CHN( I ) ) - CHARACTER'POS( '0' );
-            I := I + 1;
-          end loop;
-          exit;
-        elsif  CHN( I ) >= '0'  and then  CHN( I ) <= '9'  then
-          if  IN_FRAC  then
-            VAL := VAL + FRAC * NUM( CHARACTER'POS( CHN( I ) ) - CHARACTER'POS( '0' ) );
-            FRAC := FRAC / 10.0;
-          else
-            VAL := 10.0 * VAL + NUM( CHARACTER'POS( CHN( I ) ) - CHARACTER'POS( '0' ) );
-          end if;
-        else
-          exit;
-        end if;
-        I := I + 1;
-      end loop;
-      -- Appliquer exposant
-      if  EXP_NEG  then
-        for  J in 1 .. EXP_VAL  loop  VAL := VAL / 10.0;  end loop;
-      else
-        for  J in 1 .. EXP_VAL  loop  VAL := VAL * 10.0;  end loop;
-      end if;
-      if  NEG  then
-        ITEM := -VAL;
-      else
-        ITEM := VAL;
-      end if;
+    begin null;
 
     end	GET;
 	----
@@ -1210,8 +1144,7 @@ is					-------
 			---
     procedure		GET		( ITEM  :out NUM; WIDTH :in FIELD := 0)
     is			---
-    begin
-      GET( DEFAULT_INPUT, ITEM, WIDTH );
+    begin null;
 
     end	GET;
 	----
@@ -1224,90 +1157,7 @@ is					-------
 					  EXP  :in FIELD		:= DEFAULT_EXP
 					)
     is			---
-
-      VAL		: NUM		:= ITEM;
-      IS_NEGATIVE	: BOOLEAN		:= ITEM < 0.0;
-      E		: INTEGER		:= 0;
-      DIGIT	: INTEGER;
-      FORE_LEN	: NATURAL;
-
-    begin
-      -- Traiter le signe
-      if  IS_NEGATIVE  then
-        VAL := -ITEM;
-      end if;
-
-      -- Calculer l'exposant : normaliser 1.0 <= VAL < 10.0
-      if  VAL /= 0.0  then
-        while  VAL >= 10.0  loop
-          VAL := VAL / 10.0;
-          E := E + 1;
-        end loop;
-        while  VAL < 1.0  loop
-          VAL := VAL * 10.0;
-          E := E - 1;
-        end loop;
-      end if;
-
-      -- Padding FORE : le champ FORE inclut le signe et le chiffre avant le point
-      -- Format : [-]d.dddE[+|-]dd
-      -- Nombre de caracteres avant le point : 1 chiffre (+ signe eventuel)
-      FORE_LEN := 1;
-      if  IS_NEGATIVE  then
-        FORE_LEN := 2;
-      end if;
-      if  FORE > FORE_LEN  then
-        for  I in 1 .. FORE - FORE_LEN  loop
-          PUT( FILE, ' ' );
-        end loop;
-      end if;
-
-      -- Signe
-      if  IS_NEGATIVE  then
-        PUT( FILE, '-' );
-      end if;
-
-      -- Chiffre avant le point decimal
-      DIGIT := INTEGER( VAL );
-      if  DIGIT > 9  then DIGIT := 9; end if;				-- securite arrondi
-      if  DIGIT < 0  then DIGIT := 0; end if;
-      PUT( FILE, CHARACTER'VAL( CHARACTER'POS( '0' ) + DIGIT ) );
-      VAL := ( VAL - NUM( DIGIT ) ) * 10.0;
-
-      -- Point decimal
-      PUT( FILE, '.' );
-
-      -- Chiffres apres le point
-      for  I in 1 .. AFT  loop
-        DIGIT := INTEGER( VAL );
-        if  DIGIT > 9  then DIGIT := 9; end if;
-        if  DIGIT < 0  then DIGIT := 0; end if;
-        PUT( FILE, CHARACTER'VAL( CHARACTER'POS( '0' ) + DIGIT ) );
-        VAL := ( VAL - NUM( DIGIT ) ) * 10.0;
-      end loop;
-
-      -- Partie exposant
-      if  EXP > 0  then
-        PUT( FILE, 'E' );
-        if  E < 0  then
-          PUT( FILE, '-' );
-          E := -E;
-        else
-          PUT( FILE, '+' );
-        end if;
-        -- Ecrire l'exposant avec EXP chiffres (padding zero a gauche)
-        declare
-          EXP_STR	: STRING( 1 .. EXP );
-          POS	: NATURAL	:= EXP;
-          EVAL	: INTEGER	:= E;
-        begin
-          for  I in reverse 1 .. EXP  loop
-            EXP_STR( I ) := CHARACTER'VAL( CHARACTER'POS( '0' ) + EVAL mod 10 );
-            EVAL := EVAL / 10;
-          end loop;
-          PUT( FILE, EXP_STR );
-        end;
-      end if;
+    begin null;
 
     end	PUT;
     ----
@@ -1319,8 +1169,7 @@ is					-------
 					  EXP  :in FIELD		:= DEFAULT_EXP
 					)
     is			---
-    begin
-      PUT( DEFAULT_OUTPUT, ITEM, FORE, AFT, EXP );
+    begin null;
 
     end	PUT;
 	----
