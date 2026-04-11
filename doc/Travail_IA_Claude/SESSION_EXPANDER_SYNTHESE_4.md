@@ -1,6 +1,6 @@
 # SESSION EXPANDER — Synthèse et point de départ
 
-**Date** : avril 2026 (mise à jour après sessions des 9, 10, 11 avril)
+**Date** : avril 2026 (mise à jour après sessions des 9, 10 et 11 avril)
 **Objectif** : compléter l'EXPANDER du compilateur TLALOC
 **Objectif élargi** : implémenter le chapitre 14 du LRM Ada 83 (I/O)
 
@@ -12,11 +12,6 @@
 - **Types scalaires** : entiers (DN_INTEGER), énumérations (DN_ENUMERATION),
   sous-types entiers et énumérations — génération complète avec namespace,
   SIZ, FST, LST.
-- **Types flottants (DN_FLOAT)** : CODE_FLOAT_DECL implémenté (namespace +
-  CST SIZ). OPER_SIZ_CHAR et EXP_TYPE_CHAR forcent 'q' (qword 64 bits)
-  pour tout DN_FLOAT, indépendamment de CD_IMPL_SIZE. TYPE_SIZE renvoie
-  ADDR_SIZE (8 octets). Convention : tous les flottants sont représentés
-  en IEEE 754 double 64 bits sur la pile entière.
 - **Constrained arrays** : traitement multi-dimensionnel récursif via
   PROCESS_CONSTRAINED_ARRAY_TYPE_SPEC, calcul de taille statique/dynamique,
   descripteurs avec USEINFO et offsets virtual.
@@ -24,7 +19,7 @@
   USEINFO pour les infos de type des champs. Initialisation par défaut
   des champs (COMPILE_RECORD_VAR). Affectation complète par BLKMOV.
 - **Variables** : déclaration VAR, initialisation, accès Ld/Sd avec
-  niveau lexical et déplacement. Variables flottantes via Lq/Sq.
+  niveau lexical et déplacement.
 - **Sous-programmes** : PRO/ELB/UNLINK/RTD/endPRO complet. Paramètres
   via PRMS/PRM/endPRMS. Convention : `in` scalaire par copie valeur,
   `out`/`in out` et composites par adresse (LVA). Pour les fonctions,
@@ -35,25 +30,17 @@
 - **Instructions** : if/then/else (BT/BF/BRA), boucles for/while/loop,
   case, exit, return, goto, assign, null_stm, procedure_call.
   Boucle while corrigée (BF, pas BRZ).
-  CODE_ASSIGN et STORE_VAL gèrent DN_FLOAT.
 - **Expressions** : numeric_literal, string_literal, used_object_id,
   used_char, used_op, short_circuit, parenthesized, conversion,
   qualified, function_call, indexed, selected, attribute, membership.
-  CODE_CONVERSION : CVTIF (entier→float) et CVTFI (float→entier,
-  troncature) dans les deux chemins (statique et dynamique).
-  CODE_DN_BLTN_OPERATOR_ID : dispatch float/entier via IS_FLOAT
-  (test SM_EXP_TYPE = DN_FLOAT sur FUNCTION_CALL ou PRM_1 pour les
-  comparaisons dont le résultat est BOOLEAN).
+  CODE_CONVERSION et CODE_QUALIFIED implémentés (no-op entier↔entier/enum).
   NOT booléen via LI 1 + OUX.
-- **Attributs** : 'FIRST, 'LAST, 'LENGTH fonctionnels.
-  'DIGITS implémenté (lecture SM_ACCURACY du DN_FLOAT, fallback à 6
-  pour les paramètres formels génériques).
 - **Paramètres composites** : distinction variable locale / paramètre
   dans CODE_INDEXED, CODE_FIRST_LAST et PROCESS_DESIGNATOR.
   Pattern paramètre array : `LVa lvl, -NAME_ofs` / `LIa , , 8` / `Ld , TYPE.FST`.
 - **Types privés** : DN_PRIVATE / DN_L_PRIVATE / DN_INCOMPLETE différés.
-- **Génériques** : instanciation de packages génériques (INTEGER_IO et
-  FLOAT_IO fonctionnels). Mécanisme GFP_disp pour les paramètres formels.
+- **Génériques** : instanciation de packages génériques (INTEGER_IO
+  fonctionnel). Mécanisme GFP_disp pour les paramètres formels.
 - **Packages** : namespace FASM, elab_spec, body.
 - **Stubs/subunits** : include du .FINC correspondant.
 - **With/use** : génération des `include 'X.FINC'`.
@@ -61,53 +48,7 @@
 - **Exceptions** : squelette présent mais handlers incomplets.
 
 
-## 2. Macros CODI_x86_64 — SSE2 flottant (session 11 avril)
-
-### Convention flottante LLIR
-
-Les flottants IEEE 754 double 64 bits transitent par la **pile entière**
-(qword) exactement comme les entiers. Les macros SSE2 chargent/déchargent
-depuis la pile vers les registres xmm0/xmm1 pour les opérations.
-Transferts pile↔xmm via `movsd` (F2 0F 10/11), toujours 64 bits.
-
-FLOAT (32 bits nominal dans STANDARD) et LONG_FLOAT (64 bits) sont tous
-deux stockés en double 64 bits — OPER_SIZ_CHAR force 'q' pour DN_FLOAT.
-
-### Macros ajoutées (15)
-
-| Macro | Rôle | Encodage x86-64 |
-|-------|------|-----------------|
-| LIF val | Load Immediate Float | movabs rax, dq val + PUSH_RAX |
-| FADD | Addition | movsd + addsd xmm0,xmm1 + movsd |
-| FSUB | Soustraction | movsd + subsd + movsd |
-| FMUL | Multiplication | movsd + mulsd + movsd |
-| FDIV | Division | movsd + divsd + movsd |
-| FNEG | Négation | xor byte [rbp+7], 0x80 |
-| FABS | Valeur absolue | and byte [rbp+7], 0x7F |
-| FEXP | Exponentiation A**N | boucle mulsd (N entier) |
-| CVTIF | Entier→double | cvtsi2sd xmm0,rax + movsd |
-| CVTFI | Double→entier | movsd + cvttsd2si (troncature) |
-| FCEQ | A = B | ucomisd + sete + setnp + and |
-| FCNE | A /= B | ucomisd + setne + setp + or |
-| FCGT | A > B | ucomisd xmm0,xmm1 + seta |
-| FCGE | A >= B | ucomisd xmm0,xmm1 + setae |
-| FCLT | A < B | ucomisd xmm1,xmm0 + seta |
-| FCLE | A <= B | ucomisd xmm1,xmm0 + setae |
-
-### Pièges encodage SSE2 rencontrés
-
-- `dq double val` : fasmg ne supporte pas `double`, utiliser `dq val`
-- `dq 0x8000000000000000` : fasmg tronque les constantes hex 64 bits,
-  écrire les octets en `db` little-endian
-- `movq xmm, [rbp]` : ambigu avec movd (32 bits) dans certains contextes,
-  **toujours utiliser `movsd`** (F2 0F 10/11) pour les transferts mémoire↔xmm
-- FCLT/FCLE : `ucomisd xmm1, xmm0` → ModRM = 0xC8 (pas 0xC9 qui
-  donnerait ucomisd xmm1, xmm1)
-- FNEG/FABS : opérer directement sur l'octet de signe [rbp+7] en
-  little-endian, pas via masque 64 bits
-
-
-## 3. TEXT_IO — état actuel (LRM 14.3)
+## 2. TEXT_IO — état actuel (LRM 14.3)
 
 TEXT_IO.FINC est **généré par l'EXPANDER**. Le fichier compile,
 assemble et fonctionne. Programme de test IO_TEST validé (11 sections).
@@ -178,17 +119,6 @@ end record;
 - PUT(FILE, ITEM, WIDTH, BASE), PUT(ITEM, WIDTH, BASE) — complet bases 2–16
 - GET(FROM:STRING), PUT(TO:STRING) — corps vides
 
-**FLOAT_IO (LRM 14.3.8) — session 11 avril :**
-- PUT(FILE, ITEM, FORE, AFT, EXP) — format `[-]d.dddE[+|-]dd`, normalisation
-  1.0 ≤ val < 10.0, extraction digit par digit via CVTFI, gestion signe,
-  padding FORE, exposant avec zéros de tête
-- PUT(ITEM, FORE, AFT, EXP) — délègue à PUT(DEFAULT_OUTPUT,...)
-- GET(FILE, ITEM, WIDTH) — parse complet : signe, partie entière, point,
-  fraction, exposant E±nn
-- GET(ITEM, WIDTH) — délègue à GET(DEFAULT_INPUT,...)
-- GET(FROM:STRING), PUT(TO:STRING) — corps vides
-- DEFAULT_FORE=2, DEFAULT_AFT=NUM'DIGITS-1, DEFAULT_EXP=3 — fonctionnels
-
 ### Syscalls MACHINE_CODE — convention
 
 Toute fonction MACHINE_CODE avec un syscall doit avoir un `SD` pour
@@ -205,7 +135,7 @@ transférer le résultat depuis `[rbp]` vers `result__ofs` :
 | SYS_FILE_WRITE    | LENGTH, @BUFFER, FILE_ID     | -16 ou -24|
 
 
-## 4. Ce qui manque — Feuille de route chapitre 14
+## 3. Ce qui manque — Feuille de route chapitre 14
 
 ### Phase 1 : compléter TEXT_IO (LRM 14.3)
 
@@ -213,14 +143,12 @@ transférer le résultat depuis `[rbp]` vers `result__ofs` :
 - GET(FROM:STRING, ITEM, LAST) — parse depuis une chaîne
 - PUT(TO:STRING, ITEM, BASE) — formater dans une chaîne
 
-#### 1.2 FLOAT_IO — compléter
-- GET(FROM:STRING, ITEM, LAST) — parse depuis une chaîne
-- PUT(TO:STRING, ITEM, AFT, EXP) — formater dans une chaîne
-- **Tester GET** sur console et fichier
-- Arrondi Ada 83 : CVTFI fait troncature, Ada 83 veut arrondi au plus
-  proche pour INTEGER(float). Ajouter macro CVTFIR si nécessaire.
-- 'DIGITS : résoudre proprement via chaîne générique (actuellement
-  fallback à 6 pour les paramètres formels)
+#### 1.2 Implémenter FLOAT_IO (LRM 14.3.8)
+- Nécessite le support des **flottants** dans l'expander :
+  CODE_FLOAT_DECL, opérations FPU (FADD, FSUB, FMUL, FDIV),
+  conversion INTEGER↔FLOAT dans CODE_CONVERSION.
+- PUT : format `[-]d.dddE[+|-]dd` avec FORE, AFT, EXP
+- GET : parse d'un littéral flottant
 
 #### 1.3 Implémenter FIXED_IO (LRM 14.3.9)
 - Nécessite le support des **points fixes** (DN_FIXED).
@@ -254,6 +182,7 @@ le positionnement par index. Calcul offset : `(INDEX-1) * ELEMENT_SIZE`.
 | Fonctionnalité | Où | Pour quoi |
 |---|---|---|
 | Retour de slice (DN_ARRAY) | CODE_RETURN | NAME(FILE) |
+| Flottants (DN_FLOAT) | types_decls, expressions | FLOAT_IO |
 | Points fixes (DN_FIXED) | types_decls, expressions | FIXED_IO |
 | Unconstrained arrays | CODE_UNCONSTRAINED_ARRAY_DECL | STRING général |
 | DN_RANGE_ATTRIBUTE | expressions | for I in X'RANGE |
@@ -265,7 +194,7 @@ le positionnement par index. Calcul offset : `(INDEX-1) * ELEMENT_SIZE`.
 | Tâches (DN_TASK_BODY) | structures | Reporté |
 
 
-## 5. Architecture de l'EXPANDER (7 fichiers)
+## 4. Architecture de l'EXPANDER (7 fichiers)
 
 ```
 expander.adb                  Programme principal + CODE_ROOT
@@ -284,15 +213,13 @@ expander.adb                  Programme principal + CODE_ROOT
 ```
 
 
-## 6. Conventions LLIR à retenir
+## 5. Conventions LLIR à retenir
 
 - **Pile croissante** (RBP vers le haut). Paramètres sous le FP
   (offsets négatifs). Variables locales au-dessus (offsets positifs).
 - **Display** à R15 : 32 niveaux lexicaux.
 - **Co-pile** (R14/R13) : allocations dynamiques.
 - **Tailles** : b=1, w=2, d=4, q=8. Suffixe 'a' = 'q'.
-- **Flottants** : toujours qword (q) sur la pile, IEEE 754 double 64 bits.
-  FLOAT (CD_IMPL_SIZE=32) et LONG_FLOAT (64) tous deux en double.
 - **Doublet composite** : `_disp` + `__u`. Passage = adresse du doublet.
 - **PRM result__ofs en dernier** dans les fonctions.
 - **SD après syscall** : transférer `[rbp]` vers result__ofs.
@@ -301,11 +228,9 @@ expander.adb                  Programme principal + CODE_ROOT
 - **Opérateurs mot-clé** : MAJUSCULES dans le symrep DIANA.
 - **While** : `BF` (pas BRZ).
 - **Fins de ligne Linux** : LF seul. CR ignoré. FF = saut de page.
-- **Transferts flottants pile↔xmm** : toujours `movsd` (F2 0F 10/11),
-  jamais `movq` (ambigu avec movd 32 bits dans certains contextes fasmg).
 
 
-## 7. Pièges identifiés
+## 6. Pièges identifiés
 
 1. Double déréférencement paramètre : `LVa` (pas `La`) pour le doublet.
 2. Syntaxe virgules vides : `LIa , , ofs` pas `LIa -1, ofs`.
@@ -320,16 +245,9 @@ expander.adb                  Programme principal + CODE_ROOT
 11. DN_RANGE_ATTRIBUTE non géré : contournement FIRST..LAST.
 12. Versions sans FILE : déléguer, pas de MACHINE_CODE inline.
 13. Fichiers uploadés : toujours post-commit github.
-14. **fasmg `dq` hex 64 bits** : tronqué, écrire les octets en `db` LE.
-15. **fasmg `movq xmm,[mem]`** : peut être interprété comme movd 32 bits,
-    utiliser `movsd` (F2 0F 10/11) pour pile↔xmm.
-16. **FCLT/FCLE encodage** : ucomisd xmm1,xmm0 = ModRM 0xC8 pas 0xC9.
-17. **CODE_CONVERSION statique** : un LI suivi de CVTIF si cible DN_FLOAT.
-18. **OPER_SIZ_CHAR DN_FLOAT** : forcer 'q' (CD_IMPL_SIZE=32 dans STANDARD
-    mais on stocke toujours en double 64 bits).
 
 
-## 8. Fichiers à uploader pour la prochaine session
+## 7. Fichiers à uploader pour la prochaine session
 
 1. `src/expander/expander-expressions.adb`
 2. `src/expander/expander-instructions.adb`
@@ -343,9 +261,7 @@ expander.adb                  Programme principal + CODE_ROOT
 10. `src/expander/fasmg/codi_x86_64.finc`
 
 
-## 9. Programmes de test — résultats validés
-
-### IO_TEST (sections 1-11, entiers et fichiers)
+## 8. Programme de test IO_TEST — résultats validés
 
 ```
 === 1. Ecriture fichier ===          CREATE + PUT + NEW_LINE + CLOSE
@@ -359,46 +275,4 @@ expander.adb                  Programme principal + CODE_ROOT
 === 9. NEW_PAGE ===                  NEW_PAGE + SKIP_PAGE + GET_LINE
 === 10. END_OF_FILE ===              Lecture directe 3 lignes
 === 11. END_OF_FILE boucle ===       while not END_OF_FILE loop
-```
-
-### FLOAT_TEST (session 11 avril, 22 tests + defaults)
-
-```
-=== 1. Constantes ===
- 3.14158E+000                        LIF positif
--3.14158E+000                        LIF négatif (FNEG)
- 0.00000E+000                        zéro
- 1.00000E+000                        un
-=== 2. Arithmetique ===
- 5.50E+000                           FADD (2.5 + 3.0)
--5.00E-001                           FSUB (2.5 - 3.0)
- 7.50E+000                           FMUL (2.5 * 3.0)
- 8.3333E-001                         FDIV (2.5 / 3.0)
-=== 3. Negation et abs ===
--7.50E+000                           FNEG
- 7.50E+000                           double FNEG
- 7.50E+000                           FABS
-=== 4. Comparaisons ===
-1.0 < 2.0 : OK                      FCLT
-2.0 > 1.0 : OK                      FCGT
-1.0 <= 1.0 : OK                     FCLE
-1.0 >= 1.0 : OK                     FCGE
-1.0 /= 2.0 : OK                     FCNE
-2.0 = 2.0 : OK                      FCEQ
-=== 5. Negatifs ===
--1.0 > -2.0 : OK                    FCGT négatifs
--2.0 < -1.0 : OK                    FCLT négatifs
-=== 6. Conversion ===
- 4.2E+001                            CVTIF (INTEGER→FLOAT)
-=== 7. Grands/petits ===
- 1.234567E+005                       grand nombre
- 1.230000E-004                       petit nombre
-=== FIN ===
-```
-
-### Test defaults (PUT sans paramètres)
-
-```
-X=  3.14158E+000                     DEFAULT_FORE=2, DEFAULT_AFT=5, DEFAULT_EXP=3
-Y= -3.14158E+000                     négatif avec defaults
 ```
