@@ -438,7 +438,23 @@ null;
         elsif  NAME = "CHARACTER"
         then  COMPILE_VC_NAME_BOOL_CHAR( VC_NAME );
 
-        else  COMPILE_VC_NAME_INTEGER( VC_NAME );
+        else
+          COMPILE_VC_NAME_INTEGER( VC_NAME );
+          -- Ajouter le __u pour les enumerations utilisateur (pointeur vers le namespace du type avec les noms)
+          declare
+            VC_STR	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, VC_NAME ) );
+            TYPE_NAME	: TREE		:= D( XD_SOURCE_NAME, TYPE_SPEC );
+            TYPE_NAME_STR	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
+            LVL_STR	:constant STRING	:= IMAGE( CODI.CUR_LEVEL );
+          begin
+            PUT( "VAR " & VC_STR & "__u, q" );
+            if  CODI.DEBUG  then PUT( tab50 & "; enumeration useinfo" ); end if;
+            NEW_LINE;
+            PUT( tab & "LVA" & tab & IMAGE( DI( CD_LEVEL, TYPE_SPEC ) ) & ", " );
+            REGIONS_PATH( TYPE_NAME );
+            PUT_LINE( TYPE_NAME_STR & ".SIZ" );
+            PUT_LINE( tab & "Sa" & tab & LVL_STR & ", " & VC_STR & "__u" );
+          end;
         end if;
 
       end	COMPILE_VC_NAME_ENUMERATION;

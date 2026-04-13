@@ -948,16 +948,8 @@ null;--     LOAD_TYPE_SIZE( TYPE_SPEC  );
 	        if  IS_EMPTY( NAMES )  then return; end if;
 	        POP( NAMES, NAME );
 	        INVERSE_RECURSE_NAMES( NAMES );
-
-	        if  (NAME.TY = DN_IN_ID) and (D( SM_OBJ_TYPE, NAME ).TY in CLASS_SCALAR)  then
-	          -- in scalaire : passer par copie (valeur)
-	          PUT_LINE( tab & "Lq" & tab & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL )
-		          & ", -" & PRINT_NAME( D( LX_SYMREP, NAME ) ) & "_ofs" );
-	        else
-	          -- in composite (record, array) ou out / in_out : propager l'adresse
-	          PUT_LINE( tab & "La " & tab & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL )
-		          & ", -" & PRINT_NAME( D( LX_SYMREP, NAME ) ) & "_ofs" );
-	        end if;
+	        PUT_LINE( tab & "Lq" & tab & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL )
+		        & ", -" & PRINT_NAME( D( LX_SYMREP, NAME ) ) & "_ofs" );
 	      end	INVERSE_RECURSE_NAMES;
 
 	    begin

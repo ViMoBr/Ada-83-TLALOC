@@ -1,0 +1,163 @@
+include 'TEXT_IO.FINC'
+PRO	COULEUR_TEST_L1				;---------- PRO COULEUR_TEST
+ELB 1					;    BODY ELAB
+COULEUR = 'COULEUR'
+namespace COULEUR				; COULEUR ENUMERATION TYPE INFO
+BEGIN_BLOC_DEF
+db 0, 4, "BLEU"
+db 1, 5, "BLANC"
+db 2, 5, "ROUGE"
+END_BLOC_DEF
+IMAGES	BYTES_BLOC
+CST LST, d, 2
+CST FST, d, 0
+CST SIZ, d, 8	; SIZ en bits !
+end namespace
+
+VAR COUL_disp, b				; variable entiere
+	LI	1
+	Sb  1,	COUL_disp
+
+IO_COULEUR = 'IO_COULEUR'
+namespace IO_COULEUR			;---------- GENERIC PACKAGE INSTANTIATION
+elab_spec:				;    SPEC ELAB
+
+VAR GFP_disp, q
+VAR DEFAULT_WIDTH_disp, d			; variable entiere
+	LI	0
+	Sd  1,	DEFAULT_WIDTH_disp
+
+VAR DEFAULT_SETTING_disp, b			; variable entiere
+	LI	1
+	Sb  1,	DEFAULT_SETTING_disp
+
+if defined GET_L79_
+PRO	GET_L79				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM ITEM_ofs				; out
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 2, GFP_disp
+	La 	 2, -ITEM_ofs
+	La 	 2, -FILE_ofs
+	CALL	STANDARD.TEXT_IO.ENUMERATION_IO. ,GET_L79
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO GET
+end if
+if defined GET_L80_
+PRO	GET_L80				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM ITEM_ofs				; out
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 2, GFP_disp
+	La 	 2, -ITEM_ofs
+	CALL	STANDARD.TEXT_IO.ENUMERATION_IO. ,GET_L80
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO GET
+end if
+if defined PUT_L81_
+PRO	PUT_L81				;---------- PRO PUT
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM ITEM_ofs				; in
+	PRM WIDTH_ofs				; in
+	PRM SET_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 2, GFP_disp
+	Lq	 2, -SET_ofs
+	Lq	 2, -WIDTH_ofs
+	Lq	 2, -ITEM_ofs
+	La 	 2, -FILE_ofs
+	CALL	STANDARD.TEXT_IO.ENUMERATION_IO. ,PUT_L81
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO PUT
+end if
+if defined PUT_L82_
+PRO	PUT_L82				;---------- PRO PUT
+PRMS					;    debut parametrage
+	PRM ITEM_ofs				; in
+	PRM WIDTH_ofs				; in
+	PRM SET_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 2, GFP_disp
+	Lq	 2, -SET_ofs
+	Lq	 2, -WIDTH_ofs
+	Lq	 2, -ITEM_ofs
+	CALL	STANDARD.TEXT_IO.ENUMERATION_IO. ,PUT_L82
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO PUT
+end if
+if defined GET_L83_
+PRO	GET_L83				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM FROM_ofs				; in
+	PRM ITEM_ofs				; out
+	PRM LAST_ofs				; out
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 2, GFP_disp
+	La 	 2, -LAST_ofs
+	La 	 2, -ITEM_ofs
+	La 	 2, -FROM_ofs
+	CALL	STANDARD.TEXT_IO.ENUMERATION_IO. ,GET_L83
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO GET
+end if
+if defined PUT_L84_
+PRO	PUT_L84				;---------- PRO PUT
+PRMS					;    debut parametrage
+	PRM TO_ofs				; out
+	PRM ITEM_ofs				; in
+	PRM SET_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 2, GFP_disp
+	Lq	 2, -SET_ofs
+	Lq	 2, -ITEM_ofs
+	La 	 2, -TO_ofs
+	CALL	STANDARD.TEXT_IO.ENUMERATION_IO. ,PUT_L84
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO PUT
+end if
+					;---------- end generic package instantiation IO_COULEUR
+end namespace
+
+VAR TST_disp, q				; variable array : pointeur aux data
+VAR TST__u, q				; variable array : useinfo pointeur au rec info
+STR TST, 'INUTILE'				; constante string='INUTILE'
+	LCA	TST.data_ptr
+	La
+	Sa	1, TST_disp				; array data ptr at _disp
+	LCA	TST.info_ptr
+	La
+	Sa	1, TST__u				; array info ptr at __u
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	Lb 1,	STANDARD.COULEUR_TEST_L1.IO_COULEUR.DEFAULT_SETTING_disp
+	Ld 1,	STANDARD.COULEUR_TEST_L1.IO_COULEUR.DEFAULT_WIDTH_disp
+	Lb 1,	COUL_disp
+	CALL	STANDARD.COULEUR_TEST_L1.IO_COULEUR. ,PUT_L82
+	LVA  1,	TST_disp				; array actual
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+ret_lbl:
+	UNLINK 1
+	RTD
+excep:
+endPRO					;---------- end PRO COULEUR_TEST

@@ -405,7 +405,6 @@ separate ( EXPANDER )
     PUT_LINE( "namespace" & tab &  PROC_LBL );
     INC_LEVEL;
     STRUCTURES.CODE_BLOCK_BODY( D( AS_BLOCK_BODY, BLOCK ) );
-    PUT_LINE( tab & "UNLINK" & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL ) );					-- RESTAURER LE DISPLAY ET LA PILE APRES LE BLOC
     DEC_LEVEL;
     PUT_LINE( "endPRO" );										-- POUR CALCUL DU LOC_SIZ AVANT FERMETURE DU NAMESPACE
 
@@ -597,21 +596,6 @@ null;
 
 	  elsif  DEFN.TY = DN_IN_ID  then								-- Appel avec un parametre entrant de la procedure englobante
 	      LOAD_MEM( DEFN );
-
-	  elsif  DEFN.TY = DN_OUT_ID  or  DEFN.TY = DN_IN_OUT_ID  then					-- Param out/in_out de la procedure englobante
-	    if  FRM_PRM_ID.TY = DN_IN_ID  then
-	      -- out/inout -> in : dereferencement, charger la valeur pointee par le parametre
-	      declare
-	        SIZ_CHAR	: CHARACTER	:= CODI.OPER_SIZ_CHAR( D( SM_OBJ_TYPE, DEFN ) );
-	      begin
-	        PUT_LINE( tab & "LI" & SIZ_CHAR & ' ' & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' & tab
-			& '-' & DEFN_STR & "_ofs" );							-- load indirect : lire la valeur via l'adresse du param
-	      end;
-	    else
-	      -- out/inout -> out/inout : propager l'adresse
-	      PUT_LINE( tab & "La " & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' & tab
-		      & '-' & DEFN_STR & "_ofs" );							-- transmettre l'adresse telle quelle
-	    end if;
 
 	  elsif  DEFN.TY = DN_ENUMERATION_ID  then							-- Appel avec un énuméré
 	    PUT_LINE( tab & "LI" & ' ' & INTEGER'IMAGE( DI( SM_POS, DEFN ) ) );

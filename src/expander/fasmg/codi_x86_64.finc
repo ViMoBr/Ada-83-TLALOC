@@ -1094,6 +1094,49 @@ elab:
 
 end macro
 
+
+;	Une chaine Ada est un tableau d'octets caracteres, c'est a dire un descripteur [ PTR_TO CHARS qword | CAR_SIZE dword | FIRST dword | LAST dword ]
+; et des caracteres qui pointes par PTR_TO_CHARS peuvent etre detaches du descripteur. Ici, cas de constante, les caracteres sont juste apres le descripteur.
+;	On décompose en deux parties la constitution d'une chaîne pour pouvoir insérer tous les octets voulus.
+
+;			--------------
+macro			BEGIN_BLOC_DEF				; Debut de definition d'un bloc octets utilisable comme STRING Ada
+;			--------------
+;
+  esc struc BYTES_BLOC						; Structure du bloc type STRING avec saut de fin de macro par "esc" pour coupure en deux parties
+    postpone							; ATTENTION : différé terminé par la macro BYTE_BLK_END
+    local data
+    local info
+    local str_byte_size
+    align_q							; aligner le doublet descripteur sur un quadword (taille adresses)
+  .data_ptr = $							; adresse de l'adresse de data
+    dq	data							; offset 0 : adresse des octets
+  .info_ptr = $							;
+    dq	info							; offset 8 : adresse des infos d'usage associées TOT_SIZ, COMP_SIZ, FST_1, LST_1
+  info = $							; info d'usage mises ici
+    dd	str_byte_size, 1, 1, str_byte_size				; offset 16 : TOT_SIZ=str_byte_size ; offset 20 : COMP_SIZ=1 ; offset 24 : FST=1 ; offset 28 : LST=str_byte_size
+    virtual at 0							; definition des offsets sur le useinfo
+    SIZ = $
+    rd 1
+    COMP_SIZ = $
+    rd 1
+    FST_1 = $
+    rd 1
+    LST_1 = $
+    end virtual
+  data = $							; pour une constante les caracteres suivent (pour une chaine variable ce n'est pas le cas, les octets sont dans la co-pile)
+								; les octets deront places ici
+end macro
+
+;			-------------
+macro			END_BLOC_DEF!				; Fin de definition d'une constante chaine (Attention inconditionnelle "!")
+;			-------------
+    str_byte_size = $ - data						; Calculer la longueur effective pour mettre dans LAST
+  end postpone
+  esc end struc							; Fin de la structure du bloc arrêt de la coupure par "esc"
+end macro
+
+
 ;			---------------------
 macro			STR	name, bytes			; Definition d'une constante chaine au format d'un tableau de caracteres (pour traitement homogene des chaines)
 ;			---------------------
@@ -1275,7 +1318,7 @@ macro			SYS_GET_CHAR?				; lit un seul caractere sur stdin en mode non canonique
 			; amener le termios
   db 0x6A, 0x10							; push 16
   db 0x58								; pop rax		(rax=16=sys_ioctl)
-  db 0x48, 0x31, 0xFF						; xor rdi, rdi	(rdi=stdout=0)
+  db 0x48, 0x31, 0xFF						; xor rdi, rdi	(rdi=stdin=0)
   db 0x48, 0xC7, 0xC6, 0x01, 0x54, 0x00, 0x00				; mov rsi, 0x5401	(TCGETS)
   db 0x48, 0x89, 0xE2						; mov rdx, rsp	(adresse du termios temporaire)
   db 0x0F, 0x05							; syscall		(copier le termios)
@@ -1284,7 +1327,7 @@ macro			SYS_GET_CHAR?				; lit un seul caractere sur stdin en mode non canonique
 			; renvoyer le termios modifie
   db 0x6A, 0x10							; push 16
   db 0x58								; pop rax		(rax=16=sys_ioctl)
-  db 0x48, 0x31, 0xFF						; xor rdi, rdi	(rdi=stdout=0)
+  db 0x48, 0x31, 0xFF						; xor rdi, rdi	(rdi=stdin=0)
   db 0x48, 0xC7, 0xC6, 0x02, 0x54, 0x00, 0x00				; mov rsi, 0x5402	(TCSETS)
   db 0x48, 0x89, 0xE2						; mov rdx, rsp	(adresse du termios temporaire)
   db 0x0F, 0x05							; syscall		(envoyer le termios modifie)
@@ -1292,7 +1335,7 @@ macro			SYS_GET_CHAR?				; lit un seul caractere sur stdin en mode non canonique
   POP_RSI								;		(l'adresse destination a ete empilee sur la pile croissante)
   db 0x6A, 0x00							; push 0
   db 0x58								; pop rax		(rax=0=sys_read)
-  db 0x48, 0x89, 0xC7						; mov rdi, rax	(rdi=stdout=0)
+  db 0x48, 0x89, 0xC7						; mov rdi, rax	(rdi=stdin=0)
   db 0x6A, 0x01							; push 1
   db 0x5A								; pop rdx		(rdx=length=1 caractere)
   db 0x0F, 0x05							; syscall
@@ -1301,7 +1344,7 @@ macro			SYS_GET_CHAR?				; lit un seul caractere sur stdin en mode non canonique
 			; renvoyer le termios modifie
   db 0x6A, 0x10							; push 16
   db 0x58								; pop rax		(rax=16=sys_ioctl)
-  db 0x48, 0x31, 0xFF						; xor rdi, rdi	(rdi=stdout=0)
+  db 0x48, 0x31, 0xFF						; xor rdi, rdi	(rdi=stdin=0)
   db 0x48, 0xC7, 0xC6, 0x02, 0x54, 0x00, 0x00				; mov rsi, 0x5402	(TCSETS)
   db 0x48, 0x89, 0xE2						; mov rdx, rsp	(adresse du termios temporaire)
   db 0x0F, 0x05							; syscall		(envoyer le termios modifie)

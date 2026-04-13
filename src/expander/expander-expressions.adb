@@ -1134,8 +1134,34 @@ put_line( "; adresse component id" );
 				------------------
   procedure			CODE_SHORT_CIRCUIT		( SHORT_CIRCUIT :TREE )
   is				------------------
+
+    EXP1		: TREE		:= D( AS_EXP1, SHORT_CIRCUIT );
+    EXP2		: TREE		:= D( AS_EXP2, SHORT_CIRCUIT );
+    OP		: TREE		:= D( AS_SHORT_CIRCUIT_OP, SHORT_CIRCUIT );
+    LBL_SKIP	:constant STRING	:= NEW_LABEL;
+
   begin
-    null;
+    -- Evaluer la premiere expression
+    CODE_EXP( EXP1 );
+
+    if  OP.TY = DN_AND_THEN  then
+      -- A and then B : si A est FALSE, resultat = FALSE (ne pas evaluer B)
+      PUT_LINE( tab & "DUP" );					-- dupliquer A pour le test
+      PUT_LINE( tab & "BF" & tab & LBL_SKIP );			-- si A=FALSE, sauter (garder FALSE sur la pile)
+      PUT_LINE( tab & "DROP" );					-- jeter le duplicat de A (A etait TRUE)
+      CODE_EXP( EXP2 );						-- evaluer B, resultat = B
+      PUT_LINE( LBL_SKIP & ':' );
+
+    elsif  OP.TY = DN_OR_ELSE  then
+      -- A or else B : si A est TRUE, resultat = TRUE (ne pas evaluer B)
+      PUT_LINE( tab & "DUP" );					-- dupliquer A pour le test
+      PUT_LINE( tab & "BT" & tab & LBL_SKIP );			-- si A=TRUE, sauter (garder TRUE sur la pile)
+      PUT_LINE( tab & "DROP" );					-- jeter le duplicat de A (A etait FALSE)
+      CODE_EXP( EXP2 );						-- evaluer B, resultat = B
+      PUT_LINE( LBL_SKIP & ':' );
+
+    end if;
+
   end	CODE_SHORT_CIRCUIT;
 	------------------
 

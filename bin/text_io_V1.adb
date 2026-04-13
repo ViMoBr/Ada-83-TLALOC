@@ -889,25 +889,19 @@ is					-------
     POS	: NATURAL		:= ITEM'FIRST;
 
   begin
-    if  FILE.ID = -1  then									-- standard console input : utiliser SYS_GET_STR (mode canonique avec echo)
-      ASM_OP_2'( OPCODE => La, LVL => 1, OFS => -24 );					-- push @LAST  (adresse du parametre out LAST)
-      ASM_OP_2'( OPCODE => La, LVL => 1, OFS => -16 );					-- push @ITEM descripteur (adresse du parametre out ITEM = descripteur string)
-      ASM_OP_0'( OPCODE => SYS_GET_STR );							-- lit une ligne stdin avec echo, stocke longueur dans LAST
-    else
-      LAST := ITEM'FIRST - 1;
-      loop
-        exit when  POS > ITEM'LAST;
-        exit when  FILE.AT_END_OF_FILE;
-        GET( FILE, CH );
-        exit when  FILE.AT_END_OF_FILE;
-        exit when  CH = ASCII.LF;
-        if  CH /= ASCII.CR  then
-	ITEM( POS ) := CH;
-	LAST := POS;
-	POS := POS + 1;
-        end if;
-      end loop;
-    end if;
+    LAST := ITEM'FIRST - 1;
+    loop
+      exit when  POS > ITEM'LAST;
+      exit when  FILE.AT_END_OF_FILE;
+      GET( FILE, CH );
+      exit when  FILE.AT_END_OF_FILE;
+      exit when  CH = ASCII.LF;
+      if  CH /= ASCII.CR  then
+        ITEM( POS ) := CH;
+        LAST := POS;
+        POS := POS + 1;
+      end if;
+    end loop;
 
   end	GET_LINE;
 	--------

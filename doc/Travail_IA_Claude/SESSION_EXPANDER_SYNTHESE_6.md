@@ -1,13 +1,13 @@
 # SESSION EXPANDER — Synthèse et point de départ
 
-**Date** : avril 2026 (mise à jour après sessions des 9, 10, 11, 12 et 13 avril)
+**Date** : avril 2026 (mise à jour après sessions des 9, 10, 11 et 12 avril)
 **Objectif** : compléter l'EXPANDER du compilateur TLALOC
 **Objectif élargi** : implémenter le chapitre 14 du LRM Ada 83 (I/O)
 
 
 ## 1. État des lieux de l'EXPANDER
 
-### Ce qui fonctionne (acquis antérieurs + sessions 9-13 avril)
+### Ce qui fonctionne (acquis antérieurs + sessions 9-12 avril)
 
 - **Types scalaires** : entiers (DN_INTEGER), énumérations (DN_ENUMERATION),
   sous-types entiers et énumérations — génération complète avec namespace,
@@ -32,14 +32,10 @@
 - **Appels** : CALL avec résolution différée, `if defined ... end if`
   pour n'assembler que les procédures effectivement appelées.
   INVERSE_RECURSE_ON_PARAMETERS pour l'ordre d'empilement.
-  Propagation correcte des paramètres `out`/`in out` englobants vers
-  les appels internes (session 13 avril).
 - **Instructions** : if/then/else (BT/BF/BRA), boucles for/while/loop,
   case, exit, return, goto, assign, null_stm, procedure_call.
   Boucle while corrigée (BF, pas BRZ).
   CODE_ASSIGN et STORE_VAL gèrent DN_FLOAT.
-- **Blocs declare** : CODE_BLOCK émet UNLINK à la sortie du bloc
-  pour restaurer le display et la pile (session 13 avril).
 - **Expressions** : numeric_literal, string_literal, used_object_id,
   used_char, used_op, **short_circuit** (and then / or else), parenthesized,
   conversion, qualified, function_call, indexed, selected, attribute,
@@ -61,8 +57,6 @@
 - **Types privés** : DN_PRIVATE / DN_L_PRIVATE / DN_INCOMPLETE différés.
 - **Génériques** : instanciation de packages génériques (INTEGER_IO et
   FLOAT_IO fonctionnels). Mécanisme GFP_disp pour les paramètres formels.
-  Wrapper d'instanciation corrigé : `La` pour composites et out/in_out,
-  `Lq` uniquement pour les `in` scalaires (session 13 avril).
 - **Packages** : namespace FASM, elab_spec, body.
 - **Stubs/subunits** : include du .FINC correspondant.
 - **With/use** : génération des `include 'X.FINC'`.
@@ -187,81 +181,64 @@ end record;
 - PUT(FILE, ITEM, WIDTH, BASE), PUT(ITEM, WIDTH, BASE) — complet bases 2–16
 - GET(FROM:STRING), PUT(TO:STRING) — corps vides
 
-**FLOAT_IO (LRM 14.3.8) — sessions 11-13 avril :**
+**FLOAT_IO (LRM 14.3.8) — sessions 11-12 avril :**
 - PUT(FILE, ITEM, FORE, AFT, EXP) — format `[-]d.dddE[+|-]dd` ✓
 - PUT(ITEM, FORE, AFT, EXP) — délègue à PUT(DEFAULT_OUTPUT,...) ✓
 - GET(FILE, ITEM, WIDTH) — parse complet, **validé depuis fichier** ✓
-- GET(ITEM, WIDTH) — délègue à GET(DEFAULT_INPUT,...) ✓ (corrigé session 13)
+- GET(ITEM, WIDTH) — **SEGFAULT** (voir bugs connus §3.1)
 - GET(FROM:STRING), PUT(TO:STRING) — corps vides
 - DEFAULT_FORE=2, DEFAULT_AFT=NUM'DIGITS-1, DEFAULT_EXP=3 — fonctionnels ✓
 
 
-### 3.1 Bugs corrigés session 13 avril
+### 3.1 Bugs connus TEXT_IO — à corriger prochaine session
 
-#### Bug 1 (corrigé) : FIO.PUT(FILE,...) corrompt le record FILE_TYPE
+#### Bug 1 : FIO.PUT(FILE,...) corrompt le record FILE_TYPE
 
-**Causes** (deux bugs combinés) :
+**Symptôme** : après `FIO.PUT(F, 3.14, ...)`, tout appel subséquent
+utilisant F segfault. La valeur est bien écrite dans le fichier.
 
-**(a) Wrapper générique `Lq` au lieu de `La` pour composites** :
-dans `INVERSE_RECURSE_NAMES` (expander-declarations.adb), le wrapper
-d'instanciation utilisait `Lq` (charge la valeur) pour **tous** les
-paramètres. Pour un `in` composite (FILE_TYPE record), il fallait `La`
-(propager l'adresse). Pour `out`/`in out`, il fallait aussi `La`.
+**Hypothèse** : le PUT a 6 paramètres (FILE, ITEM, FORE, AFT, EXP, GFP).
+Le passage du FILE_TYPE (record composite, passé par adresse en `in`)
+pourrait être corrompu par la pile — les opérations internes au PUT
+déborderaient sur le record pointé. Ou bien le FILE est passé par
+copie au lieu de par adresse, et les modifications internes (COL, LINE)
+ne sont pas répercutées.
 
-**Correctif** : distinguer `(DN_IN_ID and CLASS_SCALAR)` → `Lq` (valeur),
-sinon → `La` (adresse).
+**Investigation** : vérifier dans le FINC du PUT si FILE est chargé
+avec `La` (adresse) ou `Lq` (valeur). Vérifier que les écritures
+dans les champs de FILE (COL, LINE) ne corrompent pas la pile.
 
-**(b) UNLINK manquant dans CODE_BLOCK** : un bloc `declare...begin...end`
-émettait `ELB N` (= `LINK N`) pour allouer les variables locales et
-mettre à jour le display, mais n'émettait jamais le `UNLINK N`
-correspondant à la sortie du bloc. Le display restait corrompu.
-FLOAT_IO.PUT contient un bloc `declare EXP_STR...` (BLOCK__20) qui
-faisait `LINK 2` sans `UNLINK 2`. Au retour, le display[2] pointait
-vers le frame de BLOCK__20 au lieu du frame du wrapper → le `UNLINK 2`
-du wrapper opérait sur le mauvais frame → corruption de la pile.
+#### Bug 2 : FIO.GET(ITEM) sans FILE segfault
 
-**Correctif** : ajout de `UNLINK N` dans `CODE_BLOCK` avant `DEC_LEVEL`
-et `endPRO`.
+**Symptôme** : `FIO.GET(X)` segfault au `SIq 1, -ITEM_ofs` en fin
+de GET — RAX = 0 (l'adresse de destination est nulle).
 
-#### Bug 2 (corrigé) : FIO.GET(ITEM) sans FILE segfault
+**Cause identifiée** : le wrapper d'instanciation générique fait
+`Lq 2, -ITEM_ofs` (charge le contenu) au lieu de passer l'adresse
+pour le paramètre `out`. Le wrapper appelle ensuite le GET du body
+TEXT_IO qui reçoit une valeur au lieu d'une adresse comme ITEM_ofs.
 
-**Cause** : même bug (a) que Bug 1 — le wrapper passait `Lq` au lieu
-de `La` pour le paramètre `out ITEM`. Le body recevait une valeur
-(non initialisée) au lieu d'une adresse → écriture à l'adresse 0.
+**Note** : le même mécanisme de wrapper fonctionne pour INTEGER_IO GET
+(testé dans IO_TEST section 5). La différence pourrait être dans le
+chaînage des appels : le wrapper appelle GET_L68 (sans FILE) qui
+délègue à GET_L67 (avec FILE), ajoutant un niveau d'indirection
+supplémentaire pour le paramètre `out`.
 
-**Correctif** : même correctif que Bug 1(a).
+**Contournement** : appeler `FIO.GET(STANDARD_INPUT, X)` directement.
 
-#### Bug 3 (corrigé) : GET_LINE console ne lit rien
+#### Bug 3 : GET_LINE console ne lit rien
 
-**Cause** : GET_LINE appelait `GET(FILE, CH)` caractère par caractère.
-Pour la console, GET utilise SYS_GET_CHAR qui désactive ICANON et ECHO
-pour chaque caractère → pas d'écho, aller-retours termios problématiques.
+**Symptôme** : `GET_LINE(CHN, LEN)` depuis la console retourne LEN=0,
+pas de caractères lus, pas d'écho au clavier.
 
-**Correctif** : ajout d'un `if FILE.ID = -1` dans GET_LINE qui utilise
-directement SYS_GET_STR (sys_read en mode canonique avec écho) pour la
-console. La boucle par GET(FILE, CH) est conservée pour les fichiers.
+**Cause probable** : GET_LINE appelle `GET(FILE, CH)` caractère par
+caractère. Pour la console (FILE.ID=-1), GET utilise SYS_GET_CHAR qui
+modifie le terminal (ICANON off, ECHO off) pour chaque caractère puis
+le remet — les aller-retours TCGETS/TCSETS pour chaque caractère sont
+problématiques. Il faudrait soit ne modifier le terminal qu'une fois
+au début, soit utiliser SYS_FILE_READ sur stdin directement.
 
-```ada
-if  FILE.ID = -1  then
-  ASM_OP_2'( OPCODE => La, LVL => 1, OFS => -24 );   -- push @LAST
-  ASM_OP_2'( OPCODE => La, LVL => 1, OFS => -16 );   -- push @ITEM
-  ASM_OP_0'( OPCODE => SYS_GET_STR );
-else
-  -- boucle GET(FILE, CH) pour fichiers
-end if;
-```
-
-#### Bug 4 (corrigé) : propagation param out/in_out dans INVERSE_RECURSE_ON_PARAMETERS
-
-**Cause** : dans `CODE_PROCEDURE_CALL`, quand le paramètre actuel est
-un paramètre `out` ou `in out` de la procédure englobante (DN_OUT_ID
-ou DN_IN_OUT_ID), il n'y avait pas de branche pour le traiter. Le code
-tombait dans le `else` → message d'erreur au lieu de code.
-
-**Correctif** : ajout de la branche `DN_OUT_ID / DN_IN_OUT_ID` avec
-deux sous-cas selon le paramètre formel cible :
-- `out/inout → out/inout` : `La lvl, -NAME_ofs` (propager l'adresse)
-- `out/inout → in` : `LI_siz lvl, -NAME_ofs` (déréférencer via load indirect)
+**Note** : GET_LINE fonctionne correctement depuis un fichier.
 
 
 ### Syscalls MACHINE_CODE — convention
@@ -284,6 +261,11 @@ transférer le résultat depuis `[rbp]` vers `result__ofs` :
 
 ### Phase 1 : compléter TEXT_IO (LRM 14.3)
 
+#### 1.0 Corriger les bugs TEXT_IO (prioritaire)
+- Bug 1 : PUT(FILE,...) corrompt FILE_TYPE
+- Bug 2 : GET(ITEM) sans FILE segfault (wrapper générique)
+- Bug 3 : GET_LINE console ne lit rien (SYS_GET_CHAR)
+
 #### 1.1 Compléter INTEGER_IO
 - GET(FROM:STRING, ITEM, LAST) — parse depuis une chaîne
 - PUT(TO:STRING, ITEM, BASE) — formater dans une chaîne
@@ -304,11 +286,8 @@ transférer le résultat depuis `[rbp]` vers `result__ofs` :
 - PUT : écrire le nom de l'énuméré (nécessite table de noms runtime)
 - GET : lire et identifier un nom d'énuméré
 - Support UPPER_CASE / LOWER_CASE (TYPE_SET)
-- **Point dur** : accès aux noms d'énumérés à l'exécution.
-  Les CST des littéraux sont déjà générés dans CODE_ENUM_LITERAL_S.
-  La question du passage des noms d'énumérés sous forme d'un bloc
-  STRING Ada (plutôt que chaînes Pascal via CST) est à l'étude.
-  Pourrait nécessiter le retour d'array non contraint comme pour NAME.
+- **Point dur** : accès aux noms d'énumérés à l'exécution
+- Les CST des littéraux sont déjà générés dans CODE_ENUM_LITERAL_S
 
 #### 1.5 Fonctions TEXT_IO restantes
 - NAME(FILE) — retour de slice STRING (nécessite CODE_RETURN DN_ARRAY)
@@ -331,7 +310,7 @@ le positionnement par index. Calcul offset : `(INDEX-1) * ELEMENT_SIZE`.
 
 | Fonctionnalité | Où | Pour quoi |
 |---|---|---|
-| Retour de slice (DN_ARRAY) | CODE_RETURN | NAME(FILE), ENUMERATION_IO |
+| Retour de slice (DN_ARRAY) | CODE_RETURN | NAME(FILE) |
 | Points fixes (DN_FIXED) | types_decls, expressions | FIXED_IO |
 | Unconstrained arrays | CODE_UNCONSTRAINED_ARRAY_DECL | STRING général |
 | DN_RANGE_ATTRIBUTE | expressions | for I in X'RANGE |
@@ -383,11 +362,6 @@ expander.adb                  Programme principal + CODE_ROOT
 - **Fins de ligne Linux** : LF seul. CR ignoré. FF = saut de page.
 - **Transferts flottants pile↔xmm** : toujours `movsd` (F2 0F 10/11),
   jamais `movq` (ambigu avec movd 32 bits dans certains contextes fasmg).
-- **Blocs declare** : toujours `UNLINK N` avant de quitter le bloc.
-- **Wrapper générique** : `La` pour composites et out/in_out, `Lq`
-  uniquement pour les `in` scalaires.
-- **postpone LIFO** : les `CST` en zone `postpone` sont placés en
-  mémoire dans l'ordre inverse de leur émission.
 
 
 ## 7. Pièges identifiés
@@ -414,19 +388,10 @@ expander.adb                  Programme principal + CODE_ROOT
     mais on stocke toujours en double 64 bits).
 19. **CODE_SHORT_CIRCUIT** : était un stub `null`, causait des BF/BT sans
     condition évaluée. Corrigé session 12 avril.
-20. **Wrapper générique paramètres** : `Lq` pour tous → `La` pour
-    composites et out/in_out. Corrigé session 13 avril.
-21. **CODE_BLOCK sans UNLINK** : un bloc `declare` faisait LINK N sans
-    UNLINK N correspondant → corruption du display au retour.
-    Corrigé session 13 avril.
-22. **Propagation out/in_out** : `INVERSE_RECURSE_ON_PARAMETERS` ne
-    traitait pas DN_OUT_ID / DN_IN_OUT_ID → message d'erreur au lieu
-    de code. Corrigé session 13 avril.
-23. **GET_LINE console** : SYS_GET_CHAR en boucle → pas d'écho.
-    Remplacé par SYS_GET_STR pour la console. Corrigé session 13 avril.
-24. **postpone LIFO** : les CST émises en premier se retrouvent en
-    dernier en mémoire. Ordre d'émission inverse requis pour obtenir
-    un layout mémoire séquentiel.
+20. **Wrapper générique `out` param** : le wrapper charge `Lq` (valeur)
+    au lieu de passer l'adresse pour les paramètres `out` à travers
+    la chaîne d'appels. Fonctionne en appel direct, segfault via wrapper
+    sans FILE.
 
 
 ## 8. Fichiers à uploader pour la prochaine session
@@ -503,20 +468,8 @@ X=  3.14158E+000                     DEFAULT_FORE=2, DEFAULT_AFT=5, DEFAULT_EXP=
 Y= -3.14158E+000                     négatif avec defaults ('DIGITS fonctionne)
 ```
 
-### GET_TEST (session 13 avril — FLOAT_IO fichier + console)
+### GET depuis fichier (session 12 avril)
 
 ```
-Entrez un flottant : 3.89
-Lu : [3.89]
-=== Test 1 : FIO.PUT 3.14159 dans fichier ===
-Ecriture OK
-=== Test 2 : FIO.GET depuis fichier ===
-Relu depuis fichier :  3.141580E+000
-=== Test 3 : verification GET_LINE ===
-Contenu brut : [ 3.14158E+000]
-=== Test 4 : FIO.PUT stdout ===
- 2.71828E+000
+X =  3.141580E+000                   GET(FILE, X) depuis ftest.dat contenant "3.14159"
 ```
-
-Valide : FIO.PUT(FILE,...) + NEW_LINE(FILE) + CLOSE sans corruption,
-FIO.GET(FILE, X) relecture, FIO.PUT stdout, GET_LINE console avec écho.

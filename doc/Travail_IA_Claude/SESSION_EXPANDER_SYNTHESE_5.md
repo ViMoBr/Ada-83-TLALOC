@@ -1,13 +1,13 @@
 # SESSION EXPANDER — Synthèse et point de départ
 
-**Date** : avril 2026 (mise à jour après sessions des 9, 10, 11, 12 et 13 avril)
+**Date** : avril 2026 (mise à jour après sessions des 9, 10, 11 avril)
 **Objectif** : compléter l'EXPANDER du compilateur TLALOC
 **Objectif élargi** : implémenter le chapitre 14 du LRM Ada 83 (I/O)
 
 
 ## 1. État des lieux de l'EXPANDER
 
-### Ce qui fonctionne (acquis antérieurs + sessions 9-13 avril)
+### Ce qui fonctionne (acquis antérieurs + sessions 9-11 avril)
 
 - **Types scalaires** : entiers (DN_INTEGER), énumérations (DN_ENUMERATION),
   sous-types entiers et énumérations — génération complète avec namespace,
@@ -32,20 +32,13 @@
 - **Appels** : CALL avec résolution différée, `if defined ... end if`
   pour n'assembler que les procédures effectivement appelées.
   INVERSE_RECURSE_ON_PARAMETERS pour l'ordre d'empilement.
-  Propagation correcte des paramètres `out`/`in out` englobants vers
-  les appels internes (session 13 avril).
 - **Instructions** : if/then/else (BT/BF/BRA), boucles for/while/loop,
   case, exit, return, goto, assign, null_stm, procedure_call.
   Boucle while corrigée (BF, pas BRZ).
   CODE_ASSIGN et STORE_VAL gèrent DN_FLOAT.
-- **Blocs declare** : CODE_BLOCK émet UNLINK à la sortie du bloc
-  pour restaurer le display et la pile (session 13 avril).
 - **Expressions** : numeric_literal, string_literal, used_object_id,
-  used_char, used_op, **short_circuit** (and then / or else), parenthesized,
-  conversion, qualified, function_call, indexed, selected, attribute,
-  membership.
-  CODE_SHORT_CIRCUIT implémenté (session 12 avril) : DUP + BF/BT + DROP
-  pour évaluation conditionnelle.
+  used_char, used_op, short_circuit, parenthesized, conversion,
+  qualified, function_call, indexed, selected, attribute, membership.
   CODE_CONVERSION : CVTIF (entier→float) et CVTFI (float→entier,
   troncature) dans les deux chemins (statique et dynamique).
   CODE_DN_BLTN_OPERATOR_ID : dispatch float/entier via IS_FLOAT
@@ -61,8 +54,6 @@
 - **Types privés** : DN_PRIVATE / DN_L_PRIVATE / DN_INCOMPLETE différés.
 - **Génériques** : instanciation de packages génériques (INTEGER_IO et
   FLOAT_IO fonctionnels). Mécanisme GFP_disp pour les paramètres formels.
-  Wrapper d'instanciation corrigé : `La` pour composites et out/in_out,
-  `Lq` uniquement pour les `in` scalaires (session 13 avril).
 - **Packages** : namespace FASM, elab_spec, body.
 - **Stubs/subunits** : include du .FINC correspondant.
 - **With/use** : génération des `include 'X.FINC'`.
@@ -187,82 +178,16 @@ end record;
 - PUT(FILE, ITEM, WIDTH, BASE), PUT(ITEM, WIDTH, BASE) — complet bases 2–16
 - GET(FROM:STRING), PUT(TO:STRING) — corps vides
 
-**FLOAT_IO (LRM 14.3.8) — sessions 11-13 avril :**
-- PUT(FILE, ITEM, FORE, AFT, EXP) — format `[-]d.dddE[+|-]dd` ✓
-- PUT(ITEM, FORE, AFT, EXP) — délègue à PUT(DEFAULT_OUTPUT,...) ✓
-- GET(FILE, ITEM, WIDTH) — parse complet, **validé depuis fichier** ✓
-- GET(ITEM, WIDTH) — délègue à GET(DEFAULT_INPUT,...) ✓ (corrigé session 13)
+**FLOAT_IO (LRM 14.3.8) — session 11 avril :**
+- PUT(FILE, ITEM, FORE, AFT, EXP) — format `[-]d.dddE[+|-]dd`, normalisation
+  1.0 ≤ val < 10.0, extraction digit par digit via CVTFI, gestion signe,
+  padding FORE, exposant avec zéros de tête
+- PUT(ITEM, FORE, AFT, EXP) — délègue à PUT(DEFAULT_OUTPUT,...)
+- GET(FILE, ITEM, WIDTH) — parse complet : signe, partie entière, point,
+  fraction, exposant E±nn
+- GET(ITEM, WIDTH) — délègue à GET(DEFAULT_INPUT,...)
 - GET(FROM:STRING), PUT(TO:STRING) — corps vides
-- DEFAULT_FORE=2, DEFAULT_AFT=NUM'DIGITS-1, DEFAULT_EXP=3 — fonctionnels ✓
-
-
-### 3.1 Bugs corrigés session 13 avril
-
-#### Bug 1 (corrigé) : FIO.PUT(FILE,...) corrompt le record FILE_TYPE
-
-**Causes** (deux bugs combinés) :
-
-**(a) Wrapper générique `Lq` au lieu de `La` pour composites** :
-dans `INVERSE_RECURSE_NAMES` (expander-declarations.adb), le wrapper
-d'instanciation utilisait `Lq` (charge la valeur) pour **tous** les
-paramètres. Pour un `in` composite (FILE_TYPE record), il fallait `La`
-(propager l'adresse). Pour `out`/`in out`, il fallait aussi `La`.
-
-**Correctif** : distinguer `(DN_IN_ID and CLASS_SCALAR)` → `Lq` (valeur),
-sinon → `La` (adresse).
-
-**(b) UNLINK manquant dans CODE_BLOCK** : un bloc `declare...begin...end`
-émettait `ELB N` (= `LINK N`) pour allouer les variables locales et
-mettre à jour le display, mais n'émettait jamais le `UNLINK N`
-correspondant à la sortie du bloc. Le display restait corrompu.
-FLOAT_IO.PUT contient un bloc `declare EXP_STR...` (BLOCK__20) qui
-faisait `LINK 2` sans `UNLINK 2`. Au retour, le display[2] pointait
-vers le frame de BLOCK__20 au lieu du frame du wrapper → le `UNLINK 2`
-du wrapper opérait sur le mauvais frame → corruption de la pile.
-
-**Correctif** : ajout de `UNLINK N` dans `CODE_BLOCK` avant `DEC_LEVEL`
-et `endPRO`.
-
-#### Bug 2 (corrigé) : FIO.GET(ITEM) sans FILE segfault
-
-**Cause** : même bug (a) que Bug 1 — le wrapper passait `Lq` au lieu
-de `La` pour le paramètre `out ITEM`. Le body recevait une valeur
-(non initialisée) au lieu d'une adresse → écriture à l'adresse 0.
-
-**Correctif** : même correctif que Bug 1(a).
-
-#### Bug 3 (corrigé) : GET_LINE console ne lit rien
-
-**Cause** : GET_LINE appelait `GET(FILE, CH)` caractère par caractère.
-Pour la console, GET utilise SYS_GET_CHAR qui désactive ICANON et ECHO
-pour chaque caractère → pas d'écho, aller-retours termios problématiques.
-
-**Correctif** : ajout d'un `if FILE.ID = -1` dans GET_LINE qui utilise
-directement SYS_GET_STR (sys_read en mode canonique avec écho) pour la
-console. La boucle par GET(FILE, CH) est conservée pour les fichiers.
-
-```ada
-if  FILE.ID = -1  then
-  ASM_OP_2'( OPCODE => La, LVL => 1, OFS => -24 );   -- push @LAST
-  ASM_OP_2'( OPCODE => La, LVL => 1, OFS => -16 );   -- push @ITEM
-  ASM_OP_0'( OPCODE => SYS_GET_STR );
-else
-  -- boucle GET(FILE, CH) pour fichiers
-end if;
-```
-
-#### Bug 4 (corrigé) : propagation param out/in_out dans INVERSE_RECURSE_ON_PARAMETERS
-
-**Cause** : dans `CODE_PROCEDURE_CALL`, quand le paramètre actuel est
-un paramètre `out` ou `in out` de la procédure englobante (DN_OUT_ID
-ou DN_IN_OUT_ID), il n'y avait pas de branche pour le traiter. Le code
-tombait dans le `else` → message d'erreur au lieu de code.
-
-**Correctif** : ajout de la branche `DN_OUT_ID / DN_IN_OUT_ID` avec
-deux sous-cas selon le paramètre formel cible :
-- `out/inout → out/inout` : `La lvl, -NAME_ofs` (propager l'adresse)
-- `out/inout → in` : `LI_siz lvl, -NAME_ofs` (déréférencer via load indirect)
-
+- DEFAULT_FORE=2, DEFAULT_AFT=NUM'DIGITS-1, DEFAULT_EXP=3 — fonctionnels
 
 ### Syscalls MACHINE_CODE — convention
 
@@ -291,6 +216,7 @@ transférer le résultat depuis `[rbp]` vers `result__ofs` :
 #### 1.2 FLOAT_IO — compléter
 - GET(FROM:STRING, ITEM, LAST) — parse depuis une chaîne
 - PUT(TO:STRING, ITEM, AFT, EXP) — formater dans une chaîne
+- **Tester GET** sur console et fichier
 - Arrondi Ada 83 : CVTFI fait troncature, Ada 83 veut arrondi au plus
   proche pour INTEGER(float). Ajouter macro CVTFIR si nécessaire.
 - 'DIGITS : résoudre proprement via chaîne générique (actuellement
@@ -304,11 +230,7 @@ transférer le résultat depuis `[rbp]` vers `result__ofs` :
 - PUT : écrire le nom de l'énuméré (nécessite table de noms runtime)
 - GET : lire et identifier un nom d'énuméré
 - Support UPPER_CASE / LOWER_CASE (TYPE_SET)
-- **Point dur** : accès aux noms d'énumérés à l'exécution.
-  Les CST des littéraux sont déjà générés dans CODE_ENUM_LITERAL_S.
-  La question du passage des noms d'énumérés sous forme d'un bloc
-  STRING Ada (plutôt que chaînes Pascal via CST) est à l'étude.
-  Pourrait nécessiter le retour d'array non contraint comme pour NAME.
+- **Point dur** : accès aux noms d'énumérés à l'exécution
 
 #### 1.5 Fonctions TEXT_IO restantes
 - NAME(FILE) — retour de slice STRING (nécessite CODE_RETURN DN_ARRAY)
@@ -331,7 +253,7 @@ le positionnement par index. Calcul offset : `(INDEX-1) * ELEMENT_SIZE`.
 
 | Fonctionnalité | Où | Pour quoi |
 |---|---|---|
-| Retour de slice (DN_ARRAY) | CODE_RETURN | NAME(FILE), ENUMERATION_IO |
+| Retour de slice (DN_ARRAY) | CODE_RETURN | NAME(FILE) |
 | Points fixes (DN_FIXED) | types_decls, expressions | FIXED_IO |
 | Unconstrained arrays | CODE_UNCONSTRAINED_ARRAY_DECL | STRING général |
 | DN_RANGE_ATTRIBUTE | expressions | for I in X'RANGE |
@@ -371,8 +293,6 @@ expander.adb                  Programme principal + CODE_ROOT
 - **Tailles** : b=1, w=2, d=4, q=8. Suffixe 'a' = 'q'.
 - **Flottants** : toujours qword (q) sur la pile, IEEE 754 double 64 bits.
   FLOAT (CD_IMPL_SIZE=32) et LONG_FLOAT (64) tous deux en double.
-- **Short-circuit** : `A and then B` → DUP, BF skip, DROP, eval B, skip:
-  `A or else B` → DUP, BT skip, DROP, eval B, skip:
 - **Doublet composite** : `_disp` + `__u`. Passage = adresse du doublet.
 - **PRM result__ofs en dernier** dans les fonctions.
 - **SD après syscall** : transférer `[rbp]` vers result__ofs.
@@ -383,11 +303,6 @@ expander.adb                  Programme principal + CODE_ROOT
 - **Fins de ligne Linux** : LF seul. CR ignoré. FF = saut de page.
 - **Transferts flottants pile↔xmm** : toujours `movsd` (F2 0F 10/11),
   jamais `movq` (ambigu avec movd 32 bits dans certains contextes fasmg).
-- **Blocs declare** : toujours `UNLINK N` avant de quitter le bloc.
-- **Wrapper générique** : `La` pour composites et out/in_out, `Lq`
-  uniquement pour les `in` scalaires.
-- **postpone LIFO** : les `CST` en zone `postpone` sont placés en
-  mémoire dans l'ordre inverse de leur émission.
 
 
 ## 7. Pièges identifiés
@@ -412,21 +327,6 @@ expander.adb                  Programme principal + CODE_ROOT
 17. **CODE_CONVERSION statique** : un LI suivi de CVTIF si cible DN_FLOAT.
 18. **OPER_SIZ_CHAR DN_FLOAT** : forcer 'q' (CD_IMPL_SIZE=32 dans STANDARD
     mais on stocke toujours en double 64 bits).
-19. **CODE_SHORT_CIRCUIT** : était un stub `null`, causait des BF/BT sans
-    condition évaluée. Corrigé session 12 avril.
-20. **Wrapper générique paramètres** : `Lq` pour tous → `La` pour
-    composites et out/in_out. Corrigé session 13 avril.
-21. **CODE_BLOCK sans UNLINK** : un bloc `declare` faisait LINK N sans
-    UNLINK N correspondant → corruption du display au retour.
-    Corrigé session 13 avril.
-22. **Propagation out/in_out** : `INVERSE_RECURSE_ON_PARAMETERS` ne
-    traitait pas DN_OUT_ID / DN_IN_OUT_ID → message d'erreur au lieu
-    de code. Corrigé session 13 avril.
-23. **GET_LINE console** : SYS_GET_CHAR en boucle → pas d'écho.
-    Remplacé par SYS_GET_STR pour la console. Corrigé session 13 avril.
-24. **postpone LIFO** : les CST émises en premier se retrouvent en
-    dernier en mémoire. Ordre d'émission inverse requis pour obtenir
-    un layout mémoire séquentiel.
 
 
 ## 8. Fichiers à uploader pour la prochaine session
@@ -496,27 +396,9 @@ expander.adb                  Programme principal + CODE_ROOT
 === FIN ===
 ```
 
-### Test defaults (PUT sans paramètres, session 12 avril)
+### Test defaults (PUT sans paramètres)
 
 ```
 X=  3.14158E+000                     DEFAULT_FORE=2, DEFAULT_AFT=5, DEFAULT_EXP=3
-Y= -3.14158E+000                     négatif avec defaults ('DIGITS fonctionne)
+Y= -3.14158E+000                     négatif avec defaults
 ```
-
-### GET_TEST (session 13 avril — FLOAT_IO fichier + console)
-
-```
-Entrez un flottant : 3.89
-Lu : [3.89]
-=== Test 1 : FIO.PUT 3.14159 dans fichier ===
-Ecriture OK
-=== Test 2 : FIO.GET depuis fichier ===
-Relu depuis fichier :  3.141580E+000
-=== Test 3 : verification GET_LINE ===
-Contenu brut : [ 3.14158E+000]
-=== Test 4 : FIO.PUT stdout ===
- 2.71828E+000
-```
-
-Valide : FIO.PUT(FILE,...) + NEW_LINE(FILE) + CLOSE sans corruption,
-FIO.GET(FILE, X) relecture, FIO.PUT stdout, GET_LINE console avec écho.

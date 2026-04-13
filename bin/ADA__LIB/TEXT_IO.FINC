@@ -6,9 +6,14 @@ elab_spec:				;    SPEC ELAB
 ; CODE_TYPE_DECL : skip PRIVATE FILE_TYPE (deferred to full type)
 FILE_MODE = 'FILE_MODE'
 namespace FILE_MODE				; FILE_MODE ENUMERATION TYPE INFO
-CST SIZ, d, 8
-CST , , 7, "IN_FILE"
-CST , , 8, "OUT_FILE"
+BEGIN_BLOC_DEF
+db 0, 7, "IN_FILE"
+db 1, 8, "OUT_FILE"
+END_BLOC_DEF
+IMAGES	BYTES_BLOC
+CST LST, d, 1
+CST FST, d, 0
+CST SIZ, d, 8	; SIZ en bits !
 end namespace
 
 COUNT = 'COUNT'
@@ -45,9 +50,14 @@ end namespace
 
 TYPE_SET = 'TYPE_SET'
 namespace TYPE_SET				; TYPE_SET ENUMERATION TYPE INFO
-CST SIZ, d, 8
-CST , , 10, "LOWER_CASE"
-CST , , 10, "UPPER_CASE"
+BEGIN_BLOC_DEF
+db 0, 10, "LOWER_CASE"
+db 1, 10, "UPPER_CASE"
+END_BLOC_DEF
+IMAGES	BYTES_BLOC
+CST LST, d, 1
+CST FST, d, 0
+CST SIZ, d, 8	; SIZ en bits !
 end namespace
 
 FILE_NAME_BUFFER = 'FILE_NAME_BUFFER'
@@ -689,7 +699,7 @@ L13:
 L12:					; post if
 	La 1, -FILE_ofs
 	LIb	, 0, STANDARD.TEXT_IO.FILE_TYPE.MODE
-	; CODE_PROCEDURE_CALL.INVERSE_RECURSE_ON_PARAMETERS : DEFN.TY NON FAIT DN_IN_OUT_ID
+	La  1,	-FILE_ofs
 	CALL	STANDARD.TEXT_IO. ,RESET_L5
 ret_lbl:
 	UNLINK 1
@@ -2231,7 +2241,7 @@ endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-	; CODE_PROCEDURE_CALL.INVERSE_RECURSE_ON_PARAMETERS : DEFN.TY NON FAIT DN_OUT_ID
+	La  1,	-ITEM_ofs
 	LVa 0,	DEFAULT_INPUT_disp
 	CALL	STANDARD.TEXT_IO. ,GET_L49
 ret_lbl:
@@ -2421,7 +2431,7 @@ endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-	; CODE_PROCEDURE_CALL.INVERSE_RECURSE_ON_PARAMETERS : DEFN.TY NON FAIT DN_OUT_ID
+	La  1,	-ITEM_ofs
 	LVa 0,	DEFAULT_INPUT_disp
 	CALL	STANDARD.TEXT_IO. ,GET_L53
 ret_lbl:
@@ -2532,6 +2542,18 @@ VAR POS_disp, d				; variable entiere
 
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
+					; debut if
+	La 1, -FILE_ofs
+	LId	, 0, STANDARD.TEXT_IO.FILE_TYPE.ID
+	LI	1
+	NEG
+	CEQ
+	BF	L140
+	LA 1,	-24
+	LA 1,	-16
+	SYS_GET_STR
+	BRA	L139
+L140:
 	LVa	1, -ITEM_ofs
 	LIa	, , 8
 	Ld	, STRING.FST_1
@@ -2544,25 +2566,25 @@ LOOP__5:
 	LIa	, , 8
 	Ld	, STRING.LST_1
 	CGT
-	BT	L139
+	BT	L141
 	La 1, -FILE_ofs
 	LIb	, 0, STANDARD.TEXT_IO.FILE_TYPE.AT_END_OF_FILE
-	BT	L139
+	BT	L141
 	LVA  1,	CH_disp
 	La  1,	-FILE_ofs
 	CALL	STANDARD.TEXT_IO. ,GET_L49
 	La 1, -FILE_ofs
 	LIb	, 0, STANDARD.TEXT_IO.FILE_TYPE.AT_END_OF_FILE
-	BT	L139
+	BT	L141
 	Lb 1,	CH_disp
 	LI	 10
 	CEQ
-	BT	L139
+	BT	L141
 					; debut if
 	Lb 1,	CH_disp
 	LI	 13
 	CNE
-	BF	L145
+	BF	L147
 	LVa	1, -ITEM_ofs
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	POS_disp
@@ -2583,11 +2605,12 @@ LOOP__5:
 	LI	1
 	ADD
 	Sd  1,	POS_disp
-	BRA	L144
-L145:
-L144:					; post if
+	BRA	L146
+L147:
+L146:					; post if
 	BRA	LOOP__5
-L139:					; post loop LOOP__5
+L141:					; post loop LOOP__5
+L139:					; post if
 ret_lbl:
 	UNLINK 1
 	RTD	(prm_siz)
@@ -2604,8 +2627,8 @@ endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-	; CODE_PROCEDURE_CALL.INVERSE_RECURSE_ON_PARAMETERS : DEFN.TY NON FAIT DN_OUT_ID
-	; CODE_PROCEDURE_CALL.INVERSE_RECURSE_ON_PARAMETERS : DEFN.TY NON FAIT DN_OUT_ID
+	La  1,	-LAST_ofs
+	La  1,	-ITEM_ofs
 	LVa 0,	DEFAULT_INPUT_disp
 	CALL	STANDARD.TEXT_IO. ,GET_LINE_L57
 ret_lbl:
@@ -2743,36 +2766,87 @@ begin:					;---------- BDY INSTRUCTIONS
 	LI	1
 	Sd  1,	I_disp
 LOOP__6:
-	BF	L146
+	Ld 1,	I_disp
+	Ld 1,	LEN_disp
+	CLE
+	DUP
+	BF	L149
+	DROP
+	La	 1, CHN_disp				; array data start address on stack
+	Ld 1,	I_disp
+	LId	1, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, CHN__u, STANDARD.STRING.COMP_SIZ
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	LI	32
+	CEQ
+L149:
+	BF	L148
 	Ld 1,	I_disp
 	LI	1
 	ADD
 	Sd  1,	I_disp
 	BRA	LOOP__6
-L146:					; post loop LOOP__6
+L148:					; post loop LOOP__6
 					; debut if
-	BF	L148
+	Ld 1,	I_disp
+	Ld 1,	LEN_disp
+	CLE
+	DUP
+	BF	L152
+	DROP
+	La	 1, CHN_disp				; array data start address on stack
+	Ld 1,	I_disp
+	LId	1, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, CHN__u, STANDARD.STRING.COMP_SIZ
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	LI	45
+	CEQ
+L152:
+	BF	L151
 	LI	1
 	Sb  1,	NEG_disp
 	Ld 1,	I_disp
 	LI	1
 	ADD
 	Sd  1,	I_disp
-	BRA	L147
-L148:
-	BF	L149
+	BRA	L150
+L151:
+	Ld 1,	I_disp
+	Ld 1,	LEN_disp
+	CLE
+	DUP
+	BF	L154
+	DROP
+	La	 1, CHN_disp				; array data start address on stack
+	Ld 1,	I_disp
+	LId	1, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, CHN__u, STANDARD.STRING.COMP_SIZ
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	LI	43
+	CEQ
+L154:
+	BF	L153
 	Ld 1,	I_disp
 	LI	1
 	ADD
 	Sd  1,	I_disp
-	BRA	L147
-L149:
-L147:					; post if
+	BRA	L150
+L153:
+L150:					; post if
 LOOP__7:
 	Ld 1,	I_disp
 	Ld 1,	LEN_disp
 	CLE
-	BF	L150
+	BF	L155
 	La	 1, CHN_disp				; array data start address on stack
 	Ld 1,	I_disp
 	LId	1, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
@@ -2793,7 +2867,7 @@ LOOP__7:
 	Lb					; charge depuis adresse empilee 
 	LI	57
 	CGT
-	BT	L150
+	BT	L155
 	LI	10
 	Ld 1,	VAL_disp
 	MUL
@@ -2814,18 +2888,18 @@ LOOP__7:
 	ADD
 	Sd  1,	I_disp
 	BRA	LOOP__7
-L150:					; post loop LOOP__7
+L155:					; post loop LOOP__7
 					; debut if
 	Lb 1,	NEG_disp
-	BF	L153
+	BF	L158
 	Ld 1,	VAL_disp
 	NEG
 	SId  1,	-ITEM_ofs
-	BRA	L152
-L153:
+	BRA	L157
+L158:
 	Ld 1,	VAL_disp
 	SId  1,	-ITEM_ofs
-L152:					; post if
+L157:					; post if
 ret_lbl:
 	UNLINK 1
 	RTD	(prm_siz)
@@ -2893,22 +2967,22 @@ begin:					;---------- BDY INSTRUCTIONS
 	LVA  1,	LEN_disp
 	LVA  1,	CHN_disp
 	CALL	STANDARD.TEXT_IO. ,GET_LINE_L58
-VAR	IL155_disp, d				; compteur boucle LOOP__8
+VAR	IL160_disp, d				; compteur boucle LOOP__8
 	LI	1
-	Sd  1,	IL155_disp
-VAR	LMT_IL155_disp, d			; limite boucle LOOP__8
+	Sd  1,	IL160_disp
+VAR	LMT_IL160_disp, d			; limite boucle LOOP__8
 	Ld 1,	LEN_disp
-	Sd  1,	LMT_IL155_disp
-	Ld  1,	IL155_disp				; test null range LOOP__8
-	Ld  1,	LMT_IL155_disp
+	Sd  1,	LMT_IL160_disp
+	Ld  1,	IL160_disp				; test null range LOOP__8
+	Ld  1,	LMT_IL160_disp
 	CGT
-	BT	L154
+	BT	L159
 LOOP__8:					; corps boucle LOOP__8
 	LI	10
 	Ld 1,	VAL_disp
 	MUL
 	La	 1, CHN_disp				; array data start address on stack
-	Ld	1, IL155_disp
+	Ld	1, IL160_disp
 	LId	1, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	1, CHN__u, STANDARD.STRING.COMP_SIZ
@@ -2919,15 +2993,15 @@ LOOP__8:					; corps boucle LOOP__8
 	LI	48
 	SUB
 	Sd  1,	VAL_disp
-	Ld  1,	IL155_disp				; test de sortie LOOP__8
-	Ld  1,	LMT_IL155_disp
+	Ld  1,	IL160_disp				; test de sortie LOOP__8
+	Ld  1,	LMT_IL160_disp
 	CEQ
-	BT	L154
-	Ld  1,	IL155_disp				; mise a jour compteur LOOP__8
+	BT	L159
+	Ld  1,	IL160_disp				; mise a jour compteur LOOP__8
 	INC
-	Sd  1,	IL155_disp
+	Sd  1,	IL160_disp
 	BRA	LOOP__8				; iteration suivante LOOP__8
-L154:					; post loop LOOP__8
+L159:					; post loop LOOP__8
 	Ld 1,	VAL_disp
 	SId  1,	-ITEM_ofs
 	LVa 1,	CHN_disp
@@ -3012,13 +3086,13 @@ VAR TLEN_disp, d				; variable entiere
 begin:					;---------- BDY INSTRUCTIONS
 					; debut if
 	Lb 1,	IS_NEGATIVE_disp
-	BF	L157
+	BF	L162
 	Ld  1,	-ITEM_ofs
 	NEG
 	Sd  1,	VAL_disp
-	BRA	L156
-L157:
-L156:					; post if
+	BRA	L161
+L162:
+L161:					; post if
 LOOP__9:
 	Ld 1,	VAL_disp
 	Ld  1,	-BASE_ofs
@@ -3028,7 +3102,7 @@ LOOP__9:
 	Ld 1,	DIGIT_disp
 	LI	10
 	CLT
-	BF	L160
+	BF	L165
 	La	 1, STR_disp				; array data start address on stack
 	Ld 1,	POS_disp
 	LId	1, STR__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
@@ -3040,8 +3114,8 @@ LOOP__9:
 	Ld 1,	DIGIT_disp
 	ADD
 	Sb
-	BRA	L159
-L160:
+	BRA	L164
+L165:
 	La	 1, STR_disp				; array data start address on stack
 	Ld 1,	POS_disp
 	LId	1, STR__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
@@ -3055,7 +3129,7 @@ L160:
 	LI	10
 	SUB
 	Sb
-L159:					; post if
+L164:					; post if
 	Ld 1,	VAL_disp
 	Ld  1,	-BASE_ofs
 	DIV
@@ -3063,13 +3137,13 @@ L159:					; post if
 	Ld 1,	VAL_disp
 	LI	0
 	CEQ
-	BT	L158
+	BT	L163
 	Ld 1,	POS_disp
 	LI	1
 	SUB
 	Sd  1,	POS_disp
 	BRA	LOOP__9
-L158:					; post loop LOOP__9
+L163:					; post loop LOOP__9
 	LId	1, STR__u, STRING.LST_1
 	Ld 1,	POS_disp
 	SUB
@@ -3080,90 +3154,90 @@ L158:					; post loop LOOP__9
 	Sd  1,	TLEN_disp
 					; debut if
 	Lb 1,	IS_NEGATIVE_disp
-	BF	L163
+	BF	L168
 	Ld 1,	TLEN_disp
 	LI	1
 	ADD
 	Sd  1,	TLEN_disp
-	BRA	L162
-L163:
-L162:					; post if
+	BRA	L167
+L168:
+L167:					; post if
 					; debut if
 	Ld  1,	-BASE_ofs
 	LI	10
 	CNE
-	BF	L165
+	BF	L170
 					; debut if
 	Ld  1,	-BASE_ofs
 	LI	10
 	CGE
-	BF	L167
+	BF	L172
 	Ld 1,	TLEN_disp
 	LI	4
 	ADD
 	Sd  1,	TLEN_disp
-	BRA	L166
-L167:
+	BRA	L171
+L172:
 	Ld 1,	TLEN_disp
 	LI	3
 	ADD
 	Sd  1,	TLEN_disp
-L166:					; post if
-	BRA	L164
-L165:
-L164:					; post if
+L171:					; post if
+	BRA	L169
+L170:
+L169:					; post if
 					; debut if
 	Ld  1,	-WIDTH_ofs
 	Ld 1,	TLEN_disp
 	CGT
-	BF	L169
-VAR	IL171_disp, d				; compteur boucle LOOP__10
+	BF	L174
+VAR	IL176_disp, d				; compteur boucle LOOP__10
 	LI	1
-	Sd  1,	IL171_disp
-VAR	LMT_IL171_disp, d			; limite boucle LOOP__10
+	Sd  1,	IL176_disp
+VAR	LMT_IL176_disp, d			; limite boucle LOOP__10
 	Ld  1,	-WIDTH_ofs
 	Ld 1,	TLEN_disp
 	SUB
-	Sd  1,	LMT_IL171_disp
-	Ld  1,	IL171_disp				; test null range LOOP__10
-	Ld  1,	LMT_IL171_disp
+	Sd  1,	LMT_IL176_disp
+	Ld  1,	IL176_disp				; test null range LOOP__10
+	Ld  1,	LMT_IL176_disp
 	CGT
-	BT	L170
+	BT	L175
 LOOP__10:					; corps boucle LOOP__10
 	LI	32
 	La  1,	-FILE_ofs
 	CALL	STANDARD.TEXT_IO. ,PUT_L51
-	Ld  1,	IL171_disp				; test de sortie LOOP__10
-	Ld  1,	LMT_IL171_disp
+	Ld  1,	IL176_disp				; test de sortie LOOP__10
+	Ld  1,	LMT_IL176_disp
 	CEQ
-	BT	L170
-	Ld  1,	IL171_disp				; mise a jour compteur LOOP__10
+	BT	L175
+	Ld  1,	IL176_disp				; mise a jour compteur LOOP__10
 	INC
-	Sd  1,	IL171_disp
+	Sd  1,	IL176_disp
 	BRA	LOOP__10				; iteration suivante LOOP__10
-L170:					; post loop LOOP__10
-	BRA	L168
-L169:
-L168:					; post if
+L175:					; post loop LOOP__10
+	BRA	L173
+L174:
+L173:					; post if
 					; debut if
 	Lb 1,	IS_NEGATIVE_disp
-	BF	L173
+	BF	L178
 	LI	45
 	La  1,	-FILE_ofs
 	CALL	STANDARD.TEXT_IO. ,PUT_L51
-	BRA	L172
-L173:
-L172:					; post if
+	BRA	L177
+L178:
+L177:					; post if
 					; debut if
 	Ld  1,	-BASE_ofs
 	LI	10
 	CNE
-	BF	L175
+	BF	L180
 					; debut if
 	Ld  1,	-BASE_ofs
 	LI	10
 	CGE
-	BF	L177
+	BF	L182
 	LI	49
 	La  1,	-FILE_ofs
 	CALL	STANDARD.TEXT_IO. ,PUT_L51
@@ -3174,20 +3248,20 @@ L172:					; post if
 	SUB
 	La  1,	-FILE_ofs
 	CALL	STANDARD.TEXT_IO. ,PUT_L51
-	BRA	L176
-L177:
+	BRA	L181
+L182:
 	LI	48
 	Ld  1,	-BASE_ofs
 	ADD
 	La  1,	-FILE_ofs
 	CALL	STANDARD.TEXT_IO. ,PUT_L51
-L176:					; post if
+L181:					; post if
 	LI	35
 	La  1,	-FILE_ofs
 	CALL	STANDARD.TEXT_IO. ,PUT_L51
-	BRA	L174
-L175:
-L174:					; post if
+	BRA	L179
+L180:
+L179:					; post if
 	La 1, STR_disp
 	Ld 1,	POS_disp
 	LId	1, STR__u, STRING.FST_1
@@ -3195,16 +3269,16 @@ L174:					; post if
 	LI	1
 	MUL
 	ADD
-namespace ANON_1079_18			; ensemble doublet @data/@info pour slice anonyme source
-VAR ANON_1079_18_disp, q
-VAR ANON_1079_18__u, q
+namespace ANON_1085_18			; ensemble doublet @data/@info pour slice anonyme source
+VAR ANON_1085_18_disp, q
+VAR ANON_1085_18__u, q
 VAR SIZ, d
 VAR COMP_SIZ, d
 VAR FST_1, d
 VAR LST_1, d
-	Sa	1, ANON_1079_18_disp
+	Sa	1, ANON_1085_18_disp
 	LVA	1, SIZ
-	Sa	1, ANON_1079_18__u
+	Sa	1, ANON_1085_18__u
 	LI	1
 	Sd	1, COMP_SIZ
 	Ld 1,	POS_disp
@@ -3218,7 +3292,7 @@ VAR LST_1, d
 	LI	1
 	MUL
 	Sd	1, SIZ
-	LVA	1, ANON_1079_18_disp
+	LVA	1, ANON_1085_18_disp
 end namespace
 	La  1,	-FILE_ofs
 	CALL	STANDARD.TEXT_IO. ,PUT_L55
@@ -3226,13 +3300,13 @@ end namespace
 	Ld  1,	-BASE_ofs
 	LI	10
 	CNE
-	BF	L179
+	BF	L184
 	LI	35
 	La  1,	-FILE_ofs
 	CALL	STANDARD.TEXT_IO. ,PUT_L51
-	BRA	L178
-L179:
-L178:					; post if
+	BRA	L183
+L184:
+L183:					; post if
 ret_lbl:
 	UNLINK 1
 	RTD	(prm_siz)
@@ -3309,7 +3383,7 @@ VAR DEFAULT_FORE_disp, d			; variable entiere
 	Sd  0,	DEFAULT_FORE_disp
 
 VAR DEFAULT_AFT_disp, d			; variable entiere
-; CODE_ATTRIBUTE DIGITS : SM_ACCURACY VOID
+	LI	6
 	LI	1
 	SUB
 	Sd  0,	DEFAULT_AFT_disp
@@ -3411,36 +3485,87 @@ begin:					;---------- BDY INSTRUCTIONS
 	LI	1
 	Sd  1,	I_disp
 LOOP__11:
-	BF	L180
+	Ld 1,	I_disp
+	Ld 1,	LEN_disp
+	CLE
+	DUP
+	BF	L186
+	DROP
+	La	 1, CHN_disp				; array data start address on stack
+	Ld 1,	I_disp
+	LId	1, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, CHN__u, STANDARD.STRING.COMP_SIZ
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	LI	32
+	CEQ
+L186:
+	BF	L185
 	Ld 1,	I_disp
 	LI	1
 	ADD
 	Sd  1,	I_disp
 	BRA	LOOP__11
-L180:					; post loop LOOP__11
+L185:					; post loop LOOP__11
 					; debut if
-	BF	L182
+	Ld 1,	I_disp
+	Ld 1,	LEN_disp
+	CLE
+	DUP
+	BF	L189
+	DROP
+	La	 1, CHN_disp				; array data start address on stack
+	Ld 1,	I_disp
+	LId	1, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, CHN__u, STANDARD.STRING.COMP_SIZ
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	LI	45
+	CEQ
+L189:
+	BF	L188
 	LI	1
 	Sb  1,	NEG_disp
 	Ld 1,	I_disp
 	LI	1
 	ADD
 	Sd  1,	I_disp
-	BRA	L181
-L182:
-	BF	L183
+	BRA	L187
+L188:
+	Ld 1,	I_disp
+	Ld 1,	LEN_disp
+	CLE
+	DUP
+	BF	L191
+	DROP
+	La	 1, CHN_disp				; array data start address on stack
+	Ld 1,	I_disp
+	LId	1, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, CHN__u, STANDARD.STRING.COMP_SIZ
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	LI	43
+	CEQ
+L191:
+	BF	L190
 	Ld 1,	I_disp
 	LI	1
 	ADD
 	Sd  1,	I_disp
-	BRA	L181
-L183:
-L181:					; post if
+	BRA	L187
+L190:
+L187:					; post if
 LOOP__12:
 	Ld 1,	I_disp
 	Ld 1,	LEN_disp
 	CLE
-	BF	L184
+	BF	L192
 					; debut if
 	La	 1, CHN_disp				; array data start address on stack
 	Ld 1,	I_disp
@@ -3452,11 +3577,11 @@ LOOP__12:
 	Lb					; charge depuis adresse empilee 
 	LI	46
 	CEQ
-	BF	L186
+	BF	L194
 	LI	1
 	Sb  1,	IN_FRAC_disp
-	BRA	L185
-L186:
+	BRA	L193
+L194:
 	La	 1, CHN_disp				; array data start address on stack
 	Ld 1,	I_disp
 	LId	1, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
@@ -3477,7 +3602,7 @@ L186:
 	Lb					; charge depuis adresse empilee 
 	LI	101
 	CEQ
-	BF	L187
+	BF	L195
 	LI	1
 	Sb  1,	IN_EXP_disp
 	Ld 1,	I_disp
@@ -3485,25 +3610,90 @@ L186:
 	ADD
 	Sd  1,	I_disp
 					; debut if
-	BF	L189
+	Ld 1,	I_disp
+	Ld 1,	LEN_disp
+	CLE
+	DUP
+	BF	L198
+	DROP
+	La	 1, CHN_disp				; array data start address on stack
+	Ld 1,	I_disp
+	LId	1, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, CHN__u, STANDARD.STRING.COMP_SIZ
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	LI	45
+	CEQ
+L198:
+	BF	L197
 	LI	1
 	Sb  1,	EXP_NEG_disp
 	Ld 1,	I_disp
 	LI	1
 	ADD
 	Sd  1,	I_disp
-	BRA	L188
-L189:
-	BF	L190
+	BRA	L196
+L197:
+	Ld 1,	I_disp
+	Ld 1,	LEN_disp
+	CLE
+	DUP
+	BF	L200
+	DROP
+	La	 1, CHN_disp				; array data start address on stack
+	Ld 1,	I_disp
+	LId	1, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, CHN__u, STANDARD.STRING.COMP_SIZ
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	LI	43
+	CEQ
+L200:
+	BF	L199
 	Ld 1,	I_disp
 	LI	1
 	ADD
 	Sd  1,	I_disp
-	BRA	L188
-L190:
-L188:					; post if
+	BRA	L196
+L199:
+L196:					; post if
 LOOP__13:
-	BF	L191
+	Ld 1,	I_disp
+	Ld 1,	LEN_disp
+	CLE
+	DUP
+	BF	L203
+	DROP
+	La	 1, CHN_disp				; array data start address on stack
+	Ld 1,	I_disp
+	LId	1, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, CHN__u, STANDARD.STRING.COMP_SIZ
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	LI	48
+	CGE
+L203:
+	DUP
+	BF	L202
+	DROP
+	La	 1, CHN_disp				; array data start address on stack
+	Ld 1,	I_disp
+	LId	1, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, CHN__u, STANDARD.STRING.COMP_SIZ
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	LI	57
+	CLE
+L202:
+	BF	L201
 	LI	10
 	Ld 1,	EXP_VAL_disp
 	MUL
@@ -3524,14 +3714,38 @@ LOOP__13:
 	ADD
 	Sd  1,	I_disp
 	BRA	LOOP__13
-L191:					; post loop LOOP__13
-	BRA	L184
-	BRA	L185
-L187:
-	BF	L193
+L201:					; post loop LOOP__13
+	BRA	L192
+	BRA	L193
+L195:
+	La	 1, CHN_disp				; array data start address on stack
+	Ld 1,	I_disp
+	LId	1, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, CHN__u, STANDARD.STRING.COMP_SIZ
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	LI	48
+	CGE
+	DUP
+	BF	L206
+	DROP
+	La	 1, CHN_disp				; array data start address on stack
+	Ld 1,	I_disp
+	LId	1, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, CHN__u, STANDARD.STRING.COMP_SIZ
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	LI	57
+	CLE
+L206:
+	BF	L205
 					; debut if
 	Lb 1,	IN_FRAC_disp
-	BF	L195
+	BF	L208
 	Lq 1,	VAL_disp
 	Lq 1,	FRAC_disp
 	La	 1, CHN_disp				; array data start address on stack
@@ -3552,8 +3766,8 @@ L187:
 	LIF	10.0
 	FDIV
 	Sq  1,	FRAC_disp
-	BRA	L194
-L195:
+	BRA	L207
+L208:
 	LIF	10.0
 	Lq 1,	VAL_disp
 	FMUL
@@ -3570,82 +3784,82 @@ L195:
 	CVTIF
 	FADD
 	Sq  1,	VAL_disp
-L194:					; post if
-	BRA	L185
-L193:
-	BRA	L184
-L185:					; post if
+L207:					; post if
+	BRA	L193
+L205:
+	BRA	L192
+L193:					; post if
 	Ld 1,	I_disp
 	LI	1
 	ADD
 	Sd  1,	I_disp
 	BRA	LOOP__12
-L184:					; post loop LOOP__12
+L192:					; post loop LOOP__12
 					; debut if
 	Lb 1,	EXP_NEG_disp
-	BF	L198
-VAR	JL200_disp, d				; compteur boucle LOOP__14
+	BF	L211
+VAR	JL213_disp, d				; compteur boucle LOOP__14
 	LI	1
-	Sd  1,	JL200_disp
-VAR	LMT_JL200_disp, d			; limite boucle LOOP__14
+	Sd  1,	JL213_disp
+VAR	LMT_JL213_disp, d			; limite boucle LOOP__14
 	Ld 1,	EXP_VAL_disp
-	Sd  1,	LMT_JL200_disp
-	Ld  1,	JL200_disp				; test null range LOOP__14
-	Ld  1,	LMT_JL200_disp
+	Sd  1,	LMT_JL213_disp
+	Ld  1,	JL213_disp				; test null range LOOP__14
+	Ld  1,	LMT_JL213_disp
 	CGT
-	BT	L199
+	BT	L212
 LOOP__14:					; corps boucle LOOP__14
 	Lq 1,	VAL_disp
 	LIF	10.0
 	FDIV
 	Sq  1,	VAL_disp
-	Ld  1,	JL200_disp				; test de sortie LOOP__14
-	Ld  1,	LMT_JL200_disp
+	Ld  1,	JL213_disp				; test de sortie LOOP__14
+	Ld  1,	LMT_JL213_disp
 	CEQ
-	BT	L199
-	Ld  1,	JL200_disp				; mise a jour compteur LOOP__14
+	BT	L212
+	Ld  1,	JL213_disp				; mise a jour compteur LOOP__14
 	INC
-	Sd  1,	JL200_disp
+	Sd  1,	JL213_disp
 	BRA	LOOP__14				; iteration suivante LOOP__14
-L199:					; post loop LOOP__14
-	BRA	L197
-L198:
-VAR	JL202_disp, d				; compteur boucle LOOP__15
+L212:					; post loop LOOP__14
+	BRA	L210
+L211:
+VAR	JL215_disp, d				; compteur boucle LOOP__15
 	LI	1
-	Sd  1,	JL202_disp
-VAR	LMT_JL202_disp, d			; limite boucle LOOP__15
+	Sd  1,	JL215_disp
+VAR	LMT_JL215_disp, d			; limite boucle LOOP__15
 	Ld 1,	EXP_VAL_disp
-	Sd  1,	LMT_JL202_disp
-	Ld  1,	JL202_disp				; test null range LOOP__15
-	Ld  1,	LMT_JL202_disp
+	Sd  1,	LMT_JL215_disp
+	Ld  1,	JL215_disp				; test null range LOOP__15
+	Ld  1,	LMT_JL215_disp
 	CGT
-	BT	L201
+	BT	L214
 LOOP__15:					; corps boucle LOOP__15
 	Lq 1,	VAL_disp
 	LIF	10.0
 	FMUL
 	Sq  1,	VAL_disp
-	Ld  1,	JL202_disp				; test de sortie LOOP__15
-	Ld  1,	LMT_JL202_disp
+	Ld  1,	JL215_disp				; test de sortie LOOP__15
+	Ld  1,	LMT_JL215_disp
 	CEQ
-	BT	L201
-	Ld  1,	JL202_disp				; mise a jour compteur LOOP__15
+	BT	L214
+	Ld  1,	JL215_disp				; mise a jour compteur LOOP__15
 	INC
-	Sd  1,	JL202_disp
+	Sd  1,	JL215_disp
 	BRA	LOOP__15				; iteration suivante LOOP__15
-L201:					; post loop LOOP__15
-L197:					; post if
+L214:					; post loop LOOP__15
+L210:					; post if
 					; debut if
 	Lb 1,	NEG_disp
-	BF	L204
+	BF	L217
 	Lq 1,	VAL_disp
 	FNEG
 	SIq  1,	-ITEM_ofs
-	BRA	L203
-L204:
+	BRA	L216
+L217:
 	Lq 1,	VAL_disp
 	SIq  1,	-ITEM_ofs
-L203:					; post if
+L216:					; post if
 ret_lbl:
 	UNLINK 1
 	RTD	(prm_siz)
@@ -3664,7 +3878,7 @@ ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 	Ld  1,	-WIDTH_ofs
-	; CODE_PROCEDURE_CALL.INVERSE_RECURSE_ON_PARAMETERS : DEFN.TY NON FAIT DN_OUT_ID
+	La  1,	-ITEM_ofs
 	LVa 0,	DEFAULT_INPUT_disp
 	CALL	STANDARD.TEXT_IO.FLOAT_IO. ,GET_L67
 ret_lbl:
@@ -3707,23 +3921,23 @@ VAR FORE_LEN_disp, d			; variable entiere
 begin:					;---------- BDY INSTRUCTIONS
 					; debut if
 	Lb 1,	IS_NEGATIVE_disp
-	BF	L206
+	BF	L219
 	Lq  1,	-ITEM_ofs
 	FNEG
 	Sq  1,	VAL_disp
-	BRA	L205
-L206:
-L205:					; post if
+	BRA	L218
+L219:
+L218:					; post if
 					; debut if
 	Lq 1,	VAL_disp
 	LIF	0.0
 	FCNE
-	BF	L208
+	BF	L221
 LOOP__16:
 	Lq 1,	VAL_disp
 	LIF	10.0
 	FCGE
-	BF	L209
+	BF	L222
 	Lq 1,	VAL_disp
 	LIF	10.0
 	FDIV
@@ -3733,12 +3947,12 @@ LOOP__16:
 	ADD
 	Sd  1,	E_disp
 	BRA	LOOP__16
-L209:					; post loop LOOP__16
+L222:					; post loop LOOP__16
 LOOP__17:
 	Lq 1,	VAL_disp
 	LIF	1.0
 	FCLT
-	BF	L210
+	BF	L223
 	Lq 1,	VAL_disp
 	LIF	10.0
 	FMUL
@@ -3748,62 +3962,62 @@ LOOP__17:
 	SUB
 	Sd  1,	E_disp
 	BRA	LOOP__17
-L210:					; post loop LOOP__17
-	BRA	L207
-L208:
-L207:					; post if
+L223:					; post loop LOOP__17
+	BRA	L220
+L221:
+L220:					; post if
 	LI	1
 	Sd  1,	FORE_LEN_disp
 					; debut if
 	Lb 1,	IS_NEGATIVE_disp
-	BF	L212
+	BF	L225
 	LI	2
 	Sd  1,	FORE_LEN_disp
-	BRA	L211
-L212:
-L211:					; post if
+	BRA	L224
+L225:
+L224:					; post if
 					; debut if
 	Ld  1,	-FORE_ofs
 	Ld 1,	FORE_LEN_disp
 	CGT
-	BF	L214
-VAR	IL216_disp, d				; compteur boucle LOOP__18
+	BF	L227
+VAR	IL229_disp, d				; compteur boucle LOOP__18
 	LI	1
-	Sd  1,	IL216_disp
-VAR	LMT_IL216_disp, d			; limite boucle LOOP__18
+	Sd  1,	IL229_disp
+VAR	LMT_IL229_disp, d			; limite boucle LOOP__18
 	Ld  1,	-FORE_ofs
 	Ld 1,	FORE_LEN_disp
 	SUB
-	Sd  1,	LMT_IL216_disp
-	Ld  1,	IL216_disp				; test null range LOOP__18
-	Ld  1,	LMT_IL216_disp
+	Sd  1,	LMT_IL229_disp
+	Ld  1,	IL229_disp				; test null range LOOP__18
+	Ld  1,	LMT_IL229_disp
 	CGT
-	BT	L215
+	BT	L228
 LOOP__18:					; corps boucle LOOP__18
 	LI	32
 	La  1,	-FILE_ofs
 	CALL	STANDARD.TEXT_IO. ,PUT_L51
-	Ld  1,	IL216_disp				; test de sortie LOOP__18
-	Ld  1,	LMT_IL216_disp
+	Ld  1,	IL229_disp				; test de sortie LOOP__18
+	Ld  1,	LMT_IL229_disp
 	CEQ
-	BT	L215
-	Ld  1,	IL216_disp				; mise a jour compteur LOOP__18
+	BT	L228
+	Ld  1,	IL229_disp				; mise a jour compteur LOOP__18
 	INC
-	Sd  1,	IL216_disp
+	Sd  1,	IL229_disp
 	BRA	LOOP__18				; iteration suivante LOOP__18
-L215:					; post loop LOOP__18
-	BRA	L213
-L214:
-L213:					; post if
+L228:					; post loop LOOP__18
+	BRA	L226
+L227:
+L226:					; post if
 					; debut if
 	Lb 1,	IS_NEGATIVE_disp
-	BF	L218
+	BF	L231
 	LI	45
 	La  1,	-FILE_ofs
 	CALL	STANDARD.TEXT_IO. ,PUT_L51
-	BRA	L217
-L218:
-L217:					; post if
+	BRA	L230
+L231:
+L230:					; post if
 	Lq 1,	VAL_disp
 	CVTFI
 	Sd  1,	DIGIT_disp
@@ -3811,22 +4025,22 @@ L217:					; post if
 	Ld 1,	DIGIT_disp
 	LI	9
 	CGT
-	BF	L220
+	BF	L233
 	LI	9
 	Sd  1,	DIGIT_disp
-	BRA	L219
-L220:
-L219:					; post if
+	BRA	L232
+L233:
+L232:					; post if
 					; debut if
 	Ld 1,	DIGIT_disp
 	LI	0
 	CLT
-	BF	L222
+	BF	L235
 	LI	0
 	Sd  1,	DIGIT_disp
-	BRA	L221
-L222:
-L221:					; post if
+	BRA	L234
+L235:
+L234:					; post if
 	LI	48
 	Ld 1,	DIGIT_disp
 	ADD
@@ -3842,16 +4056,16 @@ L221:					; post if
 	LI	46
 	La  1,	-FILE_ofs
 	CALL	STANDARD.TEXT_IO. ,PUT_L51
-VAR	IL224_disp, d				; compteur boucle LOOP__19
+VAR	IL237_disp, d				; compteur boucle LOOP__19
 	LI	1
-	Sd  1,	IL224_disp
-VAR	LMT_IL224_disp, d			; limite boucle LOOP__19
+	Sd  1,	IL237_disp
+VAR	LMT_IL237_disp, d			; limite boucle LOOP__19
 	Ld  1,	-AFT_ofs
-	Sd  1,	LMT_IL224_disp
-	Ld  1,	IL224_disp				; test null range LOOP__19
-	Ld  1,	LMT_IL224_disp
+	Sd  1,	LMT_IL237_disp
+	Ld  1,	IL237_disp				; test null range LOOP__19
+	Ld  1,	LMT_IL237_disp
 	CGT
-	BT	L223
+	BT	L236
 LOOP__19:					; corps boucle LOOP__19
 	Lq 1,	VAL_disp
 	CVTFI
@@ -3860,22 +4074,22 @@ LOOP__19:					; corps boucle LOOP__19
 	Ld 1,	DIGIT_disp
 	LI	9
 	CGT
-	BF	L226
+	BF	L239
 	LI	9
 	Sd  1,	DIGIT_disp
-	BRA	L225
-L226:
-L225:					; post if
+	BRA	L238
+L239:
+L238:					; post if
 					; debut if
 	Ld 1,	DIGIT_disp
 	LI	0
 	CLT
-	BF	L228
+	BF	L241
 	LI	0
 	Sd  1,	DIGIT_disp
-	BRA	L227
-L228:
-L227:					; post if
+	BRA	L240
+L241:
+L240:					; post if
 	LI	48
 	Ld 1,	DIGIT_disp
 	ADD
@@ -3888,20 +4102,20 @@ L227:					; post if
 	LIF	10.0
 	FMUL
 	Sq  1,	VAL_disp
-	Ld  1,	IL224_disp				; test de sortie LOOP__19
-	Ld  1,	LMT_IL224_disp
+	Ld  1,	IL237_disp				; test de sortie LOOP__19
+	Ld  1,	LMT_IL237_disp
 	CEQ
-	BT	L223
-	Ld  1,	IL224_disp				; mise a jour compteur LOOP__19
+	BT	L236
+	Ld  1,	IL237_disp				; mise a jour compteur LOOP__19
 	INC
-	Sd  1,	IL224_disp
+	Sd  1,	IL237_disp
 	BRA	LOOP__19				; iteration suivante LOOP__19
-L223:					; post loop LOOP__19
+L236:					; post loop LOOP__19
 					; debut if
 	Ld  1,	-EXP_ofs
 	LI	0
 	CGT
-	BF	L230
+	BF	L243
 	LI	69
 	La  1,	-FILE_ofs
 	CALL	STANDARD.TEXT_IO. ,PUT_L51
@@ -3909,19 +4123,19 @@ L223:					; post loop LOOP__19
 	Ld 1,	E_disp
 	LI	0
 	CLT
-	BF	L232
+	BF	L245
 	LI	45
 	La  1,	-FILE_ofs
 	CALL	STANDARD.TEXT_IO. ,PUT_L51
 	Ld 1,	E_disp
 	NEG
 	Sd  1,	E_disp
-	BRA	L231
-L232:
+	BRA	L244
+L245:
 	LI	43
 	La  1,	-FILE_ofs
 	CALL	STANDARD.TEXT_IO. ,PUT_L51
-L231:					; post if
+L244:					; post if
 namespace	BLOCK__20
 ELB 2					;    BODY ELAB
 STRING = 'STRING'
@@ -3973,23 +4187,23 @@ VAR EVAL_disp, d				; variable entiere
 
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-VAR	IL234_disp, d				; compteur boucle LOOP__21
+VAR	IL247_disp, d				; compteur boucle LOOP__21
 	LI	1
-	Sd  2,	IL234_disp
-VAR	LMT_IL234_disp, d			; limite boucle LOOP__21
+	Sd  2,	IL247_disp
+VAR	LMT_IL247_disp, d			; limite boucle LOOP__21
 	Ld  1,	-EXP_ofs
-	Sd  2,	LMT_IL234_disp
-	Ld  2,	IL234_disp				; test null range LOOP__21
-	Ld  2,	LMT_IL234_disp
+	Sd  2,	LMT_IL247_disp
+	Ld  2,	IL247_disp				; test null range LOOP__21
+	Ld  2,	LMT_IL247_disp
 	CGT
-	BT	L233
-	Ld  2,	IL234_disp				; inversion range LOOP__21
-	Ld  2,	LMT_IL234_disp
-	Sd  2,	IL234_disp
-	Sd  2,	LMT_IL234_disp
+	BT	L246
+	Ld  2,	IL247_disp				; inversion range LOOP__21
+	Ld  2,	LMT_IL247_disp
+	Sd  2,	IL247_disp
+	Sd  2,	LMT_IL247_disp
 LOOP__21:					; corps boucle LOOP__21
 	La	 2, EXP_STR_disp			; array data start address on stack
-	Ld	2, IL234_disp
+	Ld	2, IL247_disp
 	LId	2, EXP_STR__u, STANDARD.STRING.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	2, EXP_STR__u, STANDARD.STRING.COMP_SIZ
@@ -4005,22 +4219,23 @@ LOOP__21:					; corps boucle LOOP__21
 	LI	10
 	DIV
 	Sd  2,	EVAL_disp
-	Ld  2,	IL234_disp				; test de sortie LOOP__21
-	Ld  2,	LMT_IL234_disp
+	Ld  2,	IL247_disp				; test de sortie LOOP__21
+	Ld  2,	LMT_IL247_disp
 	CEQ
-	BT	L233
-	Ld  2,	IL234_disp				; mise a jour compteur LOOP__21
+	BT	L246
+	Ld  2,	IL247_disp				; mise a jour compteur LOOP__21
 	DEC
-	Sd  2,	IL234_disp
+	Sd  2,	IL247_disp
 	BRA	LOOP__21				; iteration suivante LOOP__21
-L233:					; post loop LOOP__21
+L246:					; post loop LOOP__21
 	LVa 2,	EXP_STR_disp
 	La  1,	-FILE_ofs
 	CALL	STANDARD.TEXT_IO. ,PUT_L55
+	UNLINK 2
 endPRO
-	BRA	L229
-L230:
-L229:					; post if
+	BRA	L242
+L243:
+L242:					; post if
 ret_lbl:
 	UNLINK 1
 	RTD	(prm_siz)

@@ -86,32 +86,34 @@ is
     TYPE_ID	: TREE		:= D( AS_SOURCE_NAME, TYPE_DECL );
     TYPE_SPEC	: TREE		:= D( SM_TYPE_SPEC, TYPE_ID );
     TYPE_STR	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, TYPE_ID ) );
-    MAX_REP	: INTEGER		:= INTEGER'FIRST;
-    MIN_REP	: INTEGER		:= INTEGER'LAST;
+
 		-------------------
     procedure	CODE_ENUM_LITERAL_S		( ENUM_LITERAL_S :TREE )
     is
       ENUM_LITERAL_SEQ	: SEQ_TYPE	:= LIST ( ENUM_LITERAL_S );
       ENUM_LITERAL_ID	: TREE;
       LAST_LITERAL		: TREE;
-    begin
-      while  not IS_EMPTY( ENUM_LITERAL_SEQ )  loop
-        POP( ENUM_LITERAL_SEQ, ENUM_LITERAL_ID );
+
+      procedure EMIT_REVERSE ( REMAIN :in out SEQ_TYPE )
+      is
+        LIT	: TREE;
+      begin
+        if  IS_EMPTY( REMAIN )  then return; end if;
+        POP( REMAIN, LIT );
+        EMIT_REVERSE( REMAIN );						-- recurse d'abord = emettre les suivants avant celui-ci
         declare
-	ENUM_ID_STR	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, ENUM_LITERAL_ID ) );
-	REP		: INTEGER		:= DI( SM_REP, ENUM_LITERAL_ID );
+	ENUM_ID_STR	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, LIT ) );
         begin
-	if  MIN_REP > REP  then MIN_REP := REP; end if;
-	if  MAX_REP < REP  then MAX_REP := REP; end if;
 	if  ENUM_ID_STR /= "'""'"
-	then  PUT_LINE( "db" & INTEGER'IMAGE( REP ) & "," & INTEGER'IMAGE( ENUM_ID_STR'LENGTH ) & ", """ & ENUM_ID_STR & """" );
-	else  PUT_LINE( "db" & INTEGER'IMAGE( REP ) & "," & INTEGER'IMAGE( ENUM_ID_STR'LENGTH ) & ", ""'""""'""" );
---	then  PUT_LINE( "CST , ," & INTEGER'IMAGE( ENUM_ID_STR'LENGTH ) & ", """ & ENUM_ID_STR & """" );
---	else  PUT_LINE( "CST , ," & INTEGER'IMAGE( ENUM_ID_STR'LENGTH ) & ", ""'""""'""" );
+	then  PUT_LINE( "CST , ," & INTEGER'IMAGE( ENUM_ID_STR'LENGTH ) & ", """ & ENUM_ID_STR & """" );
+	else  PUT_LINE( "CST , ," & INTEGER'IMAGE( ENUM_ID_STR'LENGTH ) & ", ""'""""'""" );
 	end if;
         end;
-        LAST_LITERAL := ENUM_LITERAL_ID;
-      end loop;
+        LAST_LITERAL := LIT;
+      end	EMIT_REVERSE;
+
+    begin
+      EMIT_REVERSE( ENUM_LITERAL_SEQ );
       DI( CD_LAST, ENUM_LITERAL_S, DI ( SM_REP, LAST_LITERAL ) );
 
   end	CODE_ENUM_LITERAL_S;
@@ -125,15 +127,11 @@ is
     PUT( "namespace " & TYPE_STR );
     if  CODI.DEBUG  then PUT( tab50 & "; " & TYPE_STR & " ENUMERATION TYPE INFO" ); end if;
     NEW_LINE;
-    PUT_LINE( "BEGIN_BLOC_DEF" );
+
     CODE_ENUM_LITERAL_S( D( SM_LITERAL_S, TYPE_SPEC ) );
-    PUT_LINE( "END_BLOC_DEF" );
-    PUT_LINE( "IMAGES" & ASCII.HT & "BYTES_BLOC" );
-    PUT_LINE( "CST " & "LST, d," & INTEGER'IMAGE( MAX_REP ) );
-    PUT_LINE( "CST " & "FST, d," & INTEGER'IMAGE( MIN_REP ) );
-    PUT     ( "CST " & "SIZ, d," & INTEGER'IMAGE( DI( CD_IMPL_SIZE, TYPE_SPEC ) ) );
-    if  CODI.DEBUG  then PUT( ASCII.HT & "; SIZ en bits !" ); end if;
-    NEW_LINE;
+
+    PUT_LINE( "CST " & "SIZ, d," & INTEGER'IMAGE( DI( CD_IMPL_SIZE, TYPE_SPEC ) ) );		-- SIZ en dernier emis = premier en memoire (postpone LIFO)
+
     PUT_LINE( "end namespace");
     if  CODI.DEBUG  then NEW_LINE; end if;
 
