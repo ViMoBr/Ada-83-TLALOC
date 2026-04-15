@@ -230,6 +230,11 @@ is
 	    if  GTYPE_DEF.TY = DN_FORMAL_INTEGER_DEF  then
 	      PUT_LINE( tab & "PRM " & GPRM_NAME & "_first_ofs" );
 	      PUT_LINE( tab & "PRM " & GPRM_NAME & "_last_ofs" );
+	    elsif  GTYPE_DEF.TY = DN_FORMAL_DSCRT_DEF  then
+	      PUT_LINE( tab & "PRM " & GPRM_NAME & "__u_ofs" );
+--	      PUT_LINE( tab & "PRM " & GPRM_NAME & "_images_ofs" );
+--	      PUT_LINE( tab & "PRM " & GPRM_NAME & "_first_ofs" );
+--	      PUT_LINE( tab & "PRM " & GPRM_NAME & "_last_ofs" );
 	    end if;
 	  end;
 	end if;

@@ -1443,6 +1443,22 @@ is					-------
   is			--------------
 
     			---
+    procedure		GET		( FILE :in FILE_TYPE; ITEM :out ENUM)
+    is			---
+    begin null;
+
+    end	GET;
+	---
+
+			---
+    procedure		GET		( ITEM :out ENUM)
+    is			---
+    begin null;
+
+    end	GET;
+	---
+
+			---
     procedure		PUT		( FILE  :in FILE_TYPE;
 					  ITEM  :in ENUM;
 					  WIDTH :in FIELD		:= DEFAULT_WIDTH;
@@ -1450,61 +1466,23 @@ is					-------
 					)
     is			---
 
-		---------------
-      function	GET_ENUM_IMAGES			return STRING
-      is		---------------
+      function	GET_ENUM_IMAGES	return STRING is
       begin
-        ASM_OP_2'( OPCODE => La,  LVL => 1, OFS => -40 );							-- empiler @GFP_disp
-        ASM_OP_3'( OPCODE => LIVa,  DISP => -8, OFS=> 16 );							-- empiler @GFP_disp
-        ASM_OP_2'( OPCODE => Sa,  LVL => 2, OFS => -8 );							-- stocker dans result_ofs
+        ASM_OP_2'( OPCODE => La, LVL => 1, OFS => -40 );			-- empiler le GFP place en GFP_ofs
+        ASM_OP_2'( OPCODE => La, OFS => -8 );				-- empiler l'adresse de ENUM_images_ofs sous GFP
+        ASM_OP_2'( OPCODE => Sa, LVL => 2, OFS => -8 );			-- function result
 
       end	GET_ENUM_IMAGES;
-      	---------------
 
     begin
       declare
-        IMAGES_STR		:constant STRING		:= GET_ENUM_IMAGES;
-        POS_VAL		: INTEGER			:= ENUM'POS( ITEM );
-        I			: POSITIVE		:= IMAGES_STR'FIRST;
-        REP		: INTEGER;
-        LEN		: INTEGER;
-        IMG_START		: POSITIVE;
-        PAD		: INTEGER;
+        IMAGES_STR		:constant STRING	:= GET_ENUM_IMAGES;
+        IMG_LEN_POS		: POSITIVE	:= IMAGES_STR'FIRST + 1;
       begin
-        -- Parcourir les triplets (REP, LEN, cars...) dans IMAGES_STR
-        while  I <= IMAGES_STR'LAST  loop
-          REP := CHARACTER'POS( IMAGES_STR( I ) );
-          LEN := CHARACTER'POS( IMAGES_STR( I + 1 ) );
-          if  REP = POS_VAL  then
-            IMG_START := I + 2;
-            -- Padding avec des espaces si WIDTH > LEN
-            PAD := WIDTH - LEN;
-            if  PAD > 0  then
-              for  J in 1 .. PAD  loop
-                PUT( FILE, ' ' );
-              end loop;
-            end if;
-            -- Ecrire les caracteres de l'image
-            for  J in 0 .. LEN - 1  loop
-              if  SET = LOWER_CASE  then
-                declare
-                  CH	: CHARACTER	:= IMAGES_STR( IMG_START + J );
-                begin
-                  if  CH >= 'A'  and then  CH <= 'Z'  then
-                    CH := CHARACTER'VAL( CHARACTER'POS( CH ) + 32 );
-                  end if;
-                  PUT( FILE, CH );
-                end;
-              else
-                PUT( FILE, IMAGES_STR( IMG_START + J ) );
-              end if;
-            end loop;
-            return;
-          end if;
-          I := I + 2 + LEN;
+        for  I in 1 .. ENUM'POS( ITEM )  loop
+	IMG_LEN_POS := IMG_LEN_POS + CHARACTER'POS( IMAGES_STR( IMG_LEN_POS ) ) + 2;				-- LEN suivant
         end loop;
       end;
-
     end	PUT;
 	---
 
@@ -1514,99 +1492,10 @@ is					-------
 					  SET   :in TYPE_SET	:= DEFAULT_SETTING
 					)
     is			---
-    begin
-      PUT( DEFAULT_OUTPUT, ITEM, WIDTH, SET );
+    begin null;
 
     end	PUT;
 	----
-
-    			---
-    procedure		GET		( FILE :in FILE_TYPE; ITEM :out ENUM)
-    is			---
-
-      function		GET_ENUM_IMAGES			return STRING
-      is		---------------
-      begin
-        -- GET(FILE,ITEM,GFP) : GFP_ofs = -24 (3e PRM)
-        -- GET_ENUM_IMAGES est au niveau 2, GET au niveau 1
-        ASM_OP_2'( OPCODE => La,  LVL => 1, OFS => -24 );		-- empiler @GFP_disp
-        ASM_OP_2'( OPCODE => La,  OFS => -8 );				-- charger ENUM_images_ofs
-        ASM_OP_2'( OPCODE => Sa,  LVL => 2, OFS => -8 );		-- stocker dans result__ofs
-      end	GET_ENUM_IMAGES;
-      		---------------
-    begin
-      declare
-        IMAGES_STR		:constant STRING	:= GET_ENUM_IMAGES;
-        CHN			: STRING( 1 .. 80 );
-        LEN			: NATURAL		:= 0;
-        I			: POSITIVE;
-        TOK_START		: POSITIVE;
-        TOK_LEN		: NATURAL;
-        REP			: INTEGER;
-        IMG_LEN		: INTEGER;
-        IMG_START		: POSITIVE;
-        FOUND		: BOOLEAN		:= FALSE;
-      begin
-        -- Lire un token depuis le fichier
-        GET_LINE( FILE, CHN, LEN );
-        -- Sauter les espaces de tete
-        I := 1;
-        while  I <= LEN  and then  CHN( I ) = ' '  loop
-          I := I + 1;
-        end loop;
-        TOK_START := I;
-        -- Lire le token (lettres, chiffres, underscores)
-        while  I <= LEN  loop
-          exit when  not (   ( CHN( I ) >= 'A'  and then  CHN( I ) <= 'Z' )
-                         or  ( CHN( I ) >= 'a'  and then  CHN( I ) <= 'z' )
-                         or  ( CHN( I ) >= '0'  and then  CHN( I ) <= '9' )
-                         or  CHN( I ) = '_' );
-          I := I + 1;
-        end loop;
-        TOK_LEN := I - TOK_START;
-
-        -- Parcourir les images pour trouver la correspondance
-        I := IMAGES_STR'FIRST;
-        while  I <= IMAGES_STR'LAST  loop
-          REP := CHARACTER'POS( IMAGES_STR( I ) );
-          IMG_LEN := CHARACTER'POS( IMAGES_STR( I + 1 ) );
-          IMG_START := I + 2;
-          if  IMG_LEN = TOK_LEN  then
-            FOUND := TRUE;
-            for  J in 0 .. IMG_LEN - 1  loop
-              declare
-                IMG_CH	: CHARACTER	:= IMAGES_STR( IMG_START + J );
-                TOK_CH	: CHARACTER	:= CHN( TOK_START + J );
-              begin
-                -- Comparer en majuscules
-                if  TOK_CH >= 'a'  and then  TOK_CH <= 'z'  then
-                  TOK_CH := CHARACTER'VAL( CHARACTER'POS( TOK_CH ) - 32 );
-                end if;
-                if  IMG_CH /= TOK_CH  then
-                  FOUND := FALSE;
-                end if;
-              end;
-            end loop;
-            if  FOUND  then
-              ITEM := ENUM'VAL( REP );
-              return;
-            end if;
-          end if;
-          I := I + 2 + IMG_LEN;
-        end loop;
-      end;
-
-    end	GET;
-	---
-
-			---
-    procedure		GET		( ITEM :out ENUM)
-    is			---
-    begin
-      GET( DEFAULT_INPUT, ITEM );
-
-    end	GET;
-	---
 
 			---
     procedure		GET		( FROM :in STRING;

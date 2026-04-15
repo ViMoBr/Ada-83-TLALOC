@@ -646,6 +646,26 @@ null;
 
   begin
 
+    -- Propager le GFP si on est dans un corps de generique et que la procedure
+    -- appelee est dans le meme package generique (elle attend GFP_ofs en dernier PRM).
+    -- Le GFP est le premier empile (avant les parametres Ada).
+    if  CODI.IN_GENERIC_BODY  and then  D( XD_REGION, PROC_ID ).TY = DN_GENERIC_ID  then
+      declare
+        REGION_NAME :constant STRING := PRINT_NAME( D( LX_SYMREP, D( XD_REGION, PROC_ID ) ) );
+--        PACK_NAME   :constant STRING := PRINT_NAME( D( LX_SYMREP, D( AS_SOURCE_NAME, CODI.ENCLOSING_BODY ) ) );
+      begin
+
+put_line( "; region=" & REGION_NAME & " .TY= " &  NODE_NAME'IMAGE( D( XD_REGION, PROC_ID ).TY ) );
+--put_line( "; pack=" & PACK_NAME );
+
+--        if  REGION_NAME = PACK_NAME  then
+          PUT( tab & "La " & INTEGER'IMAGE( CODI.CUR_LEVEL ) & ',' & tab & "-GFP_ofs" );
+          if  CODI.DEBUG  then PUT( tab50 & "; propagation GFP generique" ); end if;
+          NEW_LINE;
+--        end if;
+      end;
+    end if;
+
     if not IS_EMPTY( SPEC_PRM_GRP_S ) then
       POP( SPEC_PRM_GRP_S, FRM_PRM_GRP );
       SPEC_PRM_ID_S := LIST( D( AS_SOURCE_NAME_S, FRM_PRM_GRP ) );
@@ -703,10 +723,8 @@ null;
           EXPR_TYPE		: TREE		:= D ( SM_EXP_TYPE, EXP );
         begin
           if  EXPR_TYPE.TY = DN_ARRAY  then
---            EMIT( PLA, INTEGER( LEVEL_NUM( ENCLOSING_LEVEL ) - CODI.CUR_LEVEL ), RESULT_OFFSET );
             EXPRESSIONS.CODE_EXP( EXP );
---            EMIT( LDC, I, CODI.NUMBER_OF_DIMENSIONS ( EXP ) );
---            EMIT( PUA );
+            PUT_LINE( tab & "Sa " & INTEGER'IMAGE( CODI.CUR_LEVEL ) & ',' & tab & "-result__ofs" );
           elsif  EXPR_TYPE.TY = DN_ENUM_LITERAL_S  then
             EXPRESSIONS.CODE_EXP( EXP );
 --            EMIT( SLD, CODI.CODE_DATA_TYPE_OF ( EXP ), INTEGER( LEVEL_NUM( ENCLOSING_LEVEL) - CODI.CUR_LEVEL ), RESULT_OFFSET );
@@ -827,12 +845,12 @@ null;
 	end if;
 
 	if  PRINT_NAME( D( LX_SYMREP, D( AS_EXP, CHOICE_EXP ) ) ) = "LVL"  then
-	  PUT( ' ' & PRINT_NAME( D( LX_NUMREP, USED_OBJECT_ID ) ) & ',' );
+	  PUT( ' ' & PRINT_NAME( D( LX_NUMREP, USED_OBJECT_ID ) ) );
 	end if;
 
 	if  PRINT_NAME( D( LX_SYMREP, D( AS_EXP, CHOICE_EXP ) ) ) = "OFS"  then
 	  if  USED_OBJECT_ID.TY = DN_NUMERIC_LITERAL  then
-	    PUT_LINE( tab & PRINT_NAME( D( LX_NUMREP, USED_OBJECT_ID ) ) );
+	    PUT_LINE( " ," & tab & PRINT_NAME( D( LX_NUMREP, USED_OBJECT_ID ) ) );
 	  elsif  USED_OBJECT_ID.TY = DN_FUNCTION_CALL
 	     and then PRINT_NAME( D( LX_SYMREP, D(AS_NAME, USED_OBJECT_ID ) ) ) = """-"""
 	  then
@@ -842,10 +860,57 @@ null;
 	      FUNCTION_NAME_STRING	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, D(AS_NAME, USED_OBJECT_ID ) ) );
 	    begin
 	      POP( NAMED_ASSOC_LIST, NAMED_ASSOC );
-	      PUT_LINE( tab & '-' & PRINT_NAME( D( LX_NUMREP, NAMED_ASSOC ) ) );
+	      PUT_LINE( " ," & tab & '-' & PRINT_NAME( D( LX_NUMREP, NAMED_ASSOC ) ) );
 	    end;
 	  end if;
 	end if;
+
+				-- OPERATION ASM 3 PARAMETRES
+
+        elsif  OP_TYPE_STR = "ASM_OP_3"  then
+	POP( CHOICE_LIST, CHOICE_EXP );
+	if  PRINT_NAME( D( LX_SYMREP, D( AS_EXP, CHOICE_EXP ) ) ) = "OPCODE"  then
+	  PUT( tab & PRINT_NAME( D( LX_SYMREP, USED_OBJECT_ID ) ) );
+	end if;
+
+	if  PRINT_NAME( D( LX_SYMREP, D( AS_EXP, CHOICE_EXP ) ) ) = "LVL"  then
+	  PUT( ' ' & PRINT_NAME( D( LX_NUMREP, USED_OBJECT_ID ) ) );
+	end if;
+
+	if  PRINT_NAME( D( LX_SYMREP, D( AS_EXP, CHOICE_EXP ) ) ) = "DISP"  then
+	  if  USED_OBJECT_ID.TY = DN_NUMERIC_LITERAL  then
+	    PUT( " ," & tab & PRINT_NAME( D( LX_NUMREP, USED_OBJECT_ID ) ) );
+	  elsif  USED_OBJECT_ID.TY = DN_FUNCTION_CALL
+	     and then PRINT_NAME( D( LX_SYMREP, D(AS_NAME, USED_OBJECT_ID ) ) ) = """-"""
+	  then
+	    declare
+	      NAMED_ASSOC_LIST	: SEQ_TYPE	:= LIST( D( AS_GENERAL_ASSOC_S, USED_OBJECT_ID ) );
+	      NAMED_ASSOC		: TREE;
+	      FUNCTION_NAME_STRING	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, D(AS_NAME, USED_OBJECT_ID ) ) );
+	    begin
+	      POP( NAMED_ASSOC_LIST, NAMED_ASSOC );
+	      PUT( " ," & tab & '-' & PRINT_NAME( D( LX_NUMREP, NAMED_ASSOC ) ) );
+	    end;
+	  end if;
+	end if;
+
+	if  PRINT_NAME( D( LX_SYMREP, D( AS_EXP, CHOICE_EXP ) ) ) = "OFS"  then
+	  if  USED_OBJECT_ID.TY = DN_NUMERIC_LITERAL  then
+	    PUT_LINE( ',' & tab & PRINT_NAME( D( LX_NUMREP, USED_OBJECT_ID ) ) );
+	  elsif  USED_OBJECT_ID.TY = DN_FUNCTION_CALL
+	     and then PRINT_NAME( D( LX_SYMREP, D(AS_NAME, USED_OBJECT_ID ) ) ) = """-"""
+	  then
+	    declare
+	      NAMED_ASSOC_LIST	: SEQ_TYPE	:= LIST( D( AS_GENERAL_ASSOC_S, USED_OBJECT_ID ) );
+	      NAMED_ASSOC		: TREE;
+	      FUNCTION_NAME_STRING	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, D(AS_NAME, USED_OBJECT_ID ) ) );
+	    begin
+	      POP( NAMED_ASSOC_LIST, NAMED_ASSOC );
+	      PUT_LINE( " ," & tab & '-' & PRINT_NAME( D( LX_NUMREP, NAMED_ASSOC ) ) );
+	    end;
+	  end if;
+	end if;
+
         end if;
 
       end;

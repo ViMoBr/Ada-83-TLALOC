@@ -106,8 +106,6 @@ is
 	if  ENUM_ID_STR /= "'""'"
 	then  PUT_LINE( "db" & INTEGER'IMAGE( REP ) & "," & INTEGER'IMAGE( ENUM_ID_STR'LENGTH ) & ", """ & ENUM_ID_STR & """" );
 	else  PUT_LINE( "db" & INTEGER'IMAGE( REP ) & "," & INTEGER'IMAGE( ENUM_ID_STR'LENGTH ) & ", ""'""""'""" );
---	then  PUT_LINE( "CST , ," & INTEGER'IMAGE( ENUM_ID_STR'LENGTH ) & ", """ & ENUM_ID_STR & """" );
---	else  PUT_LINE( "CST , ," & INTEGER'IMAGE( ENUM_ID_STR'LENGTH ) & ", ""'""""'""" );
 	end if;
         end;
         LAST_LITERAL := ENUM_LITERAL_ID;
@@ -134,6 +132,9 @@ is
     PUT     ( "CST " & "SIZ, d," & INTEGER'IMAGE( DI( CD_IMPL_SIZE, TYPE_SPEC ) ) );
     if  CODI.DEBUG  then PUT( ASCII.HT & "; SIZ en bits !" ); end if;
     NEW_LINE;
+    PUT_LINE( "postpone" );
+    PUT_LINE( "  align_q" );										-- Assurer  l'alignement de départ de tout le bloc
+    PUT_LINE( "end postpone" );
     PUT_LINE( "end namespace");
     if  CODI.DEBUG  then NEW_LINE; end if;
 

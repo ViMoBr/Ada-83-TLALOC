@@ -14,6 +14,9 @@ IMAGES	BYTES_BLOC
 CST LST, d, 1
 CST FST, d, 0
 CST SIZ, d, 8	; SIZ en bits !
+postpone
+  align_q
+end postpone
 end namespace
 
 COUNT = 'COUNT'
@@ -58,6 +61,9 @@ IMAGES	BYTES_BLOC
 CST LST, d, 1
 CST FST, d, 0
 CST SIZ, d, 8	; SIZ en bits !
+postpone
+  align_q
+end postpone
 end namespace
 
 FILE_NAME_BUFFER = 'FILE_NAME_BUFFER'
@@ -278,9 +284,9 @@ endPRMS					;    fin parametrage
 ELB 2					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-	LA 2,	-8
+	LA 2 ,	-8
 	SYS_FILE_CREATE
-	SD 2,	-16
+	SD 2 ,	-16
 ret_lbl:
 	UNLINK 2
 	RTD	(prm_siz-8)
@@ -390,9 +396,9 @@ endPRMS					;    fin parametrage
 ELB 2					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-	LA 2,	-8
+	LA 2 ,	-8
 	SYS_FILE_OPEN
-	SD 2,	-16
+	SD 2 ,	-16
 ret_lbl:
 	UNLINK 2
 	RTD	(prm_siz-8)
@@ -501,9 +507,9 @@ endPRMS					;    fin parametrage
 ELB 2					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-	LD 2,	-8
+	LD 2 ,	-8
 	SYS_FILE_CLOSE
-	SD 2,	-16
+	SD 2 ,	-16
 ret_lbl:
 	UNLINK 2
 	RTD	(prm_siz-8)
@@ -551,9 +557,9 @@ endPRMS					;    fin parametrage
 ELB 2					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-	LA 2,	-8
+	LA 2 ,	-8
 	SYS_FILE_DELETE
-	SD 2,	-16
+	SD 2 ,	-16
 ret_lbl:
 	UNLINK 2
 	RTD	(prm_siz-8)
@@ -624,9 +630,9 @@ ELB 2					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 	LI	0
-	LD 2,	-8
+	LD 2 ,	-8
 	SYS_FILE_SET_POS
-	SD 2,	-16
+	SD 2 ,	-16
 ret_lbl:
 	UNLINK 2
 	RTD	(prm_siz-8)
@@ -764,6 +770,7 @@ L16:					; post if
 	SUB
 	LI	1
 	MUL
+	Sa  1,	-result__ofs
 	BRA ret_lbl
 ret_lbl:
 	UNLINK 1
@@ -2171,10 +2178,10 @@ ELB 2					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 	LI	1
-	LA 1,	-16
-	LD 2,	-8
+	LA 1 ,	-16
+	LD 2 ,	-8
 	SYS_FILE_READ
-	SD 2,	-16
+	SD 2 ,	-16
 ret_lbl:
 	UNLINK 2
 	RTD	(prm_siz-8)
@@ -2202,7 +2209,7 @@ L124:
 	NEG
 	CEQ
 	BF	L125
-	LA 1,	-16
+	LA 1 ,	-16
 	SYS_GET_CHAR
 	BRA	L123
 L125:
@@ -2271,10 +2278,10 @@ ELB 2					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 	LI	1
-	LVA 1,	-16
-	LD 2,	-8
+	LVA 1 ,	-16
+	LD 2 ,	-8
 	SYS_FILE_WRITE
-	SD 2,	-16
+	SD 2 ,	-16
 ret_lbl:
 	UNLINK 2
 	RTD	(prm_siz-8)
@@ -2290,7 +2297,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	NEG
 	CEQ
 	BF	L130
-	LB 1,	-16
+	LB 1 ,	-16
 	SYS_PUT_CHAR
 	BRA	L129
 L130:
@@ -2345,11 +2352,11 @@ endPRMS					;    fin parametrage
 ELB 2					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-	LD 2,	-16
-	LIA 1,	-16
-	LD 2,	-8
+	LD 2 ,	-16
+	LIA 1 ,	-16
+	LD 2 ,	-8
 	SYS_FILE_READ
-	SD 2,	-24
+	SD 2 ,	-24
 ret_lbl:
 	UNLINK 2
 	RTD	(prm_siz-8)
@@ -2461,11 +2468,11 @@ endPRMS					;    fin parametrage
 ELB 2					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-	LD 2,	-16
-	LIA 1,	-16
-	LD 2,	-8
+	LD 2 ,	-16
+	LIA 1 ,	-16
+	LD 2 ,	-8
 	SYS_FILE_WRITE
-	SD 2,	-24
+	SD 2 ,	-24
 ret_lbl:
 	UNLINK 2
 	RTD	(prm_siz-8)
@@ -2481,7 +2488,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	NEG
 	CEQ
 	BF	L138
-	LA 1,	-16
+	LA 1 ,	-16
 	SYS_PUT_STR
 	BRA	L137
 L138:
@@ -2549,8 +2556,8 @@ begin:					;---------- BDY INSTRUCTIONS
 	NEG
 	CEQ
 	BF	L140
-	LA 1,	-24
-	LA 1,	-16
+	LA 1 ,	-24
+	LA 1 ,	-16
 	SYS_GET_STR
 	BRA	L139
 L140:
@@ -3325,6 +3332,8 @@ endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
+; region=INTEGER_IO .TY= DN_GENERIC_ID
+	La  1,	-GFP_ofs				; propagation GFP generique
 	Ld  1,	-BASE_ofs
 	Ld  1,	-WIDTH_ofs
 	Ld  1,	-ITEM_ofs
@@ -3877,6 +3886,8 @@ endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
+; region=FLOAT_IO .TY= DN_GENERIC_ID
+	La  1,	-GFP_ofs				; propagation GFP generique
 	Ld  1,	-WIDTH_ofs
 	La  1,	-ITEM_ofs
 	LVa 0,	DEFAULT_INPUT_disp
@@ -4255,6 +4266,8 @@ endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
+; region=FLOAT_IO .TY= DN_GENERIC_ID
+	La  1,	-GFP_ofs				; propagation GFP generique
 	Ld  1,	-EXP_ofs
 	Ld  1,	-AFT_ofs
 	Ld  1,	-FORE_ofs
@@ -4437,6 +4450,7 @@ end namespace 				;---------- end generic package BDY FIXED_IO
 ENUMERATION_IO = 'ENUMERATION_IO'
 namespace ENUMERATION_IO			;---------- GENERIC PACKAGE
 PRMS
+	PRM ENUM__u_ofs
 endPRMS
 VAR DEFAULT_WIDTH_disp, d			; variable entiere
 	LI	0
@@ -4448,39 +4462,6 @@ VAR DEFAULT_SETTING_disp, b			; variable entiere
 
 					;    BODY ELAB
 
-if defined GET_L79_
-PRO	GET_L79				;---------- PRO GET
-PRMS					;    debut parametrage
-	PRM FILE_ofs				; in
-	PRM ITEM_ofs				; out
-	PRM GFP_ofs
-endPRMS					;    fin parametrage
-ELB 1					;    BODY ELAB
-					;    end elab
-begin:					;---------- BDY INSTRUCTIONS
-ret_lbl:
-	UNLINK 1
-	RTD	(prm_siz)
-excep:
-endPRO					;---------- end PRO GET
-end if
-
-if defined GET_L80_
-PRO	GET_L80				;---------- PRO GET
-PRMS					;    debut parametrage
-	PRM ITEM_ofs				; out
-	PRM GFP_ofs
-endPRMS					;    fin parametrage
-ELB 1					;    BODY ELAB
-					;    end elab
-begin:					;---------- BDY INSTRUCTIONS
-ret_lbl:
-	UNLINK 1
-	RTD	(prm_siz)
-excep:
-endPRO					;---------- end PRO GET
-end if
-
 if defined PUT_L81_
 PRO	PUT_L81				;---------- PRO PUT
 PRMS					;    debut parametrage
@@ -4491,8 +4472,223 @@ PRMS					;    debut parametrage
 	PRM GFP_ofs
 endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
+
+if defined GET_ENUM_IMAGES_L248_
+PRO	GET_ENUM_IMAGES_L248			;---------- PRO GET_ENUM_IMAGES
+PRMS					;    debut parametrage
+	PRM result__ofs				; resultat de fonction
+	PRM GFP_ofs
+endPRMS					;    fin parametrage
+ELB 2					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
+	LA 1 ,	-40
+	LIVA ,	-8,	16
+	SA 2 ,	-8
+ret_lbl:
+	UNLINK 2
+	RTD
+excep:
+endPRO					;---------- end PRO GET_ENUM_IMAGES
+end if
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+namespace	BLOCK__22
+ELB 2					;    BODY ELAB
+VAR IMAGES_STR_disp, q			; variable array : pointeur aux data
+VAR IMAGES_STR__u, q			; variable array : useinfo pointeur au rec info
+	LI	0					; lieu resultat sur pile
+	CALL	STANDARD.TEXT_IO.ENUMERATION_IO.PUT_L81. ,GET_ENUM_IMAGES_L248
+	DUP
+	La
+	Sa	2, IMAGES_STR_disp			; array data ptr from function result
+	La , 8
+	Sa	2, IMAGES_STR__u			; array info ptr from function result
+
+VAR POS_VAL_disp, d				; variable entiere
+	Ld  1,	-ITEM_ofs
+	Sd  2,	POS_VAL_disp
+
+VAR I_disp, d				; variable entiere
+	LId	2, IMAGES_STR__u, STRING.FST_1
+	Sd  2,	I_disp
+
+VAR REP_disp, d				; variable entiere
+
+VAR LEN_disp, d				; variable entiere
+
+VAR IMG_START_disp, d			; variable entiere
+
+VAR PAD_disp, d				; variable entiere
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+LOOP__23:
+	Ld 2,	I_disp
+	LId	2, IMAGES_STR__u, STRING.LST_1
+	CLE
+	BF	L249
+	La	 2, IMAGES_STR_disp			; array data start address on stack
+	Ld 2,	I_disp
+	LId	2, IMAGES_STR__u, STANDARD.STRING.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	2, IMAGES_STR__u, STANDARD.STRING.COMP_SIZ
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	Sd  2,	REP_disp
+	La	 2, IMAGES_STR_disp			; array data start address on stack
+	Ld 2,	I_disp
+	LI	1
+	ADD
+	LId	2, IMAGES_STR__u, STANDARD.STRING.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	2, IMAGES_STR__u, STANDARD.STRING.COMP_SIZ
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	Sd  2,	LEN_disp
+					; debut if
+	Ld 2,	REP_disp
+	Ld 2,	POS_VAL_disp
+	CEQ
+	BF	L251
+	Ld 2,	I_disp
+	LI	2
+	ADD
+	Sd  2,	IMG_START_disp
+	Ld  1,	-WIDTH_ofs
+	Ld 2,	LEN_disp
+	SUB
+	Sd  2,	PAD_disp
+					; debut if
+	Ld 2,	PAD_disp
+	LI	0
+	CGT
+	BF	L253
+VAR	JL255_disp, d				; compteur boucle LOOP__24
+	LI	1
+	Sd  2,	JL255_disp
+VAR	LMT_JL255_disp, d			; limite boucle LOOP__24
+	Ld 2,	PAD_disp
+	Sd  2,	LMT_JL255_disp
+	Ld  2,	JL255_disp				; test null range LOOP__24
+	Ld  2,	LMT_JL255_disp
+	CGT
+	BT	L254
+LOOP__24:					; corps boucle LOOP__24
+	LI	32
+	La  1,	-FILE_ofs
+	CALL	STANDARD.TEXT_IO. ,PUT_L51
+	Ld  2,	JL255_disp				; test de sortie LOOP__24
+	Ld  2,	LMT_JL255_disp
+	CEQ
+	BT	L254
+	Ld  2,	JL255_disp				; mise a jour compteur LOOP__24
+	INC
+	Sd  2,	JL255_disp
+	BRA	LOOP__24				; iteration suivante LOOP__24
+L254:					; post loop LOOP__24
+	BRA	L252
+L253:
+L252:					; post if
+VAR	JL257_disp, d				; compteur boucle LOOP__25
+	LI	0
+	Sd  2,	JL257_disp
+VAR	LMT_JL257_disp, d			; limite boucle LOOP__25
+	Ld 2,	LEN_disp
+	LI	1
+	SUB
+	Sd  2,	LMT_JL257_disp
+	Ld  2,	JL257_disp				; test null range LOOP__25
+	Ld  2,	LMT_JL257_disp
+	CGT
+	BT	L256
+LOOP__25:					; corps boucle LOOP__25
+					; debut if
+	Lb  1,	-SET_ofs
+	LI	0
+	CEQ
+	BF	L259
+namespace	BLOCK__26
+ELB 3					;    BODY ELAB
+VAR CH_disp, b				; variable bool char
+	La	 2, IMAGES_STR_disp			; array data start address on stack
+	Ld 2,	IMG_START_disp
+	Ld	2, JL257_disp
+	ADD
+	LId	2, IMAGES_STR__u, STANDARD.STRING.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	2, IMAGES_STR__u, STANDARD.STRING.COMP_SIZ
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	Sb  3,	CH_disp
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+					; debut if
+	Lb 3,	CH_disp
+	LI	65
+	CGE
+	DUP
+	BF	L262
+	DROP
+	Lb 3,	CH_disp
+	LI	90
+	CLE
+L262:
+	BF	L261
+	Lb 3,	CH_disp
+	LI	32
+	ADD
+	Sb  3,	CH_disp
+	BRA	L260
+L261:
+L260:					; post if
+	Lb 3,	CH_disp
+	La  1,	-FILE_ofs
+	CALL	STANDARD.TEXT_IO. ,PUT_L51
+	UNLINK 3
+endPRO
+	BRA	L258
+L259:
+	La	 2, IMAGES_STR_disp			; array data start address on stack
+	Ld 2,	IMG_START_disp
+	Ld	2, JL257_disp
+	ADD
+	LId	2, IMAGES_STR__u, STANDARD.STRING.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	2, IMAGES_STR__u, STANDARD.STRING.COMP_SIZ
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	La  1,	-FILE_ofs
+	CALL	STANDARD.TEXT_IO. ,PUT_L51
+L258:					; post if
+	Ld  2,	JL257_disp				; test de sortie LOOP__25
+	Ld  2,	LMT_JL257_disp
+	CEQ
+	BT	L256
+	Ld  2,	JL257_disp				; mise a jour compteur LOOP__25
+	INC
+	Sd  2,	JL257_disp
+	BRA	LOOP__25				; iteration suivante LOOP__25
+L256:					; post loop LOOP__25
+	BRA ret_lbl
+	BRA	L250
+L251:
+L250:					; post if
+	Ld 2,	I_disp
+	LI	2
+	ADD
+	Ld 2,	LEN_disp
+	ADD
+	Sd  2,	I_disp
+	BRA	LOOP__23
+L249:					; post loop LOOP__23
+	UNLINK 2
+endPRO
 ret_lbl:
 	UNLINK 1
 	RTD	(prm_siz)
@@ -4511,11 +4707,424 @@ endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
+; region=ENUMERATION_IO .TY= DN_GENERIC_ID
+	La  1,	-GFP_ofs				; propagation GFP generique
+	Lb  1,	-SET_ofs
+	Ld  1,	-WIDTH_ofs
+	Ld  1,	-ITEM_ofs
+	LVa 0,	DEFAULT_OUTPUT_disp
+	CALL	STANDARD.TEXT_IO.ENUMERATION_IO. ,PUT_L81
 ret_lbl:
 	UNLINK 1
 	RTD	(prm_siz)
 excep:
 endPRO					;---------- end PRO PUT
+end if
+
+if defined GET_L79_
+PRO	GET_L79				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM ITEM_ofs				; out
+	PRM GFP_ofs
+endPRMS					;    fin parametrage
+ELB 1					;    BODY ELAB
+
+if defined GET_ENUM_IMAGES_L263_
+PRO	GET_ENUM_IMAGES_L263			;---------- PRO GET_ENUM_IMAGES
+PRMS					;    debut parametrage
+	PRM result__ofs				; resultat de fonction
+	PRM GFP_ofs
+endPRMS					;    fin parametrage
+ELB 2					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	LA 1 ,	-24
+	LA ,	-8
+	SA 2 ,	-8
+ret_lbl:
+	UNLINK 2
+	RTD
+excep:
+endPRO					;---------- end PRO GET_ENUM_IMAGES
+end if
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+namespace	BLOCK__27
+ELB 2					;    BODY ELAB
+VAR IMAGES_STR_disp, q			; variable array : pointeur aux data
+VAR IMAGES_STR__u, q			; variable array : useinfo pointeur au rec info
+	LI	0					; lieu resultat sur pile
+	CALL	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L79. ,GET_ENUM_IMAGES_L263
+	DUP
+	La
+	Sa	2, IMAGES_STR_disp			; array data ptr from function result
+	La , 8
+	Sa	2, IMAGES_STR__u			; array info ptr from function result
+
+STRING = 'STRING'
+namespace STRING				; array var constrained array type info
+VAR SIZ, d
+  namespace info
+VAR COMP_SIZ, d
+VAR FST_1, d
+VAR LST_1, d
+	LI	1
+	Sd	2, COMP_SIZ
+	Ld	2, COMP_SIZ
+	LI	1
+	Sd	2, FST_1
+	LI	80
+	Sd	2, LST_1
+	Ld	2, LST_1
+	INC
+	Ld	2, FST_1
+	SUB
+	MUL
+	Sd	2, SIZ
+  end namespace
+  virtual at 4
+COMP_SIZ = $
+	rd 1 
+FST_1 = $
+	rd 1 
+LST_1 = $
+	rd 1 
+  end virtual
+end namespace
+
+VAR CHN_disp, q				; variable array : pointeur aux data
+VAR CHN__u, q				; variable array : useinfo pointeur au rec info
+	Ld	2, STRING.SIZ
+	CO_VAR
+	Sa	2, CHN_disp				; array data ptr at _disp
+	LVA 2, STRING.SIZ
+	Sa	2, CHN__u				; array info ptr at __u
+
+VAR LEN_disp, d				; variable entiere
+	LI	0
+	Sd  2,	LEN_disp
+
+VAR I_disp, d				; variable entiere
+
+VAR TOK_START_disp, d			; variable entiere
+
+VAR TOK_LEN_disp, d				; variable entiere
+
+VAR REP_disp, d				; variable entiere
+
+VAR IMG_LEN_disp, d				; variable entiere
+
+VAR IMG_START_disp, d			; variable entiere
+
+VAR FOUND_disp, b				; variable bool char
+	LI	0
+	Sb  2,	FOUND_disp
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	LVA  2,	LEN_disp
+	LVA  2,	CHN_disp
+	La  1,	-FILE_ofs
+	CALL	STANDARD.TEXT_IO. ,GET_LINE_L57
+	LI	1
+	Sd  2,	I_disp
+LOOP__28:
+	Ld 2,	I_disp
+	Ld 2,	LEN_disp
+	CLE
+	DUP
+	BF	L265
+	DROP
+	La	 2, CHN_disp				; array data start address on stack
+	Ld 2,	I_disp
+	LId	2, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
+	SUB
+	LId	2, CHN__u, STANDARD.STRING.COMP_SIZ
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	LI	32
+	CEQ
+L265:
+	BF	L264
+	Ld 2,	I_disp
+	LI	1
+	ADD
+	Sd  2,	I_disp
+	BRA	LOOP__28
+L264:					; post loop LOOP__28
+	Ld 2,	I_disp
+	Sd  2,	TOK_START_disp
+LOOP__29:
+	Ld 2,	I_disp
+	Ld 2,	LEN_disp
+	CLE
+	BF	L266
+	La	 2, CHN_disp				; array data start address on stack
+	Ld 2,	I_disp
+	LId	2, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
+	SUB
+	LId	2, CHN__u, STANDARD.STRING.COMP_SIZ
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	LI	65
+	CGE
+	DUP
+	BF	L268
+	DROP
+	La	 2, CHN_disp				; array data start address on stack
+	Ld 2,	I_disp
+	LId	2, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
+	SUB
+	LId	2, CHN__u, STANDARD.STRING.COMP_SIZ
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	LI	90
+	CLE
+L268:
+	La	 2, CHN_disp				; array data start address on stack
+	Ld 2,	I_disp
+	LId	2, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
+	SUB
+	LId	2, CHN__u, STANDARD.STRING.COMP_SIZ
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	LI	97
+	CGE
+	DUP
+	BF	L269
+	DROP
+	La	 2, CHN_disp				; array data start address on stack
+	Ld 2,	I_disp
+	LId	2, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
+	SUB
+	LId	2, CHN__u, STANDARD.STRING.COMP_SIZ
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	LI	122
+	CLE
+L269:
+	La	 2, CHN_disp				; array data start address on stack
+	Ld 2,	I_disp
+	LId	2, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
+	SUB
+	LId	2, CHN__u, STANDARD.STRING.COMP_SIZ
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	LI	48
+	CGE
+	DUP
+	BF	L270
+	DROP
+	La	 2, CHN_disp				; array data start address on stack
+	Ld 2,	I_disp
+	LId	2, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
+	SUB
+	LId	2, CHN__u, STANDARD.STRING.COMP_SIZ
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	LI	57
+	CLE
+L270:
+	La	 2, CHN_disp				; array data start address on stack
+	Ld 2,	I_disp
+	LId	2, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
+	SUB
+	LId	2, CHN__u, STANDARD.STRING.COMP_SIZ
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	LI	95
+	CEQ
+	LI	1
+	OUX
+	BT	L266
+	Ld 2,	I_disp
+	LI	1
+	ADD
+	Sd  2,	I_disp
+	BRA	LOOP__29
+L266:					; post loop LOOP__29
+	Ld 2,	I_disp
+	Ld 2,	TOK_START_disp
+	SUB
+	Sd  2,	TOK_LEN_disp
+	LId	2, IMAGES_STR__u, STRING.FST_1
+	Sd  2,	I_disp
+LOOP__30:
+	Ld 2,	I_disp
+	LId	2, IMAGES_STR__u, STRING.LST_1
+	CLE
+	BF	L271
+	La	 2, IMAGES_STR_disp			; array data start address on stack
+	Ld 2,	I_disp
+	LId	2, IMAGES_STR__u, STANDARD.STRING.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	2, IMAGES_STR__u, STANDARD.STRING.COMP_SIZ
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	Sd  2,	REP_disp
+	La	 2, IMAGES_STR_disp			; array data start address on stack
+	Ld 2,	I_disp
+	LI	1
+	ADD
+	LId	2, IMAGES_STR__u, STANDARD.STRING.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	2, IMAGES_STR__u, STANDARD.STRING.COMP_SIZ
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	Sd  2,	IMG_LEN_disp
+	Ld 2,	I_disp
+	LI	2
+	ADD
+	Sd  2,	IMG_START_disp
+					; debut if
+	Ld 2,	IMG_LEN_disp
+	Ld 2,	TOK_LEN_disp
+	CEQ
+	BF	L273
+	LI	1
+	Sb  2,	FOUND_disp
+VAR	JL275_disp, d				; compteur boucle LOOP__31
+	LI	0
+	Sd  2,	JL275_disp
+VAR	LMT_JL275_disp, d			; limite boucle LOOP__31
+	Ld 2,	IMG_LEN_disp
+	LI	1
+	SUB
+	Sd  2,	LMT_JL275_disp
+	Ld  2,	JL275_disp				; test null range LOOP__31
+	Ld  2,	LMT_JL275_disp
+	CGT
+	BT	L274
+LOOP__31:					; corps boucle LOOP__31
+namespace	BLOCK__32
+ELB 3					;    BODY ELAB
+VAR IMG_CH_disp, b				; variable bool char
+	La	 2, IMAGES_STR_disp			; array data start address on stack
+	Ld 2,	IMG_START_disp
+	Ld	2, JL275_disp
+	ADD
+	LId	2, IMAGES_STR__u, STANDARD.STRING.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	2, IMAGES_STR__u, STANDARD.STRING.COMP_SIZ
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	Sb  3,	IMG_CH_disp
+
+VAR TOK_CH_disp, b				; variable bool char
+	La	 2, CHN_disp				; array data start address on stack
+	Ld 2,	TOK_START_disp
+	Ld	2, JL275_disp
+	ADD
+	LId	2, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
+	SUB
+	LId	2, CHN__u, STANDARD.STRING.COMP_SIZ
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	Sb  3,	TOK_CH_disp
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+					; debut if
+	Lb 3,	TOK_CH_disp
+	LI	97
+	CGE
+	DUP
+	BF	L278
+	DROP
+	Lb 3,	TOK_CH_disp
+	LI	122
+	CLE
+L278:
+	BF	L277
+	Lb 3,	TOK_CH_disp
+	LI	32
+	SUB
+	Sb  3,	TOK_CH_disp
+	BRA	L276
+L277:
+L276:					; post if
+					; debut if
+	Lb 3,	IMG_CH_disp
+	Lb 3,	TOK_CH_disp
+	CNE
+	BF	L280
+	LI	0
+	Sb  2,	FOUND_disp
+	BRA	L279
+L280:
+L279:					; post if
+	UNLINK 3
+endPRO
+	Ld  2,	JL275_disp				; test de sortie LOOP__31
+	Ld  2,	LMT_JL275_disp
+	CEQ
+	BT	L274
+	Ld  2,	JL275_disp				; mise a jour compteur LOOP__31
+	INC
+	Sd  2,	JL275_disp
+	BRA	LOOP__31				; iteration suivante LOOP__31
+L274:					; post loop LOOP__31
+					; debut if
+	Lb 2,	FOUND_disp
+	BF	L282
+	Ld 2,	REP_disp
+	SId  1,	-ITEM_ofs
+	BRA ret_lbl
+	BRA	L281
+L282:
+L281:					; post if
+	BRA	L272
+L273:
+L272:					; post if
+	Ld 2,	I_disp
+	LI	2
+	ADD
+	Ld 2,	IMG_LEN_disp
+	ADD
+	Sd  2,	I_disp
+	BRA	LOOP__30
+L271:					; post loop LOOP__30
+	UNLINK 2
+endPRO
+ret_lbl:
+	UNLINK 1
+	RTD	(prm_siz)
+excep:
+endPRO					;---------- end PRO GET
+end if
+
+if defined GET_L80_
+PRO	GET_L80				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM ITEM_ofs				; out
+	PRM GFP_ofs
+endPRMS					;    fin parametrage
+ELB 1					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+; region=ENUMERATION_IO .TY= DN_GENERIC_ID
+	La  1,	-GFP_ofs				; propagation GFP generique
+	La  1,	-ITEM_ofs
+	LVa 0,	DEFAULT_INPUT_disp
+	CALL	STANDARD.TEXT_IO.ENUMERATION_IO. ,GET_L79
+ret_lbl:
+	UNLINK 1
+	RTD	(prm_siz)
+excep:
+endPRO					;---------- end PRO GET
 end if
 
 if defined GET_L83_

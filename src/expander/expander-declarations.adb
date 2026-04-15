@@ -522,6 +522,23 @@ null;--     LOAD_TYPE_SIZE( TYPE_SPEC  );
 	  if  CODI.DEBUG  then PUT( tab50 & "; array info ptr at __u" ); end if;
 	  NEW_LINE;
 
+	elsif  INIT_EXP /= TREE_VOID and then INIT_EXP.TY = DN_FUNCTION_CALL				-- retour de STRING par fonction
+	then
+	  EXPRESSIONS.CODE_EXP( INIT_EXP );								-- appel fonction, resultat = adresse du descripteur
+
+	  PUT_LINE( tab & "DUP" );									-- dupliquer l'adresse du descripteur
+	  PUT_LINE( tab & "La" );									-- charger data_ptr (qword a offset 0)
+	  PUT( tab & "Sa" & tab & LVL_STR & ", " & VC_STR & "_disp" );
+	  if  CODI.DEBUG  then PUT( tab50 & "; array data ptr from function result" ); end if;
+	  NEW_LINE;
+
+	  PUT_LINE( tab & "La , 8" );								-- offset +8 pour info_ptr
+--	  PUT_LINE( tab & "ADD" );									-- adresse de info_ptr
+--	  PUT_LINE( tab & "La" );									-- charger info_ptr
+	  PUT( tab & "Sa" & tab & LVL_STR & ", " & VC_STR & "__u" );
+	  if  CODI.DEBUG  then PUT( tab50 & "; array info ptr from function result" ); end if;
+	  NEW_LINE;
+
 	else
 	  PUT( tab & "Ld" & tab & IMAGE( TYPE_LEVEL ) & ", " );						-- LOAD SIZ FOR ALLOCATION
 --	  if  ANONYMOUS_SUBTYPE  then
@@ -835,6 +852,8 @@ null;--     LOAD_TYPE_SIZE( TYPE_SPEC  );
       if  G_PARAM.TY = DN_TYPE_DECL  then
         if  D( AS_TYPE_DEF, G_PARAM ).TY = DN_FORMAL_INTEGER_DEF  then
 	DI( CD_IMPL_SIZE, D( SM_TYPE_SPEC, D( AS_SOURCE_NAME, G_PARAM ) ), INTG_SIZE * 8 );
+        elsif  D( AS_TYPE_DEF, G_PARAM ).TY = DN_FORMAL_DSCRT_DEF  then
+	DI( CD_IMPL_SIZE, D( SM_TYPE_SPEC, D( AS_SOURCE_NAME, G_PARAM ) ), INTG_SIZE * 8 );
         end if;
       end if;
     end loop;
@@ -925,7 +944,7 @@ null;--     LOAD_TYPE_SIZE( TYPE_SPEC  );
 	PUT_LINE( "ELB" & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL ) );
 	PUT_LINE( "begin:" );
 
-	PUT_LINE( tab & "LVA" & tab & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL ) & ", GFP_disp" );
+	PUT_LINE( tab & "LVA" & tab & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL - 1 ) & ", GFP_disp" );
 
 	declare
 	  PRM_SECTIONS_S	: SEQ_TYPE	:= LIST( D( AS_PARAM_S, D( SM_SPEC, SOURCE_NAME ) ) );
@@ -1060,24 +1079,70 @@ null;
 	POP( GNAME_SEQ, GNAME );
 	declare
 	  DEFN		: TREE		:= D( SM_DEFN, GNAME );
-	  DEFN_TYPE_RANGE	: TREE		:= D( SM_RANGE, D( SM_TYPE_SPEC, DEFN ) );
 	  GNAME_STR	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, GNAME ) );
 	begin
 	  if  DEFN.TY = DN_SUBTYPE_ID  then
-	    if  D( SM_TYPE_SPEC, DEFN ).TY = DN_INTEGER  then
-	      PUT_LINE( "VAR " & GNAME_STR & "_last_ofs, q" );
-	      PUT_LINE( "LI" & tab & PRINT_NAME( D( LX_NUMREP, D( AS_EXP2, DEFN_TYPE_RANGE ) ) ) );
-	      PUT_LINE( "Sd" & tab & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL ) & ", " & GNAME_STR & "_last_ofs" );
+	    declare
+	      DEFN_TYPE_SPEC	: TREE		:= D( SM_TYPE_SPEC, DEFN );
+	      DEFN_TYPE_RANGE	: TREE		:= D( SM_RANGE, DEFN_TYPE_SPEC );
+	    begin
+	      if  DEFN_TYPE_SPEC.TY = DN_INTEGER  then
+	        PUT_LINE( "VAR " & GNAME_STR & "_last_ofs, q" );
+	        PUT_LINE( "LI" & tab & PRINT_NAME( D( LX_NUMREP, D( AS_EXP2, DEFN_TYPE_RANGE ) ) ) );
+	        PUT_LINE( "Sd" & tab & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL ) & ", " & GNAME_STR & "_last_ofs" );
 
-	      PUT_LINE( "VAR " & GNAME_STR & "_first_ofs, q" );
-	      PUT_LINE( "LI" & tab & PRINT_NAME( D( LX_NUMREP, D( AS_EXP1, DEFN_TYPE_RANGE ) ) ) );
-	      PUT_LINE( "Sd" & tab & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL ) & ", " & GNAME_STR & "_first_ofs" );
-	    end if;
+	        PUT_LINE( "VAR " & GNAME_STR & "_first_ofs, q" );
+	        PUT_LINE( "LI" & tab & PRINT_NAME( D( LX_NUMREP, D( AS_EXP1, DEFN_TYPE_RANGE ) ) ) );
+	        PUT_LINE( "Sd" & tab & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL ) & ", " & GNAME_STR & "_first_ofs" );
+	      end if;
+	    end;
+
+	  elsif  DEFN.TY = DN_TYPE_ID  then
+	    declare
+	      DEFN_TYPE_SPEC	: TREE		:= D( SM_TYPE_SPEC, DEFN );
+	      DEFN_STR		:constant STRING	:= PRINT_NAME( D( LX_SYMREP, DEFN ) );
+	      LVL_STR		:constant STRING	:= LEVEL_NUM'IMAGE( CODI.CUR_LEVEL );
+	    begin
+	      if  DEFN_TYPE_SPEC.TY = DN_ENUMERATION  then
+
+	        -- Ordre inverse des PRM : last en premier (plus grand offset negatif)
+--	        PUT_LINE( "VAR " & GNAME_STR & "_last_ofs, q" );
+--	        PUT( tab & "Ld" & tab & ", " );
+--	        CODI.REGIONS_PATH( DEFN );
+--	        PUT_LINE( DEFN_STR & ".LST" );
+--	        PUT_LINE( "Sd" & tab & LVL_STR & ", " & GNAME_STR & "_last_ofs" );
+
+--	        PUT_LINE( "VAR " & GNAME_STR & "_first_ofs, q" );
+--	        PUT( tab & "Ld" & tab & ", " );
+--	        CODI.REGIONS_PATH( DEFN );
+--	        PUT_LINE( DEFN_STR & ".FST" );
+--	        PUT_LINE( "Sd" & tab & LVL_STR & ", " & GNAME_STR & "_first_ofs" );
+
+	        -- Adresse du descripteur IMAGES du type enumere
+--	        PUT_LINE( "VAR " & GNAME_STR & "_images_ofs, q" );
+--	        PUT( tab & "LCA" & tab );
+--	        CODI.REGIONS_PATH( DEFN );
+--	        PUT_LINE( DEFN_STR & ".IMAGES.data_ptr" );
+--	        PUT_LINE( tab & "Sa" & tab & LVL_STR & ", " & GNAME_STR & "_images_ofs" );
+
+	        -- Adresse du patron de type
+	        PUT_LINE( "VAR " & GNAME_STR & "__u_ofs, q" );
+	        PUT( tab & "LCA" & tab );
+	        CODI.REGIONS_PATH( DEFN );
+	        PUT_LINE( DEFN_STR & ".SIZ" );
+	        PUT_LINE( tab & "Sa" & tab & LVL_STR & ", " & GNAME_STR & "__u_ofs" );
+	      end if;
+	    end;
 	  end if;
 	end;
         end loop;
 
-        PUT_LINE( "VAR GFP_disp, q" );
+        PUT( "VAR GFP_disp, q" );
+        if  CODI.DEBUG  then
+          PUT( tab50 & "; Lieu du Generic Frame Pointer " );
+        end if;
+        NEW_LINE;
+
         CODE_PACKAGE_SPEC( D( SM_SPEC, D( AS_SOURCE_NAME, PACKAGE_DECL ) ) );
 
         if  CODI.DEBUG  then

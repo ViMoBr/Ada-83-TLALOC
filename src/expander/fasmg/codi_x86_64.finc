@@ -259,7 +259,15 @@ macro			INDIRECT_BASE_IN_RAX	lvl, disp		; 1 ou 2 instr
   assert lvl >= -1 & lvl <= 31
   if lvl = -1							; top stacked adress of adress
     POP_RAX							; pop rax   adress of adress for data
-    db 0x48, 0x8B, 0x00						; mov rax, qword ptr [rax]   fetch adress of data
+    if disp = 0
+      db 0x48, 0x8B, 0x00						; mov rax, qword ptr [rax]   fetch adress of data
+    else if disp >= -128 & disp < 128
+      db 0x48, 0x8B, 0x40, disp					; mov rax, qword ptr [rax + ofs8]
+    else
+      db 0x48, 0x8B, 0x80						; mov rax, qword ptr [rax + ofs32]
+      dd disp
+    end if
+
   else								; regular framed adress of byte
     FP_IN_RAX	lvl
     FETCH_QWORD	disp						; le FP( lvl ) + disp est dans rax
@@ -397,11 +405,11 @@ end macro
 ;			L O A D   C O N S T A N T  /  V A R I A B L E   A D R E S S E
 ;-----------------------------------------------------------------------------------------------------------------------
 
-;			-------------
-macro			LCA?	ptr				; Load Constant Address (distinguer de LI - qui charge en 32 bits - car les adresses sont en 64 bits sur x64)
-;			-------------
+;			---------------------
+macro			LCA?	ptr, disp:0				; Load Constant Address (distinguer de LI - qui charge en 32 bits - car les adresses sont en 64 bits sur x64)
+;			---------------------
   db 0x48, 0xB8							; movabs rax, ptr
-  dq ptr
+  dq ptr+disp
   PUSH_RAX
 end macro
 
@@ -1075,7 +1083,7 @@ macro			PRM	name_ofs				; Definition d'un parametre
 end macro
 
 ;			-------
-macro			endPRMS					; Fin de la definition des parametres
+macro			endPRMS					; Fin de la definition des parametres adjust = 8 pour fonction
 ;			-------
   virtual PRMzone
     prm_siz = $-8							; Calcul de la taille du parametrage

@@ -22,22 +22,22 @@ db 15, 3, "LIF"
 db 16, 3, "LCA"
 db 17, 4, "LINK"
 db 18, 6, "UNLINK"
-db 19, 2, "LB"
-db 20, 2, "LW"
-db 21, 2, "LD"
-db 22, 2, "LQ"
-db 23, 2, "LA"
-db 24, 3, "LIB"
-db 25, 3, "LIW"
-db 26, 3, "LID"
-db 27, 3, "LIQ"
-db 28, 3, "LIA"
-db 29, 3, "LVA"
-db 30, 2, "SB"
-db 31, 2, "SW"
-db 32, 2, "SD"
-db 33, 2, "SQ"
-db 34, 2, "SA"
+db 19, 3, "LVA"
+db 20, 2, "LB"
+db 21, 2, "LW"
+db 22, 2, "LD"
+db 23, 2, "LQ"
+db 24, 2, "LA"
+db 25, 2, "SB"
+db 26, 2, "SW"
+db 27, 2, "SD"
+db 28, 2, "SQ"
+db 29, 2, "SA"
+db 30, 3, "LIB"
+db 31, 3, "LIW"
+db 32, 3, "LID"
+db 33, 3, "LIQ"
+db 34, 3, "LIA"
 db 35, 3, "SIB"
 db 36, 3, "SIW"
 db 37, 3, "SID"
@@ -48,6 +48,9 @@ IMAGES	BYTES_BLOC
 CST LST, d, 39
 CST FST, d, 0
 CST SIZ, d, 8	; SIZ en bits !
+postpone
+  align_q
+end postpone
 end namespace
 
 ASM_OPCODE_0 = 'ASM_OPCODE_0'
@@ -62,6 +65,11 @@ end namespace
 
 ASM_OPCODE_2 = 'ASM_OPCODE_2'
 namespace ASM_OPCODE_2			; ASM_OPCODE_2 ENUMERATION SUBTYPE INFO
+VAR SIZ, d
+end namespace
+
+ASM_OPCODE_3 = 'ASM_OPCODE_3'
+namespace ASM_OPCODE_3			; ASM_OPCODE_3 ENUMERATION SUBTYPE INFO
 VAR SIZ, d
 end namespace
 
@@ -96,6 +104,22 @@ USEINFO 0, OFS, 	LVA	0, STANDARD.INTEGER.SIZ
 virtual at 0
 STATOFS OPCODE, 1
 STATOFS LVL, 4
+STATOFS OFS, 4
+size = $
+end virtual
+end namespace
+
+ASM_OP_3 = 'ASM_OP_3'
+namespace ASM_OP_3				; ASM_OP_3 RECORD TYPE INFO
+VAR SIZ, d
+USEINFO 0, OPCODE, 	LCA	STANDARD.MACHINE_CODE.ASM_OPCODE_2.SIZ
+USEINFO 0, LVL, 	LVA	0, STANDARD.NATURAL.SIZ
+USEINFO 0, DISP, 	LVA	0, STANDARD.INTEGER.SIZ
+USEINFO 0, OFS, 	LVA	0, STANDARD.INTEGER.SIZ
+virtual at 0
+STATOFS OPCODE, 1
+STATOFS LVL, 4
+STATOFS DISP, 4
 STATOFS OFS, 4
 size = $
 end virtual

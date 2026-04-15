@@ -5,14 +5,11 @@ is
 
   type COULEUR	is ( BLEU , BLANC, ROUGE );
 
-  COUL	: COULEUR		:= BLANC;
+  COUL	: COULEUR		:= ROUGE;
 
   package IO_COULEUR is new ENUMERATION_IO( COULEUR );
 
-  TST	:constant STRING	:= "INUTILE";
-
 begin
   IO_COULEUR.PUT( COUL );
-  PUT( TST );
 
 end	COULEUR_TEST;

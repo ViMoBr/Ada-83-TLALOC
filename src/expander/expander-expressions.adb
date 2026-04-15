@@ -1032,8 +1032,6 @@ put_line( "; adresse component id" );
     	------------------------
 
   begin
-
-
     if  NAME.TY = DN_ATTRIBUTE  then
       declare
         PRM_S	: SEQ_TYPE	:= LIST( PARAMS );
