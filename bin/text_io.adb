@@ -51,6 +51,10 @@ is					-------
       FILE.PAGE := 1;
       FILE.LINE := 1;
       FILE.COL  := 1;
+      FILE.IS_DEFAULT_IO	:= FALSE;
+      FILE.LOOK_AHEAD	:= ASCII.NUL;
+      FILE.HAS_LOOK_AHEAD	:= FALSE;
+      FILE.AT_END_OF_FILE	:= FALSE;
     end if;
 
   end	CREATE;
@@ -91,6 +95,10 @@ is					-------
       FILE.PAGE := 1;
       FILE.LINE := 1;
       FILE.COL  := 1;
+      FILE.IS_DEFAULT_IO	:= FALSE;
+      FILE.LOOK_AHEAD	:= ASCII.NUL;
+      FILE.HAS_LOOK_AHEAD	:= FALSE;
+      FILE.AT_END_OF_FILE	:= FALSE;
     end if;
 
   end	OPEN;
@@ -1527,11 +1535,9 @@ is					-------
       function		GET_ENUM_IMAGES			return STRING
       is		---------------
       begin
-        -- GET(FILE,ITEM,GFP) : GFP_ofs = -24 (3e PRM)
-        -- GET_ENUM_IMAGES est au niveau 2, GET au niveau 1
-        ASM_OP_2'( OPCODE => La,  LVL => 1, OFS => -24 );		-- empiler @GFP_disp
-        ASM_OP_2'( OPCODE => La,  OFS => -8 );				-- charger ENUM_images_ofs
-        ASM_OP_2'( OPCODE => Sa,  LVL => 2, OFS => -8 );		-- stocker dans result__ofs
+        ASM_OP_2'( OPCODE => La,  LVL => 1, OFS => -24 );							-- empiler @GFP_disp (GET: 3 PRM)
+        ASM_OP_3'( OPCODE => LIVa,  DISP => -8, OFS=> 16 );							-- deref __u_ofs → IMAGES
+        ASM_OP_2'( OPCODE => Sa,  LVL => 2, OFS => -8 );							-- stocker dans result_ofs
       end	GET_ENUM_IMAGES;
       		---------------
     begin
@@ -1546,6 +1552,8 @@ is					-------
         IMG_LEN		: INTEGER;
         IMG_START		: POSITIVE;
         FOUND		: BOOLEAN		:= FALSE;
+        IMG_CH		: CHARACTER;
+        TOK_CH		: CHARACTER;
       begin
         -- Lire un token depuis le fichier
         GET_LINE( FILE, CHN, LEN );
@@ -1557,11 +1565,17 @@ is					-------
         TOK_START := I;
         -- Lire le token (lettres, chiffres, underscores)
         while  I <= LEN  loop
-          exit when  not (   ( CHN( I ) >= 'A'  and then  CHN( I ) <= 'Z' )
-                         or  ( CHN( I ) >= 'a'  and then  CHN( I ) <= 'z' )
-                         or  ( CHN( I ) >= '0'  and then  CHN( I ) <= '9' )
-                         or  CHN( I ) = '_' );
-          I := I + 1;
+          if  CHN( I ) >= 'A'  and then  CHN( I ) <= 'Z'  then
+            I := I + 1;
+          elsif  CHN( I ) >= 'a'  and then  CHN( I ) <= 'z'  then
+            I := I + 1;
+          elsif  CHN( I ) >= '0'  and then  CHN( I ) <= '9'  then
+            I := I + 1;
+          elsif  CHN( I ) = '_'  then
+            I := I + 1;
+          else
+            exit;
+          end if;
         end loop;
         TOK_LEN := I - TOK_START;
 
@@ -1574,18 +1588,14 @@ is					-------
           if  IMG_LEN = TOK_LEN  then
             FOUND := TRUE;
             for  J in 0 .. IMG_LEN - 1  loop
-              declare
-                IMG_CH	: CHARACTER	:= IMAGES_STR( IMG_START + J );
-                TOK_CH	: CHARACTER	:= CHN( TOK_START + J );
-              begin
-                -- Comparer en majuscules
-                if  TOK_CH >= 'a'  and then  TOK_CH <= 'z'  then
-                  TOK_CH := CHARACTER'VAL( CHARACTER'POS( TOK_CH ) - 32 );
-                end if;
-                if  IMG_CH /= TOK_CH  then
-                  FOUND := FALSE;
-                end if;
-              end;
+              IMG_CH := IMAGES_STR( IMG_START + J );
+              TOK_CH := CHN( TOK_START + J );
+              if  TOK_CH >= 'a'  and then  TOK_CH <= 'z'  then
+                TOK_CH := CHARACTER'VAL( CHARACTER'POS( TOK_CH ) - 32 );
+              end if;
+              if  IMG_CH /= TOK_CH  then
+                FOUND := FALSE;
+              end if;
             end loop;
             if  FOUND  then
               ITEM := ENUM'VAL( REP );

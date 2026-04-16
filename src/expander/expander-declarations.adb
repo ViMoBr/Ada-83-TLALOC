@@ -417,7 +417,7 @@ null;
 
         begin
 	PUT( "VAR " & PRINT_NAME( D( LX_SYMREP, VC_NAME ) ) & "_disp, b" );
-          if  CODI.DEBUG  then PUT( tab50 & "; variable bool char" ); end if;
+          if  CODI.DEBUG  then PUT( tab50 & "; variable bool char enum" ); end if;
 	NEW_LINE;
 
 	DI( CD_LEVEL,     VC_NAME, INTEGER( CODI.CUR_LEVEL ) );
