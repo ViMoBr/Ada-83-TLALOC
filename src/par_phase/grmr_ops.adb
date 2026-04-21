@@ -13,7 +13,7 @@ is
   HCODE			: INTEGER;
       
   type HTABLE_TYPE		is record
-			  HN	: STRING( 1 .. 17 )		:= (others=>' ');
+			  HN	: STRING(	1 .. 17 )		:= (others=>' ');
 			  HP	: GRMR_OP			:= G_ERROR;
 			end record;
 
@@ -26,14 +26,14 @@ is
   procedure			HASH_SEARCH		( S :STRING )
 				-----------
   is
-    A_17		: STRING( 1 .. 17 )	:= (others => ' ');
+    A_17		: STRING(	1 .. 17 )	:= (others => ' ');
   begin
-    if  S'LENGTH <= 17  then
+    if  S'LENGTH <=	17  then
       A_17( 1 .. S'LENGTH ) := S;
     end if;
-    HCODE := (S'LENGTH + CHARACTER'POS( S( S'LAST ) ) ) mod HSIZE;
+    HCODE	:= (S'LENGTH + CHARACTER'POS(	S( S'LAST	) ) ) mod	HSIZE;
       
-    while  A_17 /= HTABLE( HCODE ).HN  and then  HTABLE( HCODE ).HP /= G_ERROR  loop
+    while	 A_17 /= HTABLE( HCODE ).HN  and then  HTABLE( HCODE ).HP /= G_ERROR	loop
       HCODE := (HCODE + 1) mod HSIZE;
     end loop;
 
@@ -57,7 +57,7 @@ is
 				-------------
   is
     LL	: INTEGER	:= 17;
-    TXT	: STRING( 1..17 )	:= HTABLE( INTEGER( ITABLE( GO ) ) ).HN;
+    TXT	: STRING(	1..17 )	:= HTABLE( INTEGER(	ITABLE( GO ) ) ).HN;
   begin
     loop
       exit when TXT( LL ) /= ' ';
@@ -75,11 +75,11 @@ begin
     procedure			STASH		( P :GRMR_OP; S :STRING )
 				-----
     is
-      A_17	: STRING( 1 .. 17 )		:= (others => ' ');
+      A_17	: STRING(	1 .. 17 )		:= (others => ' ');
     begin
       HASH_SEARCH( S );
       A_17( 1 .. S'LENGTH ) := S;
-      HTABLE( HCODE )       := (HN=> A_17, HP=> P);
+      HTABLE( HCODE	)       := (HN=> A_17, HP=> P);
       ITABLE( P )	        := HASH_BYTE( HCODE );
 
     end	STASH;
@@ -87,7 +87,7 @@ begin
 
   begin
     STASH( N_0,			"$0"		);
-    STASH( N_DEF,			"$DEF" 		);
+    STASH( N_DEF,			"$DEF"		);
     STASH( N_1,			"$1"		);
     STASH( N_2,			"$2"		);
     STASH( N_3,			"$3"		);
@@ -106,8 +106,8 @@ begin
     STASH( G_INSERT,		"insert"		);
     STASH( G_APPEND,		"append"		);
     STASH( G_CAT,			"cat"		);
-    STASH( G_VOID,			"void" 		);
-    STASH( G_LIST,			"list" 		);
+    STASH( G_VOID,			"void"		);
+    STASH( G_LIST,			"list"		);
     STASH( G_EXCH_1,		"exch_1"		);
     STASH( G_EXCH_2,		"exch_2"		);
     STASH( G_CHECK_NAME,		"check_name"	);

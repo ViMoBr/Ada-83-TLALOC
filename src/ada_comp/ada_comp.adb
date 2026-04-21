@@ -1,43 +1,43 @@
 --------------------------------------------------------------------------------
--- TLALOC (The Lonesome Ada Loving Ol'timer Compiler) Strict Ada 83 Compiler
+-- TLALOC	(The Lonesome Ada Loving Ol'timer Compiler) Strict Ada 83 Compiler
 -- Copyright (C) 2024-2026 Vincent MORIN - Université de Bretagne Occidentale
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
--- the Free Software Foundation, either version 3 of the License, or
--- (at your option) any later version.
+-- the Free Software Foundation, either	version 3	of the License, or
+-- (at your option)	any later	version.
 --
 -- This program is distributed in the hope that it will be useful,
 -- but WITHOUT ANY WARRANTY; without even the implied warranty of
--- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
--- GNU General Public License for more details.
+-- MERCHANTABILITY or FITNESS	FOR A PARTICULAR PURPOSE. See	the
+-- GNU General Public License	for more details.
 --
--- You should have received a copy of the GNU General Public License
--- along with this program. If not, see <https://www.gnu.org/licenses/>.
+-- You should have received a	copy of the GNU General Public License
+-- along with this program. If not, see	<https://www.gnu.org/licenses/>.
 --------------------------------------------------------------------------------
 
 -------------------------------------------------------------------------------------------------------------------------
--- 	ADA_COMP.ADB	VINCENT MORIN	21/6/2024		UNIVERSITE DE BRETAGNE OCCIDENTALE
+--	ADA_COMP.ADB	VINCENT MORIN	21/6/2024		UNIVERSITE DE BRETAGNE OCCIDENTALE
 -------------------------------------------------------------------------------------------------------------------------
 --	1	2	3	4	5	6	7	8	9	0	1	2
 
 
---				          |
---				       \\ | //
---				     \\ u ^ u //		/-------_______------\
---				   \ )Y|Y|Y|Y|Y( /	  	|  T  h e            |
---				     / /o o o\ \	     	|  L  o n e s o m e  |
---				    \|H|H|H|H|H|/		|  A  d a            |
---				   G))  Q   Q  ((G	   	|  L  o v i n g      |
---				    / \   "   / \ 	   	|  O  l't i m e r    |
---				   /_/  \V¨V/  \_\	   	|  C  o m p i l e r  |
---				       \vvvvv/	     	\-------______-------/
+--					|
+--				       \\	| //
+--				     \\ u	^ u //		/-------_______------\
+--				   \ )Y|Y|Y|Y|Y( /		|  T  h e		 |
+--				     / /o	o o\ \		|  L  o n	e s o m e	 |
+--				    \|H|H|H|H|H|/		|  A  d a		 |
+--				   G))  Q	  Q  ((G		|  L  o v	i n g	 |
+--				    / \	"   / \ 	   	|  O  l't i m e r    |
+--				   /_/  \V¨V/  \_\		|  C  o m	p i l e r	 |
+--				       \vvvvv/		\-------______-------/
 --				     \ooooooooo/
 
 
 with TEXT_IO, CALENDAR;
 use  TEXT_IO, CALENDAR;
-with IDL, EXPANDER;
+with IDL,	EXPANDER;
 
 					--====--
 		procedure			ADA_COMP
@@ -45,10 +45,10 @@ with IDL, EXPANDER;
 
 is
 
-  CMD_FROM_STDIN		: STRING( 1..512 );
+  CMD_FROM_STDIN		: STRING(	1..512 );
   CMD_LENGTH		: NATURAL;
 
-  ACCES_TEXTE		: STRING( 1..256 );
+  ACCES_TEXTE		: STRING(	1..256 );
   ACCES_TEXTE_LENGTH	: NATURAL;
 
   NO_OPTION_GIVEN		: BOOLEAN		:= FALSE;
@@ -68,15 +68,15 @@ begin
     begin
 FIND_START_1:
       loop
-        exit when  CMD_FROM_STDIN( CHN_START ) /= ' ';
+        exit when  CMD_FROM_STDIN( CHN_START ) /=	' ';
         CHN_START := CHN_START + 1;
-      end loop  FIND_START_1;
-      POST_CHN := CHN_START + 1;
+      end	loop  FIND_START_1;
+      POST_CHN := CHN_START +	1;
 FIND_POST_END_1:
       loop
         exit when  CMD_FROM_STDIN( POST_CHN ) = ' ';
-        POST_CHN := POST_CHN + 1;
-      end loop  FIND_POST_END_1;
+        POST_CHN :=	POST_CHN + 1;
+      end	loop  FIND_POST_END_1;
 
       IDL.PROJECT_PATH_LENGTH	:= POST_CHN - CHN_START;
       IDL.PROJECT_PATH( 1 .. IDL.PROJECT_PATH_LENGTH )
@@ -88,7 +88,7 @@ FIND_POST_END_1:
 
     IDL.LIB_PATH_LENGTH	:= IDL.PROJECT_PATH_LENGTH + IDL.DEFAULT_LIB_PATH'LENGTH;
     IDL.LIB_PATH( 1..IDL.LIB_PATH_LENGTH )
-			:= IDL.PROJECT_PATH( 1 .. IDL.PROJECT_PATH_LENGTH )
+			:= IDL.PROJECT_PATH( 1 .. IDL.PROJECT_PATH_LENGTH	)
 			   & IDL.DEFAULT_LIB_PATH;
 
 
@@ -98,18 +98,18 @@ FIND_POST_END_1:
       CHN_START := POST_CHN;
 FIND_START_2:
       loop
-        exit when  CMD_FROM_STDIN( CHN_START ) /= ' ';
+        exit when  CMD_FROM_STDIN( CHN_START ) /=	' ';
         CHN_START := CHN_START + 1;
-      end loop  FIND_START_2;
-      POST_CHN := CHN_START + 1;
+      end	loop  FIND_START_2;
+      POST_CHN := CHN_START +	1;
 FIND_POST_END_2:
       loop
         exit when  CMD_FROM_STDIN( POST_CHN ) = ' ';
-        POST_CHN := POST_CHN + 1;
+        POST_CHN :=	POST_CHN + 1;
         if  POST_CHN > CMD_FROM_STDIN'LAST  then
 	NO_OPTION_GIVEN := TRUE;
         end if;
-      end loop  FIND_POST_END_2;
+      end	loop  FIND_POST_END_2;
 
       ACCES_TEXTE_LENGTH	:= (POST_CHN - CHN_START);
       ACCES_TEXTE( 1..ACCES_TEXTE_LENGTH ) := CMD_FROM_STDIN( CHN_START .. POST_CHN-1 );
@@ -118,7 +118,7 @@ FIND_POST_END_2:
 	--------------------------
 
     if  NO_OPTION_GIVEN
-    then  OPTION := 'S';
+    then	OPTION :=	'S';
     else
 				------------
 				ISOLE_OPTION:							--| ISOLER DANS OPTION LE CARACTERE OPTION D'ARRET
@@ -126,8 +126,8 @@ FIND_POST_END_2:
         CHN_START := POST_CHN;
 FIND_START_3:
         loop
-	exit when  CMD_FROM_STDIN( CHN_START ) /= ' ';
-	CHN_START := CHN_START + 1;
+	exit when	 CMD_FROM_STDIN( CHN_START ) /= ' ';
+	CHN_START	:= CHN_START + 1;
         end loop  FIND_START_3;
         OPTION := CMD_FROM_STDIN( CHN_START );
 
@@ -136,7 +136,7 @@ FIND_START_3:
     end if;
   end;
 
-  if  OPTION = 'U'  or  OPTION = 'P'  or  OPTION = 'A'  then
+  if  OPTION = 'U'	or  OPTION = 'P'  or  OPTION = 'A'  then
     IDL.PRETTY_DIANA( OPTION );
     return;
   end if;
@@ -151,16 +151,16 @@ FIND_START_3:
   begin
 
 DEBUT_NOM_TEXTE:
-    while  ACCES_TEXTE( POSITION_SEPARATEUR ) /= '/'  loop
+    while	 ACCES_TEXTE( POSITION_SEPARATEUR ) /= '/'  loop
       POSITION_SEPARATEUR := POSITION_SEPARATEUR - 1;
       exit when  POSITION_SEPARATEUR = 0;
     end loop  DEBUT_NOM_TEXTE;
 
 
     declare
-      CHEMIN_TEXTE	:constant STRING	:= IDL.PROJECT_PATH( 1 .. IDL.PROJECT_PATH_LENGTH )
+      CHEMIN_TEXTE	:constant	STRING	:= IDL.PROJECT_PATH( 1 .. IDL.PROJECT_PATH_LENGTH	)
 				      & ACCES_TEXTE( 1 .. POSITION_SEPARATEUR );
-      NOM_TEXTE	:constant STRING	:= ACCES_TEXTE( POSITION_SEPARATEUR+1 .. ACCES_TEXTE_LENGTH );
+      NOM_TEXTE	:constant	STRING	:= ACCES_TEXTE( POSITION_SEPARATEUR+1 .. ACCES_TEXTE_LENGTH	);
 
     begin
       IDL.PAR_PHASE( CHEMIN_TEXTE, NOM_TEXTE, IDL.LIB_PATH );
@@ -168,17 +168,17 @@ DEBUT_NOM_TEXTE:
       IDL.LIB_PHASE;		if  OPTION = 'L'  or  OPTION = 'l'  then goto FIN; end if;
       IDL.SEM_PHASE;		if  OPTION = 'M'  or  OPTION = 'm'  then goto FIN; end if;
 
-      if  OPTION = 'C'  or  OPTION = 'W'  then
+      if	OPTION = 'C'  or  OPTION = 'W'  then
         EXPANDER;
-      end if;
+      end	if;
 
 <<FIN>>
       IDL.ERR_PHASE( CHEMIN_TEXTE & NOM_TEXTE );
 
-      if  OPTION = 'W' or OPTION = 'w'  then  IDL.WRITE_LIB;  end if;
+      if	OPTION = 'W' or OPTION = 'w'	then  IDL.WRITE_LIB;  end if;
 
       END_TIME := CLOCK;
-      PUT_LINE( " ..... Ok" & INTEGER'IMAGE( INTEGER( 1000 * (END_TIME - START_TIME) ) ) & " msec" );
+      PUT_LINE( " ..... Ok" &	INTEGER'IMAGE( INTEGER( 1000 * (END_TIME - START_TIME) ) ) & " msec" );
 
     exception
       when NAME_ERROR => null;
