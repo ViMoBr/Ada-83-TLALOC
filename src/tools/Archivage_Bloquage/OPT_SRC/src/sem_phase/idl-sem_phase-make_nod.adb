@@ -359,10 +359,11 @@ is					--------
 
   end	MAKE_OPERATOR_ID;
 	----------------
-  function	MAKE_PACKAGE_ID	( LX_SRCPOS, LX_SYMREP, SM_FIRST :TREE := TREE_VOID;
-				  SM_SPEC, SM_UNIT_DESC, SM_ADDRESS :TREE := TREE_VOID;
-				  XD_REGION, XD_STUB, XD_BODY	:TREE := TREE_VOID )
-					return TREE is
+
+		---------------
+  function	MAKE_PACKAGE_ID	( LX_SRCPOS, LX_SYMREP, SM_FIRST, SM_SPEC, SM_UNIT_DESC, SM_ADDRESS,
+				XD_REGION, XD_STUB,	XD_BODY :TREE := TREE_VOID )
+				return TREE is
     NODE		: TREE	:= MAKE( DN_PACKAGE_ID );
   begin
     D( DA.LX_SRCPOS, NODE, LX_SRCPOS );
@@ -376,19 +377,17 @@ is					--------
     D( DA.XD_BODY, NODE, XD_BODY );
     DB( DA.CD_COMPILED, NODE,	FALSE );
     return NODE;
-  end	MAKE_PACKAGE_ID;
 
-  function	MAKE_GENERIC_ID
-		    ( LX_SRCPOS :TREE := TREE_VOID;
-		    LX_SYMREP :TREE	:= TREE_VOID;
-		    SM_FIRST :TREE := TREE_VOID;
-		    SM_SPEC :TREE := TREE_VOID;
-		    SM_GENERIC_PARAM_S :TREE := TREE_VOID;
-		    SM_body :TREE := TREE_VOID;
-		    SM_IS_INLINE :BOOLEAN := FALSE;
-		    XD_REGION :TREE	:= TREE_VOID )
-		    return TREE is
-         NODE :TREE	:= MAKE( DN_GENERIC_ID );
+  end	MAKE_PACKAGE_ID;
+	---------------
+
+		---------------
+  function	MAKE_GENERIC_ID	( LX_SRCPOS, LX_SYMREP, SM_FIRST, SM_SPEC, SM_GENERIC_PARAM_S,
+				SM_body :TREE := TREE_VOID;
+				SM_IS_INLINE :BOOLEAN := FALSE;
+				XD_REGION	:TREE := TREE_VOID )
+				return TREE is
+    NODE	:TREE	:= MAKE( DN_GENERIC_ID );
   begin
     D( DA.LX_SRCPOS, NODE, LX_SRCPOS );
     D( DA.LX_SYMREP, NODE, LX_SYMREP );
@@ -398,18 +397,16 @@ is					--------
     D( DA.SM_body, NODE, SM_body );
     DB( DA.SM_IS_INLINE, NODE, SM_IS_INLINE );
     D( DA.XD_REGION, NODE, XD_REGION );
-         return NODE;
+    return NODE;
+
   end	MAKE_GENERIC_ID;
-   
-  function	MAKE_TASK_body_ID
-		    ( LX_SRCPOS :TREE := TREE_VOID;
-		    LX_SYMREP :TREE	:= TREE_VOID;
-		    SM_FIRST :TREE := TREE_VOID;
-		    SM_TYPE_SPEC :TREE := TREE_VOID;
-		    SM_body :TREE := TREE_VOID;
-		    XD_REGION :TREE	:= TREE_VOID )
-		    return TREE is
-         NODE :TREE	:= MAKE( DN_TASK_body_ID );
+	---------------
+
+		-----------------
+  function	MAKE_TASK_body_ID	( LX_SRCPOS, LX_SYMREP, SM_FIRST, SM_TYPE_SPEC, SM_body,
+				XD_REGION	:TREE := TREE_VOID )
+				return TREE is
+    NODE	:TREE	:= MAKE( DN_TASK_body_ID );
   begin
     D( DA.LX_SRCPOS, NODE, LX_SRCPOS );
     D( DA.LX_SYMREP, NODE, LX_SYMREP );
@@ -417,181 +414,189 @@ is					--------
     D( DA.SM_TYPE_SPEC, NODE,	SM_TYPE_SPEC );
     D( DA.SM_body, NODE, SM_body );
     D( DA.XD_REGION, NODE, XD_REGION );
-         return NODE;
+    return NODE;
+
   end	MAKE_TASK_body_ID;
-   
-  function	MAKE_LABEL_ID
-		    ( LX_SRCPOS :TREE := TREE_VOID;
-		    LX_SYMREP :TREE	:= TREE_VOID;
-		    SM_STM :TREE :=	TREE_VOID;
-		    XD_REGION :TREE	:= TREE_VOID )
-		    return TREE is
-         NODE :TREE	:= MAKE( DN_LABEL_ID );
+	-----------------
+
+		-------------
+  function	MAKE_LABEL_ID	( LX_SRCPOS, LX_SYMREP, SM_STM, XD_REGION :TREE := TREE_VOID )
+				return TREE is
+    NODE	:TREE	:= MAKE( DN_LABEL_ID );
   begin
     D( DA.LX_SRCPOS, NODE, LX_SRCPOS );
     D( DA.LX_SYMREP, NODE, LX_SYMREP );
     D( DA.SM_STM, NODE, SM_STM );
     D( DA.XD_REGION, NODE, XD_REGION );
-         return NODE;
+    return NODE;
+
   end	MAKE_LABEL_ID;
-   
-  function	MAKE_BLOCK_LOOP_ID
-		    ( LX_SRCPOS :TREE := TREE_VOID;
-		    LX_SYMREP :TREE	:= TREE_VOID;
-		    SM_STM :TREE :=	TREE_VOID;
-		    XD_REGION :TREE	:= TREE_VOID )
-		    return TREE is
-         NODE :TREE	:= MAKE( DN_BLOCK_LOOP_ID );
+	-------------
+
+		------------------
+  function	MAKE_BLOCK_LOOP_ID	( LX_SRCPOS, LX_SYMREP, SM_STM, XD_REGION :TREE := TREE_VOID )
+				return TREE is
+    NODE	:TREE	:= MAKE( DN_BLOCK_LOOP_ID );
   begin
     D( DA.LX_SRCPOS, NODE, LX_SRCPOS );
     D( DA.LX_SYMREP, NODE, LX_SYMREP );
     D( DA.SM_STM, NODE, SM_STM );
     D( DA.XD_REGION, NODE, XD_REGION );
-         return NODE;
+    return NODE;
+
   end	MAKE_BLOCK_LOOP_ID;
-   
-  function	MAKE_ENTRY_ID
-		    ( LX_SRCPOS :TREE := TREE_VOID;
-		    LX_SYMREP :TREE	:= TREE_VOID;
-		    SM_SPEC :TREE := TREE_VOID;
-		    SM_ADDRESS :TREE := TREE_VOID;
-		    XD_REGION :TREE	:= TREE_VOID )
-		    return TREE is
-         NODE :TREE	:= MAKE( DN_ENTRY_ID );
+	------------------
+
+		-------------
+  function	MAKE_ENTRY_ID	( LX_SRCPOS, LX_SYMREP, SM_SPEC, SM_ADDRESS, XD_REGION :TREE := TREE_VOID )
+				return TREE is
+    NODE	:TREE	:= MAKE( DN_ENTRY_ID );
   begin
     D( DA.LX_SRCPOS, NODE, LX_SRCPOS );
     D( DA.LX_SYMREP, NODE, LX_SYMREP );
     D( DA.SM_SPEC, NODE, SM_SPEC );
     D( DA.SM_ADDRESS, NODE, SM_ADDRESS );
     D( DA.XD_REGION, NODE, XD_REGION );
-         return NODE;
+    return NODE;
+
   end	MAKE_ENTRY_ID;
-      --|-------------------------------------------------------------------------------------------
-      --|	FUNCTION MAKE_EXCEPTION_ID
-  function	MAKE_EXCEPTION_ID (	LX_SRCPOS, LX_SYMREP, SM_RENAMES_EXC, XD_REGION :TREE := TREE_VOID  )	return TREE is
+	-------------
+
+		-----------------
+  function	MAKE_EXCEPTION_ID	( LX_SRCPOS, LX_SYMREP, SM_RENAMES_EXC,	XD_REGION	:TREE := TREE_VOID	)
+				return TREE is
          NODE	 :TREE :=	MAKE( DN_EXCEPTION_ID  );
   begin
     D( DA.LX_SRCPOS, NODE, LX_SRCPOS );
     D( DA.LX_SYMREP, NODE, LX_SYMREP );
     D( DA.SM_RENAMES_EXC, NODE, SM_RENAMES_EXC );
     D( DA.XD_REGION, NODE, XD_REGION );
-         return NODE;
+    return NODE;
+
   end	MAKE_EXCEPTION_ID;
-      --|-------------------------------------------------------------------------------------------
-      --|	FUNCTION MAKE_ATTRIBUTE_ID
+	-----------------
+
+		-----------------
   function	MAKE_ATTRIBUTE_ID (	LX_SRCPOS, LX_SYMREP :TREE :=	TREE_VOID; XD_POS :INTEGER  )	return TREE is
-         NODE	 :TREE :=	MAKE( DN_ATTRIBUTE_ID  );
+    NODE	:TREE	:= MAKE( DN_ATTRIBUTE_ID  );
   begin
     D( DA.LX_SRCPOS, NODE, LX_SRCPOS  );
     D( DA.LX_SYMREP, NODE, LX_SYMREP  );
-         DI ( DA.XD_POS,   NODE, XD_POS	 );
-         return NODE;
+    DI( DA.XD_POS,	 NODE, XD_POS  );
+    return NODE;
+
   end	MAKE_ATTRIBUTE_ID;
-      --|-------------------------------------------------------------------------------------------
-      --|	FUNCTION MAKE_PRAGMA_ID
-  function	MAKE_PRAGMA_ID ( LX_SRCPOS, LX_SYMREP, SM_ARGUMENT_ID_S :TREE := TREE_VOID; XD_POS :INTEGER  ) return TREE is
+	-----------------
+
+		--------------
+  function	MAKE_PRAGMA_ID	( LX_SRCPOS, LX_SYMREP, SM_ARGUMENT_ID_S :TREE :=	TREE_VOID; XD_POS :INTEGER  )
+				return TREE is
          NODE	 :TREE :=	MAKE( DN_PRAGMA_ID	);
   begin
-         D  ( DA.LX_SRCPOS, NODE, LX_SRCPOS  );
-         D  ( DA.LX_SYMREP, NODE, LX_SYMREP  );
-         DI ( DA.XD_POS,    NODE, XD_POS  );
-         D  ( DA.SM_ARGUMENT_ID_S, NODE, SM_ARGUMENT_ID_S  );
-         return NODE;
-  end;
-      --|-------------------------------------------------------------------------------------------
-      --|	FUNCTION MAKE_ARGUMENT_ID
-  function	MAKE_ARGUMENT_ID ( LX_SRCPOS,	LX_SYMREP	:TREE := TREE_VOID;	XD_POS :INTEGER  ) return TREE is
-         NODE	 :TREE :=	MAKE( DN_ARGUMENT_ID  );
+    D( DA.LX_SRCPOS, NODE, LX_SRCPOS  );
+    D( DA.LX_SYMREP, NODE, LX_SYMREP  );
+    DI( DA.XD_POS,	  NODE, XD_POS  );
+    D( DA.SM_ARGUMENT_ID_S, NODE, SM_ARGUMENT_ID_S  );
+    return NODE;
+
+  end	MAKE_PRAGMA_ID;
+	--------------
+
+		----------------
+  function	MAKE_ARGUMENT_ID	( LX_SRCPOS, LX_SYMREP :TREE := TREE_VOID; XD_POS	:INTEGER	) return TREE is
+    NODE	 :TREE	:= MAKE( DN_ARGUMENT_ID  );
   begin
-         D  ( DA.LX_SRCPOS, NODE, LX_SRCPOS  );
-         D  ( DA.LX_SYMREP, NODE, LX_SYMREP  );
-         DI ( DA.XD_POS,    NODE, XD_POS  );
-         return NODE;
-  end;
-      --|-------------------------------------------------------------------------------------------
-      --|	FUNCTION MAKE_BLTN_OPERATOR_ID
-  function	MAKE_BLTN_OPERATOR_ID ( LX_SRCPOS, LX_SYMREP :TREE := TREE_VOID; SM_OPERATOR :INTEGER  ) return TREE is
-         NODE	 :TREE :=	MAKE( DN_BLTN_OPERATOR_ID  );
+    D  ( DA.LX_SRCPOS, NODE, LX_SRCPOS	);
+    D  ( DA.LX_SYMREP, NODE, LX_SYMREP	);
+    DI ( DA.XD_POS,	   NODE, XD_POS  );
+    return NODE;
+
+  end	MAKE_ARGUMENT_ID;
+	----------------
+
+		---------------------
+  function	MAKE_BLTN_OPERATOR_ID	( LX_SRCPOS, LX_SYMREP :TREE := TREE_VOID; SM_OPERATOR :INTEGER  )
+					return TREE is
+    NODE	 :TREE	:= MAKE( DN_BLTN_OPERATOR_ID	);
   begin
-         D  ( DA.LX_SRCPOS,	NODE, LX_SRCPOS );
-         D  ( DA.LX_SYMREP,	NODE, LX_SYMREP );
-         DI ( DA.SM_OPERATOR,	NODE, SM_OPERATOR );
-         return NODE;
-  end;
-   
-  function	MAKE_BLOCK_MASTER
-		    ( LX_SRCPOS :TREE := TREE_VOID;
-		    SM_STM :TREE :=	TREE_VOID	)
-		    return TREE is
-         NODE :TREE	:= MAKE( DN_BLOCK_MASTER );
+    D  ( DA.LX_SRCPOS,   NODE, LX_SRCPOS );
+    D  ( DA.LX_SYMREP,   NODE, LX_SYMREP );
+    DI ( DA.SM_OPERATOR, NODE, SM_OPERATOR );
+    return NODE;
+
+  end	MAKE_BLTN_OPERATOR_ID;
+	---------------------
+
+		-----------------
+  function	MAKE_BLOCK_MASTER	( LX_SRCPOS, SM_STM	:TREE := TREE_VOID )	return TREE is
+    NODE	:TREE	:= MAKE( DN_BLOCK_MASTER );
   begin
     D( DA.LX_SRCPOS, NODE, LX_SRCPOS );
     D( DA.SM_STM, NODE, SM_STM );
-         return NODE;
+    return NODE;
+
   end	MAKE_BLOCK_MASTER;
-   
-  function	MAKE_DSCRMT_DECL
-		    ( AS_SOURCE_NAME_S :TREE := TREE_VOID;
-		    AS_NAME :TREE := TREE_VOID;
-		    AS_EXP :TREE :=	TREE_VOID;
-		    LX_SRCPOS :TREE	:= TREE_VOID )
-		    return TREE is
-         NODE :TREE	:= MAKE( DN_DSCRMT_DECL );
+	-----------------
+
+		----------------
+  function	MAKE_DSCRMT_DECL	( AS_SOURCE_NAME_S,	AS_NAME, AS_EXP, LX_SRCPOS :TREE := TREE_VOID )
+				return TREE is
+    NODE	:TREE	:= MAKE( DN_DSCRMT_DECL );
   begin
     D( DA.AS_SOURCE_NAME_S, NODE, AS_SOURCE_NAME_S );
     D( DA.AS_NAME, NODE, AS_NAME );
     D( DA.AS_EXP, NODE, AS_EXP );
     D( DA.LX_SRCPOS, NODE, LX_SRCPOS );
-         return NODE;
+    return NODE;
+
   end	MAKE_DSCRMT_DECL;
-   
-  function	MAKE_IN
-		    ( AS_SOURCE_NAME_S :TREE := TREE_VOID;
-		    AS_NAME :TREE := TREE_VOID;
-		    AS_EXP :TREE :=	TREE_VOID;
-		    LX_SRCPOS :TREE	:= TREE_VOID;
-		    LX_DEFAULT :BOOLEAN := FALSE )
-		    return TREE is
-         NODE :TREE	:= MAKE( DN_IN );
+	----------------
+
+		-------
+  function	MAKE_IN		( AS_SOURCE_NAME_S,	AS_NAME, AS_EXP, LX_SRCPOS :TREE := TREE_VOID;
+				LX_DEFAULT :BOOLEAN	:= FALSE )
+				return TREE is
+    NODE	:TREE	:= MAKE( DN_IN );
   begin
     D( DA.AS_SOURCE_NAME_S, NODE, AS_SOURCE_NAME_S );
     D( DA.AS_NAME, NODE, AS_NAME );
     D( DA.AS_EXP, NODE, AS_EXP );
     D( DA.LX_SRCPOS, NODE, LX_SRCPOS );
     DB( DA.LX_DEFAULT, NODE, LX_DEFAULT	);
-         return NODE;
+    return NODE;
+
   end	MAKE_IN;
-   
-  function	MAKE_OUT
-		    ( AS_SOURCE_NAME_S :TREE := TREE_VOID;
-		    AS_NAME :TREE := TREE_VOID;
-		    AS_EXP :TREE :=	TREE_VOID;
-		    LX_SRCPOS :TREE	:= TREE_VOID )
-		    return TREE is
-         NODE :TREE	:= MAKE( DN_OUT );
+	-------
+
+		--------
+  function	MAKE_OUT		( AS_SOURCE_NAME_S,	AS_NAME, AS_EXP, LX_SRCPOS :TREE := TREE_VOID )
+				return TREE is
+    NODE	:TREE	:= MAKE( DN_OUT );
   begin
     D( DA.AS_SOURCE_NAME_S, NODE, AS_SOURCE_NAME_S );
     D( DA.AS_NAME, NODE, AS_NAME );
     D( DA.AS_EXP, NODE, AS_EXP );
     D( DA.LX_SRCPOS, NODE, LX_SRCPOS );
-         return NODE;
+    return NODE;
+
   end	MAKE_OUT;
-   
-  function	MAKE_IN_OUT
-		    ( AS_SOURCE_NAME_S :TREE := TREE_VOID;
-		    AS_NAME :TREE := TREE_VOID;
-		    AS_EXP :TREE :=	TREE_VOID;
-		    LX_SRCPOS :TREE	:= TREE_VOID )
-		    return TREE is
-         NODE :TREE	:= MAKE( DN_IN_OUT );
+	--------
+
+		-----------
+  function	MAKE_IN_OUT	( AS_SOURCE_NAME_S,	AS_NAME, AS_EXP, LX_SRCPOS :TREE := TREE_VOID )
+				return TREE is
+    NODE	:TREE	:= MAKE( DN_IN_OUT );
   begin
     D( DA.AS_SOURCE_NAME_S, NODE, AS_SOURCE_NAME_S );
     D( DA.AS_NAME, NODE, AS_NAME );
     D( DA.AS_EXP, NODE, AS_EXP );
     D( DA.LX_SRCPOS, NODE, LX_SRCPOS );
-         return NODE;
+    return NODE;
+
   end	MAKE_IN_OUT;
-   
+	-----------
+
+		------------------
   function	MAKE_CONSTANT_DECL
 		    ( AS_SOURCE_NAME_S :TREE := TREE_VOID;
 		    AS_EXP :TREE :=	TREE_VOID;
