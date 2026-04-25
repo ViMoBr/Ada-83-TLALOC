@@ -1046,8 +1046,11 @@ put_line( "; region=" & REGION_NAME & " .TY= " &  NODE_NAME'IMAGE( D( XD_REGION,
 	  STORE_OR_CALLI;
 
 	elsif  NAME_TYPE.TY = DN_INTEGER  then								-- OBJET ASSIGNE ENTIER
+	  if  CODI.IN_GENERIC_BODY  and then  ( DEFN.TY = DN_OUT_ID  or  DEFN.TY = DN_IN_OUT_ID )  then
+	    PUT_LINE( tab & "LVa " & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' & tab & '-' & PRINT_NAME( D( LX_SYMREP, DEFN ) ) & "_ofs" );
+	  end if;
 	  EXPRESSIONS.CODE_EXP( SRC_EXP );
-	  CODI.STORE( DEFN );
+	  STORE_OR_CALLI;
 
 	elsif  NAME_TYPE.TY = DN_FLOAT  then								-- OBJET ASSIGNE FLOTTANT
 	  EXPRESSIONS.CODE_EXP( SRC_EXP );

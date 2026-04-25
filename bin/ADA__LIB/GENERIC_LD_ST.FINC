@@ -1,0 +1,210 @@
+include 'TEXT_IO.FINC'
+PRO	GENERIC_LD_ST_L1			;---------- PRO GENERIC_LD_ST
+ELB 1					;    BODY ELAB
+COULEUR = 'COULEUR'
+namespace COULEUR				; COULEUR ENUMERATION TYPE INFO
+BEGIN_BLOC_DEF
+db 0, 4, "BLEU"
+db 1, 5, "BLANC"
+db 2, 5, "ROUGE"
+END_BLOC_DEF
+IMAGES	BYTES_BLOC
+CST LST, d, 2
+CST FST, d, 0
+CST SIZ, d, 8	; SIZ en bits !
+postpone
+  align_q
+end postpone
+end namespace
+
+IO_COULEUR = 'IO_COULEUR'
+namespace IO_COULEUR			;---------- GENERIC PACKAGE INSTANTIATION
+elab_spec:				;    SPEC ELAB
+
+VAR COULEUR__u_ofs, q
+	LCA	STANDARD.GENERIC_LD_ST_L1.COULEUR.SIZ
+	Sa	 1, COULEUR__u_ofs
+BRA post_LD_COULEUR
+LD_COULEUR.elab:
+	Lb -1, 0
+	RTD 0
+post_LD_COULEUR:
+BRA post_ST_COULEUR
+ST_COULEUR.elab:
+	SIb -1, 0
+	RTD 0
+post_ST_COULEUR:
+VAR COULEUR__ld_ofs, q
+	LCA LD_COULEUR.elab
+	Sa	 1, COULEUR__ld_ofs
+VAR COULEUR__st_ofs, q
+	LCA ST_COULEUR.elab
+	Sa	 1, COULEUR__st_ofs
+VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
+VAR DEFAULT_WIDTH_disp, d			; variable entiere
+	LI	0
+	Sd  1,	DEFAULT_WIDTH_disp
+
+VAR DEFAULT_SETTING_disp, b			; variable entiere
+	LI	1
+	Sb  1,	DEFAULT_SETTING_disp
+
+if defined GET_L79_
+PRO	GET_L79				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM ITEM_ofs				; out
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	La 	 2, -ITEM_ofs
+	La 	 2, -FILE_ofs
+	CALL	STANDARD.TEXT_IO.ENUMERATION_IO. ,GET_L79
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO GET
+end if
+if defined GET_L80_
+PRO	GET_L80				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM ITEM_ofs				; out
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	La 	 2, -ITEM_ofs
+	CALL	STANDARD.TEXT_IO.ENUMERATION_IO. ,GET_L80
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO GET
+end if
+if defined PUT_L81_
+PRO	PUT_L81				;---------- PRO PUT
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM ITEM_ofs				; in
+	PRM WIDTH_ofs				; in
+	PRM SET_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Lq	 2, -SET_ofs
+	Lq	 2, -WIDTH_ofs
+	Lq	 2, -ITEM_ofs
+	La 	 2, -FILE_ofs
+	CALL	STANDARD.TEXT_IO.ENUMERATION_IO. ,PUT_L81
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO PUT
+end if
+if defined PUT_L82_
+PRO	PUT_L82				;---------- PRO PUT
+PRMS					;    debut parametrage
+	PRM ITEM_ofs				; in
+	PRM WIDTH_ofs				; in
+	PRM SET_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Lq	 2, -SET_ofs
+	Lq	 2, -WIDTH_ofs
+	Lq	 2, -ITEM_ofs
+	CALL	STANDARD.TEXT_IO.ENUMERATION_IO. ,PUT_L82
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO PUT
+end if
+if defined GET_L83_
+PRO	GET_L83				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM FROM_ofs				; in
+	PRM ITEM_ofs				; out
+	PRM LAST_ofs				; out
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	La 	 2, -LAST_ofs
+	La 	 2, -ITEM_ofs
+	La 	 2, -FROM_ofs
+	CALL	STANDARD.TEXT_IO.ENUMERATION_IO. ,GET_L83
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO GET
+end if
+if defined PUT_L84_
+PRO	PUT_L84				;---------- PRO PUT
+PRMS					;    debut parametrage
+	PRM TO_ofs				; out
+	PRM ITEM_ofs				; in
+	PRM SET_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Lq	 2, -SET_ofs
+	Lq	 2, -ITEM_ofs
+	La 	 2, -TO_ofs
+	CALL	STANDARD.TEXT_IO.ENUMERATION_IO. ,PUT_L84
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO PUT
+end if
+					;---------- end generic package instantiation IO_COULEUR
+end namespace
+
+VAR C_disp, b				; variable entiere
+
+VAR espacement, q
+
+VAR F_disp, q				; variable record : pointeur aux data record
+VAR F__u, q				; variable record : pointeur aux useinfo
+VAR F__dat, STANDARD.TEXT_IO.FILE_TYPE.size
+	LVA	1, F__dat
+	Sa	1, F_disp				; record fin
+	LVA	1, STANDARD.TEXT_IO.FILE_TYPE.SIZ
+	Sa	1, F__u
+	LIVa 1, F_disp, STANDARD.TEXT_IO.FILE_TYPE.ID
+	LI	1
+	NEG
+	Sd
+	LIVa 1, F_disp, STANDARD.TEXT_IO.FILE_TYPE.IS_OPENED
+	LI	0
+	Sb
+	LIVa 1, F_disp, STANDARD.TEXT_IO.FILE_TYPE.IS_DEFAULT_IO
+	LI	0
+	Sb
+	LIVa 1, F_disp, STANDARD.TEXT_IO.FILE_TYPE.LOOK_AHEAD
+	LI	 0
+	Sb
+	LIVa 1, F_disp, STANDARD.TEXT_IO.FILE_TYPE.HAS_LOOK_AHEAD
+	LI	0
+	Sb
+	LIVa 1, F_disp, STANDARD.TEXT_IO.FILE_TYPE.AT_END_OF_FILE
+	LI	0
+	Sb
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+STR STR_L8, ''				; constante string=''
+	LCA	STR_L8.data_ptr
+STR STR_L9, 'enum_data.dat'			; constante string='enum_data.dat'
+	LCA	STR_L9.data_ptr
+	LI  0
+	LVA  1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,OPEN_L2
+	LVA  1,	C_disp
+	LVa 1,	F_disp
+	CALL	STANDARD.GENERIC_LD_ST_L1.IO_COULEUR. ,GET_L79
+	Lb 1,	STANDARD.GENERIC_LD_ST_L1.IO_COULEUR.DEFAULT_SETTING_disp
+	Ld 1,	STANDARD.GENERIC_LD_ST_L1.IO_COULEUR.DEFAULT_WIDTH_disp
+	Lb 1,	C_disp
+	CALL	STANDARD.GENERIC_LD_ST_L1.IO_COULEUR. ,PUT_L82
+ret_lbl:
+	UNLINK 1
+	RTD
+excep:
+endPRO					;---------- end PRO GENERIC_LD_ST

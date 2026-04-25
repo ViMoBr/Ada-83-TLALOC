@@ -991,32 +991,6 @@ put_line( "; region=" & REGION_NAME & " .TY= " &  NODE_NAME'IMAGE( D( XD_REGION,
 	NAME_TYPE	: TREE		:= D( SM_EXP_TYPE, DST_NAME );
 	DEFN	: TREE		:= D( SM_DEFN, DST_NAME );
 
-	  ---------
-	  procedure	STORE_OR_CALLI
-	  is		---------
-	    -- Si dans un body generique et parametre out/in_out, utiliser CALLI vers ST
-	    -- pour respecter la taille du type actuel. Sinon, store classique.
-	    -- Convention: pile = [..., @param_out, valeur]  (valeur en sommet, empilee par l'appelant)
-	    -- ST fait SIb -1,0 : POP_RBX (valeur), INDIRECT_BASE_IN_RAX (deref @param → @dest), STORE
-	  begin
-	    if  CODI.IN_GENERIC_BODY
-	    and then  ( DEFN.TY = DN_OUT_ID  or  DEFN.TY = DN_IN_OUT_ID )
-	    then
-	      declare
-	        FORMAL_TYPE_NAME :constant STRING := PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, NAME_TYPE ) ) );
-	      begin
-	        -- Charger l'adresse de ST via le GFP
-	        -- Utiliser le niveau du parametre (= niveau de la procedure, pas du bloc declare)
-	        PUT_LINE( tab & "La " & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' & tab & "-GFP_ofs" );
-	        PUT_LINE( tab & "La , -" & FORMAL_TYPE_NAME & "__st_ofs" );
-	        PUT_LINE( tab & "CALLI" );
-	      end;
-	    else
-	      CODI.STORE( DEFN );
-	    end if;
-	  end	STORE_OR_CALLI;
-	  ---------
-
         begin
 				-- Resolve private to full type
 	  if  NAME_TYPE.TY = DN_L_PRIVATE
@@ -1039,15 +1013,12 @@ put_line( "; region=" & REGION_NAME & " .TY= " &  NODE_NAME'IMAGE( D( XD_REGION,
             end if;
 
 	elsif  NAME_TYPE.TY = DN_ENUMERATION  then							-- OBJET ASSIGNE ENUMERATION (DONT BOOLEAN, CHARACTER)
-	  if  CODI.IN_GENERIC_BODY  and then  ( DEFN.TY = DN_OUT_ID  or  DEFN.TY = DN_IN_OUT_ID )  then
-	    PUT_LINE( tab & "LVa " & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' & tab & '-' & PRINT_NAME( D( LX_SYMREP, DEFN ) ) & "_ofs" );
-	  end if;
 	  EXPRESSIONS.CODE_EXP( SRC_EXP );
-	  STORE_OR_CALLI;
+	  STORE( DEFN );
 
 	elsif  NAME_TYPE.TY = DN_INTEGER  then								-- OBJET ASSIGNE ENTIER
 	  EXPRESSIONS.CODE_EXP( SRC_EXP );
-	  CODI.STORE( DEFN );
+            CODI.STORE( DEFN );
 
 	elsif  NAME_TYPE.TY = DN_FLOAT  then								-- OBJET ASSIGNE FLOTTANT
 	  EXPRESSIONS.CODE_EXP( SRC_EXP );
@@ -1062,11 +1033,28 @@ put_line( "; region=" & REGION_NAME & " .TY= " &  NODE_NAME'IMAGE( D( XD_REGION,
 	  PUT_LINE( tab & "BLKMOV" );									-- COPY_BLOCK  @DST LEN @SRC
 
 	else										-- AUTRE TYPE SCALAIRE (type formel generique, etc.)
-	  if  CODI.IN_GENERIC_BODY  and then  ( DEFN.TY = DN_OUT_ID  or  DEFN.TY = DN_IN_OUT_ID )  then
-	    PUT_LINE( tab & "LVa " & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' & tab & '-' & PRINT_NAME( D( LX_SYMREP, DEFN ) ) & "_ofs" );
+	  if  CODI.IN_GENERIC_BODY
+	  and then  ( DEFN.TY = DN_OUT_ID  or  DEFN.TY = DN_IN_OUT_ID )
+	  then
+	    -- Utiliser ST via CALLI pour respecter la taille du type actuel
+	    -- Convention ST : pile = [..., @param_out, valeur]  (valeur en sommet)
+	    --   ST fait SIb -1,0 : POP_RBX (valeur), INDIRECT_BASE (deref @param → @dest), STORE
+	    declare
+	      FORMAL_TYPE_NAME	:constant STRING := PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, NAME_TYPE ) ) );
+	    begin
+	      -- empiler l'adresse du parametre out (pas son contenu)
+	      PUT_LINE( tab & "LVa " & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' & tab & '-' & PRINT_NAME( D( LX_SYMREP, DEFN ) ) & "_ofs" );
+	      -- empiler la valeur source
+	      EXPRESSIONS.CODE_EXP( SRC_EXP );
+	      -- charger l'adresse de ST depuis le namespace du modele (level 0)
+	      PUT_LINE( tab & "Lq 0," & tab & '-' & FORMAL_TYPE_NAME & "__st_ofs" );
+	      -- appel indirect : ST depile valeur, deref @param, store avec la bonne taille
+	      PUT_LINE( tab & "CALLI" );
+	    end;
+	  else
+	    EXPRESSIONS.CODE_EXP( SRC_EXP );
+	    CODI.STORE( DEFN );
 	  end if;
-	  EXPRESSIONS.CODE_EXP( SRC_EXP );
-	  STORE_OR_CALLI;
 
           end if;
 

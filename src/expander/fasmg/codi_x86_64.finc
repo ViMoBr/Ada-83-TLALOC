@@ -980,7 +980,7 @@ macro			BF?	lbl				; branch false
   disp = lbl-$
 end macro
 ;			-------------------------
-macro			CALL?	prefix, subname
+macro			CALL?	prefix, subname			; CALL par offset
 ;			-------------------------
   postpone
     if ~definite prefix#subname#_
@@ -992,6 +992,18 @@ macro			CALL?	prefix, subname
   db 0xE8								; CALL empile sur la micro-pile des adresses de retour (qui	croit vers le bas)
   dd ofs
   ofs = prefix#subname#_ - $
+end macro
+;			-------------------------
+macro			CALLI?	; prefix, subname			; CALL indirect par RAX
+;			-------------------------
+;  postpone
+;    if ~definite prefix#subname#_
+;      prefix#subname#_ = prefix#subname#.elab				; le nom finissant en _ determine l'assemblage de	la routine
+;    end if
+;  end postpone
+
+  POP_RAX
+  db 0xFF, 0xD0							; CALL RAX empile sur la micro-pile des adresses de retour (qui	croit vers le bas)
 end macro
 ;			--------------------
 macro			RTD?	prm_size:0

@@ -12,6 +12,9 @@ is
 
   C	: COULEUR;
   J	: JOUR;
+
+ESPACEMENT_CORRUPTION : INTEGER;
+
   G	: FILE_TYPE;
 
 begin

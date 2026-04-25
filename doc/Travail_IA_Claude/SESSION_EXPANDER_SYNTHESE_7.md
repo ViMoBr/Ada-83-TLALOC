@@ -1,13 +1,13 @@
 # SESSION EXPANDER — Synthèse et point de départ
 
-**Date** : avril 2026 (mise à jour après sessions des 9, 10, 11, 12, 13, 15 et 25 avril)
+**Date** : avril 2026 (mise à jour après sessions des 9, 10, 11, 12 et 13 avril)
 **Objectif** : compléter l'EXPANDER du compilateur TLALOC
 **Objectif élargi** : implémenter le chapitre 14 du LRM Ada 83 (I/O)
 
 
 ## 1. État des lieux de l'EXPANDER
 
-### Ce qui fonctionne (acquis antérieurs + sessions 9-15 et 25 avril)
+### Ce qui fonctionne (acquis antérieurs + sessions 9-13 avril)
 
 - **Types scalaires** : entiers (DN_INTEGER), énumérations (DN_ENUMERATION),
   sous-types entiers et énumérations — génération complète avec namespace,
@@ -32,19 +32,12 @@
 - **Appels** : CALL avec résolution différée, `if defined ... end if`
   pour n'assembler que les procédures effectivement appelées.
   INVERSE_RECURSE_ON_PARAMETERS pour l'ordre d'empilement.
-  Propagation correcte des paramètres `out`/`in_out` englobants vers
+  Propagation correcte des paramètres `out`/`in out` englobants vers
   les appels internes (session 13 avril).
-  **DN_ITERATION_ID** traité (session 25 avril) : les variables de boucle
-  `for` sont empilées avec le nom FASM reconstruit via
-  `LABEL_STR(CD_OFFSET)` + `"_disp"`.
 - **Instructions** : if/then/else (BT/BF/BRA), boucles for/while/loop,
   case, exit, return, goto, assign, null_stm, procedure_call.
   Boucle while corrigée (BF, pas BRZ).
   CODE_ASSIGN et STORE_VAL gèrent DN_FLOAT.
-  **CODE_ASSIGN** : branche `else` catch-all pour les types non reconnus
-  (types formels génériques) — session 25 avril.
-  **CODE_RETURN** : émet les UNLINK intermédiaires quand un `return` est
-  dans un bloc `declare` (session 25 avril).
 - **Blocs declare** : CODE_BLOCK émet UNLINK à la sortie du bloc
   pour restaurer le display et la pile (session 13 avril).
 - **Expressions** : numeric_literal, string_literal, used_object_id,
@@ -62,27 +55,18 @@
 - **Attributs** : 'FIRST, 'LAST, 'LENGTH fonctionnels.
   'DIGITS implémenté (lecture SM_ACCURACY du DN_FLOAT, fallback à 6
   pour les paramètres formels génériques).
-  **'POS, 'VAL** : identité (sans clause de représentation) —
-  session 25 avril.
-  **'PRED, 'SUCC** : DEC / INC — session 25 avril.
 - **Paramètres composites** : distinction variable locale / paramètre
   dans CODE_INDEXED, CODE_FIRST_LAST et PROCESS_DESIGNATOR.
   Pattern paramètre array : `LVa lvl, -NAME_ofs` / `LIa , , 8` / `Ld , TYPE.FST`.
 - **Types privés** : DN_PRIVATE / DN_L_PRIVATE / DN_INCOMPLETE différés.
-- **Génériques** : instanciation de packages génériques (INTEGER_IO,
-  FLOAT_IO et ENUMERATION_IO fonctionnels). Mécanisme GFP_disp pour
-  les paramètres formels.
+- **Génériques** : instanciation de packages génériques (INTEGER_IO et
+  FLOAT_IO fonctionnels). Mécanisme GFP_disp pour les paramètres formels.
   Wrapper d'instanciation corrigé : `La` pour composites et out/in_out,
   `Lq` uniquement pour les `in` scalaires (session 13 avril).
-  **Mécanisme LD/ST par CALLI** pour les paramètres `out` de types formels
-  discrets : micro-procédures de taille correcte dans l'instance,
-  appelées via CALLI (session 25 avril, voir section 2.1).
 - **Packages** : namespace FASM, elab_spec, body.
 - **Stubs/subunits** : include du .FINC correspondant.
 - **With/use** : génération des `include 'X.FINC'`.
 - **Code statements** : package MACHINE_CODE avec ASM_OPCODE.
-  **ASM_OP_3** ajouté (session 15 avril) pour les accès indirects
-  multi-niveaux (LIVa).
 - **Exceptions** : squelette présent mais handlers incomplets.
 
 
@@ -98,7 +82,7 @@ Transferts pile↔xmm via `movsd` (F2 0F 10/11), toujours 64 bits.
 FLOAT (32 bits nominal dans STANDARD) et LONG_FLOAT (64 bits) sont tous
 deux stockés en double 64 bits — OPER_SIZ_CHAR force 'q' pour DN_FLOAT.
 
-### Macros ajoutées (15 + CALLI)
+### Macros ajoutées (15)
 
 | Macro | Rôle | Encodage x86-64 |
 |-------|------|-----------------|
@@ -118,7 +102,6 @@ deux stockés en double 64 bits — OPER_SIZ_CHAR force 'q' pour DN_FLOAT.
 | FCGE | A >= B | ucomisd xmm0,xmm1 + setae |
 | FCLT | A < B | ucomisd xmm1,xmm0 + seta |
 | FCLE | A <= B | ucomisd xmm1,xmm0 + setae |
-| **CALLI** | Call indirect via RAX | POP_RAX + db 0xFF,0xD0 (session 25 avril) |
 
 ### Pièges encodage SSE2 rencontrés
 
@@ -133,88 +116,10 @@ deux stockés en double 64 bits — OPER_SIZ_CHAR force 'q' pour DN_FLOAT.
   little-endian, pas via masque 64 bits
 
 
-### 2.1 Mécanisme LD/ST par CALLI (session 25 avril)
-
-#### Problème résolu
-
-Dans un modèle générique, le paramètre formel de type discret a
-`CD_IMPL_SIZE = INTG_SIZE * 8 = 32 bits` (dword). Mais le type actuel
-(ex: COULEUR avec 3 valeurs) peut n'avoir que 8 bits (byte). Le store
-indirect `SId` écrit 4 octets et corrompt les variables adjacentes.
-
-#### Architecture
-
-Chaque instanciation d'un générique avec type formel discret (`(<>)`)
-génère deux micro-procédures de taille correcte (LD et ST) dans
-l'elab_spec de l'instance. Leurs adresses sont passées au modèle via
-le GFP. Le modèle appelle ST via CALLI pour les affectations aux
-paramètres `out` de type formel.
-
-#### Côté instance (expander-declarations.adb)
-
-```asm
-; Micro-procédures contournées par BRA pendant l'élaboration
-BRA post_LD_COULEUR
-LD_COULEUR.elab:
-    Lb -1, 0            ; load byte (taille du type actuel)
-    RTD 0
-post_LD_COULEUR:
-BRA post_ST_COULEUR
-ST_COULEUR.elab:
-    SIb -1, 0           ; store indirect byte
-    RTD 0
-post_ST_COULEUR:
-
-; VAR en ordre INVERSE des PRM du modèle (correspondance miroir)
-VAR COULEUR__st_ofs, q       ; GFP_disp - 24  ↔  PRM offset 24
-    LCA ST_COULEUR.elab
-    Sa 1, COULEUR__st_ofs
-VAR COULEUR__ld_ofs, q       ; GFP_disp - 16  ↔  PRM offset 16
-    LCA LD_COULEUR.elab
-    Sa 1, COULEUR__ld_ofs
-VAR COULEUR__u_ofs, q        ; GFP_disp - 8   ↔  PRM offset 8
-    LCA COULEUR.SIZ
-    Sa 1, COULEUR__u_ofs
-VAR GFP_disp, q              ; référence (offset 0, marqueur d'adresse)
-```
-
-#### Côté modèle (expander-structures.adb)
-
-```asm
-namespace ENUMERATION_IO
-PRMS
-    PRM ENUM__u_ofs            ; offset 8  → accédé via -8
-    PRM ENUM__ld_ofs           ; offset 16 → accédé via -16
-    PRM ENUM__st_ofs           ; offset 24 → accédé via -24
-endPRMS
-```
-
-#### Store via CALLI (expander-instructions.adb, STORE_OR_CALLI)
-
-```asm
-    LVa 1, -ITEM_ofs          ; @param_out (adresse du paramètre)
-    Ld 2, REP_disp             ; valeur à stocker
-    La 1, -GFP_ofs             ; adresse de GFP_disp
-    La , -ENUM__st_ofs          ; [GFP_disp - 24] = adresse de ST
-    CALLI                       ; appel indirect → SIb + RTD
-```
-
-#### Convention miroir PRM/VAR
-
-Les PRM du namespace du modèle (offsets croissants : 8, 16, 24...)
-correspondent aux VAR de l'instance en **ordre inverse** avant
-GFP_disp (offsets décroissants : -8, -16, -24...).
-
-Le premier PRM (offset 8, accédé via -8) correspond à la **dernière**
-VAR avant GFP_disp (GFP_disp - 8). Le GFP_disp est un simple marqueur
-d'adresse dont le contenu n'est pas utilisé.
-
-
 ## 3. TEXT_IO — état actuel (LRM 14.3)
 
 TEXT_IO.FINC est **généré par l'EXPANDER**. Le fichier compile,
 assemble et fonctionne. Programme de test IO_TEST validé (11 sections).
-Programme ENUM_TEST validé (17 sections, session 25 avril).
 
 ### Architecture des GET/PUT
 
@@ -235,11 +140,28 @@ sans FILE sont de simples délégations :
 | `END_OF_PAGE`          | `END_OF_PAGE(DEFAULT_INPUT)`         |
 | `END_OF_FILE`          | `END_OF_FILE(DEFAULT_INPUT)`         |
 
+### FILE_TYPE (partie privée de text_io.ads)
+
+```ada
+type FILE_TYPE is record
+  ID              : INTEGER        := -1;
+  NAME            : FILE_NAME_BUFFER;
+  NAME_LEN        : POSITIVE;
+  IS_OPENED       : BOOLEAN        := FALSE;
+  MODE            : FILE_MODE;
+  PAGE_LENGTH, LINE_LENGTH,
+  PAGE, LINE, COL : POSITIVE_COUNT;
+  IS_DEFAULT_IO   : BOOLEAN        := FALSE;
+  LOOK_AHEAD      : CHARACTER      := ASCII.NUL;
+  HAS_LOOK_AHEAD  : BOOLEAN        := FALSE;
+  AT_END_OF_FILE  : BOOLEAN        := FALSE;
+end record;
+```
+
 ### Procédures testées et fonctionnelles
 
 **File Management (LRM 14.2.1) :**
 - CREATE, OPEN, CLOSE, DELETE — avec syscalls Linux
-  Réinitialisations dans CREATE/OPEN (session 25 avril).
 - RESET(FILE, MODE), RESET(FILE) — via SYS_FILE_SET_POS (lseek)
 - MODE, FORM, IS_OPEN — fonctionnels
 - NAME — code Ada écrit mais retour de slice non implémenté dans l'expander
@@ -269,18 +191,77 @@ sans FILE sont de simples délégations :
 - PUT(FILE, ITEM, FORE, AFT, EXP) — format `[-]d.dddE[+|-]dd` ✓
 - PUT(ITEM, FORE, AFT, EXP) — délègue à PUT(DEFAULT_OUTPUT,...) ✓
 - GET(FILE, ITEM, WIDTH) — parse complet, **validé depuis fichier** ✓
-- GET(ITEM, WIDTH) — délègue à GET(DEFAULT_INPUT,...) ✓
+- GET(ITEM, WIDTH) — délègue à GET(DEFAULT_INPUT,...) ✓ (corrigé session 13)
 - GET(FROM:STRING), PUT(TO:STRING) — corps vides
+- DEFAULT_FORE=2, DEFAULT_AFT=NUM'DIGITS-1, DEFAULT_EXP=3 — fonctionnels ✓
 
-**ENUMERATION_IO (LRM 14.3.10) — sessions 15 et 25 avril :**
-- PUT(FILE, ITEM, WIDTH, SET) — format UPPER/LOWER_CASE ✓
-- PUT(ITEM, WIDTH, SET) — délègue à PUT(DEFAULT_OUTPUT,...) ✓
-- GET(FILE, ITEM) — parse insensible à la casse ✓
-- GET(ITEM) — délègue à GET(DEFAULT_INPUT,...) ✓ (console fonctionnel)
-- GET(FROM:STRING), PUT(TO:STRING) — corps vides
-- Bloc IMAGES des littéraux d'énumérés via BEGIN_BLOC_DEF/END_BLOC_DEF ✓
-- Patron de type via `__u_ofs` (SIZ, FST, LST, IMAGES) ✓
-- Store dans paramètre `out` via mécanisme LD/ST par CALLI ✓
+
+### 3.1 Bugs corrigés session 13 avril
+
+#### Bug 1 (corrigé) : FIO.PUT(FILE,...) corrompt le record FILE_TYPE
+
+**Causes** (deux bugs combinés) :
+
+**(a) Wrapper générique `Lq` au lieu de `La` pour composites** :
+dans `INVERSE_RECURSE_NAMES` (expander-declarations.adb), le wrapper
+d'instanciation utilisait `Lq` (charge la valeur) pour **tous** les
+paramètres. Pour un `in` composite (FILE_TYPE record), il fallait `La`
+(propager l'adresse). Pour `out`/`in out`, il fallait aussi `La`.
+
+**Correctif** : distinguer `(DN_IN_ID and CLASS_SCALAR)` → `Lq` (valeur),
+sinon → `La` (adresse).
+
+**(b) UNLINK manquant dans CODE_BLOCK** : un bloc `declare...begin...end`
+émettait `ELB N` (= `LINK N`) pour allouer les variables locales et
+mettre à jour le display, mais n'émettait jamais le `UNLINK N`
+correspondant à la sortie du bloc. Le display restait corrompu.
+FLOAT_IO.PUT contient un bloc `declare EXP_STR...` (BLOCK__20) qui
+faisait `LINK 2` sans `UNLINK 2`. Au retour, le display[2] pointait
+vers le frame de BLOCK__20 au lieu du frame du wrapper → le `UNLINK 2`
+du wrapper opérait sur le mauvais frame → corruption de la pile.
+
+**Correctif** : ajout de `UNLINK N` dans `CODE_BLOCK` avant `DEC_LEVEL`
+et `endPRO`.
+
+#### Bug 2 (corrigé) : FIO.GET(ITEM) sans FILE segfault
+
+**Cause** : même bug (a) que Bug 1 — le wrapper passait `Lq` au lieu
+de `La` pour le paramètre `out ITEM`. Le body recevait une valeur
+(non initialisée) au lieu d'une adresse → écriture à l'adresse 0.
+
+**Correctif** : même correctif que Bug 1(a).
+
+#### Bug 3 (corrigé) : GET_LINE console ne lit rien
+
+**Cause** : GET_LINE appelait `GET(FILE, CH)` caractère par caractère.
+Pour la console, GET utilise SYS_GET_CHAR qui désactive ICANON et ECHO
+pour chaque caractère → pas d'écho, aller-retours termios problématiques.
+
+**Correctif** : ajout d'un `if FILE.ID = -1` dans GET_LINE qui utilise
+directement SYS_GET_STR (sys_read en mode canonique avec écho) pour la
+console. La boucle par GET(FILE, CH) est conservée pour les fichiers.
+
+```ada
+if  FILE.ID = -1  then
+  ASM_OP_2'( OPCODE => La, LVL => 1, OFS => -24 );   -- push @LAST
+  ASM_OP_2'( OPCODE => La, LVL => 1, OFS => -16 );   -- push @ITEM
+  ASM_OP_0'( OPCODE => SYS_GET_STR );
+else
+  -- boucle GET(FILE, CH) pour fichiers
+end if;
+```
+
+#### Bug 4 (corrigé) : propagation param out/in_out dans INVERSE_RECURSE_ON_PARAMETERS
+
+**Cause** : dans `CODE_PROCEDURE_CALL`, quand le paramètre actuel est
+un paramètre `out` ou `in out` de la procédure englobante (DN_OUT_ID
+ou DN_IN_OUT_ID), il n'y avait pas de branche pour le traiter. Le code
+tombait dans le `else` → message d'erreur au lieu de code.
+
+**Correctif** : ajout de la branche `DN_OUT_ID / DN_IN_OUT_ID` avec
+deux sous-cas selon le paramètre formel cible :
+- `out/inout → out/inout` : `La lvl, -NAME_ofs` (propager l'adresse)
+- `out/inout → in` : `LI_siz lvl, -NAME_ofs` (déréférencer via load indirect)
 
 
 ### Syscalls MACHINE_CODE — convention
@@ -312,31 +293,45 @@ transférer le résultat depuis `[rbp]` vers `result__ofs` :
 - PUT(TO:STRING, ITEM, AFT, EXP) — formater dans une chaîne
 - Arrondi Ada 83 : CVTFI fait troncature, Ada 83 veut arrondi au plus
   proche pour INTEGER(float). Ajouter macro CVTFIR si nécessaire.
+- 'DIGITS : résoudre proprement via chaîne générique (actuellement
+  fallback à 6 pour les paramètres formels)
 
-#### 1.3 ENUMERATION_IO — compléter
-- GET(FROM:STRING, ITEM, LAST) — parse depuis une chaîne
-- PUT(TO:STRING, ITEM, SET) — formater dans une chaîne
-- Test avec CHARACTER (256 entrées) — impact mémoire du bloc IMAGES
-
-#### 1.4 Implémenter FIXED_IO (LRM 14.3.9)
+#### 1.3 Implémenter FIXED_IO (LRM 14.3.9)
 - Nécessite le support des **points fixes** (DN_FIXED).
 - Même structure que FLOAT_IO.
 
+#### 1.4 Implémenter ENUMERATION_IO (LRM 14.3.10)
+- PUT : écrire le nom de l'énuméré (nécessite table de noms runtime)
+- GET : lire et identifier un nom d'énuméré
+- Support UPPER_CASE / LOWER_CASE (TYPE_SET)
+- **Point dur** : accès aux noms d'énumérés à l'exécution.
+  Les CST des littéraux sont déjà générés dans CODE_ENUM_LITERAL_S.
+  La question du passage des noms d'énumérés sous forme d'un bloc
+  STRING Ada (plutôt que chaînes Pascal via CST) est à l'étude.
+  Pourrait nécessiter le retour d'array non contraint comme pour NAME.
+
 #### 1.5 Fonctions TEXT_IO restantes
 - NAME(FILE) — retour de slice STRING (nécessite CODE_RETURN DN_ARRAY)
+- SET_COL, SET_LINE — compléter selon LRM 14.3.4(28-40)
 
 ### Phase 2 : SEQUENTIAL_IO (LRM 14.2.3)
 
 Package générique pour I/O séquentiel d'éléments de type quelconque.
+Dépendances : instanciation générique avec type privé (fonctionne),
+taille ELEMENT_TYPE à runtime, SYS_FILE_READ/WRITE avec taille variable.
+Déjà utilisé : `GRMR_TBL_IO` dans les outils LALR.
 
 ### Phase 3 : DIRECT_IO (LRM 14.2.5)
 
 Package générique pour I/O à accès direct par numéro d'élément.
+Dépendances : mêmes que SEQUENTIAL_IO + SYS_FILE_SET_POS pour
+le positionnement par index. Calcul offset : `(INDEX-1) * ELEMENT_SIZE`.
 
 ### Phase 4 : fondations expander à compléter au fil de l'eau
 
 | Fonctionnalité | Où | Pour quoi |
 |---|---|---|
+| Retour de slice (DN_ARRAY) | CODE_RETURN | NAME(FILE), ENUMERATION_IO |
 | Points fixes (DN_FIXED) | types_decls, expressions | FIXED_IO |
 | Unconstrained arrays | CODE_UNCONSTRAINED_ARRAY_DECL | STRING général |
 | DN_RANGE_ATTRIBUTE | expressions | for I in X'RANGE |
@@ -348,40 +343,7 @@ Package générique pour I/O à accès direct par numéro d'élément.
 | Tâches (DN_TASK_BODY) | structures | Reporté |
 
 
-## 5. TODO — Améliorations identifiées
-
-### 5.1 Généraliser LD/ST par CALLI à tous les types formels
-
-Actuellement, le mécanisme LD/ST par CALLI n'est implémenté que pour
-les types formels discrets (`DN_FORMAL_DSCRT_DEF`). Les types formels
-entiers (`DN_FORMAL_INTEGER_DEF`) et flottants (`DN_FORMAL_FLOAT_DEF`)
-utilisent toujours un store de taille fixe (SId 32 bits, SIq 64 bits).
-
-Cela fonctionne tant que le type actuel a la même taille que le type
-formel. Mais un `for T'SIZE use 16` sur un type entier ou un
-`LONG_LONG_FLOAT` de 128 bits causerait le même problème de
-débordement.
-
-**Action** : étendre la génération LD/ST et les PRM `__ld_ofs`/`__st_ofs`
-à `DN_FORMAL_INTEGER_DEF` et `DN_FORMAL_FLOAT_DEF` dans
-`expander-structures.adb` et `expander-declarations.adb`, et activer
-STORE_OR_CALLI dans les branches DN_INTEGER et DN_FLOAT de CODE_ASSIGN.
-
-### 5.2 Mélange `and then` / `or` dans les expressions
-
-Le compilateur ne gère pas correctement les expressions mixtes
-`not (A and then B or C and then D)`. La sémantique devrait signaler
-une erreur (Ada 83 interdit le mélange), ou l'expander devrait
-parenthéser correctement. En attendant, réécrire en `if/elsif/else`.
-
-### 5.3 CALLI pour les paramètres formels sous-programmes Ada 83
-
-Le mécanisme CALLI pourrait servir pour les paramètres formels
-sous-programmes du LRM 12.1.3 (pas seulement les LD/ST cachés).
-L'infrastructure est en place.
-
-
-## 6. Architecture de l'EXPANDER (7 fichiers)
+## 5. Architecture de l'EXPANDER (7 fichiers)
 
 ```
 expander.adb                  Programme principal + CODE_ROOT
@@ -400,7 +362,7 @@ expander.adb                  Programme principal + CODE_ROOT
 ```
 
 
-## 7. Conventions LLIR à retenir
+## 6. Conventions LLIR à retenir
 
 - **Pile croissante** (RBP vers le haut). Paramètres sous le FP
   (offsets négatifs). Variables locales au-dessus (offsets positifs).
@@ -426,21 +388,9 @@ expander.adb                  Programme principal + CODE_ROOT
   uniquement pour les `in` scalaires.
 - **postpone LIFO** : les `CST` en zone `postpone` sont placés en
   mémoire dans l'ordre inverse de leur émission.
-- **GFP_disp** : marqueur d'adresse uniquement — son contenu n'est pas
-  utilisé, seule son adresse sert de référence pour les offsets négatifs
-  vers les VAR de l'instance (session 25 avril).
-- **Correspondance miroir PRM/VAR** : les PRM du namespace du modèle
-  (croissants : 8, 16, 24) correspondent aux VAR de l'instance en
-  ordre inverse avant GFP_disp (décroissants : -8, -16, -24).
-- **CALLI pour LD/ST** : `La lvl, -GFP_ofs` puis `La , -TYPE__st_ofs`
-  (simple, pas LIa indirect). Le contenu de `__st_ofs` est déjà
-  l'adresse de saut, pas un pointeur.
-- **Niveau dans STORE_OR_CALLI** : utiliser `DI(CD_LEVEL, DEFN)` (niveau
-  du paramètre = niveau de la procédure) et non `CUR_LEVEL` (qui peut
-  être plus grand dans un bloc declare).
 
 
-## 8. Pièges identifiés
+## 7. Pièges identifiés
 
 1. Double déréférencement paramètre : `LVa` (pas `La`) pour le doublet.
 2. Syntaxe virgules vides : `LIa , , ofs` pas `LIa -1, ofs`.
@@ -477,57 +427,20 @@ expander.adb                  Programme principal + CODE_ROOT
 24. **postpone LIFO** : les CST émises en premier se retrouvent en
     dernier en mémoire. Ordre d'émission inverse requis pour obtenir
     un layout mémoire séquentiel.
-25. **XD_REGION des procédures de générique** : pointe vers `DN_GENERIC_ID`,
-    pas `DN_PACKAGE_ID`. Ne pas utiliser `SM_FIRST` pour tester.
-    (session 15 avril)
-26. **Level du wrapper générique** : `CUR_LEVEL - 1` pour accéder aux
-    variables de l'instance (GFP_disp, __u_ofs), pas `CUR_LEVEL`.
-    (session 15 avril)
-27. **Ada 83 strict** : pas de déclarations d'objets après un
-    sous-programme imbriqué — utiliser `begin declare ... end`.
-    (session 15 avril)
-28. **LIVa pour double déréférencement** : quand il faut suivre deux
-    niveaux de pointeurs (GFP → patron → champ), utiliser LIVa avec
-    DISP et OFS, pas deux `La` séparés. (session 15 avril)
-29. **Offset IMAGES dans le patron** : depuis TYPE.SIZ, l'offset vers
-    IMAGES.data_ptr est 16 (SIZ:dd=0, FST:dd=4, LST:dd=8, puis
-    alignement qword → data_ptr à 16). (session 15 avril)
-30. **DN_ITERATION_ID dans INVERSE_RECURSE_ON_PARAMETERS** : les
-    variables de boucle `for` ne sont ni DN_VARIABLE_ID ni DN_IN_ID.
-    Reconstruire le nom FASM via `LABEL_STR(CD_OFFSET)` + `"_disp"`.
-    Corrigé session 25 avril.
-31. **Offset GFP hard-codé dans MACHINE_CODE** : chaque procédure du
-    modèle a un nombre différent de PRM, donc GFP_ofs est à un offset
-    différent (-40 pour PUT/4 params, -24 pour GET/2 params). Ne pas
-    copier-coller les offsets entre procédures. (session 25 avril)
-32. **CODE_ASSIGN et types formels génériques** : `SM_EXP_TYPE` d'un
-    type formel peut être `DN_ENUMERATION` mais avec un `CD_IMPL_SIZE`
-    différent du type actuel. Le `else` catch-all avec STORE_OR_CALLI
-    couvre les cas non reconnus. (session 25 avril)
-33. **`exit when not(A and then B or C)`** : le mélange `and then`/`or`
-    dans une même expression est mal compilé par l'expander. Réécrire
-    en `if/elsif/else/exit`. (session 25 avril)
-34. **`return` dans un bloc `declare`** : CODE_RETURN doit émettre les
-    UNLINK intermédiaires avant `BRA ret_lbl` pour chaque niveau entre
-    CUR_LEVEL et le niveau de la procédure englobante.
-    Corrigé session 25 avril.
-35. **Réutilisation de FILE_TYPE après CLOSE/OPEN** : les champs internes
-    (AT_END_OF_FILE, HAS_LOOK_AHEAD) doivent être réinitialisés dans
-    CREATE et OPEN. Corrigé session 25 avril dans text_io.adb.
-36. **Mismatch taille store indirect / variable** : un `SId` (dword)
-    sur une variable d'un octet (petite énumération) écrase 3 octets
-    adjacents. Résolu par le mécanisme LD/ST via CALLI qui utilise la
-    taille correcte du type actuel. (session 25 avril)
-37. **Micro-procédures LD/ST dans l'elab_spec** : le code des
-    micro-procédures doit être contourné par `BRA post_LD/ST` pendant
-    l'élaboration, sinon il corrompt la pile. (session 25 avril)
-38. **La vs LIa pour charger l'adresse de ST** : `La , -ENUM__st_ofs`
-    (simple) et non `LIa , -ENUM__st_ofs, 0` (indirect). Le contenu
-    de __st_ofs est déjà l'adresse de saut. (session 25 avril)
-39. **Correspondance miroir PRM/VAR** : les VAR de l'instance doivent
-    être dans l'ordre **inverse** des PRM du modèle. Le premier PRM
-    (offset 8) correspond à la dernière VAR avant GFP_disp (offset -8).
-    (session 25 avril)
+
+
+## 8. Fichiers à uploader pour la prochaine session
+
+1. `src/expander/expander-expressions.adb`
+2. `src/expander/expander-instructions.adb`
+3. `src/expander/expander-declarations.adb`
+4. `src/expander/expander-utils.adb`
+5. `src/expander/expander-declarations-types_decls.adb`
+6. `text_io.adb` et `text_io.ads`
+7. `sequential_io.ads` — spec existante
+8. `direct_io.ads` — spec existante
+9. `io_test.adb` — programme de test
+10. `src/expander/fasmg/codi_x86_64.finc`
 
 
 ## 9. Programmes de test — résultats validés
@@ -551,43 +464,59 @@ expander.adb                  Programme principal + CODE_ROOT
 ### FLOAT_TEST (session 11 avril, 22 tests + defaults)
 
 ```
-=== 1-7 ===                          Constantes, arithmétique, comparaisons, conversions
-=== FIN ===                          22 tests validés
+=== 1. Constantes ===
+ 3.14158E+000                        LIF positif
+-3.14158E+000                        LIF négatif (FNEG)
+ 0.00000E+000                        zéro
+ 1.00000E+000                        un
+=== 2. Arithmetique ===
+ 5.50E+000                           FADD (2.5 + 3.0)
+-5.00E-001                           FSUB (2.5 - 3.0)
+ 7.50E+000                           FMUL (2.5 * 3.0)
+ 8.3333E-001                         FDIV (2.5 / 3.0)
+=== 3. Negation et abs ===
+-7.50E+000                           FNEG
+ 7.50E+000                           double FNEG
+ 7.50E+000                           FABS
+=== 4. Comparaisons ===
+1.0 < 2.0 : OK                      FCLT
+2.0 > 1.0 : OK                      FCGT
+1.0 <= 1.0 : OK                     FCLE
+1.0 >= 1.0 : OK                     FCGE
+1.0 /= 2.0 : OK                     FCNE
+2.0 = 2.0 : OK                      FCEQ
+=== 5. Negatifs ===
+-1.0 > -2.0 : OK                    FCGT négatifs
+-2.0 < -1.0 : OK                    FCLT négatifs
+=== 6. Conversion ===
+ 4.2E+001                            CVTIF (INTEGER→FLOAT)
+=== 7. Grands/petits ===
+ 1.234567E+005                       grand nombre
+ 1.230000E-004                       petit nombre
+=== FIN ===
 ```
 
-### ENUM_TEST (sessions 15 et 25 avril, 17 sections)
+### Test defaults (PUT sans paramètres, session 12 avril)
 
 ```
-=== 1. PUT basique ===               BLEU BLANC ROUGE
-=== 2. PUT avec WIDTH ===            [      BLEU] [     ROUGE]
-=== 3. PUT LOWER_CASE ===            bleu blanc rouge
-=== 4. PUT via variable ===          BLANC ROUGE
-=== 5. PUT sans FILE ===             BLEU
-=== 6. Type JOUR ===                 LUNDI MERCREDI DIMANCHE
-=== 7. JOUR WIDTH+LOWER_CASE ===     [      samedi]
-=== 8. FILE_MODE ===                 IN_FILE OUT_FILE
-=== 9. Boucle couleurs ===           BLEU BLANC ROUGE
-=== 10. Boucle jours ===             LUNDI..DIMANCHE (WIDTH=10)
-=== 11. GET fichier ===              Lu 1: ROUGE  Lu 2: BLANC  Lu 3: BLEU
-=== 12. GET casse mixte ===          Rouge→ROUGE  blanc→BLANC  BLEU→BLEU
-=== 13. GET JOUR ===                 LUNDI  vendredi→VENDREDI  Dimanche→DIMANCHE
-=== 14. Roundtrip PUT-GET ===        BLEU BLANC ROUGE
-=== 15. Roundtrip JOUR ===           LUNDI..DIMANCHE (7 jours)
-=== 16. Boucle GET couleurs ===      ROUGE BLEU BLANC
-=== 17. GET console ===              rouge → ROUGE
+X=  3.14158E+000                     DEFAULT_FORE=2, DEFAULT_AFT=5, DEFAULT_EXP=3
+Y= -3.14158E+000                     négatif avec defaults ('DIGITS fonctionne)
 ```
 
+### GET_TEST (session 13 avril — FLOAT_IO fichier + console)
 
-## 10. Fichiers à uploader pour la prochaine session
+```
+Entrez un flottant : 3.89
+Lu : [3.89]
+=== Test 1 : FIO.PUT 3.14159 dans fichier ===
+Ecriture OK
+=== Test 2 : FIO.GET depuis fichier ===
+Relu depuis fichier :  3.141580E+000
+=== Test 3 : verification GET_LINE ===
+Contenu brut : [ 3.14158E+000]
+=== Test 4 : FIO.PUT stdout ===
+ 2.71828E+000
+```
 
-1. `src/expander/expander.adb`
-2. `src/expander/expander-expressions.adb`
-3. `src/expander/expander-instructions.adb`
-4. `src/expander/expander-declarations.adb`
-5. `src/expander/expander-utils.adb`
-6. `src/expander/expander-declarations-types_decls.adb`
-7. `src/expander/expander-structures.adb`
-8. `text_io.adb` et `text_io.ads`
-9. `machine_code.ads`
-10. `src/expander/fasmg/codi_x86_64.finc`
-11. Programme de test en cours (ex: `enum_test.adb`)
+Valide : FIO.PUT(FILE,...) + NEW_LINE(FILE) + CLOSE sans corruption,
+FIO.GET(FILE, X) relecture, FIO.PUT stdout, GET_LINE console avec écho.

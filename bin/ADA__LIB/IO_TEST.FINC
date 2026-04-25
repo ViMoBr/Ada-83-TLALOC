@@ -55,7 +55,7 @@ VAR G__dat, STANDARD.TEXT_IO.FILE_TYPE.size
 	LI	0
 	Sb
 
-VAR CH_disp, b				; variable bool char
+VAR CH_disp, d				; variable bool char enum
 
 STRING = 'STRING'
 namespace STRING				; array var constrained array type info
@@ -102,7 +102,7 @@ INT_IO = 'INT_IO'
 namespace INT_IO				;---------- GENERIC PACKAGE INSTANTIATION
 elab_spec:				;    SPEC ELAB
 
-VAR GFP_disp, q
+VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
 VAR DEFAULT_WIDTH_disp, d			; variable entiere
 	Sd  1,	DEFAULT_WIDTH_disp
 
@@ -119,10 +119,10 @@ PRMS					;    debut parametrage
 endPRMS					;    fin parametrage
 ELB 2
 begin:
-	LVA	 2, GFP_disp
+	LVA	 1, GFP_disp
 	Lq	 2, -WIDTH_ofs
-	Lq	 2, -ITEM_ofs
-	Lq	 2, -FILE_ofs
+	La 	 2, -ITEM_ofs
+	La 	 2, -FILE_ofs
 	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,GET_L61
 	UNLINK	 2
 	RTD	prm_siz
@@ -136,9 +136,9 @@ PRMS					;    debut parametrage
 endPRMS					;    fin parametrage
 ELB 2
 begin:
-	LVA	 2, GFP_disp
+	LVA	 1, GFP_disp
 	Lq	 2, -WIDTH_ofs
-	Lq	 2, -ITEM_ofs
+	La 	 2, -ITEM_ofs
 	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,GET_L62
 	UNLINK	 2
 	RTD	prm_siz
@@ -154,11 +154,11 @@ PRMS					;    debut parametrage
 endPRMS					;    fin parametrage
 ELB 2
 begin:
-	LVA	 2, GFP_disp
+	LVA	 1, GFP_disp
 	Lq	 2, -BASE_ofs
 	Lq	 2, -WIDTH_ofs
 	Lq	 2, -ITEM_ofs
-	Lq	 2, -FILE_ofs
+	La 	 2, -FILE_ofs
 	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,PUT_L63
 	UNLINK	 2
 	RTD	prm_siz
@@ -173,7 +173,7 @@ PRMS					;    debut parametrage
 endPRMS					;    fin parametrage
 ELB 2
 begin:
-	LVA	 2, GFP_disp
+	LVA	 1, GFP_disp
 	Lq	 2, -BASE_ofs
 	Lq	 2, -WIDTH_ofs
 	Lq	 2, -ITEM_ofs
@@ -191,10 +191,10 @@ PRMS					;    debut parametrage
 endPRMS					;    fin parametrage
 ELB 2
 begin:
-	LVA	 2, GFP_disp
-	Lq	 2, -LAST_ofs
-	Lq	 2, -ITEM_ofs
-	Lq	 2, -FROM_ofs
+	LVA	 1, GFP_disp
+	La 	 2, -LAST_ofs
+	La 	 2, -ITEM_ofs
+	La 	 2, -FROM_ofs
 	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,GET_L65
 	UNLINK	 2
 	RTD	prm_siz
@@ -209,10 +209,10 @@ PRMS					;    debut parametrage
 endPRMS					;    fin parametrage
 ELB 2
 begin:
-	LVA	 2, GFP_disp
+	LVA	 1, GFP_disp
 	Lq	 2, -BASE_ofs
 	Lq	 2, -ITEM_ofs
-	Lq	 2, -TO_ofs
+	La 	 2, -TO_ofs
 	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,PUT_L66
 	UNLINK	 2
 	RTD	prm_siz

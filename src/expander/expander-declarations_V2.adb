@@ -1125,7 +1125,14 @@ null;
 --	        PUT_LINE( DEFN_STR & ".IMAGES.data_ptr" );
 --	        PUT_LINE( tab & "Sa" & tab & LVL_STR & ", " & GNAME_STR & "_images_ofs" );
 
-	        -- Micro-procedures LD et ST pour le type actuel (contournees par BRA)
+	        -- Adresse du patron de type
+	        PUT_LINE( "VAR " & GNAME_STR & "__u_ofs, q" );
+	        PUT( tab & "LCA" & tab );
+	        CODI.REGIONS_PATH( DEFN );
+	        PUT_LINE( DEFN_STR & ".SIZ" );
+	        PUT_LINE( tab & "Sa" & tab & LVL_STR & ", " & GNAME_STR & "__u_ofs" );
+
+	        -- Micro-procedures LD et ST pour le type actuel
 	        declare
 	          SIZ_CHAR	: CHARACTER	:= OPER_SIZ_CHAR( DEFN_TYPE_SPEC );
 	        begin
@@ -1135,7 +1142,7 @@ null;
 	          PUT_LINE( tab & "L" & SIZ_CHAR & " -1, 0" );
 	          PUT_LINE( tab & "RTD 0" );
 	          PUT_LINE( "post_LD_" & DEFN_STR & ":" );
-	          -- ST : pile = [@param_out, valeur] → pile = []
+	          -- ST : pile = [adresse_dest, valeur] → pile = []
 	          PUT_LINE( "BRA post_ST_" & DEFN_STR );
 	          PUT_LINE( "ST_" & DEFN_STR & ".elab:" );
 	          PUT_LINE( tab & "SI" & SIZ_CHAR & " -1, 0" );
@@ -1143,23 +1150,13 @@ null;
 	          PUT_LINE( "post_ST_" & DEFN_STR & ":" );
 	        end;
 
-	        -- VAR en ordre INVERSE des PRM du modele :
-	        -- PRM: __u(8) __ld(16) __st(24)  → VAR: __st(-24) __ld(-16) __u(-8)
-
-	        PUT_LINE( "VAR " & GNAME_STR & "__st_ofs, q" );
-	        PUT_LINE( tab & "LCA ST_" & DEFN_STR & ".elab" );
-	        PUT_LINE( tab & "Sa" & tab & LVL_STR & ", " & GNAME_STR & "__st_ofs" );
-
 	        PUT_LINE( "VAR " & GNAME_STR & "__ld_ofs, q" );
 	        PUT_LINE( tab & "LCA LD_" & DEFN_STR & ".elab" );
 	        PUT_LINE( tab & "Sa" & tab & LVL_STR & ", " & GNAME_STR & "__ld_ofs" );
 
-	        -- Adresse du patron de type (dernier avant GFP_disp → offset -8)
-	        PUT_LINE( "VAR " & GNAME_STR & "__u_ofs, q" );
-	        PUT( tab & "LCA" & tab );
-	        CODI.REGIONS_PATH( DEFN );
-	        PUT_LINE( DEFN_STR & ".SIZ" );
-	        PUT_LINE( tab & "Sa" & tab & LVL_STR & ", " & GNAME_STR & "__u_ofs" );
+	        PUT_LINE( "VAR " & GNAME_STR & "__st_ofs, q" );
+	        PUT_LINE( tab & "LCA ST_" & DEFN_STR & ".elab" );
+	        PUT_LINE( tab & "Sa" & tab & LVL_STR & ", " & GNAME_STR & "__st_ofs" );
 	      end if;
 	    end;
 	  end if;

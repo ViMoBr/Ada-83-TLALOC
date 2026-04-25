@@ -1351,7 +1351,7 @@ PRMS					;    debut parametrage
 	PRM SPACING_ofs				; in
 endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
-VAR CH_disp, b				; variable bool char enum
+VAR CH_disp, d				; variable bool char enum
 
 VAR LINES_SKIPPED_disp, d			; variable entiere
 	LI	0
@@ -1448,7 +1448,7 @@ PRMS					;    debut parametrage
 	PRM result__ofs				; resultat de fonction
 endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
-VAR CH_disp, b				; variable bool char enum
+VAR CH_disp, d				; variable bool char enum
 
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
@@ -1625,7 +1625,7 @@ PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
-VAR CH_disp, b				; variable bool char enum
+VAR CH_disp, d				; variable bool char enum
 
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
@@ -1725,7 +1725,7 @@ PRMS					;    debut parametrage
 	PRM result__ofs				; resultat de fonction
 endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
-VAR CH_disp, b				; variable bool char enum
+VAR CH_disp, d				; variable bool char enum
 
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
@@ -1830,7 +1830,7 @@ PRMS					;    debut parametrage
 	PRM result__ofs				; resultat de fonction
 endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
-VAR CH_disp, b				; variable bool char enum
+VAR CH_disp, d				; variable bool char enum
 
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
@@ -2571,7 +2571,7 @@ PRMS					;    debut parametrage
 	PRM LAST_ofs				; out
 endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
-VAR CH_disp, b				; variable bool char enum
+VAR CH_disp, d				; variable bool char enum
 
 VAR POS_disp, d				; variable entiere
 	LVa	1, -ITEM_ofs
@@ -2790,7 +2790,7 @@ VAR VAL_disp, d				; variable entiere
 	LI	0
 	Sd  1,	VAL_disp
 
-VAR NEG_disp, b				; variable bool char enum
+VAR NEG_disp, d				; variable bool char enum
 	LI	0
 	Sb  1,	NEG_disp
 
@@ -3109,7 +3109,7 @@ VAR POS_disp, d				; variable entiere
 	LId	1, STR__u, STRING.LST_1
 	Sd  1,	POS_disp
 
-VAR IS_NEGATIVE_disp, b			; variable bool char enum
+VAR IS_NEGATIVE_disp, d			; variable bool char enum
 	Ld  1,	-ITEM_ofs
 	LI	0
 	CLT
@@ -3495,17 +3495,17 @@ VAR FRAC_disp, q				; variable flottante
 	LIF	0.1
 	Sq  1,	FRAC_disp
 
-VAR NEG_disp, b				; variable bool char enum
+VAR NEG_disp, d				; variable bool char enum
 	LI	0
 	Sb  1,	NEG_disp
 
 VAR I_disp, d				; variable entiere
 
-VAR IN_FRAC_disp, b				; variable bool char enum
+VAR IN_FRAC_disp, d				; variable bool char enum
 	LI	0
 	Sb  1,	IN_FRAC_disp
 
-VAR IN_EXP_disp, b				; variable bool char enum
+VAR IN_EXP_disp, d				; variable bool char enum
 	LI	0
 	Sb  1,	IN_EXP_disp
 
@@ -3513,7 +3513,7 @@ VAR EXP_VAL_disp, d				; variable entiere
 	LI	0
 	Sd  1,	EXP_VAL_disp
 
-VAR EXP_NEG_disp, b				; variable bool char enum
+VAR EXP_NEG_disp, d				; variable bool char enum
 	LI	0
 	Sb  1,	EXP_NEG_disp
 
@@ -3946,7 +3946,7 @@ VAR VAL_disp, q				; variable flottante
 	Lq  1,	-ITEM_ofs
 	Sq  1,	VAL_disp
 
-VAR IS_NEGATIVE_disp, b			; variable bool char enum
+VAR IS_NEGATIVE_disp, d			; variable bool char enum
 	Lq  1,	-ITEM_ofs
 	LIF	0.0
 	FCLT
@@ -4483,6 +4483,8 @@ ENUMERATION_IO = 'ENUMERATION_IO'
 namespace ENUMERATION_IO			;---------- GENERIC PACKAGE
 PRMS
 	PRM ENUM__u_ofs
+	PRM ENUM__ld_ofs
+	PRM ENUM__st_ofs
 endPRMS
 VAR DEFAULT_WIDTH_disp, d			; variable entiere
 	LI	0
@@ -4644,7 +4646,7 @@ LOOP__25:					; corps boucle LOOP__25
 	BF	L259
 namespace	BLOCK__26
 ELB 3					;    BODY ELAB
-VAR CH_disp, b				; variable bool char enum
+VAR CH_disp, d				; variable bool char enum
 	La	 2, IMAGES_STR_disp			; array data start address on stack
 	Ld 2,	IMG_START_disp
 	Ld	2, JL257_disp
@@ -4850,13 +4852,13 @@ VAR IMG_LEN_disp, d				; variable entiere
 
 VAR IMG_START_disp, d			; variable entiere
 
-VAR FOUND_disp, b				; variable bool char enum
+VAR FOUND_disp, d				; variable bool char enum
 	LI	0
 	Sb  2,	FOUND_disp
 
-VAR IMG_CH_disp, b				; variable bool char enum
+VAR IMG_CH_disp, d				; variable bool char enum
 
-VAR TOK_CH_disp, b				; variable bool char enum
+VAR TOK_CH_disp, d				; variable bool char enum
 
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
@@ -5131,8 +5133,11 @@ L279:					; post loop LOOP__31
 					; debut if
 	Lb 2,	FOUND_disp
 	BF	L287
+	LVa  1,	-ITEM_ofs
 	Ld 2,	REP_disp
-	SId  1,	-ITEM_ofs
+	La  1,	-GFP_ofs
+	La , -ENUM__st_ofs
+	CALLI
 	UNLINK 2
 	BRA ret_lbl
 	BRA	L286

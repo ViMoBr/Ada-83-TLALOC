@@ -10,7 +10,7 @@ is			-------
   BUF		: STRING( 1 .. 80 );
   LAST		: NATURAL;
 
-  package INT_IO is new INTEGER_IO( INTEGER );  use INT_IO;
+  package INT_IO is new INTEGER_IO( INTEGER );  --use INT_IO;
 
 begin
 
