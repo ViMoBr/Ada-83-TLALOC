@@ -1,7 +1,10 @@
---|-------------------------------------------------------------------------------------------------
---|	GRMR_OPS
---|-------------------------------------------------------------------------------------------------
-package GRMR_OPS is
+--	Vincent MORIN	Universite de Bretagne Occidentale	avril 2026	Licence GPL V3
+--	1	2	3	4	5	6	7	8	9	10	11	12
+
+
+					--------
+package					GRMR_OPS
+is					--------
       
   type GRMR_OP	is (
 	G_ERROR,		N_0,		N_DEF,		N_1,
@@ -26,5 +29,6 @@ package GRMR_OPS is
   function  GRMR_OP_VALUE	( S :STRING )	return GRMR_OP;
   function  GRMR_OP_IMAGE	( GO :GRMR_OP )	return STRING;
       
---|-------------------------------------------------------------------------------------------------
-end GRMR_OPS;
+	--------
+end	GRMR_OPS;
+	--------

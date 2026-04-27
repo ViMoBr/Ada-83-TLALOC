@@ -846,21 +846,24 @@ null;--     LOAD_TYPE_SIZE( TYPE_SPEC  );
     DECL_S	: SEQ_TYPE	:= LIST( D( AS_DECL_S1, D( AS_HEADER, GENERIC_DECL ) ) );
     DECL		: TREE;
   begin
-
+				------------------------
+				TRAITE_FORMAL_PARAMETERS:
     while  not IS_EMPTY( G_PARAMS )  loop
       POP( G_PARAMS, G_PARAM );
       if  G_PARAM.TY = DN_TYPE_DECL  then
         if  D( AS_TYPE_DEF, G_PARAM ).TY = DN_FORMAL_INTEGER_DEF  then
 	DI( CD_IMPL_SIZE, D( SM_TYPE_SPEC, D( AS_SOURCE_NAME, G_PARAM ) ), INTG_SIZE * 8 );
+
         elsif  D( AS_TYPE_DEF, G_PARAM ).TY = DN_FORMAL_DSCRT_DEF  then
 	DI( CD_IMPL_SIZE, D( SM_TYPE_SPEC, D( AS_SOURCE_NAME, G_PARAM ) ), INTG_SIZE * 8 );
         end if;
       end if;
-    end loop;
+    end loop	TRAITE_FORMAL_PARAMETERS;
+		------------------------
 
     while  not IS_EMPTY( DECL_S )  loop
       POP( DECL_S, DECL );
-      if  DECL.TY = DN_SUBPROG_ENTRY_DECL and then IN_SPEC_UNIT  then
+      if  DECL.TY = DN_SUBPROG_ENTRY_DECL  and then  IN_SPEC_UNIT  then
         declare
 	LBL	: LABEL_TYPE	:= NEW_LABEL;
 	NAME	: TREE		:= D( AS_SOURCE_NAME, DECL );
@@ -1103,28 +1106,8 @@ null;
 	      DEFN_STR		:constant STRING	:= PRINT_NAME( D( LX_SYMREP, DEFN ) );
 	      LVL_STR		:constant STRING	:= LEVEL_NUM'IMAGE( CODI.CUR_LEVEL );
 	    begin
-	      if  DEFN_TYPE_SPEC.TY = DN_ENUMERATION  then
 
-	        -- Ordre inverse des PRM : last en premier (plus grand offset negatif)
---	        PUT_LINE( "VAR " & GNAME_STR & "_last_ofs, q" );
---	        PUT( tab & "Ld" & tab & ", " );
---	        CODI.REGIONS_PATH( DEFN );
---	        PUT_LINE( DEFN_STR & ".LST" );
---	        PUT_LINE( "Sd" & tab & LVL_STR & ", " & GNAME_STR & "_last_ofs" );
-
---	        PUT_LINE( "VAR " & GNAME_STR & "_first_ofs, q" );
---	        PUT( tab & "Ld" & tab & ", " );
---	        CODI.REGIONS_PATH( DEFN );
---	        PUT_LINE( DEFN_STR & ".FST" );
---	        PUT_LINE( "Sd" & tab & LVL_STR & ", " & GNAME_STR & "_first_ofs" );
-
-	        -- Adresse du descripteur IMAGES du type enumere
---	        PUT_LINE( "VAR " & GNAME_STR & "_images_ofs, q" );
---	        PUT( tab & "LCA" & tab );
---	        CODI.REGIONS_PATH( DEFN );
---	        PUT_LINE( DEFN_STR & ".IMAGES.data_ptr" );
---	        PUT_LINE( tab & "Sa" & tab & LVL_STR & ", " & GNAME_STR & "_images_ofs" );
-
+	      if  DEFN_TYPE_SPEC.TY in CLASS_SCALAR  then
 	        -- Micro-procedures LD et ST pour le type actuel (contournees par BRA)
 	        declare
 	          SIZ_CHAR	: CHARACTER	:= OPER_SIZ_CHAR( DEFN_TYPE_SPEC );
@@ -1156,11 +1139,12 @@ null;
 
 	        -- Adresse du patron de type (dernier avant GFP_disp → offset -8)
 	        PUT_LINE( "VAR " & GNAME_STR & "__u_ofs, q" );
-	        PUT( tab & "LCA" & tab );
+	        PUT( tab & "La" & tab & INTEGER'IMAGE( DI( CD_LEVEL, D( SM_TYPE_SPEC, DEFN ) ) ) & ", " );
 	        CODI.REGIONS_PATH( DEFN );
-	        PUT_LINE( DEFN_STR & ".SIZ" );
+	        PUT_LINE( DEFN_STR & ".use__info" );
 	        PUT_LINE( tab & "Sa" & tab & LVL_STR & ", " & GNAME_STR & "__u_ofs" );
 	      end if;
+
 	    end;
 	  end if;
 	end;

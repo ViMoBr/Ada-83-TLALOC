@@ -288,8 +288,11 @@ is					--------
 				SM_ADDRESS :TREE := TREE_VOID;
 				SM_IS_INLINE :BOOLEAN := FALSE;
 				SM_INTERFACE, XD_REGION, XD_STUB, XD_body :TREE := TREE_VOID )
-				return TREE is
-         NODE :TREE := MAKE( DN_PROCEDURE_ID );
+				return TREE
+  is		-----------------
+
+    NODE	:TREE	:= MAKE( DN_PROCEDURE_ID );
+
   begin
     D( DA.LX_SRCPOS, NODE, LX_SRCPOS );
     D( DA.LX_SYMREP, NODE, LX_SYMREP );
@@ -303,18 +306,23 @@ is					--------
     D( DA.XD_STUB, NODE, XD_STUB );
     D( DA.XD_body, NODE, XD_body );
     DB( DA.CD_COMPILED, NODE, FALSE );
+    DI( DA.CD_LABEL, NODE, 0 );
     return NODE;
 
   end	MAKE_PROCEDURE_ID;
 	-----------------
+
 
 		----------------
   function	MAKE_FUNCTION_ID	( LX_SRCPOS, LX_SYMREP, SM_FIRST, SM_SPEC, SM_UNIT_DESC,
 				SM_ADDRESS :TREE := TREE_VOID;
 				SM_IS_INLINE :BOOLEAN := FALSE;
 				SM_INTERFACE, XD_REGION, XD_STUB, XD_body :TREE := TREE_VOID )
-				return TREE is
+				return TREE
+  is		----------------
+
     NODE	:TREE	:= MAKE( DN_FUNCTION_ID );
+
   begin
     D( DA.LX_SRCPOS, NODE, LX_SRCPOS );
     D( DA.LX_SYMREP, NODE, LX_SYMREP );
@@ -328,6 +336,7 @@ is					--------
     D( DA.XD_STUB, NODE, XD_STUB );
     D( DA.XD_body, NODE, XD_body );
     DB( DA.CD_COMPILED, NODE, FALSE );
+    DI( DA.CD_LABEL, NODE, 0 );
     return NODE;
 
   end	MAKE_FUNCTION_ID;
@@ -339,8 +348,11 @@ is					--------
 				SM_IS_INLINE :BOOLEAN := FALSE;
 				SM_INTERFACE :TREE := TREE_VOID;
 				XD_REGION, XD_STUB, XD_body, XD_NOT_EQUAL :TREE := TREE_VOID )
-				return TREE is
+				return TREE
+  is		----------------
+
     NODE	:TREE	:= MAKE( DN_OPERATOR_ID );
+
   begin
     D( DA.LX_SRCPOS, NODE, LX_SRCPOS );
     D( DA.LX_SYMREP, NODE, LX_SYMREP );
@@ -355,6 +367,7 @@ is					--------
     D( DA.XD_body, NODE, XD_body );
     D( DA.XD_NOT_EQUAL, NODE, XD_NOT_EQUAL );
     DB( DA.CD_COMPILED, NODE, FALSE );
+    DI( DA.CD_LABEL, NODE, 0 );
     return NODE;
 
   end	MAKE_OPERATOR_ID;

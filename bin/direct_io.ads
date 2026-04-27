@@ -75,11 +75,21 @@ is					---------
   END_ERROR    : exception renames IO_EXCEPTIONS.END_ERROR;
   DATA_ERROR   : exception renames IO_EXCEPTIONS.DATA_ERROR;
 
+
 private
 
+  subtype	FILE_NAME_BUFFER	is STRING( 1 .. 256	);
+
   type FILE_TYPE		is record
-			  null;									-- front end only
+			  ID		: INTEGER		:= -1;
+			  NAME		: FILE_NAME_BUFFER;
+			  NAME_LEN	: POSITIVE;
+			  IS_OPENED	: BOOLEAN		:= FALSE;
+			  MODE		: FILE_MODE;
+			  INDEX		: POSITIVE_COUNT;
+			  AT_END_OF_FILE	: BOOLEAN		:= FALSE;
 			end record;
+
 	---------
 end	DIRECT_IO;
 	---------

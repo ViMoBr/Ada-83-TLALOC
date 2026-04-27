@@ -1,5 +1,5 @@
 ------------------------------------------------------------------------------------------------------------------------
--- CC BY SA	EXPANDER-SRUCTURES.ADB	VINCENT MORIN	9/1/2025	UNIVERSITE DE BRETAGNE OCCIDENTALE
+-- GPL-V3		EXPANDER-SRUCTURES.ADB	VINCENT MORIN	9/1/2025	UNIVERSITE DE BRETAGNE OCCIDENTALE
 ------------------------------------------------------------------------------------------------------------------------
 --	1	2	3	4	5	6	7	8	9	0	1
 
@@ -39,6 +39,7 @@ is
       DECLARATIONS.CODE_PACKAGE_DECL( UNIT_ALL_DECL );							-- les instanciations génériques sont comprises  (unit_kind instantiation)
 
     when  DN_GENERIC_DECL		=>
+      CODI.IN_SPEC_UNIT := TRUE;
       DECLARATIONS.CODE_GENERIC_DECL( UNIT_ALL_DECL );
 
     when  DN_SUBPROGRAM_BODY		=>
@@ -92,6 +93,9 @@ is
 	  begin
 	    if  DEFN.TY = DN_PACKAGE_ID
 	    then  INSERT_WITHED_PKG( DEFN );
+
+	    elsif  DEFN.TY = DN_GENERIC_ID
+	    then  PUT_LINE( "include '" & PRINT_NAME( D( LX_SYMREP, DEFN ) ) & ".FINC'" );
 
 	    elsif  DEFN.TY = DN_PROCEDURE_ID  then
 	      if  not DB( CD_COMPILED, DEFN )  then
@@ -221,23 +225,16 @@ is
       begin
         while  not IS_EMPTY( GPRM_SEQ )  loop
 	POP( GPRM_SEQ, GPRM );
+
 	if  GPRM.TY = DN_TYPE_DECL  then
 	  declare
 	    GTYPE_ID	: TREE		:= D( AS_SOURCE_NAME, GPRM );
 	    GPRM_NAME	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, GTYPE_ID ) );
 	    GTYPE_DEF	: TREE		:= D( AS_TYPE_DEF, GPRM );
 	  begin
-	    if  GTYPE_DEF.TY = DN_FORMAL_INTEGER_DEF  then
-	      PUT_LINE( tab & "PRM " & GPRM_NAME & "_first_ofs" );
-	      PUT_LINE( tab & "PRM " & GPRM_NAME & "_last_ofs" );
-	    elsif  GTYPE_DEF.TY = DN_FORMAL_DSCRT_DEF  then
-	      PUT_LINE( tab & "PRM " & GPRM_NAME & "__u_ofs" );
-	      PUT_LINE( tab & "PRM " & GPRM_NAME & "__ld_ofs" );
-	      PUT_LINE( tab & "PRM " & GPRM_NAME & "__st_ofs" );
---	      PUT_LINE( tab & "PRM " & GPRM_NAME & "_images_ofs" );
---	      PUT_LINE( tab & "PRM " & GPRM_NAME & "_first_ofs" );
---	      PUT_LINE( tab & "PRM " & GPRM_NAME & "_last_ofs" );
-	    end if;
+	    PUT_LINE( tab & "PRM " & GPRM_NAME & "__u_ofs" );
+	    PUT_LINE( tab & "PRM " & GPRM_NAME & "__ld_ofs" );
+	    PUT_LINE( tab & "PRM " & GPRM_NAME & "__st_ofs" );
 	  end;
 	end if;
         end loop;
@@ -336,18 +333,6 @@ is
 
     if  CODI.DEBUG  then PUT( tab50 & ";    BODY ELAB" ); end if;
     NEW_LINE;
-
---     if FUNCTION_RESULT /= TREE_VOID then
---       if FUNCTION_RESULT.TY = DN_ARRAY then
---         LOAD_ADR( FUNCTION_RESULT );
---         EMIT( DPL, A );
---         EMIT( SLD, A, 0, FUN_RESULT_OFFSET - CODI.ADDR_SIZE );
---         EMIT( IND, I, 0 );
---         EMIT( ALO, INTEGER( -1 ) );
---         EMIT( SLD, A, 0, FUN_RESULT_OFFSET );
---       end if;
---     end if;
-
 
     declare
       SAVE_ENCLOSING	: TREE	:= ENCLOSING_BODY;

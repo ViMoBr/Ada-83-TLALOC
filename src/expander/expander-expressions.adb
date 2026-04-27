@@ -716,7 +716,7 @@ put_line(	"; adresse component id" );
 
 		---------------
     procedure	CODE_FIRST_LAST	( IS_LAST	:BOOLEAN )
-    is
+    is		---------------
       PREFIX_DEFN		: TREE		:= D( SM_DEFN, PREFIX_NAME );
     begin
       if	PREFIX_NAME.TY = DN_USED_OBJECT_ID  then							-- UNE VARIABLE TABLEAU
@@ -833,16 +833,20 @@ put_line(	"; adresse component id" );
 
   begin
     case	CHN_ATTR(	1 )  is
+
     when	'A' =>
       if	CHN_ATTR(	2 ) = 'D'	 then null;			-- ADDRESS
       else null;						-- AFT
       end	if;
+
     when	'B' => null;					-- BASE
+
     when	'C' =>
       if	CHN_ATTR(	2 ) = 'A'	 then null;			-- CALLABLE
       elsif  CHN_ATTR( 2 .. 3	) = "ON"	then null;		-- CONSTRAINED
       elsif  CHN_ATTR( 2 .. 3	) = "OU"	then null;		-- COUNT
       end	if;
+
     when	'D' =>
       if	CHN_ATTR(	2 ) = 'E'	 then null;			-- DELTA
       else							-- DIGITS
@@ -882,16 +886,20 @@ put_line(	"; adresse component id" );
 	end if;
         end;
       end	if;
+
     when	'E' =>
       if	CHN_ATTR(	2 ) = 'M'	 then null;			-- EMAX
       else null;						-- EPSILON
       end	if;
+
     when	'F' =>
       if	CHN_ATTR(	2 ) = 'I'	 then				-- FIRST
         CODE_FIRST_LAST( IS_LAST => FALSE );
       else null;						-- FORE
       end	if;
+
     when	'I' => null;					-- IMAGE
+
     when	'L' =>
       if	CHN_ATTR(	2 .. 3 ) = "AR"  then null;			-- LARGE
       elsif  CHN_ATTR( 2 .. 3	) = "AS"	then
@@ -902,6 +910,7 @@ put_line(	"; adresse component id" );
       elsif  CHN_ATTR( 2 .. 3	) = "EN"	then CODE_LENGTH;		-- LENGTH
 
       end	if;
+
     when	'M' =>
       if	CHN_ATTR(	3 ) = 'N'	 then null;			-- MANTISSA
       elsif  CHN_ATTR( 11 ) =	'A'  then	 null;			-- MACHINE_EMAX
@@ -911,6 +920,7 @@ put_line(	"; adresse component id" );
       elsif  CHN_ATTR( 10 ) =	'A'  then	 null;			-- MACHINE_RADIX
       elsif  CHN_ATTR( 10 ) =	'O'  then	 null;			-- MACHINE_ROUNDS
       end	if;
+
     when	'P' =>
       if	CHN_ATTR'LENGTH = 8	 then null;			-- POSITION
       elsif  CHN_ATTR( 2 ) = 'O'  then				-- POS
@@ -921,7 +931,9 @@ put_line(	"; adresse component id" );
         CODE_EXP( D( AS_EXP, ATTRIBUTE ) );
         PUT_LINE( tab & "DEC"	);
       end	if;
+
     when	'R' => null;					-- RANGE
+
     when	'S' =>
       if	CHN_ATTR(	2 ) = 'I'	 then null;			-- SIZE
       elsif  CHN_ATTR( 2 ) = 'M'  then	 null;			-- SMALL
@@ -934,14 +946,18 @@ put_line(	"; adresse component id" );
       elsif  CHN_ATTR( 6 ) = 'L'  then	 null;			-- SAFE_LARGE
       elsif  CHN_ATTR( 6 ) = 'S'  then	 null;			-- SAFE_SMALL
       end	if;
+
     when	'T' =>	null;					-- TERMINATED
+
     when	'V' =>
       if	CHN_ATTR'LENGTH = 5	 then null;			-- VALUE
       else							-- VAL
         -- T'VAL(N)	: retourne la valeur de position N (identite sans	clause de	rep)
         CODE_EXP( D( AS_EXP, ATTRIBUTE ) );
       end	if;
+
     when	'W' => null;					-- WIDTH
+
     when others => null;
     end case;
   end	CODE_ATTRIBUTE;

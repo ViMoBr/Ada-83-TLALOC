@@ -14,38 +14,43 @@ db 7, 12, "SYS_GET_CHAR"
 db 8, 11, "SYS_GET_STR"
 db 9, 15, "SYS_FILE_CREATE"
 db 10, 13, "SYS_FILE_OPEN"
-db 11, 14, "SYS_FILE_CLOSE"
-db 12, 15, "SYS_FILE_DELETE"
-db 13, 2, "DB"
-db 14, 2, "LI"
-db 15, 3, "LIF"
-db 16, 3, "LCA"
-db 17, 4, "LINK"
-db 18, 6, "UNLINK"
-db 19, 3, "LVA"
-db 20, 2, "LB"
-db 21, 2, "LW"
-db 22, 2, "LD"
-db 23, 2, "LQ"
-db 24, 2, "LA"
-db 25, 2, "SB"
-db 26, 2, "SW"
-db 27, 2, "SD"
-db 28, 2, "SQ"
-db 29, 2, "SA"
-db 30, 3, "LIB"
-db 31, 3, "LIW"
-db 32, 3, "LID"
-db 33, 3, "LIQ"
-db 34, 3, "LIA"
-db 35, 3, "SIB"
-db 36, 3, "SIW"
-db 37, 3, "SID"
-db 38, 3, "SIQ"
-db 39, 3, "SIA"
+db 11, 16, "SYS_FILE_SET_POS"
+db 12, 16, "SYS_FILE_GET_POS"
+db 13, 17, "SYS_FILE_GET_SIZE"
+db 14, 14, "SYS_FILE_WRITE"
+db 15, 13, "SYS_FILE_READ"
+db 16, 14, "SYS_FILE_CLOSE"
+db 17, 15, "SYS_FILE_DELETE"
+db 18, 2, "DB"
+db 19, 2, "LI"
+db 20, 3, "LIF"
+db 21, 3, "LCA"
+db 22, 4, "LINK"
+db 23, 6, "UNLINK"
+db 24, 3, "LVA"
+db 25, 2, "LB"
+db 26, 2, "LW"
+db 27, 2, "LD"
+db 28, 2, "LQ"
+db 29, 2, "LA"
+db 30, 2, "SB"
+db 31, 2, "SW"
+db 32, 2, "SD"
+db 33, 2, "SQ"
+db 34, 2, "SA"
+db 35, 3, "LIB"
+db 36, 3, "LIW"
+db 37, 3, "LID"
+db 38, 3, "LIQ"
+db 39, 3, "LIA"
+db 40, 3, "SIB"
+db 41, 3, "SIW"
+db 42, 3, "SID"
+db 43, 3, "SIQ"
+db 44, 3, "SIA"
 END_BLOC_DEF
 IMAGES	BYTES_BLOC
-CST LST, d, 39
+CST LST, d, 44
 CST FST, d, 0
 CST SIZ, d, 8	; SIZ en bits !
 postpone
@@ -55,27 +60,42 @@ end namespace
 
 ASM_OPCODE_0 = 'ASM_OPCODE_0'
 namespace ASM_OPCODE_0			; ASM_OPCODE_0 ENUMERATION SUBTYPE INFO
+VAR use__info, q
 VAR SIZ, d
+	LVA	 0, SIZ
+	Sa	 0, use__info
 end namespace
 
 ASM_OPCODE_1 = 'ASM_OPCODE_1'
 namespace ASM_OPCODE_1			; ASM_OPCODE_1 ENUMERATION SUBTYPE INFO
+VAR use__info, q
 VAR SIZ, d
+	LVA	 0, SIZ
+	Sa	 0, use__info
 end namespace
 
 ASM_OPCODE_2 = 'ASM_OPCODE_2'
 namespace ASM_OPCODE_2			; ASM_OPCODE_2 ENUMERATION SUBTYPE INFO
+VAR use__info, q
 VAR SIZ, d
+	LVA	 0, SIZ
+	Sa	 0, use__info
 end namespace
 
 ASM_OPCODE_3 = 'ASM_OPCODE_3'
 namespace ASM_OPCODE_3			; ASM_OPCODE_3 ENUMERATION SUBTYPE INFO
+VAR use__info, q
 VAR SIZ, d
+	LVA	 0, SIZ
+	Sa	 0, use__info
 end namespace
 
 ASM_OP_0 = 'ASM_OP_0'
 namespace ASM_OP_0				; ASM_OP_0 RECORD TYPE INFO
+VAR use__info, q
 VAR SIZ, d
+	LVA	0, SIZ
+	Sa	0, use__info
 USEINFO 0, OPCODE, 	LCA	STANDARD.MACHINE_CODE.ASM_OPCODE_0.SIZ
 virtual at 0
 STATOFS OPCODE, 1
@@ -85,7 +105,10 @@ end namespace
 
 ASM_OP_1 = 'ASM_OP_1'
 namespace ASM_OP_1				; ASM_OP_1 RECORD TYPE INFO
+VAR use__info, q
 VAR SIZ, d
+	LVA	0, SIZ
+	Sa	0, use__info
 USEINFO 0, OPCODE, 	LCA	STANDARD.MACHINE_CODE.ASM_OPCODE_1.SIZ
 USEINFO 0, VAL, 	LVA	0, STANDARD.INTEGER.SIZ
 virtual at 0
@@ -97,7 +120,10 @@ end namespace
 
 ASM_OP_2 = 'ASM_OP_2'
 namespace ASM_OP_2				; ASM_OP_2 RECORD TYPE INFO
+VAR use__info, q
 VAR SIZ, d
+	LVA	0, SIZ
+	Sa	0, use__info
 USEINFO 0, OPCODE, 	LCA	STANDARD.MACHINE_CODE.ASM_OPCODE_2.SIZ
 USEINFO 0, LVL, 	LVA	0, STANDARD.NATURAL.SIZ
 USEINFO 0, OFS, 	LVA	0, STANDARD.INTEGER.SIZ
@@ -111,7 +137,10 @@ end namespace
 
 ASM_OP_3 = 'ASM_OP_3'
 namespace ASM_OP_3				; ASM_OP_3 RECORD TYPE INFO
+VAR use__info, q
 VAR SIZ, d
+	LVA	0, SIZ
+	Sa	0, use__info
 USEINFO 0, OPCODE, 	LCA	STANDARD.MACHINE_CODE.ASM_OPCODE_2.SIZ
 USEINFO 0, LVL, 	LVA	0, STANDARD.NATURAL.SIZ
 USEINFO 0, DISP, 	LVA	0, STANDARD.INTEGER.SIZ

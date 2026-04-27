@@ -17,11 +17,17 @@ CST SIZ, d, 8	; SIZ en bits !
 postpone
   align_q
 end postpone
+VAR use__info, q
+	LCA	SIZ
+	Sa	0, use__info
 end namespace
 
 COUNT = 'COUNT'
 namespace COUNT				; COUNT TYPE RANGE INFO
+VAR use__info, q
 VAR SIZ, d
+	LVA	0, SIZ
+	Sa	0, use__info
 VAR FST, d
 VAR LST, d
 	LI	32
@@ -34,7 +40,10 @@ end namespace
 
 POSITIVE_COUNT = 'POSITIVE_COUNT'
 namespace POSITIVE_COUNT			; POSITIVE_COUNT INTEGER SUBTYPE INFO
+VAR use__info, q
 VAR SIZ, d
+	LVA	 0, SIZ
+	Sa	 0, use__info
 end namespace
 
 VAR UNBOUNDED_disp, d			; variable entiere
@@ -43,12 +52,18 @@ VAR UNBOUNDED_disp, d			; variable entiere
 
 FIELD = 'FIELD'
 namespace FIELD				; FIELD INTEGER SUBTYPE INFO
+VAR use__info, q
 VAR SIZ, d
+	LVA	 0, SIZ
+	Sa	 0, use__info
 end namespace
 
 NUMBER_BASE = 'NUMBER_BASE'
 namespace NUMBER_BASE			; NUMBER_BASE INTEGER SUBTYPE INFO
+VAR use__info, q
 VAR SIZ, d
+	LVA	 0, SIZ
+	Sa	 0, use__info
 end namespace
 
 TYPE_SET = 'TYPE_SET'
@@ -64,6 +79,9 @@ CST SIZ, d, 8	; SIZ en bits !
 postpone
   align_q
 end postpone
+VAR use__info, q
+	LCA	SIZ
+	Sa	0, use__info
 end namespace
 
 FILE_NAME_BUFFER = 'FILE_NAME_BUFFER'
@@ -99,7 +117,10 @@ end namespace
 
 FILE_TYPE = 'FILE_TYPE'
 namespace FILE_TYPE				; FILE_TYPE RECORD TYPE INFO
+VAR use__info, q
 VAR SIZ, d
+	LVA	0, SIZ
+	Sa	0, use__info
 USEINFO 0, ID, 	LVA	0, STANDARD.INTEGER.SIZ
 USEINFO 0, NAME, 	LVA	0, STANDARD.TEXT_IO.FILE_NAME_BUFFER.SIZ
 USEINFO 0, NAME_LEN, 	LVA	0, STANDARD.POSITIVE.SIZ
@@ -2722,8 +2743,9 @@ end if
 INTEGER_IO = 'INTEGER_IO'
 namespace INTEGER_IO			;---------- GENERIC PACKAGE
 PRMS
-	PRM NUM_first_ofs
-	PRM NUM_last_ofs
+	PRM NUM__u_ofs
+	PRM NUM__ld_ofs
+	PRM NUM__st_ofs
 endPRMS
 VAR DEFAULT_WIDTH_disp, d			; variable entiere
 	Sd  0,	DEFAULT_WIDTH_disp
@@ -3418,6 +3440,9 @@ end namespace 				;---------- end generic package BDY INTEGER_IO
 FLOAT_IO = 'FLOAT_IO'
 namespace FLOAT_IO				;---------- GENERIC PACKAGE
 PRMS
+	PRM NUM__u_ofs
+	PRM NUM__ld_ofs
+	PRM NUM__st_ofs
 endPRMS
 VAR DEFAULT_FORE_disp, d			; variable entiere
 	LI	2
@@ -4354,6 +4379,9 @@ end namespace 				;---------- end generic package BDY FLOAT_IO
 FIXED_IO = 'FIXED_IO'
 namespace FIXED_IO				;---------- GENERIC PACKAGE
 PRMS
+	PRM NUM__u_ofs
+	PRM NUM__ld_ofs
+	PRM NUM__st_ofs
 endPRMS
 VAR DEFAULT_FORE_disp, d			; variable entiere
 	Sd  0,	DEFAULT_FORE_disp

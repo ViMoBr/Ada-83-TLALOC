@@ -1,9 +1,12 @@
+--	Vincent MORIN	Universite de Bretagne Occidentale	avril 2026	Licence GPL V3
+--	1	2	3	4	5	6	7	8	9	10	11	12
+
+
 with TEXT_IO;
 use TEXT_IO;
---|-------------------------------------------------------------------------------------------------
---|	LEX
---|-------------------------------------------------------------------------------------------------
-package body LEX is
+					---
+package body				LEX
+is					---
    
   CHAR_CONTEXT		: BOOLEAN	:= TRUE;
   ATTRIBUTE_CONTEXT		: BOOLEAN	:= FALSE;
@@ -16,11 +19,11 @@ package body LEX is
   HASH_TABLE		: array (	0 .. HASH_SIZE - 1 ) of LEX_TYPE := ( others=> LT_IDENTIFIER );
    
    
---|-------------------------------------------------------------------------------------------------
---|	FUNCTION HASH_POS
---|-------------------------------------------------------------------------------------------------
-function HASH_POS (	TXT :STRING ) return INTEGER is					--| FONCTION DE HACHAGE DU NOM DE TERMINAL
+			--------
+function			HASH_POS		( TXT :STRING )		return INTEGER			--| FONCTION DE HACHAGE DU NOM DE TERMINAL
+is			--------
   I: INTEGER;
+
 begin
   I := TXT'LENGTH +	157 * CHARACTER'POS( TXT( TXT'LAST ) );
   I := I mod HASH_SIZE;
@@ -31,16 +34,25 @@ begin
     end if;
   end loop;
   return I;
-end HASH_POS;
---|-------------------------------------------------------------------------------------------------
---|	FUNCTION HASH_SEARCH
-function HASH_SEARCH ( TXT :STRING ) return LEX_TYPE is
+
+end	HASH_POS;
+	--------
+
+
+			-----------
+function			HASH_SEARCH	( TXT :STRING )		return LEX_TYPE
+is			-----------
 begin
   return HASH_TABLE( HASH_POS( TXT ) );
-end;
---|-------------------------------------------------------------------------------------------------
---|	PROCEDURE	NEXT_TOKEN
-procedure	NEXT_TOKEN ( CHAR_CONTEXT: BOOLEAN; TTYPE_OUT: out TOKEN_TYPE; TOK_LEN :out NATURAL ) is
+
+end	HASH_SEARCH;
+	-----------
+
+
+			----------
+procedure			NEXT_TOKEN	( CHAR_CONTEXT: BOOLEAN; TTYPE_OUT: out TOKEN_TYPE;
+					  TOK_LEN :out NATURAL )
+is			----------
       
   use ASCII;
       
@@ -573,85 +585,91 @@ begin
   TTYPE_OUT := TOK_TYP;
   F_COL := START_COL;
   TOK_LEN	:= TOKEN_LENGTH;
-end NEXT_TOKEN;
---|#################################################################################################
---|
---|	PROCEDURE	LEX_SCAN
---|
-procedure	LEX_SCAN is
+
+end	NEXT_TOKEN;
+	----------
+
+
+			--------
+procedure			LEX_SCAN
+is			--------
+
   TOK_TYP		: TOKEN_TYPE;
   TOK_LEN		: NATURAL;
+
 begin
-  NEXT_TOKEN( CHAR_CONTEXT, TOK_TYP, TOK_LEN );						--| LIRE L UNITE LEXICALE
-  E_COL := F_COL + TOK_LEN - 1;							--| METTRE A JOUR LA COLONNE DE FIN
-										--| AFECTER LE TYPE	DE L ULEX
-  if TOK_TYP = NIL then								--| TYPE BRUT NIL
-    LTYPE	:= LT_END_MARK;								--| ULEX FIN
+  NEXT_TOKEN( CHAR_CONTEXT, TOK_TYP, TOK_LEN );								--| LIRE L UNITE LEXICALE
+  E_COL := F_COL + TOK_LEN - 1;									--| METTRE A JOUR LA COLONNE DE FIN
+												--| AFECTER LE TYPE	DE L ULEX
+  if TOK_TYP = NIL then										--| TYPE BRUT NIL
+    LTYPE	:= LT_END_MARK;										--| ULEX FIN
   else
     CHAR_CONTEXT :=	TRUE;
-    if TOK_TYP = QUOTE then								--| TYPE BRUT AVEC GUILLEMENT
-      LTYPE := LT_STRING_LIT;								--| ULEX CHAINE
-    elsif	TOK_TYP =	INT or TOK_TYP = DEC then						--| TYPE BRUT ENTIER OU DECIMAL
-      LTYPE := LT_NUMERIC_LIT;							--| ULEX NOMBRE
-    elsif	TOK_TYP =	CHAR then								--| TYPE BRUT CARACTERE
-      LTYPE := LT_CHAR_LIT;								--| ULEX CARACTERE
-    elsif	TOK_TYP =	ERROR then							--| TYPE BRUT ERREUR
-      LTYPE := LT_ERROR;								--| ULEX ERREUR
-    else										--| CLASSE TTYPE = IDENT OR PUNCT
-      if ATTRIBUTE_CONTEXT and then TOK_TYP = IDENT then					--| IDENTIFICATEUR ATTRIBUT
-        LTYPE := LT_IDENTIFIER;							--| ULEX IDENTIFICATEUR
-      else									--| HORS CONTEXTE D' ATTRIBUT
-        LTYPE := HASH_SEARCH(	TEXT( 1..TOK_LEN ) );					--| CHERCHER LE LEX_TYPE DE MOT CLE EVENTUEL
+    if TOK_TYP = QUOTE then										--| TYPE BRUT AVEC GUILLEMENT
+      LTYPE := LT_STRING_LIT;										--| ULEX CHAINE
+    elsif	TOK_TYP =	INT or TOK_TYP = DEC then								--| TYPE BRUT ENTIER OU DECIMAL
+      LTYPE := LT_NUMERIC_LIT;									--| ULEX NOMBRE
+    elsif	TOK_TYP =	CHAR then										--| TYPE BRUT CARACTERE
+      LTYPE := LT_CHAR_LIT;										--| ULEX CARACTERE
+    elsif	TOK_TYP =	ERROR then									--| TYPE BRUT ERREUR
+      LTYPE := LT_ERROR;										--| ULEX ERREUR
+    else												--| CLASSE TTYPE = IDENT OR PUNCT
+      if ATTRIBUTE_CONTEXT and then TOK_TYP = IDENT then							--| IDENTIFICATEUR ATTRIBUT
+        LTYPE := LT_IDENTIFIER;									--| ULEX IDENTIFICATEUR
+      else											--| HORS CONTEXTE D' ATTRIBUT
+        LTYPE := HASH_SEARCH(	TEXT( 1..TOK_LEN ) );							--| CHERCHER LE LEX_TYPE DE MOT CLE EVENTUEL
       end	if;
-      if LTYPE = LT_IDENTIFIER then							--| IDENTIFICATEUR
-        if TOK_TYP = IDENT then							--| TYPE BRUT IDENTIFICATEUR
-	CHAR_CONTEXT := FALSE;							--| SORTIE DU CONTEXTE CARACTERES IDENTIFICATEUR
+      if LTYPE = LT_IDENTIFIER then									--| IDENTIFICATEUR
+        if TOK_TYP = IDENT then									--| TYPE BRUT IDENTIFICATEUR
+	CHAR_CONTEXT := FALSE;									--| SORTIE DU CONTEXTE CARACTERES IDENTIFICATEUR
         else
-	LTYPE := LT_ERROR;								--| ERREUR SI TYPE BRUT NON IDENT
+	LTYPE := LT_ERROR;										--| ERREUR SI TYPE BRUT NON IDENT
         end if;
       end	if;
     end if;
   end if;
   
-  ATTRIBUTE_CONTEXT	:= ( LTYPE = LT_APOSTROPHE );						--| APOSTROPHE PASSER EN CONTEXTE IDENTIFICATEUR ATTRIBUT
+  ATTRIBUTE_CONTEXT	:= ( LTYPE = LT_APOSTROPHE );								--| APOSTROPHE PASSER EN CONTEXTE IDENTIFICATEUR ATTRIBUT
          
-end LEX_SCAN;
---|#################################################################################################
---|
---|	FUNCTION TOKEN_STRING							--| RETOURNE LA CHAINE DE L ULEX
---|
-function TOKEN_STRING return STRING is
+end	LEX_SCAN;
+	--------
+
+
+			------------
+function			TOKEN_STRING		return STRING
+is			------------
 begin
   return TEXT( 1..TOKEN_LENGTH );
-end;
---|#################################################################################################
---|
---|	FUNCTION LEX_IMAGE
---|
-function LEX_IMAGE ( LT :LEX_TYPE ) return STRING	is					--| RETOURNE LA CHAINE IMAGE DU TYPE DE	L ULEX
 
+end	TOKEN_STRING;
+	------------
+
+
+			---------
+function			LEX_IMAGE		( LT :LEX_TYPE )		return STRING			--| RETOURNE LA CHAINE IMAGE DU TYPE DE	L ULEX
+is			---------
 begin
   case LT	is
-  when LT_AMPERSAND	.. LT_BOX	=>							--| SYMBOLE
+  when LT_AMPERSAND	.. LT_BOX	=>									--| SYMBOLE
     declare
       OP_TEXT	: constant STRING( 1..52 )
 		  := "& ' ( ) * + , - . / : ; < = > | =>..**:=/=>=<=<<>><>";
-      II		: INTEGER								--| POSITION DE LA CHAINE DU SYMBOLE
+      II		: INTEGER										--| POSITION DE LA CHAINE DU SYMBOLE
 		  := LEX_TYPE'POS (	LT ) * 2 - LEX_TYPE'POS ( LT_AMPERSAND ) * 2 + 1;
       TEMP_STRING	: STRING ( 1 .. 2 )	:= OP_TEXT( II .. II+1 );
       
     begin
-      if TEMP_STRING( 2 ) = ' ' then return TEMP_STRING( 1 .. 1 );				--| SYMBOLE A UN SEUL CARACTERE
-      else return TEMP_STRING( 1 .. 2 );						--| SYMBOLE A DEUX CARACTERES
+      if TEMP_STRING( 2 ) = ' ' then return TEMP_STRING( 1 .. 1 );						--| SYMBOLE A UN SEUL CARACTERE
+      else return TEMP_STRING( 1 .. 2 );								--| SYMBOLE A DEUX CARACTERES
       end	if;
     end;
 	     
-  when LT_ABORT .. LT_XOR =>								--| MOT RESERVE RETIRER LE "LT_" QUI PREFIXE LE MOT DANS L IMAGE
+  when LT_ABORT .. LT_XOR =>										--| MOT RESERVE RETIRER LE "LT_" QUI PREFIXE LE MOT DANS L IMAGE
     declare
-      IMAGE	: constant STRING		:= LEX_TYPE'IMAGE( LT );			--| IMAGE	PAR EXEMPLE "LT_ABORT"
+      IMAGE	: constant STRING		:= LEX_TYPE'IMAGE( LT );					--| IMAGE	PAR EXEMPLE "LT_ABORT"
       TRONQ	: STRING ( 1..IMAGE'LENGTH-3 ):= IMAGE ( 4 .. IMAGE'LENGTH );
     begin
-      return TRONQ;									--| RETOURNER SEULEMENT "ABORT"
+      return TRONQ;											--| RETOURNER SEULEMENT "ABORT"
     end;
 
   when LT_IDENTIFIER	=> return	"identifier";
@@ -661,12 +679,16 @@ begin
   when LT_END_MARK		=> return	"*end*";
   when LT_ERROR		=> return	"*error*";
   end case;
-end LEX_IMAGE;
---|#################################################################################################
+
+end	LEX_IMAGE;
+	---------
+
 
 begin
-  for LT in LT_ABORT .. LT_BOX loop							--| POUR TOUS LES TERMINAUX
+  for  LT in LT_ABORT .. LT_BOX  loop									--| POUR TOUS LES TERMINAUX
     HASH_TABLE( HASH_POS( LEX_IMAGE( LT	) ) ) := LT;
   end loop;
---|-------------------------------------------------------------------------------------------------
-end LEX;
+
+	---
+end	LEX;
+	---

@@ -1454,6 +1454,51 @@ macro			SYS_FILE_SET_POS?				; positionnement sur un fichier
 end macro
 
 
+;			------------------
+macro			SYS_FILE_GET_POS?				; position courante dans un fichier (lseek SEEK_CUR avec offset 0)
+;			------------------
+  POP_RDI								;		(rdi = FILE_ID)
+  db 0x48, 0x31, 0xF6						; xor rsi, rsi	(rsi = 0  = offset)
+  db 0x6A, 0x01							; push 1
+  db 0x5A								; pop rdx		(rdx = 1  = SEEK_CUR : ne change rien, lseek rend la position courante)
+  db 0x6A, 0x08							; push 8
+  db 0x58								; pop rax		(rax = 8  = lseek)
+  db 0x0F, 0x05							; syscall
+  db 0x48, 0x89, 0x45, 0x00						; mov QWORD PTR [rbp], rax	(position courante en octets rendue sur le lieu result de la fonction)
+end macro
+
+
+;			------------------
+macro			SYS_FILE_GET_SIZE?				; taille d'un fichier en octets (lseek SEEK_END puis SEEK_SET pour preserver la position courante)
+;			------------------
+  POP_RDI								;		(rdi = FILE_ID)
+  ; --- 1. Sauver la position courante : lseek(fd, 0, SEEK_CUR) -> rax = position courante
+  db 0x48, 0x31, 0xF6						; xor rsi, rsi	(rsi = 0  = offset)
+  db 0x6A, 0x01							; push 1
+  db 0x5A								; pop rdx		(rdx = 1  = SEEK_CUR)
+  db 0x6A, 0x08							; push 8
+  db 0x58								; pop rax		(rax = 8  = lseek)
+  db 0x0F, 0x05							; syscall
+  db 0x49, 0x89, 0xC0						; mov r8,  rax	(r8  = position courante a restaurer)
+  ; --- 2. Lire la taille : lseek(fd, 0, SEEK_END) -> rax = taille
+  db 0x48, 0x31, 0xF6						; xor rsi, rsi	(rsi = 0  = offset)
+  db 0x6A, 0x02							; push 2
+  db 0x5A								; pop rdx		(rdx = 2  = SEEK_END)
+  db 0x6A, 0x08							; push 8
+  db 0x58								; pop rax		(rax = 8  = lseek)
+  db 0x0F, 0x05							; syscall
+  db 0x49, 0x89, 0xC1						; mov r9,  rax	(r9  = taille du fichier)
+  ; --- 3. Restaurer la position : lseek(fd, r8, SEEK_SET)
+  db 0x4C, 0x89, 0xC6						; mov rsi, r8
+  db 0x48, 0x31, 0xD2						; xor rdx, rdx	(rdx = 0  = SEEK_SET)
+  db 0x6A, 0x08							; push 8
+  db 0x58								; pop rax		(rax = 8  = lseek)
+  db 0x0F, 0x05							; syscall
+  ; --- 4. Resultat = taille (r9) sur le lieu result
+  db 0x4C, 0x89, 0x4D, 0x00						; mov QWORD PTR [rbp], r9	(taille en octets rendue sur le lieu result de la fonction)
+end macro
+
+
 ;			---------------
 macro			SYS_FILE_WRITE?				; ecriture sur un fichier
 ;			---------------

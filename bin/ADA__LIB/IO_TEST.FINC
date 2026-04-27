@@ -102,6 +102,25 @@ INT_IO = 'INT_IO'
 namespace INT_IO				;---------- GENERIC PACKAGE INSTANTIATION
 elab_spec:				;    SPEC ELAB
 
+BRA post_LD_INTEGER
+LD_INTEGER.elab:
+	Ld -1, 0
+	RTD 0
+post_LD_INTEGER:
+BRA post_ST_INTEGER
+ST_INTEGER.elab:
+	SId -1, 0
+	RTD 0
+post_ST_INTEGER:
+VAR INTEGER__st_ofs, q
+	LCA ST_INTEGER.elab
+	Sa	 1, INTEGER__st_ofs
+VAR INTEGER__ld_ofs, q
+	LCA LD_INTEGER.elab
+	Sa	 1, INTEGER__ld_ofs
+VAR INTEGER__u_ofs, q
+	LCA	STANDARD.INTEGER.SIZ
+	Sa	 1, INTEGER__u_ofs
 VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
 VAR DEFAULT_WIDTH_disp, d			; variable entiere
 	Sd  1,	DEFAULT_WIDTH_disp

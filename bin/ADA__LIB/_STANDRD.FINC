@@ -13,11 +13,17 @@ CST SIZ, d, 1	; SIZ en bits !
 postpone
   align_q
 end postpone
+VAR use__info, q
+	LCA	SIZ
+	Sa	0, use__info
 end namespace
 
 SHORT_INTEGER = 'SHORT_INTEGER'
 namespace SHORT_INTEGER			; SHORT_INTEGER TYPE RANGE INFO
+VAR use__info, q
 VAR SIZ, d
+	LVA	0, SIZ
+	Sa	0, use__info
 VAR FST, w
 VAR LST, w
 	LI	16
@@ -39,7 +45,10 @@ end namespace
 
 INTEGER = 'INTEGER'
 namespace INTEGER				; INTEGER TYPE RANGE INFO
+VAR use__info, q
 VAR SIZ, d
+	LVA	0, SIZ
+	Sa	0, use__info
 VAR FST, d
 VAR LST, d
 	LI	32
@@ -61,7 +70,10 @@ end namespace
 
 LONG_INTEGER = 'LONG_INTEGER'
 namespace LONG_INTEGER			; LONG_INTEGER TYPE RANGE INFO
+VAR use__info, q
 VAR SIZ, d
+	LVA	0, SIZ
+	Sa	0, use__info
 VAR FST, q
 VAR LST, q
 	LI	64
@@ -83,12 +95,18 @@ end namespace
 
 FLOAT = 'FLOAT'
 namespace FLOAT				; FLOAT FLOAT TYPE INFO
+VAR use__info, q
 CST SIZ, d, 32
+	LCA	SIZ
+	Sa	0, use__info
 end namespace
 
 LONG_FLOAT = 'LONG_FLOAT'
 namespace LONG_FLOAT			; LONG_FLOAT FLOAT TYPE INFO
+VAR use__info, q
 CST SIZ, d, 64
+	LCA	SIZ
+	Sa	0, use__info
 end namespace
 
 CHARACTER = 'CHARACTER'
@@ -230,6 +248,9 @@ CST SIZ, d, 8	; SIZ en bits !
 postpone
   align_q
 end postpone
+VAR use__info, q
+	LCA	SIZ
+	Sa	0, use__info
 end namespace
 
 ASCII = 'ASCII'
@@ -555,17 +576,29 @@ end namespace
 
 NATURAL = 'NATURAL'
 namespace NATURAL				; NATURAL INTEGER SUBTYPE INFO
+VAR use__info, q
 VAR SIZ, d
+	LVA	 0, SIZ
+	Sa	 0, use__info
 end namespace
 
 POSITIVE = 'POSITIVE'
 namespace POSITIVE				; POSITIVE INTEGER SUBTYPE INFO
+VAR use__info, q
 VAR SIZ, d
+	LVA	 0, SIZ
+	Sa	 0, use__info
 end namespace
 
 STRING = 'STRING'
 namespace STRING				; STRING UNCONSTRAINED ARRAY SUBTYPE INFO
+VAR use__info, q
 VAR SIZ, d
+	LVA	0, SIZ
+	Sa	0, use__info
+	LI	1
+	NEG
+	Sd	0, SIZ
   virtual at 4
 COMP_SIZ = $
 	rd 1 
@@ -578,7 +611,10 @@ end namespace
 
 _ADDRESS = '_ADDRESS'
 namespace _ADDRESS				; _ADDRESS TYPE RANGE INFO
+VAR use__info, q
 VAR SIZ, d
+	LVA	0, SIZ
+	Sa	0, use__info
 VAR FST, q
 VAR LST, q
 	LI	64

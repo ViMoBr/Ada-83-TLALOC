@@ -135,6 +135,11 @@ is
     PUT_LINE( "postpone" );
     PUT_LINE( "  align_q" );										-- Assurer  l'alignement de départ de tout le bloc
     PUT_LINE( "end postpone" );
+
+    PUT_LINE( "VAR use__info, q" );
+    PUT_LINE( tab &	"LCA" & tab & "SIZ" );
+    PUT_LINE( tab &	"Sa" & tab & IMAGE( CODI.CUR_LEVEL ) & ", use__info" );
+
     PUT_LINE( "end namespace");
     if  CODI.DEBUG	then NEW_LINE; end if;
 
@@ -163,7 +168,11 @@ is
     PUT( "namespace " & TYPE_STR );
     if  CODI.DEBUG	then  PUT( tab50 & "; " & TYPE_STR & " TYPE RANGE INFO" ); end if;
     NEW_LINE;
+    PUT_LINE( "VAR use__info, q" );
     PUT_LINE( "VAR SIZ, d" );
+    PUT_LINE( tab &	"LVA" & tab & LVL_STR & ", SIZ" );
+    PUT_LINE( tab &	"Sa" & tab & LVL_STR & ", use__info" );
+
     PUT_LINE( "VAR FST, " & SIZE_CHAR );
     PUT_LINE( "VAR LST, " & SIZE_CHAR );
 
@@ -200,7 +209,7 @@ is
 
     TYPE_ID		: TREE		:= D( AS_SOURCE_NAME, TYPE_DECL );
     TYPE_STR		:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, TYPE_ID ) );
-    FLOAT_SPEC	: TREE		:= D( SM_TYPE_SPEC,	TYPE_ID );
+    FLOAT_SPEC		: TREE		:= D( SM_TYPE_SPEC,	TYPE_ID );
   begin
     DI( CD_LEVEL,	  FLOAT_SPEC, INTEGER( CODI.CUR_LEVEL )	);
     DB( CD_COMPILED,  FLOAT_SPEC, TRUE );
@@ -209,7 +218,12 @@ is
     PUT( "namespace " & TYPE_STR );
     if  CODI.DEBUG	then  PUT( tab50 & "; " & TYPE_STR & " FLOAT TYPE INFO" ); end if;
     NEW_LINE;
+
+    PUT_LINE( "VAR use__info, q" );
     PUT_LINE( "CST SIZ, d," &	INTEGER'IMAGE( DI( CD_IMPL_SIZE, FLOAT_SPEC ) ) );
+    PUT_LINE( tab &	"LCA" & tab & "SIZ" );
+    PUT_LINE( tab &	"Sa" & tab & IMAGE( CODI.CUR_LEVEL ) & ", use__info" );
+
     PUT_LINE( "end namespace"	);
     if  CODI.DEBUG	then NEW_LINE; end if;
 
@@ -246,7 +260,11 @@ is
     PUT( "namespace " & TYPE_ID_STR );
     if  CODI.DEBUG	then PUT(	tab50 & "; " & TYPE_ID_STR & " RECORD TYPE INFO" ); end if;
     NEW_LINE;
+
+    PUT_LINE( "VAR use__info, q" );
     PUT_LINE( "VAR SIZ, d" );
+    PUT_LINE( tab &	"LVA" & tab & LVL_STR & ", SIZ" );
+    PUT_LINE( tab &	"Sa" & tab & LVL_STR & ", use__info" );
 
 			------------------------
 			INSERE_LES_DISCRIMINANTS:
@@ -518,7 +536,15 @@ is
     PUT( "namespace " & TYPE_ID_STR );
     if  CODI.DEBUG	then PUT(	tab50 & "; " & TYPE_ID_STR & " UNCONSTRAINED ARRAY SUBTYPE INFO" ); end if;
     NEW_LINE;
+
+    PUT_LINE( "VAR use__info, q" );
     PUT_LINE( "VAR SIZ, d" );
+    PUT_LINE( tab &	"LVA" & tab & LVL_STR & ", SIZ" );
+    PUT_LINE( tab &	"Sa" & tab & LVL_STR & ", use__info" );
+    PUT_LINE( tab &	"LI" & tab & '1' );
+    PUT_LINE( tab &	"NEG" );
+    PUT_LINE( tab &	"Sd" & tab & LVL_STR & ", SIZ" );							-- SIZ=-1 UNCONSTRAINED
+
     PUT_LINE( "  virtual at 4" );									-- Commence apres SIZ
 
     USEINFO_OFFSETS( INDEX_SUBTYPE_S );
@@ -729,6 +755,7 @@ is
     SUBTYPE_ID		: TREE		:= D( AS_SOURCE_NAME, SUBTYPE_DECL) ;
     TYPE_SPEC		: TREE		:= D( SM_TYPE_SPEC,	SUBTYPE_ID );
     SUBTYPE_STR		:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, SUBTYPE_ID	) );
+    LVL_STR		:constant STRING	:= INTEGER'IMAGE( INTEGER( CODI.CUR_LEVEL ) );
   begin
     DI( CD_LEVEL,	  TYPE_SPEC, INTEGER( CODI.CUR_LEVEL ) );
     DB( CD_COMPILED,  TYPE_SPEC, TRUE );
@@ -748,7 +775,12 @@ is
       PUT( "namespace " & SUBTYPE_STR );
       if	CODI.DEBUG  then PUT( tab50 &	"; " & SUBTYPE_STR & " ENUMERATION SUBTYPE INFO" ); end if;
       NEW_LINE;
-      PUT_LINE( "VAR SIZ, d" );
+
+    PUT_LINE( "VAR use__info, q" );
+    PUT_LINE( "VAR SIZ, d" );
+    PUT_LINE( tab &	"LVA" & tab & LVL_STR & ", SIZ" );
+    PUT_LINE( tab &	"Sa" & tab & LVL_STR & ", use__info" );
+
 --      D( SM_BASE_TYPE, TYPE_SPEC );
 --      D( SM_RANGE, TYPE_SPEC );
       PUT_LINE( "end namespace" );
@@ -761,7 +793,12 @@ is
       PUT( "namespace " & SUBTYPE_STR );
       if	CODI.DEBUG  then PUT( tab50 &	"; " & SUBTYPE_STR & " INTEGER SUBTYPE INFO" ); end if;
       NEW_LINE;
-      PUT_LINE( "VAR SIZ, d" );
+
+    PUT_LINE( "VAR use__info, q" );
+    PUT_LINE( "VAR SIZ, d" );
+    PUT_LINE( tab &	"LVA" & tab & LVL_STR & ", SIZ" );
+    PUT_LINE( tab &	"Sa" & tab & LVL_STR & ", use__info" );
+
 --      D( SM_BASE_TYPE, TYPE_SPEC );
 --      D( SM_RANGE, TYPE_SPEC );
       PUT_LINE( "end namespace" );

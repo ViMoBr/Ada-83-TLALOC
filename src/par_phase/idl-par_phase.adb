@@ -1,4 +1,4 @@
---	Vincent MORIN	Universite de Bretagne Occidentale	janvier 2025	Licence CC BY-SA 4.0
+--	Vincent MORIN	Universite de Bretagne Occidentale	janvier 2025	Licence GPL V3
 --	1	2	3	4	5	6	7	8	9	10	11	12
 
 
