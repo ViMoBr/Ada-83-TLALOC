@@ -299,13 +299,9 @@ null;--	     declare
 	declare
 	  PROC_LBL	:constant	STRING	:= NEW_LABEL;
 	begin
---	  CODI.GENERATE_CODE := TRUE;
---	  EMIT( RFP, INTEGER( 0 ), S=> PRINT_NAME ( SYMREP ) );
---	  DI  ( CD_LABEL,	   DEFN, INTEGER ( PROC_LBL )	);
 	  DI  ( CD_LEVEL,	   DEFN, 1 );
 	  DI  ( CD_PARAM_SIZE, DEFN, 0 );
 	  DB  ( CD_COMPILED,   DEFN, TRUE );
---	  EMIT( RFL, PROC_LBL );
 	end;
         end if;
       end	if;
@@ -343,8 +339,14 @@ null;--	     declare
 
     when DN_ENUMERATION_ID | DN_CHARACTER_ID	=> PUT_LINE( ASCII.HT & "LI" & tab & IMAGE( DI( SM_REP, DEFN ) ) );
     when DN_IN_ID |	DN_IN_OUT_ID		=> LOAD_MEM( DEFN );
---    when DN_OUT_ID				=> CODE_PRM_ID( DEFN );
-    when others => raise PROGRAM_ERROR;
+    when DN_OUT_ID				=>
+	PUT_LINE( "; CODE_USED_OBJECT_ID : OUT_ID a faire " );
+
+    when DN_DISCRIMINANT_ID			=>
+	PUT_LINE( "; CODE_USED_OBJECT_ID : DISCRIMINANT_ID a faire " );
+
+    when others => PUT_LINE( "; CODE_USED_OBJECT_ID : " & NODE_NAME'IMAGE( DEFN.TY ) & " pas gere !" );
+	raise PROGRAM_ERROR;
     end case;
 
   end	CODE_USED_OBJECT_ID;

@@ -4,8 +4,10 @@ namespace TEXT_IO				;---------- PACKAGE
 elab_spec:				;    SPEC ELAB
 
 ; CODE_TYPE_DECL : skip PRIVATE FILE_TYPE (deferred to full type)
+
+					; FILE_MODE ENUMERATION TYPE INFO
 FILE_MODE = 'FILE_MODE'
-namespace FILE_MODE				; FILE_MODE ENUMERATION TYPE INFO
+namespace FILE_MODE
 BEGIN_BLOC_DEF
 db 0, 7, "IN_FILE"
 db 1, 8, "OUT_FILE"
@@ -22,8 +24,9 @@ VAR use__info, q
 	Sa	0, use__info
 end namespace
 
+					; COUNT TYPE RANGE INFO
 COUNT = 'COUNT'
-namespace COUNT				; COUNT TYPE RANGE INFO
+namespace COUNT
 VAR use__info, q
 VAR SIZ, d
 	LVA	0, SIZ
@@ -31,43 +34,80 @@ VAR SIZ, d
 VAR FST, d
 VAR LST, d
 	LI	32
-	Sb	0, SIZ
+	Sd	0, SIZ
 	LI	0
 	Sd	0, FST
 	LI	2147483647
 	Sd	0, LST
 end namespace
 
+					; POSITIVE_COUNT INTEGER SUBTYPE INFO
 POSITIVE_COUNT = 'POSITIVE_COUNT'
-namespace POSITIVE_COUNT			; POSITIVE_COUNT INTEGER SUBTYPE INFO
+namespace POSITIVE_COUNT
 VAR use__info, q
 VAR SIZ, d
-	LVA	 0, SIZ
-	Sa	 0, use__info
+	LVA	0, SIZ
+	Sa	0, use__info
+VAR FST, d
+VAR LST, d
+	LI	32
+	Sd	0, SIZ
+	LI	1
+	Sd	0, FST
+	LI	2147483647
+	Sd	0, LST
+VAR PARENT__u, q
+	La	0, STANDARD.TEXT_IO.COUNT.use__info
+	Sa	0, PARENT__u
 end namespace
-
 VAR UNBOUNDED_disp, d			; variable entiere
 	LI	0
 	Sd  0,	UNBOUNDED_disp
 
+
+					; FIELD INTEGER SUBTYPE INFO
 FIELD = 'FIELD'
-namespace FIELD				; FIELD INTEGER SUBTYPE INFO
+namespace FIELD
 VAR use__info, q
 VAR SIZ, d
-	LVA	 0, SIZ
-	Sa	 0, use__info
+	LVA	0, SIZ
+	Sa	0, use__info
+VAR FST, d
+VAR LST, d
+	LI	32
+	Sd	0, SIZ
+	LI	0
+	Sd	0, FST
+	LI	2147483647
+	Sd	0, LST
+VAR PARENT__u, q
+	La	0, STANDARD.INTEGER.use__info
+	Sa	0, PARENT__u
 end namespace
 
+					; NUMBER_BASE INTEGER SUBTYPE INFO
 NUMBER_BASE = 'NUMBER_BASE'
-namespace NUMBER_BASE			; NUMBER_BASE INTEGER SUBTYPE INFO
+namespace NUMBER_BASE
 VAR use__info, q
 VAR SIZ, d
-	LVA	 0, SIZ
-	Sa	 0, use__info
+	LVA	0, SIZ
+	Sa	0, use__info
+VAR FST, d
+VAR LST, d
+	LI	32
+	Sd	0, SIZ
+	LI	2
+	Sd	0, FST
+	LI	16
+	Sd	0, LST
+VAR PARENT__u, q
+	La	0, STANDARD.INTEGER.use__info
+	Sa	0, PARENT__u
 end namespace
 
+					; TYPE_SET ENUMERATION TYPE INFO
 TYPE_SET = 'TYPE_SET'
-namespace TYPE_SET				; TYPE_SET ENUMERATION TYPE INFO
+namespace TYPE_SET
 BEGIN_BLOC_DEF
 db 0, 10, "LOWER_CASE"
 db 1, 10, "UPPER_CASE"
@@ -83,15 +123,16 @@ VAR use__info, q
 	LCA	SIZ
 	Sa	0, use__info
 end namespace
-
 FILE_NAME_BUFFER = 'FILE_NAME_BUFFER'
 namespace FILE_NAME_BUFFER			; FILE_NAME_BUFFER CONSTRAINED ARRAY SUBTYPE INFO
+VAR use__info, q
 VAR SIZ, d
-  namespace info
+	LVA	0, SIZ
+	Sa	0, use__info
 VAR COMP_SIZ, d
 VAR FST_1, d
 VAR LST_1, d
-	LI	1
+	LI	8
 	Sd	0, COMP_SIZ
 	Ld	0, COMP_SIZ
 	LI	1
@@ -104,7 +145,6 @@ VAR LST_1, d
 	SUB
 	MUL
 	Sd	0, SIZ
-  end namespace
   virtual at 4
 COMP_SIZ = $
 	rd 1 
@@ -115,26 +155,27 @@ LST_1 = $
   end virtual
 end namespace
 
+					; FILE_TYPE RECORD TYPE INFO
 FILE_TYPE = 'FILE_TYPE'
-namespace FILE_TYPE				; FILE_TYPE RECORD TYPE INFO
+namespace FILE_TYPE
 VAR use__info, q
 VAR SIZ, d
 	LVA	0, SIZ
 	Sa	0, use__info
-USEINFO 0, ID, 	LVA	0, STANDARD.INTEGER.SIZ
-USEINFO 0, NAME, 	LVA	0, STANDARD.TEXT_IO.FILE_NAME_BUFFER.SIZ
-USEINFO 0, NAME_LEN, 	LVA	0, STANDARD.POSITIVE.SIZ
-USEINFO 0, IS_OPENED, 	LCA	STANDARD.BOOLEAN.SIZ
-USEINFO 0, MODE, 	LCA	STANDARD.TEXT_IO.FILE_MODE.SIZ
-USEINFO 0, PAGE_LENGTH, 	LVA	0, STANDARD.TEXT_IO.POSITIVE_COUNT.SIZ
-USEINFO 0, LINE_LENGTH, 	LVA	0, STANDARD.TEXT_IO.POSITIVE_COUNT.SIZ
-USEINFO 0, PAGE, 	LVA	0, STANDARD.TEXT_IO.POSITIVE_COUNT.SIZ
-USEINFO 0, LINE, 	LVA	0, STANDARD.TEXT_IO.POSITIVE_COUNT.SIZ
-USEINFO 0, COL, 	LVA	0, STANDARD.TEXT_IO.POSITIVE_COUNT.SIZ
-USEINFO 0, IS_DEFAULT_IO, 	LCA	STANDARD.BOOLEAN.SIZ
-USEINFO 0, LOOK_AHEAD, 	LCA	STANDARD.CHARACTER.SIZ
-USEINFO 0, HAS_LOOK_AHEAD, 	LCA	STANDARD.BOOLEAN.SIZ
-USEINFO 0, AT_END_OF_FILE, 	LCA	STANDARD.BOOLEAN.SIZ
+USEINFO 0, ID, 	La 0, STANDARD.INTEGER.use__info
+USEINFO 0, NAME, 	La 0, STANDARD.TEXT_IO.FILE_NAME_BUFFER.use__info
+USEINFO 0, NAME_LEN, 	La 0, STANDARD.POSITIVE.use__info
+USEINFO 0, IS_OPENED, 	LCA	STANDARD.BOOLEAN.use__info
+USEINFO 0, MODE, 	LCA	STANDARD.TEXT_IO.FILE_MODE.use__info
+USEINFO 0, PAGE_LENGTH, 	La 0, STANDARD.TEXT_IO.POSITIVE_COUNT.use__info
+USEINFO 0, LINE_LENGTH, 	La 0, STANDARD.TEXT_IO.POSITIVE_COUNT.use__info
+USEINFO 0, PAGE, 	La 0, STANDARD.TEXT_IO.POSITIVE_COUNT.use__info
+USEINFO 0, LINE, 	La 0, STANDARD.TEXT_IO.POSITIVE_COUNT.use__info
+USEINFO 0, COL, 	La 0, STANDARD.TEXT_IO.POSITIVE_COUNT.use__info
+USEINFO 0, IS_DEFAULT_IO, 	LCA	STANDARD.BOOLEAN.use__info
+USEINFO 0, LOOK_AHEAD, 	LCA	STANDARD.CHARACTER.use__info
+USEINFO 0, HAS_LOOK_AHEAD, 	LCA	STANDARD.BOOLEAN.use__info
+USEINFO 0, AT_END_OF_FILE, 	LCA	STANDARD.BOOLEAN.use__info
 virtual at 0
 STATOFS ID, 4
 STATOFS NAME, 256
@@ -151,9 +192,10 @@ STATOFS LOOK_AHEAD, 1
 STATOFS HAS_LOOK_AHEAD, 1
 STATOFS AT_END_OF_FILE, 1
 size = $
+	LI	 size* 8
 end virtual
+	Sd	0, SIZ
 end namespace
-
 					;    BODY ELAB
 VAR STDOUT_PAGE_LENGTH_disp, d		; variable entiere
 	LI	72
@@ -2767,12 +2809,14 @@ endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
 STRING = 'STRING'
 namespace STRING				; array var constrained array type info
+VAR use__info, q
 VAR SIZ, d
-  namespace info
+	LVA	1, SIZ
+	Sa	1, use__info
 VAR COMP_SIZ, d
 VAR FST_1, d
 VAR LST_1, d
-	LI	1
+	LI	8
 	Sd	1, COMP_SIZ
 	Ld	1, COMP_SIZ
 	LI	1
@@ -2785,7 +2829,6 @@ VAR LST_1, d
 	SUB
 	MUL
 	Sd	1, SIZ
-  end namespace
   virtual at 4
 COMP_SIZ = $
 	rd 1 
@@ -2795,7 +2838,6 @@ LST_1 = $
 	rd 1 
   end virtual
 end namespace
-
 VAR CHN_disp, q				; variable array : pointeur aux data
 VAR CHN__u, q				; variable array : useinfo pointeur au rec info
 	Ld	1, STRING.SIZ
@@ -2978,12 +3020,14 @@ endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
 STRING = 'STRING'
 namespace STRING				; array var constrained array type info
+VAR use__info, q
 VAR SIZ, d
-  namespace info
+	LVA	1, SIZ
+	Sa	1, use__info
 VAR COMP_SIZ, d
 VAR FST_1, d
 VAR LST_1, d
-	LI	1
+	LI	8
 	Sd	1, COMP_SIZ
 	Ld	1, COMP_SIZ
 	LI	1
@@ -2996,7 +3040,6 @@ VAR LST_1, d
 	SUB
 	MUL
 	Sd	1, SIZ
-  end namespace
   virtual at 4
 COMP_SIZ = $
 	rd 1 
@@ -3006,7 +3049,6 @@ LST_1 = $
 	rd 1 
   end virtual
 end namespace
-
 VAR CHN_disp, q				; variable array : pointeur aux data
 VAR CHN__u, q				; variable array : useinfo pointeur au rec info
 	Ld	1, STRING.SIZ
@@ -3090,12 +3132,14 @@ VAR VAL_disp, d				; variable entiere
 
 STRING = 'STRING'
 namespace STRING				; array var constrained array type info
+VAR use__info, q
 VAR SIZ, d
-  namespace info
+	LVA	1, SIZ
+	Sa	1, use__info
 VAR COMP_SIZ, d
 VAR FST_1, d
 VAR LST_1, d
-	LI	1
+	LI	8
 	Sd	1, COMP_SIZ
 	Ld	1, COMP_SIZ
 	LI	1
@@ -3108,7 +3152,6 @@ VAR LST_1, d
 	SUB
 	MUL
 	Sd	1, SIZ
-  end namespace
   virtual at 4
 COMP_SIZ = $
 	rd 1 
@@ -3118,7 +3161,6 @@ LST_1 = $
 	rd 1 
   end virtual
 end namespace
-
 VAR STR_disp, q				; variable array : pointeur aux data
 VAR STR__u, q				; variable array : useinfo pointeur au rec info
 	Ld	1, STRING.SIZ
@@ -3471,12 +3513,14 @@ endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
 STRING = 'STRING'
 namespace STRING				; array var constrained array type info
+VAR use__info, q
 VAR SIZ, d
-  namespace info
+	LVA	1, SIZ
+	Sa	1, use__info
 VAR COMP_SIZ, d
 VAR FST_1, d
 VAR LST_1, d
-	LI	1
+	LI	8
 	Sd	1, COMP_SIZ
 	Ld	1, COMP_SIZ
 	LI	1
@@ -3489,7 +3533,6 @@ VAR LST_1, d
 	SUB
 	MUL
 	Sd	1, SIZ
-  end namespace
   virtual at 4
 COMP_SIZ = $
 	rd 1 
@@ -3499,7 +3542,6 @@ LST_1 = $
 	rd 1 
   end virtual
 end namespace
-
 VAR CHN_disp, q				; variable array : pointeur aux data
 VAR CHN__u, q				; variable array : useinfo pointeur au rec info
 	Ld	1, STRING.SIZ
@@ -4208,12 +4250,14 @@ namespace	BLOCK__20
 ELB 2					;    BODY ELAB
 STRING = 'STRING'
 namespace STRING				; array var constrained array type info
+VAR use__info, q
 VAR SIZ, d
-  namespace info
+	LVA	2, SIZ
+	Sa	2, use__info
 VAR COMP_SIZ, d
 VAR FST_1, d
 VAR LST_1, d
-	LI	1
+	LI	8
 	Sd	2, COMP_SIZ
 	Ld	2, COMP_SIZ
 	LI	1
@@ -4226,7 +4270,6 @@ VAR LST_1, d
 	SUB
 	MUL
 	Sd	2, SIZ
-  end namespace
   virtual at 4
 COMP_SIZ = $
 	rd 1 
@@ -4236,7 +4279,6 @@ LST_1 = $
 	rd 1 
   end virtual
 end namespace
-
 VAR EXP_STR_disp, q				; variable array : pointeur aux data
 VAR EXP_STR__u, q				; variable array : useinfo pointeur au rec info
 	Ld	2, STRING.SIZ
@@ -4827,12 +4869,14 @@ VAR IMAGES_STR__u, q			; variable array : useinfo pointeur au rec info
 
 STRING = 'STRING'
 namespace STRING				; array var constrained array type info
+VAR use__info, q
 VAR SIZ, d
-  namespace info
+	LVA	2, SIZ
+	Sa	2, use__info
 VAR COMP_SIZ, d
 VAR FST_1, d
 VAR LST_1, d
-	LI	1
+	LI	8
 	Sd	2, COMP_SIZ
 	Ld	2, COMP_SIZ
 	LI	1
@@ -4845,7 +4889,6 @@ VAR LST_1, d
 	SUB
 	MUL
 	Sd	2, SIZ
-  end namespace
   virtual at 4
 COMP_SIZ = $
 	rd 1 
@@ -4855,7 +4898,6 @@ LST_1 = $
 	rd 1 
   end virtual
 end namespace
-
 VAR CHN_disp, q				; variable array : pointeur aux data
 VAR CHN__u, q				; variable array : useinfo pointeur au rec info
 	Ld	2, STRING.SIZ

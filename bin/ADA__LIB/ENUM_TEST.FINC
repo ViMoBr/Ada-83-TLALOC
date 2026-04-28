@@ -1,8 +1,10 @@
 include 'TEXT_IO.FINC'
 PRO	ENUM_TEST_L1				;---------- PRO ENUM_TEST
 ELB 1					;    BODY ELAB
+
+					; COULEUR ENUMERATION TYPE INFO
 COULEUR = 'COULEUR'
-namespace COULEUR				; COULEUR ENUMERATION TYPE INFO
+namespace COULEUR
 BEGIN_BLOC_DEF
 db 0, 4, "BLEU"
 db 1, 5, "BLANC"
@@ -20,8 +22,9 @@ VAR use__info, q
 	Sa	1, use__info
 end namespace
 
+					; JOUR ENUMERATION TYPE INFO
 JOUR = 'JOUR'
-namespace JOUR				; JOUR ENUMERATION TYPE INFO
+namespace JOUR
 BEGIN_BLOC_DEF
 db 0, 5, "LUNDI"
 db 1, 5, "MARDI"
@@ -42,7 +45,6 @@ VAR use__info, q
 	LCA	SIZ
 	Sa	1, use__info
 end namespace
-
 IO_COULEUR = 'IO_COULEUR'
 namespace IO_COULEUR			;---------- GENERIC PACKAGE INSTANTIATION
 elab_spec:				;    SPEC ELAB
@@ -64,7 +66,7 @@ VAR COULEUR__ld_ofs, q
 	LCA LD_COULEUR.elab
 	Sa	 1, COULEUR__ld_ofs
 VAR COULEUR__u_ofs, q
-	LCA	STANDARD.ENUM_TEST_L1.COULEUR.SIZ
+	La	 1, STANDARD.ENUM_TEST_L1.COULEUR.use__info
 	Sa	 1, COULEUR__u_ofs
 VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
 VAR DEFAULT_WIDTH_disp, d			; variable entiere
@@ -203,7 +205,7 @@ VAR JOUR__ld_ofs, q
 	LCA LD_JOUR.elab
 	Sa	 1, JOUR__ld_ofs
 VAR JOUR__u_ofs, q
-	LCA	STANDARD.ENUM_TEST_L1.JOUR.SIZ
+	La	 1, STANDARD.ENUM_TEST_L1.JOUR.use__info
 	Sa	 1, JOUR__u_ofs
 VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
 VAR DEFAULT_WIDTH_disp, d			; variable entiere
@@ -342,7 +344,7 @@ VAR FILE_MODE__ld_ofs, q
 	LCA LD_FILE_MODE.elab
 	Sa	 1, FILE_MODE__ld_ofs
 VAR FILE_MODE__u_ofs, q
-	LCA	STANDARD.TEXT_IO.FILE_MODE.SIZ
+	La	 0, STANDARD.TEXT_IO.FILE_MODE.use__info
 	Sa	 1, FILE_MODE__u_ofs
 VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
 VAR DEFAULT_WIDTH_disp, d			; variable entiere
