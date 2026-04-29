@@ -1,5 +1,5 @@
-with MACHINE_CODE;
-use  MACHINE_CODE;
+with SYSTEM, MACHINE_CODE;
+use  SYSTEM, MACHINE_CODE;
 					----------
 	package body			DIRECT_IO
 is					----------
@@ -55,9 +55,9 @@ is					----------
 	--
 	-- En attendant, on rend INTEGER'SIZE / 8 = 4 : DIRECT_IO est
 	-- testable avec ELEMENT_TYPE = INTEGER.
-
   begin
-    return 4;					-- INTEGER'SIZE / 8 = 32/8 ; voir TODO ci-dessus
+    return ELEMENT_TYPE'SIZE / SYSTEM.STORAGE_UNIT;
+--    return FILE_TYPE'SIZE / SYSTEM.STORAGE_UNIT;
 
   end	BYTES_PER_ELEMENT;
 	-------------------

@@ -630,7 +630,7 @@ put_line(	"; adresse component id" );
 
 	  end if;
 
-	elsif  DESIGNATOR_DEFN.TY = DN_CONSTANT_ID  then
+	elsif  DESIGNATOR_DEFN.TY = DN_CONSTANT_ID  or  DESIGNATOR_DEFN.TY = DN_NUMBER_ID  then
 	  PUT_LINE( tab & "LI" & tab & PRINT_NUM( D( SM_VALUE, DESIGNATOR ) )	);
 
 	else
@@ -666,45 +666,44 @@ put_line(	"; adresse component id" );
 	----------------
 
   begin
-
     RECURSE_SELECTED( SELECTED );
 
- --   if	EXP_TYPE.TY = DN_INTEGER  then
- --     if  DEFN.TY	= DN_COMPONENT_ID  then
- --	declare
---	OFFSET_STR	:constant	STRING	:= RECURSE_SELECTED( SELECTED	);
---	VAR_STR		:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, VAR_ID ) );
---	VAR_LVL_STR	:constant	STRING	:= INTEGER'IMAGE( DI( CD_LEVEL, VAR_ID ) );
---	SIZ_CHAR		: CHARACTER	:= OPER_SIZ_CHAR( EXP_TYPE );
---	begin
---	PUT( tab );
---	if  IS_SOURCE  then
---	  PUT( 'L' );
---	else
---	  PUT( 'S' );
---	end if;
---	PUT( 'I' & SIZ_CHAR	& VAR_LVL_STR & ','	& tab );
---	if  VAR_ID.TY = DN_IN_OUT_ID	or VAR_ID.TY = DN_OUT_ID  then
---	  PUT( '-' & VAR_STR & "_ofs, " );
---	else
---	  PUT( VAR_STR & "_disp, " );
---	end if;
---	PUT_LINE(	OFFSET_STR );
---	end;
-
---      else
---	PUT_LINE(	tab & 'L'	&  OPER_SIZ_CHAR( EXP_TYPE )	& tab & RECURSE_SELECTED( SELECTED ) );
---      end if;
-
---    elsif  EXP_TYPE.TY = DN_ENUMERATION  then
---      PUT_LINE( tab & "LI" & tab & PRINT_NUM( D( SM_VALUE, SELECTED	) ) );
-
---    else
---      PUT_LINE( "; EXPRESSIONS.CODE_SELECTED TYPE PAS FAIT " & NODE_NAME'IMAGE( EXP_TYPE.TY ) );
-
---    end	if;
   end	CODE_SELECTED;
 	-------------
+
+
+			----------------------
+  function		IS_GENERIC_FORMAL_TYPE	( TYPE_DEFN : TREE )	return BOOLEAN
+  is			----------------------
+
+    REGION_ID	: TREE	:= D( XD_REGION, TYPE_DEFN );
+
+  begin
+    if  REGION_ID.TY /= DN_GENERIC_ID  then
+      return FALSE;
+    end if;
+				------------------
+				SEARCH_FORMAL_TYPE:
+    declare
+      G_PARAMS	: SEQ_TYPE	:= LIST( D( SM_GENERIC_PARAM_S, REGION_ID ) );
+      G_PARAM	: TREE;
+    begin
+      while  not IS_EMPTY( G_PARAMS )  loop
+        POP( G_PARAMS, G_PARAM );
+
+        if  G_PARAM.TY = DN_TYPE_DECL
+        and then  D( AS_SOURCE_NAME, G_PARAM ) = TYPE_DEFN
+        then
+          return TRUE;
+        end if;
+      end loop;
+    end			SEARCH_FORMAL_TYPE;
+			------------------
+    return FALSE;
+
+  end	IS_GENERIC_FORMAL_TYPE;
+	----------------------
+
 
 
 				--------------
@@ -715,6 +714,7 @@ put_line(	"; adresse component id" );
     CHN_ATTR_NAME		:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, D( AS_USED_NAME_ID, ATTRIBUTE ) ) );
     subtype CHN_STD		is STRING( 1 .. CHN_ATTR_NAME'LENGTH );
     CHN_ATTR		: CHN_STD		:= CHN_ATTR_NAME;						-- NORMALISER EN STRING A FIRST=1
+
 
 		---------------
     procedure	CODE_FIRST_LAST	( IS_LAST	:BOOLEAN )
@@ -833,6 +833,44 @@ put_line(	"; adresse component id" );
     end	CODE_POS;
     --------
 
+		---------
+    procedure	CODE_SIZE
+    is		---------
+      PREFIX_DEFN : TREE := D( SM_DEFN, PREFIX_NAME );
+    begin
+      if  PREFIX_DEFN.TY in CLASS_TYPE_NAME
+      then		---------
+			TYPE_SIZE:
+        declare
+	TYPE_SPEC		: TREE	:= D( SM_TYPE_SPEC, PREFIX_DEFN );
+	TYPE_NAME		: TREE	:= D( XD_SOURCE_NAME, TYPE_SPEC );
+	TYPE_STR		:constant STRING	:= PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
+
+        begin
+	  if  IS_GENERIC_FORMAL_TYPE( PREFIX_DEFN )  then							-- TYPE FORMEL GENERIQUE
+	    PUT_LINE( tab & "La " & INTEGER'IMAGE( CODI.CUR_LEVEL ) & ',' & tab & "-GFP_ofs" );
+	    PUT_LINE( tab & "LId , -" & TYPE_STR & "__u_ofs, 0" );
+
+	  else
+	    if  TYPE_SPEC.TY = DN_PRIVATE  or  TYPE_SPEC.TY = DN_L_PRIVATE  then
+	      TYPE_SPEC := D( SM_TYPE_SPEC, TYPE_SPEC );
+	    end if;
+
+	    PUT( tab & "LId" & tab );
+	    PUT( INTEGER'IMAGE( DI( CD_LEVEL, TYPE_SPEC ) ) & ", " );
+	    CODI.REGIONS_PATH( PREFIX_DEFN );
+	    PUT_LINE( TYPE_STR & "__u" );
+	  end if;
+
+        end	TYPE_SIZE;
+		---------
+      else
+        PUT_LINE( "; ATTRIBUTE SIZE : PREFIX NON TRAITE " & NODE_NAME'IMAGE( PREFIX_DEFN.TY ) );
+      end if;
+
+    end	CODE_SIZE;
+	---------
+
   begin
     case	CHN_ATTR(	1 )  is
 
@@ -937,7 +975,7 @@ put_line(	"; adresse component id" );
     when	'R' => null;					-- RANGE
 
     when	'S' =>
-      if	CHN_ATTR(	2 ) = 'I'	 then null;			-- SIZE
+      if	CHN_ATTR(	2 ) = 'I'	 then CODE_SIZE;			-- SIZE
       elsif  CHN_ATTR( 2 ) = 'M'  then	 null;			-- SMALL
       elsif  CHN_ATTR( 2 ) = 'T'  then	 null;			-- STORAGE
       elsif  CHN_ATTR( 2 ) = 'U'  then				-- SUCC
