@@ -70,7 +70,10 @@ is
     procedure	INSERT_WITHED_PKG	( DEFN :TREE )
     is
     begin
+      PUT_LINE( "if ~ definite " & PRINT_NAME( D( LX_SYMREP, DEFN ) ) );
       PUT_LINE( "include '" & PRINT_NAME( D( LX_SYMREP, DEFN ) ) & ".FINC'" );
+      PUT_LINE( "end if" );
+
       DB( CD_COMPILED, DEFN, TRUE );
     end	INSERT_WITHED_PKG;
 	-----------------
@@ -95,7 +98,10 @@ is
 	    then  INSERT_WITHED_PKG( DEFN );
 
 	    elsif  DEFN.TY = DN_GENERIC_ID
-	    then  PUT_LINE( "include '" & PRINT_NAME( D( LX_SYMREP, DEFN ) ) & ".FINC'" );
+	    then
+	      PUT_LINE( "if ~ definite " & PRINT_NAME( D( LX_SYMREP, DEFN ) ) );
+	      PUT_LINE( "include '" & PRINT_NAME( D( LX_SYMREP, DEFN ) ) & ".FINC'" );
+	      PUT_LINE( "end if" );
 
 	    elsif  DEFN.TY = DN_PROCEDURE_ID  then
 	      if  not DB( CD_COMPILED, DEFN )  then

@@ -1,10 +1,31 @@
+if ~ definite TEXT_IO
 include 'TEXT_IO.FINC'
+end if
 PRO	FLOAT_TEST_L1				;---------- PRO FLOAT_TEST
 ELB 1					;    BODY ELAB
 FIO = 'FIO'
 namespace FIO				;---------- GENERIC PACKAGE INSTANTIATION
 elab_spec:				;    SPEC ELAB
 
+BRA post_LD_FLOAT
+LD_FLOAT.elab:
+	Lq -1, 0
+	RTD 0
+post_LD_FLOAT:
+BRA post_ST_FLOAT
+ST_FLOAT.elab:
+	SIq -1, 0
+	RTD 0
+post_ST_FLOAT:
+VAR FLOAT__st_ofs, q
+	LCA ST_FLOAT.elab
+	Sa	 1, FLOAT__st_ofs
+VAR FLOAT__ld_ofs, q
+	LCA LD_FLOAT.elab
+	Sa	 1, FLOAT__ld_ofs
+VAR FLOAT__u_ofs, q
+	La	 0, STANDARD.FLOAT.use__info
+	Sa	 1, FLOAT__u_ofs
 VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
 VAR DEFAULT_FORE_disp, d			; variable entiere
 	LI	2

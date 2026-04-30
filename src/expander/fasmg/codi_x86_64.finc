@@ -1064,15 +1064,18 @@ end macro
 ;			--------------------
 macro			LINK?	lvl, alloc			; ALLOCATION POUR VARIABLES LOCALES APRES FRAME PTR
 ;			--------------------
-  FP_IN_RAX	lvl						; store FP(lvl) le pointeur de pile RBP	reste a pointer sur	l'empile
-  PUSH_RAX
-  if lvl = 0
-    db 0x49, 0x89, 0x2F						; mov qword ptr [r15], rbp	niveau 0,	petit offset dans le display
-  else if	lvl <= 15							; 15 niveaux suivants, petit offset dans le display
-    db 0x49, 0x89, 0x6F, 8*lvl					; mov qword ptr [r15 + 8*lvl], rbp   update FP le	FP pointe	sur l'adresse de sauvegarde du FP anterieur
-  else
-    db 0x49, 0x89, 0x6F
-    dd 8*lvl							; mov qword ptr [r15 + 8*lvl], rbp   update FP le	FP pointe	sur l'adresse de sauvegarde du FP anterieur
+  if lvl > 0
+    FP_IN_RAX	lvl						; store FP(lvl) le pointeur de pile RBP	reste a pointer sur	l'empile
+    PUSH_RAX
+
+;  if lvl = 0
+;    db 0x49, 0x89, 0x2F						; mov qword ptr [r15], rbp	niveau 0,	petit offset dans le display
+    if	lvl <= 15							; 15 niveaux suivants, petit offset dans le display
+      db 0x49, 0x89, 0x6F, 8*lvl					; mov qword ptr [r15 + 8*lvl], rbp   update FP le	FP pointe	sur l'adresse de sauvegarde du FP anterieur
+    else
+      db 0x49, 0x89, 0x6F
+      dd 8*lvl							; mov qword ptr [r15 + 8*lvl], rbp   update FP le	FP pointe	sur l'adresse de sauvegarde du FP anterieur
+    end if
   end if
 			; Faire l'allocation sur la pile de travail standard
   assert alloc >= 0
@@ -1202,7 +1205,7 @@ macro			STR	name, bytes			; Definition d'une constante chaine au format d'un tab
   postpone
     local	data
     local	info
-    local	str_byte_size
+    local	str_bit_size
     align_q							; aligner	le descripteur sur un quadword
 
   namespace name
@@ -1212,7 +1215,7 @@ macro			STR	name, bytes			; Definition d'une constante chaine au format d'un tab
   info_ptr = $							;
     dq	info							; offset 8 : adresse des infos TOT_SIZ,	COMP_SIZ,	FST_1, LST_1
   info = $							; use info
-    dd	str_byte_size, 1, 1, str_byte_size				; offset 16 : TOT_SIZ=str_byte_size ; offset 20 :	COMP_SIZ=1 ; offset	24 : FST=1 ; offset	28 : LST=str_byte_size
+    dd	str_bit_size, 8, 1, str_bit_size/8				; offset 16 : TOT_SIZ=str_bit_size ; offset 20 :	COMP_SIZ=8bits ; offset	24 : FST=1 ; offset	28 : LST=str_byte_size
     virtual at 0							; definition des offsets sur le useinfo
     SIZ =	$
     rd 1
@@ -1224,7 +1227,7 @@ macro			STR	name, bytes			; Definition d'une constante chaine au format d'un tab
     end virtual
   data = $							; pour une constante les caracteres suivent (pour	une chaine variable	ce n'est pas le cas, les octets sont dans la co-pile)
     db	bytes
-    str_byte_size =	$ - data						; Calculer la longueur effective pour mettre dans	LAST
+    str_bit_size =	8*($ - data)					; Calculer la longueur effective en bits
   end namespace
 
   end postpone

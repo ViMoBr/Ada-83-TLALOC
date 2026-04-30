@@ -1,4 +1,6 @@
+if ~ definite MACHINE_CODE
 include 'MACHINE_CODE.FINC'
+end if
 TEXT_IO = 'TEXT_IO'
 namespace TEXT_IO				;---------- PACKAGE
 elab_spec:				;    SPEC ELAB
@@ -8,6 +10,7 @@ elab_spec:				;    SPEC ELAB
 					; FILE_MODE ENUMERATION TYPE INFO
 FILE_MODE = 'FILE_MODE'
 namespace FILE_MODE
+VAR use__info, q
 BEGIN_BLOC_DEF
 db 0, 7, "IN_FILE"
 db 1, 8, "OUT_FILE"
@@ -19,7 +22,6 @@ CST SIZ, d, 8	; SIZ en bits !
 postpone
   align_q
 end postpone
-VAR use__info, q
 	LCA	SIZ
 	Sa	0, use__info
 end namespace
@@ -108,6 +110,7 @@ end namespace
 					; TYPE_SET ENUMERATION TYPE INFO
 TYPE_SET = 'TYPE_SET'
 namespace TYPE_SET
+VAR use__info, q
 BEGIN_BLOC_DEF
 db 0, 10, "LOWER_CASE"
 db 1, 10, "UPPER_CASE"
@@ -119,7 +122,6 @@ CST SIZ, d, 8	; SIZ en bits !
 postpone
   align_q
 end postpone
-VAR use__info, q
 	LCA	SIZ
 	Sa	0, use__info
 end namespace
@@ -676,7 +678,7 @@ VAR LST_1, d
 	Sa	1, ANON_153_37_disp
 	LVA	1, SIZ
 	Sa	1, ANON_153_37__u
-	LI	1
+	LI	8
 	Sd	1, COMP_SIZ
 	LI	1
 	Sd	1, FST_1
@@ -687,7 +689,7 @@ VAR LST_1, d
 	INC
 	Ld	1, FST_1
 	SUB
-	LI	1
+	LI	8
 	MUL
 	Sd	1, SIZ
 	LVA	1, ANON_153_37_disp
@@ -2492,6 +2494,8 @@ LOOP__4:					; corps boucle LOOP__4
 	LVa	1, -ITEM_ofs
 	LIa	, , 8
 	Ld	, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
 	MUL
 	ADD					; add offset to start address
 	Lb					; charge depuis adresse empilee 
@@ -2598,6 +2602,9 @@ L138:
 	SUB
 	La 1, -FILE_ofs
 	LId	, 0, STANDARD.TEXT_IO.FILE_TYPE.ID
+
+;db 0xCC
+
 	CALL	STANDARD.TEXT_IO.PUT_L55. ,WRITE_SYSTEM_CALL_L136
 	Sd  1,	ERR_CODE_disp
 L137:					; post if
@@ -2697,6 +2704,8 @@ LOOP__5:
 	LVa	1, -ITEM_ofs
 	LIa	, , 8
 	Ld	, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
 	MUL
 	ADD					; add offset to start address
 	Lb 1,	CH_disp
@@ -2841,9 +2850,11 @@ end namespace
 VAR CHN_disp, q				; variable array : pointeur aux data
 VAR CHN__u, q				; variable array : useinfo pointeur au rec info
 	Ld	1, STRING.SIZ
+	LI	8
+	DIV
 	CO_VAR
 	Sa	1, CHN_disp				; array data ptr at _disp
-	LVA 1, STRING.SIZ
+	La 1, STRING.use__info
 	Sa	1, CHN__u				; array info ptr at __u
 
 VAR LEN_disp, d				; variable entiere
@@ -2880,6 +2891,8 @@ LOOP__6:
 	LId	1, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	1, CHN__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
 	MUL
 	ADD					; add offset to start address
 	Lb					; charge depuis adresse empilee 
@@ -2905,6 +2918,8 @@ L148:					; post loop LOOP__6
 	LId	1, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	1, CHN__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
 	MUL
 	ADD					; add offset to start address
 	Lb					; charge depuis adresse empilee 
@@ -2931,6 +2946,8 @@ L151:
 	LId	1, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	1, CHN__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
 	MUL
 	ADD					; add offset to start address
 	Lb					; charge depuis adresse empilee 
@@ -2955,6 +2972,8 @@ LOOP__7:
 	LId	1, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	1, CHN__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
 	MUL
 	ADD					; add offset to start address
 	Lb					; charge depuis adresse empilee 
@@ -2965,6 +2984,8 @@ LOOP__7:
 	LId	1, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	1, CHN__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
 	MUL
 	ADD					; add offset to start address
 	Lb					; charge depuis adresse empilee 
@@ -2979,6 +3000,8 @@ LOOP__7:
 	LId	1, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	1, CHN__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
 	MUL
 	ADD					; add offset to start address
 	Lb					; charge depuis adresse empilee 
@@ -3052,9 +3075,11 @@ end namespace
 VAR CHN_disp, q				; variable array : pointeur aux data
 VAR CHN__u, q				; variable array : useinfo pointeur au rec info
 	Ld	1, STRING.SIZ
+	LI	8
+	DIV
 	CO_VAR
 	Sa	1, CHN_disp				; array data ptr at _disp
-	LVA 1, STRING.SIZ
+	La 1, STRING.use__info
 	Sa	1, CHN__u				; array info ptr at __u
 
 VAR LEN_disp, d				; variable entiere
@@ -3089,6 +3114,8 @@ LOOP__8:					; corps boucle LOOP__8
 	LId	1, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	1, CHN__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
 	MUL
 	ADD					; add offset to start address
 	Lb					; charge depuis adresse empilee 
@@ -3164,9 +3191,11 @@ end namespace
 VAR STR_disp, q				; variable array : pointeur aux data
 VAR STR__u, q				; variable array : useinfo pointeur au rec info
 	Ld	1, STRING.SIZ
+	LI	8
+	DIV
 	CO_VAR
 	Sa	1, STR_disp				; array data ptr at _disp
-	LVA 1, STRING.SIZ
+	La 1, STRING.use__info
 	Sa	1, STR__u				; array info ptr at __u
 
 VAR POS_disp, d				; variable entiere
@@ -3211,6 +3240,8 @@ LOOP__9:
 	LId	1, STR__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	1, STR__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
 	MUL
 	ADD					; add offset to start address
 	LI	48
@@ -3224,6 +3255,8 @@ L165:
 	LId	1, STR__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	1, STR__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
 	MUL
 	ADD					; add offset to start address
 	LI	65
@@ -3382,7 +3415,7 @@ VAR LST_1, d
 	Sa	1, ANON_1093_18_disp
 	LVA	1, SIZ
 	Sa	1, ANON_1093_18__u
-	LI	1
+	LI	8
 	Sd	1, COMP_SIZ
 	Ld 1,	POS_disp
 	Sd	1, FST_1
@@ -3392,7 +3425,7 @@ VAR LST_1, d
 	INC
 	Ld	1, FST_1
 	SUB
-	LI	1
+	LI	8
 	MUL
 	Sd	1, SIZ
 	LVA	1, ANON_1093_18_disp
@@ -3545,9 +3578,11 @@ end namespace
 VAR CHN_disp, q				; variable array : pointeur aux data
 VAR CHN__u, q				; variable array : useinfo pointeur au rec info
 	Ld	1, STRING.SIZ
+	LI	8
+	DIV
 	CO_VAR
 	Sa	1, CHN_disp				; array data ptr at _disp
-	LVA 1, STRING.SIZ
+	La 1, STRING.use__info
 	Sa	1, CHN__u				; array info ptr at __u
 
 VAR LEN_disp, d				; variable entiere
@@ -3604,6 +3639,8 @@ LOOP__11:
 	LId	1, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	1, CHN__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
 	MUL
 	ADD					; add offset to start address
 	Lb					; charge depuis adresse empilee 
@@ -3629,6 +3666,8 @@ L185:					; post loop LOOP__11
 	LId	1, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	1, CHN__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
 	MUL
 	ADD					; add offset to start address
 	Lb					; charge depuis adresse empilee 
@@ -3655,6 +3694,8 @@ L188:
 	LId	1, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	1, CHN__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
 	MUL
 	ADD					; add offset to start address
 	Lb					; charge depuis adresse empilee 
@@ -3680,6 +3721,8 @@ LOOP__12:
 	LId	1, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	1, CHN__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
 	MUL
 	ADD					; add offset to start address
 	Lb					; charge depuis adresse empilee 
@@ -3695,6 +3738,8 @@ L194:
 	LId	1, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	1, CHN__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
 	MUL
 	ADD					; add offset to start address
 	Lb					; charge depuis adresse empilee 
@@ -3705,6 +3750,8 @@ L194:
 	LId	1, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	1, CHN__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
 	MUL
 	ADD					; add offset to start address
 	Lb					; charge depuis adresse empilee 
@@ -3729,6 +3776,8 @@ L194:
 	LId	1, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	1, CHN__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
 	MUL
 	ADD					; add offset to start address
 	Lb					; charge depuis adresse empilee 
@@ -3755,6 +3804,8 @@ L197:
 	LId	1, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	1, CHN__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
 	MUL
 	ADD					; add offset to start address
 	Lb					; charge depuis adresse empilee 
@@ -3781,6 +3832,8 @@ LOOP__13:
 	LId	1, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	1, CHN__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
 	MUL
 	ADD					; add offset to start address
 	Lb					; charge depuis adresse empilee 
@@ -3795,6 +3848,8 @@ L203:
 	LId	1, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	1, CHN__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
 	MUL
 	ADD					; add offset to start address
 	Lb					; charge depuis adresse empilee 
@@ -3810,6 +3865,8 @@ L202:
 	LId	1, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	1, CHN__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
 	MUL
 	ADD					; add offset to start address
 	Lb					; charge depuis adresse empilee 
@@ -3831,6 +3888,8 @@ L195:
 	LId	1, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	1, CHN__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
 	MUL
 	ADD					; add offset to start address
 	Lb					; charge depuis adresse empilee 
@@ -3844,6 +3903,8 @@ L195:
 	LId	1, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	1, CHN__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
 	MUL
 	ADD					; add offset to start address
 	Lb					; charge depuis adresse empilee 
@@ -3861,6 +3922,8 @@ L206:
 	LId	1, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	1, CHN__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
 	MUL
 	ADD					; add offset to start address
 	Lb					; charge depuis adresse empilee 
@@ -3884,6 +3947,8 @@ L208:
 	LId	1, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	1, CHN__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
 	MUL
 	ADD					; add offset to start address
 	Lb					; charge depuis adresse empilee 
@@ -4282,9 +4347,11 @@ end namespace
 VAR EXP_STR_disp, q				; variable array : pointeur aux data
 VAR EXP_STR__u, q				; variable array : useinfo pointeur au rec info
 	Ld	2, STRING.SIZ
+	LI	8
+	DIV
 	CO_VAR
 	Sa	2, EXP_STR_disp				; array data ptr at _disp
-	LVA 2, STRING.SIZ
+	La 2, STRING.use__info
 	Sa	2, EXP_STR__u				; array info ptr at __u
 
 VAR POS_disp, d				; variable entiere
@@ -4317,6 +4384,8 @@ LOOP__21:					; corps boucle LOOP__21
 	LId	2, EXP_STR__u, STANDARD.STRING.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	2, EXP_STR__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
 	MUL
 	ADD					; add offset to start address
 	LI	48
@@ -4637,6 +4706,8 @@ LOOP__23:
 	LId	2, IMAGES_STR__u, STANDARD.STRING.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	2, IMAGES_STR__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
 	MUL
 	ADD					; add offset to start address
 	Lb					; charge depuis adresse empilee 
@@ -4648,6 +4719,8 @@ LOOP__23:
 	LId	2, IMAGES_STR__u, STANDARD.STRING.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	2, IMAGES_STR__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
 	MUL
 	ADD					; add offset to start address
 	Lb					; charge depuis adresse empilee 
@@ -4724,6 +4797,8 @@ VAR CH_disp, d				; variable bool char enum
 	LId	2, IMAGES_STR__u, STANDARD.STRING.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	2, IMAGES_STR__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
 	MUL
 	ADD					; add offset to start address
 	Lb					; charge depuis adresse empilee 
@@ -4764,6 +4839,8 @@ L259:
 	LId	2, IMAGES_STR__u, STANDARD.STRING.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	2, IMAGES_STR__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
 	MUL
 	ADD					; add offset to start address
 	Lb					; charge depuis adresse empilee 
@@ -4901,9 +4978,11 @@ end namespace
 VAR CHN_disp, q				; variable array : pointeur aux data
 VAR CHN__u, q				; variable array : useinfo pointeur au rec info
 	Ld	2, STRING.SIZ
+	LI	8
+	DIV
 	CO_VAR
 	Sa	2, CHN_disp				; array data ptr at _disp
-	LVA 2, STRING.SIZ
+	La 2, STRING.use__info
 	Sa	2, CHN__u				; array info ptr at __u
 
 VAR LEN_disp, d				; variable entiere
@@ -4950,6 +5029,8 @@ LOOP__28:
 	LId	2, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	2, CHN__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
 	MUL
 	ADD					; add offset to start address
 	Lb					; charge depuis adresse empilee 
@@ -4976,6 +5057,8 @@ LOOP__29:
 	LId	2, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	2, CHN__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
 	MUL
 	ADD					; add offset to start address
 	Lb					; charge depuis adresse empilee 
@@ -4989,6 +5072,8 @@ LOOP__29:
 	LId	2, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	2, CHN__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
 	MUL
 	ADD					; add offset to start address
 	Lb					; charge depuis adresse empilee 
@@ -5007,6 +5092,8 @@ L268:
 	LId	2, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	2, CHN__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
 	MUL
 	ADD					; add offset to start address
 	Lb					; charge depuis adresse empilee 
@@ -5020,6 +5107,8 @@ L268:
 	LId	2, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	2, CHN__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
 	MUL
 	ADD					; add offset to start address
 	Lb					; charge depuis adresse empilee 
@@ -5038,6 +5127,8 @@ L270:
 	LId	2, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	2, CHN__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
 	MUL
 	ADD					; add offset to start address
 	Lb					; charge depuis adresse empilee 
@@ -5051,6 +5142,8 @@ L270:
 	LId	2, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	2, CHN__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
 	MUL
 	ADD					; add offset to start address
 	Lb					; charge depuis adresse empilee 
@@ -5069,6 +5162,8 @@ L272:
 	LId	2, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	2, CHN__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
 	MUL
 	ADD					; add offset to start address
 	Lb					; charge depuis adresse empilee 
@@ -5101,6 +5196,8 @@ LOOP__30:
 	LId	2, IMAGES_STR__u, STANDARD.STRING.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	2, IMAGES_STR__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
 	MUL
 	ADD					; add offset to start address
 	Lb					; charge depuis adresse empilee 
@@ -5112,6 +5209,8 @@ LOOP__30:
 	LId	2, IMAGES_STR__u, STANDARD.STRING.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	2, IMAGES_STR__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
 	MUL
 	ADD					; add offset to start address
 	Lb					; charge depuis adresse empilee 
@@ -5147,6 +5246,8 @@ LOOP__31:					; corps boucle LOOP__31
 	LId	2, IMAGES_STR__u, STANDARD.STRING.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	2, IMAGES_STR__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
 	MUL
 	ADD					; add offset to start address
 	Lb					; charge depuis adresse empilee 
@@ -5158,6 +5259,8 @@ LOOP__31:					; corps boucle LOOP__31
 	LId	2, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	2, CHN__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
 	MUL
 	ADD					; add offset to start address
 	Lb					; charge depuis adresse empilee 

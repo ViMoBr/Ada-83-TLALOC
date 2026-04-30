@@ -124,6 +124,7 @@ is
 
     PUT_LINE( TYPE_STR & " = '" & TYPE_STR & "'" );
     PUT_LINE( "namespace " & TYPE_STR );
+    PUT_LINE( "VAR use__info, q" );
     PUT_LINE( "BEGIN_BLOC_DEF" );
     CODE_ENUM_LITERAL_S( D( SM_LITERAL_S, TYPE_SPEC ) );
     PUT_LINE( "END_BLOC_DEF" );
@@ -137,8 +138,7 @@ is
     PUT_LINE( "  align_q" );										-- Assurer  l'alignement de départ de tout le bloc
     PUT_LINE( "end postpone" );
 
-    PUT_LINE( "VAR use__info, q" );
-    PUT_LINE( tab &	"LCA" & tab & "SIZ" );
+    PUT_LINE( tab & "LCA" & tab & "SIZ" );
     PUT_LINE( tab &	"Sa" & tab & IMAGE( CODI.CUR_LEVEL ) & ", use__info" );
 
     PUT_LINE( "end namespace");
@@ -217,8 +217,8 @@ is
     PUT_LINE( tab &	"Sa" & tab & IMAGE( CODI.CUR_LEVEL ) & ", use__info" );
 
     PUT_LINE( "; load fixed limites FST LST a faire " );
-    PUT_LINE( "VAR FST, " & SIZE_CHAR );
-    PUT_LINE( "VAR LST, " & SIZE_CHAR );
+    PUT_LINE( "CST FST, " & SIZE_CHAR & ", 0" );
+    PUT_LINE( "CST LST, " & SIZE_CHAR & ", 0" );
 
     PUT_LINE( "end namespace"	);
 
@@ -246,13 +246,18 @@ is
     PUT_LINE( "namespace " & TYPE_STR );
 
     PUT_LINE( "VAR use__info, q" );
+
+    if  SIZE_CHAR = 'd'  then
+      PUT_LINE( "CST LST, " & SIZE_CHAR & ",  1.0E38" );							-- ATTENTION : CST ne sens inverse a cause de postpone
+      PUT_LINE( "CST FST, " & SIZE_CHAR & ", -1.0E38" );
+    elsif  SIZE_CHAR = 'q'  then
+      PUT_LINE( "CST LST, " & SIZE_CHAR & ",  1.0E308" );
+      PUT_LINE( "CST FST, " & SIZE_CHAR & ", -1.0E308" );
+    end if;
+
     PUT_LINE( "CST SIZ, d," &	INTEGER'IMAGE( DI( CD_IMPL_SIZE, FLOAT_SPEC ) ) );
     PUT_LINE( tab &	"LCA" & tab & "SIZ" );
     PUT_LINE( tab &	"Sa" & tab & IMAGE( CODI.CUR_LEVEL ) & ", use__info" );
-
-    PUT_LINE( "; load float limites FST LST a faire " );
-    PUT_LINE( "VAR FST, " & SIZE_CHAR );
-    PUT_LINE( "VAR LST, " & SIZE_CHAR );
 
     PUT_LINE( "end namespace"	);
 
@@ -332,7 +337,7 @@ is
     PUT_LINE( tab &	"Sd" & tab & LVL_STR & ", SIZ" );							-- SIZ=-1 UNCONSTRAINED
 
     PUT( "  virtual at 4" );										-- Commence apres SIZ
-    if  CODI.DEBUG	then  PUT_LINE( tab50 & " use info offsets pour acces sur array contraint" ); end if;
+    if  CODI.DEBUG	then  PUT_LINE( tab50 & "; use info offsets pour acces sur array contraint" ); end if;
     NEW_LINE;
 
     USEINFO_OFFSETS( INDEX_SUBTYPE_S );

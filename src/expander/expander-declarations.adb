@@ -531,7 +531,7 @@ null;--     LOAD_TYPE_SIZE( TYPE_SPEC  );
 	  if  CODI.DEBUG  then PUT( tab50 & "; array data ptr from function result" ); end if;
 	  NEW_LINE;
 
-	  PUT_LINE( tab & "La , 8" );								-- offset +8 pour info_ptr
+	  PUT_LINE( tab & "La , 8" );									-- offset +8 pour info_ptr
 	  PUT( tab & "Sa" & tab & LVL_STR & ", " & VC_STR & "__u" );
 	  if  CODI.DEBUG  then PUT( tab50 & "; array info ptr from function result" ); end if;
 	  NEW_LINE;
@@ -539,14 +539,16 @@ null;--     LOAD_TYPE_SIZE( TYPE_SPEC  );
 	else
 	  PUT( tab & "Ld" & tab & IMAGE( TYPE_LEVEL ) & ", " );						-- LOAD SIZ FOR ALLOCATION
 	  PUT_LINE( TYPE_NAME_STR & ".SIZ" );
+	  PUT_LINE( tab & "LI" & tab & '8' );
+	  PUT_LINE( tab & "DIV" );
 
 	  PUT_LINE( tab & "CO_VAR" );
 	  PUT( tab & "Sa" & tab & LVL_STR & ", " & VC_STR & "_disp" );
 	  if  CODI.DEBUG  then PUT( tab50 & "; array data ptr at _disp" ); end if;
 	  NEW_LINE;
 
-	  PUT( tab & "LVA" & INTEGER'IMAGE( TYPE_LEVEL ) & ", " );						-- LOAD ADDRESS FOR INFO
-	  PUT_LINE( TYPE_NAME_STR & ".SIZ" );
+	  PUT( tab & "La" & INTEGER'IMAGE( TYPE_LEVEL ) & ", " );						-- LOAD ADDRESS FOR INFO
+	  PUT_LINE( TYPE_NAME_STR & ".use__info" );
 
 	  PUT( tab & "Sa" & tab & LVL_STR & ", " & VC_STR & "__u" );
 	  if  CODI.DEBUG  then PUT( tab50 & "; array info ptr at __u" ); end if;

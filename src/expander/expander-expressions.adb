@@ -265,34 +265,17 @@ is
     begin
       if DEFN.TY = DN_EXCEPTION_ID then
 null;--	     declare
---	LABEL	: TREE :=	D( CD_LABEL, DEFN );
---	LBL	: LABEL_TYPE;
---	begin
---	if LABEL.TY /= DN_NUM_VAL then
---	  LBL := NEW_LABEL;
---	  DI( CD_LABEL, DEFN, INTEGER( LBL ) );
---	  EMIT( EXL, LBL, S=> PRINT_NAME( SYMREP ),
---			COMMENT=>	"NUM D EXCEPTION EXTERNE ATTRIBUE SUR USED_NAME_ID" );
---	end if;
---	EMIT( DPL, I,	COMMENT=>	"CODE D EXCEPTION EMPILE" );
---	EMIT( LDC, I, DI( CD_LABEL, DEFN ),
---			COMMENT=>	"EXCEPTION " & PRINT_NAME ( SYMREP ));
---	EMIT( EQ,	I );
---	end;
 
       elsif DEFN.TY	= DN_PACKAGE_ID then
         if not DB( CD_COMPILED, DEFN ) then
 	declare
 	  PACKAGE_SPEC	: TREE	:= D( SM_SPEC, DEFN	);
 	begin
---	  EMIT( RFP, CODI.CUR_COMP_UNIT, S=> PRINT_NAME( SYMREP ) );
 	  PUT_LINE( "; RFP"	& PRINT_NAME( SYMREP ) );
---	  CODI.GENERATE_CODE := FALSE;
 	  DB( CD_COMPILED, DEFN, TRUE	);
 	  DECLARATIONS.CODE_DECL_S( D( AS_DECL_S1, PACKAGE_SPEC ) );
 	end;
         end if;
---	CODI.CUR_COMP_UNIT := CUR_COMP_UNIT + 1;
 
       elsif DEFN.TY	= DN_PROCEDURE_ID then
         if not DB( CD_COMPILED, DEFN ) then
@@ -417,7 +400,9 @@ null;--	     declare
 	PUT( tab & "LId" & tab & LVL_IMG & ", "	& ARRAY_NAME & "__u" & ", " );
         end if;
         REGIONS_PATH( EXP_TYPE_NAME );
-        PUT_LINE( TYPE_NAME_STR & ".COMP_SIZ" );
+        PUT_LINE( TYPE_NAME_STR & ".COMP_SIZ" );								-- En bits
+        PUT_LINE( tab & "LI" & tab & IMAGE( CODI.STORAGE_UNIT ) );
+        PUT_LINE( tab & "DIV" );									-- En STORAGE_UNIT
         PUT_LINE( tab & "MUL"	);
         PUT( tab & "ADD" );
         if  CODI.DEBUG  then PUT( tab50	& "; add offset to start address" ); end if;
@@ -484,7 +469,7 @@ put_line(	"; adresse component id" );
 	PUT_LINE(	tab & "La " & IMAGE( DEFN_LVL	)
 		& ", " & DEFN_STR &	"_disp" );
 				-- Ajuster par offset du debut du slice
-				-- @slice	= @data +	(EXP1 - FST_1) * COMP_SIZ
+				-- @slice	= @data +	(EXP1 - FST_1) * COMP_SIZ/STORAGE_UNIT
 	CODE_EXP(	D( AS_EXP1, DISCRETE_RANGE ) );
 	PUT_LINE(	tab & "LId" & tab &	IMAGE( DEFN_LVL )
 		& ", " & DEFN_STR &	"__u"
@@ -529,7 +514,7 @@ put_line(	"; adresse component id" );
         PUT_LINE( tab & "Sa" & tab & IMAGE( CODI.CUR_LEVEL )  & ", " & ANON_NAME & "_disp" );
         PUT_LINE( tab & "LVA"	&  tab & IMAGE( CODI.CUR_LEVEL )  & ", SIZ" );
         PUT_LINE( tab & "Sa" & tab & IMAGE( CODI.CUR_LEVEL )  & ", " & ANON_NAME & "__u" );
-        PUT_LINE( tab & "LI" & tab & IMAGE( COMP_SIZE / CODI.STORAGE_UNIT ) );
+        PUT_LINE( tab & "LI" & tab & IMAGE( COMP_SIZE ) );							-- En bits
         PUT_LINE( tab & "Sd" & tab & IMAGE( CODI.CUR_LEVEL )  & ", COMP_SIZ" );
         CODE_EXP( D( AS_EXP1,	DISCRETE_RANGE ) );
         PUT_LINE( tab & "Sd" & tab & IMAGE( CODI.CUR_LEVEL )  & ", FST_1" );
@@ -540,7 +525,7 @@ put_line(	"; adresse component id" );
         PUT_LINE( tab & "INC"	);
         PUT_LINE( tab & "Ld" & tab & IMAGE( CODI.CUR_LEVEL )  & ", FST_1" );
         PUT_LINE( tab & "SUB"	);
-        PUT_LINE( tab & "LI" & tab & IMAGE( COMP_SIZE / CODI.STORAGE_UNIT ) );
+        PUT_LINE( tab & "LI" & tab & IMAGE( COMP_SIZE ) );							-- En bits
         PUT_LINE( tab & "MUL"	);
         PUT_LINE( tab & "Sd" & tab & IMAGE( CODI.CUR_LEVEL )  & ", SIZ" );
 
@@ -836,37 +821,42 @@ put_line(	"; adresse component id" );
 		---------
     procedure	CODE_SIZE
     is		---------
-      PREFIX_DEFN : TREE := D( SM_DEFN, PREFIX_NAME );
+      PREFIX_DEFN		: TREE	:= D( SM_DEFN, PREFIX_NAME );
+      TYPE_SPEC		: TREE;
     begin
-      if  PREFIX_DEFN.TY in CLASS_TYPE_NAME
-      then		---------
-			TYPE_SIZE:
-        declare
-	TYPE_SPEC		: TREE	:= D( SM_TYPE_SPEC, PREFIX_DEFN );
-	TYPE_NAME		: TREE	:= D( XD_SOURCE_NAME, TYPE_SPEC );
-	TYPE_STR		:constant STRING	:= PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
+      if  PREFIX_DEFN.TY in CLASS_TYPE_NAME  then
+        TYPE_SPEC := D( SM_TYPE_SPEC, PREFIX_DEFN );
 
-        begin
-	  if  IS_GENERIC_FORMAL_TYPE( PREFIX_DEFN )  then							-- TYPE FORMEL GENERIQUE
-	    PUT_LINE( tab & "La " & INTEGER'IMAGE( CODI.CUR_LEVEL ) & ',' & tab & "-GFP_ofs" );
-	    PUT_LINE( tab & "LId , -" & TYPE_STR & "__u_ofs, 0" );
+      elsif  PREFIX_DEFN.TY in CLASS_OBJECT_NAME  then
+        TYPE_SPEC := D( SM_OBJ_TYPE, PREFIX_DEFN );
 
-	  else
-	    if  TYPE_SPEC.TY = DN_PRIVATE  or  TYPE_SPEC.TY = DN_L_PRIVATE  then
-	      TYPE_SPEC := D( SM_TYPE_SPEC, TYPE_SPEC );
-	    end if;
-
-	    PUT( tab & "LId" & tab );
-	    PUT( INTEGER'IMAGE( DI( CD_LEVEL, TYPE_SPEC ) ) & ", " );
-	    CODI.REGIONS_PATH( PREFIX_DEFN );
-	    PUT_LINE( TYPE_STR & "__u" );
-	  end if;
-
-        end	TYPE_SIZE;
-		---------
       else
         PUT_LINE( "; ATTRIBUTE SIZE : PREFIX NON TRAITE " & NODE_NAME'IMAGE( PREFIX_DEFN.TY ) );
       end if;
+			---------
+			TYPE_SIZE:
+      declare
+        TYPE_NAME		: TREE	:= D( XD_SOURCE_NAME, TYPE_SPEC );
+        TYPE_STR		:constant STRING	:= PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
+
+      begin
+        if  IS_GENERIC_FORMAL_TYPE( PREFIX_DEFN )  then							-- TYPE FORMEL GENERIQUE
+	PUT_LINE( tab & "La " & INTEGER'IMAGE( CODI.CUR_LEVEL ) & ',' & tab & "-GFP_ofs" );
+	PUT_LINE( tab & "LId , -" & TYPE_STR & "__u_ofs" );
+
+        else
+	if  TYPE_SPEC.TY = DN_PRIVATE  or  TYPE_SPEC.TY = DN_L_PRIVATE  then
+	  TYPE_SPEC := D( SM_TYPE_SPEC, TYPE_SPEC );
+	end if;
+
+	PUT( tab & "LId" & tab );
+	PUT( INTEGER'IMAGE( DI( CD_LEVEL, TYPE_SPEC ) ) & ", " );
+	CODI.REGIONS_PATH( TYPE_NAME );
+	PUT_LINE( TYPE_STR & ".use__info" );
+        end if;
+
+      end		TYPE_SIZE;
+		---------
 
     end	CODE_SIZE;
 	---------

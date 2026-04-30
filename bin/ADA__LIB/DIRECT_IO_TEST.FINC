@@ -1,435 +1,174 @@
-include 'DIRECT_IO.FINC'
+if ~ definite TEXT_IO
+include 'TEXT_IO.FINC'
+end if
 PRO	DIRECT_IO_TEST_L1			;---------- PRO DIRECT_IO_TEST
 ELB 1					;    BODY ELAB
-FLT_DIRECT_IO = 'FLT_DIRECT_IO'
-namespace FLT_DIRECT_IO			;---------- GENERIC PACKAGE INSTANTIATION
+INT_IO = 'INT_IO'
+namespace INT_IO				;---------- GENERIC PACKAGE INSTANTIATION
 elab_spec:				;    SPEC ELAB
 
-BRA post_LD_FLOAT
-LD_FLOAT.elab:
-	Lq -1, 0
+BRA post_LD_INTEGER
+LD_INTEGER.elab:
+	Ld -1, 0
 	RTD 0
-post_LD_FLOAT:
-BRA post_ST_FLOAT
-ST_FLOAT.elab:
-	SIq -1, 0
+post_LD_INTEGER:
+BRA post_ST_INTEGER
+ST_INTEGER.elab:
+	SId -1, 0
 	RTD 0
-post_ST_FLOAT:
-VAR FLOAT__st_ofs, q
-	LCA ST_FLOAT.elab
-	Sa	 1, FLOAT__st_ofs
-VAR FLOAT__ld_ofs, q
-	LCA LD_FLOAT.elab
-	Sa	 1, FLOAT__ld_ofs
-VAR FLOAT__u_ofs, q
-	La	 0, STANDARD.FLOAT.use__info
-	Sa	 1, FLOAT__u_ofs
+post_ST_INTEGER:
+VAR INTEGER__st_ofs, q
+	LCA ST_INTEGER.elab
+	Sa	 1, INTEGER__st_ofs
+VAR INTEGER__ld_ofs, q
+	LCA LD_INTEGER.elab
+	Sa	 1, INTEGER__ld_ofs
+VAR INTEGER__u_ofs, q
+	La	 0, STANDARD.INTEGER.use__info
+	Sa	 1, INTEGER__u_ofs
 VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
-; CODE_TYPE_DECL : skip PRIVATE FILE_TYPE (deferred to full type)
-FILE_MODE = 'FILE_MODE'
-namespace FILE_MODE				; FILE_MODE ENUMERATION TYPE INFO
-BEGIN_BLOC_DEF
-db 0, 7, "IN_FILE"
-db 1, 10, "INOUT_FILE"
-db 2, 8, "OUT_FILE"
-END_BLOC_DEF
-IMAGES	BYTES_BLOC
-CST LST, d, 2
-CST FST, d, 0
-CST SIZ, d, 8	; SIZ en bits !
-postpone
-  align_q
-end postpone
-VAR use__info, q
-	LCA	SIZ
-	Sa	1, use__info
-end namespace
+VAR DEFAULT_WIDTH_disp, d			; variable entiere
+	Sd  1,	DEFAULT_WIDTH_disp
 
-COUNT = 'COUNT'
-namespace COUNT				; COUNT TYPE RANGE INFO
-VAR use__info, q
-VAR SIZ, d
-	LVA	1, SIZ
-	Sa	1, use__info
-VAR FST, d
-VAR LST, d
-	LI	32
-	Sb	1, SIZ
-	LI	0
-	Sd	1, FST
-	LI	2147483647
-	Sd	1, LST
-end namespace
+VAR DEFAULT_BASE_disp, d			; variable entiere
+	LI	10
+	Sd  1,	DEFAULT_BASE_disp
 
-POSITIVE_COUNT = 'POSITIVE_COUNT'
-namespace POSITIVE_COUNT			; POSITIVE_COUNT INTEGER SUBTYPE INFO
-VAR use__info, q
-VAR SIZ, d
-	LVA	 1, SIZ
-	Sa	 1, use__info
-end namespace
-
-if defined CREATE_L1_
-PRO	CREATE_L1				;---------- PRO CREATE
-PRMS					;    debut parametrage
-	PRM FILE_ofs				; in out
-	PRM MODE_ofs				; in
-	PRM NAME_ofs				; in
-	PRM FORM_ofs				; in
-endPRMS					;    fin parametrage
-ELB 2
-begin:
-	LVA	 1, GFP_disp
-	La 	 2, -FORM_ofs
-	La 	 2, -NAME_ofs
-	Lq	 2, -MODE_ofs
-	La 	 2, -FILE_ofs
-	CALL	STANDARD.DIRECT_IO. ,CREATE_L1
-	UNLINK	 2
-	RTD	prm_siz
-endPRO					;---------- end PRO CREATE
-end if
-if defined OPEN_L2_
-PRO	OPEN_L2				;---------- PRO OPEN
-PRMS					;    debut parametrage
-	PRM FILE_ofs				; in out
-	PRM MODE_ofs				; in
-	PRM NAME_ofs				; in
-	PRM FORM_ofs				; in
-endPRMS					;    fin parametrage
-ELB 2
-begin:
-	LVA	 1, GFP_disp
-	La 	 2, -FORM_ofs
-	La 	 2, -NAME_ofs
-	Lq	 2, -MODE_ofs
-	La 	 2, -FILE_ofs
-	CALL	STANDARD.DIRECT_IO. ,OPEN_L2
-	UNLINK	 2
-	RTD	prm_siz
-endPRO					;---------- end PRO OPEN
-end if
-if defined CLOSE_L3_
-PRO	CLOSE_L3				;---------- PRO CLOSE
-PRMS					;    debut parametrage
-	PRM FILE_ofs				; in out
-endPRMS					;    fin parametrage
-ELB 2
-begin:
-	LVA	 1, GFP_disp
-	La 	 2, -FILE_ofs
-	CALL	STANDARD.DIRECT_IO. ,CLOSE_L3
-	UNLINK	 2
-	RTD	prm_siz
-endPRO					;---------- end PRO CLOSE
-end if
-if defined DELETE_L4_
-PRO	DELETE_L4				;---------- PRO DELETE
-PRMS					;    debut parametrage
-	PRM FILE_ofs				; in out
-endPRMS					;    fin parametrage
-ELB 2
-begin:
-	LVA	 1, GFP_disp
-	La 	 2, -FILE_ofs
-	CALL	STANDARD.DIRECT_IO. ,DELETE_L4
-	UNLINK	 2
-	RTD	prm_siz
-endPRO					;---------- end PRO DELETE
-end if
-if defined RESET_L5_
-PRO	RESET_L5				;---------- PRO RESET
-PRMS					;    debut parametrage
-	PRM FILE_ofs				; in out
-	PRM MODE_ofs				; in
-endPRMS					;    fin parametrage
-ELB 2
-begin:
-	LVA	 1, GFP_disp
-	Lq	 2, -MODE_ofs
-	La 	 2, -FILE_ofs
-	CALL	STANDARD.DIRECT_IO. ,RESET_L5
-	UNLINK	 2
-	RTD	prm_siz
-endPRO					;---------- end PRO RESET
-end if
-if defined RESET_L6_
-PRO	RESET_L6				;---------- PRO RESET
-PRMS					;    debut parametrage
-	PRM FILE_ofs				; in out
-endPRMS					;    fin parametrage
-ELB 2
-begin:
-	LVA	 1, GFP_disp
-	La 	 2, -FILE_ofs
-	CALL	STANDARD.DIRECT_IO. ,RESET_L6
-	UNLINK	 2
-	RTD	prm_siz
-endPRO					;---------- end PRO RESET
-end if
-if defined MODE_L7_
-PRO	MODE_L7				;---------- PRO MODE
-PRMS					;    debut parametrage
-	PRM FILE_ofs				; in
-	PRM result__ofs				; resultat de fonction
-endPRMS					;    fin parametrage
-ELB 2
-begin:
-	LVA	 1, GFP_disp
-	La 	 2, -FILE_ofs
-	CALL	STANDARD.DIRECT_IO. ,MODE_L7
-	UNLINK	 2
-	RTD	prm_siz
-endPRO					;---------- end PRO MODE
-end if
-if defined NAME_L8_
-PRO	NAME_L8				;---------- PRO NAME
-PRMS					;    debut parametrage
-	PRM FILE_ofs				; in
-	PRM result__ofs				; resultat de fonction
-endPRMS					;    fin parametrage
-ELB 2
-begin:
-	LVA	 1, GFP_disp
-	La 	 2, -FILE_ofs
-	CALL	STANDARD.DIRECT_IO. ,NAME_L8
-	UNLINK	 2
-	RTD	prm_siz
-endPRO					;---------- end PRO NAME
-end if
-if defined FORM_L9_
-PRO	FORM_L9				;---------- PRO FORM
-PRMS					;    debut parametrage
-	PRM FILE_ofs				; in
-	PRM result__ofs				; resultat de fonction
-endPRMS					;    fin parametrage
-ELB 2
-begin:
-	LVA	 1, GFP_disp
-	La 	 2, -FILE_ofs
-	CALL	STANDARD.DIRECT_IO. ,FORM_L9
-	UNLINK	 2
-	RTD	prm_siz
-endPRO					;---------- end PRO FORM
-end if
-if defined IS_OPEN_L10_
-PRO	IS_OPEN_L10				;---------- PRO IS_OPEN
-PRMS					;    debut parametrage
-	PRM FILE_ofs				; in
-	PRM result__ofs				; resultat de fonction
-endPRMS					;    fin parametrage
-ELB 2
-begin:
-	LVA	 1, GFP_disp
-	La 	 2, -FILE_ofs
-	CALL	STANDARD.DIRECT_IO. ,IS_OPEN_L10
-	UNLINK	 2
-	RTD	prm_siz
-endPRO					;---------- end PRO IS_OPEN
-end if
-if defined READ_L11_
-PRO	READ_L11				;---------- PRO READ
+if defined GET_L61_
+PRO	GET_L61				;---------- PRO GET
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM ITEM_ofs				; out
+	PRM WIDTH_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Lq	 2, -WIDTH_ofs
+	La 	 2, -ITEM_ofs
+	La 	 2, -FILE_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,GET_L61
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO GET
+end if
+if defined GET_L62_
+PRO	GET_L62				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM ITEM_ofs				; out
+	PRM WIDTH_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Lq	 2, -WIDTH_ofs
+	La 	 2, -ITEM_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,GET_L62
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO GET
+end if
+if defined PUT_L63_
+PRO	PUT_L63				;---------- PRO PUT
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM ITEM_ofs				; in
+	PRM WIDTH_ofs				; in
+	PRM BASE_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Lq	 2, -BASE_ofs
+	Lq	 2, -WIDTH_ofs
+	Lq	 2, -ITEM_ofs
+	La 	 2, -FILE_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,PUT_L63
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO PUT
+end if
+if defined PUT_L64_
+PRO	PUT_L64				;---------- PRO PUT
+PRMS					;    debut parametrage
+	PRM ITEM_ofs				; in
+	PRM WIDTH_ofs				; in
+	PRM BASE_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Lq	 2, -BASE_ofs
+	Lq	 2, -WIDTH_ofs
+	Lq	 2, -ITEM_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,PUT_L64
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO PUT
+end if
+if defined GET_L65_
+PRO	GET_L65				;---------- PRO GET
+PRMS					;    debut parametrage
 	PRM FROM_ofs				; in
-endPRMS					;    fin parametrage
-ELB 2
-begin:
-	LVA	 1, GFP_disp
-	Lq	 2, -FROM_ofs
-	La 	 2, -ITEM_ofs
-	La 	 2, -FILE_ofs
-	CALL	STANDARD.DIRECT_IO. ,READ_L11
-	UNLINK	 2
-	RTD	prm_siz
-endPRO					;---------- end PRO READ
-end if
-if defined READ_L12_
-PRO	READ_L12				;---------- PRO READ
-PRMS					;    debut parametrage
-	PRM FILE_ofs				; in
 	PRM ITEM_ofs				; out
+	PRM LAST_ofs				; out
 endPRMS					;    fin parametrage
 ELB 2
 begin:
 	LVA	 1, GFP_disp
+	La 	 2, -LAST_ofs
 	La 	 2, -ITEM_ofs
-	La 	 2, -FILE_ofs
-	CALL	STANDARD.DIRECT_IO. ,READ_L12
+	La 	 2, -FROM_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,GET_L65
 	UNLINK	 2
 	RTD	prm_siz
-endPRO					;---------- end PRO READ
+endPRO					;---------- end PRO GET
 end if
-if defined WRITE_L13_
-PRO	WRITE_L13				;---------- PRO WRITE
+if defined PUT_L66_
+PRO	PUT_L66				;---------- PRO PUT
 PRMS					;    debut parametrage
-	PRM FILE_ofs				; in
+	PRM TO_ofs				; out
 	PRM ITEM_ofs				; in
-	PRM TO_ofs				; in
+	PRM BASE_ofs				; in
 endPRMS					;    fin parametrage
 ELB 2
 begin:
 	LVA	 1, GFP_disp
-	Lq	 2, -TO_ofs
+	Lq	 2, -BASE_ofs
 	Lq	 2, -ITEM_ofs
-	La 	 2, -FILE_ofs
-	CALL	STANDARD.DIRECT_IO. ,WRITE_L13
+	La 	 2, -TO_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,PUT_L66
 	UNLINK	 2
 	RTD	prm_siz
-endPRO					;---------- end PRO WRITE
+endPRO					;---------- end PRO PUT
 end if
-if defined WRITE_L14_
-PRO	WRITE_L14				;---------- PRO WRITE
-PRMS					;    debut parametrage
-	PRM FILE_ofs				; in
-	PRM ITEM_ofs				; in
-endPRMS					;    fin parametrage
-ELB 2
-begin:
-	LVA	 1, GFP_disp
-	Lq	 2, -ITEM_ofs
-	La 	 2, -FILE_ofs
-	CALL	STANDARD.DIRECT_IO. ,WRITE_L14
-	UNLINK	 2
-	RTD	prm_siz
-endPRO					;---------- end PRO WRITE
-end if
-if defined SET_INDEX_L15_
-PRO	SET_INDEX_L15				;---------- PRO SET_INDEX
-PRMS					;    debut parametrage
-	PRM FILE_ofs				; in
-	PRM TO_ofs				; in
-endPRMS					;    fin parametrage
-ELB 2
-begin:
-	LVA	 1, GFP_disp
-	Lq	 2, -TO_ofs
-	La 	 2, -FILE_ofs
-	CALL	STANDARD.DIRECT_IO. ,SET_INDEX_L15
-	UNLINK	 2
-	RTD	prm_siz
-endPRO					;---------- end PRO SET_INDEX
-end if
-if defined INDEX_L16_
-PRO	INDEX_L16				;---------- PRO INDEX
-PRMS					;    debut parametrage
-	PRM FILE_ofs				; in
-	PRM result__ofs				; resultat de fonction
-endPRMS					;    fin parametrage
-ELB 2
-begin:
-	LVA	 1, GFP_disp
-	La 	 2, -FILE_ofs
-	CALL	STANDARD.DIRECT_IO. ,INDEX_L16
-	UNLINK	 2
-	RTD	prm_siz
-endPRO					;---------- end PRO INDEX
-end if
-if defined SIZE_L17_
-PRO	SIZE_L17				;---------- PRO SIZE
-PRMS					;    debut parametrage
-	PRM FILE_ofs				; in
-	PRM result__ofs				; resultat de fonction
-endPRMS					;    fin parametrage
-ELB 2
-begin:
-	LVA	 1, GFP_disp
-	La 	 2, -FILE_ofs
-	CALL	STANDARD.DIRECT_IO. ,SIZE_L17
-	UNLINK	 2
-	RTD	prm_siz
-endPRO					;---------- end PRO SIZE
-end if
-if defined END_OF_FILE_L18_
-PRO	END_OF_FILE_L18				;---------- PRO END_OF_FILE
-PRMS					;    debut parametrage
-	PRM FILE_ofs				; in
-	PRM result__ofs				; resultat de fonction
-endPRMS					;    fin parametrage
-ELB 2
-begin:
-	LVA	 1, GFP_disp
-	La 	 2, -FILE_ofs
-	CALL	STANDARD.DIRECT_IO. ,END_OF_FILE_L18
-	UNLINK	 2
-	RTD	prm_siz
-endPRO					;---------- end PRO END_OF_FILE
-end if
-FILE_NAME_BUFFER = 'FILE_NAME_BUFFER'
-namespace FILE_NAME_BUFFER			; FILE_NAME_BUFFER CONSTRAINED ARRAY SUBTYPE INFO
-VAR SIZ, d
-  namespace info
-VAR COMP_SIZ, d
-VAR FST_1, d
-VAR LST_1, d
-	LI	1
-	Sd	1, COMP_SIZ
-	Ld	1, COMP_SIZ
-	LI	1
-	Sd	1, FST_1
-	LI	256
-	Sd	1, LST_1
-	Ld	1, LST_1
-	INC
-	Ld	1, FST_1
-	SUB
-	MUL
-	Sd	1, SIZ
-  end namespace
-  virtual at 4
-COMP_SIZ = $
-	rd 1 
-FST_1 = $
-	rd 1 
-LST_1 = $
-	rd 1 
-  end virtual
+					;---------- end generic package instantiation INT_IO
 end namespace
 
-FILE_TYPE = 'FILE_TYPE'
-namespace FILE_TYPE				; FILE_TYPE RECORD TYPE INFO
-VAR use__info, q
-VAR SIZ, d
-	LVA	1, SIZ
-	Sa	1, use__info
-USEINFO 1, ID, 	LVA	0, STANDARD.INTEGER.SIZ
-USEINFO 1, NAME, 	LVA	1, STANDARD.DIRECT_IO_TEST_L1.FLT_DIRECT_IO.FILE_NAME_BUFFER.SIZ
-USEINFO 1, NAME_LEN, 	LVA	0, STANDARD.POSITIVE.SIZ
-USEINFO 1, IS_OPENED, 	LCA	STANDARD.BOOLEAN.SIZ
-USEINFO 1, MODE, 	LCA	STANDARD.DIRECT_IO_TEST_L1.FLT_DIRECT_IO.FILE_MODE.SIZ
-USEINFO 1, INDEX, 	LVA	1, STANDARD.DIRECT_IO_TEST_L1.FLT_DIRECT_IO.POSITIVE_COUNT.SIZ
-USEINFO 1, AT_END_OF_FILE, 	LCA	STANDARD.BOOLEAN.SIZ
-virtual at 0
-STATOFS ID, 4
-STATOFS NAME, 256
-STATOFS NAME_LEN, 4
-STATOFS IS_OPENED, 1
-STATOFS MODE, 1
-STATOFS INDEX, 4
-STATOFS AT_END_OF_FILE, 1
-size = $
-end virtual
-end namespace
-
-					;---------- end generic package instantiation FLT_DIRECT_IO
-end namespace
-
-VAR F_disp, q				; variable record : pointeur aux data record
-VAR F__u, q				; variable record : pointeur aux useinfo
-VAR F__dat, STANDARD.DIRECT_IO_TEST_L1.FLT_DIRECT_IO.FILE_TYPE.size
-	LVA	1, F__dat
-	Sa	1, F_disp				; record fin
-	LVA	1, STANDARD.DIRECT_IO_TEST_L1.FLT_DIRECT_IO.FILE_TYPE.SIZ
-	Sa	1, F__u
-	LIVa 1, F_disp, STANDARD.DIRECT_IO_TEST_L1.FLT_DIRECT_IO.FILE_TYPE.ID
+VAR G_disp, q				; variable record : pointeur aux data record
+VAR G__u, q				; variable record : pointeur aux useinfo
+VAR G__dat, STANDARD.TEXT_IO.FILE_TYPE.size
+	LVA	1, G__dat
+	Sa	1, G_disp				; record fin
+	LVA	1, STANDARD.TEXT_IO.FILE_TYPE.SIZ
+	Sa	1, G__u
+	LIVa 1, G_disp, STANDARD.TEXT_IO.FILE_TYPE.ID
 	LI	1
 	NEG
 	Sd
-	LIVa 1, F_disp, STANDARD.DIRECT_IO_TEST_L1.FLT_DIRECT_IO.FILE_TYPE.IS_OPENED
+	LIVa 1, G_disp, STANDARD.TEXT_IO.FILE_TYPE.IS_OPENED
 	LI	0
 	Sb
-	LIVa 1, F_disp, STANDARD.DIRECT_IO_TEST_L1.FLT_DIRECT_IO.FILE_TYPE.AT_END_OF_FILE
+	LIVa 1, G_disp, STANDARD.TEXT_IO.FILE_TYPE.IS_DEFAULT_IO
+	LI	0
+	Sb
+	LIVa 1, G_disp, STANDARD.TEXT_IO.FILE_TYPE.LOOK_AHEAD
+	LI	 0
+	Sb
+	LIVa 1, G_disp, STANDARD.TEXT_IO.FILE_TYPE.HAS_LOOK_AHEAD
+	LI	0
+	Sb
+	LIVa 1, G_disp, STANDARD.TEXT_IO.FILE_TYPE.AT_END_OF_FILE
 	LI	0
 	Sb
 
@@ -439,18 +178,29 @@ VAR R_disp, q				; variable flottante
 
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-STR STR_L20, ''				; constante string=''
-	LCA	STR_L20.data_ptr
-STR STR_L21, 'flt_direct.dat'			; constante string='flt_direct.dat'
-	LCA	STR_L21.data_ptr
-	LI  2
-	LVA  1,	F_disp
-	CALL	STANDARD.DIRECT_IO_TEST_L1.FLT_DIRECT_IO. ,CREATE_L1
-	Lq 1,	R_disp
-	LVa 1,	F_disp
-	CALL	STANDARD.DIRECT_IO_TEST_L1.FLT_DIRECT_IO. ,WRITE_L14
-	LVA  1,	F_disp
-	CALL	STANDARD.DIRECT_IO_TEST_L1.FLT_DIRECT_IO. ,CLOSE_L3
+STR STR_L8, ' FLOAT SIZE (bits) = '		; constante string=' FLOAT SIZE (bits) = '
+	LCA	STR_L8.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	Ld 1,	STANDARD.DIRECT_IO_TEST_L1.INT_IO.DEFAULT_BASE_disp
+	Ld 1,	STANDARD.DIRECT_IO_TEST_L1.INT_IO.DEFAULT_WIDTH_disp
+	LId	 0, STANDARD.FLOAT.use__info
+	CALL	STANDARD.DIRECT_IO_TEST_L1.INT_IO. ,PUT_L64
+	LI	1
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
+STR STR_L9, ''				; constante string=''
+	LCA	STR_L9.data_ptr
+STR STR_L10, 'io_int.dat'			; constante string='io_int.dat'
+	LCA	STR_L10.data_ptr
+	LI  1
+	LVA  1,	G_disp
+	CALL	STANDARD.TEXT_IO. ,CREATE_L1
+	Ld 1,	STANDARD.DIRECT_IO_TEST_L1.INT_IO.DEFAULT_BASE_disp
+	Ld 1,	STANDARD.DIRECT_IO_TEST_L1.INT_IO.DEFAULT_WIDTH_disp
+	LI	128
+	LVa 1,	G_disp
+	CALL	STANDARD.DIRECT_IO_TEST_L1.INT_IO. ,PUT_L63
+	LVA  1,	G_disp
+	CALL	STANDARD.TEXT_IO. ,CLOSE_L3
 ret_lbl:
 	UNLINK 1
 	RTD

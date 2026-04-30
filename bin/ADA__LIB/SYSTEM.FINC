@@ -1,7 +1,10 @@
 SYSTEM = 'SYSTEM'
 namespace SYSTEM				;---------- PACKAGE DECLARATION
+
+					; NAME ENUMERATION TYPE INFO
 NAME = 'NAME'
-namespace NAME				; NAME ENUMERATION TYPE INFO
+namespace NAME
+VAR use__info, q
 BEGIN_BLOC_DEF
 db 0, 6, "X86_64"
 END_BLOC_DEF
@@ -12,28 +15,62 @@ CST SIZ, d, 8	; SIZ en bits !
 postpone
   align_q
 end postpone
+	LCA	SIZ
+	Sa	0, use__info
 end namespace
-
 VAR SYSTEM_NAME_disp, b			; variable entiere
 	LI	0
 	Sb  0,	SYSTEM_NAME_disp
 
+
+					; PRIORITY INTEGER SUBTYPE INFO
 PRIORITY = 'PRIORITY'
-namespace PRIORITY				; PRIORITY INTEGER SUBTYPE INFO
+namespace PRIORITY
 VAR use__info, q
 VAR SIZ, d
-	LVA	 0, SIZ
-	Sa	 0, use__info
+	LVA	0, SIZ
+	Sa	0, use__info
+VAR FST, d
+VAR LST, d
+	LI	32
+	Sd	0, SIZ
+	LI	0
+	Sd	0, FST
+	LI	10
+	Sd	0, LST
+VAR PARENT__u, q
+	La	0, STANDARD.INTEGER.use__info
+	Sa	0, PARENT__u
 end namespace
 
+					; ADDRESS INTEGER SUBTYPE INFO
 ADDRESS = 'ADDRESS'
-namespace ADDRESS				; ADDRESS INTEGER SUBTYPE INFO
+namespace ADDRESS
 VAR use__info, q
 VAR SIZ, d
-	LVA	 0, SIZ
-	Sa	 0, use__info
+	LVA	0, SIZ
+	Sa	0, use__info
+VAR FST, q
+VAR LST, q
+	LI	64
+	Sd	0, SIZ
+	LI	2
+	LI	63
+	DEC
+	SHL
+	NEG
+	Sq	0, FST
+	LI	2
+	LI	63
+	DEC
+	SHL
+	LI	1
+	SUB
+	Sq	0, LST
+VAR PARENT__u, q
+	La	0, STANDARD.SYSTEM.ADDRESS.use__info
+	Sa	0, PARENT__u
 end namespace
-
 VAR NULL_ADDRESS_disp, q			; variable entiere
 	LI	0
 	Sq  0,	NULL_ADDRESS_disp
