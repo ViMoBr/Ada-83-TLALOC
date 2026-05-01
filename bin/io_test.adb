@@ -4,7 +4,6 @@ use  TEXT_IO;
 procedure			IO_TEST
 is			-------
 
-  E		: FILE_TYPE;
   F		: FILE_TYPE;
   G		: FILE_TYPE;
   CH		: CHARACTER;

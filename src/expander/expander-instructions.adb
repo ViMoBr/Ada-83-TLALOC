@@ -1054,11 +1054,16 @@ put_line( "; region=" & REGION_NAME & " .TY= " &  NODE_NAME'IMAGE( D( XD_REGION,
 	  CODI.STORE( DEFN );
 
 	elsif  NAME_TYPE.TY = DN_RECORD  then								-- OBJET ASSIGNE RECORD
-	  CODI.LOAD_MEM( DEFN );									-- @DST (adresse du record destination)
+	  CODI.LOAD_MEM( DEFN );									-- @variable (adresse du doublet @data @use__info)
+	  PUT_LINE( tab & "La" );									-- @DST (adresse des data)
+
 	  PUT( tab & "LI" & tab );
 	  CODI.REGIONS_PATH( D( XD_SOURCE_NAME, NAME_TYPE ) );
 	  PUT_LINE( PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, NAME_TYPE ) ) ) & ".size" );	-- LEN (taille en octets, calculee par FASM)
-	  EXPRESSIONS.CODE_EXP( SRC_EXP );								-- @SRC (adresse du record source)
+
+	  EXPRESSIONS.CODE_EXP( SRC_EXP );								-- @variable (adresse du doublet)
+	  PUT_LINE( tab & "La" );									-- @SRC (adresse des data)
+
 	  PUT_LINE( tab & "BLKMOV" );									-- COPY_BLOCK  @DST LEN @SRC
 
 	else										-- AUTRE TYPE SCALAIRE (type formel generique, etc.)

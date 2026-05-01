@@ -1166,14 +1166,14 @@ macro			BEGIN_BLOC_DEF				; Debut de definition d'un bloc octets utilisable	comm
     postpone							; ATTENTION : différé terminé par la	macro BYTE_BLK_END
     local	data
     local	info
-    local	str_byte_size
+    local	str_bit_size
     align_q							; aligner	le doublet descripteur sur un	quadword (taille adresses)
   .data_ptr = $							; adresse	de l'adresse de data
     dq	data							; offset 0 : adresse des octets
   .info_ptr = $							;
     dq	info							; offset 8 : adresse des infos d'usage associées	TOT_SIZ, COMP_SIZ, FST_1, LST_1
   info = $							; info d'usage mises ici
-    dd	str_byte_size, 1, 1, str_byte_size				; offset 16 : TOT_SIZ=str_byte_size ; offset 20 :	COMP_SIZ=1 ; offset	24 : FST=1 ; offset	28 : LST=str_byte_size
+    dd	str_bit_size, 8, 1, str_bit_size/8				; offset 16 : TOT_SIZ=str_bit_size ; offset 20 :	COMP_SIZ=8bits ; offset	24 : FST=1 ; offset	28 : LST=str_bit_size/8
     virtual at 0							; definition des offsets sur le useinfo
     SIZ =	$
     rd 1
@@ -1190,7 +1190,7 @@ end macro
 ;			-------------
 macro			END_BLOC_DEF!				; Fin de definition	d'une constante chaine (Attention inconditionnelle "!")
 ;			-------------
-    str_byte_size =	$ - data						; Calculer la longueur effective pour mettre dans	LAST
+    str_bit_size =	8*($ - data)					; Calculer la taille effective en bits
   end postpone
   esc end	struc							; Fin de la structure du bloc	arrêt de	la coupure par "esc"
 end macro
