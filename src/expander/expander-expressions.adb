@@ -325,6 +325,9 @@ null;--	     declare
     when DN_OUT_ID				=>
 	PUT_LINE( "; CODE_USED_OBJECT_ID : OUT_ID a faire " );
 
+    when DN_NUMBER_ID			=>
+	CODE_EXP( D( SM_INIT_EXP, DEFN ) );
+
     when DN_DISCRIMINANT_ID			=>
 	PUT_LINE( "; CODE_USED_OBJECT_ID : DISCRIMINANT_ID a faire " );
 

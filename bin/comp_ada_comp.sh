@@ -1,21 +1,21 @@
 #!/bin/bash
-./a83.sh ./ ./_standrd.ads w
-./a83.sh ./ ./system.ads w
+./a83.sh ./ ./_standrd.ads W
+./a83.sh ./ ./system.ads W
 ./a83.sh ./ ./calendar.ads w
 ./a83.sh ./ ./unchecked_deallocation.ads w
 ./a83.sh ./ ./unchecked_conversion.ads w
-./a83.sh ./ ./io_exceptions.ads w
-./a83.sh ./ ./machine_code.ads w
-./a83.sh ./ ./text_io.ads w
-./a83.sh ./ ./text_io.adb w
-./a83.sh ./ ./sequential_io.ads w
-./a83.sh ./ ./direct_io.ads w
+./a83.sh ./ ./io_exceptions.ads W
+./a83.sh ./ ./machine_code.ads W
+./a83.sh ./ ./text_io.ads W
+./a83.sh ./ ./text_io.adb W
+./a83.sh ./ ./sequential_io.ads W
+./a83.sh ./ ./direct_io.ads W
 #--------------------------------------------------
 #	IDL
 #--------------------------------------------------
-./a83.sh ./ ./idl_tools/diana_node_attr_class_names.ads w
-./a83.sh ./ ../src/ada_comp/idl.ads w
-./a83.sh ./ ../src/ada_comp/idl.adb w
+./a83.sh ./ ./idl_tools/diana_node_attr_class_names.ads W
+./a83.sh ./ ../src/ada_comp/idl.ads W
+./a83.sh ./ ../src/ada_comp/idl.adb W
 
 ./a83.sh ./ ../src/communs/idl-page_man.adb w
 ./a83.sh ./ ../src/communs/idl-idl_tbl.adb w
@@ -77,14 +77,14 @@
 #--------------------------------------------------
 #	EXPANDER
 #--------------------------------------------------
-./a83.sh ./ ../src/expander/codage_intermediaire.ads w
-./a83.sh ./ ../src/expander/codage_intermediaire.adb w
-./a83.sh ./ ../src/expander/code_gen.ads w
-./a83.sh ./ ../src/expander/code_gen.adb w
-./a83.sh ./ ../src/expander/code_gen-structures.adb w
-./a83.sh ./ ../src/expander/code_gen-declarations.adb w
-./a83.sh ./ ../src/expander/code_gen-instructions.adb w
-./a83.sh ./ ../src/expander/code_gen-expressions.adb w
+./a83.sh ./ ../src/expander/expander.ads w
+./a83.sh ./ ../src/expander/expander.adb w
+./a83.sh ./ ../src/expander/expander-utils.adb w
+./a83.sh ./ ../src/expander/expander-expressions.adb w
+./a83.sh ./ ../src/expander/expander-declarations.adb w
+./a83.sh ./ ../src/expander/expander-declarations-types_decls.adb w
+./a83.sh ./ ../src/expander/expander-instructions.adb w
+./a83.sh ./ ../src/expander/expander-structures.adb w
 #--------------------------------------------------
 #	ADA_COMP
 #--------------------------------------------------

@@ -312,15 +312,15 @@ null;
 
     SRC_NAME_SEQ	: SEQ_TYPE	:= LIST( D( AS_SOURCE_NAME_S, OBJECT_DECL ) );
     SRC_NAME	: TREE;
-    TYPE_DEF	: TREE		:= D( AS_TYPE_DEF, OBJECT_DECL );
-    TYPE_NAME	: TREE		:= D( AS_NAME, TYPE_DEF );
+--    TYPE_DEF	: TREE		:= D( AS_TYPE_DEF, OBJECT_DECL );
+--    TYPE_NAME	: TREE		:= D( AS_NAME, TYPE_DEF );
 
   begin
-    if  TYPE_NAME.TY = DN_SELECTED  then
-      TYPE_NAME := D( AS_DESIGNATOR, TYPE_NAME );
-    end if;
+--    if  TYPE_NAME.TY = DN_SELECTED  then
+--      TYPE_NAME := D( AS_DESIGNATOR, TYPE_NAME );
+--    end if;
 
-    CODI.TYPE_SYMREP := D( LX_SYMREP, TYPE_NAME );
+--    CODI.TYPE_SYMREP := D( LX_SYMREP, TYPE_NAME );
     while  not IS_EMPTY( SRC_NAME_SEQ )  loop
       POP( SRC_NAME_SEQ, SRC_NAME );
       CODE_VC_NAME( SRC_NAME );
@@ -988,16 +988,16 @@ null;--     LOAD_TYPE_SIZE( TYPE_SPEC  );
         CODI.OUTPUT_CODE := TRUE;
       end if;
 
-      if  SOURCE_NAME.TY = DN_FUNCTION_ID or SOURCE_NAME.TY = DN_OPERATOR_ID  then
-        declare
-          USED_OBJECT_ID	: TREE := D( AS_NAME, HEADER );
-          RESULT_TYPE_ID	: TREE := D( SM_DEFN, USED_OBJECT_ID );
-          RESULT_TYPE_SPEC	: TREE := D( SM_TYPE_SPEC, RESULT_TYPE_ID );
-        begin
-null;
+--      if  SOURCE_NAME.TY = DN_FUNCTION_ID or SOURCE_NAME.TY = DN_OPERATOR_ID  then
+--        declare
+--          USED_OBJECT_ID	: TREE := D( AS_NAME, HEADER );
+--          RESULT_TYPE_ID	: TREE := D( SM_DEFN, USED_OBJECT_ID );
+--          RESULT_TYPE_SPEC	: TREE := D( SM_TYPE_SPEC, RESULT_TYPE_ID );
+--        begin
+--null;
 --          DI( CD_RESULT_SIZE, SOURCE_NAME, DI( CD_IMPL_SIZE, RESULT_TYPE_SPEC ) );
-        end;
-      end if;
+--        end;
+--      end if;
     end;
     DEC_LEVEL;
 
