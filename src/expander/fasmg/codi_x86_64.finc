@@ -1064,12 +1064,9 @@ end macro
 ;			--------------------
 macro			LINK?	lvl, alloc			; ALLOCATION POUR VARIABLES LOCALES APRES FRAME PTR
 ;			--------------------
-  if lvl > 0
+  if lvl > 0							; ATTENTION : rien au lvl 0
     FP_IN_RAX	lvl						; store FP(lvl) le pointeur de pile RBP	reste a pointer sur	l'empile
     PUSH_RAX
-
-;  if lvl = 0
-;    db 0x49, 0x89, 0x2F						; mov qword ptr [r15], rbp	niveau 0,	petit offset dans le display
     if	lvl <= 15							; 15 niveaux suivants, petit offset dans le display
       db 0x49, 0x89, 0x6F, 8*lvl					; mov qword ptr [r15 + 8*lvl], rbp   update FP le	FP pointe	sur l'adresse de sauvegarde du FP anterieur
     else
