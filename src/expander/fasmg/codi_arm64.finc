@@ -1493,7 +1493,7 @@ macro			BLKMOV					; Copie de bloc sans recouvrement
   POP_RSI								; x4 = adresse source
   POP_RCX								; x2 = nombre d'octets
   POP_RDI								; x5 = adresse destination
-  dd 0xB4000082							; cbz x2, .end (saut +16 octets = 4 instr)
+  dd 0xB40000A2							; cbz x2, .end (saut +16 octets = 4 instr)
 ;.loop:
   dd 0x38401490							; ldrb w16, [x4], #1   (post-increment src)
   dd 0x380014B0							; strb w16, [x5], #1   (post-increment dst)
@@ -1898,7 +1898,7 @@ Elf64_Phdr:
 	p_vaddr		dq 0x00400078
 	p_paddr		dq 0
 	p_filesz		dq ASM_SIZE				; juste le necessaire code/constantes dans le fichier
-	p_memsz		dq ASM_SIZE + 16*1024*1024			; 16Mo au dessus du code et des constantes (pour la co-pile)
+	p_memsz		dq ASM_SIZE + 64*1024*1024
 	p_align		dq 4096
 
 
@@ -1910,12 +1910,12 @@ Elf64_Phdr:
 ;	  - le display des frame pointers (32 entrees x 8 octets = 256 octets)
 ;	  - la pile de travail x29 (croissant vers les adresses hautes)
 
-  dd 0x910003F9							; mov x25, sp     (x25 = post-haut du tas, sauve le sp initial)
-  dd 0xD2A02010							; movz x16, #0x10, lsl #16   (x16 = 0x100000 = 1 Mo)
-  dd 0xCB1003FF							; sub sp, sp, x16  (descendre sp de 1 Mo)
-  dd 0x910003FC							; mov x28, sp     (x28 = debut du display)
-  dd 0x9104039D							; add x29, x28, #256  (x29 = pile de travail au-dessus du display, 8*32=256)
-  dd 0xF900039D							; str x29, [x28]   (FP du niveau 0 = x29 courant)
+  dd 0x910003F9                    ; mov x25, sp
+  dd 0xD2A00C10                    ; movz x16, #0x60, lsl #16   (6 Mo)
+  dd 0xCB3063FF                    ; sub sp, sp, x16  (extended reg)
+  dd 0x910003FC                    ; mov x28, sp
+  dd 0x9104039D                    ; add x29, x28, #256
+  dd 0xF900039D                    ; str x29, [x28]
 
 
 ;		METTRE EN PLACE LA CO-PILE

@@ -48,6 +48,7 @@ begin
   --  3. Fichier par defaut via SET_OUTPUT
   PUT_LINE( "=== 3. SET_OUTPUT fichier ===" );
   CREATE( F, OUT_FILE, "io_def.dat" );
+put_line( "set_output" );
   SET_OUTPUT( F );
   PUT_LINE( "Ceci va dans io_def.dat" );
   PUT( "Valeur = " );
