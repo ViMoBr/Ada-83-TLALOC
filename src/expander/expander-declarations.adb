@@ -150,13 +150,13 @@ is
       end loop;
 
       if  CODI.OUTPUT_CODE  then
+        if  CODI.IN_GENERIC_BODY  then
+	PUT_LINE( tab & "PRM GFP_ofs" );
+        end if;
         if  FOR_FUNCTION  then
 	PUT( tab & "PRM result__ofs" );
 	if  CODI.DEBUG  then  PUT( tab50 & "; resultat de fonction" ); end if;
 	NEW_LINE;
-        end if;
-        if  CODI.IN_GENERIC_BODY  then
-	PUT_LINE( tab & "PRM GFP_ofs" );
         end if;
         PUT( "endPRMS" );
         if CODI.DEBUG then PUT( tab50 & ";    fin parametrage" ); end if;
@@ -406,7 +406,7 @@ null;
       procedure		COMPILE_VC_NAME_ENUMERATION	( VC_NAME, TYPE_SPEC :TREE )
       is			---------------------------
 
-        NAME	:constant STRING	:= PRINT_NAME( CODI.TYPE_SYMREP );
+        NAME	:constant STRING	:= PRINT_NAME( D(LX_SYMREP, CODI.TYPE_SYMREP ) );
 
 		-------------------------
         procedure	COMPILE_VC_NAME_BOOL_CHAR	( VC_NAME :TREE )
@@ -668,7 +668,8 @@ null;--     LOAD_TYPE_SIZE( TYPE_SPEC  );
       end if;
 
       case TYPE_SPEC.TY is
-      when DN_ENUMERATION		=> COMPILE_VC_NAME_ENUMERATION(	VC_NAME, TYPE_SPEC );
+      when DN_ENUMERATION		=> TYPE_SYMREP := D( XD_SOURCE_NAME, TYPE_SPEC );
+				   COMPILE_VC_NAME_ENUMERATION(	VC_NAME, TYPE_SPEC );
       when DN_INTEGER		=> COMPILE_VC_NAME_INTEGER(		VC_NAME );
       when DN_FLOAT			=> COMPILE_VC_NAME_FLOAT(		VC_NAME );
       when DN_ACCESS		=> COMPILE_ACCESS_VAR(		VC_NAME, TYPE_SPEC );
@@ -804,9 +805,9 @@ null;--     LOAD_TYPE_SIZE( TYPE_SPEC  );
     GENERIC_ID	: TREE		:= D( AS_SOURCE_NAME, GENERIC_DECL );
     G_PARAMS	: SEQ_TYPE	:= LIST( D( SM_GENERIC_PARAM_S, GENERIC_ID ) );
     G_PARAM	: TREE;
-    DECL_S	: SEQ_TYPE	:= LIST( D( AS_DECL_S1, D( AS_HEADER, GENERIC_DECL ) ) );
-    DECL		: TREE;
+
   begin
+
 				------------------------
 				TRAITE_FORMAL_PARAMETERS:
     while  not IS_EMPTY( G_PARAMS )  loop
@@ -822,20 +823,29 @@ null;--     LOAD_TYPE_SIZE( TYPE_SPEC  );
     end loop	TRAITE_FORMAL_PARAMETERS;
 		------------------------
 
-    while  not IS_EMPTY( DECL_S )  loop
-      POP( DECL_S, DECL );
-      if  DECL.TY = DN_SUBPROG_ENTRY_DECL  and then  IN_SPEC_UNIT  then
-        declare
-	LBL	: LABEL_TYPE	:= NEW_LABEL;
-	NAME	: TREE		:= D( AS_SOURCE_NAME, DECL );
-        begin
-	DI( CD_LABEL, NAME, INTEGER( LBL ) );
-	DI( CD_LEVEL, NAME, INTEGER( CODI.CUR_LEVEL ) + 1 );
-	DB( CD_COMPILED, D( AS_SOURCE_NAME, DECL ), TRUE );
-        end;
-      end if;
-    end loop;
+    if  D( SM_SPEC, GENERIC_ID).TY = DN_PROCEDURE_SPEC  then
+      PUT_LINE( "; DN_PROCEDURE_SPEC" );
+    else
+      declare
+        DECL_S	: SEQ_TYPE	:= LIST( D( AS_DECL_S1, D( AS_HEADER, GENERIC_DECL ) ) );
+        DECL	: TREE;
+      begin
 
+        while  not IS_EMPTY( DECL_S )  loop
+	POP( DECL_S, DECL );
+	if  DECL.TY = DN_SUBPROG_ENTRY_DECL  and then  IN_SPEC_UNIT  then
+	  declare
+	    LBL	: LABEL_TYPE	:= NEW_LABEL;
+	    NAME	: TREE		:= D( AS_SOURCE_NAME, DECL );
+	  begin
+	    DI( CD_LABEL, NAME, INTEGER( LBL ) );
+	    DI( CD_LEVEL, NAME, INTEGER( CODI.CUR_LEVEL ) + 1 );
+	    DB( CD_COMPILED, D( AS_SOURCE_NAME, DECL ), TRUE );
+	  end;
+          end if;
+        end loop;
+      end;
+    end if;
   end	CODE_GENERIC_DECL;
 	--=============--
 

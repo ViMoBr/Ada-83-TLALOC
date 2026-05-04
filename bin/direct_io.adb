@@ -1,67 +1,12 @@
 with SYSTEM, MACHINE_CODE;
 use  SYSTEM, MACHINE_CODE;
+
+with TEXT_IO; use TEXT_IO;
 					----------
 	package body			DIRECT_IO
 is					----------
 
-	-- LRM 14.2.5 : DIRECT_IO traite un fichier comme un tableau
-	-- d'elements de meme taille. L'element d'index N occupe les
-	-- octets [(N-1)*SIZE_BYTES .. N*SIZE_BYTES - 1].
-	--
-	-- ELEMENT_TYPE est un parametre formel prive : la taille en
-	-- octets devrait etre lue au runtime via le mecanisme des
-	-- generiques (GFP_disp + __u_ofs vers le patron de type).
-	-- L'expander ne supporte pas encore DN_PRIVATE_DEF a ce niveau,
-	-- donc cette implementation s'appuie sur INTEGER'SIZE comme
-	-- taille de reference. DIRECT_IO est testable des aujourd'hui
-	-- avec ELEMENT_TYPE = INTEGER.
-	--
-	-- L'index courant n'est pas stocke dans le record FILE_TYPE
-	-- (FILE est passe en mode `in` par le LRM, pas modifiable par
-	-- du code Ada pur). Il est obtenu a la demande via lseek
-	-- SEEK_CUR (macro SYS_FILE_GET_POS).
-
-
-			-------------------
-  function	BYTES_PER_ELEMENT					return INTEGER
-  is		-------------------
-
-	-- TAILLE EN OCTETS DE ELEMENT_TYPE.
-	--
-	-- L'expander ne genere actuellement aucun mecanisme pour
-	-- communiquer au modele generique la taille d'un parametre
-	-- formel "is private". Pour completer le support :
-	--
-	--   * expander-structures.adb : ajouter une branche
-	--     DN_PRIVATE_DEF dans la boucle GPRM (~ligne 230) pour
-	--     emettre `PRM ELEMENT_TYPE__u_ofs`.
-	--
-	--   * expander-declarations.adb : etendre la branche de
-	--     CODE_INSTANTIATION (~ligne 1106) pour les types
-	--     non-DN_ENUMERATION (DN_INTEGER, DN_FLOAT, DN_RECORD,
-	--     DN_ARRAY...) afin d'emettre :
-	--         VAR ELEMENT_TYPE__u_ofs, q
-	--             LCA <TYPE>.SIZ
-	--             Sa <lvl>, ELEMENT_TYPE__u_ofs
-	--
-	-- Une fois ces extensions en place, ce corps sera :
-	--
-	--     ASM_OP_2'( OPCODE => LA,  LVL => 1, OFS => -16 );    -- @GFP_disp instance
-	--     ASM_OP_3'( OPCODE => LIA, LVL => -1, DISP => -8, OFS => 0 );  -- patron + 0 = @SIZ
-	--     ASM_OP_2'( OPCODE => Ld,  LVL => -1, OFS => 0 );     -- charge dword SIZ (en bits)
-	--     ASM_OP_1'( OPCODE => LI,  VAL => 8 );
-	--     ASM_OP_0'( OPCODE => DIV );                          -- bits / 8 = octets
-	--     ASM_OP_2'( OPCODE => SD,  LVL => 1, OFS => -8 );     -- result__ofs
-	--
-	-- En attendant, on rend INTEGER'SIZE / 8 = 4 : DIRECT_IO est
-	-- testable avec ELEMENT_TYPE = INTEGER.
-  begin
-    return ELEMENT_TYPE'SIZE / SYSTEM.STORAGE_UNIT;
---    return FILE_TYPE'SIZE / SYSTEM.STORAGE_UNIT;
-
-  end	BYTES_PER_ELEMENT;
-	-------------------
-
+  package INT_IO is new INTEGER_IO( INTEGER );
 
 			--   F I L E   M A N A G E M E N T
 
@@ -81,7 +26,7 @@ is					----------
     begin
       ASM_OP_2'( OPCODE => LA, LVL => 2, OFS => -8 );			-- @descripteur de NAME
       ASM_OP_0'( OPCODE => SYS_FILE_CREATE );
-      ASM_OP_2'( OPCODE => SD, LVL => 2, OFS => -16 );			-- Retour du File ID
+      ASM_OP_2'( OPCODE => SD, LVL => 2, OFS => -24 );			-- Retour du File ID apres le GFP
 
     end	CREATE_SYSTEM_CALL;
 	------------------
@@ -118,7 +63,7 @@ is					----------
     begin
       ASM_OP_2'( OPCODE => LA, LVL => 2, OFS => -8 );			-- @descripteur de NAME
       ASM_OP_0'( OPCODE => SYS_FILE_OPEN );
-      ASM_OP_2'( OPCODE => SD, LVL => 2, OFS => -16 );			-- Retour du File ID
+      ASM_OP_2'( OPCODE => SD, LVL => 2, OFS => -24 );			-- Retour du File ID apres le GFP
 
     end	OPEN_SYSTEM_CALL;
 	----------------
@@ -151,7 +96,7 @@ is					----------
     begin
       ASM_OP_2'( OPCODE => Ld, LVL => 2, OFS => -8 );			-- FILE_ID
       ASM_OP_0'( OPCODE => SYS_FILE_CLOSE );
-      ASM_OP_2'( OPCODE => SD, LVL => 2, OFS => -16 );			-- Retour du resultat syscall
+      ASM_OP_2'( OPCODE => SD, LVL => 2, OFS => -24 );			-- Retour du resultat syscall apres le GFP
 
     end	CLOSE_SYSTEM_CALL;
 	-----------------
@@ -177,7 +122,7 @@ is					----------
     begin
       ASM_OP_2'( OPCODE => La, LVL => 2, OFS => -8 );			-- @descripteur de NAME
       ASM_OP_0'( OPCODE => SYS_FILE_DELETE );
-      ASM_OP_2'( OPCODE => SD, LVL => 2, OFS => -16 );			-- Retour du resultat syscall
+      ASM_OP_2'( OPCODE => SD, LVL => 2, OFS => -24 );			-- Retour du resultat syscall apres le GFP
 
     end	DELETE_SYSTEM_CALL;
 	------------------
@@ -203,7 +148,7 @@ is					----------
       ASM_OP_1'( OPCODE => LI, VAL => 0 );				-- OFFSET = 0 (debut du fichier)
       ASM_OP_2'( OPCODE => Ld, LVL => 2, OFS => -8 );			-- FILE_ID
       ASM_OP_0'( OPCODE => SYS_FILE_SET_POS );
-      ASM_OP_2'( OPCODE => SD, LVL => 2, OFS => -16 );			-- Retour du resultat syscall
+      ASM_OP_2'( OPCODE => SD, LVL => 2, OFS => -24 );			-- Retour du resultat syscall
 
     end	SEEK_SYSTEM_CALL;
 	----------------
@@ -284,7 +229,7 @@ is					----------
   is			----
 
     BYTES_READ	: INTEGER;
-    SIZE_BYTES	: INTEGER	:= BYTES_PER_ELEMENT;
+    SIZE_BYTES	: INTEGER	:= ELEMENT_TYPE'SIZE / SYSTEM.STORAGE_UNIT;
     DUMMY	: INTEGER;
 
 		----------------
@@ -294,7 +239,7 @@ is					----------
       ASM_OP_2'( OPCODE => Ld, LVL => 2, OFS => -16 );			-- OFFSET en octets
       ASM_OP_2'( OPCODE => Ld, LVL => 2, OFS => -8 );			-- FILE_ID
       ASM_OP_0'( OPCODE => SYS_FILE_SET_POS );
-      ASM_OP_2'( OPCODE => SD, LVL => 2, OFS => -24 );			-- Retour du resultat syscall
+      ASM_OP_2'( OPCODE => SD, LVL => 2, OFS => -32 );			-- Retour du resultat syscall apres le GFP
 
     end	SEEK_SYSTEM_CALL;
 	----------------
@@ -307,7 +252,7 @@ is					----------
       ASM_OP_2'( OPCODE => La, LVL => 1, OFS => -16 );			-- @ITEM (param out READ : adresse de la zone destination)
       ASM_OP_2'( OPCODE => Ld, LVL => 2, OFS => -8 );			-- FILE_ID
       ASM_OP_0'( OPCODE => SYS_FILE_READ );
-      ASM_OP_2'( OPCODE => SD, LVL => 2, OFS => -24 );			-- Retour du BYTES_READ
+      ASM_OP_2'( OPCODE => SD, LVL => 2, OFS => -32 );			-- Retour du BYTES_READ apres le GFP
 
     end	READ_SYSTEM_CALL;
 	----------------
@@ -334,7 +279,7 @@ is					----------
   is			----
 
     BYTES_READ	: INTEGER;
-    SIZE_BYTES	: INTEGER	:= BYTES_PER_ELEMENT;
+    SIZE_BYTES	: INTEGER	:= ELEMENT_TYPE'SIZE / SYSTEM.STORAGE_UNIT;
 
 		----------------
     function	READ_SYSTEM_CALL	( FILE_ID :in INTEGER; LENGTH :in INTEGER )	return INTEGER
@@ -344,7 +289,7 @@ is					----------
       ASM_OP_2'( OPCODE => La, LVL => 1, OFS => -16 );			-- @ITEM
       ASM_OP_2'( OPCODE => Ld, LVL => 2, OFS => -8 );			-- FILE_ID
       ASM_OP_0'( OPCODE => SYS_FILE_READ );
-      ASM_OP_2'( OPCODE => SD, LVL => 2, OFS => -24 );
+      ASM_OP_2'( OPCODE => SD, LVL => 2, OFS => -32 );
 
     end	READ_SYSTEM_CALL;
 	----------------
@@ -370,7 +315,7 @@ is					----------
   is			-----
 
     ERR_CODE	: INTEGER;
-    SIZE_BYTES	: INTEGER	:= BYTES_PER_ELEMENT;
+    SIZE_BYTES	: INTEGER	:= ELEMENT_TYPE'SIZE / SYSTEM.STORAGE_UNIT;
     DUMMY	: INTEGER;
 
 		----------------
@@ -380,7 +325,7 @@ is					----------
       ASM_OP_2'( OPCODE => Ld, LVL => 2, OFS => -16 );
       ASM_OP_2'( OPCODE => Ld, LVL => 2, OFS => -8 );
       ASM_OP_0'( OPCODE => SYS_FILE_SET_POS );
-      ASM_OP_2'( OPCODE => SD, LVL => 2, OFS => -24 );
+      ASM_OP_2'( OPCODE => SD, LVL => 2, OFS => -32 );
 
     end	SEEK_SYSTEM_CALL;
 	----------------
@@ -390,10 +335,10 @@ is					----------
     is		-----------------
     begin
       ASM_OP_2'( OPCODE => Ld, LVL => 2, OFS => -16 );			-- LENGTH
-      ASM_OP_2'( OPCODE => La, LVL => 1, OFS => -16 );			-- @ITEM (param in WRITE : adresse de la zone source)
+      ASM_OP_2'( OPCODE => LVa, LVL => 1, OFS => -16 );			-- @ITEM (param in WRITE : adresse de la zone source)
       ASM_OP_2'( OPCODE => Ld, LVL => 2, OFS => -8 );			-- FILE_ID
       ASM_OP_0'( OPCODE => SYS_FILE_WRITE );
-      ASM_OP_2'( OPCODE => SD, LVL => 2, OFS => -24 );
+      ASM_OP_2'( OPCODE => SD, LVL => 2, OFS => -32 );
 
     end	WRITE_SYSTEM_CALL;
 	-----------------
@@ -416,17 +361,17 @@ is					----------
   is			-----
 
     ERR_CODE	: INTEGER;
-    SIZE_BYTES	: INTEGER	:= BYTES_PER_ELEMENT;
+    SIZE_BYTES	: INTEGER	:= ELEMENT_TYPE'SIZE / SYSTEM.STORAGE_UNIT;
 
 		-----------------
     function	WRITE_SYSTEM_CALL	( FILE_ID :in INTEGER; LENGTH :in INTEGER )	return INTEGER
     is		-----------------
     begin
-      ASM_OP_2'( OPCODE => Ld, LVL => 2, OFS => -16 );
-      ASM_OP_2'( OPCODE => La, LVL => 1, OFS => -16 );
-      ASM_OP_2'( OPCODE => Ld, LVL => 2, OFS => -8 );
+      ASM_OP_2'( OPCODE => Ld, LVL => 2, OFS => -16 );		-- LENGTH
+      ASM_OP_2'( OPCODE => LVa, LVL => 1, OFS => -16 );		-- @ITEM
+      ASM_OP_2'( OPCODE => Ld, LVL => 2, OFS => -8 );		-- FILE
       ASM_OP_0'( OPCODE => SYS_FILE_WRITE );
-      ASM_OP_2'( OPCODE => SD, LVL => 2, OFS => -24 );
+      ASM_OP_2'( OPCODE => SD, LVL => 2, OFS => -32 );
 
     end	WRITE_SYSTEM_CALL;
 	-----------------
@@ -435,7 +380,12 @@ is					----------
     if  FILE.IS_OPENED = FALSE  then raise STATUS_ERROR; end if;
     if  FILE.MODE = IN_FILE  then raise MODE_ERROR; end if;
 				-- Ecrit a la position courante
+put( "byte_size : " ); INT_IO.put( SIZE_BYTES, 8, 10 ); new_line;
     ERR_CODE := WRITE_SYSTEM_CALL( FILE.ID, SIZE_BYTES );
+
+
+put( "err_code : " ); INT_IO.put( ERR_CODE, 10, 16 );
+new_line;
 
   end	WRITE;
 	-----
@@ -446,7 +396,7 @@ is					----------
   is			---------
 
     ERR_CODE	: INTEGER;
-    SIZE_BYTES	: INTEGER	:= BYTES_PER_ELEMENT;
+    SIZE_BYTES	: INTEGER	:= ELEMENT_TYPE'SIZE / SYSTEM.STORAGE_UNIT;
 
 		----------------
     function	SEEK_SYSTEM_CALL	( FILE_ID :in INTEGER; OFFSET :in INTEGER )	return INTEGER
@@ -455,7 +405,7 @@ is					----------
       ASM_OP_2'( OPCODE => Ld, LVL => 2, OFS => -16 );			-- OFFSET en octets
       ASM_OP_2'( OPCODE => Ld, LVL => 2, OFS => -8 );			-- FILE_ID
       ASM_OP_0'( OPCODE => SYS_FILE_SET_POS );
-      ASM_OP_2'( OPCODE => SD, LVL => 2, OFS => -24 );
+      ASM_OP_2'( OPCODE => SD, LVL => 2, OFS => -32 );
 
     end	SEEK_SYSTEM_CALL;
 	----------------
@@ -476,7 +426,7 @@ is					----------
   is			-----
 
     BYTES		: INTEGER;
-    SIZE_BYTES	: INTEGER	:= BYTES_PER_ELEMENT;
+    SIZE_BYTES	: INTEGER	:= ELEMENT_TYPE'SIZE / SYSTEM.STORAGE_UNIT;
 
 		---------------------
     function	GET_POS_SYSTEM_CALL	( FILE_ID :in INTEGER )		return INTEGER
@@ -484,7 +434,7 @@ is					----------
     begin
       ASM_OP_2'( OPCODE => Ld, LVL => 2, OFS => -8 );			-- FILE_ID
       ASM_OP_0'( OPCODE => SYS_FILE_GET_POS );
-      ASM_OP_2'( OPCODE => SD, LVL => 2, OFS => -16 );			-- Retour de la position en octets
+      ASM_OP_2'( OPCODE => SD, LVL => 2, OFS => -24 );			-- Retour de la position en octets
 
     end	GET_POS_SYSTEM_CALL;
 	---------------------
@@ -504,7 +454,7 @@ is					----------
   is			----
 
     BYTES		: INTEGER;
-    SIZE_BYTES	: INTEGER	:= BYTES_PER_ELEMENT;
+    SIZE_BYTES	: INTEGER	:= ELEMENT_TYPE'SIZE / SYSTEM.STORAGE_UNIT;
 
 		---------------------
     function	GET_SIZE_SYSTEM_CALL	( FILE_ID :in INTEGER )		return INTEGER
@@ -512,7 +462,7 @@ is					----------
     begin
       ASM_OP_2'( OPCODE => Ld, LVL => 2, OFS => -8 );			-- FILE_ID
       ASM_OP_0'( OPCODE => SYS_FILE_GET_SIZE );
-      ASM_OP_2'( OPCODE => SD, LVL => 2, OFS => -16 );			-- Retour de la taille en octets
+      ASM_OP_2'( OPCODE => SD, LVL => 2, OFS => -24 );			-- Retour de la taille en octets
 
     end	GET_SIZE_SYSTEM_CALL;
 	---------------------
@@ -539,7 +489,7 @@ is					----------
     begin
       ASM_OP_2'( OPCODE => Ld, LVL => 2, OFS => -8 );
       ASM_OP_0'( OPCODE => SYS_FILE_GET_POS );
-      ASM_OP_2'( OPCODE => SD, LVL => 2, OFS => -16 );
+      ASM_OP_2'( OPCODE => SD, LVL => 2, OFS => -24 );
 
     end	GET_POS_SYSTEM_CALL;
 	---------------------
@@ -550,7 +500,7 @@ is					----------
     begin
       ASM_OP_2'( OPCODE => Ld, LVL => 2, OFS => -8 );
       ASM_OP_0'( OPCODE => SYS_FILE_GET_SIZE );
-      ASM_OP_2'( OPCODE => SD, LVL => 2, OFS => -16 );
+      ASM_OP_2'( OPCODE => SD, LVL => 2, OFS => -24 );
 
     end	GET_SIZE_SYSTEM_CALL;
 	---------------------

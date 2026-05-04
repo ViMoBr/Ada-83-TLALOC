@@ -1,31 +1,29 @@
 with TEXT_IO; use TEXT_IO;
---with DIRECT_IO;
+with DIRECT_IO;
 			--------------
 procedure			DIRECT_IO_TEST
 is			--------------
 
+  B : BOOLEAN := TRUE;
+
   package INT_IO	is new INTEGER_IO( INTEGER );
-
-  G	: FILE_TYPE;
-
---  package FLT_DIRECT_IO is new DIRECT_IO( FLOAT );
---  use FLT_DIRECT_IO;
-
---  F	: FLT_DIRECT_IO.FILE_TYPE;
-  R	: FLOAT	:= 3.5;
-
   use INT_IO;
 
+  package LONG_FLOAT_DIRECT_IO is new DIRECT_IO( LONG_FLOAT );
+  use LONG_FLOAT_DIRECT_IO;
+
+  F	: LONG_FLOAT_DIRECT_IO.FILE_TYPE;
+  R	: LONG_FLOAT	:= 3.1415;
+
 begin
-  PUT( " FLOAT SIZE (bits) = "  ); PUT( R'SIZE ); NEW_LINE;
+  PUT( " FLOAT SIZE (bits) = "  ); PUT( LONG_FLOAT'SIZE ); NEW_LINE;
 
-  CREATE( G, OUT_FILE, "io_int.dat" );
-  PUT( G, 128 );
-  CLOSE( G );
-
---  CREATE( F, OUT_FILE, "flt_direct.dat" );
---  WRITE( F, R );
---  CLOSE( F );
+  CREATE( F, OUT_FILE, "long_float_direct.dat" );
+--put_line( "create ok" );
+  WRITE( F, R );
+--put_line( "write ok" );
+  CLOSE( F );
+put_line( "close ok" );
 
 end	DIRECT_IO_TEST;
 	--------------

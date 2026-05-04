@@ -543,6 +543,30 @@ null;
     FRM_PRM_GRP	: TREE;
     SPEC_PRM_ID_S	: SEQ_TYPE;
 
+
+		---------------------
+    function	IS_IN_CURRENT_GENERIC	( ID : TREE ) return BOOLEAN
+    is		---------------------
+      REGION : TREE := ID;
+    begin
+      if  not CODI.IN_GENERIC_BODY  then
+        return FALSE;
+      end if;
+
+      while  REGION /= TREE_VOID  loop
+        if  REGION = CODI.ENCLOSING_GENERIC  then
+          return TRUE;
+        end if;
+
+        exit when REGION = TREE_VOID;
+
+        REGION := D( XD_REGION, REGION );
+      end loop;
+      return FALSE;
+
+    end	IS_IN_CURRENT_GENERIC;
+	---------------------
+
 		-----------------------------
     procedure	INVERSE_RECURSE_ON_PARAMETERS
     is		-----------------------------
@@ -658,25 +682,10 @@ null;
 	-----------------------------
 
   begin
-
-    -- Propager le GFP si on est dans un corps de generique et que la procedure
-    -- appelee est dans le meme package generique (elle attend GFP_ofs en dernier PRM).
-    -- Le GFP est le premier empile (avant les parametres Ada).
-    if  CODI.IN_GENERIC_BODY  and then  D( XD_REGION, PROC_ID ).TY = DN_GENERIC_ID  then
-      declare
-        REGION_NAME :constant STRING := PRINT_NAME( D( LX_SYMREP, D( XD_REGION, PROC_ID ) ) );
---        PACK_NAME   :constant STRING := PRINT_NAME( D( LX_SYMREP, D( AS_SOURCE_NAME, CODI.ENCLOSING_BODY ) ) );
-      begin
-
-put_line( "; region=" & REGION_NAME & " .TY= " &  NODE_NAME'IMAGE( D( XD_REGION, PROC_ID ).TY ) );
---put_line( "; pack=" & PACK_NAME );
-
---        if  REGION_NAME = PACK_NAME  then
-          PUT( tab & "La " & INTEGER'IMAGE( CODI.CUR_LEVEL ) & ',' & tab & "-GFP_ofs" );
-          if  CODI.DEBUG  then PUT( tab50 & "; propagation GFP generique" ); end if;
-          NEW_LINE;
---        end if;
-      end;
+    if  IS_IN_CURRENT_GENERIC( PROC_ID )  then
+      PUT( tab & "La " & INTEGER'IMAGE( CODI.CUR_LEVEL ) & ',' & tab & "-GFP_ofs" );
+      if  CODI.DEBUG  then PUT( tab50 & "; propagation GFP generique" ); end if;
+      NEW_LINE;
     end if;
 
     if not IS_EMPTY( SPEC_PRM_GRP_S ) then
@@ -695,9 +704,9 @@ put_line( "; region=" & REGION_NAME & " .TY= " &  NODE_NAME'IMAGE( D( XD_REGION,
 	-------------------
 
 
-
-  procedure			CODE_STM_WITH_EXP		( STM_WITH_EXP :TREE )
-  is
+			-----------------
+  procedure		CODE_STM_WITH_EXP		( STM_WITH_EXP :TREE )
+  is			-----------------
   begin
 
     if  STM_WITH_EXP.TY = DN_RETURN
@@ -717,8 +726,9 @@ put_line( "; region=" & REGION_NAME & " .TY= " &  NODE_NAME'IMAGE( D( XD_REGION,
       CODE_STM_WITH_EXP_NAME( STM_WITH_EXP );
 
     end if;
-  end	CODE_STM_WITH_EXP;
 
+  end	CODE_STM_WITH_EXP;
+	-----------------
 
 				-----------
   procedure			CODE_RETURN		( ADA_RETURN :TREE )

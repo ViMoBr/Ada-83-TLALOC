@@ -217,7 +217,8 @@ is
 
   begin
     if  PACK_DEF.TY = DN_GENERIC_ID  then
-      IN_GENERIC_BODY := TRUE;
+      CODI.IN_GENERIC_BODY := TRUE;
+      CODI.ENCLOSING_GENERIC := PACK_DEF;
       PUT_LINE( PACK_NAME & " = " & "'" & PACK_NAME & "'" );
       PUT( "namespace " & PACK_NAME );
       if  CODI.DEBUG  then PUT( tab50 & ";---------- GENERIC PACKAGE" ); end if;

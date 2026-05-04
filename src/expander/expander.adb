@@ -67,6 +67,7 @@ is
   INSTANTIATION_MODEL_NAME		: TREE;
   GENERIC_MODEL_DECL_SEQ		: SEQ_TYPE;
   IN_GENERIC_BODY			: BOOLEAN			:= FALSE;					-- Traitement special pour les corps de	generique
+  ENCLOSING_GENERIC			: TREE;
 
   IN_SPEC_UNIT			: BOOLEAN;
 

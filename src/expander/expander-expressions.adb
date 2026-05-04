@@ -704,6 +704,66 @@ put_line(	"; adresse component id" );
     CHN_ATTR		: CHN_STD		:= CHN_ATTR_NAME;						-- NORMALISER EN STRING A FIRST=1
 
 
+		----------------
+    procedure	CODE_CONSTRAINED
+    is		----------------
+      PREFIX_DEFN		: TREE	:= D( SM_DEFN, PREFIX_NAME );
+      TYPE_SPEC		: TREE	:= TREE_VOID;
+    begin
+      if  PREFIX_DEFN.TY in CLASS_TYPE_NAME  then
+        TYPE_SPEC := D( SM_TYPE_SPEC, PREFIX_DEFN );
+
+      elsif  PREFIX_DEFN.TY in CLASS_OBJECT_NAME  then
+        TYPE_SPEC := D( SM_OBJ_TYPE, PREFIX_DEFN );
+
+      else
+        PUT_LINE( "; ATTRIBUTE CONSTRAINED : PREFIX NON TRAITE "
+	        & NODE_NAME'IMAGE( PREFIX_DEFN.TY ) );
+        PUT_LINE( tab & "LI" & tab & "0" );
+        return;
+      end if;
+
+      if  IS_GENERIC_FORMAL_TYPE( PREFIX_DEFN )  then
+	declare
+	  TYPE_NAME	: TREE := D( XD_SOURCE_NAME, TYPE_SPEC );
+	  TYPE_STR	: constant STRING := PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
+	begin
+	  -- Convention provisoire :
+	  -- un type formel est considere contraint ssi sa taille n'est pas -1.
+	  -- Cela couvre correctement le cas vise pour DIRECT_IO : type private contraint.
+	  PUT_LINE( tab & "La " & INTEGER'IMAGE( CODI.CUR_LEVEL ) & ',' & tab & "-GFP_ofs" );
+	  PUT_LINE( tab & "LId , -" & TYPE_STR & "__u_ofs" );
+	  PUT_LINE( tab & "LI" & tab & "-1" );
+	  PUT_LINE( tab & "CNE" );
+	end;
+
+      else
+	if  TYPE_SPEC.TY = DN_PRIVATE  or  TYPE_SPEC.TY = DN_L_PRIVATE  then
+	  TYPE_SPEC := D( SM_TYPE_SPEC, TYPE_SPEC );
+	end if;
+
+        case TYPE_SPEC.TY is
+        when DN_ARRAY =>
+	  PUT_LINE( tab & "LI" & tab & "0" );
+
+        when DN_CONSTRAINED_ARRAY
+	   | DN_INTEGER
+	   | DN_FLOAT
+	   | DN_ENUMERATION
+	   | DN_ACCESS
+	   | DN_RECORD =>
+	  PUT_LINE( tab & "LI" & tab & "1" );
+
+        when others =>
+	  PUT_LINE( "; ATTRIBUTE CONSTRAINED : TYPE NON TRAITE "
+	          & NODE_NAME'IMAGE( TYPE_SPEC.TY ) );
+	  PUT_LINE( tab & "LI" & tab & "0" );
+        end case;
+      end if;
+
+    end	CODE_CONSTRAINED;
+	----------------
+
 		---------------
     procedure	CODE_FIRST_LAST	( IS_LAST	:BOOLEAN )
     is		---------------
@@ -876,7 +936,7 @@ put_line(	"; adresse component id" );
 
     when	'C' =>
       if	CHN_ATTR(	2 ) = 'A'	 then null;			-- CALLABLE
-      elsif  CHN_ATTR( 2 .. 3	) = "ON"	then null;		-- CONSTRAINED
+      elsif  CHN_ATTR( 2 .. 3	) = "ON"	then CODE_CONSTRAINED;	-- CONSTRAINED
       elsif  CHN_ATTR( 2 .. 3	) = "OU"	then null;		-- COUNT
       end	if;
 
