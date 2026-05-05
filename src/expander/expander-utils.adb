@@ -423,7 +423,7 @@ is					-----
     else
       REGIONS_PATH(	REGION );
       PUT( RGN_NAME	);
-      if	REGION.TY	= DN_PROCEDURE_ID  then
+      if	REGION.TY	= DN_PROCEDURE_ID  or  REGION.TY = DN_FUNCTION_ID  then
         PUT( '_' & LABEL_STR(	LABEL_TYPE( DI( CD_LABEL, REGION ) ) ) );
       end	if;
       if	WITH_DOT	then PUT(	'.' ); end if;

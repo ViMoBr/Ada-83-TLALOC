@@ -157,6 +157,7 @@ VAR INTEGER__u_ofs, q
 	Sa	 0, INTEGER__u_ofs
 VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
 VAR DEFAULT_WIDTH_disp, d			; variable entiere
+	LI	 11
 	Sd  0,	DEFAULT_WIDTH_disp
 
 VAR DEFAULT_BASE_disp, d			; variable entiere
@@ -1374,7 +1375,7 @@ L64:					; post if
 	La  1,	-GFP_ofs				; propagation GFP generique
 	La 1, -FILE_ofs
 	LId	, 0, STANDARD.DIRECT_IO.FILE_TYPE.ID
-	CALL	STANDARD.DIRECT_IO.INDEX. ,GET_POS_SYSTEM_CALL_L63
+	CALL	STANDARD.DIRECT_IO.INDEX_L16. ,GET_POS_SYSTEM_CALL_L63
 	Sd  1,	BYTES_disp
 	Ld 1,	BYTES_disp
 	Ld 1,	SIZE_BYTES_disp
@@ -1442,7 +1443,7 @@ L67:					; post if
 	La  1,	-GFP_ofs				; propagation GFP generique
 	La 1, -FILE_ofs
 	LId	, 0, STANDARD.DIRECT_IO.FILE_TYPE.ID
-	CALL	STANDARD.DIRECT_IO.SIZE. ,GET_SIZE_SYSTEM_CALL_L66
+	CALL	STANDARD.DIRECT_IO.SIZE_L17. ,GET_SIZE_SYSTEM_CALL_L66
 	Sd  1,	BYTES_disp
 	Ld 1,	BYTES_disp
 	Ld 1,	SIZE_BYTES_disp
@@ -1532,13 +1533,13 @@ L73:					; post if
 	La  1,	-GFP_ofs				; propagation GFP generique
 	La 1, -FILE_ofs
 	LId	, 0, STANDARD.DIRECT_IO.FILE_TYPE.ID
-	CALL	STANDARD.DIRECT_IO.END_OF_FILE. ,GET_POS_SYSTEM_CALL_L69
+	CALL	STANDARD.DIRECT_IO.END_OF_FILE_L18. ,GET_POS_SYSTEM_CALL_L69
 	Sd  1,	POS_BYTES_disp
 	LI	0					; lieu resultat sur pile
 	La  1,	-GFP_ofs				; propagation GFP generique
 	La 1, -FILE_ofs
 	LId	, 0, STANDARD.DIRECT_IO.FILE_TYPE.ID
-	CALL	STANDARD.DIRECT_IO.END_OF_FILE. ,GET_SIZE_SYSTEM_CALL_L70
+	CALL	STANDARD.DIRECT_IO.END_OF_FILE_L18. ,GET_SIZE_SYSTEM_CALL_L70
 	Sd  1,	SIZ_BYTES_disp
 	Ld 1,	POS_BYTES_disp
 	Ld 1,	SIZ_BYTES_disp

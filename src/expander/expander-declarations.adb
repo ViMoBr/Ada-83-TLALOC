@@ -918,6 +918,12 @@ null;--     LOAD_TYPE_SIZE( TYPE_SPEC  );
 	PUT_LINE( "ELB" & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL ) );
 	PUT_LINE( "begin:" );
 
+	if  SOURCE_NAME.TY = DN_FUNCTION_ID  or  SOURCE_NAME.TY = DN_OPERATOR_ID  then
+	  PUT( tab & "LI" & tab & '0' );
+	  if  CODI.DEBUG  then PUT( tab50 & "; lieu result" ); end if;
+	  NEW_LINE;
+	end if;
+
 	PUT_LINE( tab & "LVA" & tab & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL - 1 ) & ", GFP_disp" );
 
 	declare
@@ -983,8 +989,37 @@ null;--     LOAD_TYPE_SIZE( TYPE_SPEC  );
 	  end loop;
  	end;
 
+	if  SOURCE_NAME.TY = DN_FUNCTION_ID  or  SOURCE_NAME.TY = DN_OPERATOR_ID  then
+	  declare
+	    USED_OBJECT_ID		: TREE		:= D( AS_NAME, HEADER );
+	    RESULT_TYPE_ID		: TREE		:= D( SM_DEFN, USED_OBJECT_ID );
+	    RESULT_TYPE_SPEC	: TREE		:= D( SM_TYPE_SPEC, RESULT_TYPE_ID );
+	    RESULT_SIZE_CHAR	: CHARACTER;
+	  begin
+	    if  RESULT_TYPE_SPEC.TY  in  CLASS_UNCONSTRAINED  then
+	      PUT_LINE( "; RESULTAT UNCONSTRAINED A FAIRE" );
+	    else
+	      RESULT_SIZE_CHAR := OPER_SIZ_CHAR( RESULT_TYPE_SPEC );
+	      if  RESULT_SIZE_CHAR /= 'v'  then
+	        PUT( tab & 'S' & RESULT_SIZE_CHAR
+		& tab & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL ) & ", -result__ofs"  );
+	        if  CODI.DEBUG  then PUT( tab50 & "; retour resultat" ); end if;
+	        NEW_LINE;
+--          DI( CD_RESULT_SIZE, SOURCE_NAME, DI( CD_IMPL_SIZE, RESULT_TYPE_SPEC ) );
+	      else
+	        PUT_LINE( "; RESULTAT PAR REFERENCE A FAIRE" );
+	        raise PROGRAM_ERROR;
+	      end if;
+	    end if;
+	  end;
+	end if;
+
 	PUT_LINE( tab & "UNLINK" & tab & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL ) );
-	PUT_LINE( tab & "RTD" & tab & "prm_siz" );
+	if  SOURCE_NAME.TY = DN_FUNCTION_ID  then
+	  PUT_LINE( tab & "RTD" & tab & "(prm_siz-8)" );
+	else
+	  PUT_LINE( tab & "RTD" & tab & "prm_siz" );
+	end if;
 
 	PUT( "endPRO" );
 	if  CODI.DEBUG  then PUT( tab50 & ";---------- end PRO " & SUB_NAME); end if;
@@ -998,16 +1033,6 @@ null;--     LOAD_TYPE_SIZE( TYPE_SPEC  );
         CODI.OUTPUT_CODE := TRUE;
       end if;
 
---      if  SOURCE_NAME.TY = DN_FUNCTION_ID or SOURCE_NAME.TY = DN_OPERATOR_ID  then
---        declare
---          USED_OBJECT_ID	: TREE := D( AS_NAME, HEADER );
---          RESULT_TYPE_ID	: TREE := D( SM_DEFN, USED_OBJECT_ID );
---          RESULT_TYPE_SPEC	: TREE := D( SM_TYPE_SPEC, RESULT_TYPE_ID );
---        begin
---null;
---          DI( CD_RESULT_SIZE, SOURCE_NAME, DI( CD_IMPL_SIZE, RESULT_TYPE_SPEC ) );
---        end;
---      end if;
     end;
     DEC_LEVEL;
 

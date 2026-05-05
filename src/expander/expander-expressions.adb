@@ -924,6 +924,116 @@ put_line(	"; adresse component id" );
     end	CODE_SIZE;
 	---------
 
+
+		----------
+    procedure	CODE_WIDTH
+    is		----------
+      PREFIX_DEFN	: TREE := D( SM_DEFN, PREFIX_NAME );
+      TYPE_SPEC	: TREE := TREE_VOID;
+      BITS	: INTEGER := 0;
+    begin
+      if  PREFIX_DEFN.TY in CLASS_TYPE_NAME  then
+        TYPE_SPEC := D( SM_TYPE_SPEC, PREFIX_DEFN );
+
+      elsif  PREFIX_DEFN.TY in CLASS_OBJECT_NAME  then
+        TYPE_SPEC := D( SM_OBJ_TYPE, PREFIX_DEFN );
+
+      else
+        PUT_LINE( "; ATTRIBUTE WIDTH : PREFIX NON TRAITE "
+		& NODE_NAME'IMAGE( PREFIX_DEFN.TY ) );
+        PUT_LINE( tab & "LI" & tab & "0" );
+        return;
+      end if;
+
+      if  TYPE_SPEC.TY = DN_PRIVATE  or  TYPE_SPEC.TY = DN_L_PRIVATE  then
+        TYPE_SPEC := D( SM_TYPE_SPEC, TYPE_SPEC );
+      end if;
+
+      if  IS_GENERIC_FORMAL_TYPE( PREFIX_DEFN )  then
+	declare
+	  TYPE_NAME	: TREE := D( XD_SOURCE_NAME, TYPE_SPEC );
+	  TYPE_STR	: constant STRING := PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
+	begin
+	  -- Premiere version : WIDTH des entiers generiques deduit de SIZE.
+	  -- Cela suffit pour INTEGER_IO et evite le trou de pile.
+	  PUT_LINE( "; WIDTH POUR FORMAL TYPE A REVOIR DANS EXPANDER-EXPRESSIONS " );
+--	  PUT_LINE( tab & "La " & INTEGER'IMAGE( CODI.CUR_LEVEL ) & ',' & tab & "-GFP_ofs" );
+--	  PUT_LINE( tab & "LId , -" & TYPE_STR & "__u_ofs" );
+
+	  -- Convertir SIZE -> WIDTH selon les tailles supportees.
+	  -- Ici on delegue au runtime expanse via une cascade simple.
+	  -- 8 -> 4 ; 16 -> 6 ; 32 -> 11 ; 64 -> 20
+--	  PUT_LINE( tab & "LI" & tab & "8" );
+--	  PUT_LINE( tab & "CEQ" );
+--	  PUT_LINE( tab & "BF" & tab & "width_not_8_"  & "; ERREUR A CORRIGER" ); -- LABEL_STR( LABEL_TYPE( DI( CD_LABEL, PREFIX_NAME ) ) ) );
+--	  PUT_LINE( tab & "LI" & tab & "4" );
+--	  PUT_LINE( tab & "BRA" & tab & "width_end_"   & "; ERREUR A CORRIGER" ); -- LABEL_STR( LABEL_TYPE( DI( CD_LABEL, PREFIX_NAME ) ) ) );
+
+--	  PUT_LINE( "width_not_8_" & "; ERREUR A CORRIGER" ); -- LABEL_STR( LABEL_TYPE( DI( CD_LABEL, PREFIX_NAME ) ) ) & ':' );
+--	  PUT_LINE( tab & "La " & INTEGER'IMAGE( CODI.CUR_LEVEL ) & ',' & tab & "-GFP_ofs" );
+--	  PUT_LINE( tab & "LId , -" & TYPE_STR & "__u_ofs" );
+--	  PUT_LINE( tab & "LI" & tab & "16" );
+--	  PUT_LINE( tab & "CEQ" );
+--	  PUT_LINE( tab & "BF" & tab & "width_not_16_" & "; ERREUR A CORRIGER" ); -- LABEL_STR( LABEL_TYPE( DI( CD_LABEL, PREFIX_NAME ) ) ) );
+--	  PUT_LINE( tab & "LI" & tab & "6" );
+--	  PUT_LINE( tab & "BRA" & tab & "width_end_"   & "; ERREUR A CORRIGER" ); -- LABEL_STR( LABEL_TYPE( DI( CD_LABEL, PREFIX_NAME ) ) ) );
+
+--	  PUT_LINE( "width_not_16_" & "; ERREUR A CORRIGER" ); -- LABEL_STR( LABEL_TYPE( DI( CD_LABEL, PREFIX_NAME ) ) ) & ':' );
+--	  PUT_LINE( tab & "La " & INTEGER'IMAGE( CODI.CUR_LEVEL ) & ',' & tab & "-GFP_ofs" );
+--	  PUT_LINE( tab & "LId , -" & TYPE_STR & "__u_ofs" );
+--	  PUT_LINE( tab & "LI" & tab & "32" );
+--	  PUT_LINE( tab & "CEQ" );
+--	  PUT_LINE( tab & "BF" & tab & "width_not_32_" & "; ERREUR A CORRIGER" ); -- LABEL_STR( LABEL_TYPE( DI( CD_LABEL, PREFIX_NAME ) ) ) );
+--	  PUT_LINE( tab & "LI" & tab & "11" );
+--	  PUT_LINE( tab & "BRA" & tab & "width_end_"   & "; ERREUR A CORRIGER" ); -- LABEL_STR( LABEL_TYPE( DI( CD_LABEL, PREFIX_NAME ) ) ) );
+
+--	  PUT_LINE( "width_not_32_" & "; ERREUR A CORRIGER" ); -- LABEL_STR( LABEL_TYPE( DI( CD_LABEL, PREFIX_NAME ) ) ) & ':' );
+--	  PUT_LINE( tab & "LI" & tab & "20" );
+
+--	  PUT_LINE( "width_end_" & "; ERREUR A CORRIGER" ); -- LABEL_STR( LABEL_TYPE( DI( CD_LABEL, PREFIX_NAME ) ) ) & ':' );
+	end;
+
+      else
+        case TYPE_SPEC.TY is
+        when DN_INTEGER =>
+	declare
+		--------------------------
+    function	SIGNED_WIDTH_FROM_SIZE	( BITS : INTEGER ) return INTEGER
+    is		--------------------------
+    begin
+      case BITS is
+      when 8  => return 4;   -- -128 .. 127
+      when 16 => return 6;   -- -32768 .. 32767
+      when 32 => return 11;  -- -2147483648 .. 2147483647
+      when 64 => return 20;  -- -9223372036854775808 .. 9223372036854775807
+      when others =>
+        -- Repli conservatif.
+        -- Evite tout trou de pile et couvre les tailles exotiques de facon raisonnable.
+        if    BITS <= 8   then return 4;
+        elsif BITS <= 16  then return 6;
+        elsif BITS <= 32  then return 11;
+        else                   return 20;
+        end if;
+      end case;
+    end	SIGNED_WIDTH_FROM_SIZE;
+	--------------------------
+	begin
+
+
+	  BITS := DI( CD_IMPL_SIZE, TYPE_SPEC );
+	  PUT_LINE( tab & "LI" & tab & INTEGER'IMAGE( SIGNED_WIDTH_FROM_SIZE( BITS ) ) );
+	end;
+        when others =>
+	  PUT_LINE( "; ATTRIBUTE WIDTH : TYPE NON TRAITE "
+	          & NODE_NAME'IMAGE( TYPE_SPEC.TY ) );
+	  PUT_LINE( tab & "LI" & tab & "0" );
+        end case;
+      end if;
+
+    end	CODE_WIDTH;
+	----------
+
+
   begin
     case	CHN_ATTR(	1 )  is
 
@@ -1049,7 +1159,7 @@ put_line(	"; adresse component id" );
         CODE_EXP( D( AS_EXP, ATTRIBUTE ) );
       end	if;
 
-    when	'W' => null;					-- WIDTH
+    when	'W' => CODE_WIDTH;					-- WIDTH
 
     when others => null;
     end case;
