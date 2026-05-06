@@ -1,8 +1,8 @@
 ------------------------------------------------------------------------------------------------------------------------
--- CC BY SA	EXPANDER.INSTRUCTIONS.ADB	VINCENT MORIN	21/6/2024	UNIVERSITE DE BRETAGNE OCCIDENTALE
+-- SPDX-FileCopyrightText: 2026 VINCENT MORIN, UBO
+-- SPDX-License-Identifier: GPL-3.0-or-later
 ------------------------------------------------------------------------------------------------------------------------
---	1	2	3	4	5	6	7	8	9	0	1
-
+--	1	2	3	4	5	6	7	8	9	0	1	2
 
 separate ( EXPANDER )
 				------------
@@ -1103,9 +1103,9 @@ null;
 	-----------
 
 
-
-  procedure			CODE_EXIT			( ADA_EXIT :TREE )
-  is
+			---------
+  procedure		CODE_EXIT			( ADA_EXIT :TREE )
+  is			---------
   begin
     declare
       LVB_LBL		:constant STRING	:= NEW_LABEL;
@@ -1137,9 +1137,14 @@ null;
         end if;
       end if;
     end;
+
   end	CODE_EXIT;
+	---------
 
 
 	------------
 end	INSTRUCTIONS;
 	------------
+
+------------------------------------------------------------------------------------------------------------------------
+--	1	2	3	4	5	6	7	8	9	0	1	2

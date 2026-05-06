@@ -1,8 +1,8 @@
 ------------------------------------------------------------------------------------------------------------------------
--- GPL_V3		MAKE_NOD.ADB	VINCENT MORIN	6/5/2025	UNIVERSITE DE BRETAGNE OCCIDENTALE
+-- SPDX-FileCopyrightText: 2026 VINCENT MORIN, UBO
+-- SPDX-License-Identifier: GPL-3.0-or-later
 ------------------------------------------------------------------------------------------------------------------------
 --	1	2	3	4	5	6	7	8	9	0	1	2
-
 
 SEPARATE ( IDL.SEM_PHASE  )
 

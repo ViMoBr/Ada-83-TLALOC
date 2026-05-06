@@ -1,12 +1,18 @@
-WITH GRMR_TBL, GRMR_OPS;
-USE  GRMR_TBL, GRMR_OPS;
-SEPARATE(	IDL )
+------------------------------------------------------------------------------------------------------------------------
+-- SPDX-FileCopyrightText: 2026 VINCENT MORIN, UBO
+-- SPDX-License-Identifier: GPL-3.0-or-later
+------------------------------------------------------------------------------------------------------------------------
+--	1	2	3	4	5	6	7	8	9	0	1	2
+
+with GRMR_TBL, GRMR_OPS;
+use  GRMR_TBL, GRMR_OPS;
+separate(	IDL )
 --|--------------------------------------------------------------------------------------------------
 --|		LOAD_GRMR
 --|--------------------------------------------------------------------------------------------------
-PROCEDURE	LOAD_GRMR	( NOM_TEXTE :STRING	) IS
+procedure	LOAD_GRMR	( NOM_TEXTE :STRING	) is
 
-  PROCEDURE READ_PARSE_TABLES	IS
+  procedure READ_PARSE_TABLES	is
     PTFILE		: FILE_TYPE;
     PTCHAR		: CHARACTER;
     PTINDEX		: INTEGER;
@@ -16,40 +22,40 @@ PROCEDURE	LOAD_GRMR	( NOM_TEXTE :STRING	) IS
     STRING_SEEN		: BOOLEAN;
     --|---------------------------------------------------------------------------------------------
     --|	PROCEDURE	STORE_ACTION
-    PROCEDURE STORE_ACTION IS
+    procedure STORE_ACTION is
       ACTION		: INTEGER;
       ACTION_OP		: GRMR_OP;
       TXT			: STRING(	1 .. 10 );
       LAST		: INTEGER;
       SYM			: TREE;
-    BEGIN
+    begin
       STRING_SEEN := FALSE;
       GRMR.AC_TBL_LAST := PTINDEX;
       INT_IO.GET ( PTFILE, ACTION );
-      IF ACTION < 0	THEN
+      if ACTION < 0	then
         GRMR.AC_TBL( PTINDEX ) := AC_SHORT( ACTION );
-      ELSE
+      else
         ACTION_OP := GRMR_OP'VAL( ACTION / 1000 );
-        IF ACTION_OP NOT IN GRMR_OP_QUOTE THEN
+        if ACTION_OP not in GRMR_OP_QUOTE then
 	GRMR.AC_TBL(PTINDEX) := AC_SHORT( ACTION );
-        ELSE
+        else
 	GET_LINE(	PTFILE, TXT, LAST );
 	SYM := STORE_SYM( TXT( 1 .. LAST ) );
 	GRMR.AC_TBL( PTINDEX ) := AC_SHORT( ACTION + INTEGER( SYM.PG ) );
 	GRMR.AC_TBL_LAST :=	GRMR.AC_TBL_LAST + 1;
 	GRMR.AC_TBL( GRMR.AC_TBL_LAST	) := AC_SHORT( SYM.LN );
 	STRING_SEEN := TRUE;
-        END IF;
-      END	IF;
-    END STORE_ACTION;
+        end if;
+      end	if;
+    end STORE_ACTION;
 
-  BEGIN
+  begin
     OPEN(	PTFILE, IN_FILE, "parse.tbl" );
-    WHILE	NOT END_OF_FILE( PTFILE ) LOOP
+    while	not END_OF_FILE( PTFILE ) loop
       GET( PTFILE, PTCHAR );
       INT_IO.GET( PTFILE, PTINDEX );
 
-      IF PTCHAR = 'S' THEN
+      if PTCHAR = 'S' then
         PUT( PTCHAR	);
         INT_IO.PUT(	PTINDEX );
         GRMR.ST_TBL_LAST := PTINDEX;
@@ -57,22 +63,22 @@ PROCEDURE	LOAD_GRMR	( NOM_TEXTE :STRING	) IS
         INT_IO.PUT(	GRMR.ST_TBL( PTINDEX ) );
         NEW_LINE;
 
-      ELSIF PTCHAR = 'T' THEN
+      elsif PTCHAR = 'T' then
         GRMR.AC_SYM_LAST := PTINDEX;
         STORE_ACTION;
-        DECLARE
+        declare
 	I	: INTEGER;
-        BEGIN
+        begin
 	INT_IO.GET ( PTFILE, I );
 	GRMR.AC_SYM( PTINDEX ) := AC_BYTE( I );
-        END;
+        end;
         SKIP_LINE( PTFILE );
-      ELSIF PTCHAR = 'A' THEN
+      elsif PTCHAR = 'A' then
         STORE_ACTION;
-        IF NOT STRING_SEEN THEN
+        if not STRING_SEEN then
 	SKIP_LINE( PTFILE );
-        END IF;
-      ELSIF PTCHAR = 'N' THEN
+        end if;
+      elsif PTCHAR = 'N' then
         PUT( PTCHAR	);
         INT_IO.PUT(	PTINDEX );
         GRMR.NTER_LAST := PTINDEX;
@@ -82,37 +88,37 @@ PROCEDURE	LOAD_GRMR	( NOM_TEXTE :STRING	) IS
         NTER_TXTREP	:= STORE_TEXT ( NTER_TEXT( 1 .. LAST ) );
         GRMR.NTER_PG( PTINDEX	) := AC_BYTE( NTER_TXTREP.PG );
         GRMR.NTER_LN( PTINDEX	) := AC_BYTE( NTER_TXTREP.LN );
-      ELSE
+      else
         PUT( PTCHAR	);
         INT_IO.PUT(	PTINDEX );
         PUT_LINE( "*****TABLE ERROR" );
-        RAISE PROGRAM_ERROR;
-      END	IF;
-    END LOOP;
+        raise PROGRAM_ERROR;
+      end	if;
+    end loop;
     CLOSE( PTFILE );
     PUT_LINE( "PARSE TABLES READ." );
-  END READ_PARSE_TABLES;
+  end READ_PARSE_TABLES;
 
-  PROCEDURE WRITE_BINARY IS
-    USE GRMR_TBL_IO;
+  procedure WRITE_BINARY is
+    use GRMR_TBL_IO;
     BIN_FILE	: GRMR_TBL_IO.FILE_TYPE;
-  BEGIN
+  begin
     CREATE( BIN_FILE, OUT_FILE, "parse.bin" );
     WRITE( BIN_FILE, GRMR_TBL.GRMR );
     CLOSE( BIN_FILE	);
-  END WRITE_BINARY;
+  end WRITE_BINARY;
 
 
-BEGIN
+begin
   CREATE_IDL_TREE_FILE( NOM_TEXTE & ".lar" );
-  DECLARE
+  declare
     DUMMY		: TREE	:= STORE_SYM( "_ADDRESS");
     USER_ROOT	: TREE	:= MAKE( DN_USER_ROOT );
-  BEGIN
+  begin
     D( XD_USER_ROOT, TREE_ROOT, USER_ROOT );
     READ_PARSE_TABLES;
     CLOSE_IDL_TREE_FILE;
     WRITE_BINARY;
-  END;
+  end;
 --|--------------------------------------------------------------------------------------------------
-END LOAD_GRMR;
+end LOAD_GRMR;

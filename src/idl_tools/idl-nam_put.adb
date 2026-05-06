@@ -1,135 +1,141 @@
-SEPARATE (IDL)
+------------------------------------------------------------------------------------------------------------------------
+-- SPDX-FileCopyrightText: 2026 VINCENT MORIN, UBO
+-- SPDX-License-Identifier: GPL-3.0-or-later
+------------------------------------------------------------------------------------------------------------------------
+--	1	2	3	4	5	6	7	8	9	0	1	2
+
+separate (IDL)
 --|-------------------------------------------------------------------------------------------------
 --|		PROCEDURE	NAM_PUT
 --|
-PROCEDURE	NAM_PUT (	NOM_TEXTE	:STRING )	IS						--| ECRIT	DES PARTIES ADA POUR UN NOUVEL ENVIRONNEMENT IDL
+procedure	NAM_PUT (	NOM_TEXTE	:STRING )	is						--| ECRIT	DES PARTIES ADA POUR UN NOUVEL ENVIRONNEMENT IDL
 
   RESULT_FILE	: TEXT_IO.FILE_TYPE;
 
-  ASSERTION_ERROR	: EXCEPTION;
+  ASSERTION_ERROR	: exception;
 
   --|-----------------------------------------------------------------------------------------------
   --|		PACKAGE TBL
   --|-----------------------------------------------------------------------------------------------
-  PACKAGE	TBL IS
+  package	TBL is
 
-    TYPE AC_STRING		IS ACCESS	STRING;
+    type AC_STRING		is access	STRING;
 
-    TYPE NODE_IDX		IS RANGE 0 .. 255;						--| INDICE DES NOEUDS
-    TYPE ATTR_IDX		IS RANGE 0 .. 255;						--| INDICE DES ATTRIBUTS
-    TYPE CLASS_IDX		IS RANGE 0 .. 150;						--| INDICE DES CLASSES
-    TYPE FIELD_IDX		IS RANGE 0 .. 1500;						--| INDICE DES CHAMPS (CITATION D'UN ATTRIBUT DANS UN NOEUD)
+    type NODE_IDX		is range 0 .. 255;						--| INDICE DES NOEUDS
+    type ATTR_IDX		is range 0 .. 255;						--| INDICE DES ATTRIBUTS
+    type CLASS_IDX		is range 0 .. 150;						--| INDICE DES CLASSES
+    type FIELD_IDX		is range 0 .. 1500;						--| INDICE DES CHAMPS (CITATION D'UN ATTRIBUT DANS UN NOEUD)
 
     LAST_NODE		: NODE_IDX		:= 0;
     LAST_ATTR		: ATTR_IDX		:= 0;
     LAST_CLASS		: CLASS_IDX		:= 0;
 
-    NODE_IMAGE		: ARRAY( NODE_IDX )	OF AC_STRING;
-    START_FIELD		: ARRAY( NODE_IDX )	OF FIELD_IDX;
-    END_FIELD		: ARRAY( NODE_IDX )	OF FIELD_IDX;
+    NODE_IMAGE		: array( NODE_IDX )	of AC_STRING;
+    START_FIELD		: array( NODE_IDX )	of FIELD_IDX;
+    END_FIELD		: array( NODE_IDX )	of FIELD_IDX;
 
-    ATTR_IMAGE		: ARRAY( ATTR_IDX )	OF AC_STRING;				--| NOMS DES ATTRIBUTS
-    ATTR_KIND		: ARRAY( ATTR_IDX )	OF CHARACTER;				--| 'A' 'B' 'I' ATTRIBUT TREE, BOOLEAN,	INTEGER OR SEQUENCE
+    ATTR_IMAGE		: array( ATTR_IDX )	of AC_STRING;				--| NOMS DES ATTRIBUTS
+    ATTR_KIND		: array( ATTR_IDX )	of CHARACTER;				--| 'A' 'B' 'I' ATTRIBUT TREE, BOOLEAN,	INTEGER OR SEQUENCE
 
-    CLASS_IMAGE		: ARRAY( CLASS_IDX ) OF AC_STRING;				--| NOM DES CLASSES
-    START_NODE		: ARRAY( CLASS_IDX ) OF NODE_IDX;				--| PREMIER NOEUD DE CLASSE
-    END_NODE		: ARRAY( CLASS_IDX ) OF NODE_IDX;				--| DERNIER NOEUD DE CLASSE
+    CLASS_IMAGE		: array( CLASS_IDX ) of AC_STRING;				--| NOM DES CLASSES
+    START_NODE		: array( CLASS_IDX ) of NODE_IDX;				--| PREMIER NOEUD DE CLASSE
+    END_NODE		: array( CLASS_IDX ) of NODE_IDX;				--| DERNIER NOEUD DE CLASSE
 
-    ATTR_IDX_OF_NODE	: ARRAY( FIELD_IDX ) OF ATTR_IDX;
+    ATTR_IDX_OF_NODE	: array( FIELD_IDX ) of ATTR_IDX;
 
 
-    FUNCTION  UPPER_CASE	( A :STRING )		RETURN STRING;
-    FUNCTION  LOWER_CASE	( A :STRING )		RETURN STRING;
-    PROCEDURE READ_TABLES	( NOM_TABLE :STRING	);
+    function  UPPER_CASE	( A :STRING )		return STRING;
+    function  LOWER_CASE	( A :STRING )		return STRING;
+    procedure READ_TABLES	( NOM_TABLE :STRING	);
 
     --|---------------------------------------------------------------------------------------------
-  END TBL;
+  end TBL;
 
-  USE TBL;
-  PACKAGE	BODY TBL IS SEPARATE;
+  use TBL;
+  package	body TBL is separate;
 
 
   --|-----------------------------------------------------------------------------------------------
   --|		PROCEDURE	PUT_NODES_NAMES
   --|
-  PROCEDURE PUT_NODES_NAMES IS
+  procedure PUT_NODES_NAMES is
     I		: NATURAL		:= 0;
-  BEGIN
+  begin
     PUT_LINE( "  type NODE_NAME" & ASCII.HT & "is (" );
-    FOR N	IN 0 .. TBL.LAST_NODE LOOP
-      IF I > 4 THEN
+    for N	in 0 .. TBL.LAST_NODE loop
+      if I > 4 then
         NEW_LINE;
         I	:= 0;
-      END	IF;
-      DECLARE
-        STR	: STRING RENAMES TBL.NODE_IMAGE( N ).ALL;
-      BEGIN
+      end	if;
+      declare
+        STR	: STRING renames TBL.NODE_IMAGE( N ).all;
+      begin
         PUT( ASCII.HT & "DN_"	& UPPER_CASE( STR )	& "," );
-        IF STR'LENGTH+3 > 18 THEN
+        if STR'LENGTH+3 > 18 then
 	I := I + 1;
-        END IF;
-      END;
+        end if;
+      end;
       I := I + 1;
-    END LOOP;
+    end loop;
 
     NEW_LINE;
     PUT_LINE( ASCII.HT & "DN_VIRGIN" );
     PUT_LINE( ASCII.HT & ");"	);
     PUT_LINE( RESULT_FILE, ASCII.HT & "for NODE_NAME'SIZE use 8;" );
     NEW_LINE;
-  END PUT_NODES_NAMES;
+  end PUT_NODES_NAMES;
   --|-----------------------------------------------------------------------------------------------
   --|		PROCEDURE	PUT_ATTRIBUTES_NAMES
   --|
-  PROCEDURE PUT_ATTRIBUTES_NAMES IS
+  procedure PUT_ATTRIBUTES_NAMES is
     I		: NATURAL		:= 0;
-  BEGIN
+  begin
     PUT_LINE( "  type ATTRIBUTE_NAME" &	ASCII.HT & "is (" );
-    FOR A	IN 0 .. TBL.LAST_ATTR-1 LOOP
-      IF I > 4 THEN
+    for A	in 0 .. TBL.LAST_ATTR-1 loop
+      if I > 4 then
         NEW_LINE;
         I	:= 0;
-      END	IF;
-      DECLARE
-        STR		: STRING RENAMES TBL.ATTR_IMAGE( A ).ALL;
-      BEGIN
+      end	if;
+      declare
+        STR		: STRING renames TBL.ATTR_IMAGE( A ).all;
+      begin
         PUT( ASCII.HT & UPPER_CASE( STR( STR'FIRST .. STR'LAST ) ) & "," );
-        IF STR'LENGTH > 18 THEN
+        if STR'LENGTH > 18 then
 	I := I + 1;
-        END IF;
-      END;
+        end if;
+      end;
       I := I + 1;
-    END LOOP;
+    end loop;
 
-    IF TBL.LAST_ATTR MOD 5 = 0 THEN
+    if TBL.LAST_ATTR mod 5 = 0 then
       NEW_LINE;
-    END IF;
-    DECLARE
-      STR		: STRING RENAMES TBL.ATTR_IMAGE(  TBL.LAST_ATTR ).ALL;
-    BEGIN
+    end if;
+    declare
+      STR		: STRING renames TBL.ATTR_IMAGE(  TBL.LAST_ATTR ).all;
+    begin
       PUT( ASCII.HT	& UPPER_CASE( STR( STR'FIRST .. STR'LAST ) ) );
-    END;
+    end;
     NEW_LINE;
     PUT_LINE( ASCII.HT & ");"	);
     NEW_LINE;
-  END PUT_ATTRIBUTES_NAMES;
+  end PUT_ATTRIBUTES_NAMES;
   --|-----------------------------------------------------------------------------------------------
   --|		PROCEDURE	PUT_CLASSES
   --|
-  PROCEDURE PUT_CLASSES IS
-  BEGIN
-    FOR C	IN 0 .. TBL.LAST_CLASS LOOP
-      PUT_LINE( "  subtype CLASS_" & UPPER_CASE( CLASS_IMAGE( C ).ALL	)
-	       & ASCII.HT &	"is NODE_NAME RANGE DN_" & UPPER_CASE( TBL.NODE_IMAGE( START_NODE( C ) ).ALL )
-	       & ASCII.HT &	".. DN_" & UPPER_CASE( TBL.NODE_IMAGE( END_NODE( C ) ).ALL )
+  procedure PUT_CLASSES is
+  begin
+    for C	in 0 .. TBL.LAST_CLASS loop
+      PUT_LINE( "  subtype CLASS_" & UPPER_CASE( CLASS_IMAGE( C ).all	)
+	       & ASCII.HT &	"is NODE_NAME RANGE DN_" & UPPER_CASE( TBL.NODE_IMAGE( START_NODE( C ) ).all )
+	       & ASCII.HT &	".. DN_" & UPPER_CASE( TBL.NODE_IMAGE( END_NODE( C ) ).all )
 	       & ';'
 	     );
-    END LOOP;
+    end loop;
     NEW_LINE;
-  END;
+  end;
 
 
-BEGIN
+begin
   TBL.READ_TABLES( NOM_TEXTE );
 
   CREATE(	RESULT_FILE, OUT_FILE, LOWER_CASE( NOM_TEXTE ) & "_node_attr_class_names.ads" );
@@ -151,4 +157,4 @@ BEGIN
   CLOSE( RESULT_FILE );
 
 --|-------------------------------------------------------------------------------------------------
-END NAM_PUT;
+end NAM_PUT;

@@ -1,20 +1,26 @@
-SEPARATE(	IDL )
+------------------------------------------------------------------------------------------------------------------------
+-- SPDX-FileCopyrightText: 2026 VINCENT MORIN, UBO
+-- SPDX-License-Identifier: GPL-3.0-or-later
+------------------------------------------------------------------------------------------------------------------------
+--	1	2	3	4	5	6	7	8	9	0	1	2
+
+separate(	IDL )
 --|-------------------------------------------------------------------------------------------------
 --|		LALR_GRMR
-PROCEDURE	LALR_GRMR	( NOM_TEXTE :STRING	) IS
+procedure	LALR_GRMR	( NOM_TEXTE :STRING	) is
 
-  TYPE STBL_TYPE	IS RECORD
+  type STBL_TYPE	is record
 		  CHANGED, CLOSURE	: BOOLEAN	:= FALSE;
 		  STATE		: TREE	:= TREE_VOID;
-		END RECORD;
-  STBL	: ARRAY( 1 .. 1100 ) OF STBL_TYPE;
+		end record;
+  STBL	: array( 1 .. 1100 ) of STBL_TYPE;
 
-  TYPE RTBL_TYPE	IS RECORD
+  type RTBL_TYPE	is record
 		  STATE_NBR	: INTEGER	:= 0;
 		  REQ_CHECK	: BOOLEAN;
 		  FOLLOW		: TREE;
-		END RECORD;
-  RTBL	: ARRAY( 1 .. 400 )	OF RTBL_TYPE;
+		end record;
+  RTBL	: array( 1 .. 400 )	of RTBL_TYPE;
 
   MORE_PASSES		: BOOLEAN;
   MORE_CLOSURE_PASSES	: BOOLEAN;
@@ -22,33 +28,33 @@ PROCEDURE	LALR_GRMR	( NOM_TEXTE :STRING	) IS
 
   --|-----------------------------------------------------------------------------------------------
   --|		FUNCTION GET_RULE_NBR
-  FUNCTION GET_RULE_NBR ( SYL_LIST :SEQ_TYPE ) RETURN INTEGER IS
+  function GET_RULE_NBR ( SYL_LIST :SEQ_TYPE ) return INTEGER is
     SYL	: TREE;
     RULE	: TREE;
-  BEGIN
-    IF IS_EMPTY( SYL_LIST ) THEN
-      RETURN 0;
-    END IF;
+  begin
+    if IS_EMPTY( SYL_LIST ) then
+      return 0;
+    end if;
     SYL := HEAD( SYL_LIST );
-    IF SYL.TY /= DN_NONTERMINAL THEN
-      RETURN 0;
-    END IF;
+    if SYL.TY /= DN_NONTERMINAL then
+      return 0;
+    end if;
     RULE := D( XD_RULE, SYL );
-    IF RULE.TY = DN_VOID THEN
-      RETURN 0;
-    END IF;
-    RETURN DI( XD_RULE_NBR, D( XD_RULEINFO, RULE ) );
-  END;
+    if RULE.TY = DN_VOID then
+      return 0;
+    end if;
+    return DI( XD_RULE_NBR, D( XD_RULEINFO, RULE ) );
+  end;
   --|-----------------------------------------------------------------------------------------------
   --|		PROCEDURE	INITIALIZE
-  PROCEDURE INITIALIZE IS
+  procedure INITIALIZE is
     STATE_SEQ	: SEQ_TYPE	:= GR_STATE_SEQ;
     STATE		: TREE;
     STATE_NBR	: INTEGER;
     ITEM_SEQ	: SEQ_TYPE;
     ITEM		: TREE;
-  BEGIN
-    WHILE	NOT IS_EMPTY( STATE_SEQ) LOOP
+  begin
+    while	not IS_EMPTY( STATE_SEQ) loop
       POP( STATE_SEQ, STATE );
       STATE_NBR := DI( XD_STATE_NBR, STATE );
       PUT( "INIT" );
@@ -57,47 +63,47 @@ PROCEDURE	LALR_GRMR	( NOM_TEXTE :STRING	) IS
       STBL( STATE_NBR ).STATE	:= STATE;
 
       ITEM_SEQ := LIST( STATE);
-      WHILE NOT IS_EMPTY( ITEM_SEQ ) LOOP
+      while not IS_EMPTY( ITEM_SEQ ) loop
         POP( ITEM_SEQ, ITEM );
 
 INIT_MAKE_RTBL_ONE_ITEM:
-        DECLARE
+        declare
 	FOLLOW	: TREE;
-        BEGIN
-	IF DI ( XD_SYL_NBR,	ITEM ) = 0 THEN			-- CLOSURE ITEM
+        begin
+	if DI ( XD_SYL_NBR,	ITEM ) = 0 then			-- CLOSURE ITEM
 	  STBL( STATE_NBR ).CLOSURE := TRUE;
 
-	  DECLARE
+	  declare
 	    ALTERNATIVE	: TREE		:= D( XD_ALTERNATIVE, ITEM );
 	    RULE		: TREE		:= D( XD_RULE, ALTERNATIVE );
 	    RULE_INFO	: TREE		:= D( XD_RULEINFO, RULE );
 	    RULE_NBR	: INTEGER		:= DI( XD_RULE_NBR,	RULE_INFO	);
-	    RTBL_I	: RTBL_TYPE	RENAMES RTBL( RULE_NBR );
-	  BEGIN
-	    IF RTBL_I.STATE_NBR /= STATE_NBR THEN		-- HAVE NOT ALREADY	SEEN A CLOSURE ITEM	FOR THIS RULE
+	    RTBL_I	: RTBL_TYPE	renames RTBL( RULE_NBR );
+	  begin
+	    if RTBL_I.STATE_NBR /= STATE_NBR then		-- HAVE NOT ALREADY	SEEN A CLOSURE ITEM	FOR THIS RULE
 	      RTBL_I.STATE_NBR := STATE_NBR;
 	      RTBL_I.FOLLOW	:= MAKE( DN_TERMINAL_S );
 	      LIST( RTBL_I.FOLLOW, (TREE_NIL,TREE_NIL) );
-	    END IF;
+	    end if;
 	    FOLLOW := RTBL_I.FOLLOW;
-	  END;
+	  end;
 
-	ELSE				-- BASIS ITEM
+	else				-- BASIS ITEM
 	  FOLLOW := MAKE( DN_TERMINAL_S );
 	  LIST( FOLLOW, (TREE_NIL,TREE_NIL) );
-	END IF;
+	end if;
 	D( XD_FOLLOW, ITEM,	FOLLOW );
-        END INIT_MAKE_RTBL_ONE_ITEM;
+        end INIT_MAKE_RTBL_ONE_ITEM;
 
-      END	LOOP;
+      end	loop;
 
-      IF STBL( STATE_NBR ).CLOSURE THEN
+      if STBL( STATE_NBR ).CLOSURE then
         ITEM_SEQ :=	LIST( STATE );
-        WHILE NOT IS_EMPTY( ITEM_SEQ ) LOOP
+        while not IS_EMPTY( ITEM_SEQ ) loop
 	POP( ITEM_SEQ, ITEM	);
 
 INIT_CLOSE_RTBL_ONE_ITEM:
-	DECLARE
+	declare
 	  SYL_LIST	: SEQ_TYPE	:= LIST( ITEM );
 	  RULE_NBR	: INTEGER;
 	  SYL		: TREE;
@@ -105,63 +111,63 @@ INIT_CLOSE_RTBL_ONE_ITEM:
 	  FOLLOW		: TREE;
 	  FOLLOW_SEQ	: SEQ_TYPE;
 	  FOLLOW_SAVE	: SEQ_TYPE;
-	BEGIN
+	begin
 	  RULE_NBR := GET_RULE_NBR( SYL_LIST );
 
-	  IF RULE_NBR = 0 THEN
-	    GOTO FIN;
-	  END IF;
+	  if RULE_NBR = 0 then
+	    goto FIN;
+	  end if;
 
 	  SYL_LIST := TAIL(	SYL_LIST );
-	  IF IS_EMPTY( SYL_LIST ) THEN
-	    GOTO FIN;
-	  END IF;
+	  if IS_EMPTY( SYL_LIST ) then
+	    goto FIN;
+	  end if;
 
-	  IF RTBL( RULE_NBR	).STATE_NBR /= STATE_NBR THEN
+	  if RTBL( RULE_NBR	).STATE_NBR /= STATE_NBR then
 	    PUT( "*** RULE TABLE INCORRECT." );
 	    INT_IO.PUT( RULE_NBR );
 	    INT_IO.PUT( RTBL( RULE_NBR ).STATE_NBR );
 	    INT_IO.PUT( STATE_NBR );
 	    NEW_LINE;
-	    GOTO FIN;
-	  END IF;
+	    goto FIN;
+	  end if;
 
 	  FOLLOW := RTBL( RULE_NBR ).FOLLOW;
 	  FOLLOW_SEQ := LIST( FOLLOW );
 	  FOLLOW_SAVE := FOLLOW_SEQ;
 
-	  LOOP
+	  loop
 	    POP( SYL_LIST, SYL );
-	    IF SYL.TY = DN_TERMINAL THEN
+	    if SYL.TY = DN_TERMINAL then
 	      FOLLOW_SEQ :=	TERM_LIST.UNION( FOLLOW_SEQ, SYL );
-	      EXIT;
-	    ELSE
+	      exit;
+	    else
 	      RULE := D( XD_RULE, SYL	);
-	      IF RULE.TY = DN_VOID THEN
-	        EXIT;
-	      END	IF;
+	      if RULE.TY = DN_VOID then
+	        exit;
+	      end	if;
 	      FOLLOW_SEQ :=	TERM_LIST.UNION( FOLLOW_SEQ, LIST( D( XD_RULEINFO, RULE ) )	);
-	      IF NOT DB( XD_IS_NULLABLE, RULE )	THEN
-	        EXIT;
-	      END	IF;
-	    END IF;
-	    EXIT WHEN IS_EMPTY( SYL_LIST );
-	  END LOOP;
+	      if not DB( XD_IS_NULLABLE, RULE )	then
+	        exit;
+	      end	if;
+	    end if;
+	    exit when IS_EMPTY( SYL_LIST );
+	  end loop;
 
-	  IF NOT TERM_LIST.SAME( FOLLOW_SEQ, FOLLOW_SAVE ) THEN
+	  if not TERM_LIST.SAME( FOLLOW_SEQ, FOLLOW_SAVE ) then
 	    LIST(	FOLLOW, FOLLOW_SEQ );
 	    STBL(	STATE_NBR	).CHANGED	:= TRUE;
-	  END IF;
-	END INIT_CLOSE_RTBL_ONE_ITEM;
+	  end if;
+	end INIT_CLOSE_RTBL_ONE_ITEM;
 <<FIN>>
-	NULL;
-        END LOOP;
-      END	IF;
-    END LOOP;
-  END INITIALIZE;
+	null;
+        end loop;
+      end	if;
+    end loop;
+  end INITIALIZE;
   --|-----------------------------------------------------------------------------------------------
   --|		PROCEDURE	TRANS_CLOSE
-  PROCEDURE TRANS_CLOSE IS
+  procedure TRANS_CLOSE is
     STATE		: TREE;
     RULE		: TREE;
     RULE_NBR	: INTEGER;
@@ -171,7 +177,7 @@ INIT_CLOSE_RTBL_ONE_ITEM:
 
     --|---------------------------------------------------------------------------------------------
     --|		PROCEDURE	TRANS_CLOSE_CLOSURE_ONE_ITEM
-    PROCEDURE TRANS_CLOSE_CLOSURE_ONE_ITEM ( STATE_NBR :INTEGER; ITEM	:TREE ) IS
+    procedure TRANS_CLOSE_CLOSURE_ONE_ITEM ( STATE_NBR :INTEGER; ITEM	:TREE ) is
       SYL_LIST	: SEQ_TYPE	:= LIST( ITEM);
       RULE_NBR	: INTEGER;
       SYL		: TREE;
@@ -179,126 +185,126 @@ INIT_CLOSE_RTBL_ONE_ITEM:
       FOLLOW	: TREE;
       FOLLOW_SEQ	: SEQ_TYPE;
       FOLLOW_SAVE	: SEQ_TYPE;
-    BEGIN
+    begin
       RULE_NBR := GET_RULE_NBR( SYL_LIST );
-      IF RULE_NBR =	0 THEN
-        RETURN;
-      END	IF;
-      IF RTBL( RULE_NBR ).STATE_NBR /= STATE_NBR THEN
+      if RULE_NBR =	0 then
+        return;
+      end	if;
+      if RTBL( RULE_NBR ).STATE_NBR /= STATE_NBR then
         PUT( "*** RULE TABLE INCORRECT." );
         INT_IO.PUT(	RULE_NBR );
         INT_IO.PUT(	RTBL( RULE_NBR ).STATE_NBR );
         INT_IO.PUT(	STATE_NBR	);
         NEW_LINE;
-        RETURN;
-      END	IF;
+        return;
+      end	if;
 
-      LOOP
+      loop
         SYL_LIST :=	TAIL( SYL_LIST );			-- CAN'T BE EMPTY
-        EXIT WHEN IS_EMPTY( SYL_LIST );
+        exit when IS_EMPTY( SYL_LIST );
         SYL := HEAD( SYL_LIST);
-        EXIT WHEN SYL.TY = DN_TERMINAL;
+        exit when SYL.TY = DN_TERMINAL;
         RULE := D( XD_RULE, SYL);
-        EXIT WHEN RULE.TY = DN_VOID;
-        EXIT WHEN NOT DB( XD_IS_NULLABLE, RULE );
-      END	LOOP;
-      IF IS_EMPTY( SYL_LIST )	THEN
+        exit when RULE.TY = DN_VOID;
+        exit when not DB( XD_IS_NULLABLE, RULE );
+      end	loop;
+      if IS_EMPTY( SYL_LIST )	then
         FOLLOW := RTBL( RULE_NBR ).FOLLOW;
         FOLLOW_SEQ := LIST( FOLLOW );
         FOLLOW_SAVE	:= FOLLOW_SEQ;
         FOLLOW_SEQ := TERM_LIST.UNION( FOLLOW_SEQ, LIST( D(	XD_FOLLOW, ITEM ) )	);
 
-        IF NOT TERM_LIST.SAME( FOLLOW_SEQ, FOLLOW_SAVE ) THEN
+        if not TERM_LIST.SAME( FOLLOW_SEQ, FOLLOW_SAVE ) then
 	LIST( FOLLOW, FOLLOW_SEQ );
 	RTBL( RULE_NBR ).REQ_CHECK :=	TRUE;
 	MORE_CLOSURE_PASSES	:= TRUE;
-	END IF;
-        END IF;
-      END	TRANS_CLOSE_CLOSURE_ONE_ITEM;
+	end if;
+        end if;
+      end	TRANS_CLOSE_CLOSURE_ONE_ITEM;
 
-    BEGIN
-      FOR	STATE_NBR	IN STBL'RANGE LOOP
-        IF STBL( STATE_NBR ).CHANGED THEN
+    begin
+      for	STATE_NBR	in STBL'range loop
+        if STBL( STATE_NBR ).CHANGED then
 	STBL( STATE_NBR ).CHANGED := FALSE;
 	STATE := STBL( STATE_NBR ).STATE;
 	ITEM_SEQ := LIST( STATE );
-	IF STBL( STATE_NBR ).CLOSURE THEN
+	if STBL( STATE_NBR ).CLOSURE then
 	  PUT ( "CL ");
 	  INT_IO.PUT( STATE_NBR, 1 );
 	  NEW_LINE;
 	  ITEM_SUBSEQ := ITEM_SEQ;
-	  WHILE NOT IS_EMPTY( ITEM_SUBSEQ) LOOP
+	  while not IS_EMPTY( ITEM_SUBSEQ) loop
 
 MAKE_RTBL_ONE_ITEM:
-	  DECLARE
+	  declare
 	    ITEM		: TREE	:= HEAD( ITEM_SUBSEQ );
 	    RULE		: TREE;
 	    RULE_NBR	: INTEGER;
-	  BEGIN
-	    IF DI( XD_SYL_NBR, ITEM )	= 0 THEN			-- CLOSURE ITEM
+	  begin
+	    if DI( XD_SYL_NBR, ITEM )	= 0 then			-- CLOSURE ITEM
 	      RULE := D( XD_RULE, D( XD_ALTERNATIVE, ITEM	) );
 	      RULE_NBR := DI( XD_RULE_NBR, D( XD_RULEINFO, RULE ) );
-	      DECLARE
-	        RTBL_I: RTBL_TYPE RENAMES RTBL(	RULE_NBR );
-	      BEGIN
-	        IF RTBL_I.STATE_NBR /= STATE_NBR THEN		-- HAVE NOT ALREADY	SEEN A CLOSURE ITEM	FOR THIS RULE
+	      declare
+	        RTBL_I: RTBL_TYPE renames RTBL(	RULE_NBR );
+	      begin
+	        if RTBL_I.STATE_NBR /= STATE_NBR then		-- HAVE NOT ALREADY	SEEN A CLOSURE ITEM	FOR THIS RULE
 		RTBL_I.STATE_NBR :=	STATE_NBR;
 		RTBL_I.REQ_CHECK :=	FALSE;
 		RTBL_I.FOLLOW := D(	XD_FOLLOW, ITEM);
-	        END IF;
-	      END;
-	    END IF;
-	  END MAKE_RTBL_ONE_ITEM;
+	        end if;
+	      end;
+	    end if;
+	  end MAKE_RTBL_ONE_ITEM;
 
 	  ITEM_SUBSEQ := TAIL( ITEM_SUBSEQ );
-	END LOOP;
+	end loop;
 				-- CHECK ALL ITEMS ONCE
 	MORE_CLOSURE_PASSES	:= FALSE;
 	ITEM_SUBSEQ := ITEM_SEQ;
-	WHILE NOT	IS_EMPTY(	ITEM_SUBSEQ ) LOOP
+	while not	IS_EMPTY(	ITEM_SUBSEQ ) loop
 	  TRANS_CLOSE_CLOSURE_ONE_ITEM( STATE_NBR, HEAD( ITEM_SUBSEQ ) );
 	  ITEM_SUBSEQ := TAIL( ITEM_SUBSEQ );
-	END LOOP;
+	end loop;
 				-- NOW CHECK ITEMS THAT HAVE BEEN CHANGED
-	WHILE MORE_CLOSURE_PASSES LOOP
+	while MORE_CLOSURE_PASSES loop
 	  MORE_CLOSURE_PASSES := FALSE;
 	  ITEM_SUBSEQ := ITEM_SEQ;
-	  WHILE NOT IS_EMPTY( ITEM_SUBSEQ) LOOP
+	  while not IS_EMPTY( ITEM_SUBSEQ) loop
 	    ITEM := HEAD( ITEM_SUBSEQ);
-	    IF DI( XD_SYL_NBR, ITEM) /= 0 THEN
+	    if DI( XD_SYL_NBR, ITEM) /= 0 then
 	      ITEM_SUBSEQ := TAIL( ITEM_SUBSEQ );
-	    ELSE
+	    else
 	      RULE := D( XD_RULE, D( XD_ALTERNATIVE, ITEM	) );
 	      RULE_NBR := DI( XD_RULE_NBR, D( XD_RULEINFO, RULE ) );
-	      IF RTBL( RULE_NBR ).REQ_CHECK THEN
+	      if RTBL( RULE_NBR ).REQ_CHECK then
 	        RTBL( RULE_NBR ).REQ_CHECK := FALSE;
-	        LOOP
+	        loop
 		TRANS_CLOSE_CLOSURE_ONE_ITEM(	STATE_NBR, ITEM );
 		ITEM_SUBSEQ := TAIL	( ITEM_SUBSEQ );
-		EXIT WHEN	IS_EMPTY ( ITEM_SUBSEQ );
+		exit when	IS_EMPTY ( ITEM_SUBSEQ );
 		ITEM := HEAD( ITEM_SUBSEQ );
-		EXIT WHEN	D( XD_RULE, D( XD_ALTERNATIVE, ITEM ) )	/= RULE;
-	        END LOOP;
-	      ELSE
-	        LOOP
+		exit when	D( XD_RULE, D( XD_ALTERNATIVE, ITEM ) )	/= RULE;
+	        end loop;
+	      else
+	        loop
 		ITEM_SUBSEQ := TAIL( ITEM_SUBSEQ );
-		EXIT WHEN	IS_EMPTY(	ITEM_SUBSEQ );
+		exit when	IS_EMPTY(	ITEM_SUBSEQ );
 		ITEM := HEAD( ITEM_SUBSEQ );
-		EXIT WHEN	D( XD_RULE, D( XD_ALTERNATIVE, ITEM)) /= RULE;
-	        END LOOP;
-	      END	IF;
-	    END IF;
-	  END LOOP;
-	END LOOP;
-        END IF;
+		exit when	D( XD_RULE, D( XD_ALTERNATIVE, ITEM)) /= RULE;
+	        end loop;
+	      end	if;
+	    end if;
+	  end loop;
+	end loop;
+        end if;
         PUT( "GOTO " );
         INT_IO.PUT(	STATE_NBR, 1 );
         NEW_LINE;
         ITEM_SUBSEQ	:= ITEM_SEQ;
-        WHILE NOT IS_EMPTY( ITEM_SUBSEQ	) LOOP
+        while not IS_EMPTY( ITEM_SUBSEQ	) loop
 
 TRANS_CLOSE_GOTO_ONE_ITEM:
-	DECLARE
+	declare
 	  ITEM		: TREE		:= HEAD( ITEM_SUBSEQ );
 	  ALT_NBR		: INTEGER;
 	  SYL_NBR		: INTEGER;
@@ -308,43 +314,43 @@ TRANS_CLOSE_GOTO_ONE_ITEM:
 	  FOLLOW		: TREE;
 	  FOLLOW_SEQ	: SEQ_TYPE;
 	  FOLLOW_SAVE	: SEQ_TYPE;
-	BEGIN
-	  IF GOTO_STATE.TY /= DN_VOID	THEN
+	begin
+	  if GOTO_STATE.TY /= DN_VOID	then
 	    ALT_NBR := DI( XD_ALT_NBR, D( XD_ALTERNATIVE,	ITEM ) );
 	    SYL_NBR := DI( XD_SYL_NBR, ITEM ) +	1;
 	    GOTO_ITEMSEQ :=	LIST( GOTO_STATE );
-	    LOOP
+	    loop
 	      GOTO_ITEM := HEAD( GOTO_ITEMSEQ );
-	      EXIT WHEN DI(	XD_ALT_NBR, D( XD_ALTERNATIVE, GOTO_ITEM ) ) = ALT_NBR
-		      AND	THEN DI( XD_SYL_NBR, GOTO_ITEM) = SYL_NBR;
+	      exit when DI(	XD_ALT_NBR, D( XD_ALTERNATIVE, GOTO_ITEM ) ) = ALT_NBR
+		      and	then DI( XD_SYL_NBR, GOTO_ITEM) = SYL_NBR;
 	      GOTO_ITEMSEQ := TAIL( GOTO_ITEMSEQ );		-- NEVER EMPTY, BECAUSE DESIRED ITEM IS	IN GO TO STATE
-	    END LOOP;
+	    end loop;
 	    FOLLOW := D( XD_FOLLOW, GOTO_ITEM );
 	    FOLLOW_SAVE := LIST( FOLLOW );
 	    FOLLOW_SEQ := TERM_LIST.UNION( FOLLOW_SAVE, LIST( D( XD_FOLLOW, ITEM ) ) );
-	    IF NOT TERM_LIST.SAME( FOLLOW_SEQ, FOLLOW_SAVE ) THEN
+	    if not TERM_LIST.SAME( FOLLOW_SEQ, FOLLOW_SAVE ) then
 	      MORE_PASSES := TRUE;
 	      STBL( DI( XD_STATE_NBR,	GOTO_STATE ) ).CHANGED := TRUE;
 	      LIST ( FOLLOW, FOLLOW_SEQ );
-	    END IF;
-	  END IF;
-	END TRANS_CLOSE_GOTO_ONE_ITEM;
+	    end if;
+	  end if;
+	end TRANS_CLOSE_GOTO_ONE_ITEM;
 
 	ITEM_SUBSEQ := TAIL( ITEM_SUBSEQ );
-        END LOOP;
-      END	IF;
-    END LOOP;
-  END TRANS_CLOSE;
+        end loop;
+      end	if;
+    end loop;
+  end TRANS_CLOSE;
 
-BEGIN
+begin
   OPEN_IDL_TREE_FILE( NOM_TEXTE & ".lar" );
   GR_STATE_SEQ := LIST( D( XD_STATELIST, D( XD_USER_ROOT, TREE_ROOT )	) );
   INITIALIZE;
-  LOOP
+  loop
     MORE_PASSES := FALSE;
     TRANS_CLOSE;
-    EXIT WHEN NOT MORE_PASSES;
-  END LOOP;
+    exit when not MORE_PASSES;
+  end loop;
   CLOSE_IDL_TREE_FILE;
 --|-------------------------------------------------------------------------------------------------
-END LALR_GRMR;
+end LALR_GRMR;

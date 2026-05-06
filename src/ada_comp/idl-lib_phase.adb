@@ -1,25 +1,8 @@
---------------------------------------------------------------------------------
--- TLALOC	(The Lonesome Ada Loving Ol'timer Compiler) Strict Ada 83 Compiler
--- Copyright (C) 2024-2026 Vincent MORIN - Université de Bretagne Occidentale
---
--- This program is free software: you can redistribute it and/or modify
--- it under the terms of the GNU General Public License as published by
--- the Free Software Foundation, either	version 3	of the License, or
--- (at your option)	any later	version.
---
--- This program is distributed in the hope that it will be useful,
--- but WITHOUT ANY WARRANTY; without even the implied warranty of
--- MERCHANTABILITY or FITNESS	FOR A PARTICULAR PURPOSE. See	the
--- GNU General Public License	for more details.
---
--- You should have received a	copy of the GNU General Public License
--- along with this program. If not, see	<https://www.gnu.org/licenses/>.
---------------------------------------------------------------------------------
-
 ------------------------------------------------------------------------------------------------------------------------
---	LIB_PHASE.ADB	VINCENT MORIN	21/6/2024		UNIVERSITE DE BRETAGNE OCCIDENTALE	(UBO)
+-- SPDX-FileCopyrightText: 2026 VINCENT MORIN, UBO
+-- SPDX-License-Identifier: GPL-3.0-or-later
 ------------------------------------------------------------------------------------------------------------------------
---	1	2	3	4	5	6	7	8	9	A	B	C
+--	1	2	3	4	5	6	7	8	9	0	1	2
 
 with SEQUENTIAL_IO;
 separate ( IDL )
@@ -1249,5 +1232,5 @@ begin
 end	LIB_PHASE;
 	---------
 
---	1	2	3	4	5	6	7	8	9	A	B	C
+--	1	2	3	4	5	6	7	8	9	0	1	2
 ------------------------------------------------------------------------------------------------------------------------

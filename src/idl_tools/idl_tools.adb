@@ -1,16 +1,22 @@
-WITH TEXT_IO, IDL;
-USE  TEXT_IO;									--| LA VERSION ADAPTÉE À LA GESTION DES	STRUCTURES DE GRAMMAIRE LALR
+------------------------------------------------------------------------------------------------------------------------
+-- SPDX-FileCopyrightText: 2026 VINCENT MORIN, UBO
+-- SPDX-License-Identifier: GPL-3.0-or-later
+------------------------------------------------------------------------------------------------------------------------
+--	1	2	3	4	5	6	7	8	9	0	1	2
+
+with TEXT_IO, IDL;
+use  TEXT_IO;									--| LA VERSION ADAPTÉE À LA GESTION DES	STRUCTURES DE GRAMMAIRE LALR
 --|-------------------------------------------------------------------------------------------------
 --|		PROCEDURE	IDL_TOOLS
 --|-------------------------------------------------------------------------------------------------
-PROCEDURE	IDL_TOOLS	IS
+procedure	IDL_TOOLS	is
 
    C	: CHARACTER;
    L	: NATURAL;
    CMD	: STRING(1..64);
-BEGIN
+begin
 
-  LOOP
+  loop
     NEW_LINE;
     PUT_LINE ( "-----------------------------------------------" );
     PUT_LINE ( "                OUTILS IDL" );
@@ -27,34 +33,34 @@ BEGIN
     C := CMD( 1 );
     NEW_LINE;
 
-    CASE C IS
-    WHEN 'R' | 'T' | 'N' =>
+    case C is
+    when 'R' | 'T' | 'N' =>
       PUT	( "NOM DE FICHIER DESCRIPTION (SANS EXTENSION .idl) : " );
       GET_LINE ( CMD, L );
       NEW_LINE;
 
-    WHEN 'Q' =>
-      EXIT;
+    when 'Q' =>
+      exit;
 
-    WHEN OTHERS =>
+    when others =>
       NEW_LINE;
-    END CASE;
+    end case;
 
-    IF C = 'R' THEN
+    if C = 'R' then
       IDL.IDL_READ ( CMD( 1..L ) );
 
-    ELSIF	C = 'T' THEN
+    elsif	C = 'T' then
       IDL.TBL_PUT (	CMD( 1..L	) );
 
-    ELSIF	C = 'N' THEN
+    elsif	C = 'N' then
       IDL.NAM_PUT (	CMD( 1..L	) );
-    END IF;
+    end if;
 
     NEW_LINE;
 
-  END LOOP;
+  end loop;
 
   PUT_LINE ( "AU REVOIR ..." );
 
 --|------------------------------------------------------------------------------------------------
-END IDL_TOOLS;
+end IDL_TOOLS;

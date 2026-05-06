@@ -1,9 +1,15 @@
-SEPARATE(	IDL )
+------------------------------------------------------------------------------------------------------------------------
+-- SPDX-FileCopyrightText: 2026 VINCENT MORIN, UBO
+-- SPDX-License-Identifier: GPL-3.0-or-later
+------------------------------------------------------------------------------------------------------------------------
+--	1	2	3	4	5	6	7	8	9	0	1	2
+
+separate(	IDL )
 --|--------------------------------------------------------------------------------------------------
 --|		INIT_GRMR
 --|--------------------------------------------------------------------------------------------------
-PROCEDURE	INIT_GRMR	( NOM_TEXTE :STRING	) IS
-  USE  TERM_LIST;
+procedure	INIT_GRMR	( NOM_TEXTE :STRING	) is
+  use  TERM_LIST;
 
   GRAMMAR		: TREE;
   GR_RULE_SEQ	: SEQ_TYPE;
@@ -13,7 +19,7 @@ PROCEDURE	INIT_GRMR	( NOM_TEXTE :STRING	) IS
 
   --|-----------------------------------------------------------------------------------------------
   --|	PROCEDURE	INITIALIZE
-  PROCEDURE INITIALIZE IS
+  procedure INITIALIZE is
     RULE_SEQ		: SEQ_TYPE	:= GR_RULE_SEQ;
     RULE			: TREE;
     RULE_INIT_LIST		: SEQ_TYPE;
@@ -28,8 +34,8 @@ PROCEDURE	INIT_GRMR	( NOM_TEXTE :STRING	) IS
     NONTER_DEF_LIST		: SEQ_TYPE;
     RULE_COUNT		: INTEGER	:= 0;
     INIT_NONTER_S		: TREE;
-  BEGIN
-    WHILE	NOT IS_EMPTY( RULE_SEQ ) LOOP							--| TANT QU'IL Y A DES RÈGLES
+  begin
+    while	not IS_EMPTY( RULE_SEQ ) loop							--| TANT QU'IL Y A DES RÈGLES
       POP( RULE_SEQ, RULE );								--| EN EXTRAIRE UNE
       RULE_COUNT :=	RULE_COUNT + 1;							--| UNE DE PLUS VUE
 
@@ -47,60 +53,60 @@ PROCEDURE	INIT_GRMR	( NOM_TEXTE :STRING	) IS
       GENS_TER_STR := FALSE;
 
       ALT_SEQ := LIST( RULE );							--| PRENDRE LA LISTE D'ALTERNATIVES
-      WHILE NOT IS_EMPTY( ALT_SEQ ) LOOP						--| TANT QU'IL Y A DES ALTERNATIVES
+      while not IS_EMPTY( ALT_SEQ ) loop						--| TANT QU'IL Y A DES ALTERNATIVES
         POP( ALT_SEQ, ALT );								--| EN EXTRAIRE UNE
         D	 ( XD_RULE, ALT, RULE );							--| MENTIONNER LA RÈGLE QUI LA CONTIENT
-        DECLARE
+        declare
 	ALT_NOT_NULLABLE	: BOOLEAN	:= FALSE;
 	ALT_NOT_GEN_TER_STR	: BOOLEAN	:= FALSE;
-        BEGIN
+        begin
 	SYL_SEQ := LIST( ALT );							--| PRENDRE LA LISTE DE SYLLABES DE L'ALTERNATIVE
-	IF NOT IS_EMPTY( SYL_SEQ ) THEN						--| S'IL Y A DES SYLLABES
+	if not IS_EMPTY( SYL_SEQ ) then						--| S'IL Y A DES SYLLABES
 	  SYL := HEAD( SYL_SEQ );							--| PRENDRE LA TÊTE
-	  IF SYL.TY = DN_TERMINAL THEN						--| SI C'EST UN TERMINAL
+	  if SYL.TY = DN_TERMINAL then						--| SI C'EST UN TERMINAL
 	    RULE_INIT_LIST := UNION( RULE_INIT_LIST, SYL );				--| L'AJOUTER À LA LISTE DES TÊTES TERMINALES D'ALTERNATIVES
-	  END IF;
-	  WHILE NOT IS_EMPTY( SYL_SEQ	) LOOP						--| TANT QU'IL Y A DES SYLLABES
+	  end if;
+	  while not IS_EMPTY( SYL_SEQ	) loop						--| TANT QU'IL Y A DES SYLLABES
 	    POP( SYL_SEQ, SYL );							--| EN EXTRAIRE UNE
-	    IF SYL.TY = DN_TERMINAL THEN						--| SI C'EST UN TERMINAL
+	    if SYL.TY = DN_TERMINAL then						--| SI C'EST UN TERMINAL
 	      ALT_NOT_NULLABLE := TRUE;						--| INDIQUER NON ANNULABLE
-	    ELSE									--| C'EST	UN NON TERMINAL
+	    else									--| C'EST	UN NON TERMINAL
 	      NONTER_NAME := D( XD_SYMREP, SYL );
 	      NONTER_DEF_LIST := LIST( NONTER_NAME );
-	      WHILE NOT IS_EMPTY( NONTER_DEF_LIST ) AND THEN HEAD( NONTER_DEF_LIST).TY /= DN_RULE	LOOP
+	      while not IS_EMPTY( NONTER_DEF_LIST ) and then HEAD( NONTER_DEF_LIST).TY /= DN_RULE	loop
 	        NONTER_DEF_LIST := TAIL( NONTER_DEF_LIST );
-	      END	LOOP;
-	      IF IS_EMPTY( NONTER_DEF_LIST ) THEN
+	      end	loop;
+	      if IS_EMPTY( NONTER_DEF_LIST ) then
 	        ERROR( D( LX_SRCPOS, SYL ), "NON-TERMINAL NOT DEFINED - " & PRINT_NAME(	NONTER_NAME ) );
 	        D( XD_RULE,	SYL, TREE_VOID );
 	        ALT_NOT_NULLABLE := TRUE;
-	      ELSE
+	      else
 	        D( XD_RULE,	SYL, HEAD( NONTER_DEF_LIST ) );				-- ASSUME	THE WORST	ABOUT THE	NON-TERMINAL FOR NOW
 	        ALT_NOT_NULLABLE    := TRUE;
 	        ALT_NOT_GEN_TER_STR := TRUE;
-	      END	IF;
-	    END IF;
-	  END LOOP;
-	END IF;
-	IF NOT ALT_NOT_NULLABLE THEN
+	      end	if;
+	    end if;
+	  end loop;
+	end if;
+	if not ALT_NOT_NULLABLE then
 	  IS_NULLABLE := TRUE;
-	END IF;
-	IF NOT ALT_NOT_GEN_TER_STR THEN
+	end if;
+	if not ALT_NOT_GEN_TER_STR then
 	  GENS_TER_STR := TRUE;
-	END IF;
-        END;
-      END	LOOP;
+	end if;
+        end;
+      end	loop;
 
       LIST( RULEINFO,RULE_INIT_LIST );
       DB	( XD_GENS_TER_STR, RULEINFO, GENS_TER_STR );
       DB	( XD_IS_NULLABLE, RULE, IS_NULLABLE );
-    END LOOP;
+    end loop;
 	      -- FIRST RULE	IS ALWAYS	REACHABLE
     DB( XD_IS_REACHABLE, D( XD_RULEINFO, HEAD( GR_RULE_SEQ ) ), TRUE );
-  END INITIALIZE;
+  end INITIALIZE;
   --|-----------------------------------------------------------------------------------------------
   --|	PROCEDURE	TRANS_CLOSE
-  PROCEDURE TRANS_CLOSE IS
+  procedure TRANS_CLOSE is
     RULE_SEQ		: SEQ_TYPE	:= GR_RULE_SEQ;
     RULE			: TREE;
     RULE_INIT_LIST		: SEQ_TYPE;
@@ -124,8 +130,8 @@ PROCEDURE	INIT_GRMR	( NOM_TEXTE :STRING	) IS
     INIT_NONTER_S		: TREE;
     INIT_NONTER_SEQ		: SEQ_TYPE;
 
-  BEGIN
-    WHILE	NOT IS_EMPTY( RULE_SEQ ) LOOP
+  begin
+    while	not IS_EMPTY( RULE_SEQ ) loop
       RULE     := HEAD( RULE_SEQ );
       RULE_SEQ := TAIL( RULE_SEQ );
 
@@ -143,139 +149,139 @@ PROCEDURE	INIT_GRMR	( NOM_TEXTE :STRING	) IS
       CHANGE_FLAG := FALSE;
 
       ALT_SEQ := LIST( RULE );
-      WHILE NOT IS_EMPTY( ALT_SEQ ) LOOP
+      while not IS_EMPTY( ALT_SEQ ) loop
         POP( ALT_SEQ, ALT );
 
         ALT_NOT_NULLABLE   :=	FALSE;
         ALT_NOT_GEN_TER_STR:=	FALSE;
         SYL_SEQ	       :=	LIST ( ALT);
-        IF NOT IS_EMPTY( SYL_SEQ ) THEN
+        if not IS_EMPTY( SYL_SEQ ) then
 	SYL := HEAD( SYL_SEQ );
-	IF SYL.TY	= DN_NONTERMINAL THEN
+	if SYL.TY	= DN_NONTERMINAL then
 	  NONTER_RULE := D(	XD_RULE, SYL );
-	  IF NONTER_RULE.TY	/= DN_VOID THEN
+	  if NONTER_RULE.TY	/= DN_VOID then
 	    INIT_NONTER_SEQ	:= R_UNION( INIT_NONTER_SEQ, LIST( D( XD_INIT_NONTER_S, D( XD_RULEINFO, NONTER_RULE ) ) )	);
-	  END IF;
-	END IF;
-        END IF;
-        WHILE NOT IS_EMPTY( SYL_SEQ ) LOOP
+	  end if;
+	end if;
+        end if;
+        while not IS_EMPTY( SYL_SEQ ) loop
 	POP( SYL_SEQ, SYL );
-	IF SYL.TY	= DN_TERMINAL THEN
-	  IF NOT ALT_NOT_NULLABLE THEN
+	if SYL.TY	= DN_TERMINAL then
+	  if not ALT_NOT_NULLABLE then
 	    ALT_NOT_NULLABLE := TRUE;
-	    IF TIMECHANGED >= TIMECHECKED THEN
+	    if TIMECHANGED >= TIMECHECKED then
 						-- OTHERWISE ALREADY DONE
 	      RULE_INIT_LIST := UNION( RULE_INIT_LIST, SYL );
-	    END IF;
-	  END IF;
-	ELSE -- SINCE IT'S DN_NONTERMINAL
+	    end if;
+	  end if;
+	else -- SINCE IT'S DN_NONTERMINAL
 	  NONTER_RULE := D(	XD_RULE, SYL );
-	  IF NONTER_RULE.TY	= DN_VOID	THEN
+	  if NONTER_RULE.TY	= DN_VOID	then
 	    ALT_NOT_NULLABLE := TRUE;
-	  ELSE
+	  else
 	    NONTER_INFO := D( XD_RULEINFO, NONTER_RULE );
 	    NONTER_CHANGED := DI( XD_TIMECHANGED, NONTER_INFO );
-	    IF TIMECHANGED >= TIMECHECKED AND THEN IS_REACHABLE AND	THEN NOT DB( XD_IS_REACHABLE,	NONTER_INFO ) THEN
+	    if TIMECHANGED >= TIMECHECKED and then IS_REACHABLE and	then not DB( XD_IS_REACHABLE,	NONTER_INFO ) then
 	      MORE_PASSES := TRUE;
 	      DB(	XD_IS_REACHABLE, NONTER_INFO,	TRUE);
 	      DI(	XD_TIMECHANGED, NONTER_INFO, PASS );
-	    END IF;
-	    IF NOT ALT_NOT_NULLABLE THEN
-	      IF NOT DB( XD_IS_NULLABLE, NONTER_RULE ) THEN
+	    end if;
+	    if not ALT_NOT_NULLABLE then
+	      if not DB( XD_IS_NULLABLE, NONTER_RULE ) then
 	        ALT_NOT_NULLABLE := TRUE;
-	      ELSE
-	        IF NONTER_CHANGED > TIMECHANGED	THEN
+	      else
+	        if NONTER_CHANGED > TIMECHANGED	then
 								-- KEEP LOOKING IF NONTER BECAME NULLABLE
 		TIMECHANGED := NONTER_CHANGED;
-	        END IF;
-	      END	IF;
-	      IF NONTER_CHANGED >= TIMECHECKED THEN
+	        end if;
+	      end	if;
+	      if NONTER_CHANGED >= TIMECHECKED then
 	        RULE_INIT_LIST := UNION ( RULE_INIT_LIST,	LIST ( NONTER_INFO ) );
-	      END	IF;
-	    END IF;
-	    IF NOT ALT_NOT_GEN_TER_STR AND THEN	NOT GENS_TER_STR AND THEN NOT	DB ( XD_GENS_TER_STR, NONTER_INFO ) THEN
+	      end	if;
+	    end if;
+	    if not ALT_NOT_GEN_TER_STR and then	not GENS_TER_STR and then not	DB ( XD_GENS_TER_STR, NONTER_INFO ) then
 	      ALT_NOT_GEN_TER_STR := TRUE;
-	    END IF;
-	  END IF;
-	END IF;
-	EXIT WHEN	ALT_NOT_NULLABLE AND THEN GENS_TER_STR AND THEN TIMECHANGED	< TIMECHECKED;
-        END LOOP;
-        IF NOT ALT_NOT_NULLABLE THEN
+	    end if;
+	  end if;
+	end if;
+	exit when	ALT_NOT_NULLABLE and then GENS_TER_STR and then TIMECHANGED	< TIMECHECKED;
+        end loop;
+        if not ALT_NOT_NULLABLE then
 	IS_NULLABLE := TRUE;
-        END IF;
-        IF NOT ALT_NOT_GEN_TER_STR THEN
+        end if;
+        if not ALT_NOT_GEN_TER_STR then
 	GENS_TER_STR := TRUE;
-        END IF;
-      END	LOOP;
+        end if;
+      end	loop;
 
-      IF NOT SAME (	LIST ( RULEINFO ), RULE_INIT_LIST ) THEN
+      if not SAME (	LIST ( RULEINFO ), RULE_INIT_LIST ) then
         LIST ( RULEINFO, RULE_INIT_LIST	);
         CHANGE_FLAG	:= TRUE;
-      END	IF;
-      IF NOT SAME (	LIST ( INIT_NONTER_S), INIT_NONTER_SEQ ) THEN
+      end	if;
+      if not SAME (	LIST ( INIT_NONTER_S), INIT_NONTER_SEQ ) then
         LIST ( INIT_NONTER_S,	INIT_NONTER_SEQ );
         CHANGE_FLAG	:= TRUE;
-      END	IF;
-      IF GENS_TER_STR AND THEN NOT DB (	XD_GENS_TER_STR, RULEINFO ) THEN
+      end	if;
+      if GENS_TER_STR and then not DB (	XD_GENS_TER_STR, RULEINFO ) then
         DB ( XD_GENS_TER_STR,	RULEINFO,	TRUE );
         CHANGE_FLAG	:= TRUE;
-      END	IF;
-      IF IS_NULLABLE AND THEN	NOT DB ( XD_IS_NULLABLE, RULE	) THEN
+      end	if;
+      if IS_NULLABLE and then	not DB ( XD_IS_NULLABLE, RULE	) then
         DB ( XD_IS_NULLABLE, RULE, TRUE	);
         CHANGE_FLAG	:= TRUE;
-      END	IF;
-      IF CHANGE_FLAG THEN
+      end	if;
+      if CHANGE_FLAG then
         DI ( XD_TIMECHANGED, RULEINFO, PASS );
         MORE_PASSES	:= TRUE;
-      END	IF;
-    END LOOP;
-  END TRANS_CLOSE;
+      end	if;
+    end loop;
+  end TRANS_CLOSE;
   --|-----------------------------------------------------------------------------------------------
   --|	PROCEDURE	CHECK_GRAMMAR
-  PROCEDURE CHECK_GRAMMAR IS
+  procedure CHECK_GRAMMAR is
     RULE_SEQ	: SEQ_TYPE	:= GR_RULE_SEQ;
     RULE		: TREE;
     RULEINFO	: TREE;
-  BEGIN
-    WHILE	NOT IS_EMPTY( RULE_SEQ ) LOOP
+  begin
+    while	not IS_EMPTY( RULE_SEQ ) loop
       POP( RULE_SEQ, RULE );
       RULEINFO := D( XD_RULEINFO, RULE );
-      IF NOT DB( XD_IS_REACHABLE, RULEINFO ) THEN
+      if not DB( XD_IS_REACHABLE, RULEINFO ) then
         ERROR( D( LX_SRCPOS,RULE ), "RULE CANNOT BE REACHED - " & PRINT_NAME( D( XD_NAME,	RULE ) ) );
-      END	IF;
-      IF NOT DB( XD_GENS_TER_STR, RULEINFO ) THEN
+      end	if;
+      if not DB( XD_GENS_TER_STR, RULEINFO ) then
         ERROR( D( LX_SRCPOS,RULE ), "DOES NOT GEN TERMINAL STRING - "	& PRINT_NAME( D( XD_NAME, RULE ) ) );
-      END	IF;
-    END LOOP;
-  END CHECK_GRAMMAR;
+      end	if;
+    end loop;
+  end CHECK_GRAMMAR;
 
-BEGIN
+begin
 
   PUT_LINE( "INITIALIZE.");
-  DECLARE
+  declare
     USER_ROOT	: TREE;
-  BEGIN
+  begin
     OPEN_IDL_TREE_FILE( NOM_TEXTE & ".lar" );
     USER_ROOT := D(	XD_USER_ROOT, TREE_ROOT );
     GRAMMAR   := D(	XD_GRAMMAR, USER_ROOT );
-  END;
+  end;
 
   GR_RULE_SEQ := LIST( GRAMMAR );
   INITIALIZE;
 
-  LOOP
+  loop
     PASS := PASS + 1;
     PUT (	"BEGIN TRANS CLOSE PASS " );
     INT_IO.PUT ( PASS, 1 );
     PUT_LINE ( "." );
     MORE_PASSES := FALSE;
     TRANS_CLOSE;
-    EXIT WHEN NOT MORE_PASSES;
-  END LOOP;
+    exit when not MORE_PASSES;
+  end loop;
 
   PUT_LINE ( "CHECK GRAMMAR."	);
   CHECK_GRAMMAR;
 
   CLOSE_IDL_TREE_FILE;
 --|--------------------------------------------------------------------------------------------------
-END INIT_GRMR;
+end INIT_GRMR;

@@ -1,8 +1,14 @@
-SEPARATE(	IDL )
+------------------------------------------------------------------------------------------------------------------------
+-- SPDX-FileCopyrightText: 2026 VINCENT MORIN, UBO
+-- SPDX-License-Identifier: GPL-3.0-or-later
+------------------------------------------------------------------------------------------------------------------------
+--	1	2	3	4	5	6	7	8	9	0	1	2
+
+separate(	IDL )
 --|--------------------------------------------------------------------------------------------------
 --|		PRINT_STAT
 --|--------------------------------------------------------------------------------------------------
-PROCEDURE	PRINT_STAT ( NOM_TEXTE :STRING ) IS						--| IMPRESSION DES ÉTATS LALR	POUR DÉBOGAGE
+procedure	PRINT_STAT ( NOM_TEXTE :STRING ) is						--| IMPRESSION DES ÉTATS LALR	POUR DÉBOGAGE
   USER_ROOT	: TREE;
   STATE_SEQ	: SEQ_TYPE;
   STATE		: TREE;
@@ -16,13 +22,13 @@ PROCEDURE	PRINT_STAT ( NOM_TEXTE :STRING ) IS						--| IMPRESSION DES ÉTATS LALR
   FOLLOW		: TREE;
   OLD_FOLLOW	: TREE;
   OFILE		: TEXT_IO.FILE_TYPE;
-BEGIN
+begin
   OPEN_IDL_TREE_FILE( NOM_TEXTE & ".lar" );
   CREATE(	OFILE, OUT_FILE, NOM_TEXTE & "_PARSE_TBL.txt" );
   SET_OUTPUT( OFILE	);
   USER_ROOT := D( XD_USER_ROOT, TREE_ROOT );
   STATE_SEQ := LIST( D( XD_STATELIST, USER_ROOT )	);
-  WHILE NOT IS_EMPTY( STATE_SEQ ) LOOP
+  while not IS_EMPTY( STATE_SEQ ) loop
     POP( STATE_SEQ,	STATE );
     NEW_LINE;
     PUT( "STATE NO." );
@@ -31,49 +37,49 @@ BEGIN
     NEW_LINE;
     ITEM_SEQ := LIST( STATE );
     OLD_FOLLOW := TREE_VOID;
-    WHILE	NOT IS_EMPTY( ITEM_SEQ ) LOOP
+    while	not IS_EMPTY( ITEM_SEQ ) loop
       POP( ITEM_SEQ, ITEM );
       ALT	:= D( XD_ALTERNATIVE, ITEM );
       INT_IO.PUT( DI( XD_ALT_NBR, ALT )	);
       PUT( ": " & PRINT_NAME(	D( XD_NAME, D( XD_RULE, ALT )	) ) & " ::=" );
       SYL_SEQ := LIST( ALT );
-      FOR	I IN 1 ..	DI( XD_SYL_NBR, ITEM ) LOOP
-        IF IS_EMPTY( SYL_SEQ ) THEN
+      for	I in 1 ..	DI( XD_SYL_NBR, ITEM ) loop
+        if IS_EMPTY( SYL_SEQ ) then
 	PUT( " ***TOO-FEW-SYLLABLES***" );
-	EXIT;
-        END IF;
+	exit;
+        end if;
         POP( SYL_SEQ, SYL );
         PUT( ' ' & PRINT_NAME( D( XD_SYMREP, SYL ) ) );
-      END	LOOP;
+      end	loop;
       TEMP_SEQ := LIST( ITEM );
-      IF SYL_SEQ.FIRST /= TEMP_SEQ.FIRST THEN
+      if SYL_SEQ.FIRST /= TEMP_SEQ.FIRST then
         PUT( " ***BAD-TAIL-IN-ITEM***" );
-      END	IF;
+      end	if;
       PUT( " @" );
-      WHILE NOT IS_EMPTY( SYL_SEQ ) LOOP
+      while not IS_EMPTY( SYL_SEQ ) loop
         POP( SYL_SEQ, SYL );
         PUT( ' ' & PRINT_NAME( D( XD_SYMREP, SYL ) ) );
-      END	LOOP;
+      end	loop;
       GOTO_STATE :=	D( XD_GOTO, ITEM );
-      IF GOTO_STATE.TY /= DN_VOID THEN
+      if GOTO_STATE.TY /= DN_VOID then
         PUT ( " ===> ");
         INT_IO.PUT(	DI( XD_STATE_NBR, GOTO_STATE ), 1 );
-      ELSE
+      else
         FOLLOW := D( XD_FOLLOW, ITEM );
         SYL_SEQ := LIST( FOLLOW );
-        IF NOT IS_EMPTY( SYL_SEQ ) THEN
+        if not IS_EMPTY( SYL_SEQ ) then
 	PUT( " --->");
-	WHILE NOT	IS_EMPTY(	SYL_SEQ )	LOOP
+	while not	IS_EMPTY(	SYL_SEQ )	loop
 	  POP( SYL_SEQ, SYL	);
 	  PUT( ' ' & PRINT_NAME( D( XD_SYMREP, SYL ) ) );
-	END LOOP;
-        END IF;
-      END	IF;
+	end loop;
+        end if;
+      end	if;
       NEW_LINE;
-    END LOOP;
-  END LOOP;
+    end loop;
+  end loop;
   CLOSE( OFILE );
   SET_OUTPUT( STANDARD_OUTPUT	);
   CLOSE_IDL_TREE_FILE;
 --|--------------------------------------------------------------------------------------------------
-END PRINT_STAT;
+end PRINT_STAT;
