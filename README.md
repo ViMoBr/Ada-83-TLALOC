@@ -38,10 +38,10 @@ TLALOC is an experimental compiler that preserves this heritage by implementing 
 
 - **📜 Full Ada 83 Compliance**: Implements MIL-STD-1815A-1983 standard
 - **🌳 DIANA 86 Representation**: Descriptive Intermediate Attributed Notation for Ada
-- **🔧 Modern Toolchain**: Built with GNAT 13.3.0, generates FASM assembly
+- **🔧 Modern Toolchain**: Built with GNAT 13.3.0, generates text FASM assembly
 - **📚 Separate Compilation**: Full library management with `.DCL`, `.BDY`, `.SUB` files
 - **🐛 Debug-Friendly**: Multiple compilation phases with inspection options
-- **⚡ Stack Machine Backend**: LLIR (Low Level Intermediate Representation) code generation
+- **⚡ Stack Machine Backend**: LLIR (Low Level Intermediate Representation) code generation for x86-64 and aarch64 v8
 
 ---
 
@@ -87,7 +87,8 @@ Source Code (.ada)
 # Clone the repository
 git clone https://github.com/ViMoBr/Ada83_TLALOC.git
 cd Ada83_TLALOC
-
+# make a build directory if not already present
+mkdir ./build
 # Recompile the compiler
 make_ada_comp.sh
 
@@ -101,12 +102,13 @@ The **a83.sh** script launches the executable **ada_comp** (in the same bin dire
 
  - the path to a so-called projet directory containing an **ADA__LIB** sub-directory (start with "./" that is the bin directory where you are, it contains the development **ADA__LIB**)
  - the path from the executable to the Ada 83 source text (for example **./dis_bonjour.adb** which is a french hello world)
- - a single option letter in S,s, L,l, M,m, C, W, w, U, A, P (the normal choice is W)
+ - a single option letter in S,s, L,l, M,m, C, c, W, w, U, A, P (the normal choice is W)
 
-So the first command in the **bin** directory is :
+So the first command when in the **bin** directory is :
 
 <pre> ./a83.sh  ./  ./dis_bonjour.adb  W  </pre>
 
+(note : the first parameter ./ is the project directory path. The second path is project directory relative)
 Then enter the **bin/ADA__LIB** sub-directory
 
 <pre> cd ./ADA__LIB </pre>
@@ -136,7 +138,7 @@ TLALOC offers fine-grained control over compilation phases:
 | **S**, **s** | Parse | Stop after syntax analysis |
 | **L**, **l** | Library | Stop after library phase |
 | **M**, **m** | Semantic | Stop after semantic analysis |
-| **C** | Expand | Generate code (no library write) |
+| **C**, **c** | Expand | Generate code (no library write) |
 | **W** | Write | Full compilation with library output |
 | **w** | Write (debug) | Library write without code generation |
 | **U**, **P**, **A** | Pretty-print | Display DIANA tree (various formats) |
@@ -315,7 +317,17 @@ TLALOC preserves this heritage by providing a working implementation of the orig
 
 ## ⚖️ License
 
-See [LICENSE](LICENSE) file for details.
+
+TLALOC/Ada 83 uses SPDX license identifiers in its maintained source files.
+
+The compiler sources and runtime are licensed under GPL-3.0-or-later, with the
+GCC Runtime Library Exception 3.1 where applicable.
+
+The development repository may contain archival, experimental, or research
+material that is not part of the official distribution. Official release archives
+are intended to contain only files with explicit licensing information.
+
+See directory [LICENSES](LICENSES) and files for details.
 
 ---
 
