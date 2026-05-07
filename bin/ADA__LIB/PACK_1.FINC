@@ -1,0 +1,26 @@
+if ~ definite TEXT_IO
+include 'TEXT_IO.FINC'
+end if
+PACK_1 = 'PACK_1'
+namespace PACK_1				;---------- PACKAGE
+elab_spec:				;    SPEC ELAB
+
+					;    BODY ELAB
+
+if defined WRITE_SOMETHING_L1_
+PRO	WRITE_SOMETHING_L1			;---------- PRO WRITE_SOMETHING
+ELB 1					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+STR STR_L1, ' Something '			; constante string=' Something '
+	LCA	STR_L1.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+ret_lbl:
+	UNLINK 1
+	RTD
+excep:
+endPRO					;---------- end PRO WRITE_SOMETHING
+end if
+begin:					;---------- package BDY INSTRUCTIONS
+end namespace 				;---------- end package BDY PACK_1
+
