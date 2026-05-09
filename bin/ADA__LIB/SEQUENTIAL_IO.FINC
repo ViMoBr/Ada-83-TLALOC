@@ -1,3 +1,885 @@
-if ~ definite IO_EXCEPTIONS
-include 'IO_EXCEPTIONS.FINC'
+if ~ definite SYSTEM
+include 'SYSTEM.FINC'
 end if
+if ~ definite MACHINE_CODE
+include 'MACHINE_CODE.FINC'
+end if
+SEQUENTIAL_IO = 'SEQUENTIAL_IO'
+namespace SEQUENTIAL_IO			;---------- GENERIC PACKAGE
+PRMS
+	PRM ELEMENT_TYPE__u_ofs
+	PRM ELEMENT_TYPE__ld_ofs
+	PRM ELEMENT_TYPE__st_ofs
+endPRMS
+; CODE_TYPE_DECL : skip PRIVATE FILE_TYPE (deferred to full type)
+
+					; FILE_MODE ENUMERATION TYPE INFO
+FILE_MODE = 'FILE_MODE'
+namespace FILE_MODE
+VAR use__info, q
+BEGIN_BLOC_DEF
+db 0, 7, "IN_FILE"
+db 1, 8, "OUT_FILE"
+END_BLOC_DEF
+IMAGES	BYTES_BLOC
+CST LST, d, 1
+CST FST, d, 0
+CST SIZ, d, 8	; SIZ en bits !
+postpone
+  align_q
+end postpone
+	LCA	SIZ
+	Sa	0, use__info
+end namespace
+FILE_NAME_BUFFER = 'FILE_NAME_BUFFER'
+namespace FILE_NAME_BUFFER			; FILE_NAME_BUFFER CONSTRAINED ARRAY SUBTYPE INFO
+VAR use__info, q
+VAR SIZ, d
+	LVA	0, SIZ
+	Sa	0, use__info
+VAR COMP_SIZ, d
+VAR FST_1, d
+VAR LST_1, d
+	LI	8
+	Sd	0, COMP_SIZ
+	Ld	0, COMP_SIZ
+	LI	1
+	Sd	0, FST_1
+	LI	256
+	Sd	0, LST_1
+	Ld	0, LST_1
+	INC
+	Ld	0, FST_1
+	SUB
+	MUL
+	Sd	0, SIZ
+  virtual at 4
+COMP_SIZ = $
+	rd 1 
+FST_1 = $
+	rd 1 
+LST_1 = $
+	rd 1 
+  end virtual
+end namespace
+
+					; FILE_TYPE RECORD TYPE INFO
+FILE_TYPE = 'FILE_TYPE'
+namespace FILE_TYPE
+VAR use__info, q
+VAR SIZ, d
+	LVA	0, SIZ
+	Sa	0, use__info
+USEINFO 0, ID, 	La 0, STANDARD.INTEGER.use__info
+USEINFO 0, NAME, 	La 0, STANDARD.SEQUENTIAL_IO.FILE_NAME_BUFFER.use__info
+USEINFO 0, NAME_LEN, 	La 0, STANDARD.POSITIVE.use__info
+USEINFO 0, IS_OPENED, 	La 0, STANDARD.BOOLEAN.use__info
+USEINFO 0, MODE, 	La 0, STANDARD.SEQUENTIAL_IO.FILE_MODE.use__info
+USEINFO 0, AT_END_OF_FILE, 	La 0, STANDARD.BOOLEAN.use__info
+virtual at 0				; calcul des offsets statiques
+STATOFS ID, 4
+STATOFS NAME, 256
+STATOFS NAME_LEN, 4
+STATOFS IS_OPENED, 1
+STATOFS MODE, 1
+STATOFS AT_END_OF_FILE, 1
+size = $
+	LI	 size* 8
+end virtual
+	Sd	0, SIZ
+end namespace
+					;    BODY ELAB
+
+if defined CREATE_L1_
+PRO	CREATE_L1				;---------- PRO CREATE
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in out
+	PRM MODE_ofs				; in
+	PRM NAME_ofs				; in
+	PRM FORM_ofs				; in
+	PRM GFP_ofs
+endPRMS					;    fin parametrage
+ELB 1					;    BODY ELAB
+VAR ERR_OR_ID_disp, d			; variable entiere
+
+
+if defined CREATE_SYSTEM_CALL_L1_
+PRO	CREATE_SYSTEM_CALL_L1			;---------- PRO CREATE_SYSTEM_CALL
+PRMS					;    debut parametrage
+	PRM NAME_ofs				; in
+	PRM GFP_ofs
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 2					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	LA 2 ,	-8
+	SYS_FILE_CREATE
+	SD 2 ,	-24
+ret_lbl:
+	UNLINK 2
+	RTD	(prm_siz-8)
+excep:
+endPRO					;---------- end PRO CREATE_SYSTEM_CALL
+end if
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	LI	0					; lieu resultat sur pile
+	La  1,	-GFP_ofs				; propagation GFP generique
+	La  1,	-NAME_ofs
+	CALL	STANDARD.SEQUENTIAL_IO.CREATE_L1. ,CREATE_SYSTEM_CALL_L1
+	Sd  1,	ERR_OR_ID_disp
+					; debut if
+	Ld 1,	ERR_OR_ID_disp
+	LI	0
+	CGE
+	BF	L3
+	La 1, -FILE_ofs
+	LIVa 	, 0, STANDARD.SEQUENTIAL_IO.FILE_TYPE.ID
+	Ld 1,	ERR_OR_ID_disp
+	Sd
+	La 1, -FILE_ofs
+	LIVa 	, 0, STANDARD.SEQUENTIAL_IO.FILE_TYPE.NAME
+	LVA	1, -NAME_ofs
+	LIa	, , 8
+	Ld	, STRING.LST_1
+	INC
+	LVA	1, -NAME_ofs
+	LIa	, , 8
+	Ld	, STRING.FST_1
+	SUB
+	INC
+	LI	1
+	SUB
+	LI	1
+	MUL
+	La  1,	-NAME_ofs
+	La
+	BLKMOV
+	La 1, -FILE_ofs
+	LIVa 	, 0, STANDARD.SEQUENTIAL_IO.FILE_TYPE.NAME_LEN
+	LVA	1, -NAME_ofs
+	LIa	, , 8
+	Ld	, STRING.LST_1
+	INC
+	LVA	1, -NAME_ofs
+	LIa	, , 8
+	Ld	, STRING.FST_1
+	SUB
+	Sd
+	La 1, -FILE_ofs
+	LIVa 	, 0, STANDARD.SEQUENTIAL_IO.FILE_TYPE.IS_OPENED
+	LI	1
+	Sb
+	La 1, -FILE_ofs
+	LIVa 	, 0, STANDARD.SEQUENTIAL_IO.FILE_TYPE.MODE
+	Lb  1,	-MODE_ofs
+	Sb
+	La 1, -FILE_ofs
+	LIVa 	, 0, STANDARD.SEQUENTIAL_IO.FILE_TYPE.AT_END_OF_FILE
+	LI	0
+	Sb
+	BRA	L2
+L3:
+L2:					; post if
+ret_lbl:
+	UNLINK 1
+	RTD	(prm_siz)
+excep:
+endPRO					;---------- end PRO CREATE
+end if
+
+if defined OPEN_L2_
+PRO	OPEN_L2				;---------- PRO OPEN
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in out
+	PRM MODE_ofs				; in
+	PRM NAME_ofs				; in
+	PRM FORM_ofs				; in
+	PRM GFP_ofs
+endPRMS					;    fin parametrage
+ELB 1					;    BODY ELAB
+VAR ERR_OR_ID_disp, d			; variable entiere
+
+
+if defined OPEN_SYSTEM_CALL_L4_
+PRO	OPEN_SYSTEM_CALL_L4			;---------- PRO OPEN_SYSTEM_CALL
+PRMS					;    debut parametrage
+	PRM NAME_ofs				; in
+	PRM GFP_ofs
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 2					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	LA 2 ,	-8
+	SYS_FILE_OPEN
+	SD 2 ,	-24
+ret_lbl:
+	UNLINK 2
+	RTD	(prm_siz-8)
+excep:
+endPRO					;---------- end PRO OPEN_SYSTEM_CALL
+end if
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	LI	0					; lieu resultat sur pile
+	La  1,	-GFP_ofs				; propagation GFP generique
+	La  1,	-NAME_ofs
+	CALL	STANDARD.SEQUENTIAL_IO.OPEN_L2. ,OPEN_SYSTEM_CALL_L4
+	Sd  1,	ERR_OR_ID_disp
+					; debut if
+	Ld 1,	ERR_OR_ID_disp
+	LI	0
+	CGE
+	BF	L6
+	La 1, -FILE_ofs
+	LIVa 	, 0, STANDARD.SEQUENTIAL_IO.FILE_TYPE.ID
+	Ld 1,	ERR_OR_ID_disp
+	Sd
+	La 1, -FILE_ofs
+	LIVa 	, 0, STANDARD.SEQUENTIAL_IO.FILE_TYPE.NAME
+	LVA	1, -NAME_ofs
+	LIa	, , 8
+	Ld	, STRING.LST_1
+	INC
+	LVA	1, -NAME_ofs
+	LIa	, , 8
+	Ld	, STRING.FST_1
+	SUB
+	INC
+	LI	1
+	SUB
+	LI	1
+	MUL
+	La  1,	-NAME_ofs
+	La
+	BLKMOV
+	La 1, -FILE_ofs
+	LIVa 	, 0, STANDARD.SEQUENTIAL_IO.FILE_TYPE.NAME_LEN
+	LVA	1, -NAME_ofs
+	LIa	, , 8
+	Ld	, STRING.LST_1
+	INC
+	LVA	1, -NAME_ofs
+	LIa	, , 8
+	Ld	, STRING.FST_1
+	SUB
+	Sd
+	La 1, -FILE_ofs
+	LIVa 	, 0, STANDARD.SEQUENTIAL_IO.FILE_TYPE.IS_OPENED
+	LI	1
+	Sb
+	La 1, -FILE_ofs
+	LIVa 	, 0, STANDARD.SEQUENTIAL_IO.FILE_TYPE.MODE
+	Lb  1,	-MODE_ofs
+	Sb
+	La 1, -FILE_ofs
+	LIVa 	, 0, STANDARD.SEQUENTIAL_IO.FILE_TYPE.AT_END_OF_FILE
+	LI	0
+	Sb
+	BRA	L5
+L6:
+L5:					; post if
+ret_lbl:
+	UNLINK 1
+	RTD	(prm_siz)
+excep:
+endPRO					;---------- end PRO OPEN
+end if
+
+if defined CLOSE_L3_
+PRO	CLOSE_L3				;---------- PRO CLOSE
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in out
+	PRM GFP_ofs
+endPRMS					;    fin parametrage
+ELB 1					;    BODY ELAB
+VAR ERR_CODE_disp, d			; variable entiere
+
+
+if defined CLOSE_SYSTEM_CALL_L7_
+PRO	CLOSE_SYSTEM_CALL_L7			;---------- PRO CLOSE_SYSTEM_CALL
+PRMS					;    debut parametrage
+	PRM FILE_ID_ofs				; in
+	PRM GFP_ofs
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 2					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	LD 2 ,	-8
+	SYS_FILE_CLOSE
+	SD 2 ,	-24
+ret_lbl:
+	UNLINK 2
+	RTD	(prm_siz-8)
+excep:
+endPRO					;---------- end PRO CLOSE_SYSTEM_CALL
+end if
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	LI	0					; lieu resultat sur pile
+	La  1,	-GFP_ofs				; propagation GFP generique
+	La 1, -FILE_ofs
+	LId	, 0, STANDARD.SEQUENTIAL_IO.FILE_TYPE.ID
+	CALL	STANDARD.SEQUENTIAL_IO.CLOSE_L3. ,CLOSE_SYSTEM_CALL_L7
+	Sd  1,	ERR_CODE_disp
+	La 1, -FILE_ofs
+	LIVa 	, 0, STANDARD.SEQUENTIAL_IO.FILE_TYPE.ID
+	LI	1
+	NEG
+	Sd
+	La 1, -FILE_ofs
+	LIVa 	, 0, STANDARD.SEQUENTIAL_IO.FILE_TYPE.IS_OPENED
+	LI	0
+	Sb
+ret_lbl:
+	UNLINK 1
+	RTD	(prm_siz)
+excep:
+endPRO					;---------- end PRO CLOSE
+end if
+
+if defined DELETE_L4_
+PRO	DELETE_L4				;---------- PRO DELETE
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in out
+	PRM GFP_ofs
+endPRMS					;    fin parametrage
+ELB 1					;    BODY ELAB
+VAR ERR_CODE_disp, d			; variable entiere
+
+
+if defined DELETE_SYSTEM_CALL_L8_
+PRO	DELETE_SYSTEM_CALL_L8			;---------- PRO DELETE_SYSTEM_CALL
+PRMS					;    debut parametrage
+	PRM NAME_ofs				; in
+	PRM GFP_ofs
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 2					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	LA 2 ,	-8
+	SYS_FILE_DELETE
+	SD 2 ,	-24
+ret_lbl:
+	UNLINK 2
+	RTD	(prm_siz-8)
+excep:
+endPRO					;---------- end PRO DELETE_SYSTEM_CALL
+end if
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	LI	0					; lieu resultat sur pile
+	La  1,	-GFP_ofs				; propagation GFP generique
+	La 1, -FILE_ofs
+	LIVa 	, 0, STANDARD.SEQUENTIAL_IO.FILE_TYPE.NAME
+namespace ANON_126_37			; ensemble doublet @data/@info pour slice anonyme source
+VAR ANON_126_37_disp, q
+VAR ANON_126_37__u, q
+VAR SIZ, d
+VAR COMP_SIZ, d
+VAR FST_1, d
+VAR LST_1, d
+	Sa	1, ANON_126_37_disp
+	LVA	1, SIZ
+	Sa	1, ANON_126_37__u
+	LI	8
+	Sd	1, COMP_SIZ
+	LI	1
+	Sd	1, FST_1
+	La 1, -FILE_ofs
+	LId	, 0, STANDARD.SEQUENTIAL_IO.FILE_TYPE.NAME_LEN
+	Sd	1, LST_1
+	Ld	1, LST_1
+	INC
+	Ld	1, FST_1
+	SUB
+	LI	8
+	MUL
+	Sd	1, SIZ
+	LVA	1, ANON_126_37_disp
+end namespace
+	CALL	STANDARD.SEQUENTIAL_IO.DELETE_L4. ,DELETE_SYSTEM_CALL_L8
+	Sd  1,	ERR_CODE_disp
+	La 1, -FILE_ofs
+	LIVa 	, 0, STANDARD.SEQUENTIAL_IO.FILE_TYPE.IS_OPENED
+	LI	0
+	Sb
+ret_lbl:
+	UNLINK 1
+	RTD	(prm_siz)
+excep:
+endPRO					;---------- end PRO DELETE
+end if
+
+if defined RESET_L5_
+PRO	RESET_L5				;---------- PRO RESET
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in out
+	PRM MODE_ofs				; in
+	PRM GFP_ofs
+endPRMS					;    fin parametrage
+ELB 1					;    BODY ELAB
+VAR ERR_CODE_disp, d			; variable entiere
+
+
+if defined SEEK_SYSTEM_CALL_L9_
+PRO	SEEK_SYSTEM_CALL_L9			;---------- PRO SEEK_SYSTEM_CALL
+PRMS					;    debut parametrage
+	PRM FILE_ID_ofs				; in
+	PRM GFP_ofs
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 2					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	LI	0
+	LD 2 ,	-8
+	SYS_FILE_SET_POS
+	SD 2 ,	-24
+ret_lbl:
+	UNLINK 2
+	RTD	(prm_siz-8)
+excep:
+endPRO					;---------- end PRO SEEK_SYSTEM_CALL
+end if
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+					; debut if
+	La 1, -FILE_ofs
+	LIb	, 0, STANDARD.SEQUENTIAL_IO.FILE_TYPE.IS_OPENED
+	LI	0
+	CEQ
+	BF	L11
+	BRA	L10
+L11:
+L10:					; post if
+	LI	0					; lieu resultat sur pile
+	La  1,	-GFP_ofs				; propagation GFP generique
+	La 1, -FILE_ofs
+	LId	, 0, STANDARD.SEQUENTIAL_IO.FILE_TYPE.ID
+	CALL	STANDARD.SEQUENTIAL_IO.RESET_L5. ,SEEK_SYSTEM_CALL_L9
+	Sd  1,	ERR_CODE_disp
+	La 1, -FILE_ofs
+	LIVa 	, 0, STANDARD.SEQUENTIAL_IO.FILE_TYPE.MODE
+	Lb  1,	-MODE_ofs
+	Sb
+	La 1, -FILE_ofs
+	LIVa 	, 0, STANDARD.SEQUENTIAL_IO.FILE_TYPE.AT_END_OF_FILE
+	LI	0
+	Sb
+ret_lbl:
+	UNLINK 1
+	RTD	(prm_siz)
+excep:
+endPRO					;---------- end PRO RESET
+end if
+
+if defined RESET_L6_
+PRO	RESET_L6				;---------- PRO RESET
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in out
+	PRM GFP_ofs
+endPRMS					;    fin parametrage
+ELB 1					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+					; debut if
+	La 1, -FILE_ofs
+	LIb	, 0, STANDARD.SEQUENTIAL_IO.FILE_TYPE.IS_OPENED
+	LI	0
+	CEQ
+	BF	L13
+	BRA	L12
+L13:
+L12:					; post if
+	La  1,	-GFP_ofs				; propagation GFP generique
+	La 1, -FILE_ofs
+	LIb	, 0, STANDARD.SEQUENTIAL_IO.FILE_TYPE.MODE
+	La  1,	-FILE_ofs
+	CALL	STANDARD.SEQUENTIAL_IO. ,RESET_L5
+ret_lbl:
+	UNLINK 1
+	RTD	(prm_siz)
+excep:
+endPRO					;---------- end PRO RESET
+end if
+
+if defined MODE_L7_
+PRO	MODE_L7				;---------- PRO MODE
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM GFP_ofs
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 1					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+					; debut if
+	La 1, -FILE_ofs
+	LIb	, 0, STANDARD.SEQUENTIAL_IO.FILE_TYPE.IS_OPENED
+	LI	0
+	CEQ
+	BF	L15
+	BRA	L14
+L15:
+L14:					; post if
+	La 1, -FILE_ofs
+	LIb	, 0, STANDARD.SEQUENTIAL_IO.FILE_TYPE.MODE
+	Sb  1,	-result__ofs
+	BRA ret_lbl
+ret_lbl:
+	UNLINK 1
+	RTD	(prm_siz-8)
+excep:
+endPRO					;---------- end PRO MODE
+end if
+
+if defined NAME_L8_
+PRO	NAME_L8				;---------- PRO NAME
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM GFP_ofs
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 1					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+					; debut if
+	La 1, -FILE_ofs
+	LIb	, 0, STANDARD.SEQUENTIAL_IO.FILE_TYPE.IS_OPENED
+	LI	0
+	CEQ
+	BF	L17
+	BRA	L16
+L17:
+L16:					; post if
+	La 1, -FILE_ofs
+	LIVa 	, 0, STANDARD.SEQUENTIAL_IO.FILE_TYPE.NAME
+	La 1, -FILE_ofs
+	LId	, 0, STANDARD.SEQUENTIAL_IO.FILE_TYPE.NAME_LEN
+	INC
+	LI	1
+	SUB
+	LI	1
+	MUL
+	Sa  1,	-result__ofs
+	BRA ret_lbl
+ret_lbl:
+	UNLINK 1
+	RTD	(prm_siz-8)
+excep:
+endPRO					;---------- end PRO NAME
+end if
+
+if defined FORM_L9_
+PRO	FORM_L9				;---------- PRO FORM
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM GFP_ofs
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 1					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+					; debut if
+	La 1, -FILE_ofs
+	LIb	, 0, STANDARD.SEQUENTIAL_IO.FILE_TYPE.IS_OPENED
+	LI	0
+	CEQ
+	BF	L19
+	BRA	L18
+L19:
+L18:					; post if
+	BRA ret_lbl
+ret_lbl:
+	UNLINK 1
+	RTD	(prm_siz-8)
+excep:
+endPRO					;---------- end PRO FORM
+end if
+
+if defined IS_OPEN_L10_
+PRO	IS_OPEN_L10				;---------- PRO IS_OPEN
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM GFP_ofs
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 1					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	La 1, -FILE_ofs
+	LIb	, 0, STANDARD.SEQUENTIAL_IO.FILE_TYPE.IS_OPENED
+	Sb  1,	-result__ofs
+	BRA ret_lbl
+ret_lbl:
+	UNLINK 1
+	RTD	(prm_siz-8)
+excep:
+endPRO					;---------- end PRO IS_OPEN
+end if
+
+if defined READ_L11_
+PRO	READ_L11				;---------- PRO READ
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM ITEM_ofs				; out
+	PRM GFP_ofs
+endPRMS					;    fin parametrage
+ELB 1					;    BODY ELAB
+VAR BYTES_READ_disp, d			; variable entiere
+
+VAR SIZE_BYTES_disp, d			; variable entiere
+	La  1,	-GFP_ofs
+	LId , -ELEMENT_TYPE__u_ofs
+	LI	 8
+	DIV
+	Sd  1,	SIZE_BYTES_disp
+
+
+if defined READ_SYSTEM_CALL_L20_
+PRO	READ_SYSTEM_CALL_L20			;---------- PRO READ_SYSTEM_CALL
+PRMS					;    debut parametrage
+	PRM FILE_ID_ofs				; in
+	PRM LENGTH_ofs				; in
+	PRM GFP_ofs
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 2					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	LD 2 ,	-16
+	LA 1 ,	-16
+	LD 2 ,	-8
+	SYS_FILE_READ
+	SD 2 ,	-32
+ret_lbl:
+	UNLINK 2
+	RTD	(prm_siz-8)
+excep:
+endPRO					;---------- end PRO READ_SYSTEM_CALL
+end if
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+					; debut if
+	La 1, -FILE_ofs
+	LIb	, 0, STANDARD.SEQUENTIAL_IO.FILE_TYPE.IS_OPENED
+	LI	0
+	CEQ
+	BF	L22
+	BRA	L21
+L22:
+L21:					; post if
+					; debut if
+	La 1, -FILE_ofs
+	LIb	, 0, STANDARD.SEQUENTIAL_IO.FILE_TYPE.MODE
+	LI	1
+	CEQ
+	BF	L24
+	BRA	L23
+L24:
+L23:					; post if
+					; debut if
+	La 1, -FILE_ofs
+	LIb	, 0, STANDARD.SEQUENTIAL_IO.FILE_TYPE.AT_END_OF_FILE
+	BF	L26
+	BRA	L25
+L26:
+L25:					; post if
+	LI	0					; lieu resultat sur pile
+	La  1,	-GFP_ofs				; propagation GFP generique
+	Ld 1,	SIZE_BYTES_disp
+	La 1, -FILE_ofs
+	LId	, 0, STANDARD.SEQUENTIAL_IO.FILE_TYPE.ID
+	CALL	STANDARD.SEQUENTIAL_IO.READ_L11. ,READ_SYSTEM_CALL_L20
+	Sd  1,	BYTES_READ_disp
+					; debut if
+	Ld 1,	BYTES_READ_disp
+	Ld 1,	SIZE_BYTES_disp
+	CLT
+	BF	L28
+	BRA	L27
+L28:
+L27:					; post if
+ret_lbl:
+	UNLINK 1
+	RTD	(prm_siz)
+excep:
+endPRO					;---------- end PRO READ
+end if
+
+if defined WRITE_L12_
+PRO	WRITE_L12				;---------- PRO WRITE
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM ITEM_ofs				; in
+	PRM GFP_ofs
+endPRMS					;    fin parametrage
+ELB 1					;    BODY ELAB
+VAR ERR_CODE_disp, d			; variable entiere
+
+VAR SIZE_BYTES_disp, d			; variable entiere
+	La  1,	-GFP_ofs
+	LId , -ELEMENT_TYPE__u_ofs
+	LI	 8
+	DIV
+	Sd  1,	SIZE_BYTES_disp
+
+
+if defined WRITE_SYSTEM_CALL_L29_
+PRO	WRITE_SYSTEM_CALL_L29			;---------- PRO WRITE_SYSTEM_CALL
+PRMS					;    debut parametrage
+	PRM FILE_ID_ofs				; in
+	PRM LENGTH_ofs				; in
+	PRM GFP_ofs
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 2					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	LD 2 ,	-16
+	LVA 1 ,	-16
+	LD 2 ,	-8
+	SYS_FILE_WRITE
+	SD 2 ,	-32
+ret_lbl:
+	UNLINK 2
+	RTD	(prm_siz-8)
+excep:
+endPRO					;---------- end PRO WRITE_SYSTEM_CALL
+end if
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+					; debut if
+	La 1, -FILE_ofs
+	LIb	, 0, STANDARD.SEQUENTIAL_IO.FILE_TYPE.IS_OPENED
+	LI	0
+	CEQ
+	BF	L31
+	BRA	L30
+L31:
+L30:					; post if
+					; debut if
+	La 1, -FILE_ofs
+	LIb	, 0, STANDARD.SEQUENTIAL_IO.FILE_TYPE.MODE
+	LI	0
+	CEQ
+	BF	L33
+	BRA	L32
+L33:
+L32:					; post if
+	LI	0					; lieu resultat sur pile
+	La  1,	-GFP_ofs				; propagation GFP generique
+	Ld 1,	SIZE_BYTES_disp
+	La 1, -FILE_ofs
+	LId	, 0, STANDARD.SEQUENTIAL_IO.FILE_TYPE.ID
+	CALL	STANDARD.SEQUENTIAL_IO.WRITE_L12. ,WRITE_SYSTEM_CALL_L29
+	Sd  1,	ERR_CODE_disp
+ret_lbl:
+	UNLINK 1
+	RTD	(prm_siz)
+excep:
+endPRO					;---------- end PRO WRITE
+end if
+
+if defined END_OF_FILE_L13_
+PRO	END_OF_FILE_L13				;---------- PRO END_OF_FILE
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM GFP_ofs
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 1					;    BODY ELAB
+VAR POS_BYTES_disp, d			; variable entiere
+
+VAR SIZ_BYTES_disp, d			; variable entiere
+
+
+if defined GET_POS_SYSTEM_CALL_L34_
+PRO	GET_POS_SYSTEM_CALL_L34			;---------- PRO GET_POS_SYSTEM_CALL
+PRMS					;    debut parametrage
+	PRM FILE_ID_ofs				; in
+	PRM GFP_ofs
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 2					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	LD 2 ,	-8
+	SYS_FILE_GET_POS
+	SD 2 ,	-24
+ret_lbl:
+	UNLINK 2
+	RTD	(prm_siz-8)
+excep:
+endPRO					;---------- end PRO GET_POS_SYSTEM_CALL
+end if
+
+if defined GET_SIZE_SYSTEM_CALL_L35_
+PRO	GET_SIZE_SYSTEM_CALL_L35			;---------- PRO GET_SIZE_SYSTEM_CALL
+PRMS					;    debut parametrage
+	PRM FILE_ID_ofs				; in
+	PRM GFP_ofs
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 2					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	LD 2 ,	-8
+	SYS_FILE_GET_SIZE
+	SD 2 ,	-24
+ret_lbl:
+	UNLINK 2
+	RTD	(prm_siz-8)
+excep:
+endPRO					;---------- end PRO GET_SIZE_SYSTEM_CALL
+end if
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+					; debut if
+	La 1, -FILE_ofs
+	LIb	, 0, STANDARD.SEQUENTIAL_IO.FILE_TYPE.IS_OPENED
+	LI	0
+	CEQ
+	BF	L37
+	BRA	L36
+L37:
+L36:					; post if
+					; debut if
+	La 1, -FILE_ofs
+	LIb	, 0, STANDARD.SEQUENTIAL_IO.FILE_TYPE.MODE
+	LI	1
+	CEQ
+	BF	L39
+	BRA	L38
+L39:
+L38:					; post if
+	LI	0					; lieu resultat sur pile
+	La  1,	-GFP_ofs				; propagation GFP generique
+	La 1, -FILE_ofs
+	LId	, 0, STANDARD.SEQUENTIAL_IO.FILE_TYPE.ID
+	CALL	STANDARD.SEQUENTIAL_IO.END_OF_FILE_L13. ,GET_POS_SYSTEM_CALL_L34
+	Sd  1,	POS_BYTES_disp
+	LI	0					; lieu resultat sur pile
+	La  1,	-GFP_ofs				; propagation GFP generique
+	La 1, -FILE_ofs
+	LId	, 0, STANDARD.SEQUENTIAL_IO.FILE_TYPE.ID
+	CALL	STANDARD.SEQUENTIAL_IO.END_OF_FILE_L13. ,GET_SIZE_SYSTEM_CALL_L35
+	Sd  1,	SIZ_BYTES_disp
+	Ld 1,	POS_BYTES_disp
+	Ld 1,	SIZ_BYTES_disp
+	CGE
+	Sb  1,	-result__ofs
+	BRA ret_lbl
+ret_lbl:
+	UNLINK 1
+	RTD	(prm_siz-8)
+excep:
+endPRO					;---------- end PRO END_OF_FILE
+end if
+begin:					;---------- package BDY INSTRUCTIONS
+end namespace 				;---------- end generic package BDY SEQUENTIAL_IO

@@ -1,0 +1,20 @@
+if ~ definite TEXT_IO
+include 'TEXT_IO.FINC'
+end if
+PRO	RUNTIME_TEST_L2				;---------- PRO RUNTIME_TEST
+ELB 1					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+
+	CALL	STANDARD. ,WIDTH_L3		; TEST INCLUSION RUNTIME
+
+
+	CALL	STANDARD. ,WIDTH_L1
+STR STR_L3, ' runtime test '			; constante string=' runtime test '
+	LCA	STR_L3.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+ret_lbl:
+	UNLINK 1
+	RTD
+excep:
+endPRO					;---------- end PRO RUNTIME_TEST

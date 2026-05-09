@@ -169,6 +169,14 @@ macro			DUP
   db 0x48, 0x8D, 0x6D, 0x08				; lea rbp, [rbp+0x8]		(puis MONTER le rbp	sur la valeur ecrite car pile	croissante vers adresses hautes)
 end macro
 
+;			....
+macro			OVER
+;			....
+  db 0x48, 0x8B, 0x45, 0xF8				; mov rax, QWORD PTR [rbp-8]		(amener le NOS dans	RAX)
+  db 0x48, 0x89, 0x45, 0x08				; mov QWORD PTR [rbp+8], rax		(empîler)
+  db 0x48, 0x8D, 0x6D, 0x08				; lea rbp, [rbp+0x8]		(puis MONTER le rbp	sur la valeur ecrite car pile	croissante vers adresses hautes)
+end macro
+
 ;			.......
 macro			align_b
 ;			.......

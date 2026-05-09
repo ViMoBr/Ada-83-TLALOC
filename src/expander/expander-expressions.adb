@@ -543,7 +543,7 @@ put_line(	"; adresse component id" );
 
 
 				-------------
-  procedure			CODE_SELECTED		( SELECTED :TREE; IS_SOURCE :BOOLEAN :=	TRUE )
+  procedure			CODE_SELECTED		( SELECTED :TREE; IS_SOURCE :BOOLEAN :=	TRUE; CONTEXT :TREE := TREE_VOID )
   is				-------------
 
     EXP_TYPE	: TREE	:= D( SM_EXP_TYPE, SELECTED );
@@ -587,10 +587,13 @@ put_line(	"; adresse component id" );
 		& '-' & PRINT_NAME(	D(LX_SYMREP, NAME )	) & "_ofs" );
 
 	      if	D( SM_EXP_TYPE, DESIGNATOR ).TY in CLASS_SCALAR  and  IS_SOURCE  then
+
 	        PUT( tab & "LI" & OPER_SIZ_CHAR( D( SM_EXP_TYPE, DESIGNATOR )	) );
+
 	      else
 	        PUT( tab & "LIVa " );
 	      end	if;
+
 	      PUT( tab & ", 0, " );
 	      REGIONS_PATH(	DESIGNATOR_DEFN );
 	      PUT_LINE( DESIGNATOR_STR );
@@ -618,8 +621,18 @@ put_line(	"; adresse component id" );
 
 	  end if;
 
-	elsif  DESIGNATOR_DEFN.TY = DN_CONSTANT_ID  or  DESIGNATOR_DEFN.TY = DN_NUMBER_ID  then
+	elsif  DESIGNATOR_DEFN.TY = DN_CONSTANT_ID
+		or  DESIGNATOR_DEFN.TY = DN_NUMBER_ID
+		or  DESIGNATOR_DEFN.TY = DN_ENUMERATION_ID
+	then
 	  PUT_LINE( tab & "LI" & tab & PRINT_NUM( D( SM_VALUE, DESIGNATOR ) )	);
+
+	elsif  DESIGNATOR_DEFN.TY = DN_FUNCTION_ID
+	then
+	  PUT( tab & "LI" & tab &	"0" );
+	  if	CODI.DEBUG  then  PUT( tab50 & "; lieu resultat sur pile" ); end if;
+	  NEW_LINE;
+	  INSTRUCTIONS.CODE_PROCEDURE_CALL(	CONTEXT, DESIGNATOR );
 
 	else
 	  PUT_LINE( "; CODE_SELECTED.RECURSE_SELECTED DESIGNATOR.TY PAS FAIT: " & NODE_NAME'IMAGE( DESIGNATOR_DEFN.TY	) );
@@ -702,6 +715,36 @@ put_line(	"; adresse component id" );
     CHN_ATTR_NAME		:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, D( AS_USED_NAME_ID, ATTRIBUTE ) ) );
     subtype CHN_STD		is STRING( 1 .. CHN_ATTR_NAME'LENGTH );
     CHN_ATTR		: CHN_STD		:= CHN_ATTR_NAME;						-- NORMALISER EN STRING A FIRST=1
+
+
+
+		------------
+    procedure	CODE_ADDRESS
+    is		------------
+      PREFIX_DEFN		: TREE		:= D( SM_DEFN, PREFIX_NAME );
+      PREFIX_LVL		: INTEGER		:= DI( CD_LEVEL, PREFIX_DEFN );
+      TYPE_SPEC		: TREE		:= D( SM_OBJ_TYPE, PREFIX_DEFN );
+      TYPE_NAME		: TREE		:= D( XD_SOURCE_NAME, TYPE_SPEC );
+      TYPE_STR		:constant STRING	:= PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
+    begin
+      if  CODI.IN_GENERIC_BODY  then
+
+        if  PREFIX_DEFN.TY = DN_IN_ID  then
+	PUT_LINE( tab & "LVa"	& tab & IMAGE( PREFIX_LVL ) & ", -" & CHN_PREFIX & "_ofs" );
+
+        else
+	PUT_LINE( "; CODE_ADDRESS PREFIX_DEFN.TY pas gere " & NODE_NAME'IMAGE( PREFIX_DEFN.TY ) );
+
+        end if;
+
+        PUT_LINE( tab & "La " & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL ) & ',' & tab & "-GFP_ofs" );
+        PUT_LINE( tab & "La" & tab & ", -" & TYPE_STR & "__adr_ofs" );
+        PUT_LINE( tab & "CALLI" );
+
+      end if;
+
+    end	CODE_ADDRESS;
+	------------
 
 
 		----------------
@@ -997,29 +1040,28 @@ put_line(	"; adresse component id" );
         case TYPE_SPEC.TY is
         when DN_INTEGER =>
 	declare
-		--------------------------
-    function	SIGNED_WIDTH_FROM_SIZE	( BITS : INTEGER ) return INTEGER
-    is		--------------------------
-    begin
-      case BITS is
-      when 8  => return 4;   -- -128 .. 127
-      when 16 => return 6;   -- -32768 .. 32767
-      when 32 => return 11;  -- -2147483648 .. 2147483647
-      when 64 => return 20;  -- -9223372036854775808 .. 9223372036854775807
-      when others =>
+			----------------------
+	  function	SIGNED_WIDTH_FROM_SIZE	( BITS : INTEGER ) return INTEGER
+	  is		----------------------
+	  begin
+	    case BITS is
+	    when 8  => return 4;   -- -128 .. 127
+	    when 16 => return 6;   -- -32768 .. 32767
+	    when 32 => return 11;  -- -2147483648 .. 2147483647
+	    when 64 => return 20;  -- -9223372036854775808 .. 9223372036854775807
+	    when others =>
         -- Repli conservatif.
         -- Evite tout trou de pile et couvre les tailles exotiques de facon raisonnable.
-        if    BITS <= 8   then return 4;
-        elsif BITS <= 16  then return 6;
-        elsif BITS <= 32  then return 11;
-        else                   return 20;
-        end if;
-      end case;
-    end	SIGNED_WIDTH_FROM_SIZE;
-	--------------------------
-	begin
+	      if    BITS <= 8   then return 4;
+	      elsif BITS <= 16  then return 6;
+	      elsif BITS <= 32  then return 11;
+	      else                   return 20;
+	      end if;
+              end case;
+            end	SIGNED_WIDTH_FROM_SIZE;
+		----------------------
 
-
+          begin
 	  BITS := DI( CD_IMPL_SIZE, TYPE_SPEC );
 	  PUT_LINE( tab & "LI" & tab & INTEGER'IMAGE( SIGNED_WIDTH_FROM_SIZE( BITS ) ) );
 	end;
@@ -1038,7 +1080,7 @@ put_line(	"; adresse component id" );
     case	CHN_ATTR(	1 )  is
 
     when	'A' =>
-      if	CHN_ATTR(	2 ) = 'D'	 then null;			-- ADDRESS
+      if	CHN_ATTR(	2 ) = 'D'	 then CODE_ADDRESS;			-- ADDRESS
       else null;						-- AFT
       end	if;
 
@@ -1280,8 +1322,11 @@ put_line(	"; adresse component id" );
     elsif	 NAME.TY = DN_USED_OP  then
       CODE_DN_BLTN_OPERATOR_ID;
 
+    elsif	 NAME.TY = DN_SELECTED  then
+      CODE_SELECTED( NAME, CONTEXT=> FUNCTION_CALL );
+
     else
-      PUT_LINE( "; CODE_FUNCTION_CALL NAME.TY PAS GERE" );
+      PUT_LINE( "; CODE_FUNCTION_CALL NAME.TY PAS GERE : " & NODE_NAME'IMAGE( NAME.TY ) );
     end if;
   end	CODE_FUNCTION_CALL;
 	------------------
@@ -1320,8 +1365,8 @@ put_line(	"; adresse component id" );
     CST_CHN	:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, STRING_LITERAL ) );
     STR_CONST	:STRING		renames	CST_CHN( CST_CHN'FIRST+1 .. CST_CHN'LAST-1 );
   begin
-    PUT( "STR " & STR_NAME & ", '" & STR_CONST & ''' );
-    if CODI.DEBUG then PUT( tab50 & "; constante string='" & STR_CONST & "'" );	end if;
+    PUT( "STR " & STR_NAME & ", """ & STR_CONST & '"' );
+    if CODI.DEBUG then PUT( tab50 & "; constante string=""" & STR_CONST & """" );	end if;
     NEW_LINE;
 
   end	CODE_STRING_LITERAL;

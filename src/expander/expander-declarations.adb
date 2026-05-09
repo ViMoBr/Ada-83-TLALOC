@@ -505,37 +505,71 @@ null;--     LOAD_TYPE_SIZE( TYPE_SPEC  );
         declare
 	INIT_EXP		: TREE		:= D( SM_INIT_EXP, VC_NAME );
         begin
-          if  INIT_EXP /= TREE_VOID and then INIT_EXP.TY = DN_STRING_LITERAL					-- vraie constante chaine
-	then
-	  EXPRESSIONS.CODE_STRING_LITERAL( INIT_EXP, VC_STR );
+	if  INIT_EXP /= TREE_VOID  then
 
-	  PUT_LINE( tab & "LCA" & tab & VC_STR & ".data_ptr" );
-	  PUT_LINE( tab & "La" );
-	  PUT( tab & "Sa" & tab & LVL_STR & ", " & VC_STR & "_disp" );
-	  if  CODI.DEBUG  then PUT( tab50 & "; array data ptr at _disp" ); end if;
-	  NEW_LINE;
+	  if  INIT_EXP.TY = DN_STRING_LITERAL								-- vraie constante chaine
+	  then
+	    EXPRESSIONS.CODE_STRING_LITERAL( INIT_EXP, VC_STR );
 
-	  PUT_LINE( tab & "LCA" & tab & VC_STR & ".info_ptr" );						-- LOAD CONSTANT ADDRESS FOR INFO
-	  PUT_LINE( tab & "La" );
-	  PUT( tab & "Sa" & tab & LVL_STR & ", " & VC_STR & "__u" );
-	  if  CODI.DEBUG  then PUT( tab50 & "; array info ptr at __u" ); end if;
-	  NEW_LINE;
+	    PUT_LINE( tab & "LCA" & tab & VC_STR & ".data_ptr" );
+	    PUT_LINE( tab & "La" );
+	    PUT( tab & "Sa" & tab & LVL_STR & ", " & VC_STR & "_disp" );
+	    if  CODI.DEBUG  then PUT( tab50 & "; array data ptr at _disp" ); end if;
+	    NEW_LINE;
 
-	elsif  INIT_EXP /= TREE_VOID and then INIT_EXP.TY = DN_FUNCTION_CALL				-- retour de STRING par fonction
-	then
-	  EXPRESSIONS.CODE_EXP( INIT_EXP );								-- appel fonction, resultat = adresse du descripteur
+	    PUT_LINE( tab & "LCA" & tab & VC_STR & ".info_ptr" );						-- LOAD CONSTANT ADDRESS FOR INFO
+	    PUT_LINE( tab & "La" );
+	    PUT( tab & "Sa" & tab & LVL_STR & ", " & VC_STR & "__u" );
+	    if  CODI.DEBUG  then PUT( tab50 & "; array info ptr at __u" ); end if;
+	    NEW_LINE;
 
-	  PUT_LINE( tab & "DUP" );									-- dupliquer l'adresse du descripteur
-	  PUT_LINE( tab & "La" );									-- charger data_ptr (qword a offset 0)
-	  PUT( tab & "Sa" & tab & LVL_STR & ", " & VC_STR & "_disp" );
-	  if  CODI.DEBUG  then PUT( tab50 & "; array data ptr from function result" ); end if;
-	  NEW_LINE;
+	  elsif  INIT_EXP.TY = DN_FUNCTION_CALL								-- retour de STRING par fonction par exemple
+	  then
+	    EXPRESSIONS.CODE_EXP( INIT_EXP );								-- appel fonction, resultat = adresse du descripteur
 
-	  PUT_LINE( tab & "La , 8" );									-- offset +8 pour info_ptr
-	  PUT( tab & "Sa" & tab & LVL_STR & ", " & VC_STR & "__u" );
-	  if  CODI.DEBUG  then PUT( tab50 & "; array info ptr from function result" ); end if;
-	  NEW_LINE;
+	    PUT_LINE( tab & "DUP" );									-- dupliquer l'adresse du descripteur
+	    PUT_LINE( tab & "La" );									-- charger data_ptr (qword a offset 0)
+	    PUT( tab & "Sa" & tab & LVL_STR & ", " & VC_STR & "_disp" );
+	    if  CODI.DEBUG  then PUT( tab50 & "; array data ptr from function result" ); end if;
+	    NEW_LINE;
 
+	    PUT_LINE( tab & "La , 8" );								-- offset +8 pour info_ptr
+	    PUT( tab & "Sa" & tab & LVL_STR & ", " & VC_STR & "__u" );
+	    if  CODI.DEBUG  then PUT( tab50 & "; array info ptr from function result" ); end if;
+	    NEW_LINE;
+
+	  elsif  INIT_EXP.TY = DN_AGGREGATE								-- Agregat tableau
+	  then
+	    if  CODI.DEBUG  then PUT( tab50 & "; array data aggregate" ); end if;
+	    NEW_LINE;
+
+
+	    declare
+	      GENERAL_ASSOC_SEQ		: SEQ_TYPE	:= LIST( D( AS_GENERAL_ASSOC_S, INIT_EXP ) );
+	      ASSOC			: TREE;
+	    begin
+	      while not IS_EMPTY( GENERAL_ASSOC_SEQ ) loop
+	        POP( GENERAL_ASSOC_SEQ, ASSOC );
+
+	        if  ASSOC.TY  in  CLASS_EXP  then
+		if  CODI.DEBUG  then PUT( tab50 & "; agg exp" ); end if;
+		NEW_LINE;
+		EXPRESSIONS.CODE_EXP( ASSOC );
+
+	        elsif  ASSOC.TY = DN_NAMED  then
+		if  CODI.DEBUG  then PUT( tab50 & "; agg named" ); end if;
+		NEW_LINE;
+
+	        else
+		if  CODI.DEBUG  then PUT( "; COMPILE_ARRAY_VAR ASOOC.TY non gere " & NODE_NAME'IMAGE( ASSOC.TY ) );
+		end if;
+		NEW_LINE;
+	        end if;
+
+	      end loop;
+	    end;
+	  end if;
+				-- PAS D'INITIALISATION, ALLOUER
 	else
 	  PUT( tab & "Ld" & tab & IMAGE( TYPE_LEVEL ) & ", " );						-- LOAD SIZ FOR ALLOCATION
 	  PUT_LINE( TYPE_NAME_STR & ".SIZ" );
@@ -609,12 +643,36 @@ null;--     LOAD_TYPE_SIZE( TYPE_SPEC  );
 
         if  INIT_EXP.TY = DN_AGGREGATE  then
 	declare
-	  GENERAL_ASSOC_SEQ		: SEQ_TYPE	:= LIST( D( SM_NORMALIZED_COMP_S, INIT_EXP ) );
-	  COMP_EXP		: TREE;
+	  GENERAL_ASSOC_SEQ		: SEQ_TYPE	:= LIST( D( AS_GENERAL_ASSOC_S, INIT_EXP ) );
+	  NAMED			: TREE;
 	begin
 	  while not IS_EMPTY( GENERAL_ASSOC_SEQ ) loop
-	    POP( GENERAL_ASSOC_SEQ, COMP_EXP );
-	    EXPRESSIONS.CODE_EXP( COMP_EXP );
+	    POP( GENERAL_ASSOC_SEQ, NAMED );
+	    declare
+	      COMP_EXP	: TREE		:= D( AS_EXP, NAMED );
+	      COMP_TYPE	: TREE		:= D( SM_EXP_TYPE, COMP_EXP );
+	      CHOICES	: SEQ_TYPE	:= LIST( D( AS_CHOICE_S, NAMED ) );
+	      CHOICE_EXP	: TREE;
+	    begin
+	      EXPRESSIONS.CODE_EXP( COMP_EXP );
+
+	      while not IS_EMPTY( CHOICES ) loop
+	        POP( CHOICES, CHOICE_EXP );
+
+	        PUT( tab & "LIVa "
+		    & LVL_STR & ", "
+		    & VC_STR & "_disp, " );
+	        CODI.REGIONS_PATH( TYPE_NAME );
+	        PUT_LINE( TYPE_NAME_STR & "."
+		    & PRINT_NAME( D( LX_SYMREP, D( AS_EXP, CHOICE_EXP ) ) ) );
+	        PUT_LINE( tab & "OVER" );
+
+	        PUT_LINE( tab & "S"
+		    & CODI.OPER_SIZ_CHAR( COMP_TYPE ) );
+
+	      end loop;
+	      PUT_LINE( tab & "DROP" );
+	    end;
 	  end loop;
 	end;
 
@@ -1103,7 +1161,7 @@ null;--     LOAD_TYPE_SIZE( TYPE_SPEC  );
 	      LVL_STR		:constant STRING	:= LEVEL_NUM'IMAGE( CODI.CUR_LEVEL );
 	    begin
 
-	      if  DEFN_TYPE_SPEC.TY in CLASS_SCALAR  then
+	      if  DEFN_TYPE_SPEC.TY  in  CLASS_SCALAR  then
 	        -- Micro-procedures LD et ST pour le type actuel (contournees par BRA)
 	        declare
 	          SIZ_CHAR	: CHARACTER	:= OPER_SIZ_CHAR( DEFN_TYPE_SPEC );
@@ -1120,10 +1178,19 @@ null;--     LOAD_TYPE_SIZE( TYPE_SPEC  );
 	          PUT_LINE( tab & "SI" & SIZ_CHAR & " -1, 0" );
 	          PUT_LINE( tab & "RTD 0" );
 	          PUT_LINE( "post_ST_" & DEFN_STR & ":" );
+	          -- ADR : pile = [@param_out, valeur] → pile = []
+	          PUT_LINE( "BRA post_ADR_" & DEFN_STR );
+	          PUT_LINE( "ADR_" & DEFN_STR & ".elab:" );
+	          PUT_LINE( tab & "RTD 0" );								-- Rien a faire pour un scalaire
+	          PUT_LINE( "post_ADR_" & DEFN_STR & ":" );
 	        end;
 
 	        -- VAR en ordre INVERSE des PRM du modele :
 	        -- PRM: __u(8) __ld(16) __st(24)  → VAR: __st(-24) __ld(-16) __u(-8)
+
+	        PUT_LINE( "VAR " & GNAME_STR & "__adr_ofs, q" );
+	        PUT_LINE( tab & "LCA ADR_" & DEFN_STR & ".elab" );
+	        PUT_LINE( tab & "Sa" & tab & LVL_STR & ", " & GNAME_STR & "__adr_ofs" );
 
 	        PUT_LINE( "VAR " & GNAME_STR & "__st_ofs, q" );
 	        PUT_LINE( tab & "LCA ST_" & DEFN_STR & ".elab" );
@@ -1133,13 +1200,55 @@ null;--     LOAD_TYPE_SIZE( TYPE_SPEC  );
 	        PUT_LINE( tab & "LCA LD_" & DEFN_STR & ".elab" );
 	        PUT_LINE( tab & "Sa" & tab & LVL_STR & ", " & GNAME_STR & "__ld_ofs" );
 
-	        -- Adresse du patron de type (dernier avant GFP_disp → offset -8)
-	        PUT_LINE( "VAR " & GNAME_STR & "__u_ofs, q" );
-	        PUT( tab & "La" & tab & INTEGER'IMAGE( DI( CD_LEVEL, D( SM_TYPE_SPEC, DEFN ) ) ) & ", " );
-	        CODI.REGIONS_PATH( DEFN );
-	        PUT_LINE( DEFN_STR & ".use__info" );
-	        PUT_LINE( tab & "Sa" & tab & LVL_STR & ", " & GNAME_STR & "__u_ofs" );
+	      elsif  DEFN_TYPE_SPEC.TY  in  CLASS_UNCONSTRAINED 						-- COMPOSITE ARRAY OU RECORD GENERIQUES
+		or  DEFN_TYPE_SPEC.TY  in  CLASS_CONSTRAINED  then
+	 				-- A REVOIR
+
+	        declare
+	          SIZ_CHAR	: CHARACTER	:= OPER_SIZ_CHAR( DEFN_TYPE_SPEC );
+	        begin
+	          -- LD : pile = [adresse] → pile = [valeur]
+	          PUT_LINE( "BRA post_LD_" & DEFN_STR );
+	          PUT_LINE( "LD_" & DEFN_STR & ".elab:" );
+	          PUT_LINE( tab & "LI 0" );				-- A REVOIR
+	          PUT_LINE( tab & "RTD 0" );
+	          PUT_LINE( "post_LD_" & DEFN_STR & ":" );
+	          -- ST : pile = [@param_out, valeur] → pile = []
+	          PUT_LINE( "BRA post_ST_" & DEFN_STR );
+	          PUT_LINE( "ST_" & DEFN_STR & ".elab:" );
+	          PUT_LINE( tab & "DROP" );				-- A REVOIR
+	          PUT_LINE( tab & "RTD 0" );
+	          PUT_LINE( "post_ST_" & DEFN_STR & ":" );
+	          -- ADR : pile = [@param_out, valeur] → pile = []
+	          PUT_LINE( "BRA post_ADR_" & DEFN_STR );
+	          PUT_LINE( "ADR_" & DEFN_STR & ".elab:" );
+	          PUT_LINE( tab & "La -1, 0" );								-- Indirection
+	          PUT_LINE( tab & "RTD 0" );
+	          PUT_LINE( "post_ADR_" & DEFN_STR & ":" );
+	        end;
+
+	        PUT_LINE( "VAR " & GNAME_STR & "__adr_ofs, q" );
+	        PUT_LINE( tab & "LCA ADR_" & DEFN_STR & ".elab" );
+	        PUT_LINE( tab & "Sa" & tab & LVL_STR & ", " & GNAME_STR & "__adr_ofs" );
+
+	        PUT_LINE( "VAR " & GNAME_STR & "__st_ofs, q" );
+	        PUT_LINE( tab & "LCA ST_" & DEFN_STR & ".elab" );
+	        PUT_LINE( tab & "Sa" & tab & LVL_STR & ", " & GNAME_STR & "__st_ofs" );
+
+	        PUT_LINE( "VAR " & GNAME_STR & "__ld_ofs, q" );
+	        PUT_LINE( tab & "LCA LD_" & DEFN_STR & ".elab" );
+	        PUT_LINE( tab & "Sa" & tab & LVL_STR & ", " & GNAME_STR & "__ld_ofs" );
+
+	      else
+	        PUT_LINE( "; CODE_PACKAGE_DECL : TYPE_ID GENERIQUE PAS GERE " & NODE_NAME'IMAGE( DEFN_TYPE_SPEC.TY ) );
+
 	      end if;
+
+	      PUT_LINE( "VAR " & GNAME_STR & "__u_ofs, q" );
+	      PUT( tab & "La" & tab & INTEGER'IMAGE( DI( CD_LEVEL, D( SM_TYPE_SPEC, DEFN ) ) ) & ", " );
+	      CODI.REGIONS_PATH( DEFN );
+	      PUT_LINE( DEFN_STR & ".use__info" );
+	      PUT_LINE( tab & "Sa" & tab & LVL_STR & ", " & GNAME_STR & "__u_ofs" );
 
 	    end;
 	  end if;

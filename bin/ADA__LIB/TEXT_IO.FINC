@@ -194,8 +194,8 @@ STATOFS LOOK_AHEAD, 1
 STATOFS HAS_LOOK_AHEAD, 1
 STATOFS AT_END_OF_FILE, 1
 size = $
-	LI	 size* 8
 end virtual
+	LI	 size* 8
 	Sd	0, SIZ
 end namespace
 					;    BODY ELAB
@@ -472,11 +472,11 @@ begin:					;---------- BDY INSTRUCTIONS
 	Sb
 	La 1, -FILE_ofs
 	LIVa 	, 0, STANDARD.TEXT_IO.FILE_TYPE.PAGE_LENGTH
-	Ld 0,	STDOUT_PAGE_LENGTH_disp
+	Ld 0,	STANDARD.TEXT_IO.STDOUT_PAGE_LENGTH_disp
 	Sd
 	La 1, -FILE_ofs
 	LIVa 	, 0, STANDARD.TEXT_IO.FILE_TYPE.LINE_LENGTH
-	Ld 0,	STDOUT_LINE_LENGTH_disp
+	Ld 0,	STANDARD.TEXT_IO.STDOUT_LINE_LENGTH_disp
 	Sd
 	La 1, -FILE_ofs
 	LIVa 	, 0, STANDARD.TEXT_IO.FILE_TYPE.PAGE
@@ -602,11 +602,11 @@ begin:					;---------- BDY INSTRUCTIONS
 	Sb
 	La 1, -FILE_ofs
 	LIVa 	, 0, STANDARD.TEXT_IO.FILE_TYPE.PAGE_LENGTH
-	Ld 0,	STDOUT_PAGE_LENGTH_disp
+	Ld 0,	STANDARD.TEXT_IO.STDOUT_PAGE_LENGTH_disp
 	Sd
 	La 1, -FILE_ofs
 	LIVa 	, 0, STANDARD.TEXT_IO.FILE_TYPE.LINE_LENGTH
-	Ld 0,	STDOUT_LINE_LENGTH_disp
+	Ld 0,	STANDARD.TEXT_IO.STDOUT_LINE_LENGTH_disp
 	Sd
 	La 1, -FILE_ofs
 	LIVa 	, 0, STANDARD.TEXT_IO.FILE_TYPE.PAGE
@@ -1008,7 +1008,7 @@ L20:					; post if
 	BRA	L22
 L23:
 L22:					; post if
-	LVa 0,	DEFAULT_INPUT_disp
+	LVa 0,	STANDARD.TEXT_IO.DEFAULT_INPUT_disp
 	La
 	LI	STANDARD.TEXT_IO.FILE_TYPE.size
 	La  1,	-FILE_ofs
@@ -1047,7 +1047,7 @@ L24:					; post if
 	BRA	L26
 L27:
 L26:					; post if
-	LVa 0,	DEFAULT_OUTPUT_disp
+	LVa 0,	STANDARD.TEXT_IO.DEFAULT_OUTPUT_disp
 	La
 	LI	STANDARD.TEXT_IO.FILE_TYPE.size
 	La  1,	-FILE_ofs
@@ -1068,7 +1068,7 @@ endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-	LVa 0,	STD_INPUT_disp
+	LVa 0,	STANDARD.TEXT_IO.STD_INPUT_disp
 	Sa  1,	-result__ofs
 	BRA ret_lbl
 ret_lbl:
@@ -1086,7 +1086,7 @@ endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-	LVa 0,	STD_OUTPUT_disp
+	LVa 0,	STANDARD.TEXT_IO.STD_OUTPUT_disp
 	Sa  1,	-result__ofs
 	BRA ret_lbl
 ret_lbl:
@@ -1104,7 +1104,7 @@ endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-	LVa 0,	DEFAULT_INPUT_disp
+	LVa 0,	STANDARD.TEXT_IO.DEFAULT_INPUT_disp
 	Sa  1,	-result__ofs
 	BRA ret_lbl
 ret_lbl:
@@ -1122,7 +1122,7 @@ endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-	LVa 0,	DEFAULT_OUTPUT_disp
+	LVa 0,	STANDARD.TEXT_IO.DEFAULT_OUTPUT_disp
 	Sa  1,	-result__ofs
 	BRA ret_lbl
 ret_lbl:
@@ -1179,7 +1179,7 @@ ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 	Ld  1,	-TO_ofs
-	LVa 0,	DEFAULT_OUTPUT_disp
+	LVa 0,	STANDARD.TEXT_IO.DEFAULT_OUTPUT_disp
 	CALL	STANDARD.TEXT_IO. ,SET_LINE_LENGTH_L17
 ret_lbl:
 	UNLINK 1
@@ -1235,7 +1235,7 @@ ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 	Ld  1,	-TO_ofs
-	LVa 0,	DEFAULT_OUTPUT_disp
+	LVa 0,	STANDARD.TEXT_IO.DEFAULT_OUTPUT_disp
 	CALL	STANDARD.TEXT_IO. ,SET_PAGE_LENGTH_L19
 ret_lbl:
 	UNLINK 1
@@ -1291,7 +1291,7 @@ ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 	LI	0					; lieu resultat sur pile
-	LVa 0,	DEFAULT_OUTPUT_disp
+	LVa 0,	STANDARD.TEXT_IO.DEFAULT_OUTPUT_disp
 	CALL	STANDARD.TEXT_IO. ,LINE_LENGTH_L21
 	Sd  1,	-result__ofs
 	BRA ret_lbl
@@ -1349,7 +1349,7 @@ ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 	LI	0					; lieu resultat sur pile
-	LVa 0,	DEFAULT_OUTPUT_disp
+	LVa 0,	STANDARD.TEXT_IO.DEFAULT_OUTPUT_disp
 	CALL	STANDARD.TEXT_IO. ,PAGE_LENGTH_L23
 	Sd  1,	-result__ofs
 	BRA ret_lbl
@@ -1464,7 +1464,7 @@ ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 	Ld  1,	-SPACING_ofs
-	LVa 0,	DEFAULT_OUTPUT_disp
+	LVa 0,	STANDARD.TEXT_IO.DEFAULT_OUTPUT_disp
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L25
 ret_lbl:
 	UNLINK 1
@@ -1561,7 +1561,7 @@ ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 	Ld  1,	-SPACING_ofs
-	LVa 0,	DEFAULT_INPUT_disp
+	LVa 0,	STANDARD.TEXT_IO.DEFAULT_INPUT_disp
 	CALL	STANDARD.TEXT_IO. ,SKIP_LINE_L27
 ret_lbl:
 	UNLINK 1
@@ -1664,7 +1664,7 @@ ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 	LI	0					; lieu resultat sur pile
-	LVa 0,	DEFAULT_INPUT_disp
+	LVa 0,	STANDARD.TEXT_IO.DEFAULT_INPUT_disp
 	CALL	STANDARD.TEXT_IO. ,END_OF_LINE_L29
 	Sb  1,	-result__ofs
 	BRA ret_lbl
@@ -1739,7 +1739,7 @@ PRO	NEW_PAGE_L32				;---------- PRO NEW_PAGE
 ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-	LVa 0,	DEFAULT_OUTPUT_disp
+	LVa 0,	STANDARD.TEXT_IO.DEFAULT_OUTPUT_disp
 	CALL	STANDARD.TEXT_IO. ,NEW_PAGE_L31
 ret_lbl:
 	UNLINK 1
@@ -1838,7 +1838,7 @@ PRO	SKIP_PAGE_L34				;---------- PRO SKIP_PAGE
 ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-	LVa 0,	DEFAULT_INPUT_disp
+	LVa 0,	STANDARD.TEXT_IO.DEFAULT_INPUT_disp
 	CALL	STANDARD.TEXT_IO. ,SKIP_PAGE_L33
 ret_lbl:
 	UNLINK 1
@@ -1941,7 +1941,7 @@ ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 	LI	0					; lieu resultat sur pile
-	LVa 0,	DEFAULT_INPUT_disp
+	LVa 0,	STANDARD.TEXT_IO.DEFAULT_INPUT_disp
 	CALL	STANDARD.TEXT_IO. ,END_OF_PAGE_L35
 	Sb  1,	-result__ofs
 	BRA ret_lbl
@@ -2041,7 +2041,7 @@ ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 	LI	0					; lieu resultat sur pile
-	LVa 0,	DEFAULT_INPUT_disp
+	LVa 0,	STANDARD.TEXT_IO.DEFAULT_INPUT_disp
 	CALL	STANDARD.TEXT_IO. ,END_OF_FILE_L37
 	Sb  1,	-result__ofs
 	BRA ret_lbl
@@ -2103,7 +2103,7 @@ ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 	Ld  1,	-TO_ofs
-	LVa 0,	DEFAULT_OUTPUT_disp
+	LVa 0,	STANDARD.TEXT_IO.DEFAULT_OUTPUT_disp
 	CALL	STANDARD.TEXT_IO. ,SET_COL_L39
 ret_lbl:
 	UNLINK 1
@@ -2163,7 +2163,7 @@ ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 	Ld  1,	-TO_ofs
-	LVa 0,	DEFAULT_OUTPUT_disp
+	LVa 0,	STANDARD.TEXT_IO.DEFAULT_OUTPUT_disp
 	CALL	STANDARD.TEXT_IO. ,SET_LINE_L41
 ret_lbl:
 	UNLINK 1
@@ -2210,7 +2210,7 @@ ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 	LI	0					; lieu resultat sur pile
-	LVa 0,	DEFAULT_OUTPUT_disp
+	LVa 0,	STANDARD.TEXT_IO.DEFAULT_OUTPUT_disp
 	CALL	STANDARD.TEXT_IO. ,COL_L43
 	Sd  1,	-result__ofs
 	BRA ret_lbl
@@ -2259,7 +2259,7 @@ ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 	LI	0					; lieu resultat sur pile
-	LVa 0,	DEFAULT_OUTPUT_disp
+	LVa 0,	STANDARD.TEXT_IO.DEFAULT_OUTPUT_disp
 	CALL	STANDARD.TEXT_IO. ,LINE_L45
 	Sd  1,	-result__ofs
 	BRA ret_lbl
@@ -2308,7 +2308,7 @@ ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 	LI	0					; lieu resultat sur pile
-	LVa 0,	DEFAULT_OUTPUT_disp
+	LVa 0,	STANDARD.TEXT_IO.DEFAULT_OUTPUT_disp
 	CALL	STANDARD.TEXT_IO. ,PAGE_L47
 	Sd  1,	-result__ofs
 	BRA ret_lbl
@@ -2410,7 +2410,7 @@ ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 	La  1,	-ITEM_ofs
-	LVa 0,	DEFAULT_INPUT_disp
+	LVa 0,	STANDARD.TEXT_IO.DEFAULT_INPUT_disp
 	CALL	STANDARD.TEXT_IO. ,GET_L49
 ret_lbl:
 	UNLINK 1
@@ -2484,7 +2484,7 @@ ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 	Lb  1,	-ITEM_ofs
-	LVa 0,	DEFAULT_OUTPUT_disp
+	LVa 0,	STANDARD.TEXT_IO.DEFAULT_OUTPUT_disp
 	CALL	STANDARD.TEXT_IO. ,PUT_L51
 ret_lbl:
 	UNLINK 1
@@ -2602,7 +2602,7 @@ ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 	La  1,	-ITEM_ofs
-	LVa 0,	DEFAULT_INPUT_disp
+	LVa 0,	STANDARD.TEXT_IO.DEFAULT_INPUT_disp
 	CALL	STANDARD.TEXT_IO. ,GET_L53
 ret_lbl:
 	UNLINK 1
@@ -2685,7 +2685,7 @@ ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 	La  1,	-ITEM_ofs
-	LVa 0,	DEFAULT_OUTPUT_disp
+	LVa 0,	STANDARD.TEXT_IO.DEFAULT_OUTPUT_disp
 	CALL	STANDARD.TEXT_IO. ,PUT_L55
 ret_lbl:
 	UNLINK 1
@@ -2801,7 +2801,7 @@ ELB 1					;    BODY ELAB
 begin:					;---------- BDY INSTRUCTIONS
 	La  1,	-LAST_ofs
 	La  1,	-ITEM_ofs
-	LVa 0,	DEFAULT_INPUT_disp
+	LVa 0,	STANDARD.TEXT_IO.DEFAULT_INPUT_disp
 	CALL	STANDARD.TEXT_IO. ,GET_LINE_L57
 ret_lbl:
 	UNLINK 1
@@ -2841,10 +2841,10 @@ ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 	La  1,	-ITEM_ofs
-	LVa 0,	DEFAULT_OUTPUT_disp
+	LVa 0,	STANDARD.TEXT_IO.DEFAULT_OUTPUT_disp
 	CALL	STANDARD.TEXT_IO. ,PUT_L55
 	LI	1
-	LVa 0,	DEFAULT_OUTPUT_disp
+	LVa 0,	STANDARD.TEXT_IO.DEFAULT_OUTPUT_disp
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L25
 ret_lbl:
 	UNLINK 1
@@ -2858,6 +2858,7 @@ PRMS
 	PRM NUM__u_ofs
 	PRM NUM__ld_ofs
 	PRM NUM__st_ofs
+	PRM NUM__adr_ofs
 endPRMS
 VAR DEFAULT_WIDTH_disp, d			; variable entiere
 ; WIDTH POUR FORMAL TYPE A REVOIR DANS EXPANDER-EXPRESSIONS 
@@ -3527,7 +3528,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	Ld  1,	-BASE_ofs
 	Ld  1,	-WIDTH_ofs
 	Ld  1,	-ITEM_ofs
-	LVa 0,	DEFAULT_OUTPUT_disp
+	LVa 0,	STANDARD.TEXT_IO.DEFAULT_OUTPUT_disp
 	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,PUT_L63
 ret_lbl:
 	UNLINK 1
@@ -3579,6 +3580,7 @@ PRMS
 	PRM NUM__u_ofs
 	PRM NUM__ld_ofs
 	PRM NUM__st_ofs
+	PRM NUM__adr_ofs
 endPRMS
 VAR DEFAULT_FORE_disp, d			; variable entiere
 	LI	2
@@ -4114,7 +4116,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	La  1,	-GFP_ofs				; propagation GFP generique
 	Ld  1,	-WIDTH_ofs
 	La  1,	-ITEM_ofs
-	LVa 0,	DEFAULT_INPUT_disp
+	LVa 0,	STANDARD.TEXT_IO.DEFAULT_INPUT_disp
 	CALL	STANDARD.TEXT_IO.FLOAT_IO. ,GET_L67
 ret_lbl:
 	UNLINK 1
@@ -4419,7 +4421,7 @@ VAR POS_disp, d				; variable entiere
 	Sd  2,	POS_disp
 
 VAR EVAL_disp, d				; variable entiere
-	Ld 1,	E_disp
+	Ld 1,	STANDARD.TEXT_IO.FLOAT_IO.PUT_L69.E_disp
 	Sd  2,	EVAL_disp
 
 					;    end elab
@@ -4499,7 +4501,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	Ld  1,	-AFT_ofs
 	Ld  1,	-FORE_ofs
 	Lq  1,	-ITEM_ofs
-	LVa 0,	DEFAULT_OUTPUT_disp
+	LVa 0,	STANDARD.TEXT_IO.DEFAULT_OUTPUT_disp
 	CALL	STANDARD.TEXT_IO.FLOAT_IO. ,PUT_L69
 ret_lbl:
 	UNLINK 1
@@ -4552,6 +4554,7 @@ PRMS
 	PRM NUM__u_ofs
 	PRM NUM__ld_ofs
 	PRM NUM__st_ofs
+	PRM NUM__adr_ofs
 endPRMS
 VAR DEFAULT_FORE_disp, d			; variable entiere
 	Sd  0,	DEFAULT_FORE_disp
@@ -4683,6 +4686,7 @@ PRMS
 	PRM ENUM__u_ofs
 	PRM ENUM__ld_ofs
 	PRM ENUM__st_ofs
+	PRM ENUM__adr_ofs
 endPRMS
 VAR DEFAULT_WIDTH_disp, d			; variable entiere
 	LI	0
@@ -4851,7 +4855,7 @@ namespace	BLOCK__26
 ELB 3					;    BODY ELAB
 VAR CH_disp, d				; variable bool char enum
 	La	 2, IMAGES_STR_disp			; array data start address on stack
-	Ld 2,	IMG_START_disp
+	Ld 2,	STANDARD.TEXT_IO.ENUMERATION_IO.PUT_L81.BLOCK__22.IMG_START_disp
 	Ld	2, JL257_disp
 	ADD
 	LId	2, IMAGES_STR__u, STANDARD.STRING.FST_1	; (index - FST_1) * SIZ_1
@@ -4953,7 +4957,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	Lb  1,	-SET_ofs
 	Ld  1,	-WIDTH_ofs
 	Ld  1,	-ITEM_ofs
-	LVa 0,	DEFAULT_OUTPUT_disp
+	LVa 0,	STANDARD.TEXT_IO.DEFAULT_OUTPUT_disp
 	CALL	STANDARD.TEXT_IO.ENUMERATION_IO. ,PUT_L81
 ret_lbl:
 	UNLINK 1
@@ -5407,7 +5411,7 @@ ELB 1					;    BODY ELAB
 begin:					;---------- BDY INSTRUCTIONS
 	La  1,	-GFP_ofs				; propagation GFP generique
 	La  1,	-ITEM_ofs
-	LVa 0,	DEFAULT_INPUT_disp
+	LVa 0,	STANDARD.TEXT_IO.DEFAULT_INPUT_disp
 	CALL	STANDARD.TEXT_IO.ENUMERATION_IO. ,GET_L79
 ret_lbl:
 	UNLINK 1

@@ -332,8 +332,9 @@ is					-----
 
         begin
 	PUT( tab & "L" & SIZ_CHAR & ' ' & IMAGE( DEFN_LVL	) & ',' &	tab );
-	if  DEFN_LVL >= INTEGER( CUR_LEVEL )
-	and then	D( XD_REGION, DEFN ).TY = DN_PACKAGE_ID
+--	if  DEFN_LVL >= INTEGER( CUR_LEVEL )
+	if  DEFN_LVL /= INTEGER( CUR_LEVEL )
+	or else	D( XD_REGION, DEFN ).TY = DN_PACKAGE_ID
 	then
 	  REGIONS_PATH( DEFN );
 	end if;
@@ -345,8 +346,9 @@ is					-----
 	DEFN_LVL	: INTEGER		:= DI( CD_LEVEL, DEFN );
         begin
 	PUT( tab & "LVa " &	IMAGE( DEFN_LVL ) &	',' & tab	);
-	if  DEFN_LVL >= INTEGER( CUR_LEVEL )
-	and then	D( XD_REGION, DEFN ).TY = DN_PACKAGE_ID
+--	if  DEFN_LVL >= INTEGER( CUR_LEVEL )
+	if  DEFN_LVL /= INTEGER( CUR_LEVEL )
+	or else	D( XD_REGION, DEFN ).TY = DN_PACKAGE_ID
 	then
 	  REGIONS_PATH( DEFN );
 	end if;

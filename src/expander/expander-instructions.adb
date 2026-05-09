@@ -971,11 +971,6 @@ null;
         when DN_ENUMERATION | DN_INTEGER | DN_FLOAT =>
           PUT_LINE( tab & "S" & CODI.OPER_SIZ_CHAR( TYPE_SPEC ) );
 
---        when DN_UNIVERSAL_INTEGER =>
---          LOAD_ADR( TYPE_SPEC );
---          EMIT( CVB );
---          EMIT( STO, I );
-
         when others =>
           PUT_LINE ( "!!! STORE_VAL TYPE_SPEC.TY ILLICITE " & NODE_NAME'IMAGE ( TYPE_SPEC.TY ) );
           raise PROGRAM_ERROR;
@@ -987,7 +982,6 @@ null;
     begin
 
       if  DST_NAME.TY = DN_ALL  then									-- AFFECTATION A UN ELEMENT POINTE
---        CODE_ADRESSE( D( AS_NAME, DST_NAME ) );
         EXPRESSIONS.CODE_EXP( SRC_EXP );								-- EXPRESSION A AFFECTER
         STORE_VAL( D( SM_EXP_TYPE, DST_NAME ) );
 
@@ -1001,31 +995,31 @@ null;
 	NAME_TYPE	: TREE		:= D( SM_EXP_TYPE, DST_NAME );
 	DEFN	: TREE		:= D( SM_DEFN, DST_NAME );
 
-	  ---------
-	  procedure	STORE_OR_CALLI
-	  is		---------
+			--------------
+	procedure		STORE_OR_CALLI
+	is		--------------
 	    -- Si dans un body generique et parametre out/in_out, utiliser CALLI vers ST
 	    -- pour respecter la taille du type actuel. Sinon, store classique.
 	    -- Convention: pile = [..., @param_out, valeur]  (valeur en sommet, empilee par l'appelant)
 	    -- ST fait SIb -1,0 : POP_RBX (valeur), INDIRECT_BASE_IN_RAX (deref @param → @dest), STORE
-	  begin
-	    if  CODI.IN_GENERIC_BODY
-	    and then  ( DEFN.TY = DN_OUT_ID  or  DEFN.TY = DN_IN_OUT_ID )
-	    then
-	      declare
-	        FORMAL_TYPE_NAME :constant STRING := PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, NAME_TYPE ) ) );
-	      begin
+	begin
+	  if  CODI.IN_GENERIC_BODY
+	  and then  ( DEFN.TY = DN_OUT_ID  or  DEFN.TY = DN_IN_OUT_ID )
+	  then
+	    declare
+	      FORMAL_TYPE_NAME :constant STRING := PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, NAME_TYPE ) ) );
+	    begin
 	        -- Charger l'adresse de ST via le GFP
 	        -- Utiliser le niveau du parametre (= niveau de la procedure, pas du bloc declare)
-	        PUT_LINE( tab & "La " & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' & tab & "-GFP_ofs" );
-	        PUT_LINE( tab & "La , -" & FORMAL_TYPE_NAME & "__st_ofs" );
-	        PUT_LINE( tab & "CALLI" );
-	      end;
-	    else
-	      CODI.STORE( DEFN );
-	    end if;
-	  end	STORE_OR_CALLI;
-	  ---------
+	      PUT_LINE( tab & "La " & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' & tab & "-GFP_ofs" );
+	      PUT_LINE( tab & "La , -" & FORMAL_TYPE_NAME & "__st_ofs" );
+	      PUT_LINE( tab & "CALLI" );
+	    end;
+	  else
+	    CODI.STORE( DEFN );
+	  end if;
+	end	STORE_OR_CALLI;
+		--------------
 
         begin
 				-- Resolve private to full type

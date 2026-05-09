@@ -1,3 +1,4 @@
+elab_spec:				;    SPEC ELAB
 
 
 
@@ -686,5 +687,25 @@ VAR LST, q
 end namespace
 ; EXC_LBL	L2
 
-; EXC_LBL	L3
+					;    BODY ELAB
+
+if defined WIDTH_L3_
+PRO	WIDTH_L3				;---------- PRO WIDTH
+PRMS					;    debut parametrage
+	PRM I_ofs				; in
+endPRMS					;    fin parametrage
+ELB 1					;    BODY ELAB
+VAR J_disp, d				; variable entiere
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	Ld  1,	-I_ofs
+	Sd  1,	J_disp
+ret_lbl:
+	UNLINK 1
+	RTD	(prm_siz)
+excep:
+endPRO					;---------- end PRO WIDTH
+end if
+begin:					;---------- package BDY INSTRUCTIONS
 

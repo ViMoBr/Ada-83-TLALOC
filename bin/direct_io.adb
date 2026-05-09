@@ -245,11 +245,12 @@ is					----------
 	----------------
 
 		----------------
-    function	READ_SYSTEM_CALL	( FILE_ID :in INTEGER; LENGTH :in INTEGER )	return INTEGER
+    function	READ_SYSTEM_CALL	( FILE_ID :in INTEGER; LENGTH :in INTEGER )
+					return INTEGER
     is		----------------
     begin
       ASM_OP_2'( OPCODE => Ld, LVL => 2, OFS => -16 );			-- LENGTH en octets
-      ASM_OP_2'( OPCODE => La, LVL => 1, OFS => -16 );			-- @ITEM (param out READ : adresse de la zone destination)
+      ASM_OP_2'( OPCODE => La, LVL => 1, OFS => -16 );			-- @ITEM_DATA (param out READ : adresse de la zone destination)
       ASM_OP_2'( OPCODE => Ld, LVL => 2, OFS => -8 );			-- FILE_ID
       ASM_OP_0'( OPCODE => SYS_FILE_READ );
       ASM_OP_2'( OPCODE => SD, LVL => 2, OFS => -32 );			-- Retour du BYTES_READ apres le GFP
@@ -282,11 +283,12 @@ is					----------
     SIZE_BYTES	: INTEGER	:= ELEMENT_TYPE'SIZE / SYSTEM.STORAGE_UNIT;
 
 		----------------
-    function	READ_SYSTEM_CALL	( FILE_ID :in INTEGER; LENGTH :in INTEGER )	return INTEGER
+    function	READ_SYSTEM_CALL	( FILE_ID :in INTEGER; LENGTH :in INTEGER )
+					return INTEGER
     is		----------------
     begin
       ASM_OP_2'( OPCODE => Ld, LVL => 2, OFS => -16 );			-- LENGTH
-      ASM_OP_2'( OPCODE => La, LVL => 1, OFS => -16 );			-- @ITEM
+      ASM_OP_2'( OPCODE => La, LVL => 1, OFS => -16 );			-- @ITEM_DATA
       ASM_OP_2'( OPCODE => Ld, LVL => 2, OFS => -8 );			-- FILE_ID
       ASM_OP_0'( OPCODE => SYS_FILE_READ );
       ASM_OP_2'( OPCODE => SD, LVL => 2, OFS => -32 );
@@ -331,11 +333,11 @@ is					----------
 	----------------
 
 		-----------------
-    function	WRITE_SYSTEM_CALL	( FILE_ID :in INTEGER; LENGTH :in INTEGER )	return INTEGER
+    function	WRITE_SYSTEM_CALL	( FILE_ID :in INTEGER; LENGTH :in INTEGER; ADR :SYSTEM.ADDRESS )	return INTEGER
     is		-----------------
     begin
       ASM_OP_2'( OPCODE => Ld, LVL => 2, OFS => -16 );			-- LENGTH
-      ASM_OP_2'( OPCODE => LVa, LVL => 1, OFS => -16 );			-- @ITEM (param in WRITE : adresse de la zone source)
+      ASM_OP_2'( OPCODE => La, LVL => 2, OFS => -24 );			-- @ITEM_DATA (param in WRITE : adresse de la zone source)
       ASM_OP_2'( OPCODE => Ld, LVL => 2, OFS => -8 );			-- FILE_ID
       ASM_OP_0'( OPCODE => SYS_FILE_WRITE );
       ASM_OP_2'( OPCODE => SD, LVL => 2, OFS => -32 );
@@ -349,7 +351,7 @@ is					----------
     if  INTEGER( TO ) <= 0  then raise USE_ERROR; end if;
 
     DUMMY    := SEEK_SYSTEM_CALL( FILE.ID, ( INTEGER( TO ) - 1 ) * SIZE_BYTES );
-    ERR_CODE := WRITE_SYSTEM_CALL( FILE.ID, SIZE_BYTES );
+    ERR_CODE := WRITE_SYSTEM_CALL( FILE.ID, SIZE_BYTES, ITEM'ADDRESS );
 
   end	WRITE;
 	-----
@@ -364,11 +366,12 @@ is					----------
     SIZE_BYTES	: INTEGER	:= ELEMENT_TYPE'SIZE / SYSTEM.STORAGE_UNIT;
 
 		-----------------
-    function	WRITE_SYSTEM_CALL	( FILE_ID :in INTEGER; LENGTH :in INTEGER )	return INTEGER
+    function	WRITE_SYSTEM_CALL	( FILE_ID :in INTEGER; LENGTH :in INTEGER; ADR :SYSTEM.ADDRESS )
+					return INTEGER
     is		-----------------
     begin
       ASM_OP_2'( OPCODE => Ld, LVL => 2, OFS => -16 );		-- LENGTH
-      ASM_OP_2'( OPCODE => LVa, LVL => 1, OFS => -16 );		-- @ITEM
+      ASM_OP_2'( OPCODE => La, LVL => 2, OFS => -24 );		-- @ITEM_DATA
       ASM_OP_2'( OPCODE => Ld, LVL => 2, OFS => -8 );		-- FILE
       ASM_OP_0'( OPCODE => SYS_FILE_WRITE );
       ASM_OP_2'( OPCODE => SD, LVL => 2, OFS => -32 );
@@ -380,12 +383,7 @@ is					----------
     if  FILE.IS_OPENED = FALSE  then raise STATUS_ERROR; end if;
     if  FILE.MODE = IN_FILE  then raise MODE_ERROR; end if;
 				-- Ecrit a la position courante
-put( "byte_size : " ); INT_IO.put( SIZE_BYTES, 8, 10 ); new_line;
-    ERR_CODE := WRITE_SYSTEM_CALL( FILE.ID, SIZE_BYTES );
-
-
-put( "err_code : " ); INT_IO.put( ERR_CODE, 10, 16 );
-new_line;
+    ERR_CODE := WRITE_SYSTEM_CALL( FILE.ID, SIZE_BYTES, ITEM'ADDRESS );
 
   end	WRITE;
 	-----

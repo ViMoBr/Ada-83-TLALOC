@@ -61,6 +61,13 @@ ST_COULEUR.elab:
 	SIb -1, 0
 	RTD 0
 post_ST_COULEUR:
+BRA post_ADR_COULEUR
+ADR_COULEUR.elab:
+	RTD 0
+post_ADR_COULEUR:
+VAR COULEUR__adr_ofs, q
+	LCA ADR_COULEUR.elab
+	Sa	 1, COULEUR__adr_ofs
 VAR COULEUR__st_ofs, q
 	LCA ST_COULEUR.elab
 	Sa	 1, COULEUR__st_ofs
@@ -200,6 +207,13 @@ ST_JOUR.elab:
 	SIb -1, 0
 	RTD 0
 post_ST_JOUR:
+BRA post_ADR_JOUR
+ADR_JOUR.elab:
+	RTD 0
+post_ADR_JOUR:
+VAR JOUR__adr_ofs, q
+	LCA ADR_JOUR.elab
+	Sa	 1, JOUR__adr_ofs
 VAR JOUR__st_ofs, q
 	LCA ST_JOUR.elab
 	Sa	 1, JOUR__st_ofs
@@ -339,6 +353,13 @@ ST_FILE_MODE.elab:
 	SIb -1, 0
 	RTD 0
 post_ST_FILE_MODE:
+BRA post_ADR_FILE_MODE
+ADR_FILE_MODE.elab:
+	RTD 0
+post_ADR_FILE_MODE:
+VAR FILE_MODE__adr_ofs, q
+	LCA ADR_FILE_MODE.elab
+	Sa	 1, FILE_MODE__adr_ofs
 VAR FILE_MODE__st_ofs, q
 	LCA ST_FILE_MODE.elab
 	Sa	 1, FILE_MODE__st_ofs
@@ -512,7 +533,7 @@ VAR G__dat, STANDARD.TEXT_IO.FILE_TYPE.size
 
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-STR STR_L19, '=== 1. PUT basique ==='		; constante string='=== 1. PUT basique ==='
+STR STR_L19, "=== 1. PUT basique ==="		; constante string="=== 1. PUT basique ==="
 	LCA	STR_L19.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
 	Lb 1,	STANDARD.ENUM_TEST_L1.IO_COULEUR.DEFAULT_SETTING_disp
@@ -533,30 +554,30 @@ STR STR_L19, '=== 1. PUT basique ==='		; constante string='=== 1. PUT basique ==
 	CALL	STANDARD.ENUM_TEST_L1.IO_COULEUR. ,PUT_L4
 	LI	1
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
-STR STR_L20, '=== 2. PUT avec WIDTH ==='	; constante string='=== 2. PUT avec WIDTH ==='
+STR STR_L20, "=== 2. PUT avec WIDTH ==="	; constante string="=== 2. PUT avec WIDTH ==="
 	LCA	STR_L20.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-STR STR_L21, '['				; constante string='['
+STR STR_L21, "["				; constante string="["
 	LCA	STR_L21.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	Lb 1,	STANDARD.ENUM_TEST_L1.IO_COULEUR.DEFAULT_SETTING_disp
 	LI	10
 	LI  0
 	CALL	STANDARD.ENUM_TEST_L1.IO_COULEUR. ,PUT_L4
-STR STR_L22, ']'				; constante string=']'
+STR STR_L22, "]"				; constante string="]"
 	LCA	STR_L22.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-STR STR_L23, '['				; constante string='['
+STR STR_L23, "["				; constante string="["
 	LCA	STR_L23.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	Lb 1,	STANDARD.ENUM_TEST_L1.IO_COULEUR.DEFAULT_SETTING_disp
 	LI	10
 	LI  2
 	CALL	STANDARD.ENUM_TEST_L1.IO_COULEUR. ,PUT_L4
-STR STR_L24, ']'				; constante string=']'
+STR STR_L24, "]"				; constante string="]"
 	LCA	STR_L24.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-STR STR_L25, '=== 3. PUT LOWER_CASE ==='	; constante string='=== 3. PUT LOWER_CASE ==='
+STR STR_L25, "=== 3. PUT LOWER_CASE ==="	; constante string="=== 3. PUT LOWER_CASE ==="
 	LCA	STR_L25.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
 	LI  0
@@ -577,7 +598,7 @@ STR STR_L25, '=== 3. PUT LOWER_CASE ==='	; constante string='=== 3. PUT LOWER_CA
 	CALL	STANDARD.ENUM_TEST_L1.IO_COULEUR. ,PUT_L4
 	LI	1
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
-STR STR_L26, '=== 4. PUT via variable ==='	; constante string='=== 4. PUT via variable ==='
+STR STR_L26, "=== 4. PUT via variable ==="	; constante string="=== 4. PUT via variable ==="
 	LCA	STR_L26.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
 	LI	1
@@ -596,7 +617,7 @@ STR STR_L26, '=== 4. PUT via variable ==='	; constante string='=== 4. PUT via va
 	CALL	STANDARD.ENUM_TEST_L1.IO_COULEUR. ,PUT_L4
 	LI	1
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
-STR STR_L27, '=== 5. PUT sans FILE ==='		; constante string='=== 5. PUT sans FILE ==='
+STR STR_L27, "=== 5. PUT sans FILE ==="		; constante string="=== 5. PUT sans FILE ==="
 	LCA	STR_L27.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
 	Lb 1,	STANDARD.ENUM_TEST_L1.IO_COULEUR.DEFAULT_SETTING_disp
@@ -605,7 +626,7 @@ STR STR_L27, '=== 5. PUT sans FILE ==='		; constante string='=== 5. PUT sans FIL
 	CALL	STANDARD.ENUM_TEST_L1.IO_COULEUR. ,PUT_L4
 	LI	1
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
-STR STR_L28, '=== 6. Type JOUR ==='		; constante string='=== 6. Type JOUR ==='
+STR STR_L28, "=== 6. Type JOUR ==="		; constante string="=== 6. Type JOUR ==="
 	LCA	STR_L28.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
 	Lb 1,	STANDARD.ENUM_TEST_L1.IO_JOUR.DEFAULT_SETTING_disp
@@ -626,20 +647,20 @@ STR STR_L28, '=== 6. Type JOUR ==='		; constante string='=== 6. Type JOUR ==='
 	CALL	STANDARD.ENUM_TEST_L1.IO_JOUR. ,PUT_L10
 	LI	1
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
-STR STR_L29, '=== 7. JOUR WIDTH+LOWER_CASE ==='	; constante string='=== 7. JOUR WIDTH+LOWER_CASE ==='
+STR STR_L29, "=== 7. JOUR WIDTH+LOWER_CASE ==="	; constante string="=== 7. JOUR WIDTH+LOWER_CASE ==="
 	LCA	STR_L29.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-STR STR_L30, '['				; constante string='['
+STR STR_L30, "["				; constante string="["
 	LCA	STR_L30.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	LI  0
 	LI	12
 	LI  5
 	CALL	STANDARD.ENUM_TEST_L1.IO_JOUR. ,PUT_L10
-STR STR_L31, ']'				; constante string=']'
+STR STR_L31, "]"				; constante string="]"
 	LCA	STR_L31.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-STR STR_L32, '=== 8. FILE_MODE ==='		; constante string='=== 8. FILE_MODE ==='
+STR STR_L32, "=== 8. FILE_MODE ==="		; constante string="=== 8. FILE_MODE ==="
 	LCA	STR_L32.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
 	Lb 1,	STANDARD.ENUM_TEST_L1.IO_MODE.DEFAULT_SETTING_disp
@@ -654,7 +675,7 @@ STR STR_L32, '=== 8. FILE_MODE ==='		; constante string='=== 8. FILE_MODE ==='
 	CALL	STANDARD.ENUM_TEST_L1.IO_MODE. ,PUT_L16
 	LI	1
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
-STR STR_L33, '=== 9. Boucle couleurs ==='	; constante string='=== 9. Boucle couleurs ==='
+STR STR_L33, "=== 9. Boucle couleurs ==="	; constante string="=== 9. Boucle couleurs ==="
 	LCA	STR_L33.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
 VAR	IL35_disp, b				; compteur boucle LOOP__1
@@ -672,7 +693,7 @@ LOOP__1:					; corps boucle LOOP__1
 	Ld 1,	STANDARD.ENUM_TEST_L1.IO_COULEUR.DEFAULT_WIDTH_disp
 	Lb  1,	IL35_disp
 	CALL	STANDARD.ENUM_TEST_L1.IO_COULEUR. ,PUT_L4
-STR STR_L36, ' '				; constante string=' '
+STR STR_L36, " "				; constante string=" "
 	LCA	STR_L36.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	Lb  1,	IL35_disp				; test de sortie LOOP__1
@@ -686,7 +707,7 @@ STR STR_L36, ' '				; constante string=' '
 L34:					; post loop LOOP__1
 	LI	1
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
-STR STR_L37, '=== 10. Boucle jours ==='		; constante string='=== 10. Boucle jours ==='
+STR STR_L37, "=== 10. Boucle jours ==="		; constante string="=== 10. Boucle jours ==="
 	LCA	STR_L37.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
 VAR	IL39_disp, b				; compteur boucle LOOP__2
@@ -715,44 +736,44 @@ LOOP__2:					; corps boucle LOOP__2
 L38:					; post loop LOOP__2
 	LI	1
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
-STR STR_L40, '=== 11. GET fichier ==='		; constante string='=== 11. GET fichier ==='
+STR STR_L40, "=== 11. GET fichier ==="		; constante string="=== 11. GET fichier ==="
 	LCA	STR_L40.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-STR STR_L41, ''				; constante string=''
+STR STR_L41, ""				; constante string=""
 	LCA	STR_L41.data_ptr
-STR STR_L42, 'enum_data.dat'			; constante string='enum_data.dat'
+STR STR_L42, "enum_data.dat"			; constante string="enum_data.dat"
 	LCA	STR_L42.data_ptr
 	LI  1
 	LVA  1,	G_disp
 	CALL	STANDARD.TEXT_IO. ,CREATE_L1
-STR STR_L43, 'ROUGE'			; constante string='ROUGE'
+STR STR_L43, "ROUGE"			; constante string="ROUGE"
 	LCA	STR_L43.data_ptr
 	LVa 1,	G_disp
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L59
-STR STR_L44, 'BLANC'			; constante string='BLANC'
+STR STR_L44, "BLANC"			; constante string="BLANC"
 	LCA	STR_L44.data_ptr
 	LVa 1,	G_disp
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L59
-STR STR_L45, 'BLEU'				; constante string='BLEU'
+STR STR_L45, "BLEU"				; constante string="BLEU"
 	LCA	STR_L45.data_ptr
 	LVa 1,	G_disp
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L59
 	LVA  1,	G_disp
 	CALL	STANDARD.TEXT_IO. ,CLOSE_L3
-STR STR_L46, ''				; constante string=''
+STR STR_L46, ""				; constante string=""
 	LCA	STR_L46.data_ptr
-STR STR_L47, 'enum_data.dat'			; constante string='enum_data.dat'
+STR STR_L47, "enum_data.dat"			; constante string="enum_data.dat"
 	LCA	STR_L47.data_ptr
 	LI  0
 	LVA  1,	G_disp
 	CALL	STANDARD.TEXT_IO. ,OPEN_L2
-STR STR_L48, 'lecture 1...'			; constante string='lecture 1...'
+STR STR_L48, "lecture 1..."			; constante string="lecture 1..."
 	LCA	STR_L48.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	LVA  1,	C_disp
 	LVa 1,	G_disp
 	CALL	STANDARD.ENUM_TEST_L1.IO_COULEUR. ,GET_L1
-STR STR_L49, 'Lu 1 : '			; constante string='Lu 1 : '
+STR STR_L49, "Lu 1 : "			; constante string="Lu 1 : "
 	LCA	STR_L49.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	Lb 1,	STANDARD.ENUM_TEST_L1.IO_COULEUR.DEFAULT_SETTING_disp
@@ -761,13 +782,13 @@ STR STR_L49, 'Lu 1 : '			; constante string='Lu 1 : '
 	CALL	STANDARD.ENUM_TEST_L1.IO_COULEUR. ,PUT_L4
 	LI	1
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
-STR STR_L50, 'lecture 2...'			; constante string='lecture 2...'
+STR STR_L50, "lecture 2..."			; constante string="lecture 2..."
 	LCA	STR_L50.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	LVA  1,	C_disp
 	LVa 1,	G_disp
 	CALL	STANDARD.ENUM_TEST_L1.IO_COULEUR. ,GET_L1
-STR STR_L51, 'Lu 2 : '			; constante string='Lu 2 : '
+STR STR_L51, "Lu 2 : "			; constante string="Lu 2 : "
 	LCA	STR_L51.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	Lb 1,	STANDARD.ENUM_TEST_L1.IO_COULEUR.DEFAULT_SETTING_disp
@@ -776,13 +797,13 @@ STR STR_L51, 'Lu 2 : '			; constante string='Lu 2 : '
 	CALL	STANDARD.ENUM_TEST_L1.IO_COULEUR. ,PUT_L4
 	LI	1
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
-STR STR_L52, 'lecture 3...'			; constante string='lecture 3...'
+STR STR_L52, "lecture 3..."			; constante string="lecture 3..."
 	LCA	STR_L52.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	LVA  1,	C_disp
 	LVa 1,	G_disp
 	CALL	STANDARD.ENUM_TEST_L1.IO_COULEUR. ,GET_L1
-STR STR_L53, 'Lu 3 : '			; constante string='Lu 3 : '
+STR STR_L53, "Lu 3 : "			; constante string="Lu 3 : "
 	LCA	STR_L53.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	Lb 1,	STANDARD.ENUM_TEST_L1.IO_COULEUR.DEFAULT_SETTING_disp
@@ -793,44 +814,44 @@ STR STR_L53, 'Lu 3 : '			; constante string='Lu 3 : '
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
 	LVA  1,	G_disp
 	CALL	STANDARD.TEXT_IO. ,CLOSE_L3
-STR STR_L54, '=== 12. GET casse mixte ==='	; constante string='=== 12. GET casse mixte ==='
+STR STR_L54, "=== 12. GET casse mixte ==="	; constante string="=== 12. GET casse mixte ==="
 	LCA	STR_L54.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-STR STR_L55, ''				; constante string=''
+STR STR_L55, ""				; constante string=""
 	LCA	STR_L55.data_ptr
-STR STR_L56, 'enum_data2.dat'			; constante string='enum_data2.dat'
+STR STR_L56, "enum_data2.dat"			; constante string="enum_data2.dat"
 	LCA	STR_L56.data_ptr
 	LI  1
 	LVA  1,	G_disp
 	CALL	STANDARD.TEXT_IO. ,CREATE_L1
-STR STR_L57, 'Rouge'			; constante string='Rouge'
+STR STR_L57, "Rouge"			; constante string="Rouge"
 	LCA	STR_L57.data_ptr
 	LVa 1,	G_disp
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L59
-STR STR_L58, 'blanc'			; constante string='blanc'
+STR STR_L58, "blanc"			; constante string="blanc"
 	LCA	STR_L58.data_ptr
 	LVa 1,	G_disp
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L59
-STR STR_L59, 'BLEU'				; constante string='BLEU'
+STR STR_L59, "BLEU"				; constante string="BLEU"
 	LCA	STR_L59.data_ptr
 	LVa 1,	G_disp
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L59
 	LVA  1,	G_disp
 	CALL	STANDARD.TEXT_IO. ,CLOSE_L3
-STR STR_L60, ''				; constante string=''
+STR STR_L60, ""				; constante string=""
 	LCA	STR_L60.data_ptr
-STR STR_L61, 'enum_data2.dat'			; constante string='enum_data2.dat'
+STR STR_L61, "enum_data2.dat"			; constante string="enum_data2.dat"
 	LCA	STR_L61.data_ptr
 	LI  0
 	LVA  1,	G_disp
 	CALL	STANDARD.TEXT_IO. ,OPEN_L2
-STR STR_L62, 'lecture 1...'			; constante string='lecture 1...'
+STR STR_L62, "lecture 1..."			; constante string="lecture 1..."
 	LCA	STR_L62.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	LVA  1,	C_disp
 	LVa 1,	G_disp
 	CALL	STANDARD.ENUM_TEST_L1.IO_COULEUR. ,GET_L1
-STR STR_L63, 'Lu 1 : '			; constante string='Lu 1 : '
+STR STR_L63, "Lu 1 : "			; constante string="Lu 1 : "
 	LCA	STR_L63.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	Lb 1,	STANDARD.ENUM_TEST_L1.IO_COULEUR.DEFAULT_SETTING_disp
@@ -839,13 +860,13 @@ STR STR_L63, 'Lu 1 : '			; constante string='Lu 1 : '
 	CALL	STANDARD.ENUM_TEST_L1.IO_COULEUR. ,PUT_L4
 	LI	1
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
-STR STR_L64, 'lecture 2...'			; constante string='lecture 2...'
+STR STR_L64, "lecture 2..."			; constante string="lecture 2..."
 	LCA	STR_L64.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	LVA  1,	C_disp
 	LVa 1,	G_disp
 	CALL	STANDARD.ENUM_TEST_L1.IO_COULEUR. ,GET_L1
-STR STR_L65, 'Lu 2 : '			; constante string='Lu 2 : '
+STR STR_L65, "Lu 2 : "			; constante string="Lu 2 : "
 	LCA	STR_L65.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	Lb 1,	STANDARD.ENUM_TEST_L1.IO_COULEUR.DEFAULT_SETTING_disp
@@ -854,13 +875,13 @@ STR STR_L65, 'Lu 2 : '			; constante string='Lu 2 : '
 	CALL	STANDARD.ENUM_TEST_L1.IO_COULEUR. ,PUT_L4
 	LI	1
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
-STR STR_L66, 'lecture 3...'			; constante string='lecture 3...'
+STR STR_L66, "lecture 3..."			; constante string="lecture 3..."
 	LCA	STR_L66.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	LVA  1,	C_disp
 	LVa 1,	G_disp
 	CALL	STANDARD.ENUM_TEST_L1.IO_COULEUR. ,GET_L1
-STR STR_L67, 'Lu 3 : '			; constante string='Lu 3 : '
+STR STR_L67, "Lu 3 : "			; constante string="Lu 3 : "
 	LCA	STR_L67.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	Lb 1,	STANDARD.ENUM_TEST_L1.IO_COULEUR.DEFAULT_SETTING_disp
@@ -871,33 +892,33 @@ STR STR_L67, 'Lu 3 : '			; constante string='Lu 3 : '
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
 	LVA  1,	G_disp
 	CALL	STANDARD.TEXT_IO. ,CLOSE_L3
-STR STR_L68, '=== 13. GET JOUR ==='		; constante string='=== 13. GET JOUR ==='
+STR STR_L68, "=== 13. GET JOUR ==="		; constante string="=== 13. GET JOUR ==="
 	LCA	STR_L68.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-STR STR_L69, ''				; constante string=''
+STR STR_L69, ""				; constante string=""
 	LCA	STR_L69.data_ptr
-STR STR_L70, 'jour_data.dat'			; constante string='jour_data.dat'
+STR STR_L70, "jour_data.dat"			; constante string="jour_data.dat"
 	LCA	STR_L70.data_ptr
 	LI  1
 	LVA  1,	G_disp
 	CALL	STANDARD.TEXT_IO. ,CREATE_L1
-STR STR_L71, 'LUNDI'			; constante string='LUNDI'
+STR STR_L71, "LUNDI"			; constante string="LUNDI"
 	LCA	STR_L71.data_ptr
 	LVa 1,	G_disp
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L59
-STR STR_L72, 'vendredi'			; constante string='vendredi'
+STR STR_L72, "vendredi"			; constante string="vendredi"
 	LCA	STR_L72.data_ptr
 	LVa 1,	G_disp
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L59
-STR STR_L73, 'Dimanche'			; constante string='Dimanche'
+STR STR_L73, "Dimanche"			; constante string="Dimanche"
 	LCA	STR_L73.data_ptr
 	LVa 1,	G_disp
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L59
 	LVA  1,	G_disp
 	CALL	STANDARD.TEXT_IO. ,CLOSE_L3
-STR STR_L74, ''				; constante string=''
+STR STR_L74, ""				; constante string=""
 	LCA	STR_L74.data_ptr
-STR STR_L75, 'jour_data.dat'			; constante string='jour_data.dat'
+STR STR_L75, "jour_data.dat"			; constante string="jour_data.dat"
 	LCA	STR_L75.data_ptr
 	LI  0
 	LVA  1,	G_disp
@@ -905,7 +926,7 @@ STR STR_L75, 'jour_data.dat'			; constante string='jour_data.dat'
 	LVA  1,	J_disp
 	LVa 1,	G_disp
 	CALL	STANDARD.ENUM_TEST_L1.IO_JOUR. ,GET_L7
-STR STR_L76, 'Lu 1 : '			; constante string='Lu 1 : '
+STR STR_L76, "Lu 1 : "			; constante string="Lu 1 : "
 	LCA	STR_L76.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	Lb 1,	STANDARD.ENUM_TEST_L1.IO_JOUR.DEFAULT_SETTING_disp
@@ -917,7 +938,7 @@ STR STR_L76, 'Lu 1 : '			; constante string='Lu 1 : '
 	LVA  1,	J_disp
 	LVa 1,	G_disp
 	CALL	STANDARD.ENUM_TEST_L1.IO_JOUR. ,GET_L7
-STR STR_L77, 'Lu 2 : '			; constante string='Lu 2 : '
+STR STR_L77, "Lu 2 : "			; constante string="Lu 2 : "
 	LCA	STR_L77.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	Lb 1,	STANDARD.ENUM_TEST_L1.IO_JOUR.DEFAULT_SETTING_disp
@@ -929,7 +950,7 @@ STR STR_L77, 'Lu 2 : '			; constante string='Lu 2 : '
 	LVA  1,	J_disp
 	LVa 1,	G_disp
 	CALL	STANDARD.ENUM_TEST_L1.IO_JOUR. ,GET_L7
-STR STR_L78, 'Lu 3 : '			; constante string='Lu 3 : '
+STR STR_L78, "Lu 3 : "			; constante string="Lu 3 : "
 	LCA	STR_L78.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	Lb 1,	STANDARD.ENUM_TEST_L1.IO_JOUR.DEFAULT_SETTING_disp
@@ -940,12 +961,12 @@ STR STR_L78, 'Lu 3 : '			; constante string='Lu 3 : '
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
 	LVA  1,	G_disp
 	CALL	STANDARD.TEXT_IO. ,CLOSE_L3
-STR STR_L79, '=== 14. Roundtrip ==='		; constante string='=== 14. Roundtrip ==='
+STR STR_L79, "=== 14. Roundtrip ==="		; constante string="=== 14. Roundtrip ==="
 	LCA	STR_L79.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-STR STR_L80, ''				; constante string=''
+STR STR_L80, ""				; constante string=""
 	LCA	STR_L80.data_ptr
-STR STR_L81, 'roundtrip.dat'			; constante string='roundtrip.dat'
+STR STR_L81, "roundtrip.dat"			; constante string="roundtrip.dat"
 	LCA	STR_L81.data_ptr
 	LI  1
 	LVA  1,	G_disp
@@ -980,9 +1001,9 @@ LOOP__3:					; corps boucle LOOP__3
 L82:					; post loop LOOP__3
 	LVA  1,	G_disp
 	CALL	STANDARD.TEXT_IO. ,CLOSE_L3
-STR STR_L84, ''				; constante string=''
+STR STR_L84, ""				; constante string=""
 	LCA	STR_L84.data_ptr
-STR STR_L85, 'roundtrip.dat'			; constante string='roundtrip.dat'
+STR STR_L85, "roundtrip.dat"			; constante string="roundtrip.dat"
 	LCA	STR_L85.data_ptr
 	LI  0
 	LVA  1,	G_disp
@@ -1005,7 +1026,7 @@ LOOP__4:					; corps boucle LOOP__4
 	Ld 1,	STANDARD.ENUM_TEST_L1.IO_COULEUR.DEFAULT_WIDTH_disp
 	Lb 1,	C_disp
 	CALL	STANDARD.ENUM_TEST_L1.IO_COULEUR. ,PUT_L4
-STR STR_L88, ' '				; constante string=' '
+STR STR_L88, " "				; constante string=" "
 	LCA	STR_L88.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	Lb  1,	IL87_disp				; test de sortie LOOP__4
@@ -1021,12 +1042,12 @@ L86:					; post loop LOOP__4
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
 	LVA  1,	G_disp
 	CALL	STANDARD.TEXT_IO. ,CLOSE_L3
-STR STR_L89, '=== 15. Roundtrip JOUR ==='	; constante string='=== 15. Roundtrip JOUR ==='
+STR STR_L89, "=== 15. Roundtrip JOUR ==="	; constante string="=== 15. Roundtrip JOUR ==="
 	LCA	STR_L89.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-STR STR_L90, ''				; constante string=''
+STR STR_L90, ""				; constante string=""
 	LCA	STR_L90.data_ptr
-STR STR_L91, 'jour_rt.dat'			; constante string='jour_rt.dat'
+STR STR_L91, "jour_rt.dat"			; constante string="jour_rt.dat"
 	LCA	STR_L91.data_ptr
 	LI  1
 	LVA  1,	G_disp
@@ -1061,9 +1082,9 @@ LOOP__5:					; corps boucle LOOP__5
 L92:					; post loop LOOP__5
 	LVA  1,	G_disp
 	CALL	STANDARD.TEXT_IO. ,CLOSE_L3
-STR STR_L94, ''				; constante string=''
+STR STR_L94, ""				; constante string=""
 	LCA	STR_L94.data_ptr
-STR STR_L95, 'jour_rt.dat'			; constante string='jour_rt.dat'
+STR STR_L95, "jour_rt.dat"			; constante string="jour_rt.dat"
 	LCA	STR_L95.data_ptr
 	LI  0
 	LVA  1,	G_disp
@@ -1086,7 +1107,7 @@ LOOP__6:					; corps boucle LOOP__6
 	Ld 1,	STANDARD.ENUM_TEST_L1.IO_JOUR.DEFAULT_WIDTH_disp
 	Lb 1,	J_disp
 	CALL	STANDARD.ENUM_TEST_L1.IO_JOUR. ,PUT_L10
-STR STR_L98, ' '				; constante string=' '
+STR STR_L98, " "				; constante string=" "
 	LCA	STR_L98.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	Lb  1,	IL97_disp				; test de sortie LOOP__6
@@ -1102,12 +1123,12 @@ L96:					; post loop LOOP__6
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
 	LVA  1,	G_disp
 	CALL	STANDARD.TEXT_IO. ,CLOSE_L3
-STR STR_L99, '=== 16. Boucle GET couleurs ==='	; constante string='=== 16. Boucle GET couleurs ==='
+STR STR_L99, "=== 16. Boucle GET couleurs ==="	; constante string="=== 16. Boucle GET couleurs ==="
 	LCA	STR_L99.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-STR STR_L100, ''				; constante string=''
+STR STR_L100, ""				; constante string=""
 	LCA	STR_L100.data_ptr
-STR STR_L101, 'enum_data.dat'			; constante string='enum_data.dat'
+STR STR_L101, "enum_data.dat"			; constante string="enum_data.dat"
 	LCA	STR_L101.data_ptr
 	LI  1
 	LVA  1,	G_disp
@@ -1138,9 +1159,9 @@ STR STR_L101, 'enum_data.dat'			; constante string='enum_data.dat'
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L25
 	LVA  1,	G_disp
 	CALL	STANDARD.TEXT_IO. ,CLOSE_L3
-STR STR_L102, ''				; constante string=''
+STR STR_L102, ""				; constante string=""
 	LCA	STR_L102.data_ptr
-STR STR_L103, 'enum_data.dat'			; constante string='enum_data.dat'
+STR STR_L103, "enum_data.dat"			; constante string="enum_data.dat"
 	LCA	STR_L103.data_ptr
 	LI  0
 	LVA  1,	G_disp
@@ -1163,7 +1184,7 @@ LOOP__7:					; corps boucle LOOP__7
 	Ld 1,	STANDARD.ENUM_TEST_L1.IO_COULEUR.DEFAULT_WIDTH_disp
 	Lb 1,	C_disp
 	CALL	STANDARD.ENUM_TEST_L1.IO_COULEUR. ,PUT_L4
-STR STR_L106, ' '				; constante string=' '
+STR STR_L106, " "				; constante string=" "
 	LCA	STR_L106.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	Ld  1,	IL105_disp				; test de sortie LOOP__7
@@ -1179,15 +1200,15 @@ L104:					; post loop LOOP__7
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
 	LVA  1,	G_disp
 	CALL	STANDARD.TEXT_IO. ,CLOSE_L3
-STR STR_L107, '=== 17. GET console ==='		; constante string='=== 17. GET console ==='
+STR STR_L107, "=== 17. GET console ==="		; constante string="=== 17. GET console ==="
 	LCA	STR_L107.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-STR STR_L108, 'Entrez une couleur : '		; constante string='Entrez une couleur : '
+STR STR_L108, "Entrez une couleur : "		; constante string="Entrez une couleur : "
 	LCA	STR_L108.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	LVA  1,	C_disp
 	CALL	STANDARD.ENUM_TEST_L1.IO_COULEUR. ,GET_L2
-STR STR_L109, 'Lu : '			; constante string='Lu : '
+STR STR_L109, "Lu : "			; constante string="Lu : "
 	LCA	STR_L109.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	Lb 1,	STANDARD.ENUM_TEST_L1.IO_COULEUR.DEFAULT_SETTING_disp
@@ -1196,7 +1217,7 @@ STR STR_L109, 'Lu : '			; constante string='Lu : '
 	CALL	STANDARD.ENUM_TEST_L1.IO_COULEUR. ,PUT_L4
 	LI	1
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
-STR STR_L110, '=== FIN ==='			; constante string='=== FIN ==='
+STR STR_L110, "=== FIN ==="			; constante string="=== FIN ==="
 	LCA	STR_L110.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
 ret_lbl:

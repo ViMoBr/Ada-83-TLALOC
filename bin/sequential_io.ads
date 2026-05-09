@@ -53,9 +53,17 @@ is					-------------
 
 private
 
+  subtype	FILE_NAME_BUFFER	is STRING( 1 .. 256	);
+
   type FILE_TYPE		is record
-			  null; -- for front end only
+			  ID		: INTEGER		:= -1;
+			  NAME		: FILE_NAME_BUFFER;
+			  NAME_LEN	: POSITIVE;
+			  IS_OPENED	: BOOLEAN		:= FALSE;
+			  MODE		: FILE_MODE;
+			  AT_END_OF_FILE	: BOOLEAN		:= FALSE;
 			end record;
+
 	-------------
 end	SEQUENTIAL_IO;
 	-------------

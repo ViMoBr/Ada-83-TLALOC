@@ -20,6 +20,13 @@ ST_INTEGER.elab:
 	SId -1, 0
 	RTD 0
 post_ST_INTEGER:
+BRA post_ADR_INTEGER
+ADR_INTEGER.elab:
+	RTD 0
+post_ADR_INTEGER:
+VAR INTEGER__adr_ofs, q
+	LCA ADR_INTEGER.elab
+	Sa	 1, INTEGER__adr_ofs
 VAR INTEGER__st_ofs, q
 	LCA ST_INTEGER.elab
 	Sa	 1, INTEGER__st_ofs
@@ -163,6 +170,13 @@ ST_LONG_FLOAT.elab:
 	SIq -1, 0
 	RTD 0
 post_ST_LONG_FLOAT:
+BRA post_ADR_LONG_FLOAT
+ADR_LONG_FLOAT.elab:
+	RTD 0
+post_ADR_LONG_FLOAT:
+VAR LONG_FLOAT__adr_ofs, q
+	LCA ADR_LONG_FLOAT.elab
+	Sa	 1, LONG_FLOAT__adr_ofs
 VAR LONG_FLOAT__st_ofs, q
 	LCA ST_LONG_FLOAT.elab
 	Sa	 1, LONG_FLOAT__st_ofs
@@ -318,6 +332,13 @@ ST_LONG_FLOAT.elab:
 	SIq -1, 0
 	RTD 0
 post_ST_LONG_FLOAT:
+BRA post_ADR_LONG_FLOAT
+ADR_LONG_FLOAT.elab:
+	RTD 0
+post_ADR_LONG_FLOAT:
+VAR LONG_FLOAT__adr_ofs, q
+	LCA ADR_LONG_FLOAT.elab
+	Sa	 1, LONG_FLOAT__adr_ofs
 VAR LONG_FLOAT__st_ofs, q
 	LCA ST_LONG_FLOAT.elab
 	Sa	 1, LONG_FLOAT__st_ofs
@@ -742,8 +763,8 @@ STATOFS MODE, 1
 STATOFS INDEX, 4
 STATOFS AT_END_OF_FILE, 1
 size = $
-	LI	 size* 8
 end virtual
+	LI	 size* 8
 	Sd	1, SIZ
 end namespace
 					;---------- end generic package instantiation LF_IO
@@ -798,39 +819,39 @@ VAR TMP_disp, d				; variable entiere
 
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-STR STR_L32, 'LONG_FLOAT SIZE = '		; constante string='LONG_FLOAT SIZE = '
+STR STR_L32, "LONG_FLOAT SIZE = "		; constante string="LONG_FLOAT SIZE = "
 	LCA	STR_L32.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	Ld 1,	STANDARD.DIRECT_IO_TEST_L1.INT_IO.DEFAULT_BASE_disp
 	Ld 1,	STANDARD.DIRECT_IO_TEST_L1.INT_IO.DEFAULT_WIDTH_disp
 	LId	 0, STANDARD.LONG_FLOAT.use__info
 	CALL	STANDARD.DIRECT_IO_TEST_L1.INT_IO. ,PUT_L5
-STR STR_L33, ' bits'			; constante string=' bits'
+STR STR_L33, " bits"			; constante string=" bits"
 	LCA	STR_L33.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-STR STR_L34, ''				; constante string=''
+STR STR_L34, ""				; constante string=""
 	LCA	STR_L34.data_ptr
-STR STR_L35, 'long_float_direct.dat'		; constante string='long_float_direct.dat'
+STR STR_L35, "long_float_direct.dat"		; constante string="long_float_direct.dat"
 	LCA	STR_L35.data_ptr
 	LI  2
 	LVA  1,	F_disp
 	CALL	STANDARD.DIRECT_IO_TEST_L1.LF_IO. ,CREATE_L14
-STR STR_L36, 'create ok'			; constante string='create ok'
+STR STR_L36, "create ok"			; constante string="create ok"
 	LCA	STR_L36.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
 	Lq 1,	X1_disp
 	LVa 1,	F_disp
 	CALL	STANDARD.DIRECT_IO_TEST_L1.LF_IO. ,WRITE_L27
-STR STR_L37, 'write #1 ok'			; constante string='write #1 ok'
+STR STR_L37, "write #1 ok"			; constante string="write #1 ok"
 	LCA	STR_L37.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
 	Lq 1,	X2_disp
 	LVa 1,	F_disp
 	CALL	STANDARD.DIRECT_IO_TEST_L1.LF_IO. ,WRITE_L27
-STR STR_L38, 'write #2 ok'			; constante string='write #2 ok'
+STR STR_L38, "write #2 ok"			; constante string="write #2 ok"
 	LCA	STR_L38.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-STR STR_L39, 'INDEX = '			; constante string='INDEX = '
+STR STR_L39, "INDEX = "			; constante string="INDEX = "
 	LCA	STR_L39.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	LI	0					; lieu resultat sur pile
@@ -846,10 +867,10 @@ STR STR_L39, 'INDEX = '			; constante string='INDEX = '
 	Lq 1,	X3_disp
 	LVa 1,	F_disp
 	CALL	STANDARD.DIRECT_IO_TEST_L1.LF_IO. ,WRITE_L27
-STR STR_L40, 'write #3 ok'			; constante string='write #3 ok'
+STR STR_L40, "write #3 ok"			; constante string="write #3 ok"
 	LCA	STR_L40.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-STR STR_L41, 'size after writes = '		; constante string='size after writes = '
+STR STR_L41, "size after writes = "		; constante string="size after writes = "
 	LCA	STR_L41.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	LI	0					; lieu resultat sur pile
@@ -864,17 +885,17 @@ STR STR_L41, 'size after writes = '		; constante string='size after writes = '
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
 	LVA  1,	F_disp
 	CALL	STANDARD.DIRECT_IO_TEST_L1.LF_IO. ,CLOSE_L16
-STR STR_L42, 'close after writes ok'		; constante string='close after writes ok'
+STR STR_L42, "close after writes ok"		; constante string="close after writes ok"
 	LCA	STR_L42.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-STR STR_L43, ''				; constante string=''
+STR STR_L43, ""				; constante string=""
 	LCA	STR_L43.data_ptr
-STR STR_L44, 'long_float_direct.dat'		; constante string='long_float_direct.dat'
+STR STR_L44, "long_float_direct.dat"		; constante string="long_float_direct.dat"
 	LCA	STR_L44.data_ptr
 	LI  0
 	LVA  1,	F_disp
 	CALL	STANDARD.DIRECT_IO_TEST_L1.LF_IO. ,OPEN_L15
-STR STR_L45, 'open in_file ok'		; constante string='open in_file ok'
+STR STR_L45, "open in_file ok"		; constante string="open in_file ok"
 	LCA	STR_L45.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
 	LVA  1,	R1_disp
@@ -886,7 +907,7 @@ STR STR_L45, 'open in_file ok'		; constante string='open in_file ok'
 	LVA  1,	R3_disp
 	LVa 1,	F_disp
 	CALL	STANDARD.DIRECT_IO_TEST_L1.LF_IO. ,READ_L25
-STR STR_L46, 'read seq #1 = '			; constante string='read seq #1 = '
+STR STR_L46, "read seq #1 = "			; constante string="read seq #1 = "
 	LCA	STR_L46.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	Ld 1,	STANDARD.DIRECT_IO_TEST_L1.LF_TEXT_IO.DEFAULT_EXP_disp
@@ -896,7 +917,7 @@ STR STR_L46, 'read seq #1 = '			; constante string='read seq #1 = '
 	CALL	STANDARD.DIRECT_IO_TEST_L1.LF_TEXT_IO. ,PUT_L11
 	LI	1
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
-STR STR_L47, 'read seq #2 = '			; constante string='read seq #2 = '
+STR STR_L47, "read seq #2 = "			; constante string="read seq #2 = "
 	LCA	STR_L47.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	Ld 1,	STANDARD.DIRECT_IO_TEST_L1.LF_TEXT_IO.DEFAULT_EXP_disp
@@ -906,7 +927,7 @@ STR STR_L47, 'read seq #2 = '			; constante string='read seq #2 = '
 	CALL	STANDARD.DIRECT_IO_TEST_L1.LF_TEXT_IO. ,PUT_L11
 	LI	1
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
-STR STR_L48, 'read seq #3 = '			; constante string='read seq #3 = '
+STR STR_L48, "read seq #3 = "			; constante string="read seq #3 = "
 	LCA	STR_L48.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	Ld 1,	STANDARD.DIRECT_IO_TEST_L1.LF_TEXT_IO.DEFAULT_EXP_disp
@@ -918,24 +939,24 @@ STR STR_L48, 'read seq #3 = '			; constante string='read seq #3 = '
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
 	LVA  1,	F_disp
 	CALL	STANDARD.DIRECT_IO_TEST_L1.LF_IO. ,CLOSE_L16
-STR STR_L49, 'close after sequential read ok'	; constante string='close after sequential read ok'
+STR STR_L49, "close after sequential read ok"	; constante string="close after sequential read ok"
 	LCA	STR_L49.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-STR STR_L50, ''				; constante string=''
+STR STR_L50, ""				; constante string=""
 	LCA	STR_L50.data_ptr
-STR STR_L51, 'long_float_direct.dat'		; constante string='long_float_direct.dat'
+STR STR_L51, "long_float_direct.dat"		; constante string="long_float_direct.dat"
 	LCA	STR_L51.data_ptr
 	LI  0
 	LVA  1,	F_disp
 	CALL	STANDARD.DIRECT_IO_TEST_L1.LF_IO. ,OPEN_L15
-STR STR_L52, 'open again for positioned read ok'	; constante string='open again for positioned read ok'
+STR STR_L52, "open again for positioned read ok"	; constante string="open again for positioned read ok"
 	LCA	STR_L52.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
 	LI	2
 	LVA  1,	R2_disp
 	LVa 1,	F_disp
 	CALL	STANDARD.DIRECT_IO_TEST_L1.LF_IO. ,READ_L24
-STR STR_L53, 'read positioned #2 = '		; constante string='read positioned #2 = '
+STR STR_L53, "read positioned #2 = "		; constante string="read positioned #2 = "
 	LCA	STR_L53.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	Ld 1,	STANDARD.DIRECT_IO_TEST_L1.LF_TEXT_IO.DEFAULT_EXP_disp
@@ -949,7 +970,7 @@ STR STR_L53, 'read positioned #2 = '		; constante string='read positioned #2 = '
 	LVA  1,	R3_disp
 	LVa 1,	F_disp
 	CALL	STANDARD.DIRECT_IO_TEST_L1.LF_IO. ,READ_L24
-STR STR_L54, 'read positioned #3 = '		; constante string='read positioned #3 = '
+STR STR_L54, "read positioned #3 = "		; constante string="read positioned #3 = "
 	LCA	STR_L54.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	Ld 1,	STANDARD.DIRECT_IO_TEST_L1.LF_TEXT_IO.DEFAULT_EXP_disp
@@ -961,27 +982,27 @@ STR STR_L54, 'read positioned #3 = '		; constante string='read positioned #3 = '
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
 	LVA  1,	F_disp
 	CALL	STANDARD.DIRECT_IO_TEST_L1.LF_IO. ,CLOSE_L16
-STR STR_L55, 'close after positioned read ok'	; constante string='close after positioned read ok'
+STR STR_L55, "close after positioned read ok"	; constante string="close after positioned read ok"
 	LCA	STR_L55.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-STR STR_L56, ''				; constante string=''
+STR STR_L56, ""				; constante string=""
 	LCA	STR_L56.data_ptr
-STR STR_L57, 'long_float_direct.dat'		; constante string='long_float_direct.dat'
+STR STR_L57, "long_float_direct.dat"		; constante string="long_float_direct.dat"
 	LCA	STR_L57.data_ptr
 	LI  1
 	LVA  1,	F_disp
 	CALL	STANDARD.DIRECT_IO_TEST_L1.LF_IO. ,OPEN_L15
-STR STR_L58, 'open inout_file ok'		; constante string='open inout_file ok'
+STR STR_L58, "open inout_file ok"		; constante string="open inout_file ok"
 	LCA	STR_L58.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
 	LI	2
 	Lq 1,	X1_disp
 	LVa 1,	F_disp
 	CALL	STANDARD.DIRECT_IO_TEST_L1.LF_IO. ,WRITE_L26
-STR STR_L59, 'rewrite position 2 ok'		; constante string='rewrite position 2 ok'
+STR STR_L59, "rewrite position 2 ok"		; constante string="rewrite position 2 ok"
 	LCA	STR_L59.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-STR STR_L60, 'size after rewrite = '		; constante string='size after rewrite = '
+STR STR_L60, "size after rewrite = "		; constante string="size after rewrite = "
 	LCA	STR_L60.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	Ld 1,	STANDARD.DIRECT_IO_TEST_L1.INT_IO.DEFAULT_BASE_disp
@@ -994,17 +1015,17 @@ STR STR_L60, 'size after rewrite = '		; constante string='size after rewrite = '
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
 	LVA  1,	F_disp
 	CALL	STANDARD.DIRECT_IO_TEST_L1.LF_IO. ,CLOSE_L16
-STR STR_L61, 'close after rewrite ok'		; constante string='close after rewrite ok'
+STR STR_L61, "close after rewrite ok"		; constante string="close after rewrite ok"
 	LCA	STR_L61.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-STR STR_L62, ''				; constante string=''
+STR STR_L62, ""				; constante string=""
 	LCA	STR_L62.data_ptr
-STR STR_L63, 'long_float_direct.dat'		; constante string='long_float_direct.dat'
+STR STR_L63, "long_float_direct.dat"		; constante string="long_float_direct.dat"
 	LCA	STR_L63.data_ptr
 	LI  0
 	LVA  1,	F_disp
 	CALL	STANDARD.DIRECT_IO_TEST_L1.LF_IO. ,OPEN_L15
-STR STR_L64, 'open final check ok'		; constante string='open final check ok'
+STR STR_L64, "open final check ok"		; constante string="open final check ok"
 	LCA	STR_L64.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
 	LI	1
@@ -1019,7 +1040,7 @@ STR STR_L64, 'open final check ok'		; constante string='open final check ok'
 	LVA  1,	R3_disp
 	LVa 1,	F_disp
 	CALL	STANDARD.DIRECT_IO_TEST_L1.LF_IO. ,READ_L24
-STR STR_L65, 'final #1 = '			; constante string='final #1 = '
+STR STR_L65, "final #1 = "			; constante string="final #1 = "
 	LCA	STR_L65.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	Ld 1,	STANDARD.DIRECT_IO_TEST_L1.LF_TEXT_IO.DEFAULT_EXP_disp
@@ -1029,7 +1050,7 @@ STR STR_L65, 'final #1 = '			; constante string='final #1 = '
 	CALL	STANDARD.DIRECT_IO_TEST_L1.LF_TEXT_IO. ,PUT_L11
 	LI	1
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
-STR STR_L66, 'final #2 = '			; constante string='final #2 = '
+STR STR_L66, "final #2 = "			; constante string="final #2 = "
 	LCA	STR_L66.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	Ld 1,	STANDARD.DIRECT_IO_TEST_L1.LF_TEXT_IO.DEFAULT_EXP_disp
@@ -1039,7 +1060,7 @@ STR STR_L66, 'final #2 = '			; constante string='final #2 = '
 	CALL	STANDARD.DIRECT_IO_TEST_L1.LF_TEXT_IO. ,PUT_L11
 	LI	1
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
-STR STR_L67, 'final #3 = '			; constante string='final #3 = '
+STR STR_L67, "final #3 = "			; constante string="final #3 = "
 	LCA	STR_L67.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	Ld 1,	STANDARD.DIRECT_IO_TEST_L1.LF_TEXT_IO.DEFAULT_EXP_disp
@@ -1051,7 +1072,7 @@ STR STR_L67, 'final #3 = '			; constante string='final #3 = '
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
 	LVA  1,	F_disp
 	CALL	STANDARD.DIRECT_IO_TEST_L1.LF_IO. ,CLOSE_L16
-STR STR_L68, 'final close ok'			; constante string='final close ok'
+STR STR_L68, "final close ok"			; constante string="final close ok"
 	LCA	STR_L68.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
 ret_lbl:

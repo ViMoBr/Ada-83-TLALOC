@@ -739,8 +739,8 @@ is
 
       if	IS_STATIC	 then
         PUT_LINE( "size = $" );
-        PUT_LINE( tab & "LI" & tab & " size*" & INTEGER'IMAGE( CODI.STORAGE_UNIT ) );
         PUT_LINE( "end virtual" );
+        PUT_LINE( tab & "LI" & tab & " size*" & INTEGER'IMAGE( CODI.STORAGE_UNIT ) );
         PUT_LINE( tab & "Sd" & tab & LVL_STR & ", SIZ" );
         DI( CD_IMPL_SIZE, TYPE_SPEC, STATIC_SIZE );
       end	if;
