@@ -1,6 +1,6 @@
 # SESSION EXPANDER — Synthèse et point de départ
 
-**Date** : mai 2026 (mise à jour après sessions des 9, 10, 11, 12, 13, 15 et 25 avril, et 10 mai)
+**Date** : avril 2026 (mise à jour après sessions des 9, 10, 11, 12, 13, 15 et 25 avril)
 **Objectif** : compléter l'EXPANDER du compilateur TLALOC
 **Objectif élargi** : implémenter le chapitre 14 du LRM Ada 83 (I/O)
 
@@ -83,14 +83,6 @@
 - **Code statements** : package MACHINE_CODE avec ASM_OPCODE.
   **ASM_OP_3** ajouté (session 15 avril) pour les accès indirects
   multi-niveaux (LIVa).
-- **DIRECT_IO** : package générique LRM 14.2.5 compilé et validé (session
-  10 mai). CREATE, OPEN, CLOSE, DELETE, RESET (2 versions), READ (2 versions),
-  WRITE (2 versions), SET_INDEX, INDEX, SIZE, END_OF_FILE, IS_OPEN, MODE,
-  NAME, FORM. Testé sur LONG_FLOAT (scalaire), type énuméré (byte), record
-  contraint (POINT : 3 INTEGER), tableau contraint (VECTEUR : array 1..4 of
-  INTEGER). Lectures/écritures séquentielles et positionnées validées.
-  Mécanisme `ITEM'ADDRESS` + micro-procédure `ADR` pour l'accès aux données
-  brutes des composites (voir section 2.2).
 - **Exceptions** : squelette présent mais handlers incomplets.
 
 
@@ -139,56 +131,6 @@ deux stockés en double 64 bits — OPER_SIZ_CHAR force 'q' pour DN_FLOAT.
   donnerait ucomisd xmm1, xmm1)
 - FNEG/FABS : opérer directement sur l'octet de signe [rbp+7] en
   little-endian, pas via masque 64 bits
-
-
-### 2.2 Mécanisme ADR par CALLI — accès aux données brutes composites (session 10 mai)
-
-#### Problème résolu
-
-Pour `DIRECT_IO`, `WRITE_SYSTEM_CALL` doit passer au syscall `SYS_FILE_WRITE`
-l'adresse des **octets bruts** de `ITEM`. Si `ELEMENT_TYPE` est un type
-composite (record, array), l'expander passe `ITEM` par doublet descripteur
-`(_disp, __u)`. Utiliser `LVa 1, -OFS` dans la macro LLIR donne l'adresse
-du doublet, pas des données — le fichier contiendrait des pointeurs de pile,
-et la relecture dans un autre processus segfaulterait.
-
-#### Solution : `ITEM'ADDRESS` + troisième micro-procédure `ADR`
-
-Le body `DIRECT_IO` passe explicitement `ITEM'ADDRESS` comme troisième
-paramètre `ADR : SYSTEM.ADDRESS` à `WRITE_SYSTEM_CALL`. L'instruction LLIR
-`La 2, -24` charge directement cette adresse sans ambiguïté.
-
-Parallèlement, l'expander génère une troisième micro-procédure `ADR_TYPE.elab`
-dans l'elab_spec de chaque instanciation, aux côtés de `LD` et `ST` :
-
-- **Type scalaire** : `ADR` = `RTD 0` (no-op) — l'adresse passée est déjà
-  l'adresse de la valeur scalaire.
-- **Type composite** (record ou array contraint) : `ADR` = `La -1, 0` +
-  `RTD 0` — dépile l'adresse du doublet et charge le `data_ptr` (offset 0),
-  soit l'adresse réelle des octets.
-
-#### Convention GFP étendue (4 PRM dans le modèle)
-
-```asm
-PRMS
-    PRM ELEM__u_ofs       ; offset  8 → use_info (SIZ, FST, LST...)
-    PRM ELEM__ld_ofs      ; offset 16 → adresse de LD_TYPE.elab
-    PRM ELEM__st_ofs      ; offset 24 → adresse de ST_TYPE.elab
-    PRM ELEM__adr_ofs     ; offset 32 → adresse de ADR_TYPE.elab
-endPRMS
-```
-
-VAR de l'instance en ordre inverse avant GFP_disp :
-`__adr_ofs` (GFP-8), `__st_ofs` (GFP-16), `__ld_ofs` (GFP-24),
-`__u_ofs` (GFP-32).
-
-#### État actuel des micro-procédures composites
-
-`LD` et `ST` pour les types composites sont marqués **`A REVOIR`** dans
-`expander-declarations.adb` (corps provisoires `LI 0` / `DROP`). Ils ne
-sont pas nécessaires pour `DIRECT_IO` qui utilise `ITEM'ADDRESS` directement,
-mais le seront pour les génériques Ada 83 généraux avec paramètres `out`
-de type composite.
 
 
 ### 2.1 Mécanisme LD/ST par CALLI (session 25 avril)
@@ -587,20 +529,6 @@ expander.adb                  Programme principal + CODE_ROOT
     (offset 8) correspond à la dernière VAR avant GFP_disp (offset -8).
     (session 25 avril)
 
-40. **`LVa` sur `in` composite dans syscall** : donne l'adresse du doublet
-    descripteur, pas des données brutes. Pour les I/O fichier, utiliser
-    `ITEM'ADDRESS` comme paramètre explicite `SYSTEM.ADDRESS` et `La 2, -OFS`
-    dans la macro LLIR. (session 10 mai)
-41. **Hexdump cohérent ≠ fichier correct** : READ/WRITE symétriques sur le
-    même doublet donnent des résultats corrects en intra-processus mais
-    écrivent des pointeurs de pile dans le fichier. Un second processus
-    segfaulterait. Toujours vérifier avec hexdump que le fichier contient
-    les valeurs attendues, pas des adresses `0x7ffc...`. (session 10 mai)
-42. **Agrégats nommés en position de paramètre** : non encore implémentés
-    dans l'expander. Un agrégat `(X=>1,Y=>2)` comme initialiseur de variable
-    fonctionne (COMPILE_RECORD_VAR), mais pas comme argument d'appel. 
-    Contournement : variable intermédiaire déclarée avec l'agrégat. (session 10 mai)
-
 
 ## 9. Programmes de test — résultats validés
 
@@ -650,33 +578,6 @@ expander.adb                  Programme principal + CODE_ROOT
 ```
 
 
-### DIRECT_IO_TEST (session 10 mai, scalaire LONG_FLOAT)
-
-```
-LONG_FLOAT SIZE = 64 bits
-create+write+close ok / open in_file ok
-read seq #1/#2/#3 : 3.1415 / 6.5 / -2.25
-read positioned #2/#3 : 6.5 / -2.25
-open inout_file ok / rewrite position 2 ok
-size after rewrite = 3
-final #1/#2/#3 : 3.1415 / 3.1415 / -2.25
-```
-
-### DIRECT_IO_TEST2 (session 10 mai, types non scalaires)
-
-```
-=== 1. COULEUR (énuméré, 8 bits) ===   5 writes, seq + positioned, ok
-=== 2. POINT (record 3 INTEGER) ===    4 writes, seq + positioned en ordre qqcq, ok
-=== 3. VECTEUR (array 1..4 INTEGER) == 3 writes, seq + positioned, ok
-=== 4. SET_INDEX + END_OF_FILE ===     SET_INDEX(4), EOF avant/après lecture, retour début, ok
-=== 5. RESET + réécriture partielle == INOUT_FILE, rewrite pos 2+4, RESET IN_FILE, verify, ok
-=== 6. IS_OPEN ===                     FALSE après CLOSE, TRUE après OPEN, ok
-=== 7. Boucle END_OF_FILE ===          parcours séquentiel VECTEUR, 3 éléments, ok
-=== 8. DELETE ===                      3 fichiers supprimés, IS_OPEN FALSE après DELETE, ok
-```
-Note : agrégats nommés en position de paramètre (`(X=>777,Y=>888,Z=>999)`)
-non encore compilables — contournement par variables intermédiaires déclarées.
-
 ## 10. Fichiers à uploader pour la prochaine session
 
 1. `src/expander/expander.adb`
@@ -687,7 +588,6 @@ non encore compilables — contournement par variables intermédiaires déclaré
 6. `src/expander/expander-declarations-types_decls.adb`
 7. `src/expander/expander-structures.adb`
 8. `text_io.adb` et `text_io.ads`
-9. `direct_io.adb` et `direct_io.ads`
-10. `machine_code.ads`
-11. `src/expander/fasmg/codi_x86_64.finc`
-12. Programme de test en cours
+9. `machine_code.ads`
+10. `src/expander/fasmg/codi_x86_64.finc`
+11. Programme de test en cours (ex: `enum_test.adb`)

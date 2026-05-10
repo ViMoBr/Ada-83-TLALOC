@@ -883,6 +883,7 @@ PRO	READ_SYSTEM_CALL_L27			;---------- PRO READ_SYSTEM_CALL
 PRMS					;    debut parametrage
 	PRM FILE_ID_ofs				; in
 	PRM LENGTH_ofs				; in
+	PRM ADR_ofs				; in
 	PRM GFP_ofs
 	PRM result__ofs				; resultat de fonction
 endPRMS					;    fin parametrage
@@ -890,7 +891,7 @@ ELB 2					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 	LD 2 ,	-16
-	LA 1 ,	-16
+	LA 2 ,	-24
 	LD 2 ,	-8
 	SYS_FILE_READ
 	SD 2 ,	-32
@@ -941,6 +942,10 @@ L32:					; post if
 	Sd  1,	DUMMY_disp
 	LI	0					; lieu resultat sur pile
 	La  1,	-GFP_ofs				; propagation GFP generique
+	La	1, -ITEM_ofs
+	La  1,	-GFP_ofs
+	La	, -ELEMENT_TYPE__adr_ofs
+	CALLI
 	Ld 1,	SIZE_BYTES_disp
 	La 1, -FILE_ofs
 	LId	, 0, STANDARD.DIRECT_IO.FILE_TYPE.ID
@@ -984,6 +989,7 @@ PRO	READ_SYSTEM_CALL_L36			;---------- PRO READ_SYSTEM_CALL
 PRMS					;    debut parametrage
 	PRM FILE_ID_ofs				; in
 	PRM LENGTH_ofs				; in
+	PRM ADR_ofs				; in
 	PRM GFP_ofs
 	PRM result__ofs				; resultat de fonction
 endPRMS					;    fin parametrage
@@ -991,7 +997,7 @@ ELB 2					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 	LD 2 ,	-16
-	LA 1 ,	-16
+	LA 2 ,	-24
 	LD 2 ,	-8
 	SYS_FILE_READ
 	SD 2 ,	-32
@@ -1023,6 +1029,10 @@ L40:
 L39:					; post if
 	LI	0					; lieu resultat sur pile
 	La  1,	-GFP_ofs				; propagation GFP generique
+	La	1, -ITEM_ofs
+	La  1,	-GFP_ofs
+	La	, -ELEMENT_TYPE__adr_ofs
+	CALLI
 	Ld 1,	SIZE_BYTES_disp
 	La 1, -FILE_ofs
 	LId	, 0, STANDARD.DIRECT_IO.FILE_TYPE.ID
@@ -1150,7 +1160,7 @@ L49:					; post if
 	Sd  1,	DUMMY_disp
 	LI	0					; lieu resultat sur pile
 	La  1,	-GFP_ofs				; propagation GFP generique
-	LVa	1, -ITEM_ofs
+	La	1, -ITEM_ofs
 	La  1,	-GFP_ofs
 	La	, -ELEMENT_TYPE__adr_ofs
 	CALLI
@@ -1229,7 +1239,7 @@ L55:
 L54:					; post if
 	LI	0					; lieu resultat sur pile
 	La  1,	-GFP_ofs				; propagation GFP generique
-	LVa	1, -ITEM_ofs
+	La	1, -ITEM_ofs
 	La  1,	-GFP_ofs
 	La	, -ELEMENT_TYPE__adr_ofs
 	CALLI

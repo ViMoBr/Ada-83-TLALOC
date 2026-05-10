@@ -1855,17 +1855,17 @@ VAR P2__dat, STANDARD.DIRECT_IO_TEST2_L1.POINT.size
 	Sa	1, P2_disp				; record fin
 	LVA	1, STANDARD.DIRECT_IO_TEST2_L1.POINT.SIZ
 	Sa	1, P2__u
-	LI	10
+	LI	16
 	LIVa 1, P2_disp, STANDARD.DIRECT_IO_TEST2_L1.POINT.X
 	OVER
 	Sd
 	DROP
-	LI	20
+	LI	32
 	LIVa 1, P2_disp, STANDARD.DIRECT_IO_TEST2_L1.POINT.Y
 	OVER
 	Sd
 	DROP
-	LI	30
+	LI	64
 	LIVa 1, P2_disp, STANDARD.DIRECT_IO_TEST2_L1.POINT.Z
 	OVER
 	Sd
@@ -1919,40 +1919,167 @@ VAR P4__dat, STANDARD.DIRECT_IO_TEST2_L1.POINT.size
 	Sd
 	DROP
 
+VAR P_NEG_disp, q				; variable record : pointeur aux data record
+VAR P_NEG__u, q				; variable record : pointeur aux useinfo
+VAR P_NEG__dat, STANDARD.DIRECT_IO_TEST2_L1.POINT.size
+	LVA	1, P_NEG__dat
+	Sa	1, P_NEG_disp				; record fin
+	LVA	1, STANDARD.DIRECT_IO_TEST2_L1.POINT.SIZ
+	Sa	1, P_NEG__u
+	LI	42
+	NEG
+	LIVa 1, P_NEG_disp, STANDARD.DIRECT_IO_TEST2_L1.POINT.X
+	OVER
+	Sd
+	DROP
+	LI	42
+	NEG
+	LIVa 1, P_NEG_disp, STANDARD.DIRECT_IO_TEST2_L1.POINT.Y
+	OVER
+	Sd
+	DROP
+	LI	42
+	NEG
+	LIVa 1, P_NEG_disp, STANDARD.DIRECT_IO_TEST2_L1.POINT.Z
+	OVER
+	Sd
+	DROP
+
 VAR V1_disp, q				; variable array : pointeur aux data
 VAR V1__u, q				; variable array : useinfo pointeur au rec info
+	La 1, VECTEUR.use__info
+	Sa	1, V1__u				; array info ptr at __u
+	Ld	1, VECTEUR.SIZ
+	LI	8
+	DIV
+	CO_VAR
+	Sa	1, V1_disp				; array data ptr at _disp
 					; array data aggregate
+	La	1, V1_disp
 					; agg exp
+	DUP
 	LI	11
+	Sd
+	LId	1, V1__u,STANDARD.DIRECT_IO_TEST2_L1.VECTEUR.COMP_SIZ
+	LI	8
+	DIV
+	ADD
 					; agg exp
+	DUP
 	LI	22
+	Sd
+	LId	1, V1__u,STANDARD.DIRECT_IO_TEST2_L1.VECTEUR.COMP_SIZ
+	LI	8
+	DIV
+	ADD
 					; agg exp
+	DUP
 	LI	33
+	Sd
+	LId	1, V1__u,STANDARD.DIRECT_IO_TEST2_L1.VECTEUR.COMP_SIZ
+	LI	8
+	DIV
+	ADD
 					; agg exp
+	DUP
 	LI	44
+	Sd
+	LId	1, V1__u,STANDARD.DIRECT_IO_TEST2_L1.VECTEUR.COMP_SIZ
+	LI	8
+	DIV
+	ADD
 
 VAR V2_disp, q				; variable array : pointeur aux data
 VAR V2__u, q				; variable array : useinfo pointeur au rec info
+	La 1, VECTEUR.use__info
+	Sa	1, V2__u				; array info ptr at __u
+	Ld	1, VECTEUR.SIZ
+	LI	8
+	DIV
+	CO_VAR
+	Sa	1, V2_disp				; array data ptr at _disp
 					; array data aggregate
-					; agg named
-					; agg named
-					; agg named
+	La	1, V2_disp
+					; agg exp
+	DUP
+	LI	55
+	Sd
+	LId	1, V2__u,STANDARD.DIRECT_IO_TEST2_L1.VECTEUR.COMP_SIZ
+	LI	8
+	DIV
+	ADD
+					; agg exp
+	DUP
+	LI	66
+	Sd
+	LId	1, V2__u,STANDARD.DIRECT_IO_TEST2_L1.VECTEUR.COMP_SIZ
+	LI	8
+	DIV
+	ADD
+					; agg exp
+	DUP
+	LI	77
+	Sd
+	LId	1, V2__u,STANDARD.DIRECT_IO_TEST2_L1.VECTEUR.COMP_SIZ
+	LI	8
+	DIV
+	ADD
+					; agg exp
+	DUP
+	LI	88
+	Sd
+	LId	1, V2__u,STANDARD.DIRECT_IO_TEST2_L1.VECTEUR.COMP_SIZ
+	LI	8
+	DIV
+	ADD
 
 VAR V3_disp, q				; variable array : pointeur aux data
 VAR V3__u, q				; variable array : useinfo pointeur au rec info
+	La 1, VECTEUR.use__info
+	Sa	1, V3__u				; array info ptr at __u
+	Ld	1, VECTEUR.SIZ
+	LI	8
+	DIV
+	CO_VAR
+	Sa	1, V3_disp				; array data ptr at _disp
 					; array data aggregate
+	La	1, V3_disp
 					; agg exp
+	DUP
 	LI	1
 	NEG
+	Sd
+	LId	1, V3__u,STANDARD.DIRECT_IO_TEST2_L1.VECTEUR.COMP_SIZ
+	LI	8
+	DIV
+	ADD
 					; agg exp
+	DUP
 	LI	2
 	NEG
+	Sd
+	LId	1, V3__u,STANDARD.DIRECT_IO_TEST2_L1.VECTEUR.COMP_SIZ
+	LI	8
+	DIV
+	ADD
 					; agg exp
+	DUP
 	LI	3
 	NEG
+	Sd
+	LId	1, V3__u,STANDARD.DIRECT_IO_TEST2_L1.VECTEUR.COMP_SIZ
+	LI	8
+	DIV
+	ADD
 					; agg exp
+	DUP
 	LI	4
 	NEG
+	Sd
+	LId	1, V3__u,STANDARD.DIRECT_IO_TEST2_L1.VECTEUR.COMP_SIZ
+	LI	8
+	DIV
+	ADD
 
 VAR RC_disp, b				; variable entiere
 	LI	1
@@ -1983,15 +2110,47 @@ VAR RP__dat, STANDARD.DIRECT_IO_TEST2_L1.POINT.size
 
 VAR RV_disp, q				; variable array : pointeur aux data
 VAR RV__u, q				; variable array : useinfo pointeur au rec info
+	La 1, VECTEUR.use__info
+	Sa	1, RV__u				; array info ptr at __u
+	Ld	1, VECTEUR.SIZ
+	LI	8
+	DIV
+	CO_VAR
+	Sa	1, RV_disp				; array data ptr at _disp
 					; array data aggregate
+	La	1, RV_disp
 					; agg exp
+	DUP
 	LI	0
+	Sd
+	LId	1, RV__u,STANDARD.DIRECT_IO_TEST2_L1.VECTEUR.COMP_SIZ
+	LI	8
+	DIV
+	ADD
 					; agg exp
+	DUP
 	LI	0
+	Sd
+	LId	1, RV__u,STANDARD.DIRECT_IO_TEST2_L1.VECTEUR.COMP_SIZ
+	LI	8
+	DIV
+	ADD
 					; agg exp
+	DUP
 	LI	0
+	Sd
+	LId	1, RV__u,STANDARD.DIRECT_IO_TEST2_L1.VECTEUR.COMP_SIZ
+	LI	8
+	DIV
+	ADD
 					; agg exp
+	DUP
 	LI	0
+	Sd
+	LId	1, RV__u,STANDARD.DIRECT_IO_TEST2_L1.VECTEUR.COMP_SIZ
+	LI	8
+	DIV
+	ADD
 
 VAR TMP_disp, d				; variable entiere
 	LI	0
@@ -2163,15 +2322,9 @@ STR STR_L82, "  COULEUR'SIZE = "		; constante string="  COULEUR'SIZE = "
 STR STR_L83, " bits"			; constante string=" bits"
 	LCA	STR_L83.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-STR STR_L84, "write coul 1"			; constante string="write coul 1"
-	LCA	STR_L84.data_ptr
-	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
 	Lb 1,	C1_disp
 	LVa 1,	FC_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1.CLR_DIO. ,WRITE_L27
-STR STR_L85, "ok write coul 1"		; constante string="ok write coul 1"
-	LCA	STR_L85.data_ptr
-	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
 	Lb 1,	C2_disp
 	LVa 1,	FC_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1.CLR_DIO. ,WRITE_L27
@@ -2184,8 +2337,8 @@ STR STR_L85, "ok write coul 1"		; constante string="ok write coul 1"
 	Lb 1,	C5_disp
 	LVa 1,	FC_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1.CLR_DIO. ,WRITE_L27
-STR STR_L86, "  size apres 5 writes = "		; constante string="  size apres 5 writes = "
-	LCA	STR_L86.data_ptr
+STR STR_L84, "  size apres 5 writes = "		; constante string="  size apres 5 writes = "
+	LCA	STR_L84.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	Ld 1,	STANDARD.DIRECT_IO_TEST2_L1.INT_IO.DEFAULT_BASE_disp
 	Ld 1,	STANDARD.DIRECT_IO_TEST2_L1.INT_IO.DEFAULT_WIDTH_disp
@@ -2197,21 +2350,21 @@ STR STR_L86, "  size apres 5 writes = "		; constante string="  size apres 5 writ
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
 	LVA  1,	FC_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1.CLR_DIO. ,CLOSE_L16
-STR STR_L87, "  create+write+close ok"		; constante string="  create+write+close ok"
-	LCA	STR_L87.data_ptr
+STR STR_L85, "  create+write+close ok"		; constante string="  create+write+close ok"
+	LCA	STR_L85.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-STR STR_L88, ""				; constante string=""
-	LCA	STR_L88.data_ptr
-STR STR_L89, "couleur_direct.dat"		; constante string="couleur_direct.dat"
-	LCA	STR_L89.data_ptr
+STR STR_L86, ""				; constante string=""
+	LCA	STR_L86.data_ptr
+STR STR_L87, "couleur_direct.dat"		; constante string="couleur_direct.dat"
+	LCA	STR_L87.data_ptr
 	LI	 0
 	LVA  1,	FC_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1.CLR_DIO. ,OPEN_L15
 	LVA  1,	RC_disp
 	LVa 1,	FC_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1.CLR_DIO. ,READ_L25
-STR STR_L90, "  seq #1 = "			; constante string="  seq #1 = "
-	LCA	STR_L90.data_ptr
+STR STR_L88, "  seq #1 = "			; constante string="  seq #1 = "
+	LCA	STR_L88.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	Ld 1,	STANDARD.DIRECT_IO_TEST2_L1.INT_IO.DEFAULT_BASE_disp
 	Ld 1,	STANDARD.DIRECT_IO_TEST2_L1.INT_IO.DEFAULT_WIDTH_disp
@@ -2222,8 +2375,8 @@ STR STR_L90, "  seq #1 = "			; constante string="  seq #1 = "
 	LVA  1,	RC_disp
 	LVa 1,	FC_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1.CLR_DIO. ,READ_L25
-STR STR_L91, "  seq #2 = "			; constante string="  seq #2 = "
-	LCA	STR_L91.data_ptr
+STR STR_L89, "  seq #2 = "			; constante string="  seq #2 = "
+	LCA	STR_L89.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	Ld 1,	STANDARD.DIRECT_IO_TEST2_L1.INT_IO.DEFAULT_BASE_disp
 	Ld 1,	STANDARD.DIRECT_IO_TEST2_L1.INT_IO.DEFAULT_WIDTH_disp
@@ -2235,8 +2388,8 @@ STR STR_L91, "  seq #2 = "			; constante string="  seq #2 = "
 	LVA  1,	RC_disp
 	LVa 1,	FC_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1.CLR_DIO. ,READ_L24
-STR STR_L92, "  positioned #5 = "		; constante string="  positioned #5 = "
-	LCA	STR_L92.data_ptr
+STR STR_L90, "  positioned #5 = "		; constante string="  positioned #5 = "
+	LCA	STR_L90.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	Ld 1,	STANDARD.DIRECT_IO_TEST2_L1.INT_IO.DEFAULT_BASE_disp
 	Ld 1,	STANDARD.DIRECT_IO_TEST2_L1.INT_IO.DEFAULT_WIDTH_disp
@@ -2248,8 +2401,8 @@ STR STR_L92, "  positioned #5 = "		; constante string="  positioned #5 = "
 	LVA  1,	RC_disp
 	LVa 1,	FC_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1.CLR_DIO. ,READ_L24
-STR STR_L93, "  positioned #3 = "		; constante string="  positioned #3 = "
-	LCA	STR_L93.data_ptr
+STR STR_L91, "  positioned #3 = "		; constante string="  positioned #3 = "
+	LCA	STR_L91.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	Ld 1,	STANDARD.DIRECT_IO_TEST2_L1.INT_IO.DEFAULT_BASE_disp
 	Ld 1,	STANDARD.DIRECT_IO_TEST2_L1.INT_IO.DEFAULT_WIDTH_disp
@@ -2259,28 +2412,28 @@ STR STR_L93, "  positioned #3 = "		; constante string="  positioned #3 = "
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
 	LVA  1,	FC_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1.CLR_DIO. ,CLOSE_L16
-STR STR_L94, "  read+close ok"		; constante string="  read+close ok"
+STR STR_L92, "  read+close ok"		; constante string="  read+close ok"
+	LCA	STR_L92.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+STR STR_L93, "=== 2. DIRECT_IO sur record POINT (3 INTEGER) ==="	; constante string="=== 2. DIRECT_IO sur record POINT (3 INTEGER) ==="
+	LCA	STR_L93.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+STR STR_L94, ""				; constante string=""
 	LCA	STR_L94.data_ptr
-	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-STR STR_L95, "=== 2. DIRECT_IO sur record POINT (3 INTEGER) ==="	; constante string="=== 2. DIRECT_IO sur record POINT (3 INTEGER) ==="
+STR STR_L95, "point_direct.dat"		; constante string="point_direct.dat"
 	LCA	STR_L95.data_ptr
-	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-STR STR_L96, ""				; constante string=""
-	LCA	STR_L96.data_ptr
-STR STR_L97, "point_direct.dat"		; constante string="point_direct.dat"
-	LCA	STR_L97.data_ptr
 	LI	 2
 	LVA  1,	FP_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1.POINT_DIO. ,CREATE_L32
-STR STR_L98, "  POINT'SIZE = "		; constante string="  POINT'SIZE = "
-	LCA	STR_L98.data_ptr
+STR STR_L96, "  POINT'SIZE = "		; constante string="  POINT'SIZE = "
+	LCA	STR_L96.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	Ld 1,	STANDARD.DIRECT_IO_TEST2_L1.INT_IO.DEFAULT_BASE_disp
 	Ld 1,	STANDARD.DIRECT_IO_TEST2_L1.INT_IO.DEFAULT_WIDTH_disp
 	LId	 1, STANDARD.DIRECT_IO_TEST2_L1.POINT.use__info
 	CALL	STANDARD.DIRECT_IO_TEST2_L1.INT_IO. ,PUT_L5
-STR STR_L99, " bits"			; constante string=" bits"
-	LCA	STR_L99.data_ptr
+STR STR_L97, " bits"			; constante string=" bits"
+	LCA	STR_L97.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
 	LVa 1,	P1_disp
 	LVa 1,	FP_disp
@@ -2294,8 +2447,8 @@ STR STR_L99, " bits"			; constante string=" bits"
 	LVa 1,	P4_disp
 	LVa 1,	FP_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1.POINT_DIO. ,WRITE_L45
-STR STR_L100, "  size apres 4 writes = "	; constante string="  size apres 4 writes = "
-	LCA	STR_L100.data_ptr
+STR STR_L98, "  size apres 4 writes = "		; constante string="  size apres 4 writes = "
+	LCA	STR_L98.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	Ld 1,	STANDARD.DIRECT_IO_TEST2_L1.INT_IO.DEFAULT_BASE_disp
 	Ld 1,	STANDARD.DIRECT_IO_TEST2_L1.INT_IO.DEFAULT_WIDTH_disp
@@ -2307,20 +2460,40 @@ STR STR_L100, "  size apres 4 writes = "	; constante string="  size apres 4 writ
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
 	LVA  1,	FP_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1.POINT_DIO. ,CLOSE_L34
-STR STR_L101, "  create+write+close ok"		; constante string="  create+write+close ok"
-	LCA	STR_L101.data_ptr
+STR STR_L99, "  create+write+close ok"		; constante string="  create+write+close ok"
+	LCA	STR_L99.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-STR STR_L102, ""				; constante string=""
-	LCA	STR_L102.data_ptr
-STR STR_L103, "point_direct.dat"		; constante string="point_direct.dat"
-	LCA	STR_L103.data_ptr
+STR STR_L100, ""				; constante string=""
+	LCA	STR_L100.data_ptr
+STR STR_L101, "point_direct.dat"		; constante string="point_direct.dat"
+	LCA	STR_L101.data_ptr
 	LI	 0
 	LVA  1,	FP_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1.POINT_DIO. ,OPEN_L33
 	LVA  1,	RP_disp
 	LVa 1,	FP_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1.POINT_DIO. ,READ_L43
-STR STR_L104, "  seq #1 = "			; constante string="  seq #1 = "
+STR STR_L102, "  seq #1 = "			; constante string="  seq #1 = "
+	LCA	STR_L102.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	LVa 1,	RP_disp
+	CALL	STANDARD.DIRECT_IO_TEST2_L1. ,PUT_POINT_L68
+	LI	1
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
+	LVA  1,	RP_disp
+	LVa 1,	FP_disp
+	CALL	STANDARD.DIRECT_IO_TEST2_L1.POINT_DIO. ,READ_L43
+STR STR_L103, "  seq #2 = "			; constante string="  seq #2 = "
+	LCA	STR_L103.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	LVa 1,	RP_disp
+	CALL	STANDARD.DIRECT_IO_TEST2_L1. ,PUT_POINT_L68
+	LI	1
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
+	LVA  1,	RP_disp
+	LVa 1,	FP_disp
+	CALL	STANDARD.DIRECT_IO_TEST2_L1.POINT_DIO. ,READ_L43
+STR STR_L104, "  seq #3 = "			; constante string="  seq #3 = "
 	LCA	STR_L104.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	LVa 1,	RP_disp
@@ -2330,28 +2503,8 @@ STR STR_L104, "  seq #1 = "			; constante string="  seq #1 = "
 	LVA  1,	RP_disp
 	LVa 1,	FP_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1.POINT_DIO. ,READ_L43
-STR STR_L105, "  seq #2 = "			; constante string="  seq #2 = "
+STR STR_L105, "  seq #4 = "			; constante string="  seq #4 = "
 	LCA	STR_L105.data_ptr
-	CALL	STANDARD.TEXT_IO. ,PUT_L56
-	LVa 1,	RP_disp
-	CALL	STANDARD.DIRECT_IO_TEST2_L1. ,PUT_POINT_L68
-	LI	1
-	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
-	LVA  1,	RP_disp
-	LVa 1,	FP_disp
-	CALL	STANDARD.DIRECT_IO_TEST2_L1.POINT_DIO. ,READ_L43
-STR STR_L106, "  seq #3 = "			; constante string="  seq #3 = "
-	LCA	STR_L106.data_ptr
-	CALL	STANDARD.TEXT_IO. ,PUT_L56
-	LVa 1,	RP_disp
-	CALL	STANDARD.DIRECT_IO_TEST2_L1. ,PUT_POINT_L68
-	LI	1
-	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
-	LVA  1,	RP_disp
-	LVa 1,	FP_disp
-	CALL	STANDARD.DIRECT_IO_TEST2_L1.POINT_DIO. ,READ_L43
-STR STR_L107, "  seq #4 = "			; constante string="  seq #4 = "
-	LCA	STR_L107.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	LVa 1,	RP_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1. ,PUT_POINT_L68
@@ -2359,10 +2512,10 @@ STR STR_L107, "  seq #4 = "			; constante string="  seq #4 = "
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
 	LVA  1,	FP_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1.POINT_DIO. ,CLOSE_L34
-STR STR_L108, ""				; constante string=""
-	LCA	STR_L108.data_ptr
-STR STR_L109, "point_direct.dat"		; constante string="point_direct.dat"
-	LCA	STR_L109.data_ptr
+STR STR_L106, ""				; constante string=""
+	LCA	STR_L106.data_ptr
+STR STR_L107, "point_direct.dat"		; constante string="point_direct.dat"
+	LCA	STR_L107.data_ptr
 	LI	 0
 	LVA  1,	FP_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1.POINT_DIO. ,OPEN_L33
@@ -2370,8 +2523,8 @@ STR STR_L109, "point_direct.dat"		; constante string="point_direct.dat"
 	LVA  1,	RP_disp
 	LVa 1,	FP_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1.POINT_DIO. ,READ_L42
-STR STR_L110, "  positioned #4 = "		; constante string="  positioned #4 = "
-	LCA	STR_L110.data_ptr
+STR STR_L108, "  positioned #4 = "		; constante string="  positioned #4 = "
+	LCA	STR_L108.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	LVa 1,	RP_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1. ,PUT_POINT_L68
@@ -2381,8 +2534,8 @@ STR STR_L110, "  positioned #4 = "		; constante string="  positioned #4 = "
 	LVA  1,	RP_disp
 	LVa 1,	FP_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1.POINT_DIO. ,READ_L42
-STR STR_L111, "  positioned #1 = "		; constante string="  positioned #1 = "
-	LCA	STR_L111.data_ptr
+STR STR_L109, "  positioned #1 = "		; constante string="  positioned #1 = "
+	LCA	STR_L109.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	LVa 1,	RP_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1. ,PUT_POINT_L68
@@ -2392,8 +2545,8 @@ STR STR_L111, "  positioned #1 = "		; constante string="  positioned #1 = "
 	LVA  1,	RP_disp
 	LVa 1,	FP_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1.POINT_DIO. ,READ_L42
-STR STR_L112, "  positioned #2 = "		; constante string="  positioned #2 = "
-	LCA	STR_L112.data_ptr
+STR STR_L110, "  positioned #2 = "		; constante string="  positioned #2 = "
+	LCA	STR_L110.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	LVa 1,	RP_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1. ,PUT_POINT_L68
@@ -2401,28 +2554,28 @@ STR STR_L112, "  positioned #2 = "		; constante string="  positioned #2 = "
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
 	LVA  1,	FP_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1.POINT_DIO. ,CLOSE_L34
-STR STR_L113, "  lectures positionnees ok"	; constante string="  lectures positionnees ok"
+STR STR_L111, "  lectures positionnees ok"	; constante string="  lectures positionnees ok"
+	LCA	STR_L111.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+STR STR_L112, "=== 3. DIRECT_IO sur tableau VECTEUR (array 1..4 of INTEGER) ==="	; constante string="=== 3. DIRECT_IO sur tableau VECTEUR (array 1..4 of INTEGER) ==="
+	LCA	STR_L112.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+STR STR_L113, ""				; constante string=""
 	LCA	STR_L113.data_ptr
-	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-STR STR_L114, "=== 3. DIRECT_IO sur tableau VECTEUR (array 1..4 of INTEGER) ==="	; constante string="=== 3. DIRECT_IO sur tableau VECTEUR (array 1..4 of INTEGER) ==="
+STR STR_L114, "vec_direct.dat"		; constante string="vec_direct.dat"
 	LCA	STR_L114.data_ptr
-	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-STR STR_L115, ""				; constante string=""
-	LCA	STR_L115.data_ptr
-STR STR_L116, "vec_direct.dat"		; constante string="vec_direct.dat"
-	LCA	STR_L116.data_ptr
 	LI	 2
 	LVA  1,	FV_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1.VEC_DIO. ,CREATE_L50
-STR STR_L117, "  VECTEUR'SIZE = "		; constante string="  VECTEUR'SIZE = "
-	LCA	STR_L117.data_ptr
+STR STR_L115, "  VECTEUR'SIZE = "		; constante string="  VECTEUR'SIZE = "
+	LCA	STR_L115.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	Ld 1,	STANDARD.DIRECT_IO_TEST2_L1.INT_IO.DEFAULT_BASE_disp
 	Ld 1,	STANDARD.DIRECT_IO_TEST2_L1.INT_IO.DEFAULT_WIDTH_disp
 	LId	 1, STANDARD.DIRECT_IO_TEST2_L1.VECTEUR.use__info
 	CALL	STANDARD.DIRECT_IO_TEST2_L1.INT_IO. ,PUT_L5
-STR STR_L118, " bits"			; constante string=" bits"
-	LCA	STR_L118.data_ptr
+STR STR_L116, " bits"			; constante string=" bits"
+	LCA	STR_L116.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
 	LVa 1,	V1_disp
 	LVa 1,	FV_disp
@@ -2433,8 +2586,8 @@ STR STR_L118, " bits"			; constante string=" bits"
 	LVa 1,	V3_disp
 	LVa 1,	FV_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1.VEC_DIO. ,WRITE_L63
-STR STR_L119, "  size apres 3 writes = "	; constante string="  size apres 3 writes = "
-	LCA	STR_L119.data_ptr
+STR STR_L117, "  size apres 3 writes = "	; constante string="  size apres 3 writes = "
+	LCA	STR_L117.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	Ld 1,	STANDARD.DIRECT_IO_TEST2_L1.INT_IO.DEFAULT_BASE_disp
 	Ld 1,	STANDARD.DIRECT_IO_TEST2_L1.INT_IO.DEFAULT_WIDTH_disp
@@ -2446,21 +2599,21 @@ STR STR_L119, "  size apres 3 writes = "	; constante string="  size apres 3 writ
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
 	LVA  1,	FV_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1.VEC_DIO. ,CLOSE_L52
-STR STR_L120, "  create+write+close ok"		; constante string="  create+write+close ok"
-	LCA	STR_L120.data_ptr
+STR STR_L118, "  create+write+close ok"		; constante string="  create+write+close ok"
+	LCA	STR_L118.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-STR STR_L121, ""				; constante string=""
-	LCA	STR_L121.data_ptr
-STR STR_L122, "vec_direct.dat"		; constante string="vec_direct.dat"
-	LCA	STR_L122.data_ptr
+STR STR_L119, ""				; constante string=""
+	LCA	STR_L119.data_ptr
+STR STR_L120, "vec_direct.dat"		; constante string="vec_direct.dat"
+	LCA	STR_L120.data_ptr
 	LI	 0
 	LVA  1,	FV_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1.VEC_DIO. ,OPEN_L51
 	LVA  1,	RV_disp
 	LVa 1,	FV_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1.VEC_DIO. ,READ_L61
-STR STR_L123, "  seq #1 = "			; constante string="  seq #1 = "
-	LCA	STR_L123.data_ptr
+STR STR_L121, "  seq #1 = "			; constante string="  seq #1 = "
+	LCA	STR_L121.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	LVa 1,	RV_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1. ,PUT_VEC_L73
@@ -2469,8 +2622,8 @@ STR STR_L123, "  seq #1 = "			; constante string="  seq #1 = "
 	LVA  1,	RV_disp
 	LVa 1,	FV_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1.VEC_DIO. ,READ_L61
-STR STR_L124, "  seq #2 = "			; constante string="  seq #2 = "
-	LCA	STR_L124.data_ptr
+STR STR_L122, "  seq #2 = "			; constante string="  seq #2 = "
+	LCA	STR_L122.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	LVa 1,	RV_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1. ,PUT_VEC_L73
@@ -2480,8 +2633,8 @@ STR STR_L124, "  seq #2 = "			; constante string="  seq #2 = "
 	LVA  1,	RV_disp
 	LVa 1,	FV_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1.VEC_DIO. ,READ_L60
-STR STR_L125, "  positioned #3 = "		; constante string="  positioned #3 = "
-	LCA	STR_L125.data_ptr
+STR STR_L123, "  positioned #3 = "		; constante string="  positioned #3 = "
+	LCA	STR_L123.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	LVa 1,	RV_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1. ,PUT_VEC_L73
@@ -2491,8 +2644,8 @@ STR STR_L125, "  positioned #3 = "		; constante string="  positioned #3 = "
 	LVA  1,	RV_disp
 	LVa 1,	FV_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1.VEC_DIO. ,READ_L60
-STR STR_L126, "  positioned #1 = "		; constante string="  positioned #1 = "
-	LCA	STR_L126.data_ptr
+STR STR_L124, "  positioned #1 = "		; constante string="  positioned #1 = "
+	LCA	STR_L124.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	LVa 1,	RV_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1. ,PUT_VEC_L73
@@ -2500,24 +2653,24 @@ STR STR_L126, "  positioned #1 = "		; constante string="  positioned #1 = "
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
 	LVA  1,	FV_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1.VEC_DIO. ,CLOSE_L52
-STR STR_L127, "  read+close ok"		; constante string="  read+close ok"
+STR STR_L125, "  read+close ok"		; constante string="  read+close ok"
+	LCA	STR_L125.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+STR STR_L126, "=== 4. SET_INDEX et END_OF_FILE (sur POINT) ==="	; constante string="=== 4. SET_INDEX et END_OF_FILE (sur POINT) ==="
+	LCA	STR_L126.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+STR STR_L127, ""				; constante string=""
 	LCA	STR_L127.data_ptr
-	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-STR STR_L128, "=== 4. SET_INDEX et END_OF_FILE (sur POINT) ==="	; constante string="=== 4. SET_INDEX et END_OF_FILE (sur POINT) ==="
+STR STR_L128, "point_direct.dat"		; constante string="point_direct.dat"
 	LCA	STR_L128.data_ptr
-	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-STR STR_L129, ""				; constante string=""
-	LCA	STR_L129.data_ptr
-STR STR_L130, "point_direct.dat"		; constante string="point_direct.dat"
-	LCA	STR_L130.data_ptr
 	LI	 0
 	LVA  1,	FP_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1.POINT_DIO. ,OPEN_L33
 	LI	4
 	LVa 1,	FP_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1.POINT_DIO. ,SET_INDEX_L46
-STR STR_L131, "  INDEX apres SET_INDEX(4) = "	; constante string="  INDEX apres SET_INDEX(4) = "
-	LCA	STR_L131.data_ptr
+STR STR_L129, "  INDEX apres SET_INDEX(4) = "	; constante string="  INDEX apres SET_INDEX(4) = "
+	LCA	STR_L129.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	Ld 1,	STANDARD.DIRECT_IO_TEST2_L1.INT_IO.DEFAULT_BASE_disp
 	Ld 1,	STANDARD.DIRECT_IO_TEST2_L1.INT_IO.DEFAULT_WIDTH_disp
@@ -2527,55 +2680,55 @@ STR STR_L131, "  INDEX apres SET_INDEX(4) = "	; constante string="  INDEX apres 
 	CALL	STANDARD.DIRECT_IO_TEST2_L1.INT_IO. ,PUT_L5
 	LI	1
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
-STR STR_L132, "  END_OF_FILE avant derniere lecture = "	; constante string="  END_OF_FILE avant derniere lecture = "
-	LCA	STR_L132.data_ptr
+STR STR_L130, "  END_OF_FILE avant derniere lecture = "	; constante string="  END_OF_FILE avant derniere lecture = "
+	LCA	STR_L130.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 					; debut if
 	LI	0					; lieu resultat sur pile
 	LVa 1,	FP_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1.POINT_DIO. ,END_OF_FILE_L49
-	BF	L134
-STR STR_L135, "TRUE"			; constante string="TRUE"
-	LCA	STR_L135.data_ptr
+	BF	L132
+STR STR_L133, "TRUE"			; constante string="TRUE"
+	LCA	STR_L133.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-	BRA	L133
-L134:
-STR STR_L136, "FALSE"			; constante string="FALSE"
-	LCA	STR_L136.data_ptr
+	BRA	L131
+L132:
+STR STR_L134, "FALSE"			; constante string="FALSE"
+	LCA	STR_L134.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-L133:					; post if
+L131:					; post if
 	LVA  1,	RP_disp
 	LVa 1,	FP_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1.POINT_DIO. ,READ_L43
-STR STR_L137, "  dernier element = "		; constante string="  dernier element = "
-	LCA	STR_L137.data_ptr
+STR STR_L135, "  dernier element = "		; constante string="  dernier element = "
+	LCA	STR_L135.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	LVa 1,	RP_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1. ,PUT_POINT_L68
 	LI	1
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
-STR STR_L138, "  END_OF_FILE apres derniere lecture = "	; constante string="  END_OF_FILE apres derniere lecture = "
-	LCA	STR_L138.data_ptr
+STR STR_L136, "  END_OF_FILE apres derniere lecture = "	; constante string="  END_OF_FILE apres derniere lecture = "
+	LCA	STR_L136.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 					; debut if
 	LI	0					; lieu resultat sur pile
 	LVa 1,	FP_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1.POINT_DIO. ,END_OF_FILE_L49
-	BF	L140
-STR STR_L141, "TRUE"			; constante string="TRUE"
-	LCA	STR_L141.data_ptr
+	BF	L138
+STR STR_L139, "TRUE"			; constante string="TRUE"
+	LCA	STR_L139.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-	BRA	L139
-L140:
-STR STR_L142, "FALSE"			; constante string="FALSE"
-	LCA	STR_L142.data_ptr
+	BRA	L137
+L138:
+STR STR_L140, "FALSE"			; constante string="FALSE"
+	LCA	STR_L140.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-L139:					; post if
+L137:					; post if
 	LI	1
 	LVa 1,	FP_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1.POINT_DIO. ,SET_INDEX_L46
-STR STR_L143, "  INDEX apres SET_INDEX(1) = "	; constante string="  INDEX apres SET_INDEX(1) = "
-	LCA	STR_L143.data_ptr
+STR STR_L141, "  INDEX apres SET_INDEX(1) = "	; constante string="  INDEX apres SET_INDEX(1) = "
+	LCA	STR_L141.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	Ld 1,	STANDARD.DIRECT_IO_TEST2_L1.INT_IO.DEFAULT_BASE_disp
 	Ld 1,	STANDARD.DIRECT_IO_TEST2_L1.INT_IO.DEFAULT_WIDTH_disp
@@ -2585,61 +2738,109 @@ STR STR_L143, "  INDEX apres SET_INDEX(1) = "	; constante string="  INDEX apres 
 	CALL	STANDARD.DIRECT_IO_TEST2_L1.INT_IO. ,PUT_L5
 	LI	1
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
-STR STR_L144, "  END_OF_FILE apres retour debut = "	; constante string="  END_OF_FILE apres retour debut = "
-	LCA	STR_L144.data_ptr
+STR STR_L142, "  END_OF_FILE apres retour debut = "	; constante string="  END_OF_FILE apres retour debut = "
+	LCA	STR_L142.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 					; debut if
 	LI	0					; lieu resultat sur pile
 	LVa 1,	FP_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1.POINT_DIO. ,END_OF_FILE_L49
-	BF	L146
-STR STR_L147, "TRUE"			; constante string="TRUE"
-	LCA	STR_L147.data_ptr
+	BF	L144
+STR STR_L145, "TRUE"			; constante string="TRUE"
+	LCA	STR_L145.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-	BRA	L145
-L146:
-STR STR_L148, "FALSE"			; constante string="FALSE"
-	LCA	STR_L148.data_ptr
+	BRA	L143
+L144:
+STR STR_L146, "FALSE"			; constante string="FALSE"
+	LCA	STR_L146.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-L145:					; post if
+L143:					; post if
 	LVA  1,	FP_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1.POINT_DIO. ,CLOSE_L34
-STR STR_L149, "  SET_INDEX + END_OF_FILE ok"	; constante string="  SET_INDEX + END_OF_FILE ok"
+STR STR_L147, "  SET_INDEX + END_OF_FILE ok"	; constante string="  SET_INDEX + END_OF_FILE ok"
+	LCA	STR_L147.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+STR STR_L148, "=== 5. RESET et reecriture partielle (sur POINT) ==="	; constante string="=== 5. RESET et reecriture partielle (sur POINT) ==="
+	LCA	STR_L148.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+STR STR_L149, ""				; constante string=""
 	LCA	STR_L149.data_ptr
-	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-STR STR_L150, "=== 5. RESET et reecriture partielle (sur POINT) ==="	; constante string="=== 5. RESET et reecriture partielle (sur POINT) ==="
+STR STR_L150, "point_direct.dat"		; constante string="point_direct.dat"
 	LCA	STR_L150.data_ptr
-	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-STR STR_L151, ""				; constante string=""
-	LCA	STR_L151.data_ptr
-STR STR_L152, "point_direct.dat"		; constante string="point_direct.dat"
-	LCA	STR_L152.data_ptr
 	LI	 1
 	LVA  1,	FP_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1.POINT_DIO. ,OPEN_L33
-STR STR_L153, "  open INOUT_FILE ok"		; constante string="  open INOUT_FILE ok"
+STR STR_L151, "  open INOUT_FILE ok"		; constante string="  open INOUT_FILE ok"
+	LCA	STR_L151.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+namespace	BLOCK__1
+ELB 2					;    BODY ELAB
+VAR P_NEW_disp, q				; variable record : pointeur aux data record
+VAR P_NEW__u, q				; variable record : pointeur aux useinfo
+VAR P_NEW__dat, STANDARD.DIRECT_IO_TEST2_L1.POINT.size
+	LVA	2, P_NEW__dat
+	Sa	2, P_NEW_disp				; record fin
+	LVA	2, STANDARD.DIRECT_IO_TEST2_L1.POINT.SIZ
+	Sa	2, P_NEW__u
+	LI	777
+	LIVa 2, P_NEW_disp, STANDARD.DIRECT_IO_TEST2_L1.POINT.X
+	OVER
+	Sd
+	DROP
+	LI	888
+	LIVa 2, P_NEW_disp, STANDARD.DIRECT_IO_TEST2_L1.POINT.Y
+	OVER
+	Sd
+	DROP
+	LI	999
+	LIVa 2, P_NEW_disp, STANDARD.DIRECT_IO_TEST2_L1.POINT.Z
+	OVER
+	Sd
+	DROP
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+STR STR_L152, "  P_NEW X (en bloc) = "		; constante string="  P_NEW X (en bloc) = "
+	LCA	STR_L152.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	Ld 1,	STANDARD.DIRECT_IO_TEST2_L1.INT_IO.DEFAULT_BASE_disp
+	Ld 1,	STANDARD.DIRECT_IO_TEST2_L1.INT_IO.DEFAULT_WIDTH_disp
+	LId	2, P_NEW_disp, STANDARD.DIRECT_IO_TEST2_L1.POINT.X
+	CALL	STANDARD.DIRECT_IO_TEST2_L1.INT_IO. ,PUT_L5
+STR STR_L153, " Y="				; constante string=" Y="
 	LCA	STR_L153.data_ptr
-	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-	LI	2
-	LVa 1,	FP_disp
-	CALL	STANDARD.DIRECT_IO_TEST2_L1.POINT_DIO. ,WRITE_L44
-STR STR_L154, "  rewrite position 2 ok"		; constante string="  rewrite position 2 ok"
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	Ld 1,	STANDARD.DIRECT_IO_TEST2_L1.INT_IO.DEFAULT_BASE_disp
+	Ld 1,	STANDARD.DIRECT_IO_TEST2_L1.INT_IO.DEFAULT_WIDTH_disp
+	LId	2, P_NEW_disp, STANDARD.DIRECT_IO_TEST2_L1.POINT.Y
+	CALL	STANDARD.DIRECT_IO_TEST2_L1.INT_IO. ,PUT_L5
+STR STR_L154, " Z="				; constante string=" Z="
 	LCA	STR_L154.data_ptr
-	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-	LI	4
-	LVa 1,	FP_disp
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	Ld 1,	STANDARD.DIRECT_IO_TEST2_L1.INT_IO.DEFAULT_BASE_disp
+	Ld 1,	STANDARD.DIRECT_IO_TEST2_L1.INT_IO.DEFAULT_WIDTH_disp
+	LId	2, P_NEW_disp, STANDARD.DIRECT_IO_TEST2_L1.POINT.Z
+	CALL	STANDARD.DIRECT_IO_TEST2_L1.INT_IO. ,PUT_L5
+	LI	1
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
+	LI	2
+	LVa 2,	P_NEW_disp
+	LVa 1,	STANDARD.DIRECT_IO_TEST2_L1.FP_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1.POINT_DIO. ,WRITE_L44
-STR STR_L155, "  rewrite position 4 ok"		; constante string="  rewrite position 4 ok"
-	LCA	STR_L155.data_ptr
-	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	LI	4
+	LVa 1,	STANDARD.DIRECT_IO_TEST2_L1.P_NEG_disp
+	LVa 1,	STANDARD.DIRECT_IO_TEST2_L1.FP_disp
+	CALL	STANDARD.DIRECT_IO_TEST2_L1.POINT_DIO. ,WRITE_L44
+	UNLINK 2
+endPRO
 	LI	 0
 	LVA  1,	FP_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1.POINT_DIO. ,RESET_L36
-STR STR_L156, "  RESET IN_FILE ok"		; constante string="  RESET IN_FILE ok"
-	LCA	STR_L156.data_ptr
+STR STR_L155, "  RESET IN_FILE ok"		; constante string="  RESET IN_FILE ok"
+	LCA	STR_L155.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-STR STR_L157, "  apres RESET INDEX = "		; constante string="  apres RESET INDEX = "
-	LCA	STR_L157.data_ptr
+STR STR_L156, "  apres RESET INDEX = "		; constante string="  apres RESET INDEX = "
+	LCA	STR_L156.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	Ld 1,	STANDARD.DIRECT_IO_TEST2_L1.INT_IO.DEFAULT_BASE_disp
 	Ld 1,	STANDARD.DIRECT_IO_TEST2_L1.INT_IO.DEFAULT_WIDTH_disp
@@ -2653,8 +2854,8 @@ STR STR_L157, "  apres RESET INDEX = "		; constante string="  apres RESET INDEX 
 	LVA  1,	RP_disp
 	LVa 1,	FP_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1.POINT_DIO. ,READ_L42
-STR STR_L158, "  verify #1 = "		; constante string="  verify #1 = "
-	LCA	STR_L158.data_ptr
+STR STR_L157, "  verify #1 = "		; constante string="  verify #1 = "
+	LCA	STR_L157.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	LVa 1,	RP_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1. ,PUT_POINT_L68
@@ -2664,8 +2865,8 @@ STR STR_L158, "  verify #1 = "		; constante string="  verify #1 = "
 	LVA  1,	RP_disp
 	LVa 1,	FP_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1.POINT_DIO. ,READ_L42
-STR STR_L159, "  verify #2 (reecrit) = "	; constante string="  verify #2 (reecrit) = "
-	LCA	STR_L159.data_ptr
+STR STR_L158, "  verify #2 (reecrit) = "	; constante string="  verify #2 (reecrit) = "
+	LCA	STR_L158.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	LVa 1,	RP_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1. ,PUT_POINT_L68
@@ -2675,8 +2876,8 @@ STR STR_L159, "  verify #2 (reecrit) = "	; constante string="  verify #2 (reecri
 	LVA  1,	RP_disp
 	LVa 1,	FP_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1.POINT_DIO. ,READ_L42
-STR STR_L160, "  verify #3 = "		; constante string="  verify #3 = "
-	LCA	STR_L160.data_ptr
+STR STR_L159, "  verify #3 = "		; constante string="  verify #3 = "
+	LCA	STR_L159.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	LVa 1,	RP_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1. ,PUT_POINT_L68
@@ -2686,8 +2887,8 @@ STR STR_L160, "  verify #3 = "		; constante string="  verify #3 = "
 	LVA  1,	RP_disp
 	LVa 1,	FP_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1.POINT_DIO. ,READ_L42
-STR STR_L161, "  verify #4 (reecrit) = "	; constante string="  verify #4 (reecrit) = "
-	LCA	STR_L161.data_ptr
+STR STR_L160, "  verify #4 (reecrit) = "	; constante string="  verify #4 (reecrit) = "
+	LCA	STR_L160.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	LVa 1,	RP_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1. ,PUT_POINT_L68
@@ -2695,69 +2896,69 @@ STR STR_L161, "  verify #4 (reecrit) = "	; constante string="  verify #4 (reecri
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
 	LVA  1,	FP_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1.POINT_DIO. ,CLOSE_L34
-STR STR_L162, "  RESET + reecriture ok"		; constante string="  RESET + reecriture ok"
+STR STR_L161, "  RESET + reecriture ok"		; constante string="  RESET + reecriture ok"
+	LCA	STR_L161.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+STR STR_L162, "=== 6. IS_OPEN ==="		; constante string="=== 6. IS_OPEN ==="
 	LCA	STR_L162.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-STR STR_L163, "=== 6. IS_OPEN ==="		; constante string="=== 6. IS_OPEN ==="
+STR STR_L163, "  FP IS_OPEN apres CLOSE = "	; constante string="  FP IS_OPEN apres CLOSE = "
 	LCA	STR_L163.data_ptr
-	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-STR STR_L164, "  FP IS_OPEN apres CLOSE = "	; constante string="  FP IS_OPEN apres CLOSE = "
-	LCA	STR_L164.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 					; debut if
 	LI	0					; lieu resultat sur pile
 	LVa 1,	FP_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1.POINT_DIO. ,IS_OPEN_L41
-	BF	L166
-STR STR_L167, "TRUE (anormal)"		; constante string="TRUE (anormal)"
+	BF	L165
+STR STR_L166, "TRUE (anormal)"		; constante string="TRUE (anormal)"
+	LCA	STR_L166.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	BRA	L164
+L165:
+STR STR_L167, "FALSE (correct)"		; constante string="FALSE (correct)"
 	LCA	STR_L167.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-	BRA	L165
-L166:
-STR STR_L168, "FALSE (correct)"		; constante string="FALSE (correct)"
+L164:					; post if
+STR STR_L168, ""				; constante string=""
 	LCA	STR_L168.data_ptr
-	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-L165:					; post if
-STR STR_L169, ""				; constante string=""
+STR STR_L169, "point_direct.dat"		; constante string="point_direct.dat"
 	LCA	STR_L169.data_ptr
-STR STR_L170, "point_direct.dat"		; constante string="point_direct.dat"
-	LCA	STR_L170.data_ptr
 	LI	 0
 	LVA  1,	FP_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1.POINT_DIO. ,OPEN_L33
-STR STR_L171, "  FP IS_OPEN apres OPEN = "	; constante string="  FP IS_OPEN apres OPEN = "
-	LCA	STR_L171.data_ptr
+STR STR_L170, "  FP IS_OPEN apres OPEN = "	; constante string="  FP IS_OPEN apres OPEN = "
+	LCA	STR_L170.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 					; debut if
 	LI	0					; lieu resultat sur pile
 	LVa 1,	FP_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1.POINT_DIO. ,IS_OPEN_L41
-	BF	L173
-STR STR_L174, "TRUE (correct)"		; constante string="TRUE (correct)"
+	BF	L172
+STR STR_L173, "TRUE (correct)"		; constante string="TRUE (correct)"
+	LCA	STR_L173.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	BRA	L171
+L172:
+STR STR_L174, "FALSE (anormal)"		; constante string="FALSE (anormal)"
 	LCA	STR_L174.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-	BRA	L172
-L173:
-STR STR_L175, "FALSE (anormal)"		; constante string="FALSE (anormal)"
-	LCA	STR_L175.data_ptr
-	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-L172:					; post if
+L171:					; post if
 	LVA  1,	FP_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1.POINT_DIO. ,CLOSE_L34
-STR STR_L176, "=== 7. Boucle de lecture sequentielle avec END_OF_FILE ==="	; constante string="=== 7. Boucle de lecture sequentielle avec END_OF_FILE ==="
-	LCA	STR_L176.data_ptr
+STR STR_L175, "=== 7. Boucle de lecture sequentielle avec END_OF_FILE ==="	; constante string="=== 7. Boucle de lecture sequentielle avec END_OF_FILE ==="
+	LCA	STR_L175.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-STR STR_L177, ""				; constante string=""
+STR STR_L176, ""				; constante string=""
+	LCA	STR_L176.data_ptr
+STR STR_L177, "vec_direct.dat"		; constante string="vec_direct.dat"
 	LCA	STR_L177.data_ptr
-STR STR_L178, "vec_direct.dat"		; constante string="vec_direct.dat"
-	LCA	STR_L178.data_ptr
 	LI	 0
 	LVA  1,	FV_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1.VEC_DIO. ,OPEN_L51
-STR STR_L179, "  parcours sequentiel vec_direct.dat :"	; constante string="  parcours sequentiel vec_direct.dat :"
-	LCA	STR_L179.data_ptr
+STR STR_L178, "  parcours sequentiel vec_direct.dat :"	; constante string="  parcours sequentiel vec_direct.dat :"
+	LCA	STR_L178.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-namespace	BLOCK__1
+namespace	BLOCK__2
 ELB 2					;    BODY ELAB
 VAR IDX_disp, d				; variable entiere
 	LI	1
@@ -2765,25 +2966,25 @@ VAR IDX_disp, d				; variable entiere
 
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-LOOP__2:
+LOOP__3:
 	LI	0					; lieu resultat sur pile
 	LVa 1,	STANDARD.DIRECT_IO_TEST2_L1.FV_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1.VEC_DIO. ,END_OF_FILE_L67
 	LI	1
 	OUX
-	BF	L180
+	BF	L179
 	LVA  1,	RV_disp
 	LVa 1,	STANDARD.DIRECT_IO_TEST2_L1.FV_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1.VEC_DIO. ,READ_L61
-STR STR_L181, "  element "			; constante string="  element "
-	LCA	STR_L181.data_ptr
+STR STR_L180, "  element "			; constante string="  element "
+	LCA	STR_L180.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	Ld 1,	STANDARD.DIRECT_IO_TEST2_L1.INT_IO.DEFAULT_BASE_disp
 	Ld 1,	STANDARD.DIRECT_IO_TEST2_L1.INT_IO.DEFAULT_WIDTH_disp
 	Ld 2,	IDX_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1.INT_IO. ,PUT_L5
-STR STR_L182, " = "				; constante string=" = "
-	LCA	STR_L182.data_ptr
+STR STR_L181, " = "				; constante string=" = "
+	LCA	STR_L181.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	LVa 1,	STANDARD.DIRECT_IO_TEST2_L1.RV_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1. ,PUT_VEC_L73
@@ -2793,64 +2994,20 @@ STR STR_L182, " = "				; constante string=" = "
 	LI	1
 	ADD
 	Sd  2,	IDX_disp
-	BRA	LOOP__2
-L180:					; post loop LOOP__2
+	BRA	LOOP__3
+L179:					; post loop LOOP__3
 	UNLINK 2
 endPRO
 	LVA  1,	FV_disp
 	CALL	STANDARD.DIRECT_IO_TEST2_L1.VEC_DIO. ,CLOSE_L52
-STR STR_L183, "  boucle END_OF_FILE ok"		; constante string="  boucle END_OF_FILE ok"
+STR STR_L182, "  boucle END_OF_FILE ok"		; constante string="  boucle END_OF_FILE ok"
+	LCA	STR_L182.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+STR STR_L183, "=== 8. DELETE ==="		; constante string="=== 8. DELETE ==="
 	LCA	STR_L183.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-STR STR_L184, "=== 8. DELETE ==="		; constante string="=== 8. DELETE ==="
+STR STR_L184, "=== FIN DIRECT_IO_TEST2 ==="	; constante string="=== FIN DIRECT_IO_TEST2 ==="
 	LCA	STR_L184.data_ptr
-	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-STR STR_L185, ""				; constante string=""
-	LCA	STR_L185.data_ptr
-STR STR_L186, "couleur_direct.dat"		; constante string="couleur_direct.dat"
-	LCA	STR_L186.data_ptr
-	LI	 1
-	LVA  1,	FC_disp
-	CALL	STANDARD.DIRECT_IO_TEST2_L1.CLR_DIO. ,OPEN_L15
-	LVA  1,	FC_disp
-	CALL	STANDARD.DIRECT_IO_TEST2_L1.CLR_DIO. ,DELETE_L17
-STR STR_L187, "  couleur_direct.dat deleted"	; constante string="  couleur_direct.dat deleted"
-	LCA	STR_L187.data_ptr
-	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-STR STR_L188, "  FC IS_OPEN apres DELETE = "	; constante string="  FC IS_OPEN apres DELETE = "
-	LCA	STR_L188.data_ptr
-	CALL	STANDARD.TEXT_IO. ,PUT_L56
-					; debut if
-	LI	0					; lieu resultat sur pile
-	LVa 1,	FC_disp
-	CALL	STANDARD.DIRECT_IO_TEST2_L1.CLR_DIO. ,IS_OPEN_L23
-	BF	L190
-STR STR_L191, "TRUE (anormal)"		; constante string="TRUE (anormal)"
-	LCA	STR_L191.data_ptr
-	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-	BRA	L189
-L190:
-STR STR_L192, "FALSE (correct)"		; constante string="FALSE (correct)"
-	LCA	STR_L192.data_ptr
-	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-L189:					; post if
-STR STR_L193, ""				; constante string=""
-	LCA	STR_L193.data_ptr
-STR STR_L194, "point_direct.dat"		; constante string="point_direct.dat"
-	LCA	STR_L194.data_ptr
-	LI	 1
-	LVA  1,	FP_disp
-	CALL	STANDARD.DIRECT_IO_TEST2_L1.POINT_DIO. ,OPEN_L33
-	LVA  1,	FP_disp
-	CALL	STANDARD.DIRECT_IO_TEST2_L1.POINT_DIO. ,DELETE_L35
-STR STR_L195, "  point_direct.dat deleted"	; constante string="  point_direct.dat deleted"
-	LCA	STR_L195.data_ptr
-	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-STR STR_L196, "  DELETE ok"			; constante string="  DELETE ok"
-	LCA	STR_L196.data_ptr
-	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-STR STR_L197, "=== FIN DIRECT_IO_TEST2 ==="	; constante string="=== FIN DIRECT_IO_TEST2 ==="
-	LCA	STR_L197.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
 ret_lbl:
 	UNLINK 1

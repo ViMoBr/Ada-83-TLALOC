@@ -729,8 +729,8 @@ put_line(	"; adresse component id" );
     begin
       if  CODI.IN_GENERIC_BODY  then
 
-        if  PREFIX_DEFN.TY = DN_IN_ID  then
-	PUT_LINE( tab & "LVa"	& tab & IMAGE( PREFIX_LVL ) & ", -" & CHN_PREFIX & "_ofs" );
+        if  PREFIX_DEFN.TY  in  CLASS_PARAM_NAME  then
+	PUT_LINE( tab & "La"	& tab & IMAGE( PREFIX_LVL ) & ", -" & CHN_PREFIX & "_ofs" );
 
         else
 	PUT_LINE( "; CODE_ADDRESS PREFIX_DEFN.TY pas gere " & NODE_NAME'IMAGE( PREFIX_DEFN.TY ) );

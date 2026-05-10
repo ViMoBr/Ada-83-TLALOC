@@ -1,0 +1,905 @@
+if ~ definite TEXT_IO
+include 'TEXT_IO.FINC'
+end if
+if ~ definite DIRECT_IO
+include 'DIRECT_IO.FINC'
+end if
+PRO	TEST_BLOCS_L1				;---------- PRO TEST_BLOCS
+ELB 1					;    BODY ELAB
+INT_IO = 'INT_IO'
+namespace INT_IO				;---------- GENERIC PACKAGE INSTANTIATION
+elab_spec:				;    SPEC ELAB
+
+BRA post_LD_INTEGER
+LD_INTEGER.elab:
+	Ld -1, 0
+	RTD 0
+post_LD_INTEGER:
+BRA post_ST_INTEGER
+ST_INTEGER.elab:
+	SId -1, 0
+	RTD 0
+post_ST_INTEGER:
+BRA post_ADR_INTEGER
+ADR_INTEGER.elab:
+	RTD 0
+post_ADR_INTEGER:
+VAR INTEGER__adr_ofs, q
+	LCA ADR_INTEGER.elab
+	Sa	 1, INTEGER__adr_ofs
+VAR INTEGER__st_ofs, q
+	LCA ST_INTEGER.elab
+	Sa	 1, INTEGER__st_ofs
+VAR INTEGER__ld_ofs, q
+	LCA LD_INTEGER.elab
+	Sa	 1, INTEGER__ld_ofs
+VAR INTEGER__u_ofs, q
+	La	 0, STANDARD.INTEGER.use__info
+	Sa	 1, INTEGER__u_ofs
+VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
+VAR DEFAULT_WIDTH_disp, d			; variable entiere
+	LI	 11
+	Sd  1,	DEFAULT_WIDTH_disp
+
+VAR DEFAULT_BASE_disp, d			; variable entiere
+	LI	10
+	Sd  1,	DEFAULT_BASE_disp
+
+if defined GET_L2_
+PRO	GET_L2				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM ITEM_ofs				; out
+	PRM WIDTH_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Lq	 2, -WIDTH_ofs
+	La 	 2, -ITEM_ofs
+	La 	 2, -FILE_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,GET_L61
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO GET
+end if
+if defined GET_L3_
+PRO	GET_L3				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM ITEM_ofs				; out
+	PRM WIDTH_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Lq	 2, -WIDTH_ofs
+	La 	 2, -ITEM_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,GET_L62
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO GET
+end if
+if defined PUT_L4_
+PRO	PUT_L4				;---------- PRO PUT
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM ITEM_ofs				; in
+	PRM WIDTH_ofs				; in
+	PRM BASE_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Lq	 2, -BASE_ofs
+	Lq	 2, -WIDTH_ofs
+	Lq	 2, -ITEM_ofs
+	La 	 2, -FILE_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,PUT_L63
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO PUT
+end if
+if defined PUT_L5_
+PRO	PUT_L5				;---------- PRO PUT
+PRMS					;    debut parametrage
+	PRM ITEM_ofs				; in
+	PRM WIDTH_ofs				; in
+	PRM BASE_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Lq	 2, -BASE_ofs
+	Lq	 2, -WIDTH_ofs
+	Lq	 2, -ITEM_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,PUT_L64
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO PUT
+end if
+if defined GET_L6_
+PRO	GET_L6				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM FROM_ofs				; in
+	PRM ITEM_ofs				; out
+	PRM LAST_ofs				; out
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	La 	 2, -LAST_ofs
+	La 	 2, -ITEM_ofs
+	La 	 2, -FROM_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,GET_L65
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO GET
+end if
+if defined PUT_L7_
+PRO	PUT_L7				;---------- PRO PUT
+PRMS					;    debut parametrage
+	PRM TO_ofs				; out
+	PRM ITEM_ofs				; in
+	PRM BASE_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Lq	 2, -BASE_ofs
+	Lq	 2, -ITEM_ofs
+	La 	 2, -TO_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,PUT_L66
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO PUT
+end if
+					;---------- end generic package instantiation INT_IO
+end namespace
+
+VAR LEVEL_1_disp, d				; variable entiere
+	LI	10
+	Sd  1,	LEVEL_1_disp
+
+
+					; POINT RECORD TYPE INFO
+POINT = 'POINT'
+namespace POINT
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+USEINFO 1, X, 	La 0, STANDARD.INTEGER.use__info
+USEINFO 1, Y, 	La 0, STANDARD.INTEGER.use__info
+USEINFO 1, Z, 	La 0, STANDARD.INTEGER.use__info
+virtual at 0				; calcul des offsets statiques
+STATOFS X, 4
+STATOFS Y, 4
+STATOFS Z, 4
+size = $
+end virtual
+	LI	 size* 8
+	Sd	1, SIZ
+end namespace
+VAR PT_disp, q				; variable record : pointeur aux data record
+VAR PT__u, q				; variable record : pointeur aux useinfo
+VAR PT__dat, STANDARD.TEST_BLOCS_L1.POINT.size
+	LVA	1, PT__dat
+	Sa	1, PT_disp				; record fin
+	LVA	1, STANDARD.TEST_BLOCS_L1.POINT.SIZ
+	Sa	1, PT__u
+	LI	111
+	LIVa 1, PT_disp, STANDARD.TEST_BLOCS_L1.POINT.X
+	OVER
+	Sd
+	DROP
+	LI	222
+	LIVa 1, PT_disp, STANDARD.TEST_BLOCS_L1.POINT.Y
+	OVER
+	Sd
+	DROP
+	LI	333
+	LIVa 1, PT_disp, STANDARD.TEST_BLOCS_L1.POINT.Z
+	OVER
+	Sd
+	DROP
+
+POINT_DIO = 'POINT_DIO'
+namespace POINT_DIO				;---------- GENERIC PACKAGE INSTANTIATION
+elab_spec:				;    SPEC ELAB
+
+BRA post_LD_POINT
+LD_POINT.elab:
+	LI 0
+	RTD 0
+post_LD_POINT:
+BRA post_ST_POINT
+ST_POINT.elab:
+	DROP
+	RTD 0
+post_ST_POINT:
+BRA post_ADR_POINT
+ADR_POINT.elab:
+	La -1, 0
+	RTD 0
+post_ADR_POINT:
+VAR POINT__adr_ofs, q
+	LCA ADR_POINT.elab
+	Sa	 1, POINT__adr_ofs
+VAR POINT__st_ofs, q
+	LCA ST_POINT.elab
+	Sa	 1, POINT__st_ofs
+VAR POINT__ld_ofs, q
+	LCA LD_POINT.elab
+	Sa	 1, POINT__ld_ofs
+VAR POINT__u_ofs, q
+	La	 1, STANDARD.TEST_BLOCS_L1.POINT.use__info
+	Sa	 1, POINT__u_ofs
+VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
+; CODE_TYPE_DECL : skip PRIVATE FILE_TYPE (deferred to full type)
+
+					; FILE_MODE ENUMERATION TYPE INFO
+FILE_MODE = 'FILE_MODE'
+namespace FILE_MODE
+VAR use__info, q
+BEGIN_BLOC_DEF
+db 0, 7, "IN_FILE"
+db 1, 10, "INOUT_FILE"
+db 2, 8, "OUT_FILE"
+END_BLOC_DEF
+IMAGES	BYTES_BLOC
+CST LST, d, 2
+CST FST, d, 0
+CST SIZ, d, 8	; SIZ en bits !
+postpone
+  align_q
+end postpone
+	LCA	SIZ
+	Sa	1, use__info
+end namespace
+
+					; COUNT TYPE RANGE INFO
+COUNT = 'COUNT'
+namespace COUNT
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+VAR FST, d
+VAR LST, d
+	LI	32
+	Sd	1, SIZ
+	LI	0
+	Sd	1, FST
+	LI	2147483647
+	Sd	1, LST
+end namespace
+
+					; POSITIVE_COUNT INTEGER SUBTYPE INFO
+POSITIVE_COUNT = 'POSITIVE_COUNT'
+namespace POSITIVE_COUNT
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+VAR FST, d
+VAR LST, d
+	LI	32
+	Sd	1, SIZ
+	LI	1
+	Sd	1, FST
+	LI	2147483647
+	Sd	1, LST
+VAR PARENT__u, q
+	La	1, STANDARD.TEST_BLOCS_L1.POINT_DIO.COUNT.use__info
+	Sa	1, PARENT__u
+end namespace
+if defined CREATE_L8_
+PRO	CREATE_L8				;---------- PRO CREATE
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in out
+	PRM MODE_ofs				; in
+	PRM NAME_ofs				; in
+	PRM FORM_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	La 	 2, -FORM_ofs
+	La 	 2, -NAME_ofs
+	Lq	 2, -MODE_ofs
+	La 	 2, -FILE_ofs
+	CALL	STANDARD.DIRECT_IO. ,CREATE_L1
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO CREATE
+end if
+if defined OPEN_L9_
+PRO	OPEN_L9				;---------- PRO OPEN
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in out
+	PRM MODE_ofs				; in
+	PRM NAME_ofs				; in
+	PRM FORM_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	La 	 2, -FORM_ofs
+	La 	 2, -NAME_ofs
+	Lq	 2, -MODE_ofs
+	La 	 2, -FILE_ofs
+	CALL	STANDARD.DIRECT_IO. ,OPEN_L2
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO OPEN
+end if
+if defined CLOSE_L10_
+PRO	CLOSE_L10				;---------- PRO CLOSE
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in out
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	La 	 2, -FILE_ofs
+	CALL	STANDARD.DIRECT_IO. ,CLOSE_L3
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO CLOSE
+end if
+if defined DELETE_L11_
+PRO	DELETE_L11				;---------- PRO DELETE
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in out
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	La 	 2, -FILE_ofs
+	CALL	STANDARD.DIRECT_IO. ,DELETE_L4
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO DELETE
+end if
+if defined RESET_L12_
+PRO	RESET_L12				;---------- PRO RESET
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in out
+	PRM MODE_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Lq	 2, -MODE_ofs
+	La 	 2, -FILE_ofs
+	CALL	STANDARD.DIRECT_IO. ,RESET_L5
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO RESET
+end if
+if defined RESET_L13_
+PRO	RESET_L13				;---------- PRO RESET
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in out
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	La 	 2, -FILE_ofs
+	CALL	STANDARD.DIRECT_IO. ,RESET_L6
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO RESET
+end if
+if defined MODE_L14_
+PRO	MODE_L14				;---------- PRO MODE
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LI	0					; lieu result
+	LVA	 1, GFP_disp
+	La 	 2, -FILE_ofs
+	CALL	STANDARD.DIRECT_IO. ,MODE_L7
+	Sb	 2, -result__ofs			; retour resultat
+	UNLINK	 2
+	RTD	(prm_siz-8)
+endPRO					;---------- end PRO MODE
+end if
+if defined NAME_L15_
+PRO	NAME_L15				;---------- PRO NAME
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LI	0					; lieu result
+	LVA	 1, GFP_disp
+	La 	 2, -FILE_ofs
+	CALL	STANDARD.DIRECT_IO. ,NAME_L8
+; RESULTAT UNCONSTRAINED A FAIRE
+	UNLINK	 2
+	RTD	(prm_siz-8)
+endPRO					;---------- end PRO NAME
+end if
+if defined FORM_L16_
+PRO	FORM_L16				;---------- PRO FORM
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LI	0					; lieu result
+	LVA	 1, GFP_disp
+	La 	 2, -FILE_ofs
+	CALL	STANDARD.DIRECT_IO. ,FORM_L9
+; RESULTAT UNCONSTRAINED A FAIRE
+	UNLINK	 2
+	RTD	(prm_siz-8)
+endPRO					;---------- end PRO FORM
+end if
+if defined IS_OPEN_L17_
+PRO	IS_OPEN_L17				;---------- PRO IS_OPEN
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LI	0					; lieu result
+	LVA	 1, GFP_disp
+	La 	 2, -FILE_ofs
+	CALL	STANDARD.DIRECT_IO. ,IS_OPEN_L10
+	Sb	 2, -result__ofs			; retour resultat
+	UNLINK	 2
+	RTD	(prm_siz-8)
+endPRO					;---------- end PRO IS_OPEN
+end if
+if defined READ_L18_
+PRO	READ_L18				;---------- PRO READ
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM ITEM_ofs				; out
+	PRM FROM_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Lq	 2, -FROM_ofs
+	La 	 2, -ITEM_ofs
+	La 	 2, -FILE_ofs
+	CALL	STANDARD.DIRECT_IO. ,READ_L11
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO READ
+end if
+if defined READ_L19_
+PRO	READ_L19				;---------- PRO READ
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM ITEM_ofs				; out
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	La 	 2, -ITEM_ofs
+	La 	 2, -FILE_ofs
+	CALL	STANDARD.DIRECT_IO. ,READ_L12
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO READ
+end if
+if defined WRITE_L20_
+PRO	WRITE_L20				;---------- PRO WRITE
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM ITEM_ofs				; in
+	PRM TO_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Lq	 2, -TO_ofs
+	La 	 2, -ITEM_ofs
+	La 	 2, -FILE_ofs
+	CALL	STANDARD.DIRECT_IO. ,WRITE_L13
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO WRITE
+end if
+if defined WRITE_L21_
+PRO	WRITE_L21				;---------- PRO WRITE
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM ITEM_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	La 	 2, -ITEM_ofs
+	La 	 2, -FILE_ofs
+	CALL	STANDARD.DIRECT_IO. ,WRITE_L14
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO WRITE
+end if
+if defined SET_INDEX_L22_
+PRO	SET_INDEX_L22				;---------- PRO SET_INDEX
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM TO_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Lq	 2, -TO_ofs
+	La 	 2, -FILE_ofs
+	CALL	STANDARD.DIRECT_IO. ,SET_INDEX_L15
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO SET_INDEX
+end if
+if defined INDEX_L23_
+PRO	INDEX_L23				;---------- PRO INDEX
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LI	0					; lieu result
+	LVA	 1, GFP_disp
+	La 	 2, -FILE_ofs
+	CALL	STANDARD.DIRECT_IO. ,INDEX_L16
+	Sd	 2, -result__ofs			; retour resultat
+	UNLINK	 2
+	RTD	(prm_siz-8)
+endPRO					;---------- end PRO INDEX
+end if
+if defined SIZE_L24_
+PRO	SIZE_L24				;---------- PRO SIZE
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LI	0					; lieu result
+	LVA	 1, GFP_disp
+	La 	 2, -FILE_ofs
+	CALL	STANDARD.DIRECT_IO. ,SIZE_L17
+	Sd	 2, -result__ofs			; retour resultat
+	UNLINK	 2
+	RTD	(prm_siz-8)
+endPRO					;---------- end PRO SIZE
+end if
+if defined END_OF_FILE_L25_
+PRO	END_OF_FILE_L25				;---------- PRO END_OF_FILE
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LI	0					; lieu result
+	LVA	 1, GFP_disp
+	La 	 2, -FILE_ofs
+	CALL	STANDARD.DIRECT_IO. ,END_OF_FILE_L18
+	Sb	 2, -result__ofs			; retour resultat
+	UNLINK	 2
+	RTD	(prm_siz-8)
+endPRO					;---------- end PRO END_OF_FILE
+end if
+FILE_NAME_BUFFER = 'FILE_NAME_BUFFER'
+namespace FILE_NAME_BUFFER			; FILE_NAME_BUFFER CONSTRAINED ARRAY SUBTYPE INFO
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+VAR COMP_SIZ, d
+VAR FST_1, d
+VAR LST_1, d
+	LI	8
+	Sd	1, COMP_SIZ
+	Ld	1, COMP_SIZ
+	LI	1
+	Sd	1, FST_1
+	LI	256
+	Sd	1, LST_1
+	Ld	1, LST_1
+	INC
+	Ld	1, FST_1
+	SUB
+	MUL
+	Sd	1, SIZ
+  virtual at 4
+COMP_SIZ = $
+	rd 1 
+FST_1 = $
+	rd 1 
+LST_1 = $
+	rd 1 
+  end virtual
+end namespace
+
+					; FILE_TYPE RECORD TYPE INFO
+FILE_TYPE = 'FILE_TYPE'
+namespace FILE_TYPE
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+USEINFO 1, ID, 	La 0, STANDARD.INTEGER.use__info
+USEINFO 1, NAME, 	La 1, STANDARD.TEST_BLOCS_L1.POINT_DIO.FILE_NAME_BUFFER.use__info
+USEINFO 1, NAME_LEN, 	La 0, STANDARD.POSITIVE.use__info
+USEINFO 1, IS_OPENED, 	La 0, STANDARD.BOOLEAN.use__info
+USEINFO 1, MODE, 	La 1, STANDARD.TEST_BLOCS_L1.POINT_DIO.FILE_MODE.use__info
+USEINFO 1, INDEX, 	La 1, STANDARD.TEST_BLOCS_L1.POINT_DIO.POSITIVE_COUNT.use__info
+USEINFO 1, AT_END_OF_FILE, 	La 0, STANDARD.BOOLEAN.use__info
+virtual at 0				; calcul des offsets statiques
+STATOFS ID, 4
+STATOFS NAME, 256
+STATOFS NAME_LEN, 4
+STATOFS IS_OPENED, 1
+STATOFS MODE, 1
+STATOFS INDEX, 4
+STATOFS AT_END_OF_FILE, 1
+size = $
+end virtual
+	LI	 size* 8
+	Sd	1, SIZ
+end namespace
+					;---------- end generic package instantiation POINT_DIO
+end namespace
+
+VAR FP_disp, q				; variable record : pointeur aux data record
+VAR FP__u, q				; variable record : pointeur aux useinfo
+VAR FP__dat, STANDARD.TEST_BLOCS_L1.POINT_DIO.FILE_TYPE.size
+	LVA	1, FP__dat
+	Sa	1, FP_disp				; record fin
+	LVA	1, STANDARD.TEST_BLOCS_L1.POINT_DIO.FILE_TYPE.SIZ
+	Sa	1, FP__u
+	LIVa 1, FP_disp, STANDARD.TEST_BLOCS_L1.POINT_DIO.FILE_TYPE.ID
+	LI	1
+	NEG
+	Sd
+	LIVa 1, FP_disp, STANDARD.TEST_BLOCS_L1.POINT_DIO.FILE_TYPE.IS_OPENED
+	LI	0
+	Sb
+	LIVa 1, FP_disp, STANDARD.TEST_BLOCS_L1.POINT_DIO.FILE_TYPE.AT_END_OF_FILE
+	LI	0
+	Sb
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+STR STR_L26, ""				; constante string=""
+	LCA	STR_L26.data_ptr
+STR STR_L27, "point_direct.dat"		; constante string="point_direct.dat"
+	LCA	STR_L27.data_ptr
+	LI	 1
+	LVA  1,	FP_disp
+	CALL	STANDARD.TEST_BLOCS_L1.POINT_DIO. ,CREATE_L8
+	LVa 1,	PT_disp
+	LVa 1,	FP_disp
+	CALL	STANDARD.TEST_BLOCS_L1.POINT_DIO. ,WRITE_L21
+	LVa 1,	PT_disp
+	LVa 1,	FP_disp
+	CALL	STANDARD.TEST_BLOCS_L1.POINT_DIO. ,WRITE_L21
+	LVa 1,	PT_disp
+	LVa 1,	FP_disp
+	CALL	STANDARD.TEST_BLOCS_L1.POINT_DIO. ,WRITE_L21
+	LVa 1,	PT_disp
+	LVa 1,	FP_disp
+	CALL	STANDARD.TEST_BLOCS_L1.POINT_DIO. ,WRITE_L21
+	LVA  1,	FP_disp
+	CALL	STANDARD.TEST_BLOCS_L1.POINT_DIO. ,CLOSE_L10
+STR STR_L28, "Niveau 1"			; constante string="Niveau 1"
+	LCA	STR_L28.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	Ld 1,	STANDARD.TEST_BLOCS_L1.INT_IO.DEFAULT_BASE_disp
+	Ld 1,	STANDARD.TEST_BLOCS_L1.INT_IO.DEFAULT_WIDTH_disp
+	Ld 1,	LEVEL_1_disp
+	CALL	STANDARD.TEST_BLOCS_L1.INT_IO. ,PUT_L5
+	LI	1
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
+namespace	BLOC_LVL2
+ELB 2					;    BODY ELAB
+VAR LEVEL_2_disp, d				; variable entiere
+	LI	20
+	Sd  2,	LEVEL_2_disp
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+STR STR_L29, "Niveau 2"			; constante string="Niveau 2"
+	LCA	STR_L29.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	Ld 1,	STANDARD.TEST_BLOCS_L1.INT_IO.DEFAULT_BASE_disp
+	Ld 1,	STANDARD.TEST_BLOCS_L1.INT_IO.DEFAULT_WIDTH_disp
+	Ld 2,	LEVEL_2_disp
+	CALL	STANDARD.TEST_BLOCS_L1.INT_IO. ,PUT_L5
+	LI	1
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
+namespace	BLOCK__1
+ELB 3					;    BODY ELAB
+VAR P_NEW_disp, q				; variable record : pointeur aux data record
+VAR P_NEW__u, q				; variable record : pointeur aux useinfo
+VAR P_NEW__dat, STANDARD.TEST_BLOCS_L1.POINT.size
+	LVA	3, P_NEW__dat
+	Sa	3, P_NEW_disp				; record fin
+	LVA	3, STANDARD.TEST_BLOCS_L1.POINT.SIZ
+	Sa	3, P_NEW__u
+	LI	777
+	LIVa 3, P_NEW_disp, STANDARD.TEST_BLOCS_L1.POINT.X
+	OVER
+	Sd
+	DROP
+	LI	888
+	LIVa 3, P_NEW_disp, STANDARD.TEST_BLOCS_L1.POINT.Y
+	OVER
+	Sd
+	DROP
+	LI	999
+	LIVa 3, P_NEW_disp, STANDARD.TEST_BLOCS_L1.POINT.Z
+	OVER
+	Sd
+	DROP
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+STR STR_L30, ""				; constante string=""
+	LCA	STR_L30.data_ptr
+STR STR_L31, "point_direct.dat"		; constante string="point_direct.dat"
+	LCA	STR_L31.data_ptr
+	LI	 1
+	LVA  1,	FP_disp
+	CALL	STANDARD.TEST_BLOCS_L1.POINT_DIO. ,OPEN_L9
+	LI	2
+	LVa 3,	P_NEW_disp
+	LVa 1,	STANDARD.TEST_BLOCS_L1.FP_disp
+	CALL	STANDARD.TEST_BLOCS_L1.POINT_DIO. ,WRITE_L20
+	LI	4
+	LVa 3,	P_NEW_disp
+	LVa 1,	STANDARD.TEST_BLOCS_L1.FP_disp
+	CALL	STANDARD.TEST_BLOCS_L1.POINT_DIO. ,WRITE_L20
+	LI	1
+	LVA  1,	PT_disp
+	LVa 1,	STANDARD.TEST_BLOCS_L1.FP_disp
+	CALL	STANDARD.TEST_BLOCS_L1.POINT_DIO. ,READ_L18
+STR STR_L32, "(1) X="			; constante string="(1) X="
+	LCA	STR_L32.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	Ld 1,	STANDARD.TEST_BLOCS_L1.INT_IO.DEFAULT_BASE_disp
+	Ld 1,	STANDARD.TEST_BLOCS_L1.INT_IO.DEFAULT_WIDTH_disp
+	LId	1, PT_disp, STANDARD.TEST_BLOCS_L1.POINT.X
+	CALL	STANDARD.TEST_BLOCS_L1.INT_IO. ,PUT_L5
+STR STR_L33, " Y="				; constante string=" Y="
+	LCA	STR_L33.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	Ld 1,	STANDARD.TEST_BLOCS_L1.INT_IO.DEFAULT_BASE_disp
+	Ld 1,	STANDARD.TEST_BLOCS_L1.INT_IO.DEFAULT_WIDTH_disp
+	LId	1, PT_disp, STANDARD.TEST_BLOCS_L1.POINT.Y
+	CALL	STANDARD.TEST_BLOCS_L1.INT_IO. ,PUT_L5
+STR STR_L34, " Z="				; constante string=" Z="
+	LCA	STR_L34.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	Ld 1,	STANDARD.TEST_BLOCS_L1.INT_IO.DEFAULT_BASE_disp
+	Ld 1,	STANDARD.TEST_BLOCS_L1.INT_IO.DEFAULT_WIDTH_disp
+	LId	1, PT_disp, STANDARD.TEST_BLOCS_L1.POINT.Z
+	CALL	STANDARD.TEST_BLOCS_L1.INT_IO. ,PUT_L5
+	LI	1
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
+	LI	2
+	LVA  1,	PT_disp
+	LVa 1,	STANDARD.TEST_BLOCS_L1.FP_disp
+	CALL	STANDARD.TEST_BLOCS_L1.POINT_DIO. ,READ_L18
+STR STR_L35, "(2) X="			; constante string="(2) X="
+	LCA	STR_L35.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	Ld 1,	STANDARD.TEST_BLOCS_L1.INT_IO.DEFAULT_BASE_disp
+	Ld 1,	STANDARD.TEST_BLOCS_L1.INT_IO.DEFAULT_WIDTH_disp
+	LId	1, PT_disp, STANDARD.TEST_BLOCS_L1.POINT.X
+	CALL	STANDARD.TEST_BLOCS_L1.INT_IO. ,PUT_L5
+STR STR_L36, " Y="				; constante string=" Y="
+	LCA	STR_L36.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	Ld 1,	STANDARD.TEST_BLOCS_L1.INT_IO.DEFAULT_BASE_disp
+	Ld 1,	STANDARD.TEST_BLOCS_L1.INT_IO.DEFAULT_WIDTH_disp
+	LId	1, PT_disp, STANDARD.TEST_BLOCS_L1.POINT.Y
+	CALL	STANDARD.TEST_BLOCS_L1.INT_IO. ,PUT_L5
+STR STR_L37, " Z="				; constante string=" Z="
+	LCA	STR_L37.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	Ld 1,	STANDARD.TEST_BLOCS_L1.INT_IO.DEFAULT_BASE_disp
+	Ld 1,	STANDARD.TEST_BLOCS_L1.INT_IO.DEFAULT_WIDTH_disp
+	LId	1, PT_disp, STANDARD.TEST_BLOCS_L1.POINT.Z
+	CALL	STANDARD.TEST_BLOCS_L1.INT_IO. ,PUT_L5
+	LI	1
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
+	LI	3
+	LVA  1,	PT_disp
+	LVa 1,	STANDARD.TEST_BLOCS_L1.FP_disp
+	CALL	STANDARD.TEST_BLOCS_L1.POINT_DIO. ,READ_L18
+STR STR_L38, "(3) X="			; constante string="(3) X="
+	LCA	STR_L38.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	Ld 1,	STANDARD.TEST_BLOCS_L1.INT_IO.DEFAULT_BASE_disp
+	Ld 1,	STANDARD.TEST_BLOCS_L1.INT_IO.DEFAULT_WIDTH_disp
+	LId	1, PT_disp, STANDARD.TEST_BLOCS_L1.POINT.X
+	CALL	STANDARD.TEST_BLOCS_L1.INT_IO. ,PUT_L5
+STR STR_L39, " Y="				; constante string=" Y="
+	LCA	STR_L39.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	Ld 1,	STANDARD.TEST_BLOCS_L1.INT_IO.DEFAULT_BASE_disp
+	Ld 1,	STANDARD.TEST_BLOCS_L1.INT_IO.DEFAULT_WIDTH_disp
+	LId	1, PT_disp, STANDARD.TEST_BLOCS_L1.POINT.Y
+	CALL	STANDARD.TEST_BLOCS_L1.INT_IO. ,PUT_L5
+STR STR_L40, " Z="				; constante string=" Z="
+	LCA	STR_L40.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	Ld 1,	STANDARD.TEST_BLOCS_L1.INT_IO.DEFAULT_BASE_disp
+	Ld 1,	STANDARD.TEST_BLOCS_L1.INT_IO.DEFAULT_WIDTH_disp
+	LId	1, PT_disp, STANDARD.TEST_BLOCS_L1.POINT.Z
+	CALL	STANDARD.TEST_BLOCS_L1.INT_IO. ,PUT_L5
+	LI	1
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
+	LI	4
+	LVA  1,	PT_disp
+	LVa 1,	STANDARD.TEST_BLOCS_L1.FP_disp
+	CALL	STANDARD.TEST_BLOCS_L1.POINT_DIO. ,READ_L18
+STR STR_L41, "(4) X="			; constante string="(4) X="
+	LCA	STR_L41.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	Ld 1,	STANDARD.TEST_BLOCS_L1.INT_IO.DEFAULT_BASE_disp
+	Ld 1,	STANDARD.TEST_BLOCS_L1.INT_IO.DEFAULT_WIDTH_disp
+	LId	1, PT_disp, STANDARD.TEST_BLOCS_L1.POINT.X
+	CALL	STANDARD.TEST_BLOCS_L1.INT_IO. ,PUT_L5
+STR STR_L42, " Y="				; constante string=" Y="
+	LCA	STR_L42.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	Ld 1,	STANDARD.TEST_BLOCS_L1.INT_IO.DEFAULT_BASE_disp
+	Ld 1,	STANDARD.TEST_BLOCS_L1.INT_IO.DEFAULT_WIDTH_disp
+	LId	1, PT_disp, STANDARD.TEST_BLOCS_L1.POINT.Y
+	CALL	STANDARD.TEST_BLOCS_L1.INT_IO. ,PUT_L5
+STR STR_L43, " Z="				; constante string=" Z="
+	LCA	STR_L43.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	Ld 1,	STANDARD.TEST_BLOCS_L1.INT_IO.DEFAULT_BASE_disp
+	Ld 1,	STANDARD.TEST_BLOCS_L1.INT_IO.DEFAULT_WIDTH_disp
+	LId	1, PT_disp, STANDARD.TEST_BLOCS_L1.POINT.Z
+	CALL	STANDARD.TEST_BLOCS_L1.INT_IO. ,PUT_L5
+	LI	1
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
+	UNLINK 3
+endPRO
+	LVA  1,	FP_disp
+	CALL	STANDARD.TEST_BLOCS_L1.POINT_DIO. ,CLOSE_L10
+namespace	BLOC_LVL3
+ELB 3					;    BODY ELAB
+VAR LEVEL_3_disp, d				; variable entiere
+	LI	30
+	Sd  3,	LEVEL_3_disp
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+STR STR_L44, "Niveau 3"			; constante string="Niveau 3"
+	LCA	STR_L44.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	Ld 1,	STANDARD.TEST_BLOCS_L1.INT_IO.DEFAULT_BASE_disp
+	Ld 1,	STANDARD.TEST_BLOCS_L1.INT_IO.DEFAULT_WIDTH_disp
+	Ld 3,	LEVEL_3_disp
+	CALL	STANDARD.TEST_BLOCS_L1.INT_IO. ,PUT_L5
+	LI	1
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
+	UNLINK 3
+endPRO
+	UNLINK 2
+endPRO
+ret_lbl:
+	UNLINK 1
+	RTD
+excep:
+endPRO					;---------- end PRO TEST_BLOCS

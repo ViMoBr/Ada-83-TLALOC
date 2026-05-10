@@ -245,12 +245,12 @@ is					----------
 	----------------
 
 		----------------
-    function	READ_SYSTEM_CALL	( FILE_ID :in INTEGER; LENGTH :in INTEGER )
+    function	READ_SYSTEM_CALL	( FILE_ID :in INTEGER; LENGTH :in INTEGER; ADR :SYSTEM.ADDRESS )
 					return INTEGER
     is		----------------
     begin
       ASM_OP_2'( OPCODE => Ld, LVL => 2, OFS => -16 );			-- LENGTH en octets
-      ASM_OP_2'( OPCODE => La, LVL => 1, OFS => -16 );			-- @ITEM_DATA (param out READ : adresse de la zone destination)
+      ASM_OP_2'( OPCODE => La, LVL => 2, OFS => -24 );			-- @ITEM_DATA (param out READ : adresse de la zone destination)
       ASM_OP_2'( OPCODE => Ld, LVL => 2, OFS => -8 );			-- FILE_ID
       ASM_OP_0'( OPCODE => SYS_FILE_READ );
       ASM_OP_2'( OPCODE => SD, LVL => 2, OFS => -32 );			-- Retour du BYTES_READ apres le GFP
@@ -264,7 +264,7 @@ is					----------
     if  INTEGER( FROM ) <= 0  then raise USE_ERROR; end if;
 
     DUMMY      := SEEK_SYSTEM_CALL( FILE.ID, ( INTEGER( FROM ) - 1 ) * SIZE_BYTES );
-    BYTES_READ := READ_SYSTEM_CALL( FILE.ID, SIZE_BYTES );
+    BYTES_READ := READ_SYSTEM_CALL( FILE.ID, SIZE_BYTES, ITEM'ADDRESS );
     if  BYTES_READ < SIZE_BYTES  then
       raise END_ERROR;
     end if;
@@ -283,12 +283,12 @@ is					----------
     SIZE_BYTES	: INTEGER	:= ELEMENT_TYPE'SIZE / SYSTEM.STORAGE_UNIT;
 
 		----------------
-    function	READ_SYSTEM_CALL	( FILE_ID :in INTEGER; LENGTH :in INTEGER )
+    function	READ_SYSTEM_CALL	( FILE_ID :in INTEGER; LENGTH :in INTEGER; ADR :SYSTEM.ADDRESS )
 					return INTEGER
     is		----------------
     begin
       ASM_OP_2'( OPCODE => Ld, LVL => 2, OFS => -16 );			-- LENGTH
-      ASM_OP_2'( OPCODE => La, LVL => 1, OFS => -16 );			-- @ITEM_DATA
+      ASM_OP_2'( OPCODE => La, LVL => 2, OFS => -24 );			-- @ITEM_DATA
       ASM_OP_2'( OPCODE => Ld, LVL => 2, OFS => -8 );			-- FILE_ID
       ASM_OP_0'( OPCODE => SYS_FILE_READ );
       ASM_OP_2'( OPCODE => SD, LVL => 2, OFS => -32 );
@@ -300,7 +300,7 @@ is					----------
     if  FILE.IS_OPENED = FALSE  then raise STATUS_ERROR; end if;
     if  FILE.MODE = OUT_FILE  then raise MODE_ERROR; end if;
 				-- Lit a la position courante du fichier (qui est l'index courant)
-    BYTES_READ := READ_SYSTEM_CALL( FILE.ID, SIZE_BYTES );
+    BYTES_READ := READ_SYSTEM_CALL( FILE.ID, SIZE_BYTES, ITEM'ADDRESS );
     if  BYTES_READ < SIZE_BYTES  then
       raise END_ERROR;
     end if;

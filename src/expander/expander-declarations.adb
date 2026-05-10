@@ -480,6 +480,24 @@ null;--     LOAD_TYPE_SIZE( TYPE_SPEC  );
         LVL		: LEVEL_NUM		renames CODI.CUR_LEVEL;
         LVL_STR		:constant STRING		:= IMAGE( CODI.CUR_LEVEL );
         ANONYMOUS_SUBTYPE	: BOOLEAN			:= FALSE;
+
+			--------------
+        procedure		COVAR_ALLOCATE
+        is		--------------
+        begin
+	PUT( tab & "Ld" & tab & IMAGE( TYPE_LEVEL ) & ", " );						-- LOAD SIZ FOR ALLOCATION
+	PUT_LINE( TYPE_NAME_STR & ".SIZ" );
+	PUT_LINE( tab & "LI" & tab & '8' );
+	PUT_LINE( tab & "DIV" );
+
+	PUT_LINE( tab & "CO_VAR" );
+	PUT( tab & "Sa" & tab & LVL_STR & ", " & VC_STR & "_disp" );
+	if  CODI.DEBUG  then PUT( tab50 & "; array data ptr at _disp" ); end if;
+	NEW_LINE;
+
+        end	COVAR_ALLOCATE;
+		--------------
+
       begin
 
         if  DB( CD_COMPILED, TYPE_SPEC ) = FALSE  then
@@ -502,6 +520,14 @@ null;--     LOAD_TYPE_SIZE( TYPE_SPEC  );
 
         DI( CD_LEVEL, VC_NAME, INTEGER( LVL ) );
 
+        PUT( tab & "La" & INTEGER'IMAGE( TYPE_LEVEL ) & ", " );						-- LOAD ADDRESS FOR INFO
+        PUT_LINE( TYPE_NAME_STR & ".use__info" );
+
+        PUT( tab & "Sa" & tab & LVL_STR & ", " & VC_STR & "__u" );
+        if  CODI.DEBUG  then PUT( tab50 & "; array info ptr at __u" ); end if;
+        NEW_LINE;
+				----------
+				INITIALIZE:
         declare
 	INIT_EXP		: TREE		:= D( SM_INIT_EXP, VC_NAME );
         begin
@@ -540,9 +566,11 @@ null;--     LOAD_TYPE_SIZE( TYPE_SPEC  );
 
 	  elsif  INIT_EXP.TY = DN_AGGREGATE								-- Agregat tableau
 	  then
+	    COVAR_ALLOCATE;
 	    if  CODI.DEBUG  then PUT( tab50 & "; array data aggregate" ); end if;
 	    NEW_LINE;
 
+	    PUT_LINE( tab & "La" & tab & LVL_STR & ", " & VC_STR & "_disp" );
 
 	    declare
 	      GENERAL_ASSOC_SEQ		: SEQ_TYPE	:= LIST( D( AS_GENERAL_ASSOC_S, INIT_EXP ) );
@@ -552,44 +580,47 @@ null;--     LOAD_TYPE_SIZE( TYPE_SPEC  );
 	        POP( GENERAL_ASSOC_SEQ, ASSOC );
 
 	        if  ASSOC.TY  in  CLASS_EXP  then
-		if  CODI.DEBUG  then PUT( tab50 & "; agg exp" ); end if;
-		NEW_LINE;
-		EXPRESSIONS.CODE_EXP( ASSOC );
+		declare
+		  EXP_TYPE	: TREE	:= D( SM_EXP_TYPE, ASSOC );
+		  TYPE_NAME	: TREE		:= D( XD_SOURCE_NAME, EXP_TYPE );
+		  TYPE_NAME_STR	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
+		begin
+		  if  CODI.DEBUG  then PUT( tab50 & "; agg exp" ); end if;
+		  NEW_LINE;
+		  PUT_LINE( tab & "DUP" );
+		  EXPRESSIONS.CODE_EXP( ASSOC );
+		  if  EXP_TYPE.TY  in  CLASS_SCALAR  then
+		    PUT_LINE( tab & "S" & EXP_TYPE_CHAR( ASSOC ) );
+		  else
+PUT( "; COMPILE_ARRAY_VAR EXP non gere " & NODE_NAME'IMAGE( EXP_TYPE.TY ) );
+		  end if;
+		end;
+		PUT( tab & "LId" & tab & LVL_STR & ", " & VC_STR & "__u," );
+		REGIONS_PATH( TYPE_NAME );
+		PUT_LINE( TYPE_NAME_STR & ".COMP_SIZ" );
+
+		PUT_LINE( tab & "LI" & tab & '8' );
+		PUT_LINE( tab & "DIV" );
+		PUT_LINE( tab & "ADD" );
 
 	        elsif  ASSOC.TY = DN_NAMED  then
-		if  CODI.DEBUG  then PUT( tab50 & "; agg named" ); end if;
-		NEW_LINE;
+		PUT_LINE( "; COMPILE_ARRAY_VAR ASSOC.TY NAMED a faire " );
 
 	        else
-		if  CODI.DEBUG  then PUT( "; COMPILE_ARRAY_VAR ASOOC.TY non gere " & NODE_NAME'IMAGE( ASSOC.TY ) );
-		end if;
-		NEW_LINE;
+		PUT_LINE( "; COMPILE_ARRAY_VAR ASSOC.TY non gere " & NODE_NAME'IMAGE( ASSOC.TY ) );
+
 	        end if;
 
 	      end loop;
 	    end;
 	  end if;
-				-- PAS D'INITIALISATION, ALLOUER
-	else
-	  PUT( tab & "Ld" & tab & IMAGE( TYPE_LEVEL ) & ", " );						-- LOAD SIZ FOR ALLOCATION
-	  PUT_LINE( TYPE_NAME_STR & ".SIZ" );
-	  PUT_LINE( tab & "LI" & tab & '8' );
-	  PUT_LINE( tab & "DIV" );
 
-	  PUT_LINE( tab & "CO_VAR" );
-	  PUT( tab & "Sa" & tab & LVL_STR & ", " & VC_STR & "_disp" );
-	  if  CODI.DEBUG  then PUT( tab50 & "; array data ptr at _disp" ); end if;
-	  NEW_LINE;
-
-	  PUT( tab & "La" & INTEGER'IMAGE( TYPE_LEVEL ) & ", " );						-- LOAD ADDRESS FOR INFO
-	  PUT_LINE( TYPE_NAME_STR & ".use__info" );
-
-	  PUT( tab & "Sa" & tab & LVL_STR & ", " & VC_STR & "__u" );
-	  if  CODI.DEBUG  then PUT( tab50 & "; array info ptr at __u" ); end if;
-	  NEW_LINE;
+	else											-- PAS D'INITIALISATION, ALLOUER
+	  COVAR_ALLOCATE;
 
 	end if;
-        end;
+        end			INITIALIZE;
+				----------
 
         DI( CD_LEVEL,	VC_NAME, INTEGER( LVL ) );
         DB( CD_COMPILED,	VC_NAME, TRUE );

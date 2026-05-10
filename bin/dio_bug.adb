@@ -1,8 +1,8 @@
 with TEXT_IO; use TEXT_IO;
 with DIRECT_IO;
-			---------------
-procedure			DIRECT_IO_TEST2
-is			---------------
+			-----------------
+procedure		DIRECT_IO_TEST2
+is			-----------------
 
   --
   --  Types de test
@@ -271,14 +271,15 @@ begin
   POINT_DIO.OPEN( FP, POINT_DIO.INOUT_FILE, "point_direct.dat" );
   PUT_LINE( "  open INOUT_FILE ok" );
 
-  declare
-    P_NEW : POINT := ( X => 777, Y => 888, Z => 999 );
-  begin
-    PUT( "  P_NEW X (en bloc) = " ); PUT( P_NEW.X ); PUT( " Y=" ); PUT( P_NEW.Y ); PUT( " Z=" ); PUT( P_NEW.Z ); NEW_LINE;
+declare
+  P_NEW : POINT := ( X => 777, Y => 888, Z => 999 );
+begin
+  PUT( "P_NEW X=" ); PUT( P_NEW.X ); PUT( " Y=" ); PUT( P_NEW.Y ); PUT( " Z=" ); PUT( P_NEW.Z ); NEW_LINE;
 
-    POINT_DIO.WRITE( FP, P_NEW, 2 );
-    POINT_DIO.WRITE( FP, P_NEG, 4 );
-  end;
+--  POINT_DIO.WRITE( FP, P_NEW, 2 );
+
+--  POINT_DIO.WRITE( FP, P_NEG, 4 );
+end;
 
   -- RESET en IN_FILE pour relire
   POINT_DIO.RESET( FP, POINT_DIO.IN_FILE );
@@ -287,16 +288,16 @@ begin
   PUT( "  apres RESET INDEX = " );
   PUT( INTEGER( POINT_DIO.INDEX( FP ) ) ); NEW_LINE;
 
-  POINT_DIO.READ( FP, RP, 1 );
+--  POINT_DIO.READ( FP, RP, 1 );
   PUT( "  verify #1 = " ); PUT_POINT( RP ); NEW_LINE;
 
-  POINT_DIO.READ( FP, RP, 2 );
+--  POINT_DIO.READ( FP, RP, 2 );
   PUT( "  verify #2 (reecrit) = " ); PUT_POINT( RP ); NEW_LINE;
 
-  POINT_DIO.READ( FP, RP, 3 );
+--  POINT_DIO.READ( FP, RP, 3 );
   PUT( "  verify #3 = " ); PUT_POINT( RP ); NEW_LINE;
 
-  POINT_DIO.READ( FP, RP, 4 );
+--  POINT_DIO.READ( FP, RP, 4 );
   PUT( "  verify #4 (reecrit) = " ); PUT_POINT( RP ); NEW_LINE;
 
   POINT_DIO.CLOSE( FP );
@@ -307,22 +308,22 @@ begin
   PUT_LINE( "=== 6. IS_OPEN ===" );
   -- ---------------------------------------------------------------
 
-  PUT( "  FP IS_OPEN apres CLOSE = " );
-  if POINT_DIO.IS_OPEN( FP ) then
-    PUT_LINE( "TRUE (anormal)" );
-  else
-    PUT_LINE( "FALSE (correct)" );
-  end if;
+--  PUT( "  FP IS_OPEN apres CLOSE = " );
+--  if POINT_DIO.IS_OPEN( FP ) then
+--    PUT_LINE( "TRUE (anormal)" );
+--  else
+--    PUT_LINE( "FALSE (correct)" );
+--  end if;
 
-  POINT_DIO.OPEN( FP, POINT_DIO.IN_FILE, "point_direct.dat" );
-  PUT( "  FP IS_OPEN apres OPEN = " );
-  if POINT_DIO.IS_OPEN( FP ) then
-    PUT_LINE( "TRUE (correct)" );
-  else
-    PUT_LINE( "FALSE (anormal)" );
-  end if;
-
-  POINT_DIO.CLOSE( FP );
+--  POINT_DIO.OPEN( FP, POINT_DIO.IN_FILE, "point_direct.dat" );
+--  PUT( "  FP IS_OPEN apres OPEN = " );
+--  if POINT_DIO.IS_OPEN( FP ) then
+--    PUT_LINE( "TRUE (correct)" );
+--  else
+--    PUT_LINE( "FALSE (anormal)" );
+--  end if;
+--
+--  POINT_DIO.CLOSE( FP );
 
 
   -- ---------------------------------------------------------------
@@ -353,26 +354,26 @@ begin
   -- ---------------------------------------------------------------
 
   -- Supprimer les trois fichiers de test
---  CLR_DIO.OPEN( FC, CLR_DIO.INOUT_FILE, "couleur_direct.dat" );
---  CLR_DIO.DELETE( FC );
---  PUT_LINE( "  couleur_direct.dat deleted" );
+  CLR_DIO.OPEN( FC, CLR_DIO.INOUT_FILE, "couleur_direct.dat" );
+  CLR_DIO.DELETE( FC );
+  PUT_LINE( "  couleur_direct.dat deleted" );
 
---  PUT( "  FC IS_OPEN apres DELETE = " );
---  if CLR_DIO.IS_OPEN( FC ) then
---    PUT_LINE( "TRUE (anormal)" );
---  else
---    PUT_LINE( "FALSE (correct)" );
---  end if;
+  PUT( "  FC IS_OPEN apres DELETE = " );
+  if CLR_DIO.IS_OPEN( FC ) then
+    PUT_LINE( "TRUE (anormal)" );
+  else
+    PUT_LINE( "FALSE (correct)" );
+  end if;
 
 --  POINT_DIO.OPEN( FP, POINT_DIO.INOUT_FILE, "point_direct.dat" );
 --  POINT_DIO.DELETE( FP );
 --  PUT_LINE( "  point_direct.dat deleted" );
 
---  VEC_DIO.OPEN( FV, VEC_DIO.INOUT_FILE, "vec_direct.dat" );
---  VEC_DIO.DELETE( FV );
---  PUT_LINE( "  vec_direct.dat deleted" );
+  VEC_DIO.OPEN( FV, VEC_DIO.INOUT_FILE, "vec_direct.dat" );
+  VEC_DIO.DELETE( FV );
+  PUT_LINE( "  vec_direct.dat deleted" );
 
---  PUT_LINE( "  DELETE ok" );
+  PUT_LINE( "  DELETE ok" );
 
   -- ---------------------------------------------------------------
   PUT_LINE( "=== FIN DIRECT_IO_TEST2 ===" );
