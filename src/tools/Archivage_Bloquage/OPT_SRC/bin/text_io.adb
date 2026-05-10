@@ -1463,7 +1463,7 @@ is					-------
       is		---------------
       begin
         ASM_OP_2'( OPCODE => La,  LVL => 1, OFS => -40 );							-- empiler @GFP_disp
-        ASM_OP_3'( OPCODE => LIVa,  DISP => -8, OFS=> 16 );							-- empiler @GFP_disp
+        ASM_OP_3'( OPCODE => LIVa,  DISP => -8, OFS=> 16 );							-- deref __u_ofs → IMAGES
         ASM_OP_2'( OPCODE => Sa,  LVL => 2, OFS => -8 );							-- stocker dans result_ofs
 
       end	GET_ENUM_IMAGES;

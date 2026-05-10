@@ -1,0 +1,266 @@
+PRO	TEST_AGREGATS_L1			;---------- PRO TEST_AGREGATS
+ELB 1					;    BODY ELAB
+
+					; POINT RECORD TYPE INFO
+POINT = 'POINT'
+namespace POINT
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+USEINFO 1, X, 	La 0, STANDARD.INTEGER.use__info
+USEINFO 1, Y, 	La 0, STANDARD.INTEGER.use__info
+USEINFO 1, Z, 	La 0, STANDARD.INTEGER.use__info
+virtual at 0				; calcul des offsets statiques
+STATOFS X, 4
+STATOFS Y, 4
+STATOFS Z, 4
+size = $
+end virtual
+	LI	 size* 8
+	Sd	1, SIZ
+end namespace
+
+					; array decl constrained array type info
+VECTEUR = 'VECTEUR'
+namespace VECTEUR
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+VAR COMP_SIZ, d
+VAR FST_1, d
+VAR LST_1, d
+	LI	32
+	Sd	1, COMP_SIZ
+	Ld	1, COMP_SIZ
+	LI	1
+	Sd	1, FST_1
+	LI	4
+	Sd	1, LST_1
+	Ld	1, LST_1
+	INC
+	Ld	1, FST_1
+	SUB
+	MUL
+	Sd	1, SIZ
+  virtual at 4
+COMP_SIZ = $
+	rd 1 
+FST_1 = $
+	rd 1 
+LST_1 = $
+	rd 1 
+  end virtual
+end namespace
+VAR P1_disp, q				; variable record : pointeur aux data record
+VAR P1__u, q				; variable record : pointeur aux useinfo
+VAR P1__dat, STANDARD.TEST_AGREGATS_L1.POINT.size
+	LVA	1, P1__dat
+	Sa	1, P1_disp				; record fin
+	LVA	1, STANDARD.TEST_AGREGATS_L1.POINT.SIZ
+	Sa	1, P1__u
+	LI	16
+	LIVa 1, P1_disp, STANDARD.TEST_AGREGATS_L1.POINT.X
+	OVER
+	Sd
+	DROP
+	LI	32
+	LIVa 1, P1_disp, STANDARD.TEST_AGREGATS_L1.POINT.Y
+	OVER
+	Sd
+	DROP
+	LI	64
+	LIVa 1, P1_disp, STANDARD.TEST_AGREGATS_L1.POINT.Z
+	OVER
+	Sd
+	DROP
+
+VAR V1_disp, q				; variable array : pointeur aux data
+VAR V1__u, q				; variable array : useinfo pointeur au rec info
+	La 1, VECTEUR.use__info
+	Sa	1, V1__u				; array info ptr at __u
+	Ld	1, VECTEUR.SIZ
+	LI	8
+	DIV
+	CO_VAR
+	Sa	1, V1_disp				; array data ptr at _disp
+					; array data aggregate
+	La	1, V1_disp
+	DUP
+	LI	0
+	Sd
+	LId	1, V1__u,STANDARD.TEST_AGREGATS_L1.VECTEUR.COMP_SIZ
+	LI	8
+	DIV
+	ADD
+	DUP
+	LI	1
+	Sd
+	LId	1, V1__u,STANDARD.TEST_AGREGATS_L1.VECTEUR.COMP_SIZ
+	LI	8
+	DIV
+	ADD
+	DUP
+	LI	2
+	Sd
+	LId	1, V1__u,STANDARD.TEST_AGREGATS_L1.VECTEUR.COMP_SIZ
+	LI	8
+	DIV
+	ADD
+	DUP
+	LI	3
+	Sd
+	LId	1, V1__u,STANDARD.TEST_AGREGATS_L1.VECTEUR.COMP_SIZ
+	LI	8
+	DIV
+	ADD
+	DROP
+
+VAR P2_disp, q				; variable record : pointeur aux data record
+VAR P2__u, q				; variable record : pointeur aux useinfo
+VAR P2__dat, STANDARD.TEST_AGREGATS_L1.POINT.size
+	LVA	1, P2__dat
+	Sa	1, P2_disp				; record fin
+	LVA	1, STANDARD.TEST_AGREGATS_L1.POINT.SIZ
+	Sa	1, P2__u
+	LI	128
+	LIVa 1, P2_disp, STANDARD.TEST_AGREGATS_L1.POINT.X
+	OVER
+	Sd
+	DROP
+	LI	256
+	LIVa 1, P2_disp, STANDARD.TEST_AGREGATS_L1.POINT.Y
+	OVER
+	Sd
+	DROP
+	LI	512
+	LIVa 1, P2_disp, STANDARD.TEST_AGREGATS_L1.POINT.Z
+	OVER
+	Sd
+	DROP
+
+VAR V2_disp, q				; variable array : pointeur aux data
+VAR V2__u, q				; variable array : useinfo pointeur au rec info
+	La 1, VECTEUR.use__info
+	Sa	1, V2__u				; array info ptr at __u
+	Ld	1, VECTEUR.SIZ
+	LI	8
+	DIV
+	CO_VAR
+	Sa	1, V2_disp				; array data ptr at _disp
+					; array data aggregate
+	La	1, V2_disp
+	DUP
+	LI	0
+	Sd
+	LId	1, V2__u,STANDARD.TEST_AGREGATS_L1.VECTEUR.COMP_SIZ
+	LI	8
+	DIV
+	ADD
+	DUP
+	LI	1
+	Sd
+	LId	1, V2__u,STANDARD.TEST_AGREGATS_L1.VECTEUR.COMP_SIZ
+	LI	8
+	DIV
+	ADD
+	DUP
+	LI	1
+	Sd
+	LId	1, V2__u,STANDARD.TEST_AGREGATS_L1.VECTEUR.COMP_SIZ
+	LI	8
+	DIV
+	ADD
+	DUP
+	LI	1
+	NEG
+	Sd
+	LId	1, V2__u,STANDARD.TEST_AGREGATS_L1.VECTEUR.COMP_SIZ
+	LI	8
+	DIV
+	ADD
+	DROP
+
+VAR V3_disp, q				; variable array : pointeur aux data
+VAR V3__u, q				; variable array : useinfo pointeur au rec info
+	La 1, VECTEUR.use__info
+	Sa	1, V3__u				; array info ptr at __u
+	Ld	1, VECTEUR.SIZ
+	LI	8
+	DIV
+	CO_VAR
+	Sa	1, V3_disp				; array data ptr at _disp
+					; array data aggregate
+	La	1, V3_disp
+	DUP
+	LI	0
+	Sd
+	LId	1, V3__u,STANDARD.TEST_AGREGATS_L1.VECTEUR.COMP_SIZ
+	LI	8
+	DIV
+	ADD
+	DUP
+	LI	1
+	Sd
+	LId	1, V3__u,STANDARD.TEST_AGREGATS_L1.VECTEUR.COMP_SIZ
+	LI	8
+	DIV
+	ADD
+	DUP
+	LI	1
+	NEG
+	Sd
+	LId	1, V3__u,STANDARD.TEST_AGREGATS_L1.VECTEUR.COMP_SIZ
+	LI	8
+	DIV
+	ADD
+	DUP
+	LI	1
+	NEG
+	Sd
+	LId	1, V3__u,STANDARD.TEST_AGREGATS_L1.VECTEUR.COMP_SIZ
+	LI	8
+	DIV
+	ADD
+	DROP
+
+
+if defined INGERE_VECTEUR_L2_
+PRO	INGERE_VECTEUR_L2			;---------- PRO INGERE_VECTEUR
+PRMS					;    debut parametrage
+	PRM VEC_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+ret_lbl:
+	UNLINK 2
+	RTD	(prm_siz)
+excep:
+endPRO					;---------- end PRO INGERE_VECTEUR
+end if
+
+if defined INGERE_POINT_L3_
+PRO	INGERE_POINT_L3				;---------- PRO INGERE_POINT
+PRMS					;    debut parametrage
+	PRM PT_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+ret_lbl:
+	UNLINK 2
+	RTD	(prm_siz)
+excep:
+endPRO					;---------- end PRO INGERE_POINT
+end if
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	CALL	STANDARD.TEST_AGREGATS_L1. ,INGERE_VECTEUR_L2
+	CALL	STANDARD.TEST_AGREGATS_L1. ,INGERE_POINT_L3
+ret_lbl:
+	UNLINK 1
+	RTD
+excep:
+endPRO					;---------- end PRO TEST_AGREGATS

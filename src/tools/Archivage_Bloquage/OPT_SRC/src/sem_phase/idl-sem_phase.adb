@@ -1,3 +1,9 @@
+------------------------------------------------------------------------------------------------------------------------
+-- SPDX-FileCopyrightText: 2026 VINCENT	MORIN, UBO
+-- SPDX-License-Identifier: GPL-3.0-or-later
+------------------------------------------------------------------------------------------------------------------------
+--	1	2	3	4	5	6	7	8	9	0	1	2
+
 separate(	IDL )
 
 					---------
@@ -1810,62 +1816,45 @@ is					---------
 	      CD_IMPL_SMALL: TREE := TREE_VOID)
 	      return TREE;
 
-	function MAKE_ARRAY
-	      ( SM_DERIVED:	TREE := TREE_VOID;
-	      SM_IS_ANONYMOUS: BOOLEAN := FALSE;
-	      SM_BASE_TYPE:	TREE := TREE_VOID;
-	      SM_SIZE: TREE	:= TREE_VOID;
-	      SM_IS_LIMITED: BOOLEAN := FALSE;
-	      SM_IS_PACKED:	BOOLEAN := FALSE;
-	      SM_INDEX_S: TREE := TREE_VOID;
-	      SM_COMP_TYPE:	TREE := TREE_VOID;
-	      XD_SOURCE_NAME: TREE :=	TREE_VOID)
-	      return TREE;
+    function  MAKE_ARRAY	( SM_DERIVED		:TREE	:= TREE_VOID;
+			  SM_IS_ANONYMOUS		:BOOLEAN	:= FALSE;
+			  SM_BASE_TYPE, SM_SIZE	:TREE	:= TREE_VOID;
+			  SM_IS_LIMITED		:BOOLEAN	:= FALSE;
+			  SM_IS_PACKED		:BOOLEAN	:= FALSE;
+			  SM_INDEX_S, SM_COMP_TYPE, XD_SOURCE_NAME	: TREE	:= TREE_VOID )
+			return TREE;
 
-	function MAKE_RECORD
-	      ( SM_DERIVED:	TREE := TREE_VOID;
-	      SM_IS_ANONYMOUS: BOOLEAN := FALSE;
-	      SM_BASE_TYPE:	TREE := TREE_VOID;
-	      SM_SIZE: TREE	:= TREE_VOID;
-	      SM_IS_LIMITED: BOOLEAN := FALSE;
-	      SM_IS_PACKED:	BOOLEAN := FALSE;
-	      SM_DISCRIMINANT_S: TREE	:= TREE_VOID;
-	      SM_COMP_LIST:	TREE := TREE_VOID;
-	      SM_REPRESENTATION: TREE	:= TREE_VOID;
-	      XD_SOURCE_NAME: TREE :=	TREE_VOID)
-	      return TREE;
+    function  MAKE_RECORD	( SM_DERIVED		:TREE	:= TREE_VOID;
+			  SM_IS_ANONYMOUS		:BOOLEAN	:= FALSE;
+			  SM_BASE_TYPE, SM_SIZE	:TREE	:= TREE_VOID;
+			  SM_IS_LIMITED		:BOOLEAN	:= FALSE;
+			  SM_IS_PACKED		:BOOLEAN	:= FALSE;
+			  SM_DISCRIMINANT_S, SM_COMP_LIST,
+			  SM_REPRESENTATION, XD_SOURCE_NAME	:TREE	:= TREE_VOID )
+			return TREE;
 
-	function MAKE_ACCESS
-	      ( SM_DERIVED:	TREE := TREE_VOID;
-	      SM_IS_ANONYMOUS: BOOLEAN := FALSE;
-	      SM_BASE_TYPE:	TREE := TREE_VOID;
-	      SM_SIZE: TREE	:= TREE_VOID;
-	      SM_STORAGE_SIZE: TREE := TREE_VOID;
-	      SM_IS_CONTROLLED: BOOLEAN := FALSE;
-	      SM_DESIG_TYPE: TREE := TREE_VOID;
-	      SM_MASTER: TREE := TREE_VOID;
-	      XD_SOURCE_NAME: TREE :=	TREE_VOID)
-	      return TREE;
+    function MAKE_ACCESS	( SM_DERIVED	:TREE	:= TREE_VOID;
+			  SM_IS_ANONYMOUS	:BOOLEAN	:= FALSE;
+			  SM_BASE_TYPE, SM_SIZE, SM_STORAGE_SIZE :TREE	:= TREE_VOID;
+			  SM_IS_CONTROLLED	:BOOLEAN	:= FALSE;
+			  SM_DESIG_TYPE, SM_MASTER, XD_SOURCE_NAME :TREE	:= TREE_VOID)
+			return TREE;
 
-	function MAKE_CONSTRAINED_ARRAY
-	      ( SM_DERIVED:	TREE := TREE_VOID;
-	      SM_IS_ANONYMOUS: BOOLEAN := FALSE;
-	      SM_BASE_TYPE:	TREE := TREE_VOID;
-	      SM_DEPENDS_ON_DSCRMT: BOOLEAN := FALSE;
-	      SM_INDEX_SUBTYPE_S: TREE := TREE_VOID;
-	      XD_SOURCE_NAME: TREE :=	TREE_VOID)
-	      return TREE;
+    function  MAKE_CONSTRAINED_ARRAY	( SM_DERIVED	:TREE := TREE_VOID;
+				  SM_IS_ANONYMOUS	:BOOLEAN := FALSE;
+				  SM_BASE_TYPE	:TREE := TREE_VOID;
+				  SM_DEPENDS_ON_DSCRMT :BOOLEAN := FALSE;
+				  SM_INDEX_SUBTYPE_S, XD_SOURCE_NAME :TREE := TREE_VOID )
+				return TREE;
 
-	function MAKE_CONSTRAINED_RECORD
-	      ( SM_DERIVED:	TREE := TREE_VOID;
-	      SM_IS_ANONYMOUS: BOOLEAN := FALSE;
-	      SM_BASE_TYPE:	TREE := TREE_VOID;
-	      SM_DEPENDS_ON_DSCRMT: BOOLEAN := FALSE;
-	      SM_NORMALIZED_DSCRMT_S:	TREE := TREE_VOID;
-	      XD_SOURCE_NAME: TREE :=	TREE_VOID)
-	      return TREE;
+    function  MAKE_CONSTRAINED_RECORD	( SM_DERIVED	:TREE := TREE_VOID;
+				  SM_IS_ANONYMOUS	:BOOLEAN := FALSE;
+				  SM_BASE_TYPE	:TREE := TREE_VOID;
+				  SM_DEPENDS_ON_DSCRMT :BOOLEAN := FALSE;
+				  SM_NORMALIZED_DSCRMT_S, XD_SOURCE_NAME: TREE :=	TREE_VOID	)
+				return TREE;
 
-	function MAKE_CONSTRAINED_ACCESS
+    function MAKE_CONSTRAINED_ACCESS
 	      ( SM_DERIVED:	TREE := TREE_VOID;
 	      SM_IS_ANONYMOUS: BOOLEAN := FALSE;
 	      SM_BASE_TYPE:	TREE := TREE_VOID;
@@ -1874,7 +1863,7 @@ is					---------
 	      XD_SOURCE_NAME: TREE :=	TREE_VOID)
 	      return TREE;
 
-	function MAKE_PRIVATE
+    function MAKE_PRIVATE
 	      ( SM_DERIVED:	TREE := TREE_VOID;
 	      SM_IS_ANONYMOUS: BOOLEAN := FALSE;
 	      SM_DISCRIMINANT_S: TREE	:= TREE_VOID;
@@ -1882,30 +1871,25 @@ is					---------
 	      XD_SOURCE_NAME: TREE :=	TREE_VOID)
 	      return TREE;
 
-	function MAKE_L_PRIVATE
-	      ( SM_DERIVED:	TREE := TREE_VOID;
-	      SM_IS_ANONYMOUS: BOOLEAN := FALSE;
-	      SM_DISCRIMINANT_S: TREE	:= TREE_VOID;
-	      SM_TYPE_SPEC:	TREE := TREE_VOID;
-	      XD_SOURCE_NAME: TREE :=	TREE_VOID)
+    function MAKE_L_PRIVATE		( SM_DERIVED	:TREE := TREE_VOID;
+				SM_IS_ANONYMOUS	:BOOLEAN := FALSE;
+				SM_DISCRIMINANT_S	:TREE := TREE_VOID;
+				SM_TYPE_SPEC	:TREE := TREE_VOID;
+				XD_SOURCE_NAME	:TREE :=	TREE_VOID)
 	      return TREE;
 
-	function MAKE_INCOMPLETE
-	      ( SM_DISCRIMINANT_S: TREE := TREE_VOID;
-	      XD_SOURCE_NAME: TREE :=	TREE_VOID;
-	      XD_FULL_TYPE_SPEC: TREE	:= TREE_VOID)
+    function MAKE_INCOMPLETE		( SM_DISCRIMINANT_S	:TREE := TREE_VOID;
+				XD_SOURCE_NAME	:TREE :=	TREE_VOID;
+				XD_FULL_TYPE_SPEC	:TREE := TREE_VOID)
 	      return TREE;
 
-	function MAKE_UNIVERSAL_INTEGER
-	      ( XD_SOURCE_NAME: TREE := TREE_VOID)
+    function MAKE_UNIVERSAL_INTEGER	( XD_SOURCE_NAME: TREE := TREE_VOID)
 	      return TREE;
 
-	function MAKE_UNIVERSAL_FIXED
-	      ( XD_SOURCE_NAME: TREE := TREE_VOID)
+    function MAKE_UNIVERSAL_FIXED	( XD_SOURCE_NAME: TREE := TREE_VOID)
 	      return TREE;
 
-	function MAKE_UNIVERSAL_REAL
-	      ( XD_SOURCE_NAME: TREE := TREE_VOID)
+    function MAKE_UNIVERSAL_REAL	( XD_SOURCE_NAME: TREE := TREE_VOID)
 	      return TREE;
 
   --|------------------------------------------------------------------------------------------------

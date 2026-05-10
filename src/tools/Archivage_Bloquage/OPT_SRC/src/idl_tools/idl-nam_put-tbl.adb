@@ -1,44 +1,50 @@
-WITH TEXT_IO; USE  TEXT_IO;
-SEPARATE ( IDL.NAM_PUT )
+------------------------------------------------------------------------------------------------------------------------
+-- SPDX-FileCopyrightText: 2026 VINCENT	MORIN, UBO
+-- SPDX-License-Identifier: GPL-3.0-or-later
+------------------------------------------------------------------------------------------------------------------------
+--	1	2	3	4	5	6	7	8	9	0	1	2
+
+with TEXT_IO; use  TEXT_IO;
+separate ( IDL.NAM_PUT )
 --|--------------------------------------------------------------------------------------------------
 --|	TBL
 --|--------------------------------------------------------------------------------------------------
-PACKAGE BODY TBL IS
+package body TBL is
 
-  TBL_ERROR	: EXCEPTION;
+  TBL_ERROR	: exception;
 
   --|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
   --|		FUNCTION UPPER_CASE
   --|
-  FUNCTION UPPER_CASE ( A :STRING ) RETURN STRING	IS
+  function UPPER_CASE ( A :STRING ) return STRING	is
     S	: STRING(	1 .. A'LENGTH )	:= A;
-    DECAL	: CONSTANT := CHARACTER'POS( 'A' ) - CHARACTER'POS( 'a' );
-  BEGIN
-    FOR I	IN 1 .. S'LENGTH LOOP
-      IF S( I ) IN 'a' .. 'z'	THEN
+    DECAL	: constant := CHARACTER'POS( 'A' ) - CHARACTER'POS( 'a' );
+  begin
+    for I	in 1 .. S'LENGTH loop
+      if S( I ) in 'a' .. 'z'	then
         S( I ) := CHARACTER'VAL( CHARACTER'POS( S( I ) ) + DECAL );
-      END	IF;
-    END LOOP;
-    RETURN S;
-  END UPPER_CASE;
+      end	if;
+    end loop;
+    return S;
+  end UPPER_CASE;
   --|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
   --|		FUNCTION LOWER_CASE
   --|
-  FUNCTION LOWER_CASE ( A :STRING ) RETURN STRING	IS
+  function LOWER_CASE ( A :STRING ) return STRING	is
     S	: STRING(	1 .. A'LENGTH )	:= A;
-    DECAL	: CONSTANT := CHARACTER'POS( 'a' ) - CHARACTER'POS( 'A' );
-  BEGIN
-    FOR I	IN 1 .. S'LENGTH LOOP
-      IF S( I ) IN 'A' .. 'Z'	THEN
+    DECAL	: constant := CHARACTER'POS( 'a' ) - CHARACTER'POS( 'A' );
+  begin
+    for I	in 1 .. S'LENGTH loop
+      if S( I ) in 'A' .. 'Z'	then
         S( I ) := CHARACTER'VAL( CHARACTER'POS( S( I ) ) + DECAL );
-      END	IF;
-    END LOOP;
-    RETURN S;
-  END LOWER_CASE;
+      end	if;
+    end loop;
+    return S;
+  end LOWER_CASE;
   --|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
   --|		PROCEDURE	READ_TABLES
   --|
-  PROCEDURE READ_TABLES ( NOM_TABLE :STRING ) IS
+  procedure READ_TABLES ( NOM_TABLE :STRING ) is
     TABLE_FILE		: TEXT_IO.FILE_TYPE;
     BUFFER		: STRING(	1 .. 120 );
     B_CHAR		: CHARACTER;
@@ -50,109 +56,109 @@ PACKAGE BODY TBL IS
 
     ATTR_SEEN_FOR_THIS_NODE	: BOOLEAN	:= FALSE;
 
-    PACKAGE MY_INTEGER_IO IS NEW INTEGER_IO( INTEGER );
-    USE MY_INTEGER_IO;
+    package MY_INTEGER_IO is new INTEGER_IO( INTEGER );
+    use MY_INTEGER_IO;
     --|----------------------------------------------------------------------------------------------
     --|		PROCEDURE	NIBBLE_NAME
     --|
-    PROCEDURE NIBBLE_NAME IS
-    BEGIN
+    procedure NIBBLE_NAME is
+    begin
       FIRST_COL := LAST_COL +	1;
-      WHILE FIRST_COL <= LAST	AND THEN (BUFFER( FIRST_COL )	= ' ' OR ELSE BUFFER( FIRST_COL ) = ASCII.HT) LOOP
+      while FIRST_COL <= LAST	and then (BUFFER( FIRST_COL )	= ' ' or else BUFFER( FIRST_COL ) = ASCII.HT) loop
         FIRST_COL := FIRST_COL + 1;
-      END	LOOP;
+      end	loop;
       LAST_COL := FIRST_COL;
-      WHILE LAST_COL <= LAST AND THEN BUFFER( LAST_COL ) /=	' ' AND THEN BUFFER( LAST_COL	) /= ASCII.HT LOOP
+      while LAST_COL <= LAST and then BUFFER( LAST_COL ) /=	' ' and then BUFFER( LAST_COL	) /= ASCII.HT loop
         LAST_COL :=	LAST_COL + 1;
-      END	LOOP;
+      end	loop;
       LAST_COL := LAST_COL - 1;
-    END NIBBLE_NAME;
+    end NIBBLE_NAME;
 
-  BEGIN
+  begin
     ATTR_IDX_OF_NODE( 0 ) := 0;
     START_NODE( 0 )	:= 0;
     END_NODE( 0 ) := 0;
 
     TEXT_IO.OPEN( TABLE_FILE,	TEXT_IO.IN_FILE, NOM_TEXTE & ".tbl" );
 
-    LOOP
-      EXIT WHEN END_OF_FILE (	TABLE_FILE );
+    loop
+      exit when END_OF_FILE (	TABLE_FILE );
       GET( TABLE_FILE, B_CHAR	);
 
-      IF B_CHAR = 'C' THEN
+      if B_CHAR = 'C' then
         GET_LINE( TABLE_FILE,	BUFFER, LAST );
         LAST_COL :=	0;
         NIBBLE_NAME;
-        CLASS_IMAGE( LAST_CLASS ) := NEW STRING'(	BUFFER( FIRST_COL..LAST_COL )	);
+        CLASS_IMAGE( LAST_CLASS ) := new STRING'(	BUFFER( FIRST_COL..LAST_COL )	);
         START_NODE(	LAST_CLASS ) := LAST_NODE;
         LAST_CLASS := LAST_CLASS + 1;
 
-      ELSIF B_CHAR = 'E' THEN
+      elsif B_CHAR = 'E' then
         GET_LINE ( TABLE_FILE, BUFFER, LAST );
         LAST_COL :=	0;
         NIBBLE_NAME;
 
-        FOR C IN REVERSE 0 ..	LAST_CLASS-1 LOOP
-	IF CLASS_IMAGE( C ).ALL = BUFFER( FIRST_COL..LAST_COL ) THEN
+        for C in reverse 0 ..	LAST_CLASS-1 loop
+	if CLASS_IMAGE( C ).all = BUFFER( FIRST_COL..LAST_COL ) then
 	  END_NODE( C ) := LAST_NODE -1;
-	END IF;
-        END LOOP;
+	end if;
+        end loop;
 
-      ELSIF B_CHAR = 'N' THEN
+      elsif B_CHAR = 'N' then
         GET     ( TABLE_FILE,	B_NUM );
         GET_LINE( TABLE_FILE,	BUFFER, LAST );
         LAST_COL :=	0;
-        IF LAST_NODE /= NODE_IDX( B_NUM	) THEN
+        if LAST_NODE /= NODE_IDX( B_NUM	) then
 	SET_OUTPUT( STANDARD_OUTPUT );
 	PUT_LINE(	"**** NODES OUT OF SYNC LAST NODE = "
 		 & INTEGER'IMAGE ( INTEGER( TBL.LAST_NODE ) )
 		 & "  B_NUM = "
 		 & NATURAL'IMAGE ( INTEGER( B_NUM ) )
 		 );
-	RAISE TBL_ERROR;
-        END IF;
+	raise TBL_ERROR;
+        end if;
         NIBBLE_NAME;
-        NODE_IMAGE(	LAST_NODE	) := NEW STRING'( BUFFER( FIRST_COL..LAST_COL ) );
+        NODE_IMAGE(	LAST_NODE	) := new STRING'( BUFFER( FIRST_COL..LAST_COL ) );
         LAST_NODE := LAST_NODE + 1;
         ATTR_SEEN_FOR_THIS_NODE := FALSE;
         START_FIELD( LAST_NODE ) := 1;
         END_FIELD( LAST_NODE ) := 0;
 
-      ELSIF B_CHAR = 'A' OR B_CHAR = 'B' OR B_CHAR = 'I' THEN
+      elsif B_CHAR = 'A' or B_CHAR = 'B' or B_CHAR = 'I' then
         GET     ( TABLE_FILE,	B_NUM );
         GET_LINE( TABLE_FILE,	BUFFER, LAST );
         LAST_COL :=	0;
-        IF B_NUM < 0 THEN
+        if B_NUM < 0 then
 	B_NUM := - B_NUM;								--| NUMERO NEGATIF
 	ATTR_KIND( ATTR_IDX( B_NUM ) ) := 'S';						--| SEQUENCE/LISTE
-        ELSE
+        else
 	ATTR_KIND( ATTR_IDX( B_NUM ) ) := B_CHAR;
-        END IF;
+        end if;
         NIBBLE_NAME;
-        ATTR_IMAGE(	ATTR_IDX(	B_NUM ) )	:= NEW STRING'( BUFFER( FIRST_COL..LAST_COL ) );
-        IF LAST_ATTR < ATTR_IDX( B_NUM ) THEN
+        ATTR_IMAGE(	ATTR_IDX(	B_NUM ) )	:= new STRING'( BUFFER( FIRST_COL..LAST_COL ) );
+        if LAST_ATTR < ATTR_IDX( B_NUM ) then
 	LAST_ATTR	:= ATTR_IDX( B_NUM );
-        END IF;
+        end if;
 
-        IF NOT ATTR_SEEN_FOR_THIS_NODE THEN
+        if not ATTR_SEEN_FOR_THIS_NODE then
 	ATTR_SEEN_FOR_THIS_NODE := TRUE;
 	START_FIELD( LAST_NODE ) := LAST_FIELD;
-        END IF;
+        end if;
         ATTR_IDX_OF_NODE( LAST_FIELD ) := ATTR_IDX( B_NUM );
         END_FIELD( LAST_NODE ) := LAST_FIELD;
         LAST_FIELD := LAST_FIELD + 1;
-      END	IF;
-    END LOOP;
+      end	if;
+    end loop;
 
     LAST_NODE  := LAST_NODE -	1;
     LAST_CLASS := LAST_CLASS - 1;
 
     TEXT_IO.CLOSE( TABLE_FILE	);
 
-  EXCEPTION
-    WHEN END_ERROR =>
+  exception
+    when END_ERROR =>
       TEXT_IO.CLOSE( TABLE_FILE );
-  END READ_TABLES;
+  end READ_TABLES;
 
 --|-------------------------------------------------------------------------------------------------
-END TBL;
+end TBL;

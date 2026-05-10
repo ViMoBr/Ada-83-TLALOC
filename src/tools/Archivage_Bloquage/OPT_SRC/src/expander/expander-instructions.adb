@@ -1,8 +1,8 @@
 ------------------------------------------------------------------------------------------------------------------------
--- CC BY SA	EXPANDER.INSTRUCTIONS.ADB	VINCENT MORIN	21/6/2024	UNIVERSITE DE BRETAGNE OCCIDENTALE
+-- SPDX-FileCopyrightText: 2026 VINCENT	MORIN, UBO
+-- SPDX-License-Identifier: GPL-3.0-or-later
 ------------------------------------------------------------------------------------------------------------------------
---	1	2	3	4	5	6	7	8	9	0	1
-
+--	1	2	3	4	5	6	7	8	9	0	1	2
 
 separate ( EXPANDER	)
 				------------
@@ -543,6 +543,30 @@ null;
     FRM_PRM_GRP	: TREE;
     SPEC_PRM_ID_S	: SEQ_TYPE;
 
+
+		---------------------
+    function	IS_IN_CURRENT_GENERIC	( ID : TREE ) return BOOLEAN
+    is		---------------------
+      REGION : TREE	:= ID;
+    begin
+      if	not CODI.IN_GENERIC_BODY  then
+        return FALSE;
+      end	if;
+
+      while  REGION	/= TREE_VOID  loop
+        if  REGION = CODI.ENCLOSING_GENERIC  then
+	return TRUE;
+        end if;
+
+        exit when REGION = TREE_VOID;
+
+        REGION := D( XD_REGION, REGION );
+      end	loop;
+      return FALSE;
+
+    end	IS_IN_CURRENT_GENERIC;
+	---------------------
+
 		-----------------------------
     procedure	INVERSE_RECURSE_ON_PARAMETERS
     is		-----------------------------
@@ -658,25 +682,10 @@ null;
 	-----------------------------
 
   begin
-
-    -- Propager le GFP si on est dans un corps de	generique	et que la	procedure
-    -- appelee est dans le meme package	generique	(elle attend GFP_ofs en dernier PRM).
-    -- Le	GFP est le premier empile (avant les parametres Ada).
-    if  CODI.IN_GENERIC_BODY	and then	D( XD_REGION, PROC_ID ).TY = DN_GENERIC_ID  then
-      declare
-        REGION_NAME	:constant	STRING :=	PRINT_NAME( D( LX_SYMREP, D( XD_REGION,	PROC_ID )	) );
---	PACK_NAME	  :constant STRING := PRINT_NAME( D( LX_SYMREP, D( AS_SOURCE_NAME, CODI.ENCLOSING_BODY ) ) );
-      begin
-
-put_line(	"; region=" & REGION_NAME & " .TY= " &	NODE_NAME'IMAGE( D(	XD_REGION, PROC_ID ).TY ) );
---put_line( "; pack=" & PACK_NAME );
-
---	if  REGION_NAME = PACK_NAME  then
-	PUT( tab & "La " & INTEGER'IMAGE( CODI.CUR_LEVEL ) & ',' & tab & "-GFP_ofs" );
-	if  CODI.DEBUG  then PUT( tab50 & "; propagation GFP generique" ); end if;
-	NEW_LINE;
---	end if;
-      end;
+    if  IS_IN_CURRENT_GENERIC( PROC_ID )  then
+      PUT( tab & "La " & INTEGER'IMAGE(	CODI.CUR_LEVEL ) & ',' & tab & "-GFP_ofs" );
+      if	CODI.DEBUG  then PUT( tab50 &	"; propagation GFP generique"	); end if;
+      NEW_LINE;
     end if;
 
     if not IS_EMPTY( SPEC_PRM_GRP_S ) then
@@ -695,9 +704,9 @@ put_line(	"; region=" & REGION_NAME & " .TY= " &	NODE_NAME'IMAGE( D(	XD_REGION, 
 	-------------------
 
 
-
-  procedure			CODE_STM_WITH_EXP		( STM_WITH_EXP :TREE )
-  is
+			-----------------
+  procedure		CODE_STM_WITH_EXP		( STM_WITH_EXP :TREE )
+  is			-----------------
   begin
 
     if  STM_WITH_EXP.TY = DN_RETURN
@@ -717,8 +726,9 @@ put_line(	"; region=" & REGION_NAME & " .TY= " &	NODE_NAME'IMAGE( D(	XD_REGION, 
       CODE_STM_WITH_EXP_NAME(	STM_WITH_EXP );
 
     end if;
-  end	CODE_STM_WITH_EXP;
 
+  end	CODE_STM_WITH_EXP;
+	-----------------
 
 				-----------
   procedure			CODE_RETURN		( ADA_RETURN :TREE )
@@ -961,11 +971,6 @@ put_line(	"; region=" & REGION_NAME & " .TY= " &	NODE_NAME'IMAGE( D(	XD_REGION, 
         when DN_ENUMERATION |	DN_INTEGER | DN_FLOAT =>
 	PUT_LINE(	tab & "S"	& CODI.OPER_SIZ_CHAR( TYPE_SPEC ) );
 
---	when DN_UNIVERSAL_INTEGER =>
---	  LOAD_ADR( TYPE_SPEC );
---	  EMIT( CVB );
---	  EMIT( STO, I );
-
         when others	=>
 	PUT_LINE ( "!!! STORE_VAL TYPE_SPEC.TY ILLICITE "	& NODE_NAME'IMAGE (	TYPE_SPEC.TY ) );
 	raise PROGRAM_ERROR;
@@ -977,7 +982,6 @@ put_line(	"; region=" & REGION_NAME & " .TY= " &	NODE_NAME'IMAGE( D(	XD_REGION, 
     begin
 
       if	DST_NAME.TY = DN_ALL  then									-- AFFECTATION A UN	ELEMENT POINTE
---	CODE_ADRESSE( D( AS_NAME, DST_NAME ) );
         EXPRESSIONS.CODE_EXP(	SRC_EXP );								-- EXPRESSION A AFFECTER
         STORE_VAL( D( SM_EXP_TYPE, DST_NAME ) );
 
@@ -990,6 +994,32 @@ put_line(	"; region=" & REGION_NAME & " .TY= " &	NODE_NAME'IMAGE( D(	XD_REGION, 
         declare
 	NAME_TYPE	: TREE		:= D( SM_EXP_TYPE, DST_NAME );
 	DEFN	: TREE		:= D( SM_DEFN, DST_NAME );
+
+			--------------
+	procedure		STORE_OR_CALLI
+	is		--------------
+	    -- Si	dans un body generique et parametre out/in_out, utiliser CALLI vers ST
+	    -- pour respecter la taille du type	actuel. Sinon, store classique.
+	    -- Convention: pile = [..., @param_out, valeur]  (valeur en sommet, empilee	par l'appelant)
+	    -- ST	fait SIb -1,0 : POP_RBX (valeur), INDIRECT_BASE_IN_RAX (deref @param → @dest), STORE
+	begin
+	  if  CODI.IN_GENERIC_BODY
+	  and then  ( DEFN.TY = DN_OUT_ID  or  DEFN.TY = DN_IN_OUT_ID )
+	  then
+	    declare
+	      FORMAL_TYPE_NAME :constant STRING	:= PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, NAME_TYPE )	) );
+	    begin
+	        -- Charger l'adresse de ST via le GFP
+	        -- Utiliser	le niveau	du parametre (= niveau de la procedure,	pas du bloc declare)
+	      PUT_LINE( tab	& "La " &	INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) &	',' & tab	& "-GFP_ofs" );
+	      PUT_LINE( tab	& "La , -" & FORMAL_TYPE_NAME	& "__st_ofs" );
+	      PUT_LINE( tab	& "CALLI"	);
+	    end;
+	  else
+	    CODI.STORE( DEFN );
+	  end if;
+	end	STORE_OR_CALLI;
+		--------------
 
         begin
 				-- Resolve private to full type
@@ -1013,8 +1043,11 @@ put_line(	"; region=" & REGION_NAME & " .TY= " &	NODE_NAME'IMAGE( D(	XD_REGION, 
 	  end if;
 
 	elsif  NAME_TYPE.TY	= DN_ENUMERATION  then							-- OBJET ASSIGNE ENUMERATION (DONT BOOLEAN, CHARACTER)
+	  if  CODI.IN_GENERIC_BODY  and then  (	DEFN.TY =	DN_OUT_ID	 or  DEFN.TY = DN_IN_OUT_ID )	 then
+	    PUT_LINE( tab &	"LVa " & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' & tab & '-' & PRINT_NAME( D( LX_SYMREP, DEFN )	) & "_ofs" );
+	  end if;
 	  EXPRESSIONS.CODE_EXP( SRC_EXP );
-	  STORE( DEFN );
+	  STORE_OR_CALLI;
 
 	elsif  NAME_TYPE.TY	= DN_INTEGER  then								-- OBJET ASSIGNE ENTIER
 	  EXPRESSIONS.CODE_EXP( SRC_EXP );
@@ -1025,16 +1058,24 @@ put_line(	"; region=" & REGION_NAME & " .TY= " &	NODE_NAME'IMAGE( D(	XD_REGION, 
 	  CODI.STORE( DEFN );
 
 	elsif  NAME_TYPE.TY	= DN_RECORD  then								-- OBJET ASSIGNE RECORD
-	  CODI.LOAD_MEM( DEFN );									-- @DST (adresse du	record destination)
+	  CODI.LOAD_MEM( DEFN );									-- @variable (adresse du doublet @data @use__info)
+	  PUT_LINE( tab & "La" );									-- @DST (adresse des data)
+
 	  PUT( tab & "LI" &	tab );
 	  CODI.REGIONS_PATH( D( XD_SOURCE_NAME,	NAME_TYPE	) );
 	  PUT_LINE( PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, NAME_TYPE ) ) ) & ".size" );	-- LEN (taille en octets, calculee par FASM)
-	  EXPRESSIONS.CODE_EXP( SRC_EXP );								-- @SRC (adresse du	record source)
+
+	  EXPRESSIONS.CODE_EXP( SRC_EXP );								-- @variable (adresse du doublet)
+	  PUT_LINE( tab & "La" );									-- @SRC (adresse des data)
+
 	  PUT_LINE( tab & "BLKMOV" );									-- COPY_BLOCK  @DST	LEN @SRC
 
-	else										-- AUTRE TYPE SCALAIRE (type formel generique, constrained_array, etc.)
+	else										-- AUTRE TYPE SCALAIRE (type formel generique, etc.)
+	  if  CODI.IN_GENERIC_BODY  and then  (	DEFN.TY =	DN_OUT_ID	 or  DEFN.TY = DN_IN_OUT_ID )	 then
+	    PUT_LINE( tab &	"LVa " & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' & tab & '-' & PRINT_NAME( D( LX_SYMREP, DEFN )	) & "_ofs" );
+	  end if;
 	  EXPRESSIONS.CODE_EXP( SRC_EXP );
-	  CODI.STORE( DEFN );
+	  STORE_OR_CALLI;
 
 	end if;
 
@@ -1056,9 +1097,9 @@ put_line(	"; region=" & REGION_NAME & " .TY= " &	NODE_NAME'IMAGE( D(	XD_REGION, 
 	-----------
 
 
-
-  procedure			CODE_EXIT			( ADA_EXIT :TREE )
-  is
+			---------
+  procedure		CODE_EXIT			( ADA_EXIT :TREE )
+  is			---------
   begin
     declare
       LVB_LBL		:constant	STRING	:= NEW_LABEL;
@@ -1090,9 +1131,14 @@ put_line(	"; region=" & REGION_NAME & " .TY= " &	NODE_NAME'IMAGE( D(	XD_REGION, 
         end if;
       end	if;
     end;
+
   end	CODE_EXIT;
+	---------
 
 
 	------------
 end	INSTRUCTIONS;
 	------------
+
+------------------------------------------------------------------------------------------------------------------------
+--	1	2	3	4	5	6	7	8	9	0	1	2

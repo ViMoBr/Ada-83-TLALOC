@@ -1,24 +1,8 @@
-;------------------------------------------------------------------------------
-; TLALOC (The Lonesome Ada Loving Ol'timer Compiler) Strict	Ada 83 Compiler
-; Copyright (C) 2024-2026 Vincent MORIN	- Université de Bretagne Occidentale
-;
-; This program is free software: you can redistribute it and/or modify
-; it under the terms of the GNU General	Public License as published by
-; the Free Software	Foundation, either version 3 of the License, or
-; (at your option) any later version.
-;
-; This program is distributed	in the hope that it	will be useful,
-; but WITHOUT ANY WARRANTY; without even the implied warranty of
-; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-; GNU General Public License for more details.
-;
-; You should have received a copy of the GNU General Public	License
-; along with this program. If	not, see <https://www.gnu.org/licenses/>.
-;------------------------------------------------------------------------------
-
 ;-----------------------------------------------------------------------------------------------------------------------
-;	1	2	3	4	5	6	7	8	9	A	B	C
-
+;- SPDX-FileCopyrightText: 2026 VINCENT	MORIN, UBO
+;- SPDX-License-Identifier: GPL-3.0-or-later
+;-----------------------------------------------------------------------------------------------------------------------
+;	1	2	3	4	5	6	7	8	9	0	1	2
 
 ;					|
 ;				       \\	| //
@@ -47,6 +31,9 @@ macro show description, value				; pour debogage
   end repeat
 end macro
 
+; PAS INDISPENSABLE	: exploration d'optimisation
+optim_RAX_ON_TOP		= 0			; pour exploration peephole
+optim_PUSH_POP_RAX_COUNT	= 0
 
 ;			-------------------------------------------------------------------
 ;			S P E C I	F I Q U E	  P R O C	E S S E U	R   I N T	E L   x 8	6   6 4
@@ -94,6 +81,8 @@ macro			PUSH_RAX
 ;			........
   db 0x48, 0x89, 0x45, 0x08				; mov QWORD PTR [rbp+8], rax		(ecrire RAX a l'emplacement libre en haut de pile, au dessus du rbp)
   db 0x48, 0x8D, 0x6D, 0x08				; lea rbp, [rbp+0x8]		(puis MONTER le rbp	sur la valeur ecrite car pile	croissante vers adresses hautes)
+
+optim_RAX_ON_TOP = 1
 end macro
 
 ;			........
@@ -101,6 +90,8 @@ macro			PUSH_RDX
 ;			........
   db 0x48, 0x89, 0x55, 0x08				; mov QWORD PTR [rbp+8], rdx		(ecrire RDX a l'emplacement libre en haut de pile, au dessus du rbp)
   db 0x48, 0x8D, 0x6D, 0x08				; lea rbp, [rbp+0x8]		(puis MONTER le rbp	sur la valeur ecrite car pile	croissante vers adresses hautes)
+
+optim_RAX_ON_TOP = 0
 end macro
 
 ;			.......
@@ -108,6 +99,13 @@ macro			POP_RAX
 ;			.......
   db 0x48, 0x8B, 0x45, 0x00				; mov rax, QWORD PTR [rbp]		(lire dans RAX la valeur top sur le rbp)
   db 0x48, 0x8D, 0x6D, 0xF8				; lea rbp, [rbp-0x8]		(puis DESCENDRE le rbp car pile croissante vers adresses hautes)
+
+if optim_RAX_ON_TOP	= 1
+postpone
+  optim_PUSH_POP_RAX_COUNT = optim_PUSH_POP_RAX_COUNT + 1
+end postpone
+  optim_RAX_ON_TOP = 0
+end if
 end macro
 
 ;			.......
@@ -115,6 +113,8 @@ macro			POP_RBX
 ;			.......
   db 0x48, 0x8B, 0x5D, 0x00				; mov rbx, QWORD PTR [rbp]		(lire dans RBX la valeur top sur le rbp)
   db 0x48, 0x8D, 0x6D, 0xF8				; lea rbp, [rbp-0x8]		(puis DESCENDRE le rbp car pile croissante vers adresses hautes)
+
+optim_RAX_ON_TOP = 0
 end macro
 
 ;			.......
@@ -122,6 +122,8 @@ macro			POP_RCX
 ;			.......
   db 0x48, 0x8B, 0x4D, 0x00				; mov rcx, QWORD PTR [rbp]		(lire dans RCX la valeur top sur le rbp)
   db 0x48, 0x8D, 0x6D, 0xF8				; lea rbp, [rbp-0x8]		(puis DESCENDRE le rbp car pile croissante vers adresses hautes)
+
+optim_RAX_ON_TOP = 0
 end macro
 
 ;			.......
@@ -129,6 +131,8 @@ macro			POP_RDX
 ;			.......
   db 0x48, 0x8B, 0x55, 0x00				; mov rdx, QWORD PTR [rbp]		(lire dans RDX la valeur top sur le rbp)
   db 0x48, 0x8D, 0x6D, 0xF8				; lea rbp, [rbp-0x8]		(puis DESCENDRE le rbp car pile croissante vers adresses hautes)
+
+optim_RAX_ON_TOP = 0
 end macro
 
 ;			.......
@@ -136,6 +140,8 @@ macro			POP_RSI
 ;			.......
   db 0x48, 0x8B, 0x75, 0x00				; mov rsi, QWORD PTR [rbp]		(lire dans RSI la valeur top sur le rbp)
   db 0x48, 0x8D, 0x6D, 0xF8				; lea rbp, [rbp-0x8]		(puis DESCENDRE le rbp car pile croissante vers adresses hautes)
+
+optim_RAX_ON_TOP = 0
 end macro
 
 ;			.......
@@ -143,12 +149,16 @@ macro			POP_RDI
 ;			.......
   db 0x48, 0x8B, 0x7D, 0x00				; mov rdi, QWORD PTR [rbp]		(lire dans RDI la valeur top sur le rbp)
   db 0x48, 0x8D, 0x6D, 0xF8				; lea rbp, [rbp-0x8]		(puis DESCENDRE le rbp car pile croissante vers adresses hautes)
+
+optim_RAX_ON_TOP = 0
 end macro
 
 ;			....
 macro			DROP
 ;			....
   db 0x48, 0x8D, 0x6D, 0xF8				; lea rbp, [rbp-0x8]		(DESCENDRE le rbp car pile croissante vers adresses hautes)
+
+optim_RAX_ON_TOP = 0
 end macro
 
 ;			...
@@ -156,6 +166,14 @@ macro			DUP
 ;			...
   db 0x48, 0x8B, 0x45, 0x00				; mov rax, QWORD PTR [rbp]		(amener le TOS dans	RAX)
   db 0x48, 0x89, 0x45, 0x08				; mov QWORD PTR [rbp+8], rax		(dupliquer)
+  db 0x48, 0x8D, 0x6D, 0x08				; lea rbp, [rbp+0x8]		(puis MONTER le rbp	sur la valeur ecrite car pile	croissante vers adresses hautes)
+end macro
+
+;			....
+macro			OVER
+;			....
+  db 0x48, 0x8B, 0x45, 0xF8				; mov rax, QWORD PTR [rbp-8]		(amener le NOS dans	RAX)
+  db 0x48, 0x89, 0x45, 0x08				; mov QWORD PTR [rbp+8], rax		(empîler)
   db 0x48, 0x8D, 0x6D, 0x08				; lea rbp, [rbp+0x8]		(puis MONTER le rbp	sur la valeur ecrite car pile	croissante vers adresses hautes)
 end macro
 
@@ -212,6 +230,8 @@ macro			FP_IN_RAX		lvl
     db 0x49, 0x8B, 0x87						; mov rax, [r15 + 8*lvl]	(aller chercher le frame pointer du lvl	dans le display pointe par r15)
     dd 8*lvl
   end if
+
+optim_RAX_ON_TOP = 0
 end macro
 
 ;			.......................
@@ -285,6 +305,8 @@ macro			FETCH_BYTE	disp
     db 0x48, 0x0F, 0xBE, 0x80						; movsx rax, byte ptr [rax + ofs32]
     dd disp
   end if
+
+optim_RAX_ON_TOP = 0
 end macro
 
 ;			........................
@@ -298,6 +320,8 @@ macro			FETCH_WORD	disp
     db 0x48, 0x0F, 0xBF, 0x80						; movsx rax, word ptr [rax + ofs32]
     dd disp
   end if
+
+optim_RAX_ON_TOP = 0
 end macro
 
 ;			........................
@@ -311,6 +335,8 @@ macro			FETCH_DWORD	disp
     db 0x48, 0x63, 0x80						; movsx rax, dword ptr [rax +	ofs32]
     dd disp
   end if
+
+optim_RAX_ON_TOP = 0
 end macro
 
 ;			........................
@@ -324,6 +350,8 @@ macro			FETCH_QWORD	disp
     db 0x48, 0x8B, 0x80						; mov rax, qword ptr [rax + ofs32]
     dd disp
   end if
+
+optim_RAX_ON_TOP = 0
 end macro
 
 ;			........................
@@ -980,7 +1008,7 @@ macro			BF?	lbl				; branch false
   disp = lbl-$
 end macro
 ;			-------------------------
-macro			CALL?	prefix, subname
+macro			CALL?	prefix, subname			; CALL par offset
 ;			-------------------------
   postpone
     if ~definite prefix#subname#_
@@ -992,6 +1020,18 @@ macro			CALL?	prefix, subname
   db 0xE8								; CALL empile sur la micro-pile des adresses de retour (qui	croit vers le bas)
   dd ofs
   ofs = prefix#subname#_ - $
+end macro
+;			-------------------------
+macro			CALLI?	; prefix,	subname			; CALL indirect par	RAX
+;			-------------------------
+;  postpone
+;    if ~definite prefix#subname#_
+;      prefix#subname#_ = prefix#subname#.elab				; le nom finissant en _ determine l'assemblage de	la routine
+;    end if
+;  end postpone
+
+  POP_RAX
+  db 0xFF, 0xD0							; CALL RAX empile sur la micro-pile des	adresses de retour (qui	croit vers le bas)
 end macro
 ;			--------------------
 macro			RTD?	prm_size:0
@@ -1016,15 +1056,15 @@ end macro
 ;			--------------------
 macro			LINK?	lvl, alloc			; ALLOCATION POUR VARIABLES LOCALES APRES FRAME PTR
 ;			--------------------
-  FP_IN_RAX	lvl						; store FP(lvl) le pointeur de pile RBP	reste a pointer sur	l'empile
-  PUSH_RAX
-  if lvl = 0
-    db 0x49, 0x89, 0x2F						; mov qword ptr [r15], rbp	niveau 0,	petit offset dans le display
-  else if	lvl <= 15							; 15 niveaux suivants, petit offset dans le display
-    db 0x49, 0x89, 0x6F, 8*lvl					; mov qword ptr [r15 + 8*lvl], rbp   update FP le	FP pointe	sur l'adresse de sauvegarde du FP anterieur
-  else
-    db 0x49, 0x89, 0x6F
-    dd 8*lvl							; mov qword ptr [r15 + 8*lvl], rbp   update FP le	FP pointe	sur l'adresse de sauvegarde du FP anterieur
+  if lvl > 0							; ATTENTION : rien au lvl 0
+    FP_IN_RAX	lvl						; store FP(lvl) le pointeur de pile RBP	reste a pointer sur	l'empile
+    PUSH_RAX
+    if	lvl <= 15							; 15 niveaux suivants, petit offset dans le display
+      db 0x49, 0x89, 0x6F, 8*lvl					; mov qword ptr [r15 + 8*lvl], rbp   update FP le	FP pointe	sur l'adresse de sauvegarde du FP anterieur
+    else
+      db 0x49, 0x89, 0x6F
+      dd 8*lvl							; mov qword ptr [r15 + 8*lvl], rbp   update FP le	FP pointe	sur l'adresse de sauvegarde du FP anterieur
+    end if
   end if
 			; Faire l'allocation sur la pile de travail standard
   assert alloc >= 0
@@ -1115,14 +1155,14 @@ macro			BEGIN_BLOC_DEF				; Debut de definition d'un bloc octets utilisable	comm
     postpone							; ATTENTION : différé terminé par la	macro BYTE_BLK_END
     local	data
     local	info
-    local	str_byte_size
+    local	str_bit_size
     align_q							; aligner	le doublet descripteur sur un	quadword (taille adresses)
   .data_ptr = $							; adresse	de l'adresse de data
     dq	data							; offset 0 : adresse des octets
   .info_ptr = $							;
     dq	info							; offset 8 : adresse des infos d'usage associées	TOT_SIZ, COMP_SIZ, FST_1, LST_1
   info = $							; info d'usage mises ici
-    dd	str_byte_size, 1, 1, str_byte_size				; offset 16 : TOT_SIZ=str_byte_size ; offset 20 :	COMP_SIZ=1 ; offset	24 : FST=1 ; offset	28 : LST=str_byte_size
+    dd	str_bit_size, 8, 1,	str_bit_size/8				; offset 16 : TOT_SIZ=str_bit_size ; offset 20 :	COMP_SIZ=8bits ; offset	24 : FST=1 ; offset	28 : LST=str_bit_size/8
     virtual at 0							; definition des offsets sur le useinfo
     SIZ =	$
     rd 1
@@ -1139,7 +1179,7 @@ end macro
 ;			-------------
 macro			END_BLOC_DEF!				; Fin de definition	d'une constante chaine (Attention inconditionnelle "!")
 ;			-------------
-    str_byte_size =	$ - data						; Calculer la longueur effective pour mettre dans	LAST
+    str_bit_size =	8*($ - data)					; Calculer la taille effective en bits
   end postpone
   esc end	struc							; Fin de la structure du bloc	arrêt de	la coupure par "esc"
 end macro
@@ -1154,7 +1194,7 @@ macro			STR	name, bytes			; Definition d'une constante chaine au format d'un tab
   postpone
     local	data
     local	info
-    local	str_byte_size
+    local	str_bit_size
     align_q							; aligner	le descripteur sur un quadword
 
   namespace name
@@ -1164,7 +1204,7 @@ macro			STR	name, bytes			; Definition d'une constante chaine au format d'un tab
   info_ptr = $							;
     dq	info							; offset 8 : adresse des infos TOT_SIZ,	COMP_SIZ,	FST_1, LST_1
   info = $							; use info
-    dd	str_byte_size, 1, 1, str_byte_size				; offset 16 : TOT_SIZ=str_byte_size ; offset 20 :	COMP_SIZ=1 ; offset	24 : FST=1 ; offset	28 : LST=str_byte_size
+    dd	str_bit_size, 8, 1,	str_bit_size/8				; offset 16 : TOT_SIZ=str_bit_size ; offset 20 :	COMP_SIZ=8bits ; offset	24 : FST=1 ; offset	28 : LST=str_byte_size
     virtual at 0							; definition des offsets sur le useinfo
     SIZ =	$
     rd 1
@@ -1176,7 +1216,7 @@ macro			STR	name, bytes			; Definition d'une constante chaine au format d'un tab
     end virtual
   data = $							; pour une constante les caracteres suivent (pour	une chaine variable	ce n'est pas le cas, les octets sont dans la co-pile)
     db	bytes
-    str_byte_size =	$ - data						; Calculer la longueur effective pour mettre dans	LAST
+    str_bit_size =	8*($ - data)					; Calculer la longueur effective en bits
   end namespace
 
   end postpone
@@ -1193,7 +1233,7 @@ macro			CST	name_cst:_nil_, sizChar:b, val&	; Definition d'une constante
 end macro
 
 ;			----------------------------------------
-macro			USEINFO	lvl, field_name, load_instruc&	; Reference __u a un __i info
+macro			USEINFO	lvl, field_name, load_instruc&	; Reference a un __u use info
 ;			----------------------------------------
   virtual	VARzone
     align_q							; aligner	en fonction de l'unite de reservation
@@ -1215,7 +1255,7 @@ macro			STATOFS	name, siz				; Definition de l'offset statique (pour	un record	s
   end if
 name = $								; nom offset du champ
   rb siz								; reservation
-size = $								; Taille de la structure (sert à l'allocation)
+;size = $								; Taille de la structure (sert à l'allocation)
 end macro
 
 ;			-----------------------------------
@@ -1251,6 +1291,7 @@ macro			endPRO					; Fin de procedure
 ;			------
 post:
   virtual	VARzone
+    align_q
     loc_siz = $							; Ce n'est que la que l'on calcule la taille des locales qui sera retropropagee	au LINK du ELAB
   end virtual
   end namespace
@@ -1442,6 +1483,51 @@ macro			SYS_FILE_SET_POS?				; positionnement sur un fichier
 end macro
 
 
+;			------------------
+macro			SYS_FILE_GET_POS?				; position courante	dans un fichier (lseek SEEK_CUR avec offset 0)
+;			------------------
+  POP_RDI								;		(rdi = FILE_ID)
+  db 0x48, 0x31, 0xF6						; xor rsi, rsi	(rsi = 0	= offset)
+  db 0x6A, 0x01							; push 1
+  db 0x5A								; pop rdx		(rdx = 1	= SEEK_CUR : ne change rien, lseek rend	la position courante)
+  db 0x6A, 0x08							; push 8
+  db 0x58								; pop rax		(rax = 8	= lseek)
+  db 0x0F, 0x05							; syscall
+  db 0x48, 0x89, 0x45, 0x00						; mov QWORD PTR [rbp], rax	(position	courante en octets rendue sur	le lieu result de la fonction)
+end macro
+
+
+;			------------------
+macro			SYS_FILE_GET_SIZE?				; taille d'un fichier en octets (lseek SEEK_END puis SEEK_SET pour preserver la	position courante)
+;			------------------
+  POP_RDI								;		(rdi = FILE_ID)
+  ; --- 1. Sauver la position	courante : lseek(fd, 0, SEEK_CUR) -> rax = position courante
+  db 0x48, 0x31, 0xF6						; xor rsi, rsi	(rsi = 0	= offset)
+  db 0x6A, 0x01							; push 1
+  db 0x5A								; pop rdx		(rdx = 1	= SEEK_CUR)
+  db 0x6A, 0x08							; push 8
+  db 0x58								; pop rax		(rax = 8	= lseek)
+  db 0x0F, 0x05							; syscall
+  db 0x49, 0x89, 0xC0						; mov r8,	 rax	(r8  = position courante a restaurer)
+  ; --- 2. Lire la taille : lseek(fd, 0, SEEK_END) -> rax =	taille
+  db 0x48, 0x31, 0xF6						; xor rsi, rsi	(rsi = 0	= offset)
+  db 0x6A, 0x02							; push 2
+  db 0x5A								; pop rdx		(rdx = 2	= SEEK_END)
+  db 0x6A, 0x08							; push 8
+  db 0x58								; pop rax		(rax = 8	= lseek)
+  db 0x0F, 0x05							; syscall
+  db 0x49, 0x89, 0xC1						; mov r9,	 rax	(r9  = taille du fichier)
+  ; --- 3. Restaurer la position : lseek(fd, r8, SEEK_SET)
+  db 0x4C, 0x89, 0xC6						; mov rsi, r8
+  db 0x48, 0x31, 0xD2						; xor rdx, rdx	(rdx = 0	= SEEK_SET)
+  db 0x6A, 0x08							; push 8
+  db 0x58								; pop rax		(rax = 8	= lseek)
+  db 0x0F, 0x05							; syscall
+  ; --- 4. Resultat	= taille (r9) sur le lieu result
+  db 0x4C, 0x89, 0x4D, 0x00						; mov QWORD PTR [rbp], r9	(taille en octets rendue sur le lieu result de la	fonction)
+end macro
+
+
 ;			---------------
 macro			SYS_FILE_WRITE?				; ecriture sur un fichier
 ;			---------------
@@ -1555,3 +1641,11 @@ Elf64_Phdr:
   db 0x4D, 0x89, 0x36						; mov [r14], r14			(empiler le premier	"frame" de co-pile)
   db 0x4D, 0x89, 0xF5						; mov r13, r14			(R13 est le "frame pointer" de co-pile)
   db 0x4D, 0x8D, 0x76, 0x08						; lea r14, [r14 + 8]		(monter le haut de co-pile sur le premier lieu libre)
+
+; PAS INDISPENSABLE	: exploration d'optimisation
+postpone
+  show 'optim push_pop_rax_count (8 octets/unité) = ', optim_PUSH_POP_RAX_COUNT
+end postpone
+
+;-----------------------------------------------------------------------------------------------------------------------
+;	1	2	3	4	5	6	7	8	9	0	1	2

@@ -1,8 +1,8 @@
 ------------------------------------------------------------------------------------------------------------------------
--- GPL_V3		MAKE_NOD.ADB	VINCENT MORIN	6/5/2025	UNIVERSITE DE BRETAGNE OCCIDENTALE
+-- SPDX-FileCopyrightText: 2026 VINCENT	MORIN, UBO
+-- SPDX-License-Identifier: GPL-3.0-or-later
 ------------------------------------------------------------------------------------------------------------------------
 --	1	2	3	4	5	6	7	8	9	0	1	2
-
 
 SEPARATE ( IDL.SEM_PHASE  )
 
@@ -288,8 +288,11 @@ is					--------
 				SM_ADDRESS :TREE :=	TREE_VOID;
 				SM_IS_INLINE :BOOLEAN := FALSE;
 				SM_INTERFACE, XD_REGION, XD_STUB, XD_body :TREE := TREE_VOID )
-				return TREE is
-         NODE :TREE	:= MAKE( DN_PROCEDURE_ID );
+				return TREE
+  is		-----------------
+
+    NODE	:TREE	:= MAKE( DN_PROCEDURE_ID );
+
   begin
     D( DA.LX_SRCPOS, NODE, LX_SRCPOS );
     D( DA.LX_SYMREP, NODE, LX_SYMREP );
@@ -303,18 +306,23 @@ is					--------
     D( DA.XD_STUB, NODE, XD_STUB );
     D( DA.XD_body, NODE, XD_body );
     DB( DA.CD_COMPILED, NODE,	FALSE );
+    DI( DA.CD_LABEL, NODE, 0 );
     return NODE;
 
   end	MAKE_PROCEDURE_ID;
 	-----------------
+
 
 		----------------
   function	MAKE_FUNCTION_ID	( LX_SRCPOS, LX_SYMREP, SM_FIRST, SM_SPEC, SM_UNIT_DESC,
 				SM_ADDRESS :TREE :=	TREE_VOID;
 				SM_IS_INLINE :BOOLEAN := FALSE;
 				SM_INTERFACE, XD_REGION, XD_STUB, XD_body :TREE := TREE_VOID )
-				return TREE is
+				return TREE
+  is		----------------
+
     NODE	:TREE	:= MAKE( DN_FUNCTION_ID );
+
   begin
     D( DA.LX_SRCPOS, NODE, LX_SRCPOS );
     D( DA.LX_SYMREP, NODE, LX_SYMREP );
@@ -328,6 +336,7 @@ is					--------
     D( DA.XD_STUB, NODE, XD_STUB );
     D( DA.XD_body, NODE, XD_body );
     DB( DA.CD_COMPILED, NODE,	FALSE );
+    DI( DA.CD_LABEL, NODE, 0 );
     return NODE;
 
   end	MAKE_FUNCTION_ID;
@@ -339,8 +348,11 @@ is					--------
 				SM_IS_INLINE :BOOLEAN := FALSE;
 				SM_INTERFACE :TREE := TREE_VOID;
 				XD_REGION, XD_STUB,	XD_body, XD_NOT_EQUAL :TREE := TREE_VOID )
-				return TREE is
+				return TREE
+  is		----------------
+
     NODE	:TREE	:= MAKE( DN_OPERATOR_ID );
+
   begin
     D( DA.LX_SRCPOS, NODE, LX_SRCPOS );
     D( DA.LX_SYMREP, NODE, LX_SYMREP );
@@ -355,6 +367,7 @@ is					--------
     D( DA.XD_body, NODE, XD_body );
     D( DA.XD_NOT_EQUAL, NODE,	XD_NOT_EQUAL );
     DB( DA.CD_COMPILED, NODE,	FALSE );
+    DI( DA.CD_LABEL, NODE, 0 );
     return NODE;
 
   end	MAKE_OPERATOR_ID;
@@ -2675,19 +2688,18 @@ is					--------
     DB( DA.CD_COMPILED, NODE,	FALSE );
     return NODE;
   end	MAKE_FIXED;
-   
-  function	MAKE_ARRAY
-		    ( SM_DERIVED :TREE := TREE_VOID;
-		    SM_IS_ANONYMOUS	:BOOLEAN := FALSE;
-		    SM_BASE_TYPE :TREE := TREE_VOID;
-		    SM_SIZE :TREE := TREE_VOID;
-		    SM_IS_LIMITED :BOOLEAN :=	FALSE;
-		    SM_IS_PACKED :BOOLEAN := FALSE;
-		    SM_INDEX_S :TREE := TREE_VOID;
-		    SM_COMP_TYPE :TREE := TREE_VOID;
-		    XD_SOURCE_NAME :TREE := TREE_VOID )
-		    return TREE is
-         NODE :TREE	:= MAKE( DN_ARRAY );
+
+		----------
+  function	MAKE_ARRAY	( SM_DERIVED		:TREE	:= TREE_VOID;
+				  SM_IS_ANONYMOUS		:BOOLEAN	:= FALSE;
+				  SM_BASE_TYPE, SM_SIZE	:TREE	:= TREE_VOID;
+				  SM_IS_LIMITED		:BOOLEAN	:= FALSE;
+				  SM_IS_PACKED		:BOOLEAN	:= FALSE;
+				  SM_INDEX_S, SM_COMP_TYPE,
+				  XD_SOURCE_NAME		:TREE	:= TREE_VOID )
+				return TREE
+  is
+    NODE	:TREE	:= MAKE( DN_ARRAY );
   begin
     D( DA.SM_DERIVED, NODE, SM_DERIVED );
     DB( DA.SM_IS_ANONYMOUS, NODE, SM_IS_ANONYMOUS	);
@@ -2700,48 +2712,48 @@ is					--------
     D( DA.XD_SOURCE_NAME, NODE, XD_SOURCE_NAME );
     DB( DA.CD_COMPILED, NODE,	FALSE );
     return NODE;
+
   end	MAKE_ARRAY;
-   
-  function	MAKE_RECORD
-		    ( SM_DERIVED :TREE := TREE_VOID;
-		    SM_IS_ANONYMOUS	:BOOLEAN := FALSE;
-		    SM_BASE_TYPE :TREE := TREE_VOID;
-		    SM_SIZE :TREE := TREE_VOID;
-		    SM_IS_LIMITED :BOOLEAN :=	FALSE;
-		    SM_IS_PACKED :BOOLEAN := FALSE;
-		    SM_DISCRIMINANT_S :TREE := TREE_VOID;
-		    SM_COMP_LIST :TREE := TREE_VOID;
-		    SM_REPRESENTATION :TREE := TREE_VOID;
-		    XD_SOURCE_NAME :TREE := TREE_VOID )
-		    return TREE is
-         NODE :TREE	:= MAKE( DN_RECORD );
+	----------
+
+		-----------
+  function	MAKE_RECORD	( SM_DERIVED		:TREE	:= TREE_VOID;
+				  SM_IS_ANONYMOUS		:BOOLEAN	:= FALSE;
+				  SM_BASE_TYPE, SM_SIZE	:TREE	:= TREE_VOID;
+				  SM_IS_LIMITED		:BOOLEAN	:= FALSE;
+				  SM_IS_PACKED		:BOOLEAN	:= FALSE;
+				  SM_DISCRIMINANT_S, SM_COMP_LIST,
+				  SM_REPRESENTATION,XD_SOURCE_NAME	:TREE := TREE_VOID )
+				return TREE
+  is
+    NODE	:TREE	:= MAKE( DN_RECORD );
   begin
-    D( DA.SM_DERIVED, NODE, SM_DERIVED );
+    D ( DA.SM_DERIVED, NODE, SM_DERIVED	);
     DB( DA.SM_IS_ANONYMOUS, NODE, SM_IS_ANONYMOUS	);
-    D( DA.SM_BASE_TYPE, NODE,	SM_BASE_TYPE );
-    D( DA.SM_SIZE, NODE, SM_SIZE );
+    D ( DA.SM_BASE_TYPE, NODE, SM_BASE_TYPE );
+    D ( DA.SM_SIZE,	NODE, SM_SIZE );
     DB( DA.SM_IS_LIMITED, NODE, SM_IS_LIMITED );
     DB( DA.SM_IS_PACKED, NODE, SM_IS_PACKED );
-    D( DA.SM_DISCRIMINANT_S, NODE, SM_DISCRIMINANT_S );
-    D( DA.SM_COMP_LIST, NODE,	SM_COMP_LIST );
-    D( DA.SM_REPRESENTATION, NODE, SM_REPRESENTATION );
-    D( DA.XD_SOURCE_NAME, NODE, XD_SOURCE_NAME );
+    D ( DA.SM_DISCRIMINANT_S,	NODE, SM_DISCRIMINANT_S );
+    D ( DA.SM_COMP_LIST, NODE, SM_COMP_LIST );
+    D ( DA.SM_REPRESENTATION,	NODE, SM_REPRESENTATION );
+    D ( DA.XD_SOURCE_NAME, NODE, XD_SOURCE_NAME );
+    DI( DA.CD_IMPL_SIZE, NODE, 0 );
     DB( DA.CD_COMPILED, NODE,	FALSE );
-         return NODE;
+    return NODE;
+
   end	MAKE_RECORD;
-   
-  function	MAKE_ACCESS
-		    ( SM_DERIVED :TREE := TREE_VOID;
-		    SM_IS_ANONYMOUS	:BOOLEAN := FALSE;
-		    SM_BASE_TYPE :TREE := TREE_VOID;
-		    SM_SIZE :TREE := TREE_VOID;
-		    SM_STORAGE_SIZE	:TREE := TREE_VOID;
-		    SM_IS_CONTROLLED :BOOLEAN	:= FALSE;
-		    SM_DESIG_TYPE :TREE := TREE_VOID;
-		    SM_MASTER :TREE	:= TREE_VOID;
-		    XD_SOURCE_NAME :TREE := TREE_VOID )
-		    return TREE is
-         NODE :TREE	:= MAKE( DN_ACCESS );
+	-----------
+
+		-----------
+  function	MAKE_ACCESS	( SM_DERIVED :TREE := TREE_VOID;
+				  SM_IS_ANONYMOUS :BOOLEAN :=	FALSE;
+				  SM_BASE_TYPE, SM_SIZE, SM_STORAGE_SIZE :TREE :=	TREE_VOID;
+				  SM_IS_CONTROLLED :BOOLEAN := FALSE;
+				  SM_DESIG_TYPE, SM_MASTER, XD_SOURCE_NAME :TREE := TREE_VOID )
+				return TREE
+  is
+    NODE	: TREE	:= MAKE( DN_ACCESS );
   begin
     D( DA.SM_DERIVED, NODE, SM_DERIVED );
     DB( DA.SM_IS_ANONYMOUS, NODE, SM_IS_ANONYMOUS	);
@@ -2753,48 +2765,57 @@ is					--------
     D( DA.SM_MASTER, NODE, SM_MASTER );
     D( DA.XD_SOURCE_NAME, NODE, XD_SOURCE_NAME );
     DB( DA.CD_COMPILED, NODE,	FALSE );
+    DI( DA.CD_LEVEL, NODE, 0 );
     return NODE;
+
   end	MAKE_ACCESS;
-   
-  function	MAKE_CONSTRAINED_ARRAY
-		    ( SM_DERIVED :TREE := TREE_VOID;
-		    SM_IS_ANONYMOUS	:BOOLEAN := FALSE;
-		    SM_BASE_TYPE :TREE := TREE_VOID;
-		    SM_DEPENDS_ON_DSCRMT :BOOLEAN := FALSE;
-		    SM_INDEX_SUBTYPE_S :TREE := TREE_VOID;
-		    XD_SOURCE_NAME :TREE := TREE_VOID )
-		    return TREE is
-         NODE :TREE	:= MAKE( DN_CONSTRAINED_ARRAY	);
+	-----------
+
+		----------------------
+  function	MAKE_CONSTRAINED_ARRAY	( SM_DERIVED :TREE := TREE_VOID;
+					  SM_IS_ANONYMOUS :BOOLEAN :=	FALSE;
+					  SM_BASE_TYPE :TREE := TREE_VOID;
+					  SM_DEPENDS_ON_DSCRMT :BOOLEAN := FALSE;
+					  SM_INDEX_SUBTYPE_S, XD_SOURCE_NAME :TREE := TREE_VOID )
+					return TREE
+  is		----------------------
+	NODE	: TREE	:= MAKE( DN_CONSTRAINED_ARRAY	);
   begin
-    D( DA.SM_DERIVED, NODE, SM_DERIVED	);
+    D ( DA.SM_DERIVED, NODE, SM_DERIVED	 );
     DB( DA.SM_IS_ANONYMOUS, NODE, SM_IS_ANONYMOUS	 );
-    D( DA.SM_BASE_TYPE, NODE,	SM_BASE_TYPE  );
+    D ( DA.SM_BASE_TYPE, NODE, SM_BASE_TYPE  );
     DB( DA.SM_DEPENDS_ON_DSCRMT, NODE, SM_DEPENDS_ON_DSCRMT	 );
-    D( DA.SM_INDEX_SUBTYPE_S,	NODE, SM_INDEX_SUBTYPE_S  );
-    D( DA.XD_SOURCE_NAME, NODE, XD_SOURCE_NAME  );
+    D ( DA.SM_INDEX_SUBTYPE_S, NODE, SM_INDEX_SUBTYPE_S  );
+    D ( DA.XD_SOURCE_NAME, NODE, XD_SOURCE_NAME  );
     DB( DA.CD_COMPILED, NODE,	FALSE  );
+    DI( DA.CD_IMPL_SIZE, NODE, 0  );
          return NODE;
+
   end	MAKE_CONSTRAINED_ARRAY;
-   
-  function	MAKE_CONSTRAINED_RECORD
-		    ( SM_DERIVED :TREE := TREE_VOID;
-		    SM_IS_ANONYMOUS	:BOOLEAN := FALSE;
-		    SM_BASE_TYPE :TREE := TREE_VOID;
-		    SM_DEPENDS_ON_DSCRMT :BOOLEAN := FALSE;
-		    SM_NORMALIZED_DSCRMT_S :TREE := TREE_VOID;
-		    XD_SOURCE_NAME :TREE := TREE_VOID )
-		    return TREE is
-         NODE :TREE	:= MAKE( DN_CONSTRAINED_RECORD );
+	----------------------
+		-----------------------
+  function	MAKE_CONSTRAINED_RECORD	( SM_DERIVED :TREE := TREE_VOID;
+					  SM_IS_ANONYMOUS :BOOLEAN :=	FALSE;
+					  SM_BASE_TYPE :TREE := TREE_VOID;
+					  SM_DEPENDS_ON_DSCRMT :BOOLEAN := FALSE;
+					  SM_NORMALIZED_DSCRMT_S, XD_SOURCE_NAME :TREE :=	TREE_VOID	)
+					return TREE
+  is		-----------------------
+	NODE	: TREE	:= MAKE( DN_CONSTRAINED_RECORD );
   begin
-    D( DA.SM_DERIVED, NODE, SM_DERIVED );
+    D ( DA.SM_DERIVED, NODE, SM_DERIVED	);
     DB( DA.SM_IS_ANONYMOUS, NODE, SM_IS_ANONYMOUS	);
-    D( DA.SM_BASE_TYPE, NODE,	SM_BASE_TYPE );
+    D ( DA.SM_BASE_TYPE, NODE, SM_BASE_TYPE );
     DB( DA.SM_DEPENDS_ON_DSCRMT, NODE, SM_DEPENDS_ON_DSCRMT	);
-    D( DA.SM_NORMALIZED_DSCRMT_S, NODE,	SM_NORMALIZED_DSCRMT_S );
-    D( DA.XD_SOURCE_NAME, NODE, XD_SOURCE_NAME );
-         return NODE;
+    D ( DA.SM_NORMALIZED_DSCRMT_S, NODE, SM_NORMALIZED_DSCRMT_S );
+    D ( DA.XD_SOURCE_NAME, NODE, XD_SOURCE_NAME );
+    DI( DA.CD_IMPL_SIZE, NODE, 0  );
+    DI( DA.CD_LEVEL, NODE, 0	);
+        return NODE;
+
   end	MAKE_CONSTRAINED_RECORD;
-   
+	-----------------------
+
   function	MAKE_CONSTRAINED_ACCESS
 		    ( SM_DERIVED :TREE := TREE_VOID;
 		    SM_IS_ANONYMOUS	:BOOLEAN := FALSE;

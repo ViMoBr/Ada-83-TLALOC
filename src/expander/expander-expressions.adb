@@ -216,7 +216,7 @@ is
     is
     begin
       if AGG_EXP.TY	= DN_AGGREGATE  then
-        CODE_AGGREGATE( AGG_EXP );
+        null; -- CODE_AGGREGATE( AGG_EXP );
 
       elsif AGG_EXP.TY = DN_STRING_LITERAL  then
         CODE_STRING_LITERAL( AGG_EXP, "A VOIR !" );
@@ -1356,10 +1356,133 @@ put_line(	"; adresse component id" );
 
 
 				--------------
-  procedure			CODE_AGGREGATE		( AGGREGATE :TREE )
+  procedure			CODE_AGGREGATE		( AGGREGATE :TREE; VC_STR :STRING; TYPE_SPEC :TREE )
   is				--------------
+    TYPE_NAME		: TREE			:= D( XD_SOURCE_NAME, TYPE_SPEC );
+    TYPE_NAME_STR		:constant	STRING		:= PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
+    LVL_STR		:constant	STRING		:= IMAGE(	CODI.CUR_LEVEL );
+    NORM_SEQ		: SEQ_TYPE		:= LIST( D( SM_NORMALIZED_COMP_S, AGGREGATE ) );
+
   begin
-    null;
+    if  TYPE_SPEC.TY = DN_CONSTRAINED_ARRAY  or  TYPE_SPEC.TY = DN_ARRAY  then
+
+	    PUT_LINE( tab &	"La" & tab & LVL_STR & ", " &	VC_STR & "_disp" );
+
+	    declare
+	      ASSOC	: TREE;
+	      INDEX_S	: SEQ_TYPE	:= LIST( D( SM_INDEX_S, D( SM_BASE_TYPE, TYPE_SPEC ) ) );
+	      INDEX_NODE	: TREE;
+	      FST		: INTEGER;
+	      LST		: INTEGER;
+	      EMIS	: INTEGER		:= 0;
+	    begin
+	      POP( INDEX_S,	INDEX_NODE );
+	    -- FST et LST de la premiere dimension
+	      declare
+	        IDX_TYPE	: TREE	:= D( SM_TYPE_SPEC, INDEX_NODE );
+	        RNG	: TREE	:= D( SM_RANGE, IDX_TYPE );
+	      begin
+	        FST := DI( SM_VALUE, D( AS_EXP1, RNG ) );
+	        LST := DI( SM_VALUE, D( AS_EXP2, RNG ) );
+	      end;
+
+	      while not IS_EMPTY( NORM_SEQ ) loop
+	        POP( NORM_SEQ, ASSOC );
+
+	        if  ASSOC.TY  in  CLASS_EXP  then
+		declare
+		  EXP_TYPE  : TREE	:= D( SM_EXP_TYPE, ASSOC );
+		begin
+		  PUT_LINE( tab & "DUP" );
+		  EXPRESSIONS.CODE_EXP( ASSOC	);
+		  PUT_LINE( tab & "S" & EXP_TYPE_CHAR( ASSOC ) );
+		end;
+		PUT( tab & "LId" & tab & LVL_STR & ", "	& VC_STR & "__u," );
+		REGIONS_PATH( TYPE_NAME );
+		PUT_LINE(	TYPE_NAME_STR & ".COMP_SIZ" );
+		PUT_LINE(	tab & "LI" & tab & '8' );
+		PUT_LINE(	tab & "DIV" );
+		PUT_LINE(	tab & "ADD" );
+		EMIS := EMIS + 1;
+
+	        elsif  ASSOC.TY = DN_NAMED  then
+		declare
+		  COMP_EXP	: TREE		:= D( AS_EXP, ASSOC );
+		  EXP_TYPE	: TREE		:= D( SM_EXP_TYPE, COMP_EXP );
+		  REPEAT		: INTEGER		:= 1;
+		  CHOICES		: SEQ_TYPE	:= LIST( D( AS_CHOICE_S, ASSOC ) );
+		  CH		: TREE;
+		begin
+		  while not IS_EMPTY( CHOICES	) loop
+		    POP( CHOICES, CH );
+		    if  CH.TY = DN_CHOICE_RANGE  then
+		      declare
+		        RNG	: TREE		:= D( AS_DISCRETE_RANGE, CH	);
+		        LO	: INTEGER		:= DI( SM_VALUE, D( AS_EXP1, RNG ) );
+		        HI	: INTEGER		:= DI( SM_VALUE, D( AS_EXP2, RNG ) );
+		      begin
+		        REPEAT := HI - LO + 1;
+		      end;
+		    elsif	 CH.TY = DN_CHOICE_OTHERS  then
+		      REPEAT := LST	- FST + 1	- EMIS;
+		    end if;
+		  end loop;
+
+		  for  I	in  1 .. REPEAT  loop
+		    PUT_LINE( tab &	"DUP" );
+		    EXPRESSIONS.CODE_EXP( COMP_EXP );
+		    PUT_LINE( tab &	"S" & EXP_TYPE_CHAR( COMP_EXP	) );
+		    PUT( tab & "LId" & tab & LVL_STR & ", " & VC_STR & "__u," );
+		    REGIONS_PATH( TYPE_NAME );
+		    PUT_LINE( TYPE_NAME_STR &	".COMP_SIZ" );
+		    PUT_LINE( tab &	"LI" & tab & '8' );
+		    PUT_LINE( tab &	"DIV" );
+		    PUT_LINE( tab &	"ADD" );
+		  end loop;
+		  EMIS :=	EMIS + REPEAT;
+		end;
+	        end if;
+
+	      end	loop;
+	      PUT_LINE( tab	& "DROP" );    -- jeter l'adresse finale non utilisée
+	    end;
+
+
+    elsif  TYPE_SPEC.TY = DN_RECORD  then
+
+	declare
+	  COMP_DECL_S : SEQ_TYPE := LIST( D( AS_DECL_S,
+				      D( SM_COMP_LIST, TYPE_SPEC ) ) );
+	  COMP_EXP    : TREE;
+	  COMP_DECL   : TREE;
+	begin
+	  while not IS_EMPTY( NORM_SEQ ) loop
+	    POP( NORM_SEQ,	  COMP_EXP  );
+	    POP( COMP_DECL_S, COMP_DECL );
+	    declare
+	      COMP_ID_S   :	SEQ_TYPE := LIST( D( AS_SOURCE_NAME_S, COMP_DECL ) );
+	      COMP_ID     :	TREE;
+	    begin
+	      POP( COMP_ID_S, COMP_ID	);
+	      declare
+	        COMP_TYPE	: TREE	        := D( SM_OBJ_TYPE, COMP_ID );
+	        COMP_STR	:constant	STRING   := PRINT_NAME( D( LX_SYMREP, COMP_ID ) );
+	      begin
+	        EXPRESSIONS.CODE_EXP(	COMP_EXP );
+	        PUT( tab & "LIVa "
+		  & LVL_STR & ", "
+		  & VC_STR & "_disp, " );
+	        CODI.REGIONS_PATH( TYPE_NAME );
+	        PUT_LINE( TYPE_NAME_STR & "." &	COMP_STR );
+	        PUT_LINE( tab & "OVER" );
+	        PUT_LINE( tab & "S" &	CODI.OPER_SIZ_CHAR(	COMP_TYPE	) );
+	        PUT_LINE( tab & "DROP" );
+	      end;
+	    end;
+	  end loop;
+	end;
+
+    end if;
   end	CODE_AGGREGATE;
 	--------------
 

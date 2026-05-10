@@ -1,26 +1,8 @@
---------------------------------------------------------------------------------
--- TLALOC	Strict Ada 83 Compiler
--- Copyright (C) 2024-2026 Vincent MORIN - Université de Bretagne Occidentale
---
--- This program is free software: you can redistribute it and/or modify
--- it under the terms of the GNU General Public License as published by
--- the Free Software Foundation, either	version 3	of the License, or
--- (at your option)	any later	version.
---
--- This program is distributed in the hope that it will be useful,
--- but WITHOUT ANY WARRANTY; without even the implied warranty of
--- MERCHANTABILITY or FITNESS	FOR A PARTICULAR PURPOSE. See	the
--- GNU General Public License	for more details.
---
--- You should have received a	copy of the GNU General Public License
--- along with this program. If not, see	<https://www.gnu.org/licenses/>.
---------------------------------------------------------------------------------
-
 ------------------------------------------------------------------------------------------------------------------------
---		EXPANDER.ADB	VINCENT MORIN	21/6/2024		UNIVERSITE DE BRETAGNE OCCIDENTALE
+-- SPDX-FileCopyrightText: 2026 VINCENT	MORIN, UBO
+-- SPDX-License-Identifier: GPL-3.0-or-later
 ------------------------------------------------------------------------------------------------------------------------
---	1	2	3	4	5	6	7	8	9	0	1
-
+--	1	2	3	4	5	6	7	8	9	0	1	2
 
 with DIANA_NODE_ATTR_CLASS_NAMES, IDL, TEXT_IO;
 use  DIANA_NODE_ATTR_CLASS_NAMES, IDL, TEXT_IO;
@@ -67,6 +49,7 @@ is
   INSTANTIATION_MODEL_NAME		: TREE;
   GENERIC_MODEL_DECL_SEQ		: SEQ_TYPE;
   IN_GENERIC_BODY			: BOOLEAN			:= FALSE;					-- Traitement special pour les corps de	generique
+  ENCLOSING_GENERIC			: TREE;
 
   IN_SPEC_UNIT			: BOOLEAN;
 
@@ -137,7 +120,7 @@ end	UTILS;
     procedure CODE_EXP		( EXP		:TREE );
     procedure CODE_INDEXED		( INDEXED		:TREE );
     procedure CODE_STRING_LITERAL	( STRING_LITERAL	:TREE; STR_NAME :STRING );
-    procedure CODE_SELECTED		( SELECTED	:TREE; IS_SOURCE :BOOLEAN := TRUE );
+    procedure CODE_SELECTED		( SELECTED	:TREE; IS_SOURCE :BOOLEAN := TRUE; CONTEXT :TREE := TREE_VOID );
     procedure CODE_SLICE		( SLICE		:TREE; IS_DESTINATION :BOOLEAN := TRUE );
 
 
@@ -460,5 +443,5 @@ begin
 end	EXPANDER;
 	--------
 
--------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
 --	1	2	3	4	5	6	7	8	9	0	1	2

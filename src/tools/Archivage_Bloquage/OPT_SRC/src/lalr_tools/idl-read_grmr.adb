@@ -1,10 +1,16 @@
-WITH UNCHECKED_DEALLOCATION;
-WITH LEX,	GRMR_OPS;
-SEPARATE(	IDL )
+------------------------------------------------------------------------------------------------------------------------
+-- SPDX-FileCopyrightText: 2026 VINCENT	MORIN, UBO
+-- SPDX-License-Identifier: GPL-3.0-or-later
+------------------------------------------------------------------------------------------------------------------------
+--	1	2	3	4	5	6	7	8	9	0	1	2
+
+with UNCHECKED_DEALLOCATION;
+with LEX,	GRMR_OPS;
+separate(	IDL )
 --|-------------------------------------------------------------------------------------------------
 --|		READ_GRMR
 --|
-PROCEDURE	READ_GRMR	( NOM_TEXTE :STRING	) IS
+procedure	READ_GRMR	( NOM_TEXTE :STRING	) is
 
   IFILE, OFILE		: FILE_TYPE;						--| FICHIER GRAMMAIRE ET TEXTE D'INITIALISATIONS SYMBOLES OPERATEURS
 
@@ -17,23 +23,23 @@ PROCEDURE	READ_GRMR	( NOM_TEXTE :STRING	) IS
   SOURCE_LIST		: SEQ_TYPE;						--| LISTE	DES SOURCELINES
   SOURCEPOS		: TREE;							--| LA SOURCE_POSITION
 
-  ARITY_TABLE		: ARRAY( 0 .. 300 )	OF INTEGER	:= (OTHERS => -1);
+  ARITY_TABLE		: array( 0 .. 300 )	of INTEGER	:= (others => -1);
 
   --|-----------------------------------------------------------------------------------------------
   --|
-  PACKAGE	LALR_LEX IS
+  package	LALR_LEX is
   --|-----------------------------------------------------------------------------------------------
 
-    PROCEDURE AVANCER;
-    FUNCTION  TOKEN	RETURN STRING;
+    procedure AVANCER;
+    function  TOKEN	return STRING;
 
   --|-----------------------------------------------------------------------------------------------
-  END LALR_LEX;
+  end LALR_LEX;
 
 
   --|-----------------------------------------------------------------------------------------------
   --|
-  PACKAGE	BODY LALR_LEX IS
+  package	body LALR_LEX is
   --|-----------------------------------------------------------------------------------------------
 
     SLINE		: STRING(	1 .. 256 );						--| LIGNE	COURANTE
@@ -45,122 +51,122 @@ PROCEDURE	READ_GRMR	( NOM_TEXTE :STRING	) IS
 
     --||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
     --|	PROCEDURE	AVANCER
-    PROCEDURE AVANCER IS
+    procedure AVANCER is
       SOURCE_LINE		: TREE;							--| LE SOURCELINE COURANT
-    BEGIN
+    begin
 
 <<START_GET>>
 
-      IF COL > LAST	THEN
-        IF END_OF_FILE( IFILE	) THEN
+      if COL > LAST	then
+        if END_OF_FILE( IFILE	) then
 	TS := SLINE'FIRST;
 	TE := SLINE'FIRST +	3;
 	SLINE( SLINE'FIRST..SLINE'FIRST+3 ) := "%end";
-        ELSE
+        else
 	GET_LINE(	IFILE, SLINE, LAST );
 	LINE_COUNT := LINE_COUNT + 1;
 	COL := 1;
-        END IF;
-      END	IF;
+        end if;
+      end	if;
 
-      WHILE COL <= LAST AND THEN (SLINE( COL ) = ' ' OR ELSE SLINE( COL ) = ASCII.HT) LOOP
+      while COL <= LAST and then (SLINE( COL ) = ' ' or else SLINE( COL ) = ASCII.HT) loop
         COL := COL + 1;
-      END	LOOP;
+      end	loop;
 
-      IF COL < LAST	THEN
-        IF SLINE( COL..COL+1 ) = "--" OR SLINE( COL..COL+1 ) = "//" OR SLINE( COL..COL+1 ) = "##" THEN
+      if COL < LAST	then
+        if SLINE( COL..COL+1 ) = "--" or SLINE( COL..COL+1 ) = "//" or SLINE( COL..COL+1 ) = "##" then
 	COL := LAST + 1;
-	GOTO START_GET;
-        END IF;
-      ELSIF COL > LAST THEN				--| LIGNE	BLANCHE
-        GOTO START_GET;
-      END	IF;
+	goto START_GET;
+        end if;
+      elsif COL > LAST then				--| LIGNE	BLANCHE
+        goto START_GET;
+      end	if;
 
       TS := COL;
-      WHILE COL <= LAST LOOP
-        EXIT WHEN SLINE( COL ) = ' ' OR	ELSE SLINE( COL ) =	ASCII.HT;
-        IF COL < LAST AND THEN SLINE( COL..COL+1 ) = "--" THEN
+      while COL <= LAST loop
+        exit when SLINE( COL ) = ' ' or	else SLINE( COL ) =	ASCII.HT;
+        if COL < LAST and then SLINE( COL..COL+1 ) = "--" then
 	COL := LAST + 1;
-	GOTO START_GET;
-        END IF;
+	goto START_GET;
+        end if;
         COL := COL + 1;
-      END	LOOP;
+      end	loop;
       TE := COL - 1;
 
-      IF LINE_COUNT	/= LINE_TAKEN THEN
+      if LINE_COUNT	/= LINE_TAKEN then
         SOURCE_LINE	:= MAKE( DN_SOURCELINE );
         DI  ( XD_NUMBER, SOURCE_LINE, LINE_COUNT );
         LIST( SOURCE_LINE, (TREE_NIL,TREE_NIL) );
         SOURCE_LIST	:= APPEND( SOURCE_LIST, SOURCE_LINE );
-      END	IF;
+      end	if;
 
       SOURCEPOS := MAKE_SOURCE_POSITION( SOURCE_LINE,SRCCOL_IDX( TS )	);
-    END AVANCER;
+    end AVANCER;
     --||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
     --|	FUNCTION TOKEN
-    FUNCTION TOKEN RETURN STRING IS
-    BEGIN
-      RETURN SLINE(	TS..TE );
-    END;
+    function TOKEN return STRING is
+    begin
+      return SLINE(	TS..TE );
+    end;
 
   --|-----------------------------------------------------------------------------------------------
-  END LALR_LEX;
-  USE LALR_LEX;
+  end LALR_LEX;
+  use LALR_LEX;
 
 
 
 
   --|-----------------------------------------------------------------------------------------------
   --|	PROCEDURE	LOAD_DIANA
-  PROCEDURE LOAD_DIANA IS
+  procedure LOAD_DIANA is
     OP		: TREE;
     SYM		: TREE;
     NODE_POS	: NATURAL;
     DIANATBL_FILE	: TEXT_IO.FILE_TYPE;
     BUFFER	: STRING(	1..127 );
-    LAST		: NATURAL	RANGE 0..127;
-    COL		: NATURAL	RANGE 0..127;
+    LAST		: NATURAL	range 0..127;
+    COL		: NATURAL	range 0..127;
 
-    PROCEDURE SKIP_BLANKS IS
-    BEGIN
-      WHILE COL <= LAST AND THEN (BUFFER( COL ) =	' ' OR BUFFER( COL ) = ASCII.HT) LOOP
+    procedure SKIP_BLANKS is
+    begin
+      while COL <= LAST and then (BUFFER( COL ) =	' ' or BUFFER( COL ) = ASCII.HT) loop
         COL := COL + 1;
-      END	LOOP;
-    END;
+      end	loop;
+    end;
 
-    PROCEDURE FIND_BLANK IS
-    BEGIN
-      WHILE COL <= LAST AND THEN BUFFER( COL ) /=	' ' AND THEN BUFFER( COL ) /=	ASCII.HT LOOP
+    procedure FIND_BLANK is
+    begin
+      while COL <= LAST and then BUFFER( COL ) /=	' ' and then BUFFER( COL ) /=	ASCII.HT loop
         COL := COL + 1;
-      END	LOOP;
-    END;
+      end	loop;
+    end;
 
-  BEGIN
+  begin
 
     TEXT_IO.OPEN( DIANATBL_FILE, TEXT_IO.IN_FILE,	"../idl_tools/diana.tbl" );
 
 TROUVER_CLASSE_ALL_SOURCE:
-    LOOP
+    loop
       GET_LINE( DIANATBL_FILE, BUFFER, LAST );
-      IF LAST > 0 THEN
-        IF BUFFER( 1 ) = 'C' THEN
+      if LAST > 0 then
+        if BUFFER( 1 ) = 'C' then
 	COL := 2;
 	SKIP_BLANKS;
-	EXIT WHEN	BUFFER( COL..LAST )	= "ALL_SOURCE";
-        END IF;
-      END	IF;
-    END LOOP TROUVER_CLASSE_ALL_SOURCE;
+	exit when	BUFFER( COL..LAST )	= "ALL_SOURCE";
+        end if;
+      end	if;
+    end loop TROUVER_CLASSE_ALL_SOURCE;
 
 TRAITER_TOUTE_CLASSE_ALL_SOURCE:
-    LOOP
+    loop
       GET_LINE( DIANATBL_FILE, BUFFER, LAST);
-      IF LAST > 0 THEN
-        IF BUFFER( 1 ) = 'E' THEN							--| FIN DE CLASSE
+      if LAST > 0 then
+        if BUFFER( 1 ) = 'E' then							--| FIN DE CLASSE
 	COL := 2;
 	SKIP_BLANKS;
-	EXIT WHEN	BUFFER( COL..LAST )	= "ALL_SOURCE";					--| FIN DE CLASSE SOURCE_NAME	: FIN DE TRAITEMENT
+	exit when	BUFFER( COL..LAST )	= "ALL_SOURCE";					--| FIN DE CLASSE SOURCE_NAME	: FIN DE TRAITEMENT
 
-        ELSIF BUFFER( 1 ) = 'N' THEN							--| POUR UN NOEUD
+        elsif BUFFER( 1 ) = 'N' then							--| POUR UN NOEUD
 	COL := 2;
 	SKIP_BLANKS;
 	FIND_BLANK;								--| POUR PASSER SUR	LE NUMERO	DE NOEUD
@@ -173,58 +179,58 @@ TRAITER_TOUTE_CLASSE_ALL_SOURCE:
 	LIST( SYM, INSERT( LIST( SYM ), OP ) );
 	ARITY_TABLE( NODE_POS ) := 0;
 
-        ELSIF BUFFER( 1 ) = 'A' OR ELSE	BUFFER( 1	) = 'B' OR ELSE BUFFER( 1 ) =	'I' THEN
+        elsif BUFFER( 1 ) = 'A' or else	BUFFER( 1	) = 'B' or else BUFFER( 1 ) =	'I' then
 	COL := 2;
 	SKIP_BLANKS;
 	FIND_BLANK;
 	SKIP_BLANKS;
 
-	IF COL + 2 <= LAST AND THEN BUFFER( COL	.. COL+2 ) = "as_" THEN			--| ATTRIBUT as_xxx
+	if COL + 2 <= LAST and then BUFFER( COL	.. COL+2 ) = "as_" then			--| ATTRIBUT as_xxx
 	  COL := 2;								--| RECULER AU DEVANT DU NUMERO D ATTRIBUT
 	  SKIP_BLANKS;
-	  IF BUFFER( COL ) = '-' THEN							--| NUMERO NEGATIF INDIQUE SEQUENCE
+	  if BUFFER( COL ) = '-' then							--| NUMERO NEGATIF INDIQUE SEQUENCE
 	    ARITY_TABLE( NODE_POS ) := 4;
-	  ELSE
+	  else
 	    ARITY_TABLE( NODE_POS ) := ARITY_TABLE( NODE_POS ) + 1;
-	  END IF;
-	END IF;
-        END IF;
-      END	IF;
-    END LOOP TRAITER_TOUTE_CLASSE_ALL_SOURCE;
+	  end if;
+	end if;
+        end if;
+      end	if;
+    end loop TRAITER_TOUTE_CLASSE_ALL_SOURCE;
 
     TEXT_IO.CLOSE( DIANATBL_FILE );
 
-  EXCEPTION
-    WHEN END_ERROR =>
+  exception
+    when END_ERROR =>
       TEXT_IO.CLOSE( DIANATBL_FILE );
-  END LOAD_DIANA;
+  end LOAD_DIANA;
   --|-----------------------------------------------------------------------------------------------
   --|	PROCEDURE	LOAD_TERMINALS
-  PROCEDURE LOAD_TERMINALS IS
+  procedure LOAD_TERMINALS is
     TER		: TREE;
     SYM		: TREE;
     DEFLIST	: SEQ_TYPE;
-    USE LEX;
-  BEGIN
-    FOR T	IN LEX_TYPE LOOP
+    use LEX;
+  begin
+    for T	in LEX_TYPE loop
       TER	:= MAKE( DN_TERMINAL );
       SYM	:= STORE_SYM( LEX.LEX_IMAGE (	T ) );
       DEFLIST := LIST( SYM );
-      WHILE NOT IS_EMPTY( DEFLIST ) AND	THEN HEAD( DEFLIST ).TY /= DN_TERMINAL LOOP
+      while not IS_EMPTY( DEFLIST ) and	then HEAD( DEFLIST ).TY /= DN_TERMINAL loop
         DEFLIST := TAIL( DEFLIST );
-      END	LOOP;
-      IF NOT IS_EMPTY( DEFLIST ) THEN
+      end	loop;
+      if not IS_EMPTY( DEFLIST ) then
         PUT ( "***DUPLICATE TERMINAL IMAGE - " );
         PUT_LINE( LEX_IMAGE (	T ) );
-      END	IF;
+      end	if;
       LIST( SYM, INSERT( LIST( SYM ), TER ) );
       D( XD_SYMREP,	TER, SYM );
       DI(	XD_TER_NBR, TER, LEX_TYPE'POS( T ) );
-    END LOOP;
-  END LOAD_TERMINALS;
+    end loop;
+  end LOAD_TERMINALS;
   --|----------------------------------------------------------------------------------------------
   --|	PROCEDURE	PROCESS_GRAMMAR
-  PROCEDURE PROCESS_GRAMMAR IS
+  procedure PROCESS_GRAMMAR is
     USER_ROOT	: TREE;
     GRAMMAR	: TREE;
     RULE		: TREE;
@@ -239,11 +245,11 @@ TRAITER_TOUTE_CLASSE_ALL_SOURCE:
     SEM_S		: TREE;
     --|---------------------------------------------------------------------------------------------
     --|	PROCEDURE	MAKE_RULE
-    PROCEDURE MAKE_RULE ( TEXT :STRING ) IS
+    procedure MAKE_RULE ( TEXT :STRING ) is
       DEFLIST	: SEQ_TYPE;
-    BEGIN
+    begin
 
-      IF TEXT = "%%" OR TEXT = "::=" THEN RAISE PROGRAM_ERROR; END IF;
+      if TEXT = "%%" or TEXT = "::=" then raise PROGRAM_ERROR; end if;
 
       SYMBOL := STORE_SYM( TEXT );
       PUT_LINE( "RULE = " & TEXT );
@@ -254,23 +260,23 @@ TRAITER_TOUTE_CLASSE_ALL_SOURCE:
 
       SEQ	:= LIST( SYMBOL );
       DEFLIST := SEQ;
-      WHILE NOT IS_EMPTY( DEFLIST )
-	  AND THEN HEAD( DEFLIST).TY /= DN_RULE
-	  AND THEN HEAD( DEFLIST).TY /= DN_TERMINAL
-      LOOP
+      while not IS_EMPTY( DEFLIST )
+	  and then HEAD( DEFLIST).TY /= DN_RULE
+	  and then HEAD( DEFLIST).TY /= DN_TERMINAL
+      loop
         DEFLIST := TAIL( DEFLIST );
-      END	LOOP;
-      IF NOT IS_EMPTY( DEFLIST ) THEN
+      end	loop;
+      if not IS_EMPTY( DEFLIST ) then
         ERROR( SOURCEPOS, "DUPLICATE RULE - " & TEXT );
-      END	IF;
+      end	if;
       LIST( SYMBOL,	APPEND( SEQ, RULE )	);
 
       ALT_LIST := (TREE_NIL,TREE_NIL);
-    END MAKE_RULE;
+    end MAKE_RULE;
     --|--------------------------------------------------------------------------------------------
     --|	PROCEDURE	MAKE_ALTERNATIVE
-    PROCEDURE MAKE_ALTERNATIVE IS
-    BEGIN
+    procedure MAKE_ALTERNATIVE is
+    begin
       ALTERNATIVE := MAKE( DN_ALT );
       D( LX_SRCPOS,	ALTERNATIVE, SOURCEPOS);
       ALT_COUNT   := ALT_COUNT + 1;
@@ -279,70 +285,70 @@ TRAITER_TOUTE_CLASSE_ALL_SOURCE:
 
       SYL_LIST   :=	(TREE_NIL,TREE_NIL);
       SEMAN_LIST :=	(TREE_NIL,TREE_NIL);
-    END MAKE_ALTERNATIVE;
+    end MAKE_ALTERNATIVE;
     --|---------------------------------------------------------------------------------------------
     --|	PROCEDURE	MAKE_SYLLABE
-    PROCEDURE MAKE_SYLLABE ( TEXT :STRING ) IS
-    BEGIN
+    procedure MAKE_SYLLABE ( TEXT :STRING ) is
+    begin
 
-      IF TEXT = "%%" OR TEXT = "::=" THEN RAISE PROGRAM_ERROR; END IF;
+      if TEXT = "%%" or TEXT = "::=" then raise PROGRAM_ERROR; end if;
 
-      IF TEXT = "'|'" THEN
+      if TEXT = "'|'" then
         SYMBOL := STORE_SYM( "|" );
-      ELSE
+      else
         SYMBOL := STORE_SYM( TEXT );
-      END	IF;
+      end	if;
 
       SEQ	:= LIST( SYMBOL );
-      WHILE NOT IS_EMPTY( SEQ	)
-	  AND THEN HEAD( SEQ ).TY /= DN_TERMINAL
-	  AND THEN HEAD( SEQ ).TY /= DN_RULE
-      LOOP
+      while not IS_EMPTY( SEQ	)
+	  and then HEAD( SEQ ).TY /= DN_TERMINAL
+	  and then HEAD( SEQ ).TY /= DN_RULE
+      loop
         SEQ := TAIL( SEQ );
-      END	LOOP;
-      IF IS_EMPTY( SEQ ) OR ELSE HEAD( SEQ ).TY /= DN_TERMINAL THEN
+      end	loop;
+      if IS_EMPTY( SEQ ) or else HEAD( SEQ ).TY /= DN_TERMINAL then
         SYLLABLE :=	MAKE( DN_NONTERMINAL);
-      ELSE
+      else
         SYLLABLE :=	MAKE( DN_TERMINAL );
         DI( XD_TER_NBR, SYLLABLE, DI( XD_TER_NBR,	HEAD( SEQ	) ) );
-      END	IF;
+      end	if;
 
       D( XD_SYMREP,	SYLLABLE,	SYMBOL );
       D( LX_SRCPOS,	SYLLABLE,	SOURCEPOS	);
 
       SYL_LIST := APPEND( SYL_LIST, SYLLABLE );
-    END MAKE_SYLLABE;
+    end MAKE_SYLLABE;
     --|---------------------------------------------------------------------------------------------
     --|	PROCEDURE	MAKE_SEMANTICS_GET_TOKEN
-    PROCEDURE MAKE_SEMANTICS_GET_TOKEN ( IN_TEXT :STRING ) IS
-      TEXT		: CONSTANT STRING	:= IN_TEXT;				-- COPY OF THE ARGUMENT
-      USE	GRMR_OPS;
+    procedure MAKE_SEMANTICS_GET_TOKEN ( IN_TEXT :STRING ) is
+      TEXT		: constant STRING	:= IN_TEXT;				-- COPY OF THE ARGUMENT
+      use	GRMR_OPS;
       SEM_OP		: GRMR_OP;
       SEMAN_SYM		: TREE;
       NODE_NAME_POS		: INTEGER;
       DEFLIST		: SEQ_TYPE;
       SEMAN		: TREE;
       NODE_NAME_ARITY	: ARITIES;
-    BEGIN
+    begin
 
       SEM_OP := GRMR_OP_VALUE( TEXT );
       AVANCER;
-      CASE SEM_OP IS
-      WHEN G_ERROR =>
+      case SEM_OP is
+      when G_ERROR =>
         ERROR ( SOURCEPOS, "INVALID SEMANTIC OP - " & TEXT );
-      WHEN N_0 .. N_L =>
+      when N_0 .. N_L =>
         SEMAN_SYM := FIND_SYM( TOKEN );
-        IF SEMAN_SYM.TY = DN_VOID THEN
+        if SEMAN_SYM.TY = DN_VOID then
 	DEFLIST := (TREE_NIL,TREE_NIL);
-        ELSE
+        else
 	DEFLIST := LIST( SEMAN_SYM );
-	WHILE NOT	IS_EMPTY(	DEFLIST )	AND THEN HEAD( DEFLIST ).TY /= DN_SEM_OP LOOP
+	while not	IS_EMPTY(	DEFLIST )	and then HEAD( DEFLIST ).TY /= DN_SEM_OP loop
 	  DEFLIST	:= TAIL( DEFLIST );
-	END LOOP;
-        END IF;
-        IF IS_EMPTY( DEFLIST)	THEN
+	end loop;
+        end if;
+        if IS_EMPTY( DEFLIST)	then
 	ERROR( SOURCEPOS, "NODE NAME NOT FOUND AFTER - " & TEXT );
-        ELSE
+        else
 	NODE_NAME_POS := DI( XD_SEM_OP, HEAD( DEFLIST ) );
 	AVANCER;
 	SEMAN := MAKE( DN_SEM_NODE );
@@ -352,112 +358,112 @@ TRAITER_TOUTE_CLASSE_ALL_SOURCE:
 	SEMAN_COUNT := SEMAN_COUNT + 1;
 
 	NODE_NAME_ARITY := ARITIES'VAL( ARITY_TABLE( NODE_NAME_POS ) );
-	CASE SEM_OP IS
-	WHEN N_0 .. N_DEF =>
-	  IF NODE_NAME_ARITY /= NULLARY THEN
+	case SEM_OP is
+	when N_0 .. N_DEF =>
+	  if NODE_NAME_ARITY /= NULLARY then
 	    ERROR( SOURCEPOS, "NODE MUST BE NULLARY - " &	TEXT & " " & PRINT_NAME( SEMAN_SYM ) );
-	  END IF;
-	WHEN N_1 =>
-	  IF NODE_NAME_ARITY /= UNARY	THEN
+	  end if;
+	when N_1 =>
+	  if NODE_NAME_ARITY /= UNARY	then
 	    ERROR( SOURCEPOS, "NODE MUST BE UNARY - " & TEXT & " " & PRINT_NAME( SEMAN_SYM ) );
-	  END IF;
-	WHEN N_2 .. N_V2 =>
-	  IF NODE_NAME_ARITY /= BINARY THEN
+	  end if;
+	when N_2 .. N_V2 =>
+	  if NODE_NAME_ARITY /= BINARY then
 	    ERROR( SOURCEPOS, "NODE MUST BE BINARY - " & TEXT & " "	& PRINT_NAME( SEMAN_SYM ) );
-	  END IF;
-	WHEN N_3 .. N_V3 =>
-	  IF NODE_NAME_ARITY /= TERNARY THEN
+	  end if;
+	when N_3 .. N_V3 =>
+	  if NODE_NAME_ARITY /= TERNARY then
 	    ERROR( SOURCEPOS, "NODE MUST BE TERNARY - " &	TEXT & " " & PRINT_NAME( SEMAN_SYM ) );
-	  END IF;
-	WHEN N_L =>
-	  IF NODE_NAME_ARITY /= ARBITRARY THEN
+	  end if;
+	when N_L =>
+	  if NODE_NAME_ARITY /= ARBITRARY then
 	    ERROR	( SOURCEPOS, "NODE MUST BE ARBITRARY - " & TEXT &	" " & PRINT_NAME( SEMAN_SYM )	);
-	  END IF;
-	WHEN OTHERS =>
-	  RAISE PROGRAM_ERROR;
-	END CASE;
-        END IF;
-      WHEN G_INFIX | G_UNARY =>
-        IF TOKEN( TOKEN'FIRST	) /= '"' THEN
+	  end if;
+	when others =>
+	  raise PROGRAM_ERROR;
+	end case;
+        end if;
+      when G_INFIX | G_UNARY =>
+        if TOKEN( TOKEN'FIRST	) /= '"' then
 	ERROR( SOURCEPOS, "QUOTED STRING REQUIRED AFTER - " & TEXT & "( TOKEN = " & TOKEN & ")" );
-        ELSE
+        else
 	SEMAN := MAKE( DN_SEM_NODE );
 	DI( XD_SEM_OP, SEMAN, GRMR_OP'POS( SEM_OP ) );
-	DECLARE
+	declare
 	  SYM	: TREE	:= STORE_SYM( TOKEN	);
-	BEGIN
+	begin
 	  D( XD_KIND, SEMAN, SYM );
 
 	  PUT_LINE( OFILE, "STORE_SYM ( " &  TOKEN & " );" );
 	  SET_OUTPUT( OFILE	); PRINT_TREE( SYM ); SET_OUTPUT( STANDARD_OUTPUT	);
 
-	END;
+	end;
 	SEMAN_LIST := APPEND( SEMAN_LIST, SEMAN	);
 	SEMAN_COUNT := SEMAN_COUNT + 1;
 	AVANCER;
-        END IF;
-      WHEN OTHERS =>
+        end if;
+      when others =>
         SEMAN := MAKE( DN_SEM_OP );
         DI( XD_SEM_OP, SEMAN,	GRMR_OP'POS( SEM_OP	) );
         SEMAN_LIST := APPEND(	SEMAN_LIST, SEMAN );
         SEMAN_COUNT	:= SEMAN_COUNT + 1;
-      END	CASE;
-    END MAKE_SEMANTICS_GET_TOKEN;
+      end	case;
+    end MAKE_SEMANTICS_GET_TOKEN;
     --|---------------------------------------------------------------------------------------------
     --|	PROCEDURE	MAKE_TERMINAL
-    PROCEDURE MAKE_TERMINAL (	TEXT :STRING ) IS
+    procedure MAKE_TERMINAL (	TEXT :STRING ) is
       SYMBOL		: TREE;
       DEFLIST		: SEQ_TYPE;
-    BEGIN
-      IF TEXT = "'|'" THEN
+    begin
+      if TEXT = "'|'" then
         SYMBOL := FIND_SYM( "|");
-      ELSE
+      else
         SYMBOL := FIND_SYM( TEXT );
-      END	IF;
+      end	if;
 
-      IF SYMBOL.TY = DN_VOID THEN
+      if SYMBOL.TY = DN_VOID then
         DEFLIST := (TREE_NIL,TREE_NIL);
-      ELSE
+      else
         DEFLIST := LIST( SYMBOL );
-        WHILE NOT IS_EMPTY( DEFLIST ) AND THEN HEAD( DEFLIST).TY /= DN_TERMINAL	LOOP
+        while not IS_EMPTY( DEFLIST ) and then HEAD( DEFLIST).TY /= DN_TERMINAL	loop
 	DEFLIST := TAIL( DEFLIST );
-        END LOOP;
-      END	IF;
-      IF IS_EMPTY( DEFLIST ) THEN
+        end loop;
+      end	if;
+      if IS_EMPTY( DEFLIST ) then
         ERROR( SOURCEPOS, "UNDEFINED TERMINAL - "	& TEXT );
-      ELSE
+      else
         D( LX_SRCPOS, HEAD( DEFLIST ), SOURCEPOS );
-      END	IF;
-    END MAKE_TERMINAL;
+      end	if;
+    end MAKE_TERMINAL;
 
-  BEGIN
+  begin
 
-    IF TOKEN /= "%terminals" THEN
+    if TOKEN /= "%terminals" then
       ERROR( SOURCEPOS, "EXPECTING %terminals" );
-      RETURN;
-    END IF;
+      return;
+    end if;
     AVANCER;
 
     MAKE_TERMINAL( "*end*" );
 
-    WHILE	TOKEN /= "%start" LOOP
+    while	TOKEN /= "%start" loop
       MAKE_TERMINAL	( TOKEN );
       AVANCER;
-    END LOOP;
+    end loop;
 
-    IF TOKEN /="%start" THEN
+    if TOKEN /="%start" then
       ERROR( SOURCEPOS, "EXPECTING %start" );
-      RETURN;
-    END IF;
+      return;
+    end if;
     AVANCER;									--| SAUTER %start
 	      -- GENERATE RULE:
 	      --	 *SENTENCE* ::= <START_SYMBOL> *END*
     MAKE_RULE( "*SENTENCE*" );
     MAKE_ALTERNATIVE;
     MAKE_SYLLABE( TOKEN );
-    IF SYLLABLE.TY = DN_TERMINAL THEN
+    if SYLLABLE.TY = DN_TERMINAL then
       ERROR( SOURCEPOS, "START SYMBOL CANNOT BE TERMINAL - " & TOKEN );
-    END IF;
+    end if;
     MAKE_SYLLABE( "*end*" );
     SEM_S	:= MAKE( DN_SEM_S );
     DI  (	XD_SEM_INDEX, SEM_S, 0);
@@ -467,55 +473,55 @@ TRAITER_TOUTE_CLASSE_ALL_SOURCE:
     LIST(	RULE, ALT_LIST );
 
     AVANCER;									--| LIT LE %rules
-    IF TOKEN /= "%rules" THEN
+    if TOKEN /= "%rules" then
       ERROR( SOURCEPOS, "EXPECTING %RULES INSTEAD OF " & TOKEN );
-      RETURN;
-    END IF;
+      return;
+    end if;
     AVANCER;									--| SAUTER %rules
 
-    WHILE	TOKEN /= "%end" LOOP
+    while	TOKEN /= "%end" loop
       MAKE_RULE( TOKEN );
       AVANCER;
-      IF TOKEN = "::=" THEN
+      if TOKEN = "::=" then
         AVANCER;
-      ELSE
+      else
         ERROR( SOURCEPOS, "EXPECTING ::= INSTEAD OF " & TOKEN );
-      END	IF;
+      end	if;
 
-      WHILE TOKEN /= "%%" LOOP
+      while TOKEN /= "%%" loop
         MAKE_ALTERNATIVE;
-        WHILE TOKEN	/= "|" AND THEN TOKEN /= "====>" AND THEN TOKEN /= "%%" LOOP
-	IF TOKEN /= "empty"	THEN
+        while TOKEN	/= "|" and then TOKEN /= "====>" and then TOKEN /= "%%" loop
+	if TOKEN /= "empty"	then
 	  MAKE_SYLLABE( TOKEN );
-	END IF;
+	end if;
 	AVANCER;
-        END LOOP;
+        end loop;
 
-        IF TOKEN = "====>" THEN							--| UNE LISTE D'OPERATIONS SEMANTIQUES
+        if TOKEN = "====>" then							--| UNE LISTE D'OPERATIONS SEMANTIQUES
 	AVANCER;
-	WHILE TOKEN /= "|" AND TOKEN /= "%%" LOOP					--| ARRET	DE LA LISTE SUR NOUVELLE ALTERNATIVE OU	FIN DE REGLE
+	while TOKEN /= "|" and TOKEN /= "%%" loop					--| ARRET	DE LA LISTE SUR NOUVELLE ALTERNATIVE OU	FIN DE REGLE
 	  MAKE_SEMANTICS_GET_TOKEN( TOKEN );						--| INTEGRER L'OPERATION SEMANTIQUE
-	END LOOP;
-        END IF;
+	end loop;
+        end if;
 
         SEM_S := MAKE( DN_SEM_S );
         DI  ( XD_SEM_INDEX, SEM_S, 0 );
         LIST( SEM_S, SEMAN_LIST );
-        IF NOT IS_EMPTY( SEMAN_LIST ) THEN
+        if not IS_EMPTY( SEMAN_LIST ) then
 	SEMAN_ALT_COUNT := SEMAN_ALT_COUNT + 1;
-        END IF;
+        end if;
         D	  ( XD_SEMANTICS, ALTERNATIVE, SEM_S );
         LIST( ALTERNATIVE, SYL_LIST );
 
-        IF TOKEN = "|" THEN								--| ENCORE UNE ALTERNATIVE, PASSER LE '|'
+        if TOKEN = "|" then								--| ENCORE UNE ALTERNATIVE, PASSER LE '|'
 	AVANCER;
-        END IF;
-      END	LOOP;
+        end if;
+      end	loop;
 
       LIST( RULE, ALT_LIST );								--| LISTER LA REGLE
       AVANCER;									--| PASSER LE %%
 
-    END LOOP;
+    end loop;
 
     GRAMMAR := MAKE( DN_RULE_S );
     LIST(	GRAMMAR, RULE_LIST );
@@ -525,10 +531,10 @@ TRAITER_TOUTE_CLASSE_ALL_SOURCE:
     D( XD_GRAMMAR, USER_ROOT,	GRAMMAR );
 
     D( XD_USER_ROOT, TREE_ROOT, USER_ROOT );
-  END PROCESS_GRAMMAR;
+  end PROCESS_GRAMMAR;
 
 
-BEGIN
+begin
   OPEN  (	IFILE, IN_FILE, "../../idl/" & "diana.idl" );					--| CONTIENT LA DESCRIPTION IDL DE LA GRAMMAIRE ADA83
   CREATE(	OFILE, OUT_FILE, NOM_TEXTE & "_INITS.txt" );
   CREATE_IDL_TREE_FILE( NOM_TEXTE & ".lar" );						--| FICHIER DES PAGES CONTENANT L ARBRE	GRAMMAIRE	ADA83
@@ -550,4 +556,4 @@ BEGIN
   INT_IO.PUT( SEMAN_ALT_COUNT, 0 );
   PUT_LINE( " ALTS." );
 --|-------------------------------------------------------------------------------------------------
-END READ_GRMR;
+end READ_GRMR;

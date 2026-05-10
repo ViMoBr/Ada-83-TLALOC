@@ -1,7 +1,8 @@
 ------------------------------------------------------------------------------------------------------------------------
--- CC BY SA	EXPANDER-UTILS.ADB		VINCENT MORIN	6/5/2025	UNIVERSITE DE BRETAGNE OCCIDENTALE
+-- SPDX-FileCopyrightText: 2026 VINCENT	MORIN, UBO
+-- SPDX-License-Identifier: GPL-3.0-or-later
 ------------------------------------------------------------------------------------------------------------------------
---	1	2	3	4	5	6	7	8	9	0	1
+--	1	2	3	4	5	6	7	8	9	0	1	2
 
 separate ( EXPANDER	)
 
@@ -331,8 +332,9 @@ is					-----
 
         begin
 	PUT( tab & "L" & SIZ_CHAR & '	' & IMAGE( DEFN_LVL	) & ',' &	tab );
-	if  DEFN_LVL >= INTEGER( CUR_LEVEL )
-	and then	D( XD_REGION, DEFN ).TY = DN_PACKAGE_ID
+--	if  DEFN_LVL >= INTEGER( CUR_LEVEL )
+	if  DEFN_LVL /= INTEGER( CUR_LEVEL )
+	or else	D( XD_REGION, DEFN ).TY = DN_PACKAGE_ID
 	then
 	  REGIONS_PATH( DEFN );
 	end if;
@@ -344,8 +346,9 @@ is					-----
 	DEFN_LVL	: INTEGER		:= DI( CD_LEVEL, DEFN );
         begin
 	PUT( tab & "LVa " &	IMAGE( DEFN_LVL ) &	',' & tab	);
-	if  DEFN_LVL >= INTEGER( CUR_LEVEL )
-	and then	D( XD_REGION, DEFN ).TY = DN_PACKAGE_ID
+--	if  DEFN_LVL >= INTEGER( CUR_LEVEL )
+	if  DEFN_LVL /= INTEGER( CUR_LEVEL )
+	or else	D( XD_REGION, DEFN ).TY = DN_PACKAGE_ID
 	then
 	  REGIONS_PATH( DEFN );
 	end if;
@@ -423,7 +426,7 @@ is					-----
     else
       REGIONS_PATH(	REGION );
       PUT( RGN_NAME	);
-      if	REGION.TY	= DN_PROCEDURE_ID  then
+      if	REGION.TY	= DN_PROCEDURE_ID  or  REGION.TY = DN_FUNCTION_ID	 then
         PUT( '_' & LABEL_STR(	LABEL_TYPE( DI( CD_LABEL, REGION ) ) ) );
       end	if;
       if	WITH_DOT	then PUT(	'.' ); end if;
@@ -438,5 +441,5 @@ is					-----
 end	UTILS;
 	-----
 
--------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
 --	1	2	3	4	5	6	7	8	9	0	1	2

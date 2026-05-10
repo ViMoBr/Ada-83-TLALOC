@@ -1,8 +1,14 @@
-SEPARATE (IDL)
+------------------------------------------------------------------------------------------------------------------------
+-- SPDX-FileCopyrightText: 2026 VINCENT	MORIN, UBO
+-- SPDX-License-Identifier: GPL-3.0-or-later
+------------------------------------------------------------------------------------------------------------------------
+--	1	2	3	4	5	6	7	8	9	0	1	2
+
+separate (IDL)
 --|-------------------------------------------------------------------------------------------------
 --|		PROCEDURE	IDL_READ
 --|-------------------------------------------------------------------------------------------------
-PROCEDURE	IDL_READ ( NOM_TEXTE :STRING ) IS						--| LIT UNE DESCRIPTION IDL EN MEMOIRE VIRTUELLE
+procedure	IDL_READ ( NOM_TEXTE :STRING ) is						--| LIT UNE DESCRIPTION IDL EN MEMOIRE VIRTUELLE
 
   IFILE			: FILE_TYPE;						--| FICHIER IDL
   SLINE			: STRING ( 1..256 );					--| LIGNE	TEXTE COURANTE
@@ -20,192 +26,192 @@ PROCEDURE	IDL_READ ( NOM_TEXTE :STRING ) IS						--| LIT UNE DESCRIPTION IDL EN 
 
   USER_ROOT		: TREE;							--| RACINE DE L'ARBRE
 
-  TYPE CONTEXT_TYPE		IS (NIL, IN_NODE, IN_CLASS);
+  type CONTEXT_TYPE		is (NIL, IN_NODE, IN_CLASS);
   CONTEXT			: CONTEXT_TYPE	:= NIL;
 
-  PROCEDURE PROCESS_IDL;
-  PROCEDURE CHECK_IDL;
-  PROCEDURE PRINT_IDL;
+  procedure PROCESS_IDL;
+  procedure CHECK_IDL;
+  procedure PRINT_IDL;
 
   --|-----------------------------------------------------------------------------------------------
   --|		PROCEDURE	GET_TOKEN
-  PROCEDURE GET_TOKEN IS
-  BEGIN
-    WHILE	 COL <= LAST  AND THEN  ( SLINE(	COL ) = '	' OR ELSE	SLINE( COL ) = ASCII.HT )  LOOP	--| PASSER LES ESPACES
+  procedure GET_TOKEN is
+  begin
+    while	 COL <= LAST  and then  ( SLINE(	COL ) = '	' or else	SLINE( COL ) = ASCII.HT )  loop	--| PASSER LES ESPACES
       COL	:= COL + 1;
-    END LOOP;
+    end loop;
 
-    IF COL < LAST AND THEN SLINE( COL )	= '-' AND	THEN SLINE( COL+1 )	= '-' THEN		--| SAUTER EN FIN DE LIGNE SUR COMMENTAIRE
+    if COL < LAST and then SLINE( COL )	= '-' and	then SLINE( COL+1 )	= '-' then		--| SAUTER EN FIN DE LIGNE SUR COMMENTAIRE
       COL	:= LAST +	1;
-    END IF;
+    end if;
 
-    IF COL > LAST THEN								--| SI ON	EST POST FIN DE LIGNE
-      LOOP
-        IF END_OF_FILE ( IFILE ) THEN RETURN; END	IF;
+    if COL > LAST then								--| SI ON	EST POST FIN DE LIGNE
+      loop
+        if END_OF_FILE ( IFILE ) then return; end	if;
 
-        IF END_OF_LINE ( IFILE ) THEN
+        if END_OF_LINE ( IFILE ) then
 	SKIP_LINE	( IFILE );
 	LINE_COUNT := LINE_COUNT + 1;
 	LAST := 0;
-        ELSE
+        else
 	SLINE( 1..2 ) := "??";							--| FORCER À AUTRE CHOSE QUE // EN CAS DE LIGNE VIDE
 	GET_LINE(	IFILE, SLINE, LAST );						--| LIRE UNE LIGNE
-	IF SLINE(	1..2 ) = "//" THEN							--| NE S'OCCUPER QUE DES LIGNES COMMENÇANT PAR //
+	if SLINE(	1..2 ) = "//" then							--| NE S'OCCUPER QUE DES LIGNES COMMENÇANT PAR //
 	  COL := 3;								--| SE METTRE EN COL 3 POST "//"
-	ELSE
+	else
 	  COL := LAST + 1;								--| POST FIN DE LIGNE POUR NEGLIGER LA LIGNE
-	END IF;
-        END IF;
+	end if;
+        end if;
 
-        WHILE COL <= LAST AND	THEN ( SLINE(COL) =	' ' OR ELSE SLINE(COL) = ASCII.HT ) LOOP	--| PASSER LES BLANCS
+        while COL <= LAST and	then ( SLINE(COL) =	' ' or else SLINE(COL) = ASCII.HT ) loop	--| PASSER LES BLANCS
 	COL := COL + 1;
-        END LOOP;
+        end loop;
 
-        IF COL <= LAST THEN
-	IF SLINE(	COL ) = '-' AND THEN COL < LAST AND THEN SLINE( COL+1 ) = '-' THEN
+        if COL <= LAST then
+	if SLINE(	COL ) = '-' and then COL < LAST and then SLINE( COL+1 ) = '-' then
 	  COL := LAST + 1;
-	ELSE									--| LIGNE	NON VIDE
+	else									--| LIGNE	NON VIDE
 	  SOURCELINE := MAKE ( DN_SOURCELINE );						--| CREER	UN NOEUD LIGNE SOURCE
 	  DI  ( XD_NUMBER, SOURCELINE, LINE_COUNT );					--| Y METTRE LE NUMERO DE LIGNE
 	  LIST( SOURCELINE,	(TREE_NIL,TREE_NIL)	);					--| INITIALISER LA XD_ERROR_LIST
 	  SOURCE_LIST := APPEND ( SOURCE_LIST, SOURCELINE	);				--| METTRE LA LIGNE	EN FILE
-	  EXIT;
-	END IF;
-        END IF;
-      END	LOOP;
-    END IF;
+	  exit;
+	end if;
+        end if;
+      end	loop;
+    end if;
 
     F_COL	:= COL;
     TOKEN_LENGTH :=	1;
     TOKEN_IS_NAME := FALSE;
 
-    CASE SLINE(COL)	IS
-    WHEN 'A'..'Z' |	'a'..'z' =>
+    case SLINE(COL)	is
+    when 'A'..'Z' |	'a'..'z' =>
       TOKEN_IS_NAME	:= TRUE;
       COL	:= COL +1;
-      WHILE COL <= LAST
-	  AND THEN ( SLINE(	COL ) IN 'A'..'Z'
-		   OR ELSE SLINE( COL ) IN 'a'..'z'
-		   OR ELSE SLINE( COL ) = '_'
-		   OR ELSE SLINE( COL ) IN '0'..'9'
+      while COL <= LAST
+	  and then ( SLINE(	COL ) in 'A'..'Z'
+		   or else SLINE( COL ) in 'a'..'z'
+		   or else SLINE( COL ) = '_'
+		   or else SLINE( COL ) in '0'..'9'
 			)
-      LOOP
+      loop
         TOKEN_LENGTH := TOKEN_LENGTH + 1;
         COL := COL + 1;
-      END	LOOP;
+      end	loop;
 
-    WHEN ':' =>									--| PEUT ETRE ::=
-      IF COL + 2 <=	LAST
-	        AND THEN SLINE (COL +	1) = ':' AND THEN SLINE( COL + 2 ) = '=' THEN		--| OUI UN ::=
+    when ':' =>									--| PEUT ETRE ::=
+      if COL + 2 <=	LAST
+	        and then SLINE (COL +	1) = ':' and then SLINE( COL + 2 ) = '=' then		--| OUI UN ::=
         TOKEN_LENGTH := 3;								--| LONGUEUR 3
         COL := COL + 3;
-      ELSE
+      else
         COL := COL + 1;
-      END	IF;
+      end	if;
 
-    WHEN '=' =>									--| PEUT ETRE =>
-      IF COL + 1 <=	LAST AND THEN SLINE( COL + 1 ) = '>' THEN				--| OUI "=>"
+    when '=' =>									--| PEUT ETRE =>
+      if COL + 1 <=	LAST and then SLINE( COL + 1 ) = '>' then				--| OUI "=>"
         TOKEN_LENGTH := 2;
         COL := COL + 2;
-      ELSE
+      else
         COL := COL + 1;
-      END	IF;
+      end	if;
 
-    WHEN '|' | ';' | ',' =>
+    when '|' | ';' | ',' =>
       COL	:= COL + 1;
 
-    WHEN OTHERS =>
+    when others =>
       COL	:= COL + 1;
 
-    END CASE;
+    end case;
 
     SOURCEPOS := MAKE_SOURCE_POSITION( SOURCELINE, SRCCOL_IDX( F_COL ) );
 
-  END GET_TOKEN;
+  end GET_TOKEN;
   --|-----------------------------------------------------------------------------------------------
   --|		PROCEDURE	PROCESS_IDL
-  PROCEDURE PROCESS_IDL IS
+  procedure PROCESS_IDL is
 
     RULE_NODE		: TREE;
     NODE_LIST		: SEQ_TYPE	:= (TREE_NIL,TREE_NIL);
     PRIOR_F_COL		: POSITIVE	:= 1;
     PRIOR_TOKEN_LENGTH	: NATURAL		:= 0;
-    TYPE ATTR_TYPE		IS (NORMAL, SEQ);
+    type ATTR_TYPE		is (NORMAL, SEQ);
 
     --|---------------------------------------------------------------------------------------------
     --|		PROCEDURE	MAKE_RULE_OR_CLASS_NODE
-    PROCEDURE MAKE_RULE_OR_CLASS_NODE (	NODE_NAME	:STRING )	IS
+    procedure MAKE_RULE_OR_CLASS_NODE (	NODE_NAME	:STRING )	is
       SYMBOL		: TREE		:= STORE_SYM ( NODE_NAME );			--| STOCKER/RETIRER	LE NOM DE	NOEUD REGLE (NOM EN	PARTIE GAUCHE AVANT	LE => )
       R_LIST		: SEQ_TYPE	:= LIST (	SYMBOL );				--| LISTE	CONTENANT	LE NOEUD REGLE ASSOCIEES AU SYMBOLE (REFERENCE COMME GAUCHE	DE REGLE OU TYPAGE)
-    BEGIN
-      IF IS_EMPTY (	R_LIST ) THEN							--| LA LISTE EST VIDE, C'EST LA PREMIERE DEFINITION DE REGLE/CLASSE
+    begin
+      if IS_EMPTY (	R_LIST ) then							--| LA LISTE EST VIDE, C'EST LA PREMIERE DEFINITION DE REGLE/CLASSE
         RULE_NODE := MAKE ( DN_CLASS_NODE );						--| FABRIQUER UN NOEUD POUR LA REGLE/CLASSE
         D	( XD_SYMREP, RULE_NODE, SYMBOL );						--| METTRE LE SYMBOLE DU NOM DE REGLE (NOM GAUCHE) DANS LE XD_NAME DU	NOEUD REGLE
         LIST ( RULE_NODE, (TREE_NIL,TREE_NIL) );						--| INITIALISER À VIDE LA LISTE DES ELEMENTS DU CÔTE DROIT
-        IF CONTEXT = IN_NODE THEN							--| DANS UN NOEUD REGLE SIMPLE
+        if CONTEXT = IN_NODE then							--| DANS UN NOEUD REGLE SIMPLE
 	DB ( XD_IS_CLASS, RULE_NODE, FALSE );						--| MARQUER UNE REGLE DE STRUCTURE D'ATTRIBUTS
-        ELSE									--| DANS UNE CLASSE
+        else									--| DANS UNE CLASSE
 	DB ( XD_IS_CLASS, RULE_NODE, TRUE );						--| MARQUER UNE REGLE DE DEFINITION DE CLASSE
-        END IF;
+        end if;
         D	( LX_SRCPOS, RULE_NODE, SOURCEPOS );						--| METTRE LA POSITION SOURCE	DONNEE PAR GET_TOKEN
         D	( XD_PARENT, RULE_NODE, TREE_VOID );
         LIST ( SYMBOL, APPEND	( (TREE_NIL,TREE_NIL), RULE_NODE ) );				--| METTRE LE NOEUD	REGLE COMME ELEMENT	UNIQUE DE	LISTE DU SYMBOLE DE	NOM GAUCHE (XD_DEFLIST)
         NODE_LIST := APPEND (	NODE_LIST, RULE_NODE );					--| METTRE EN LISTE	LA REGLE
 
-      ELSE									--| UNE REGLE AVEC MEME PARTIE GAUCHE A	DEJÀ ETE VUE
-        DECLARE
+      else									--| UNE REGLE AVEC MEME PARTIE GAUCHE A	DEJÀ ETE VUE
+        declare
 	DEF		: TREE		:= HEAD (	R_LIST );				--| PRENDRE LE NOEUD DE TETE,	LE NOEUD REGLE
-        BEGIN
-	IF DEF.TY	= DN_CLASS_NODE THEN						--| VERIFIER QUE C'EST UNE REGLE
+        begin
+	if DEF.TY	= DN_CLASS_NODE then						--| VERIFIER QUE C'EST UNE REGLE
 	  RULE_NODE := DEF;								--| PRENDRE CE NOEUD COMME COURANT
-	  IF CONTEXT = IN_CLASS THEN							--| ON A UN NOM CITE EN CLASSE (PEUT AVOIR ETE TROUVE AUPARAVANT CITE	COMME TYPAGE EN DROITE DE REGLE D'ATTRIBUTION )
+	  if CONTEXT = IN_CLASS then							--| ON A UN NOM CITE EN CLASSE (PEUT AVOIR ETE TROUVE AUPARAVANT CITE	COMME TYPAGE EN DROITE DE REGLE D'ATTRIBUTION )
 	    DB ( XD_IS_CLASS, RULE_NODE, TRUE );					--| MARQUER COMME CLASSE
-	  END IF;
+	  end if;
 
-	ELSE									--| ANOMALIE LE NOEUD N'EST PAS UNE REGLE
+	else									--| ANOMALIE LE NOEUD N'EST PAS UNE REGLE
 	  ERROR (	SOURCEPOS, "HOLA ! " & NODE_NAME & " N EST PAS UN NOM EN PARTIE GAUCHE (REGLE) !" );
-	END IF;
-        END;
-      END	IF;
+	end if;
+        end;
+      end	if;
 
-    END MAKE_RULE_OR_CLASS_NODE;
+    end MAKE_RULE_OR_CLASS_NODE;
     --|---------------------------------------------------------------------------------------------
     --|		PROCEDURE	MAKE_ATTR
-    PROCEDURE MAKE_ATTR ( ATTR_NAME :STRING; ATYPE :ATTR_TYPE; NOM_TYPE :STRING	) IS
+    procedure MAKE_ATTR ( ATTR_NAME :STRING; ATYPE :ATTR_TYPE; NOM_TYPE :STRING	) is
       SYMBOL		: TREE		:= STORE_SYM ( ATTR_NAME );			--| STOCKER/RETIRER	LE SYMBOLE (SYMREP)	DE L'ATTRIBUT
       A_LIST		: SEQ_TYPE	:= LIST (	SYMBOL );				--| LISTE	CONTENANT	LA DEFINITION DE L'ATTRIBUT
       TYPAGE		: TREE		:= STORE_SYM ( NOM_TYPE );			--| STOCKER/REPRENDRE LE SYMBOLE DU TYPE DE L'ATTRIBUT (UN NOM DE REGLE OU DE CLASSE)
       ATTR		: TREE;
-    BEGIN
+    begin
 
-      IF IS_EMPTY (	A_LIST ) THEN							--| AUCUNE APPARITION DE CET ATTRIBUT
+      if IS_EMPTY (	A_LIST ) then							--| AUCUNE APPARITION DE CET ATTRIBUT
         ATTR_COUNT := ATTR_COUNT + 1;							--| UN ATTRIBUT DE PLUS
         ATTR := MAKE ( DN_ATTR );							--| CREER	UN NOEUD DE TYPE ATTRIBUT/TERMINAL
         D	( XD_SYMREP, ATTR, SYMBOL );							--| POINTER LE SYMBOLE DANS LE CHAMP XD_SYMREP DU	TERMINAL
 
-        CASE ATYPE IS								--| SUIVANT QUE L'ON A UN ATTRIBUT SIMPLE OU UNE SEQUENCE
-        WHEN NORMAL	=>								--| UN ATTRIBUT SIMPLE
+        case ATYPE is								--| SUIVANT QUE L'ON A UN ATTRIBUT SIMPLE OU UNE SEQUENCE
+        when NORMAL	=>								--| UN ATTRIBUT SIMPLE
 	DI ( XD_ATTR_ID, ATTR, ATTR_COUNT );						--| PORTER LE N° D'ATTRIBUT EN POSITIF
-        WHEN OTHERS	=>								--| UN ATTRIBUT SEQUENCE, PORTER LE N° D'ATTRIBUT	EN NEGATIF
+        when others	=>								--| UN ATTRIBUT SEQUENCE, PORTER LE N° D'ATTRIBUT	EN NEGATIF
 	DI (XD_ATTR_ID, ATTR, - ATTR_COUNT );
-        END CASE;
+        end case;
         D	( XD_ATTR_TYPE, ATTR, TYPAGE );						--| METTRE LE TYPAGE
         LIST ( SYMBOL, APPEND	( (TREE_NIL,TREE_NIL), ATTR )	);				--| PORTER L'ATTRIBUT CREÉ EN	LISTE DANS LE XD_DEFLIST DU SYMREP
 
-      ELSE									--| IL Y A DEJÀ EU UNE APPARITION
+      else									--| IL Y A DEJÀ EU UNE APPARITION
         ATTR := HEAD ( A_LIST	);							--| PRENDRE LA DEFINITION EXISTANTE
-      END	IF;
+      end	if;
 
-      IF ATTR.TY = DN_ATTR THEN							--| CE DOIT ETRE UN	ATTRIBUT/TERMINAL
-        CASE ATYPE IS
-        WHEN NORMAL	=>								--| ATTRIBUT SIMPLE	(NON SEQUENCE)
-	IF DI ( XD_ATTR_ID,	ATTR ) < 0  THEN						--| IL Y A UNE ANOMALIE (LE N° D'ATTRIBUT DOIT ETRE POSITIF	DANS CE CAS)
+      if ATTR.TY = DN_ATTR then							--| CE DOIT ETRE UN	ATTRIBUT/TERMINAL
+        case ATYPE is
+        when NORMAL	=>								--| ATTRIBUT SIMPLE	(NON SEQUENCE)
+	if DI ( XD_ATTR_ID,	ATTR ) < 0  then						--| IL Y A UNE ANOMALIE (LE N° D'ATTRIBUT DOIT ETRE POSITIF	DANS CE CAS)
 	  ERROR (	SOURCEPOS, "ATTR IS SEQ" & ATTR_NAME);
 
-	ELSIF TYPAGE /= D (	XD_ATTR_TYPE, ATTR ) THEN					--| ANOMALIE SI LE TYPAGE NE CORRESPOND	PAS À CE QUI EST DANS L'ATTRIBUT (VOIR LA LIGNE (**) UN PEU	PLUS HAUT)
-	  DECLARE
+	elsif TYPAGE /= D (	XD_ATTR_TYPE, ATTR ) then					--| ANOMALIE SI LE TYPAGE NE CORRESPOND	PAS À CE QUI EST DANS L'ATTRIBUT (VOIR LA LIGNE (**) UN PEU	PLUS HAUT)
+	  declare
 	    OLD_TYPAGE	: TREE		:= D ( XD_ATTR_TYPE, ATTR );
-	  BEGIN
+	  begin
 	    ERROR	( SOURCEPOS, "VALUE OF " & ATTR_NAME
 			& " IS "	 & PRINT_NAME ( TYPAGE )
 			& " [" & PAGE_IDX'IMAGE ( TYPAGE.PG )
@@ -217,166 +223,166 @@ PROCEDURE	IDL_READ ( NOM_TEXTE :STRING ) IS						--| LIT UNE DESCRIPTION IDL EN 
 			& "." & LINE_IDX'IMAGE ( OLD_TYPAGE.LN )
 			& "." & NODE_NAME'IMAGE ( OLD_TYPAGE.TY	) & "] CALLED " & PRINT_NAME ( OLD_TYPAGE )
 			);
-	  END;
-	END IF;
-        WHEN OTHERS	=>								--| ATTRIBUT SEQUENCE
-	IF DI ( XD_ATTR_ID,	ATTR) >= 0 THEN						--| ANOMALIE SI LE N° D'ATTRIBUT EST POSITIF (IL DOIT ETRE NEGATIF POUR UNE SEQUENCE)
+	  end;
+	end if;
+        when others	=>								--| ATTRIBUT SEQUENCE
+	if DI ( XD_ATTR_ID,	ATTR) >= 0 then						--| ANOMALIE SI LE N° D'ATTRIBUT EST POSITIF (IL DOIT ETRE NEGATIF POUR UNE SEQUENCE)
 	  ERROR (	SOURCEPOS, "ATTR IS NOT SEQ" & ATTR_NAME );
 
-	ELSIF TYPAGE /= D (	XD_ATTR_TYPE, ATTR)	THEN					--| SI LE	TYPAGE DE	SEQUENCE DIFFERE DE	L'ANTERIEUR
-	  DECLARE
+	elsif TYPAGE /= D (	XD_ATTR_TYPE, ATTR)	then					--| SI LE	TYPAGE DE	SEQUENCE DIFFERE DE	L'ANTERIEUR
+	  declare
 	    TEMP		: TREE		:= ATTR;					--| GARER	L'ATTRIBUT ANCIENNEMENT TYPE
-	  BEGIN
+	  begin
 	    ATTR := MAKE ( DN_ATTR );							--| REFAIRE UN TERMINAL QUI EST PRIS COMME ATTRIBUT
 	    D  ( XD_SYMREP,	ATTR, D (	XD_SYMREP, TEMP ) );				--| DANS LE SYMREP DU NOUVEAU, RECOPIER	LE SYMREP	DE L'ANCIEN
 	    DI ( XD_ATTR_ID, ATTR, DI	( XD_ATTR_ID, TEMP ) );				--| REPORTER AUSSI LE N° D'ATTRIBUT
 	    D  ( XD_ATTR_TYPE, ATTR, TYPAGE );						--| METTRE LE TYPAGE DANS CE NOUVEAU NOEUD ATTRIBUT QUI DIFERE PAR LE	TYPAGE
-	  END;
-	END IF;
-        END CASE;
-        DECLARE
+	  end;
+	end if;
+        end case;
+        declare
 	ASEQ		: SEQ_TYPE	 := LIST ( RULE_NODE );			--| REPRENDRE LA XD_LIST DU NOEUD REGLE	EN COURS
-        BEGIN
+        begin
 	LIST ( RULE_NODE, APPEND ( ASEQ, ATTR )	);					--| AJOUTER AU NOEUD REGLE EN	COURS LA LISTE DES ATTRIBUTS AUGMENTEE
-        END;
-      ELSE									--| LA DEFINITION (TROUVEE) N'EST PAS UN TERMINAL	!
+        end;
+      else									--| LA DEFINITION (TROUVEE) N'EST PAS UN TERMINAL	!
         ERROR ( SOURCEPOS, "NOT DEFINED AS AN ATTRIBUTE -" & ATTR_NAME );
 
-      END	IF;
+      end	if;
 
-    END MAKE_ATTR;
+    end MAKE_ATTR;
     --|---------------------------------------------------------------------------------------------
     --|		PROCEDURE	MAKE_MEMBER
-    PROCEDURE MAKE_MEMBER ( MEMBER_NAME	:STRING )	IS
+    procedure MAKE_MEMBER ( MEMBER_NAME	:STRING )	is
 
       SYMBOL		: TREE		:= STORE_SYM ( MEMBER_NAME );			--| STOCKER/REPRENDRE LE SYMREP CORRESPONDANT AU NOM D'ELEMENT DE CLASSE
       MEMBER		: TREE		:= MAKE (	DN_MEMBER	);			--| FABRIQUER UN NON TERMINAL	POUR UN ELEMENT APPARTENANT À	UNE CLASSE
       M_LIST		: SEQ_TYPE	:= LIST (	SYMBOL );				--| LA LISTE CONTENANT LA REGLE DEFINISSANT LE SYMBOLE
-    BEGIN
+    begin
       D (	XD_SYMREP, MEMBER, SYMBOL );							--| METTRE LE SYMREP DANS LE CHAMP XD_SYMREP DU MEMBRE DE CLASSE
       D (	LX_SRCPOS, MEMBER, SOURCEPOS );						--| METTRE LA POSITION SOURCE	DU MEMBRE	CREÉ PAR GET_TOKEN
       LIST ( RULE_NODE, APPEND ( LIST (	RULE_NODE	), MEMBER	) );				--| AJOUTER LE MEMBRE À LA LISTE DES MEMBRES DU NOEUD
-    END ;
+    end ;
     --|---------------------------------------------------------------------------------------------
 
-  BEGIN
+  begin
     LAST := 0;
     COL := 1;
     GET_TOKEN;
-    LOOP
+    loop
 
-      EXIT WHEN END_OF_FILE (IFILE) OR ELSE SLINE( F_COL..F_COL + TOKEN_LENGTH - 1) = "end";	--| FINIR	AVEC LE FICHIER OU LE LEXEME %%% QUI INDIQUE LA FIN
+      exit when END_OF_FILE (IFILE) or else SLINE( F_COL..F_COL + TOKEN_LENGTH - 1) = "end";	--| FINIR	AVEC LE FICHIER OU LE LEXEME %%% QUI INDIQUE LA FIN
 
-      IF TOKEN_IS_NAME THEN								--| LEXEME IDENTIFICATEUR
+      if TOKEN_IS_NAME then								--| LEXEME IDENTIFICATEUR
         PRIOR_F_COL	:= F_COL;								--| GARDER SA POSITION
         PRIOR_TOKEN_LENGTH :=	TOKEN_LENGTH;						--| ET SA	LONGUEUR
         GET_TOKEN;									--| ET PASSER AU SUIVANT (QUI	VA PERMETTRE DE SAVOIR CE QUE	L'ON VA FAIRE)
 
-      ELSIF SLINE( F_COL..F_COL + TOKEN_LENGTH - 1) = "=>" THEN				--| INDIQUE UNE REGLE DEFINISSANT DES ATTRIBUTS
+      elsif SLINE( F_COL..F_COL + TOKEN_LENGTH - 1) = "=>" then				--| INDIQUE UNE REGLE DEFINISSANT DES ATTRIBUTS
         CONTEXT := IN_NODE;								--| GARDER UNE TRACE DE CE FAIT : DEFINITION D'UNE ASSOCIATION D'ATTRIBUTS
         MAKE_RULE_OR_CLASS_NODE ( SLINE( PRIOR_F_COL..PRIOR_F_COL +PRIOR_TOKEN_LENGTH -1 ) );	--| TENTER LA CREATION D'UN NOEUD REGLE	(OU LE RAMENER S'IL	EXISTE DEJÀ)
         GET_TOKEN;									--| ALLER	CHERCHER LE PREMIER	NOM D'ATTRIBUT OU LE ;
 
-      ELSIF SLINE( F_COL..F_COL + TOKEN_LENGTH - 1) = "::="	THEN				--| LEXEME MARQUANT	UNE DEFINITION DE CLASSE
+      elsif SLINE( F_COL..F_COL + TOKEN_LENGTH - 1) = "::="	then				--| LEXEME MARQUANT	UNE DEFINITION DE CLASSE
         CONTEXT := IN_CLASS;								--| GARDER UNE TRACE DE CE FAIT : DEFINITION D'UNE CLASSE
         MAKE_RULE_OR_CLASS_NODE ( SLINE( PRIOR_F_COL..PRIOR_F_COL +PRIOR_TOKEN_LENGTH -1 ) );	--| TENTER LA CREATION D'UN NOEUD REGLE	(OU LE RAMENER S'IL	EXISTE DEJÀ)
         GET_TOKEN;									--| ALLER	CHERCHER UN COMPOSANT DE CLASSE
-        WHILE SLINE( F_COL..F_COL + TOKEN_LENGTH - 1) /= ";" LOOP				--| JUSQU'À LA FIN DE LA DEFINITION DE CLASSE
-	IF TOKEN_IS_NAME THEN							--| SI L'ON A UN NOM (PAS UNE	',' SEPARATRICE)
+        while SLINE( F_COL..F_COL + TOKEN_LENGTH - 1) /= ";" loop				--| JUSQU'À LA FIN DE LA DEFINITION DE CLASSE
+	if TOKEN_IS_NAME then							--| SI L'ON A UN NOM (PAS UNE	',' SEPARATRICE)
 	  MAKE_MEMBER ( SLINE( F_COL..F_COL + TOKEN_LENGTH - 1) );				--| CREER	UN MEMBRE	DE CLASSE
-	END IF;
+	end if;
 	GET_TOKEN;								--| AVANCER AU LEXEME SUIVANT
-        END LOOP;
+        end loop;
 
-      ELSIF SLINE( F_COL..F_COL + TOKEN_LENGTH - 1) = ":" THEN				--| SEPARATEUR DU TYPAGE
+      elsif SLINE( F_COL..F_COL + TOKEN_LENGTH - 1) = ":" then				--| SEPARATEUR DU TYPAGE
         GET_TOKEN;									--| AMENER UN SEQ OU LE NOM DU TYPE
-        IF SLINE( F_COL..F_COL + TOKEN_LENGTH - 1) = "Seq" THEN				--| C'EST	UN SEQ
+        if SLINE( F_COL..F_COL + TOKEN_LENGTH - 1) = "Seq" then				--| C'EST	UN SEQ
 	GET_TOKEN;								--| PRENDRE LE OF OU LE NOM DE TYPE
-	IF SLINE(	F_COL..F_COL + TOKEN_LENGTH -	1) = "Of"	THEN				--| ON A LE OF
+	if SLINE(	F_COL..F_COL + TOKEN_LENGTH -	1) = "Of"	then				--| ON A LE OF
 	  GET_TOKEN;								--| PRENDRE LE NOM DE TYPE
-	END IF;
+	end if;
 	MAKE_ATTR	( SLINE( PRIOR_F_COL..PRIOR_F_COL +PRIOR_TOKEN_LENGTH -1 ),	SEQ,		--| AJOUTER UN ATTRIBUT SEQUENCE
 		  SLINE( F_COL..F_COL + TOKEN_LENGTH - 1 )				--| AVEC SON TYPAGE
 		 );
 
-        ELSIF SLINE( PRIOR_F_COL..PRIOR_F_COL +PRIOR_TOKEN_LENGTH -1 ) /= "lx_comments" THEN	--| SI CE	N'EST PAS	UN ATTRIBUT LX_COMMENTS
+        elsif SLINE( PRIOR_F_COL..PRIOR_F_COL +PRIOR_TOKEN_LENGTH -1 ) /= "lx_comments" then	--| SI CE	N'EST PAS	UN ATTRIBUT LX_COMMENTS
 	MAKE_ATTR	( SLINE( PRIOR_F_COL..PRIOR_F_COL + PRIOR_TOKEN_LENGTH - 1), NORMAL,		--| AJOUTER UN ATTRIBUT SIMPLE (NON SEQUENCE)
 		  SLINE( F_COL..F_COL + TOKEN_LENGTH - 1 )				--| AVEC SON TYPAGE
 		 );
-        END IF;
+        end if;
 
-      ELSE
+      else
         GET_TOKEN;									--| LEXEME NON RECONNU, PASSER AU SUIVANT
-      END	IF;
-    END LOOP;
+      end	if;
+    end loop;
 
     USER_ROOT := MAKE ( DN_USER_ROOT );							--| FABRIQUER LE NOEUD RACINE	ARBRE
     D ( XD_SOURCENAME, USER_ROOT, STORE_TEXT ( NOM_TEXTE ) );				--| Y METTRE LE NOM	DE FICHIER ANS XD_SOURCENAME
     LIST ( USER_ROOT, NODE_LIST );							--| PORTER DANS LE NOEUD SEQUENCE LA LISTE DES NOEUDS
     D ( XD_USER_ROOT, TREE_ROOT, USER_ROOT );						--| METTRE LE NOEUD	RACINE ARBRE DANS LA RACINE SYSTEME
-  END PROCESS_IDL;
+  end PROCESS_IDL;
   --|-----------------------------------------------------------------------------------------------
   --|		PROCEDURE	CHECK_IDL
-  PROCEDURE CHECK_IDL IS
+  procedure CHECK_IDL is
     NODE_LIST		: SEQ_TYPE		:= LIST (	USER_ROOT	);		--| REPRENDRE LA LISTE DES REGLES DU CHAMP XD_LIST
     RULE_NODE		: TREE;
     ITEM_LIST		: SEQ_TYPE;
     ITEM			: TREE;
-  BEGIN
+  begin
     PUT_LINE ( "**** VERIFICATION ...");
-    WHILE	NOT IS_EMPTY ( NODE_LIST ) LOOP
+    while	not IS_EMPTY ( NODE_LIST ) loop
       POP	( NODE_LIST, RULE_NODE );							--| RETIRER UN NOEUD REGLE
       ITEM_LIST := LIST ( RULE_NODE );							--| LISTE	DES ATTRIBUTS OU DES MEMBRES
-      WHILE NOT IS_EMPTY ( ITEM_LIST ) LOOP						--| TANT QUE LISTE NON VIDE
+      while not IS_EMPTY ( ITEM_LIST ) loop						--| TANT QUE LISTE NON VIDE
         POP ( ITEM_LIST, ITEM	);							--| RETIRER UN ELEMENT DE LA XD_LIST (ATTRIBUT OU	MEMBRE DE	CLASSE)
 
-        IF ITEM.TY = DN_ATTR THEN							--| TERMINAL (OU ATTRIBUT)
-	DECLARE
+        if ITEM.TY = DN_ATTR then							--| TERMINAL (OU ATTRIBUT)
+	declare
 	  TYPAGE		: TREE		:= D ( XD_ATTR_TYPE, ITEM );			--| LE TYPE DE L'ATTRIBUT
-	BEGIN
-	  IF TYPAGE.TY /= DN_SYMBOL_REP THEN
+	begin
+	  if TYPAGE.TY /= DN_SYMBOL_REP then
 	    ERROR	( D ( LX_SRCPOS, RULE_NODE ),	"TYPAGE INEXISTANT: " );
-	  END IF;
-	END;
+	  end if;
+	end;
 
-        ELSE									--| NON TERMINAL (OU MEMBRE DE CLASSE)
-	DECLARE
+        else									--| NON TERMINAL (OU MEMBRE DE CLASSE)
+	declare
 	  DEFINING_RULE_LIST	: SEQ_TYPE	:= LIST (	D ( XD_SYMREP, ITEM	) );
-	BEGIN
+	begin
 
-	  IF IS_EMPTY ( DEFINING_RULE_LIST ) THEN
+	  if IS_EMPTY ( DEFINING_RULE_LIST ) then
 	    ERROR	( D ( LX_SRCPOS, RULE_NODE ),	"!! CLASSE VIDE : "	& PRINT_NAME ( D ( XD_SYMREP,	ITEM ) ) );
-	  ELSIF HEAD ( DEFINING_RULE_LIST ).TY /= DN_CLASS_NODE THEN
+	  elsif HEAD ( DEFINING_RULE_LIST ).TY /= DN_CLASS_NODE then
 	    ERROR	( D ( LX_SRCPOS, RULE_NODE ),	"!! PAS UN NOEUD CLASSE : " &	PRINT_NAME ( D ( XD_SYMREP, ITEM ) ) );
-	  ELSE
-	    DECLARE
-	      DEFINING_RULE		: CONSTANT TREE	:= HEAD (	DEFINING_RULE_LIST );
-	      OWNER		: CONSTANT TREE	:= RULE_NODE;
+	  else
+	    declare
+	      DEFINING_RULE		: constant TREE	:= HEAD (	DEFINING_RULE_LIST );
+	      OWNER		: constant TREE	:= RULE_NODE;
 	      PARENT		: TREE		:= D ( XD_PARENT, DEFINING_RULE );
-	    BEGIN
+	    begin
 	      D (	XD_CLASS_NODE, ITEM, DEFINING_RULE );
-	      IF PARENT = TREE_VOID THEN
+	      if PARENT = TREE_VOID then
 	        D	( XD_PARENT, DEFINING_RULE, OWNER );
 
-	      ELSIF DEFINING_RULE = TREE_VOID THEN
-	        NULL;
-	      ELSIF PARENT /= OWNER THEN
+	      elsif DEFINING_RULE = TREE_VOID then
+	        null;
+	      elsif PARENT /= OWNER then
 	        ERROR ( D (	LX_SRCPOS, OWNER ),	"NOEUD/CLASSE "
 			   & PRINT_NAME ( D	( XD_SYMREP, DEFINING_RULE ) )
 			   & " A LA FOIS DANS " & PRINT_NAME ( D ( XD_SYMREP, OWNER	) )
 			   & " ET " & PRINT_NAME ( D ( XD_SYMREP, PARENT ) )
 			   );
-	      END	IF;
-	    END;
-	  END IF;
-	END;
-        END IF;
-      END	LOOP;
-    END LOOP;
-  END CHECK_IDL;
+	      end	if;
+	    end;
+	  end if;
+	end;
+        end if;
+      end	loop;
+    end loop;
+  end CHECK_IDL;
   --|-----------------------------------------------------------------------------------------------
   --|		PROCEDURE	PRINT_IDL
-  PROCEDURE PRINT_IDL IS
+  procedure PRINT_IDL is
     NODE_LIST		: SEQ_TYPE		:= LIST (	USER_ROOT	);
     RULE_NODE		: TREE;
     ITEM_LIST		: SEQ_TYPE;
@@ -385,117 +391,117 @@ PROCEDURE	IDL_READ ( NOM_TEXTE :STRING ) IS						--| LIT UNE DESCRIPTION IDL EN 
     NFILE, CFILE		: TEXT_IO.FILE_TYPE;					--| FICHIERS NOEUDS	ET HIERARCHIE
     --|---------------------------------------------------------------------------------------------
     --|		PROCEDURE	CLASS_PATH
-    PROCEDURE CLASS_PATH ( NODE :TREE; IS_CLASS :BOOLEAN ) IS
-      PARENT		: CONSTANT TREE		:= D( XD_PARENT, NODE );
-    BEGIN
-      IF PARENT = NODE THEN
+    procedure CLASS_PATH ( NODE :TREE; IS_CLASS :BOOLEAN ) is
+      PARENT		: constant TREE		:= D( XD_PARENT, NODE );
+    begin
+      if PARENT = NODE then
         ERROR( D( LX_SRCPOS, NODE ), "AUTO PARENT ! " & PRINT_NAME( D( XD_SYMREP, NODE ) ) );
         PUT_LINE ( "ERREUR PARTITION" );
-      END	IF;
+      end	if;
 
-      IF PARENT = TREE_VOID THEN							--| CLASSE DE BASE
-        IF DB( XD_IS_CLASS, NODE ) THEN							--| UN NOEUD CLASSE
-	DECLARE
-	  THE_NAME	: CONSTANT STRING		:= PRINT_NAME( D ( XD_SYMREP,	NODE ) );
-	BEGIN
-	  IF THE_NAME /= "NON_DIANA"
-	    AND THEN THE_NAME /= "ALL_SOURCE"
-	    AND THEN THE_NAME /= "TYPE_SPEC"
-	    AND THEN THE_NAME /= "STANDARD_IDL"
-	  THEN
+      if PARENT = TREE_VOID then							--| CLASSE DE BASE
+        if DB( XD_IS_CLASS, NODE ) then							--| UN NOEUD CLASSE
+	declare
+	  THE_NAME	: constant STRING		:= PRINT_NAME( D ( XD_SYMREP,	NODE ) );
+	begin
+	  if THE_NAME /= "NON_DIANA"
+	    and then THE_NAME /= "ALL_SOURCE"
+	    and then THE_NAME /= "TYPE_SPEC"
+	    and then THE_NAME /= "STANDARD_IDL"
+	  then
 	    PUT_LINE ( "**** PARTITION INATTENDUE = " & THE_NAME );
-	  END IF;
+	  end if;
 	  PUT( THE_NAME );
-	  IF NOT IS_CLASS THEN
+	  if not IS_CLASS then
 	    PUT( CFILE, THE_NAME );
-	  END IF;
-	END;
+	  end if;
+	end;
 
-        ELSE									--| UN NOEUD DE REGLE D'ATTRIBUTION
+        else									--| UN NOEUD DE REGLE D'ATTRIBUTION
 	PUT( "..." );
-        END IF;
+        end if;
 
-      ELSE									--| PAS CLASSE DE BASE
+      else									--| PAS CLASSE DE BASE
         CLASS_PATH(	PARENT, IS_CLASS );							--| REMONTER VERS LA CLASSE DE BASE
         PUT( " > " & PRINT_NAME( D( XD_SYMREP, NODE ) ) );
-        IF NOT IS_CLASS THEN
+        if not IS_CLASS then
 	PUT ( CFILE, " > " & PRINT_NAME ( D ( XD_SYMREP, NODE ) ) );			--| REPETER
-        END IF;
-      END	IF;
-    END CLASS_PATH;
+        end if;
+      end	if;
+    end CLASS_PATH;
 
 
-  BEGIN
+  begin
     CREATE ( NFILE,	OUT_FILE,	NOM_TEXTE	& "_NODES_.txt" );					--| FICHIER INFORMATION TEXTE	DES NOEUDS
     CREATE ( CFILE,	OUT_FILE,	NOM_TEXTE	& "_CLASS_.txt" );					--| FICHIER INFORMATION TEXTE	HIERARCHIE DES CLASSES
     SET_OUTPUT ( NFILE );
     PUT_LINE ( "----- ARBORESCENCE IDL -----");
-    WHILE	NOT IS_EMPTY ( NODE_LIST ) LOOP
+    while	not IS_EMPTY ( NODE_LIST ) loop
       POP	( NODE_LIST, RULE_NODE );
 
-      DECLARE
-        IS_A_CLASS		: CONSTANT BOOLEAN		:= DB ( XD_IS_CLASS, RULE_NODE );
-      BEGIN
-        DECLARE
-	RULE_CLASS_NAME	: CONSTANT STRING		:= PRINT_NAME ( D (	XD_SYMREP, RULE_NODE ) );
-        BEGIN
+      declare
+        IS_A_CLASS		: constant BOOLEAN		:= DB ( XD_IS_CLASS, RULE_NODE );
+      begin
+        declare
+	RULE_CLASS_NAME	: constant STRING		:= PRINT_NAME ( D (	XD_SYMREP, RULE_NODE ) );
+        begin
 
-	IF IS_A_CLASS THEN								--| DEFINIT UNE CLASSE
+	if IS_A_CLASS then								--| DEFINIT UNE CLASSE
 	  PUT ( "{" & RULE_CLASS_NAME	& "}" );
-	ELSE
+	else
 	  PUT ( RULE_CLASS_NAME );
-	END IF;
-        END;
+	end if;
+        end;
 
         PUT ( ASCII.HT & "PATH " );
         CLASS_PATH ( RULE_NODE, IS_CLASS=> DB ( XD_IS_CLASS, RULE_NODE ) );
-        IF NOT IS_A_CLASS THEN							--| PAS UNE CLASSE
+        if not IS_A_CLASS then							--| PAS UNE CLASSE
 	NEW_LINE ( CFILE );
-        END IF;
+        end if;
 
         ITEM_LIST := LIST ( RULE_NODE );						--| LISTE	DES ATTRIBUTS OU DES MEMBRES
-        IF NOT IS_EMPTY ( ITEM_LIST ) THEN
-	IF IS_A_CLASS THEN								--| DEFINIT UNE CLASSE
+        if not IS_EMPTY ( ITEM_LIST ) then
+	if IS_A_CLASS then								--| DEFINIT UNE CLASSE
 	  PUT ( " ::= " );
-	END IF;
-        END IF;
+	end if;
+        end if;
         NEW_LINE;
-      END;
+      end;
 
-      WHILE NOT IS_EMPTY ( ITEM_LIST ) LOOP
+      while not IS_EMPTY ( ITEM_LIST ) loop
         POP ( ITEM_LIST, ITEM	);
 
-        IF ITEM.TY = DN_ATTR THEN							--| ATTRIBUT
+        if ITEM.TY = DN_ATTR then							--| ATTRIBUT
 	PUT ( ASCII.HT & "=> " & PRINT_NAME ( D	( XD_SYMREP, ITEM )	) & ASCII.HT & ": ");
-	IF DI ( XD_ATTR_ID,	ITEM ) < 0 THEN						--| ATTRIBUT SEQUENCE
+	if DI ( XD_ATTR_ID,	ITEM ) < 0 then						--| ATTRIBUT SEQUENCE
 	  PUT ( "SEQ OF ");
-	END IF;
+	end if;
 	PUT_LINE ( PRINT_NAME ( D ( XD_ATTR_TYPE, ITEM ) ) );				--| TYPAGE
 
-        ELSE									--| MEMBRE DE CLASSE
+        else									--| MEMBRE DE CLASSE
 	PUT ( ASCII.HT & PRINT_NAME (	D ( XD_SYMREP, ITEM	) ) );				--| NOM DU MEMBRE
 	DEFLIST := LIST ( D	( XD_SYMREP, ITEM )	);
-	IF IS_EMPTY ( DEFLIST ) OR ELSE HEAD ( DEFLIST ).TY /= DN_CLASS_NODE THEN
+	if IS_EMPTY ( DEFLIST ) or else HEAD ( DEFLIST ).TY /= DN_CLASS_NODE then
 	  PUT ( " ?????" );
-	END IF;
+	end if;
 	NEW_LINE;
-        END IF;
-      END	LOOP;
+        end if;
+      end	loop;
       NEW_LINE;
 
-    END LOOP;
+    end loop;
     SET_OUTPUT ( STANDARD_OUTPUT );
     CLOSE	( NFILE );
     CLOSE	( CFILE );
 
-  EXCEPTION
-    WHEN OTHERS =>
+  exception
+    when others =>
       CLOSE ( NFILE	);
       CLOSE ( CFILE	);
       PUT_LINE ( "ERREUR A L IMPRESSION" );
-  END PRINT_IDL;
+  end PRINT_IDL;
 
-BEGIN
+begin
 
   OPEN ( IFILE, IN_FILE, "../../idl/" &	NOM_TEXTE	& ".idl" );						--| FICHIER SOURCE IDL
   PUT_LINE ( "LE FICHIER : " & NOM_TEXTE & ".IDL EST OUVERT " );
@@ -512,9 +518,9 @@ BEGIN
 
   CLOSE_IDL_TREE_FILE;
 
-EXCEPTION
-  WHEN NAME_ERROR =>
+exception
+  when NAME_ERROR =>
     PUT_LINE ( "LE FICHIER DESCRIPTION : " & "../../idl/" &	NOM_TEXTE	& ".idl  EST INTROUVABLE" );
 
 --|-------------------------------------------------------------------------------------------------
-END IDL_READ;
+end IDL_READ;

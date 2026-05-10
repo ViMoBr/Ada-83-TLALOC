@@ -1,6 +1,8 @@
---	Vincent MORIN	Universite de Bretagne Occidentale	janvier 2025	Licence CC BY-SA 4.0
---	1	2	3	4	5	6	7	8	9	10	11	12
-
+------------------------------------------------------------------------------------------------------------------------
+-- SPDX-FileCopyrightText: 2026 VINCENT	MORIN, UBO
+-- SPDX-License-Identifier: GPL-3.0-or-later
+------------------------------------------------------------------------------------------------------------------------
+--	1	2	3	4	5	6	7	8	9	0	1	2
 
 separate(	IDL )
 					------------
@@ -416,7 +418,7 @@ return;
     PUT_LINE( "TREE_ROOT=" );	   print_node( TREE_ROOT );
     PUT_LINE( "USER_ROOT=" );	   print_node( USER_ROOT );
 
-    MARK_STRUCT( COMPLTN_STRUCT );							--| MARQUER LES NOEUDS DE CLASS_ALL_SOURCE
+    MARK_STRUCT( COMPLTN_STRUCT );									--| MARQUER LES NOEUDS DE CLASS_ALL_SOURCE
     PRINT_DIANA( COMPLTN_STRUCT, 0, TREE_VOID );
     NEW_LINE;
 
@@ -424,18 +426,23 @@ return;
 	-------
 
 begin
-  OPEN_IDL_TREE_FILE( IDL.LIB_PATH( 1..LIB_PATH_LENGTH ) & "$$$.TMP" );			--| OUVRIR LE FICHIER ARBRE TEMPORAIRE
-  CREATE(	OFILE, OUT_FILE,"$$$_TREE.TXT" );						--| CREER	LE FICHIER IMPRESSION DE L'ARBRE
-  SET_OUTPUT( OFILE	);								--| REDIRIGER LA SORTIE STANDARD VERS LE FICHIER IMPRESSION
-  IMPRIME;									--| IMPRIMER L'ARBRE
-  SET_OUTPUT( STANDARD_OUTPUT	);							--| REPOSITIONNER LA SORTIE STANDARD
-  CLOSE( OFILE );									--| FERMER LE FICHIER IMPRESSION
-  CLOSE_IDL_TREE_FILE;								--| FERMER LE FICHIER ARBRE
+  OPEN_IDL_TREE_FILE( IDL.LIB_PATH( 1..LIB_PATH_LENGTH ) & "$$$.TMP" );					--| OUVRIR LE FICHIER ARBRE TEMPORAIRE
+  CREATE(	OFILE, OUT_FILE,"$$$_TREE.TXT" );								--| CREER	LE FICHIER IMPRESSION DE L'ARBRE
+  SET_OUTPUT( OFILE	);										--| REDIRIGER LA SORTIE STANDARD VERS LE FICHIER IMPRESSION
+  IMPRIME;											--| IMPRIMER L'ARBRE
+  SET_OUTPUT( STANDARD_OUTPUT	);									--| REPOSITIONNER LA SORTIE STANDARD
+  CLOSE( OFILE );											--| FERMER LE FICHIER IMPRESSION
+  CLOSE_IDL_TREE_FILE;										--| FERMER LE FICHIER ARBRE
 
 exception
-  when others =>									--| POUR TOUT PROBLEME
-    SET_OUTPUT( STANDARD_OUTPUT );							--| REPOSITIONNER LA SORTIE STANDARD
-    CLOSE( OFILE );									--| FERMER LE FICHIER IMPRESSION
-    CLOSE_IDL_TREE_FILE;								--| FERMER LE FICHIER ARBRE
+  when others =>											--| POUR TOUT PROBLEME
+    SET_OUTPUT( STANDARD_OUTPUT );									--| REPOSITIONNER LA SORTIE STANDARD
+    CLOSE( OFILE );											--| FERMER LE FICHIER IMPRESSION
+    CLOSE_IDL_TREE_FILE;										--| FERMER LE FICHIER ARBRE
     raise;
-end PRETTY_DIANA;
+
+end	PRETTY_DIANA;
+	------------
+
+------------------------------------------------------------------------------------------------------------------------
+--	1	2	3	4	5	6	7	8	9	0	1	2
