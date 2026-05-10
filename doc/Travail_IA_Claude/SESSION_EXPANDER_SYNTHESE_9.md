@@ -1,6 +1,6 @@
 # SESSION EXPANDER — Synthèse et point de départ
 
-**Date** : mai 2026 (mise à jour après sessions des 9, 10, 11, 12, 13, 15 et 25 avril, et 10 mai (1) et 10 mai (2))
+**Date** : mai 2026 (mise à jour après sessions des 9, 10, 11, 12, 13, 15 et 25 avril, et 10 mai)
 **Objectif** : compléter l'EXPANDER du compilateur TLALOC
 **Objectif élargi** : implémenter le chapitre 14 du LRM Ada 83 (I/O)
 
@@ -83,18 +83,14 @@
 - **Code statements** : package MACHINE_CODE avec ASM_OPCODE.
   **ASM_OP_3** ajouté (session 15 avril) pour les accès indirects
   multi-niveaux (LIVa).
-- **DIRECT_IO** : package générique LRM 14.2.5 compilé et validé (sessions
-  10 mai (1) et 10 mai (2)). CREATE, OPEN, CLOSE, DELETE, RESET (2 versions),
-  READ (2 versions), WRITE (2 versions), SET_INDEX, INDEX, SIZE, END_OF_FILE,
-  IS_OPEN, MODE, NAME, FORM. Tous types validés : scalaire (LONG_FLOAT),
-  énuméré byte (COULEUR), record (POINT : 3 INTEGER), tableau contraint
-  (VECTEUR : array 1..4 of INTEGER). Lectures/écritures séquentielles et
-  positionnées, SET_INDEX, END_OF_FILE, RESET, IS_OPEN, boucle END_OF_FILE,
-  DELETE — tous fonctionnels. Mécanisme `ITEM'ADDRESS` + `__adr_ofs` via
-  CALLI correctement câblé dans WRITE et READ : `CODE_ADDRESS` émet le
-  déréférencement via CALLI pour obtenir le `data_ptr` réel ; READ et WRITE
-  passent cette adresse comme paramètre `ADR : SYSTEM.ADDRESS` à
-  `READ/WRITE_SYSTEM_CALL` (voir section 2.2).
+- **DIRECT_IO** : package générique LRM 14.2.5 compilé et validé (session
+  10 mai). CREATE, OPEN, CLOSE, DELETE, RESET (2 versions), READ (2 versions),
+  WRITE (2 versions), SET_INDEX, INDEX, SIZE, END_OF_FILE, IS_OPEN, MODE,
+  NAME, FORM. Testé sur LONG_FLOAT (scalaire), type énuméré (byte), record
+  contraint (POINT : 3 INTEGER), tableau contraint (VECTEUR : array 1..4 of
+  INTEGER). Lectures/écritures séquentielles et positionnées validées.
+  Mécanisme `ITEM'ADDRESS` + micro-procédure `ADR` pour l'accès aux données
+  brutes des composites (voir section 2.2).
 - **Exceptions** : squelette présent mais handlers incomplets.
 
 
@@ -186,29 +182,13 @@ VAR de l'instance en ordre inverse avant GFP_disp :
 `__adr_ofs` (GFP-8), `__st_ofs` (GFP-16), `__ld_ofs` (GFP-24),
 `__u_ofs` (GFP-32).
 
-#### État actuel des micro-procédures composites — mis à jour (10 mai (2))
+#### État actuel des micro-procédures composites
 
-`ADR` est désormais correctement invoqué depuis READ et WRITE via
-`ITEM'ADDRESS` + CALLI dans `CODE_ADDRESS` (expander-expressions.adb).
-La procédure `CODE_ADDRESS` émet, pour un paramètre composite dans un
-body générique :
-
-```ada
-La  PREFIX_LVL, -NAME_ofs    -- adresse du doublet descripteur
-La  CUR_LEVEL,  -GFP_ofs     -- GFP pour CALLI
-La              -TYPE__adr_ofs
-CALLI                         -- → data_ptr réel
-```
-
-READ et WRITE passent le résultat comme paramètre `ADR : SYSTEM.ADDRESS`
-à `READ/WRITE_SYSTEM_CALL`, qui l'accède via `La 2, -24`.
-Correction validée sur POINT (record) et VECTEUR (array contraint).
-
-`LD` et `ST` pour les types composites restent marqués **`A REVOIR`**
-dans `expander-declarations.adb` (corps provisoires `LI 0` / `DROP`).
-Ils ne sont pas nécessaires pour `DIRECT_IO` qui utilise `ITEM'ADDRESS`
-directement, mais le seront pour les génériques Ada 83 généraux avec
-paramètres `out` de type composite.
+`LD` et `ST` pour les types composites sont marqués **`A REVOIR`** dans
+`expander-declarations.adb` (corps provisoires `LI 0` / `DROP`). Ils ne
+sont pas nécessaires pour `DIRECT_IO` qui utilise `ITEM'ADDRESS` directement,
+mais le seront pour les génériques Ada 83 généraux avec paramètres `out`
+de type composite.
 
 
 ### 2.1 Mécanisme LD/ST par CALLI (session 25 avril)
@@ -610,27 +590,16 @@ expander.adb                  Programme principal + CODE_ROOT
 40. **`LVa` sur `in` composite dans syscall** : donne l'adresse du doublet
     descripteur, pas des données brutes. Pour les I/O fichier, utiliser
     `ITEM'ADDRESS` comme paramètre explicite `SYSTEM.ADDRESS` et `La 2, -OFS`
-    dans la macro LLIR. (session 10 mai (1))
-41. **`ITEM'ADDRESS` sur composite écrivait des pointeurs de pile** ~~(ouvert)~~
-    → **résolu (session 10 mai (2))**. `CODE_ADDRESS` dans le body générique
-    émet `La lvl, -NAME_ofs` + `La CUR_LEVEL, -GFP_ofs` + `La , -TYPE__adr_ofs`
-    + `CALLI` pour obtenir le `data_ptr` réel. READ et WRITE passent cette
-    adresse comme paramètre `ADR : SYSTEM.ADDRESS` à `READ/WRITE_SYSTEM_CALL`,
-    qui l'accèdent via `La 2, -24`. Validé sur COULEUR (énuméré), POINT
-    (record), VECTEUR (array).
-42. **Hexdump cohérent ≠ fichier correct** : READ/WRITE symétriques sur le
+    dans la macro LLIR. (session 10 mai)
+41. **Hexdump cohérent ≠ fichier correct** : READ/WRITE symétriques sur le
     même doublet donnent des résultats corrects en intra-processus mais
     écrivent des pointeurs de pile dans le fichier. Un second processus
     segfaulterait. Toujours vérifier avec hexdump que le fichier contient
-    les valeurs attendues, pas des adresses `0x7ffc...`. (session 10 mai (1))
-43. **`ITEM'ADDRESS` ne déréférence pas automatiquement le doublet** : dans
-    un body générique, `X'ADDRESS` où `X` est un composite passe par
-    `CODE_ADDRESS` qui doit vérifier `PREFIX_DEFN.TY in CLASS_PARAM_NAME`
-    et émettre le CALLI via `__adr_ofs`. Si `PREFIX_DEFN.TY` est
-    `DN_VARIABLE_ID` (variable locale dans un bloc `declare` imbriqué),
-    le même chemin s'applique — vérifier que le type de la variable est bien
-    composite avant d'émettre le CALLI, sinon émettre simplement `LVa`.
-    (session 10 mai (2))
+    les valeurs attendues, pas des adresses `0x7ffc...`. (session 10 mai)
+42. **Agrégats nommés en position de paramètre** : non encore implémentés
+    dans l'expander. Un agrégat `(X=>1,Y=>2)` comme initialiseur de variable
+    fonctionne (COMPILE_RECORD_VAR), mais pas comme argument d'appel. 
+    Contournement : variable intermédiaire déclarée avec l'agrégat. (session 10 mai)
 
 
 ## 9. Programmes de test — résultats validés
@@ -681,7 +650,7 @@ expander.adb                  Programme principal + CODE_ROOT
 ```
 
 
-### DIRECT_IO_TEST (session 10 mai (1), scalaire LONG_FLOAT)
+### DIRECT_IO_TEST (session 10 mai, scalaire LONG_FLOAT)
 
 ```
 LONG_FLOAT SIZE = 64 bits
@@ -693,30 +662,20 @@ size after rewrite = 3
 final #1/#2/#3 : 3.1415 / 3.1415 / -2.25
 ```
 
-### DIRECT_IO_TEST2 (sessions 10 mai (1) et 10 mai (2), tous types)
+### DIRECT_IO_TEST2 (session 10 mai, types non scalaires)
 
 ```
 === 1. COULEUR (énuméré, 8 bits) ===   5 writes, seq + positioned, ok
 === 2. POINT (record 3 INTEGER) ===    4 writes, seq + positioned en ordre qqcq, ok
 === 3. VECTEUR (array 1..4 INTEGER) == 3 writes, seq + positioned, ok
 === 4. SET_INDEX + END_OF_FILE ===     SET_INDEX(4), EOF avant/après lecture, retour début, ok
-=== 5. RESET + réécriture partielle == INOUT_FILE, rewrite pos 2+4 (variable en bloc declare), RESET IN_FILE, verify, ok
+=== 5. RESET + réécriture partielle == INOUT_FILE, rewrite pos 2+4, RESET IN_FILE, verify, ok
 === 6. IS_OPEN ===                     FALSE après CLOSE, TRUE après OPEN, ok
 === 7. Boucle END_OF_FILE ===          parcours séquentiel VECTEUR, 3 éléments, ok
 === 8. DELETE ===                      3 fichiers supprimés, IS_OPEN FALSE après DELETE, ok
 ```
-
-Fichier `point_direct.dat` après 4 writes (hexdump vérifié) :
-```
-0001 0000  0002 0000  0003 0000   → X=1,  Y=2,  Z=3   (P1)
-0010 0000  0020 0000  0040 0000   → X=16, Y=32, Z=64  (P2)
-fffb ffff  0000 0000  0063 0000   → X=-5, Y=0,  Z=99  (P3)
-002a 0000  ffff ffff  0007 0000   → X=42, Y=-1, Z=7   (P4)
-```
-
 Note : agrégats nommés en position de paramètre (`(X=>777,Y=>888,Z=>999)`)
-non encore compilables — contournement par variable intermédiaire déclarée
-dans un bloc `declare`.
+non encore compilables — contournement par variables intermédiaires déclarées.
 
 ## 10. Fichiers à uploader pour la prochaine session
 
