@@ -95,13 +95,21 @@ ST_INTEGER.elab:
 	SId -1, 0
 	RTD 0
 post_ST_INTEGER:
-BRA post_ADR_INTEGER
-ADR_INTEGER.elab:
+BRA post_INADR_INTEGER
+INADR_INTEGER.elab:
 	RTD 0
-post_ADR_INTEGER:
-VAR INTEGER__adr_ofs, q
-	LCA ADR_INTEGER.elab
-	Sa	 1, INTEGER__adr_ofs
+post_INADR_INTEGER:
+BRA post_OUTADR_INTEGER
+OUTADR_INTEGER.elab:
+	La
+	RTD 0
+post_OUTADR_INTEGER:
+VAR INTEGER__outadr_ofs, q
+	LCA OUTADR_INTEGER.elab
+	Sa	 1, INTEGER__outadr_ofs
+VAR INTEGER__inadr_ofs, q
+	LCA INADR_INTEGER.elab
+	Sa	 1, INTEGER__inadr_ofs
 VAR INTEGER__st_ofs, q
 	LCA ST_INTEGER.elab
 	Sa	 1, INTEGER__st_ofs
@@ -245,13 +253,21 @@ ST_LONG_FLOAT.elab:
 	SIq -1, 0
 	RTD 0
 post_ST_LONG_FLOAT:
-BRA post_ADR_LONG_FLOAT
-ADR_LONG_FLOAT.elab:
+BRA post_INADR_LONG_FLOAT
+INADR_LONG_FLOAT.elab:
 	RTD 0
-post_ADR_LONG_FLOAT:
-VAR LONG_FLOAT__adr_ofs, q
-	LCA ADR_LONG_FLOAT.elab
-	Sa	 1, LONG_FLOAT__adr_ofs
+post_INADR_LONG_FLOAT:
+BRA post_OUTADR_LONG_FLOAT
+OUTADR_LONG_FLOAT.elab:
+	La
+	RTD 0
+post_OUTADR_LONG_FLOAT:
+VAR LONG_FLOAT__outadr_ofs, q
+	LCA OUTADR_LONG_FLOAT.elab
+	Sa	 1, LONG_FLOAT__outadr_ofs
+VAR LONG_FLOAT__inadr_ofs, q
+	LCA INADR_LONG_FLOAT.elab
+	Sa	 1, LONG_FLOAT__inadr_ofs
 VAR LONG_FLOAT__st_ofs, q
 	LCA ST_LONG_FLOAT.elab
 	Sa	 1, LONG_FLOAT__st_ofs
@@ -407,13 +423,21 @@ ST_COULEUR.elab:
 	SIb -1, 0
 	RTD 0
 post_ST_COULEUR:
-BRA post_ADR_COULEUR
-ADR_COULEUR.elab:
+BRA post_INADR_COULEUR
+INADR_COULEUR.elab:
 	RTD 0
-post_ADR_COULEUR:
-VAR COULEUR__adr_ofs, q
-	LCA ADR_COULEUR.elab
-	Sa	 1, COULEUR__adr_ofs
+post_INADR_COULEUR:
+BRA post_OUTADR_COULEUR
+OUTADR_COULEUR.elab:
+	La
+	RTD 0
+post_OUTADR_COULEUR:
+VAR COULEUR__outadr_ofs, q
+	LCA OUTADR_COULEUR.elab
+	Sa	 1, COULEUR__outadr_ofs
+VAR COULEUR__inadr_ofs, q
+	LCA INADR_COULEUR.elab
+	Sa	 1, COULEUR__inadr_ofs
 VAR COULEUR__st_ofs, q
 	LCA ST_COULEUR.elab
 	Sa	 1, COULEUR__st_ofs
@@ -859,14 +883,22 @@ ST_POINT.elab:
 	DROP
 	RTD 0
 post_ST_POINT:
-BRA post_ADR_POINT
-ADR_POINT.elab:
-	La -1, 0
+BRA post_INADR_POINT
+INADR_POINT.elab:
+	LIa
 	RTD 0
-post_ADR_POINT:
-VAR POINT__adr_ofs, q
-	LCA ADR_POINT.elab
-	Sa	 1, POINT__adr_ofs
+post_INADR_POINT:
+BRA post_OUTADR_POINT
+OUTADR_POINT.elab:
+	LIa
+	RTD 0
+post_OUTADR_POINT:
+VAR POINT__outadr_ofs, q
+	LCA OUTADR_POINT.elab
+	Sa	 1, POINT__outadr_ofs
+VAR POINT__inadr_ofs, q
+	LCA INADR_POINT.elab
+	Sa	 1, POINT__inadr_ofs
 VAR POINT__st_ofs, q
 	LCA ST_POINT.elab
 	Sa	 1, POINT__st_ofs
@@ -1312,14 +1344,22 @@ ST_VECTEUR.elab:
 	DROP
 	RTD 0
 post_ST_VECTEUR:
-BRA post_ADR_VECTEUR
-ADR_VECTEUR.elab:
-	La -1, 0
+BRA post_INADR_VECTEUR
+INADR_VECTEUR.elab:
+	LIa
 	RTD 0
-post_ADR_VECTEUR:
-VAR VECTEUR__adr_ofs, q
-	LCA ADR_VECTEUR.elab
-	Sa	 1, VECTEUR__adr_ofs
+post_INADR_VECTEUR:
+BRA post_OUTADR_VECTEUR
+OUTADR_VECTEUR.elab:
+	LIa
+	RTD 0
+post_OUTADR_VECTEUR:
+VAR VECTEUR__outadr_ofs, q
+	LCA OUTADR_VECTEUR.elab
+	Sa	 1, VECTEUR__outadr_ofs
+VAR VECTEUR__inadr_ofs, q
+	LCA INADR_VECTEUR.elab
+	Sa	 1, VECTEUR__inadr_ofs
 VAR VECTEUR__st_ofs, q
 	LCA ST_VECTEUR.elab
 	Sa	 1, VECTEUR__st_ofs

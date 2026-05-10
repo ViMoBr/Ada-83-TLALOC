@@ -729,16 +729,21 @@ put_line(	"; adresse component id" );
     begin
       if  CODI.IN_GENERIC_BODY  then
 
-        if  PREFIX_DEFN.TY  in  CLASS_PARAM_NAME  then
-	PUT_LINE( tab & "La"	& tab & IMAGE( PREFIX_LVL ) & ", -" & CHN_PREFIX & "_ofs" );
+        if  PREFIX_DEFN.TY = DN_IN_ID  then
+	PUT_LINE( tab & "LVa"	& tab & IMAGE( PREFIX_LVL ) & ", -" & CHN_PREFIX & "_ofs" );
+          PUT_LINE( tab & "La " & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL ) & ',' & tab & "-GFP_ofs" );
+          PUT_LINE( tab & "La" & tab & ", -" & TYPE_STR & "__inadr_ofs" );					-- Conversion pout IN
+
+        elsif  PREFIX_DEFN.TY  in  CLASS_PARAM_IO_O  then
+	PUT_LINE( tab & "LVa"	& tab & IMAGE( PREFIX_LVL ) & ", -" & CHN_PREFIX & "_ofs" );
+          PUT_LINE( tab & "La " & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL ) & ',' & tab & "-GFP_ofs" );
+          PUT_LINE( tab & "La" & tab & ", -" & TYPE_STR & "__outadr_ofs" );					-- Conversion pour OUT ou IN_OUT
 
         else
 	PUT_LINE( "; CODE_ADDRESS PREFIX_DEFN.TY pas gere " & NODE_NAME'IMAGE( PREFIX_DEFN.TY ) );
 
         end if;
 
-        PUT_LINE( tab & "La " & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL ) & ',' & tab & "-GFP_ofs" );
-        PUT_LINE( tab & "La" & tab & ", -" & TYPE_STR & "__adr_ofs" );
         PUT_LINE( tab & "CALLI" );
 
       end if;

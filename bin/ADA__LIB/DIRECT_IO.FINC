@@ -13,7 +13,8 @@ PRMS
 	PRM ELEMENT_TYPE__u_ofs
 	PRM ELEMENT_TYPE__ld_ofs
 	PRM ELEMENT_TYPE__st_ofs
-	PRM ELEMENT_TYPE__adr_ofs
+	PRM ELEMENT_TYPE__inadr_ofs
+	PRM ELEMENT_TYPE__outadr_ofs
 endPRMS
 ; CODE_TYPE_DECL : skip PRIVATE FILE_TYPE (deferred to full type)
 
@@ -147,13 +148,21 @@ ST_INTEGER.elab:
 	SId -1, 0
 	RTD 0
 post_ST_INTEGER:
-BRA post_ADR_INTEGER
-ADR_INTEGER.elab:
+BRA post_INADR_INTEGER
+INADR_INTEGER.elab:
 	RTD 0
-post_ADR_INTEGER:
-VAR INTEGER__adr_ofs, q
-	LCA ADR_INTEGER.elab
-	Sa	 0, INTEGER__adr_ofs
+post_INADR_INTEGER:
+BRA post_OUTADR_INTEGER
+OUTADR_INTEGER.elab:
+	La
+	RTD 0
+post_OUTADR_INTEGER:
+VAR INTEGER__outadr_ofs, q
+	LCA OUTADR_INTEGER.elab
+	Sa	 0, INTEGER__outadr_ofs
+VAR INTEGER__inadr_ofs, q
+	LCA INADR_INTEGER.elab
+	Sa	 0, INTEGER__inadr_ofs
 VAR INTEGER__st_ofs, q
 	LCA ST_INTEGER.elab
 	Sa	 0, INTEGER__st_ofs
@@ -942,9 +951,9 @@ L32:					; post if
 	Sd  1,	DUMMY_disp
 	LI	0					; lieu resultat sur pile
 	La  1,	-GFP_ofs				; propagation GFP generique
-	La	1, -ITEM_ofs
+	LVa	1, -ITEM_ofs
 	La  1,	-GFP_ofs
-	La	, -ELEMENT_TYPE__adr_ofs
+	La	, -ELEMENT_TYPE__outadr_ofs
 	CALLI
 	Ld 1,	SIZE_BYTES_disp
 	La 1, -FILE_ofs
@@ -1029,9 +1038,9 @@ L40:
 L39:					; post if
 	LI	0					; lieu resultat sur pile
 	La  1,	-GFP_ofs				; propagation GFP generique
-	La	1, -ITEM_ofs
+	LVa	1, -ITEM_ofs
 	La  1,	-GFP_ofs
-	La	, -ELEMENT_TYPE__adr_ofs
+	La	, -ELEMENT_TYPE__outadr_ofs
 	CALLI
 	Ld 1,	SIZE_BYTES_disp
 	La 1, -FILE_ofs
@@ -1160,9 +1169,9 @@ L49:					; post if
 	Sd  1,	DUMMY_disp
 	LI	0					; lieu resultat sur pile
 	La  1,	-GFP_ofs				; propagation GFP generique
-	La	1, -ITEM_ofs
+	LVa	1, -ITEM_ofs
 	La  1,	-GFP_ofs
-	La	, -ELEMENT_TYPE__adr_ofs
+	La	, -ELEMENT_TYPE__inadr_ofs
 	CALLI
 	Ld 1,	SIZE_BYTES_disp
 	La 1, -FILE_ofs
@@ -1239,9 +1248,9 @@ L55:
 L54:					; post if
 	LI	0					; lieu resultat sur pile
 	La  1,	-GFP_ofs				; propagation GFP generique
-	La	1, -ITEM_ofs
+	LVa	1, -ITEM_ofs
 	La  1,	-GFP_ofs
-	La	, -ELEMENT_TYPE__adr_ofs
+	La	, -ELEMENT_TYPE__inadr_ofs
 	CALLI
 	Ld 1,	SIZE_BYTES_disp
 	La 1, -FILE_ofs

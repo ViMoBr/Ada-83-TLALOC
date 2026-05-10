@@ -1,3 +1,6 @@
+if ~ definite TEXT_IO
+include 'TEXT_IO.FINC'
+end if
 if ~ definite SYSTEM
 include 'SYSTEM.FINC'
 end if
@@ -10,6 +13,8 @@ PRMS
 	PRM ELEMENT_TYPE__u_ofs
 	PRM ELEMENT_TYPE__ld_ofs
 	PRM ELEMENT_TYPE__st_ofs
+	PRM ELEMENT_TYPE__inadr_ofs
+	PRM ELEMENT_TYPE__outadr_ofs
 endPRMS
 ; CODE_TYPE_DECL : skip PRIVATE FILE_TYPE (deferred to full type)
 
@@ -84,8 +89,8 @@ STATOFS IS_OPENED, 1
 STATOFS MODE, 1
 STATOFS AT_END_OF_FILE, 1
 size = $
-	LI	 size* 8
 end virtual
+	LI	 size* 8
 	Sd	0, SIZ
 end namespace
 					;    BODY ELAB
@@ -646,6 +651,7 @@ PRO	READ_SYSTEM_CALL_L20			;---------- PRO READ_SYSTEM_CALL
 PRMS					;    debut parametrage
 	PRM FILE_ID_ofs				; in
 	PRM LENGTH_ofs				; in
+	PRM ADR_ofs				; in
 	PRM GFP_ofs
 	PRM result__ofs				; resultat de fonction
 endPRMS					;    fin parametrage
@@ -653,7 +659,7 @@ ELB 2					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 	LD 2 ,	-16
-	LA 1 ,	-16
+	LA 2 ,	-24
 	LD 2 ,	-8
 	SYS_FILE_READ
 	SD 2 ,	-32
@@ -692,6 +698,10 @@ L26:
 L25:					; post if
 	LI	0					; lieu resultat sur pile
 	La  1,	-GFP_ofs				; propagation GFP generique
+	LVa	1, -ITEM_ofs
+	La  1,	-GFP_ofs
+	La	, -ELEMENT_TYPE__outadr_ofs
+	CALLI
 	Ld 1,	SIZE_BYTES_disp
 	La 1, -FILE_ofs
 	LId	, 0, STANDARD.SEQUENTIAL_IO.FILE_TYPE.ID
@@ -735,6 +745,7 @@ PRO	WRITE_SYSTEM_CALL_L29			;---------- PRO WRITE_SYSTEM_CALL
 PRMS					;    debut parametrage
 	PRM FILE_ID_ofs				; in
 	PRM LENGTH_ofs				; in
+	PRM ADR_ofs				; in
 	PRM GFP_ofs
 	PRM result__ofs				; resultat de fonction
 endPRMS					;    fin parametrage
@@ -742,7 +753,7 @@ ELB 2					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 	LD 2 ,	-16
-	LVA 1 ,	-16
+	LA 2 ,	-24
 	LD 2 ,	-8
 	SYS_FILE_WRITE
 	SD 2 ,	-32
@@ -774,6 +785,10 @@ L33:
 L32:					; post if
 	LI	0					; lieu resultat sur pile
 	La  1,	-GFP_ofs				; propagation GFP generique
+	LVa	1, -ITEM_ofs
+	La  1,	-GFP_ofs
+	La	, -ELEMENT_TYPE__inadr_ofs
+	CALLI
 	Ld 1,	SIZE_BYTES_disp
 	La 1, -FILE_ofs
 	LId	, 0, STANDARD.SEQUENTIAL_IO.FILE_TYPE.ID

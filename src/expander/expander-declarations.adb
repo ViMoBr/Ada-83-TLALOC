@@ -1203,6 +1203,7 @@ PUT( "; COMPILE_ARRAY_VAR EXP non gere " & NODE_NAME'IMAGE( EXP_TYPE.TY ) );
 	          PUT_LINE( tab & "L" & SIZ_CHAR & " -1, 0" );
 	          PUT_LINE( tab & "RTD 0" );
 	          PUT_LINE( "post_LD_" & DEFN_STR & ":" );
+
 	          -- ST : pile = [@param_out, valeur] → pile = []
 	          PUT_LINE( "BRA post_ST_" & DEFN_STR );
 	          PUT_LINE( "ST_" & DEFN_STR & ".elab:" );
@@ -1210,18 +1211,29 @@ PUT( "; COMPILE_ARRAY_VAR EXP non gere " & NODE_NAME'IMAGE( EXP_TYPE.TY ) );
 	          PUT_LINE( tab & "RTD 0" );
 	          PUT_LINE( "post_ST_" & DEFN_STR & ":" );
 	          -- ADR : pile = [@param_out, valeur] → pile = []
-	          PUT_LINE( "BRA post_ADR_" & DEFN_STR );
-	          PUT_LINE( "ADR_" & DEFN_STR & ".elab:" );
+
+	          PUT_LINE( "BRA post_INADR_" & DEFN_STR );
+	          PUT_LINE( "INADR_" & DEFN_STR & ".elab:" );
 	          PUT_LINE( tab & "RTD 0" );								-- Rien a faire pour un scalaire
-	          PUT_LINE( "post_ADR_" & DEFN_STR & ":" );
+	          PUT_LINE( "post_INADR_" & DEFN_STR & ":" );
+
+	          PUT_LINE( "BRA post_OUTADR_" & DEFN_STR );
+	          PUT_LINE( "OUTADR_" & DEFN_STR & ".elab:" );
+	          PUT_LINE( tab & "La" );								-- Pointer Data
+	          PUT_LINE( tab & "RTD 0" );								-- Rien a faire pour un scalaire
+	          PUT_LINE( "post_OUTADR_" & DEFN_STR & ":" );
 	        end;
 
 	        -- VAR en ordre INVERSE des PRM du modele :
 	        -- PRM: __u(8) __ld(16) __st(24)  → VAR: __st(-24) __ld(-16) __u(-8)
 
-	        PUT_LINE( "VAR " & GNAME_STR & "__adr_ofs, q" );
-	        PUT_LINE( tab & "LCA ADR_" & DEFN_STR & ".elab" );
-	        PUT_LINE( tab & "Sa" & tab & LVL_STR & ", " & GNAME_STR & "__adr_ofs" );
+	        PUT_LINE( "VAR " & GNAME_STR & "__outadr_ofs, q" );
+	        PUT_LINE( tab & "LCA OUTADR_" & DEFN_STR & ".elab" );
+	        PUT_LINE( tab & "Sa" & tab & LVL_STR & ", " & GNAME_STR & "__outadr_ofs" );
+
+	        PUT_LINE( "VAR " & GNAME_STR & "__inadr_ofs, q" );
+	        PUT_LINE( tab & "LCA INADR_" & DEFN_STR & ".elab" );
+	        PUT_LINE( tab & "Sa" & tab & LVL_STR & ", " & GNAME_STR & "__inadr_ofs" );
 
 	        PUT_LINE( "VAR " & GNAME_STR & "__st_ofs, q" );
 	        PUT_LINE( tab & "LCA ST_" & DEFN_STR & ".elab" );
@@ -1244,23 +1256,35 @@ PUT( "; COMPILE_ARRAY_VAR EXP non gere " & NODE_NAME'IMAGE( EXP_TYPE.TY ) );
 	          PUT_LINE( tab & "LI 0" );				-- A REVOIR
 	          PUT_LINE( tab & "RTD 0" );
 	          PUT_LINE( "post_LD_" & DEFN_STR & ":" );
+
 	          -- ST : pile = [@param_out, valeur] → pile = []
 	          PUT_LINE( "BRA post_ST_" & DEFN_STR );
 	          PUT_LINE( "ST_" & DEFN_STR & ".elab:" );
 	          PUT_LINE( tab & "DROP" );				-- A REVOIR
 	          PUT_LINE( tab & "RTD 0" );
 	          PUT_LINE( "post_ST_" & DEFN_STR & ":" );
+
 	          -- ADR : pile = [@param_out, valeur] → pile = []
-	          PUT_LINE( "BRA post_ADR_" & DEFN_STR );
-	          PUT_LINE( "ADR_" & DEFN_STR & ".elab:" );
-	          PUT_LINE( tab & "La -1, 0" );								-- Indirection
+	          PUT_LINE( "BRA post_INADR_" & DEFN_STR );
+	          PUT_LINE( "INADR_" & DEFN_STR & ".elab:" );
+	          PUT_LINE( tab & "LIa" );								-- Indirection
 	          PUT_LINE( tab & "RTD 0" );
-	          PUT_LINE( "post_ADR_" & DEFN_STR & ":" );
+	          PUT_LINE( "post_INADR_" & DEFN_STR & ":" );
+
+	          PUT_LINE( "BRA post_OUTADR_" & DEFN_STR );
+	          PUT_LINE( "OUTADR_" & DEFN_STR & ".elab:" );
+	          PUT_LINE( tab & "LIa" );								-- Indirection
+	          PUT_LINE( tab & "RTD 0" );
+	          PUT_LINE( "post_OUTADR_" & DEFN_STR & ":" );
 	        end;
 
-	        PUT_LINE( "VAR " & GNAME_STR & "__adr_ofs, q" );
-	        PUT_LINE( tab & "LCA ADR_" & DEFN_STR & ".elab" );
-	        PUT_LINE( tab & "Sa" & tab & LVL_STR & ", " & GNAME_STR & "__adr_ofs" );
+	        PUT_LINE( "VAR " & GNAME_STR & "__outadr_ofs, q" );
+	        PUT_LINE( tab & "LCA OUTADR_" & DEFN_STR & ".elab" );
+	        PUT_LINE( tab & "Sa" & tab & LVL_STR & ", " & GNAME_STR & "__outadr_ofs" );
+
+	        PUT_LINE( "VAR " & GNAME_STR & "__inadr_ofs, q" );
+	        PUT_LINE( tab & "LCA INADR_" & DEFN_STR & ".elab" );
+	        PUT_LINE( tab & "Sa" & tab & LVL_STR & ", " & GNAME_STR & "__inadr_ofs" );
 
 	        PUT_LINE( "VAR " & GNAME_STR & "__st_ofs, q" );
 	        PUT_LINE( tab & "LCA ST_" & DEFN_STR & ".elab" );

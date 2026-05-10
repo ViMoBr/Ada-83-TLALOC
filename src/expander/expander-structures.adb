@@ -242,7 +242,8 @@ is
 	    PUT_LINE( tab & "PRM " & GPRM_NAME & "__u_ofs" );
 	    PUT_LINE( tab & "PRM " & GPRM_NAME & "__ld_ofs" );
 	    PUT_LINE( tab & "PRM " & GPRM_NAME & "__st_ofs" );
-	    PUT_LINE( tab & "PRM " & GPRM_NAME & "__adr_ofs" );
+	    PUT_LINE( tab & "PRM " & GPRM_NAME & "__inadr_ofs" );
+	    PUT_LINE( tab & "PRM " & GPRM_NAME & "__outadr_ofs" );
 	  end;
 	end if;
         end loop;

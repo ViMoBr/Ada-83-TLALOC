@@ -1,5 +1,5 @@
-with SYSTEM, MACHINE_CODE;
-use  SYSTEM, MACHINE_CODE;
+with TEXT_IO, SYSTEM, MACHINE_CODE;
+use  TEXT_IO, SYSTEM, MACHINE_CODE;
 
 					--------------
 	package body			SEQUENTIAL_IO
@@ -225,11 +225,12 @@ is					--------------
     SIZE_BYTES	: INTEGER	:= ELEMENT_TYPE'SIZE / SYSTEM.STORAGE_UNIT;
 
 		----------------
-    function	READ_SYSTEM_CALL	( FILE_ID :in INTEGER; LENGTH :in INTEGER )	return INTEGER
+    function	READ_SYSTEM_CALL	( FILE_ID :in INTEGER; LENGTH :in INTEGER; ADR :SYSTEM.ADDRESS )
+					return INTEGER
     is		----------------
     begin
       ASM_OP_2'( OPCODE => Ld, LVL => 2, OFS => -16 );			-- LENGTH en octets
-      ASM_OP_2'( OPCODE => La, LVL => 1, OFS => -16 );			-- @ITEM (param out READ : adresse de la zone destination)
+      ASM_OP_2'( OPCODE => La, LVL => 2, OFS => -24 );			-- @ITEM_DATA (data_ptr reel via ADR)
       ASM_OP_2'( OPCODE => Ld, LVL => 2, OFS => -8 );			-- FILE_ID
       ASM_OP_0'( OPCODE => SYS_FILE_READ );
       ASM_OP_2'( OPCODE => SD, LVL => 2, OFS => -32 );			-- Retour du BYTES_READ apres le GFP
@@ -242,7 +243,7 @@ is					--------------
     if  FILE.MODE = OUT_FILE    then raise MODE_ERROR;   end if;
     if  FILE.AT_END_OF_FILE     then raise END_ERROR;    end if;
 				-- Lit a la position courante (avancement sequentiel)
-    BYTES_READ := READ_SYSTEM_CALL( FILE.ID, SIZE_BYTES );
+    BYTES_READ := READ_SYSTEM_CALL( FILE.ID, SIZE_BYTES, ITEM'ADDRESS );
     if  BYTES_READ < SIZE_BYTES  then
       raise END_ERROR;
     end if;
@@ -261,11 +262,12 @@ is					--------------
     SIZE_BYTES	: INTEGER	:= ELEMENT_TYPE'SIZE / SYSTEM.STORAGE_UNIT;
 
 		-----------------
-    function	WRITE_SYSTEM_CALL	( FILE_ID :in INTEGER; LENGTH :in INTEGER )	return INTEGER
+    function	WRITE_SYSTEM_CALL	( FILE_ID :in INTEGER; LENGTH :in INTEGER; ADR :SYSTEM.ADDRESS )
+					return INTEGER
     is		-----------------
     begin
       ASM_OP_2'( OPCODE => Ld, LVL => 2, OFS => -16 );			-- LENGTH en octets
-      ASM_OP_2'( OPCODE => LVa, LVL => 1, OFS => -16 );		-- @ITEM (param in WRITE : adresse de la zone source)
+      ASM_OP_2'( OPCODE => La, LVL => 2, OFS => -24 );			-- @ITEM_DATA (data_ptr reel via ADR)
       ASM_OP_2'( OPCODE => Ld, LVL => 2, OFS => -8 );			-- FILE_ID
       ASM_OP_0'( OPCODE => SYS_FILE_WRITE );
       ASM_OP_2'( OPCODE => SD, LVL => 2, OFS => -32 );			-- Retour du resultat syscall apres le GFP
@@ -277,7 +279,7 @@ is					--------------
     if  FILE.IS_OPENED = FALSE  then raise STATUS_ERROR; end if;
     if  FILE.MODE = IN_FILE     then raise MODE_ERROR;   end if;
 				-- Ecrit a la position courante (avancement sequentiel)
-    ERR_CODE := WRITE_SYSTEM_CALL( FILE.ID, SIZE_BYTES );
+    ERR_CODE := WRITE_SYSTEM_CALL( FILE.ID, SIZE_BYTES, ITEM'ADDRESS );
 
   end	WRITE;
 	-----
