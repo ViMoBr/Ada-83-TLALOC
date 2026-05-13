@@ -674,6 +674,38 @@ null;
 
         elsif  ACT_PRM.TY = DN_SLICE  then								-- SLICE PARAMETER
 	EXPRESSIONS.CODE_SLICE( ACT_PRM, IS_DESTINATION=> FALSE );
+
+
+        elsif  ACT_PRM.TY = DN_AGGREGATE
+	 or  ( ACT_PRM.TY = DN_QUALIFIED  and then D( AS_EXP, ACT_PRM).TY = DN_AGGREGATE ) then
+
+	if  ACT_PRM.TY = DN_QUALIFIED  then ACT_PRM := D( AS_EXP, ACT_PRM); end if;
+	declare
+	  ANONYMOUS_STR	:constant STRING	:= ANONYMOUS_NAME_AT( ACT_PRM );
+	  TYPE_SPEC	: TREE		:= D( SM_EXP_TYPE, ACT_PRM );
+--	  TYPE_SIZE	: INTEGER		:= DI( CD_IMPL_SIZE, TYPE_SPEC ) / CODI.STORAGE_UNIT;
+	  TYPE_NAME	: TREE		:= D( XD_SOURCE_NAME, TYPE_SPEC );
+	  TYPE_NAME_STR	:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
+	begin
+	  PUT_LINE( tab & "VAR " & ANONYMOUS_STR	& "_disp, q" );
+	  PUT_LINE( tab & "VAR " & ANONYMOUS_STR	& "__u, q" );
+	  PUT( tab & "VAR " & ANONYMOUS_STR	& "__dat, " );
+	  CODI.REGIONS_PATH( TYPE_NAME );
+	  PUT_LINE( TYPE_NAME_STR & ".SIZ" );
+
+	  PUT_LINE( tab & "LVA " & IMAGE( CODI.CUR_LEVEL ) & ", " & ANONYMOUS_STR & "__dat" );
+	  PUT_LINE( tab & "Sa " & IMAGE( CODI.CUR_LEVEL ) & ", " & ANONYMOUS_STR & "_disp" );
+
+	  PUT( tab & "La " & IMAGE( DI( CD_LEVEL, TYPE_SPEC ) ) & ", " );
+	  CODI.REGIONS_PATH( TYPE_NAME );
+	  PUT_LINE( TYPE_NAME_STR & ".use__info" );
+	  PUT_LINE( tab & "Sa " & IMAGE( CODI.CUR_LEVEL ) & ", " & ANONYMOUS_STR & "__u" );
+
+	  PUT_LINE( tab & "LVA " & IMAGE( CODI.CUR_LEVEL ) & ", " & ANONYMOUS_STR & "__dat" );
+	  EXPRESSIONS.CODE_AGGREGATE( ACT_PRM );
+	  PUT_LINE( tab & "LVA " & IMAGE( CODI.CUR_LEVEL ) & ", " & ANONYMOUS_STR & "_disp" );
+	end;
+
         else
 	EXPRESSIONS.CODE_EXP( ACT_PRM );
         end if;

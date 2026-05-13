@@ -1,6 +1,10 @@
+with TEXT_IO;
+use  TEXT_IO;
 			-------------
 procedure			TEST_AGREGATS
 is			-------------
+
+  package INT_IO	is new INTEGER_IO( INTEGER );
 
   type POINT	is record
 		  X : INTEGER;
@@ -58,13 +62,27 @@ is			-------------
   TP1	: TABLEAU_DE_POINTS	:= ( (1,0,0), (0,1,0), (0,0,1) );						-- array de records
 
 
---  procedure INGERE_VECTEUR	( VEC :VECTEUR ) is begin null; end;
---  procedure INGERE_POINT	( PT :POINT ) is begin null; end;
+  procedure INGERE_VECTEUR	( VEC :VECTEUR )
+  is
+  begin
+    PUT( "VEC = [" );
+	INT_IO.PUT( VEC(1) ); PUT( ", " ); INT_IO.PUT( VEC(2) ); PUT( ", " );
+	INT_IO.PUT( VEC(3) ); PUT( ", " ); INT_IO.PUT( VEC(4) );
+	PUT( ']' ); NEW_LINE;
+  end;
+
+  procedure INGERE_POINT	( PT :POINT )
+  is
+  begin
+    PUT( "PT = (" );
+	INT_IO.PUT( PT.X ); PUT( ", " ); INT_IO.PUT( PT.Y ); PUT( ", " );
+	INT_IO.PUT( PT.Z );
+	PUT( ')' ); NEW_LINE;
+  end;
 
 begin
-  null;
---  INGERE_VECTEUR( VECTEUR'(8, 16, 32, 64) );
---  INGERE_POINT( (10,12,14) );
+  INGERE_VECTEUR( VECTEUR'(8, 16, 32, 64) );
+  INGERE_POINT( (10,12,14) );
 
 end	TEST_AGREGATS;
 	-------------

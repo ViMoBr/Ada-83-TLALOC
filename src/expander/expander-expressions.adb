@@ -216,7 +216,7 @@ is
     is
     begin
       if AGG_EXP.TY	= DN_AGGREGATE  then
-        null; -- CODE_AGGREGATE( AGG_EXP );
+        CODE_AGGREGATE( AGG_EXP );
 
       elsif AGG_EXP.TY = DN_STRING_LITERAL  then
         CODE_STRING_LITERAL( AGG_EXP, "A VOIR !" );
@@ -1745,6 +1745,9 @@ SCAN_IDS:
       end	if;
 
     else
+
+put_line( "; CODE_QUALIFIED : DN_QUALIFIED" & NODE_NAME'IMAGE( SRC_EXP.TY ) );
+
       -- Expression	qualifiee	dynamique	: generer	le code de l'expression
       CODE_EXP( SRC_EXP );
 

@@ -674,6 +674,21 @@ null;
 
         elsif  ACT_PRM.TY = DN_SLICE  then								-- SLICE PARAMETER
 	EXPRESSIONS.CODE_SLICE( ACT_PRM, IS_DESTINATION=>	FALSE );
+
+
+        elsif  ACT_PRM.TY = DN_AGGREGATE  then
+			-------------------
+			AGGREGATE_PARAMETER:
+	declare
+	  ANONYMOUS_NAME	:constant STRING	:= ANONYMOUS_NAME_AT( ACT_PRM );
+	begin
+	  PUT( "VAR " & ANONYMOUS_NAME & "_disp, q" );
+	  PUT( tab & "LVA" & tab & IMAGE( CODI.CUR_LEVEL ) & ", " & ANONYMOUS_NAME & "_disp" );					-- Stocker l'adresse du rec dans le ptr
+
+	  CODE_AGGREGATE( ACT_PRM );
+	end		AGGREGATE_PARAMETER;
+			-------------------
+
         else
 	EXPRESSIONS.CODE_EXP( ACT_PRM	);
         end if;
@@ -683,7 +698,7 @@ null;
 
   begin
     if  IS_IN_CURRENT_GENERIC( PROC_ID )  then
-      PUT( tab & "La " & INTEGER'IMAGE(	CODI.CUR_LEVEL ) & ',' & tab & "-GFP_ofs" );
+      PUT( tab & "La" & INTEGER'IMAGE(	CODI.CUR_LEVEL ) & ',' & tab & "-GFP_ofs" );
       if	CODI.DEBUG  then PUT( tab50 &	"; propagation GFP generique"	); end if;
       NEW_LINE;
     end if;

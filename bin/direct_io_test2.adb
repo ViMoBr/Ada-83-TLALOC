@@ -276,7 +276,8 @@ begin
   begin
     PUT( "  P_NEW X (en bloc) = " ); PUT( P_NEW.X ); PUT( " Y=" ); PUT( P_NEW.Y ); PUT( " Z=" ); PUT( P_NEW.Z ); NEW_LINE;
 
-    POINT_DIO.WRITE( FP, P_NEW, 2 );
+--    POINT_DIO.WRITE( FP, P_NEW, 2 );
+    POINT_DIO.WRITE( FP, POINT'( X => 777, Y => 888, Z => 999 ), 2 );
     POINT_DIO.WRITE( FP, P_NEG, 4 );
   end;
 
