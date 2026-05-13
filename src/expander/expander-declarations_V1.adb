@@ -634,7 +634,7 @@ null;--	  LOAD_TYPE_SIZE( TYPE_SPEC  );
         DI( CD_LEVEL,     VC_NAME, INTEGER( LVL )	);
         DB( CD_COMPILED,  VC_NAME, TRUE	);
 
-if  INIT_EXP.TY = DN_AGGREGATE	then
+        if  INIT_EXP.TY = DN_AGGREGATE	then
 
 	PUT_LINE( tab & "La " & LVL_STR & ", " & VC_STR & "_disp" );					-- Adresse de debut data
 	EXPRESSIONS.CODE_AGGREGATE( INIT_EXP );
@@ -661,26 +661,15 @@ if  INIT_EXP.TY = DN_AGGREGATE	then
 		COMP_STR	:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, COMP_ID ) );
 	        begin
 		if  FIELD_INIT /= TREE_VOID  then
-		  if  FIELD_INIT.TY = DN_AGGREGATE  then						-- composant composite : descente recursive
-		    PUT( tab & "LIVa "
-		      & LVL_STR & ", "
-		      & VC_STR & "_disp, " );
-		    CODI.REGIONS_PATH( TYPE_NAME );
-		    PUT_LINE( TYPE_NAME_STR & "."
-		      & COMP_STR );
-		    EXPRESSIONS.CODE_AGGREGATE( FIELD_INIT );					-- l'adresse du champ est sur la pile, CODE_AGGREGATE la consomme
-
-		  else										-- composant scalaire : store direct
-		    PUT( tab & "LIVa "
-		      & LVL_STR & ", "
-		      & VC_STR & "_disp, " );
-		    CODI.REGIONS_PATH( TYPE_NAME );
-		    PUT_LINE( TYPE_NAME_STR & "."
-		      & COMP_STR );
-		    EXPRESSIONS.CODE_EXP( FIELD_INIT );
-		    PUT_LINE( tab & "S"
-		      & CODI.OPER_SIZ_CHAR( COMP_TYPE ) );
-		  end if;
+		  PUT( tab & "LIVa "
+		    & LVL_STR & ", "
+		    & VC_STR & "_disp, " );
+		  CODI.REGIONS_PATH( TYPE_NAME );
+		  PUT_LINE( TYPE_NAME_STR & "."
+		    & COMP_STR );
+		  EXPRESSIONS.CODE_EXP( FIELD_INIT );
+		  PUT_LINE( tab & "S"
+		    & CODI.OPER_SIZ_CHAR( COMP_TYPE ) );
 		end if;
 	        end;
 	      end	loop;
@@ -688,6 +677,7 @@ if  INIT_EXP.TY = DN_AGGREGATE	then
 	  end loop;
 	end;
         end if;
+
       end	COMPILE_RECORD_VAR;
 	------------------
 

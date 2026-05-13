@@ -571,7 +571,7 @@ put_line(	"; adresse component id" );
 	    PUT_LINE( tab &	"L" & OPER_SIZ_CHAR( DESIGNATOR_DEFN ) & tab & IMAGE( DESIGNATOR_LEVEL ) & ", "	& DESIGNATOR_STR  );
 
 --	  else
---	    PUT_LINE( tab &	"LVA" & tab & IMAGE( DESIGNATOR_LEVEL ) & ", " &	DESIGNATOR_STR   );
+--	    PUT_LINE( tab &	"LVA " & tab & IMAGE( DESIGNATOR_LEVEL ) & ", " &	DESIGNATOR_STR   );
 
 	  end if;
 
@@ -615,7 +615,7 @@ put_line(	"; adresse component id" );
 	    end if;
 
 	  else
-	    PUT( tab & "LVA" & tab &	", " );
+	    PUT( tab & "LVa " & tab &	", " );
 	    REGIONS_PATH( DESIGNATOR_DEFN );
 	    PUT_LINE( DESIGNATOR_STR );
 
@@ -1367,151 +1367,121 @@ put_line(	"; adresse component id" );
 
 
     if  TYPE_SPEC.TY = DN_CONSTRAINED_ARRAY  or  TYPE_SPEC.TY = DN_ARRAY  then					-- L'adresse de debut data est deja empilee
-
-				----------------------
+				-----------------------
 				ASSIGN_ARRAY_AGGREGATE:
       declare
-        BASE_TYPE	: TREE		:= D( SM_BASE_TYPE, TYPE_SPEC );
-        INDEX_S	: SEQ_TYPE	:= LIST( D( SM_INDEX_S, BASE_TYPE ) );
-        NB_DIMS	: NATURAL		:= 0;
+        ASSOC	: TREE;
+        INDEX_S	: SEQ_TYPE	:= LIST( D( SM_INDEX_S, D( SM_BASE_TYPE, TYPE_SPEC ) ) );
+        INDEX_NODE	: TREE;
+        FST		: INTEGER;
+        LST		: INTEGER;
+        EMIS	: INTEGER		:= 0;
+      begin
 
-        -- Tableaux de dimensions et de strides (max 8 dimensions suffit en Ada 83 pratique)
-        type DIM_INFO	is record
-			  FST	: INTEGER;
-			  LST	: INTEGER;
-			  STRIDE	: INTEGER;							-- en octets, pas pour avancer d'un élément
-			end record;
-        DIM_TBL	: array( 1 .. 8 ) of DIM_INFO;
+SCAN_INDEX_RANGES:
+        while not IS_EMPTY( INDEX_S ) loop
 
-        COMP_SIZ_BITS	: INTEGER		:= DI( CD_IMPL_SIZE, D( SM_COMP_TYPE, BASE_TYPE ) );
-        COMP_SIZ_BYTES	: INTEGER		:= COMP_SIZ_BITS / 8;
 
-		-----------------
-        procedure	EMIT_AGG_AT_DEPTH	( AGG :TREE; DEPTH :NATURAL )
-        is	-----------------
-          -- Invariant : à l'entrée, l'adresse du bloc à remplir est sur la pile.
-          --             à la sortie, cette adresse a été DROP-ée.
-	SEQ	: SEQ_TYPE	:= LIST( D( SM_NORMALIZED_COMP_S, AGG ) );
-	ASSOC	: TREE;
-	FST	: INTEGER		:= DIM_TBL( DEPTH ).FST;
-	LST	: INTEGER		:= DIM_TBL( DEPTH ).LST;
-	STRIDE	: INTEGER		:= DIM_TBL( DEPTH ).STRIDE;
-	STRIDE_S	: constant STRING	:= IMAGE( STRIDE );
-	EMIS	: INTEGER		:= 0;
 
-		-------------
-	procedure	EMIT_ONE_COMP	( COMP :TREE )
-	is	-------------
-            -- COMP est un élément à émettre à la position courante.
-            -- À l'entrée et à la sortie : l'adresse de la position courante
-            -- est au sommet de la pile (préservée par DUP/ADD).
-            -- Cette procédure DUPlique, remplit, puis ajoute STRIDE.
-	begin
-	  PUT_LINE( tab & "DUP" );
-
-	  if  COMP.TY = DN_AGGREGATE  then
-	    if  DEPTH < NB_DIMS  then
-                -- Sous-agrégat tableau de dimension interne (pas de SM_EXP_TYPE)
-	      EMIT_AGG_AT_DEPTH( COMP, DEPTH + 1 );
-	    else
-		-- Feuille : l'élément du tableau est un agrégat (record, ou
-		-- éventuellement tableau imbriqué via type d'élément composite).
-		-- Délégation à CODE_AGGREGATE qui gère DN_RECORD / DN_ARRAY.
-	      CODE_AGGREGATE( COMP );
-	    end if;
-
-	  elsif  COMP.TY  in  CLASS_EXP  then
-		-- Composante scalaire — possible uniquement à DEPTH = NB_DIMS
-	    EXPRESSIONS.CODE_EXP( COMP );
-	    PUT_LINE( tab & "S" & EXP_TYPE_CHAR( COMP ) );
-
-	  else
-	    PUT_LINE( "; EMIT_ONE_COMP : composante non geree " & NODE_NAME'IMAGE( COMP.TY ) );
-	  end if;
-
-	  PUT_LINE( tab & "LI" & tab & STRIDE_S );
-	  PUT_LINE( tab & "ADD" );
-
-	end	EMIT_ONE_COMP;
-		-------------
-
-        begin				-- EMIT_AGG_AT_DEPTH
-
-	while not  IS_EMPTY( SEQ )  loop
-	  POP( SEQ, ASSOC );
-
-	  if  ASSOC.TY = DN_NAMED  then
-	    declare
-	      COMP_EXP	: TREE		:= D( AS_EXP, ASSOC );
-	      CHOICES	: SEQ_TYPE	:= LIST( D( AS_CHOICE_S, ASSOC ) );
-	      CH		: TREE;
-	      REPEAT	: INTEGER		:= 1;
-	    begin
-	      while not  IS_EMPTY( CHOICES )  loop
-	        POP( CHOICES, CH );
-	        if  CH.TY = DN_CHOICE_RANGE  then
-		declare
-		  RNG	: TREE		:= D( AS_DISCRETE_RANGE, CH );
-		  LO	: INTEGER		:= DI( SM_VALUE, D( AS_EXP1, RNG ) );
-		  HI	: INTEGER		:= DI( SM_VALUE, D( AS_EXP2, RNG ) );
-		begin
-		  REPEAT := HI - LO + 1;
-		end;
-	        elsif  CH.TY = DN_CHOICE_OTHERS  then
-		REPEAT := LST - FST + 1 - EMIS;
-	        end if;
-	      end loop;
-
-	      for  I  in  1 .. REPEAT  loop
-	        EMIT_ONE_COMP( COMP_EXP );
-	      end loop;
-	      EMIS := EMIS + REPEAT;
-	    end;
-
-	  else
-			-- DN_AGGREGATE positionnel ou CLASS_EXP positionnel
-	    EMIT_ONE_COMP( ASSOC );
-	    EMIS := EMIS + 1;
-	  end if;
-
-	end loop;
-
-	PUT_LINE( tab & "DROP" );    -- jeter l'adresse finale (au-delà du dernier élément)
-
-        end	EMIT_AGG_AT_DEPTH;
-		-----------------
-
-      begin    		-- ASSIGN_ARRAY_AGGREGATE
-
-        -- Étape 1 : extraire les dimensions
+        POP( INDEX_S,	INDEX_NODE );
+	    -- FST et LST de la premiere dimension
         declare
-	INDEX_NODE	: TREE;
+	IDX_TYPE	: TREE	:= D( SM_TYPE_SPEC, INDEX_NODE );
+	RNG	: TREE	:= D( SM_RANGE, IDX_TYPE );
         begin
-	while not  IS_EMPTY( INDEX_S )  loop
-	  POP( INDEX_S, INDEX_NODE );
-	  NB_DIMS := NB_DIMS + 1;
-	  declare
-	    IDX_TYPE	: TREE	:= D( SM_TYPE_SPEC, INDEX_NODE );
-	    RNG		: TREE	:= D( SM_RANGE, IDX_TYPE );
-	  begin
-	    DIM_TBL( NB_DIMS ).FST := DI( SM_VALUE, D( AS_EXP1, RNG ) );
-	    DIM_TBL( NB_DIMS ).LST := DI( SM_VALUE, D( AS_EXP2, RNG ) );
-	  end;
-	end loop;
+	FST := DI( SM_VALUE, D( AS_EXP1, RNG ) );
+	LST := DI( SM_VALUE, D( AS_EXP2, RNG ) );
         end;
 
-		-- Étape 2 : calculer les strides de la dimension la plus interne
-		-- vers la dimension la plus externe.
-        DIM_TBL( NB_DIMS ).STRIDE := COMP_SIZ_BYTES;
-        for  K  in reverse  1 .. NB_DIMS - 1  loop
-	DIM_TBL( K ).STRIDE := DIM_TBL( K + 1 ).STRIDE * ( DIM_TBL( K + 1 ).LST - DIM_TBL( K + 1 ).FST + 1 );
+        while not IS_EMPTY( NORM_SEQ ) loop
+	POP( NORM_SEQ, ASSOC );
+
+	if  ASSOC.TY = DN_AGGREGATE  then
+	  if  D( SM_EXP_TYPE, ASSOC ) /= TREE_VOID  then
+	    PUT_LINE( tab & "DUP" );
+	    CODE_AGGREGATE( ASSOC );
+          -- avancer de la taille du sous-type (en octets)
+	    declare
+	      SUB_TYPE	: TREE	:= D( SM_EXP_TYPE, ASSOC );
+	      SUB_SIZE	: INTEGER	:= DI( CD_IMPL_SIZE, SUB_TYPE ) / 8;
+	    begin
+	      PUT_LINE( tab & "LI" & tab & INTEGER'IMAGE( SUB_SIZE ) );
+	    end;
+	    PUT_LINE( tab & "ADD" );
+
+	  else					-- Sous agregat non type pour tableau multidimensionnel
+	    null;
+	  end if;
+	  EMIS := EMIS + 1;
+
+	elsif  ASSOC.TY  in  CLASS_EXP  then
+	  declare
+	    EXP_TYPE  : TREE	:= D( SM_EXP_TYPE, ASSOC );
+	  begin
+	    PUT_LINE( tab & "DUP" );
+	    EXPRESSIONS.CODE_EXP( ASSOC	);
+	    PUT_LINE( tab & "S" & EXP_TYPE_CHAR( ASSOC ) );
+	  end;
+	  PUT( tab & "LId" & tab & LVL_STR & ", " );
+	  REGIONS_PATH( TYPE_NAME );
+	  PUT( TYPE_NAME_STR & ".use__info," );
+
+	  REGIONS_PATH( TYPE_NAME );
+	  PUT_LINE(	TYPE_NAME_STR & ".COMP_SIZ" );
+	  PUT_LINE(	tab & "LI" & tab & '8' );
+	  PUT_LINE(	tab & "DIV" );
+	  PUT_LINE(	tab & "ADD" );
+	  EMIS := EMIS + 1;
+
+	elsif  ASSOC.TY = DN_NAMED  then
+	  declare
+	    COMP_EXP	: TREE		:= D( AS_EXP, ASSOC );
+	    EXP_TYPE	: TREE		:= D( SM_EXP_TYPE, COMP_EXP );
+	    REPEAT	: INTEGER		:= 1;
+	    CHOICES	: SEQ_TYPE	:= LIST( D( AS_CHOICE_S, ASSOC ) );
+	    CH		: TREE;
+	  begin
+	    while not  IS_EMPTY( CHOICES )  loop
+	      POP( CHOICES, CH );
+	      if  CH.TY = DN_CHOICE_RANGE  then
+	        declare
+	          RNG	: TREE		:= D( AS_DISCRETE_RANGE, CH	);
+	          LO	: INTEGER		:= DI( SM_VALUE, D( AS_EXP1, RNG ) );
+	          HI	: INTEGER		:= DI( SM_VALUE, D( AS_EXP2, RNG ) );
+	        begin
+	          REPEAT := HI - LO + 1;
+	        end;
+	      elsif  CH.TY = DN_CHOICE_OTHERS  then
+	        REPEAT := LST - FST + 1 - EMIS;
+	      end if;
+	    end loop;
+
+	    for  I in 1 .. REPEAT  loop
+	      PUT_LINE( tab & "DUP" );
+	      EXPRESSIONS.CODE_EXP( COMP_EXP );
+	      PUT_LINE( tab & "S" & EXP_TYPE_CHAR( COMP_EXP ) );
+
+	      PUT( tab & "LId" & tab & LVL_STR & ", " );
+	      REGIONS_PATH( TYPE_NAME );
+	      PUT( TYPE_NAME_STR & ".use__info," );
+
+	      REGIONS_PATH( TYPE_NAME );
+	      PUT_LINE( TYPE_NAME_STR & ".COMP_SIZ" );
+	      PUT_LINE( tab & "LI" & tab & '8' );
+	      PUT_LINE( tab & "DIV" );
+	      PUT_LINE( tab & "ADD" );
+	    end loop;
+	    EMIS := EMIS + REPEAT;
+	  end;
+          end if;
+
         end loop;
+        PUT_LINE( tab & "DROP" );									-- jeter l'adresse finale non utilisée
+        end loop			SCAN_INDEX_RANGES;
 
-        -- Étape 3 : émettre récursivement
-        EMIT_AGG_AT_DEPTH( AGGREGATE, 1 );
+      end			ASSIGN_ARRAY_AGGREGATE;
+			-----------------------
 
-      end				ASSIGN_ARRAY_AGGREGATE;
-				----------------------
 
     elsif  TYPE_SPEC.TY = DN_RECORD  then								-- L'adresse du doublet est deja empilee
 				-----------------------
@@ -1522,46 +1492,41 @@ put_line(	"; adresse component id" );
         COMP_DECL		: TREE;
 
       begin
-SCAN_DECLS:
-        while not IS_EMPTY( COMP_DECL_S )  loop
+        while not IS_EMPTY( NORM_SEQ ) loop
+	POP( NORM_SEQ, COMP_EXP  );
 	POP( COMP_DECL_S, COMP_DECL );
 	declare
 	  COMP_ID_S	: SEQ_TYPE	:= LIST( D( AS_SOURCE_NAME_S, COMP_DECL ) );
 	  COMP_ID		: TREE;
 
 	begin
-SCAN_IDS:
-	  while not IS_EMPTY( COMP_ID_S )  loop
-	    POP( COMP_ID_S, COMP_ID	);
-	    exit SCAN_DECLS  when  IS_EMPTY( NORM_SEQ );							-- securite : agregat plus court que decls
-	    POP( NORM_SEQ, COMP_EXP );
-	    declare
-	      COMP_TYPE	: TREE		:= D( SM_OBJ_TYPE, COMP_ID );
-	      COMP_STR	:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, COMP_ID ) );
+	  POP( COMP_ID_S, COMP_ID	);
+	  declare
+	    COMP_TYPE	: TREE		:= D( SM_OBJ_TYPE, COMP_ID );
+	    COMP_STR	:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, COMP_ID ) );
 
-	    begin
-	      if  COMP_EXP.TY = DN_AGGREGATE  then
-	        PUT_LINE( tab & "DUP" );
-	        PUT( tab & "LVA" & tab & ", " );							-- composant composite : calculer adresse dans zone parent
-	        CODI.REGIONS_PATH( TYPE_NAME );
-	        PUT_LINE( TYPE_NAME_STR & "." & COMP_STR );
-	        CODE_AGGREGATE( COMP_EXP );								-- adresse du sous-composant empilée, appel récursif
+	  begin
+	    if  COMP_EXP.TY = DN_AGGREGATE  then
+	      PUT_LINE( tab & "DUP" );
+	      PUT( tab & "LVA , " );									-- composant composite : calculer adresse dans zone parent
+	      CODI.REGIONS_PATH( TYPE_NAME );
+	      PUT_LINE( TYPE_NAME_STR & "." & COMP_STR );
+	      CODE_AGGREGATE( COMP_EXP );								-- adresse du sous-composant empilée, appel récursif
 
               else
-	        PUT_LINE( tab & "DUP" );								-- Duplicata de l'adresse de debut de data record
+	      PUT_LINE( tab & "DUP" );								-- Duplicata de l'adresse de debut de data record
 
-	        PUT( tab & "LVA" & tab & ", " );
-	        CODI.REGIONS_PATH( TYPE_NAME );
-	        PUT_LINE( TYPE_NAME_STR & "." &	COMP_STR );
+	      PUT( tab & "LVA " & tab & ", " );
+	      CODI.REGIONS_PATH( TYPE_NAME );
+	      PUT_LINE( TYPE_NAME_STR & "." &	COMP_STR );
 
-	        EXPRESSIONS.CODE_EXP(	COMP_EXP );
+	      EXPRESSIONS.CODE_EXP(	COMP_EXP );
 
-	        PUT_LINE( tab & "S" &	CODI.OPER_SIZ_CHAR(	COMP_TYPE	) );
-	      end if;
-	    end;
-	  end loop		SCAN_IDS;
+	      PUT_LINE( tab & "S" &	CODI.OPER_SIZ_CHAR(	COMP_TYPE	) );
+	    end if;
+	  end;
 	end;
-        end loop		SCAN_DECLS;
+        end loop;
         PUT_LINE( tab & "DROP" );									-- Enlever l'adresse de debut data record de reference
 
       end			ASSIGN_RECORD_AGGREGATE;
