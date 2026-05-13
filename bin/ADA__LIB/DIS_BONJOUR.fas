@@ -1,19 +1,18 @@
-include '../../src/expander/fasmg/codi_x86_64.finc'
-STANDARD = 'STANDARD'
-namespace STANDARD
-  virtual at 8
-    VARzone::
-    VARzone.DISP = $
-  end virtual
-include '../../bin/ADA__LIB/_STANDRD.FINC'
+include '../../src/expander/fasmg/codi_x86_64.finc'		; All LLIR macros and ELF headers are first assembled
+STANDARD = 'STANDARD'					; define the top namespaces hierachy name
+namespace STANDARD						; define the global namespace (root of the name hierarchy)
+  virtual at 8						; Virtual zone for level 0 stack variables (in fact global variables) start at 8 (quadword after frame pointer slot)
+    VARzone::						; special label for zone extension in VAR macro (STANDARD.VARzone allows globals placement)
+  end virtual						; temporary closing of zone (will be extended by VAR allocations)
+include '../../bin/ADA__LIB/_STANDRD.FINC'			; Include STANDARD definitions types and vars, elaboration code included
 
-	LINK	0, loc_siz
+	LINK	0, loc_siz				; Fill frame pointer level 0 slot (there will be no UNLINK 0)
 
- include 'DIS_BONJOUR.FINC'
-	CALL	STANDARD., DIS_BONJOUR_L1
-	SYS_EXIT
+ include 'DIS_BONJOUR.FINC'					; Include main sub program code (with sub-includes as TEXT_IO.finc subs and elab code)
+	CALL	STANDARD., DIS_BONJOUR_L1			; LLIR macro CALL to main procedure
+	SYS_EXIT						; Program exit macro
 
-  virtual VARzone
-    loc_siz = $						; Ce n'est que là que l'on calcule la taille des globales qui sera retropropagee au LINK 0
-  end virtual
+  virtual VARzone						; Final reopen STANDARD.VARzone for globals block size computing
+    loc_siz = $						; Level 0 variables block is only computed here and retro propagated to LINK 0 for globals allocation
+  end virtual						; Terminal closing of STANDARD.VARzone
 end namespace
