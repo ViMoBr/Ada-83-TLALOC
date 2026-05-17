@@ -43,9 +43,9 @@ is					--------
 
 private
 
-  type TIME	is record
-		  null;										-- for front end only
-		end record;
+  type TIME	is new LONG_INTEGER;
+
+
 	--------
 end	CALENDAR;
 	--------

@@ -137,19 +137,24 @@ is
     SAVE_ENCLOSING		: TREE		:= ENCLOSING_BODY;
     SAVE_NO_SUB_PARAM	: BOOLEAN		:= CODI.NO_SUBP_PARAMS;
     SUB_BODY		: TREE		:= D( AS_BODY, SUBPROGRAM_BODY );
+
   begin
-
     INC_LEVEL;
+    if  DECL_ID.TY /= DN_GENERIC_ID  then
+      if  DECL_ID = SOURCE_NAME  then									-- PREMIERE DEFINITION PAS DE SPEC DEJA ETIQUETEE
+        LBL := NEW_LABEL;
+        DI( CD_LEVEL, SOURCE_NAME, INTEGER( CODI.CUR_LEVEL ) );
+        DI( CD_LABEL, SOURCE_NAME, INTEGER( LBL ) );
 
-    if  DECL_ID = SOURCE_NAME  then									-- PREMIERE DEFINITION PAS DE SPEC DEJA ETIQUETEE
-      LBL := NEW_LABEL;
-      DI( CD_LEVEL, SOURCE_NAME, INTEGER( CODI.CUR_LEVEL ) );
-      DI( CD_LABEL, SOURCE_NAME, INTEGER( LBL ) );
+      else
+        LBL := LABEL_TYPE( DI( CD_LABEL, DECL_ID ) );
+        DI( CD_LEVEL, SOURCE_NAME, DI( CD_LEVEL, DECL_ID ) );
+        DI( CD_LABEL, SOURCE_NAME, INTEGER( LBL ) );
+
+      end if;
 
     else
-      LBL := LABEL_TYPE( DI( CD_LABEL, DECL_ID ) );
-      DI( CD_LEVEL, SOURCE_NAME, DI( CD_LEVEL, DECL_ID ) );
-      DI( CD_LABEL, SOURCE_NAME, INTEGER( LBL ) );
+      CODI.IN_GENERIC_BODY := TRUE;
 
     end if;
 
@@ -164,6 +169,7 @@ is
       begin
         PUT_LINE( "include '" & UNIT_FILE_NAME( UNIT_FILE_NAME'FIRST .. UNIT_FILE_NAME'LAST-4 )  & '-' & SUB_NAME & ".FINC'" );
       end;
+
     else
       PUT( "PRO" & tab & SUB_NAME & '_' & LABEL_STR( LBL ) );
       if  CODI.DEBUG  then PUT( tab50 & ";---------- PRO " & SUB_NAME ); end if;
@@ -192,6 +198,10 @@ is
       PUT( "endPRO" );
       if  CODI.DEBUG  then PUT( tab50 & ";---------- end PRO " & SUB_NAME); end if;
       NEW_LINE;
+    end if;
+
+    if  CODI.IN_GENERIC_BODY  and  ENCLOSING_BODY = TREE_VOID  then						-- Cas du sous-programme générique
+      CODI.IN_GENERIC_BODY := FALSE;
     end if;
 
     DEC_LEVEL;
@@ -260,7 +270,7 @@ is
         PUT( tab50 & ";---------- end generic package BDY " & PACK_NAME );
       end if;
       NEW_LINE;
-      IN_GENERIC_BODY := FALSE;
+      CODI.IN_GENERIC_BODY := FALSE;
 
     else
 

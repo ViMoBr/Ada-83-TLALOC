@@ -1,0 +1,85 @@
+if ~ definite UNCHECKED_CONVERSION
+include 'UNCHECKED_CONVERSION.FINC'
+end if
+PRO	TEST_UNCHECKED_CONVERSION_L1		;---------- PRO TEST_UNCHECKED_CONVERSION
+ELB 1					;    BODY ELAB
+BRA post_LD_INTEGER
+LD_INTEGER.elab:
+	Ld -1, 0
+	RTD 0
+post_LD_INTEGER:
+BRA post_ST_INTEGER
+ST_INTEGER.elab:
+	SId -1, 0
+	RTD 0
+post_ST_INTEGER:
+BRA post_INADR_INTEGER
+INADR_INTEGER.elab:
+	RTD 0
+post_INADR_INTEGER:
+BRA post_OUTADR_INTEGER
+OUTADR_INTEGER.elab:
+	La
+	RTD 0
+post_OUTADR_INTEGER:
+VAR INTEGER__outadr_ofs, q
+	LCA OUTADR_INTEGER.elab
+	Sa	 1, INTEGER__outadr_ofs
+VAR INTEGER__inadr_ofs, q
+	LCA INADR_INTEGER.elab
+	Sa	 1, INTEGER__inadr_ofs
+VAR INTEGER__st_ofs, q
+	LCA ST_INTEGER.elab
+	Sa	 1, INTEGER__st_ofs
+VAR INTEGER__ld_ofs, q
+	LCA LD_INTEGER.elab
+	Sa	 1, INTEGER__ld_ofs
+VAR INTEGER__u_ofs, q
+	La	 0, STANDARD.INTEGER.use__info
+	Sa	 1, INTEGER__u_ofs
+BRA post_LD_FLOAT
+LD_FLOAT.elab:
+	Lq -1, 0
+	RTD 0
+post_LD_FLOAT:
+BRA post_ST_FLOAT
+ST_FLOAT.elab:
+	SIq -1, 0
+	RTD 0
+post_ST_FLOAT:
+BRA post_INADR_FLOAT
+INADR_FLOAT.elab:
+	RTD 0
+post_INADR_FLOAT:
+BRA post_OUTADR_FLOAT
+OUTADR_FLOAT.elab:
+	La
+	RTD 0
+post_OUTADR_FLOAT:
+VAR FLOAT__outadr_ofs, q
+	LCA OUTADR_FLOAT.elab
+	Sa	 1, FLOAT__outadr_ofs
+VAR FLOAT__inadr_ofs, q
+	LCA INADR_FLOAT.elab
+	Sa	 1, FLOAT__inadr_ofs
+VAR FLOAT__st_ofs, q
+	LCA ST_FLOAT.elab
+	Sa	 1, FLOAT__st_ofs
+VAR FLOAT__ld_ofs, q
+	LCA LD_FLOAT.elab
+	Sa	 1, FLOAT__ld_ofs
+VAR FLOAT__u_ofs, q
+	La	 0, STANDARD.FLOAT.use__info
+	Sa	 1, FLOAT__u_ofs
+VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
+if defined INT_TO_FLOAT_L2_
+PRO	INT_TO_FLOAT_L2				;---------- PRO INT_TO_FLOAT
+PRMS					;    debut parametrage
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LI	0					; lieu result
+	LVA	 1, GFP_disp
+	Lq	 2, -S_ofs
+	CALL	STANDARD.UNCHECKED_CONVERSION. ,!! FUNCTION D : PAS D ATTRIBUT SM_DEFN DANS [DN_VOID<0.0]>

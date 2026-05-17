@@ -1,5 +1,7 @@
 CALENDAR = 'CALENDAR'
-namespace CALENDAR				;---------- PACKAGE DECLARATION
+namespace CALENDAR				;---------- PACKAGE
+elab_spec:				;    SPEC ELAB
+
 ; CODE_TYPE_DECL : skip PRIVATE TIME (deferred to full type)
 
 					; YEAR_NUMBER INTEGER SUBTYPE INFO
@@ -63,11 +65,320 @@ VAR PARENT__u, q
 end namespace
 ;  CODE_SUBTYPE_DECL : TYPE_SPEC.TY PAS FAIT DN_FIXED
 
-					; TIME RECORD TYPE INFO
+					; TIME TYPE RANGE INFO
 TIME = 'TIME'
 namespace TIME
 VAR use__info, q
 VAR SIZ, d
 	LVA	0, SIZ
 	Sa	0, use__info
-!! FUNCTION D : PAS D ATTRIBUT AS_SOURCE_NAME_S DANS [DN_NULL_COMP_DECL<19.53]>
+VAR FST, q
+VAR LST, q
+	LI	64
+	Sd	0, SIZ
+	LI	2
+	LI	63
+	DEC
+	SHL
+	NEG
+	Sq	0, FST
+	LI	2
+	LI	63
+	DEC
+	SHL
+	LI	1
+	SUB
+	Sq	0, LST
+end namespace
+					;    BODY ELAB
+
+if defined CLOCK_L1_
+PRO	CLOCK_L1				;---------- PRO CLOCK
+PRMS					;    debut parametrage
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 1					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	LI	0
+	Sq  1,	-result__ofs
+	BRA ret_lbl
+ret_lbl:
+	UNLINK 1
+	RTD
+excep:
+endPRO					;---------- end PRO CLOCK
+end if
+
+if defined YEAR_L2_
+PRO	YEAR_L2				;---------- PRO YEAR
+PRMS					;    debut parametrage
+	PRM DATE_ofs				; in
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 1					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	LI	0
+	Sd  1,	-result__ofs
+	BRA ret_lbl
+ret_lbl:
+	UNLINK 1
+	RTD	(prm_siz-8)
+excep:
+endPRO					;---------- end PRO YEAR
+end if
+
+if defined MONTH_L3_
+PRO	MONTH_L3				;---------- PRO MONTH
+PRMS					;    debut parametrage
+	PRM DATE_ofs				; in
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 1					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	LI	0
+	Sd  1,	-result__ofs
+	BRA ret_lbl
+ret_lbl:
+	UNLINK 1
+	RTD	(prm_siz-8)
+excep:
+endPRO					;---------- end PRO MONTH
+end if
+
+if defined DAY_L4_
+PRO	DAY_L4				;---------- PRO DAY
+PRMS					;    debut parametrage
+	PRM DATE_ofs				; in
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 1					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	LI	0
+	Sd  1,	-result__ofs
+	BRA ret_lbl
+ret_lbl:
+	UNLINK 1
+	RTD	(prm_siz-8)
+excep:
+endPRO					;---------- end PRO DAY
+end if
+
+if defined SECONDS_L5_
+PRO	SECONDS_L5				;---------- PRO SECONDS
+PRMS					;    debut parametrage
+	PRM DATE_ofs				; in
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 1					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	BRA ret_lbl
+ret_lbl:
+	UNLINK 1
+	RTD	(prm_siz-8)
+excep:
+endPRO					;---------- end PRO SECONDS
+end if
+
+if defined SPLIT_L6_
+PRO	SPLIT_L6				;---------- PRO SPLIT
+PRMS					;    debut parametrage
+	PRM DATE_ofs				; in
+	PRM YEAR_ofs				; out
+	PRM MONTH_ofs				; out
+	PRM DAY_ofs				; out
+	PRM SECONDS_ofs				; out
+endPRMS					;    fin parametrage
+ELB 1					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+ret_lbl:
+	UNLINK 1
+	RTD	(prm_siz)
+excep:
+endPRO					;---------- end PRO SPLIT
+end if
+
+if defined TIME_OF_L7_
+PRO	TIME_OF_L7				;---------- PRO TIME_OF
+PRMS					;    debut parametrage
+	PRM YEAR_ofs				; in
+	PRM MONTH_ofs				; in
+	PRM DAY_ofs				; in
+	PRM SECONDS_ofs				; in
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 1					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+ret_lbl:
+	UNLINK 1
+	RTD	(prm_siz-8)
+excep:
+endPRO					;---------- end PRO TIME_OF
+end if
+
+if defined "+"_L8_
+PRO	"+"_L8				;---------- PRO "+"
+PRMS					;    debut parametrage
+	PRM LEFT_ofs				; in
+	PRM RIGHT_ofs				; in
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 1					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	LI	0
+	Sq  1,	-result__ofs
+	BRA ret_lbl
+ret_lbl:
+	UNLINK 1
+	RTD	(prm_siz)
+excep:
+endPRO					;---------- end PRO "+"
+end if
+
+if defined "+"_L9_
+PRO	"+"_L9				;---------- PRO "+"
+PRMS					;    debut parametrage
+	PRM LEFT_ofs				; in
+	PRM RIGHT_ofs				; in
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 1					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	LI	0
+	Sq  1,	-result__ofs
+	BRA ret_lbl
+ret_lbl:
+	UNLINK 1
+	RTD	(prm_siz)
+excep:
+endPRO					;---------- end PRO "+"
+end if
+
+if defined "-"_L10_
+PRO	"-"_L10				;---------- PRO "-"
+PRMS					;    debut parametrage
+	PRM LEFT_ofs				; in
+	PRM RIGHT_ofs				; in
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 1					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	LI	0
+	Sq  1,	-result__ofs
+	BRA ret_lbl
+ret_lbl:
+	UNLINK 1
+	RTD	(prm_siz)
+excep:
+endPRO					;---------- end PRO "-"
+end if
+
+if defined "-"_L11_
+PRO	"-"_L11				;---------- PRO "-"
+PRMS					;    debut parametrage
+	PRM LEFT_ofs				; in
+	PRM RIGHT_ofs				; in
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 1					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	BRA ret_lbl
+ret_lbl:
+	UNLINK 1
+	RTD	(prm_siz)
+excep:
+endPRO					;---------- end PRO "-"
+end if
+
+if defined "<"_L12_
+PRO	"<"_L12				;---------- PRO "<"
+PRMS					;    debut parametrage
+	PRM LEFT_ofs				; in
+	PRM RIGHT_ofs				; in
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 1					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	LI	1
+	Sb  1,	-result__ofs
+	BRA ret_lbl
+ret_lbl:
+	UNLINK 1
+	RTD	(prm_siz)
+excep:
+endPRO					;---------- end PRO "<"
+end if
+
+if defined "<="_L13_
+PRO	"<="_L13				;---------- PRO "<="
+PRMS					;    debut parametrage
+	PRM LEFT_ofs				; in
+	PRM RIGHT_ofs				; in
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 1					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	LI	1
+	Sb  1,	-result__ofs
+	BRA ret_lbl
+ret_lbl:
+	UNLINK 1
+	RTD	(prm_siz)
+excep:
+endPRO					;---------- end PRO "<="
+end if
+
+if defined ">"_L14_
+PRO	">"_L14				;---------- PRO ">"
+PRMS					;    debut parametrage
+	PRM LEFT_ofs				; in
+	PRM RIGHT_ofs				; in
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 1					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	LI	1
+	Sb  1,	-result__ofs
+	BRA ret_lbl
+ret_lbl:
+	UNLINK 1
+	RTD	(prm_siz)
+excep:
+endPRO					;---------- end PRO ">"
+end if
+
+if defined ">="_L15_
+PRO	">="_L15				;---------- PRO ">="
+PRMS					;    debut parametrage
+	PRM LEFT_ofs				; in
+	PRM RIGHT_ofs				; in
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 1					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	LI	1
+	Sb  1,	-result__ofs
+	BRA ret_lbl
+ret_lbl:
+	UNLINK 1
+	RTD	(prm_siz)
+excep:
+endPRO					;---------- end PRO ">="
+end if
+begin:					;---------- package BDY INSTRUCTIONS
+end namespace 				;---------- end package BDY CALENDAR
+

@@ -7,7 +7,7 @@
 with DIANA_NODE_ATTR_CLASS_NAMES, IDL, TEXT_IO;
 use  DIANA_NODE_ATTR_CLASS_NAMES, IDL, TEXT_IO;
 					--------
-			procedure		EXPANDER
+			procedure		EXPANDER		( NOM_TEXTE :STRING := "" )
 					--------
 is
 
@@ -432,12 +432,72 @@ PUT_LINE(	"; EXL" &	tab & LBL	);
 
 
 begin
-  OPEN_IDL_TREE_FILE( LIB_PATH(1..LIB_PATH_LENGTH) & "$$$.TMP" );
-  if DI( XD_ERR_COUNT, TREE_ROOT ) = 0
-  then
-    CODE_ROOT( TREE_ROOT );
+  if  NOM_TEXTE = ""  then										-- Pas de fabrication du .fas (tête d'assemblage fasmg)
+    OPEN_IDL_TREE_FILE( LIB_PATH(1..LIB_PATH_LENGTH) & "$$$.TMP" );
+    if DI( XD_ERR_COUNT, TREE_ROOT ) = 0
+    then
+      CODE_ROOT( TREE_ROOT );
+    end if;
+    CLOSE_IDL_TREE_FILE;
+
+  else												-- Fabriquer le .fas
+			--------------------
+			CREATE_FAS_MAIN_FILE:
+    declare
+      LAST_NAME_CHAR	: POSITIVE	:= NOM_TEXTE'FIRST;
+      UPPER_NAME		: STRING( NOM_TEXTE'RANGE );
+    begin
+FIND_DOT_IF_ANY_AND_UPCASE:
+      for  I in NOM_TEXTE'RANGE  loop
+        if  NOM_TEXTE( I ) in 'a' .. 'z'  then
+	UPPER_NAME( I ) := CHARACTER'VAL( CHARACTER'POS( 'A' )
+				+ CHARACTER'POS( NOM_TEXTE( I ) ) - CHARACTER'POS( 'a' ) );
+        else UPPER_NAME( I ) := NOM_TEXTE( I );
+        end if;
+        exit when  NOM_TEXTE( I ) = '.';
+        LAST_NAME_CHAR := I;
+      end loop	FIND_DOT_IF_ANY_AND_UPCASE;
+
+      declare
+        F		: FILE_TYPE;
+        NOM_FAS	: STRING renames UPPER_NAME( UPPER_NAME'FIRST .. LAST_NAME_CHAR );
+
+      begin
+        OPEN( F, IN_FILE, IDL.LIB_PATH( 1 .. IDL.LIB_PATH_LENGTH )						-- Tenter l'ouverture pour voir s'il existe déjà
+			& NOM_FAS  & ".fas" );
+        CLOSE( F );
+        PUT_LINE( "TLALOC/Ada 83 - " & IDL.LIB_PATH( 1 .. IDL.LIB_PATH_LENGTH ) & NOM_FAS  & ".fas already exists" );
+      exception
+        when NAME_ERROR =>										-- Le .fas n'existe pas
+	CREATE( F, OUT_FILE, IDL.LIB_PATH( 1 .. IDL.LIB_PATH_LENGTH )					-- Le créer
+			& NOM_FAS & ".fas" );
+	SET_OUTPUT( F );
+	PUT_LINE( tab & "include '../../src/expander/fasmg/codi_x86_64.finc'" );				-- Il faudra modifier le chemin pour plus de généralité
+	PUT_LINE( "STANDARD = 'STANDARD'" );
+	PUT_LINE( "namespace STANDARD" );
+	PUT_LINE( "  virtual at 8" );
+	PUT_LINE( "    VARzone::" );
+	PUT_LINE( "  end virtual" );
+	PUT_LINE( "include '../../bin/ADA__LIB/_STANDRD.FINC'" );
+
+	PUT_LINE( tab & "LINK" & tab & "0, loc_siz" );
+
+	PUT_LINE( "include '" & NOM_FAS & ".FINC'" );
+	PUT_LINE( tab & "CALL" & tab & "STANDARD., " & NOM_FAS & "_L1" );
+	PUT_LINE( tab & "SYS_EXIT" );
+
+	PUT_LINE( " virtual VARzone" );
+	PUT_LINE( "   loc_siz = $" );
+	PUT_LINE( "  end virtual" );
+	PUT_LINE( "end namespace" );
+	CLOSE( F );
+	SET_OUTPUT( STANDARD_OUTPUT );
+	PUT_LINE( "TLALOC/Ada 83 - " & IDL.LIB_PATH( 1 .. IDL.LIB_PATH_LENGTH ) & NOM_FAS  & ".fas created" );
+      end;
+    end		CREATE_FAS_MAIN_FILE;
+		--------------------
+
   end if;
-  CLOSE_IDL_TREE_FILE;
 
 	--------
 end	EXPANDER;

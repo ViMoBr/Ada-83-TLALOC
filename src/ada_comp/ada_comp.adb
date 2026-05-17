@@ -98,6 +98,7 @@ FIND_POST_END_2:
     end	ISOLE_RELATIVE_SOURCE_PATH;
 	--------------------------
 
+
     if  NO_OPTION_GIVEN
     then	OPTION :=	'S';
     else
@@ -121,8 +122,6 @@ FIND_START_3:
     IDL.PRETTY_DIANA( OPTION );
     return;
   end if;
-
-  START_TIME := CLOCK;
 				-----------------------
 				SEPARE_PATH_NOM_EXECUTE:
 
@@ -144,6 +143,14 @@ DEBUT_NOM_TEXTE:
       NOM_TEXTE	:constant	STRING	:= ACCES_TEXTE( POSITION_SEPARATEUR+1 .. ACCES_TEXTE_LENGTH	);
 
     begin
+
+      if  OPTION = 'B'  or  OPTION = 'b'  then								--| Write .fas fasmg main file
+        EXPANDER( NOM_TEXTE );
+        return;
+      end if;
+
+      START_TIME := CLOCK;
+
       IDL.PAR_PHASE( CHEMIN_TEXTE, NOM_TEXTE, IDL.LIB_PATH );
 				if  OPTION = 'S'  or  OPTION = 's'  then goto FIN; end if;			--| Stop after par_phase
       IDL.LIB_PHASE;		if  OPTION = 'L'  or  OPTION = 'l'  then goto FIN; end if;			--| Stop after lib_phase
@@ -153,6 +160,7 @@ DEBUT_NOM_TEXTE:
 	or  OPTION = 'W'  then									--| Code then write (kills $$$.TMP dont use U, A, P print thereafter)
         EXPANDER;
       end	if;
+
 
 <<FIN>>
       IDL.ERR_PHASE( CHEMIN_TEXTE & NOM_TEXTE );

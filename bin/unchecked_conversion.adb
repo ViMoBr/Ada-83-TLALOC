@@ -1,5 +1,5 @@
 		--------------------
-function		UNCHECKED_CONVERSION	( S :SOURCE )		return TARGET
+function		UNCHECKED_CONVERSION		( S :SOURCE )		return TARGET
 is		--------------------
 begin
   null;
