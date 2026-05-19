@@ -4,15 +4,15 @@ is					------
 
   type NAME is (X86_64);
 
-  SYSTEM_NAME		:constant	NAME	:= X86_64;
+  SYSTEM_NAME		:constant	NAME	:= X86_64;						-- Intel 64 bits
   STORAGE_UNIT		:constant		:= 8;
-  MEMORY_SIZE		:constant		:= 2**31-1;
-  MAX_INT			:constant		:= 2**31-1;
-  MIN_INT			:constant		:= -(2**31);
-  MAX_DIGITS		:constant		:= 15;
-  MAX_MANTISSA		:constant		:= 31;
-  FINE_DELTA		:constant		:= 2.0**(-30);
-  TICK			:constant		:= 1.0**(-2);
+  MEMORY_SIZE		:constant		:= 2**48-1;						-- 48 bits d'adresse effective 256 To
+  MAX_INT			:constant		:= 2**63-1;
+  MIN_INT			:constant		:= -(2**63);
+  MAX_DIGITS		:constant		:= 15;							-- Pour virgule flottante
+  MAX_MANTISSA		:constant		:= 63;							-- Pour virgule fixe
+  FINE_DELTA		:constant		:= 2.0**(-63);
+  TICK			:constant		:= 1.0**(-6);
 
   subtype	PRIORITY		is INTEGER range 0 .. 10;
 
