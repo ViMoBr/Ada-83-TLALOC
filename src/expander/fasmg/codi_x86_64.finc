@@ -1318,6 +1318,29 @@ end macro
 ;				------------------------------
 
 
+;-----------------------------------------------------------------------
+; SYS_CLOCK_GETTIME -- @timespec_buffer →
+;
+; Lit l'horloge UTC (CLOCK_REALTIME). Le paramètre est dépilé : c'est
+; l'adresse d'une zone de 16 octets (struct timespec : qword tv_sec,
+; qword tv_nsec) qui sera remplie par le noyau.
+;
+; Syscall 228 (sys_clock_gettime), CLOCK_REALTIME = 0.
+; ABI Linux x86-64 : RAX=syscall_no, RDI=arg1, RSI=arg2, syscall.
+; Détruit RAX, RCX, RDX, RDI, RSI, R11 (convention syscall Linux).
+;-----------------------------------------------------------------------
+
+;			-----------------
+macro			SYS_CLOCK_GETTIME
+;			-----------------
+  POP_RSI								; RSI = @timespec_buffer
+  db 0x48, 0x31, 0xFF						; xor rdi, rdi	RDI = CLOCK_REALTIME
+  db 0x68, 0xE4, 0x00, 0x00, 0x00					; push 228	sys_clock_gettime
+  db 0x58								; pop rax
+  db 0x0F, 0x05							; syscall
+end macro
+
+
 ;			-------------
 macro			SYS_PUT_CHAR?				; affiche	un seul caractere sur stdout
 ;			-------------
@@ -1330,6 +1353,7 @@ macro			SYS_PUT_CHAR?				; affiche	un seul caractere sur stdout
   db 0x0F, 0x05							; syscall
   DROP								; caractere consomme
 end macro
+
 
 ;			------------
 macro			SYS_PUT_STR?				; affiche	tout une chaine sur	stdout

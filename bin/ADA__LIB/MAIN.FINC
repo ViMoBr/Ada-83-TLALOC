@@ -1,0 +1,212 @@
+if ~ definite TEXT_IO
+include 'TEXT_IO.FINC'
+end if
+PRO	MAIN_L1				;---------- PRO MAIN
+ELB 1					;    BODY ELAB
+
+					; ENUM_TYPE ENUMERATION TYPE INFO
+ENUM_TYPE = 'ENUM_TYPE'
+namespace ENUM_TYPE
+VAR use__info, q
+BEGIN_BLOC_DEF
+db 0, 1, "A"
+db 1, 1, "B"
+db 2, 1, "C"
+db 3, 1, "D"
+db 4, 1, "E"
+END_BLOC_DEF
+IMAGES	BYTES_BLOC
+CST LST, d, 4
+CST FST, d, 0
+CST SIZ, d, 8	; SIZ en bits !
+postpone
+  align_q
+end postpone
+	LCA	SIZ
+	Sa	1, use__info
+end namespace
+ENUM_IO = 'ENUM_IO'
+namespace ENUM_IO				;---------- GENERIC PACKAGE INSTANTIATION
+elab_spec:				;    SPEC ELAB
+
+BRA post_LD_ENUM_TYPE
+LD_ENUM_TYPE.elab:
+	Lb -1, 0
+	RTD 0
+post_LD_ENUM_TYPE:
+BRA post_ST_ENUM_TYPE
+ST_ENUM_TYPE.elab:
+	SIb -1, 0
+	RTD 0
+post_ST_ENUM_TYPE:
+BRA post_INADR_ENUM_TYPE
+INADR_ENUM_TYPE.elab:
+	RTD 0
+post_INADR_ENUM_TYPE:
+BRA post_OUTADR_ENUM_TYPE
+OUTADR_ENUM_TYPE.elab:
+	La
+	RTD 0
+post_OUTADR_ENUM_TYPE:
+VAR ENUM_TYPE__outadr_ofs, q
+	LCA OUTADR_ENUM_TYPE.elab
+	Sa	 1, ENUM_TYPE__outadr_ofs
+VAR ENUM_TYPE__inadr_ofs, q
+	LCA INADR_ENUM_TYPE.elab
+	Sa	 1, ENUM_TYPE__inadr_ofs
+VAR ENUM_TYPE__st_ofs, q
+	LCA ST_ENUM_TYPE.elab
+	Sa	 1, ENUM_TYPE__st_ofs
+VAR ENUM_TYPE__ld_ofs, q
+	LCA LD_ENUM_TYPE.elab
+	Sa	 1, ENUM_TYPE__ld_ofs
+VAR ENUM_TYPE__u_ofs, q
+	La	 1, STANDARD.MAIN_L1.ENUM_TYPE.use__info
+	Sa	 1, ENUM_TYPE__u_ofs
+VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
+VAR DEFAULT_WIDTH_disp, d			; variable entiere
+	LI	0
+	Sd  1,	DEFAULT_WIDTH_disp
+
+VAR DEFAULT_SETTING_disp, b			; variable entiere
+	LI	1
+	Sb  1,	DEFAULT_SETTING_disp
+
+if defined GET_L79_
+PRO	GET_L79				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM ITEM_ofs				; out
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	La 	 2, -ITEM_ofs
+	La 	 2, -FILE_ofs
+	CALL	STANDARD.TEXT_IO.ENUMERATION_IO. ,GET_L79
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO GET
+end if
+if defined GET_L80_
+PRO	GET_L80				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM ITEM_ofs				; out
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	La 	 2, -ITEM_ofs
+	CALL	STANDARD.TEXT_IO.ENUMERATION_IO. ,GET_L80
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO GET
+end if
+if defined PUT_L81_
+PRO	PUT_L81				;---------- PRO PUT
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM ITEM_ofs				; in
+	PRM WIDTH_ofs				; in
+	PRM SET_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Lq	 2, -SET_ofs
+	Lq	 2, -WIDTH_ofs
+	Lq	 2, -ITEM_ofs
+	La 	 2, -FILE_ofs
+	CALL	STANDARD.TEXT_IO.ENUMERATION_IO. ,PUT_L81
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO PUT
+end if
+if defined PUT_L82_
+PRO	PUT_L82				;---------- PRO PUT
+PRMS					;    debut parametrage
+	PRM ITEM_ofs				; in
+	PRM WIDTH_ofs				; in
+	PRM SET_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Lq	 2, -SET_ofs
+	Lq	 2, -WIDTH_ofs
+	Lq	 2, -ITEM_ofs
+	CALL	STANDARD.TEXT_IO.ENUMERATION_IO. ,PUT_L82
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO PUT
+end if
+if defined GET_L83_
+PRO	GET_L83				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM FROM_ofs				; in
+	PRM ITEM_ofs				; out
+	PRM LAST_ofs				; out
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	La 	 2, -LAST_ofs
+	La 	 2, -ITEM_ofs
+	La 	 2, -FROM_ofs
+	CALL	STANDARD.TEXT_IO.ENUMERATION_IO. ,GET_L83
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO GET
+end if
+if defined PUT_L84_
+PRO	PUT_L84				;---------- PRO PUT
+PRMS					;    debut parametrage
+	PRM TO_ofs				; out
+	PRM ITEM_ofs				; in
+	PRM SET_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Lq	 2, -SET_ofs
+	Lq	 2, -ITEM_ofs
+	La 	 2, -TO_ofs
+	CALL	STANDARD.TEXT_IO.ENUMERATION_IO. ,PUT_L84
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO PUT
+end if
+					;---------- end generic package instantiation ENUM_IO
+end namespace
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+VAR	INDEXL9_disp, b				; compteur boucle LOOP__1
+	LI	0
+	Sb  1,	INDEXL9_disp
+VAR	LMT_INDEXL9_disp, b			; limite boucle LOOP__1
+	LI	4
+	Sb  1,	LMT_INDEXL9_disp
+	Lb  1,	INDEXL9_disp			; test null range LOOP__1
+	Lb  1,	LMT_INDEXL9_disp
+	CGT
+	BT	L8
+LOOP__1:					; corps boucle LOOP__1
+	Lb 1,	STANDARD.MAIN_L1.ENUM_IO.DEFAULT_SETTING_disp
+	Ld 1,	STANDARD.MAIN_L1.ENUM_IO.DEFAULT_WIDTH_disp
+	Lb  1,	INDEXL9_disp
+	CALL	STANDARD.MAIN_L1.ENUM_IO. ,PUT_L82
+	Lb  1,	INDEXL9_disp			; test de sortie LOOP__1
+	Lb  1,	LMT_INDEXL9_disp
+	CEQ
+	BT	L8
+	Lb  1,	INDEXL9_disp			; mise a jour compteur LOOP__1
+	INC
+	Sb  1,	INDEXL9_disp
+	BRA	LOOP__1				; iteration suivante LOOP__1
+L8:					; post loop LOOP__1
+ret_lbl:
+	UNLINK 1
+	RTD
+excep:
+endPRO					;---------- end PRO MAIN
