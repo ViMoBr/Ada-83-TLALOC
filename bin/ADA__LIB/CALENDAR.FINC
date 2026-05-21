@@ -1,5 +1,13 @@
+if ~ definite TEXT_IO
+include 'TEXT_IO.FINC'
+end if
+if ~ definite MACHINE_CODE
+include 'MACHINE_CODE.FINC'
+end if
 CALENDAR = 'CALENDAR'
-namespace CALENDAR				;---------- PACKAGE DECLARATION
+namespace CALENDAR				;---------- PACKAGE
+elab_spec:				;    SPEC ELAB
+
 ; CODE_TYPE_DECL : skip PRIVATE TIME (deferred to full type)
 
 					; YEAR_NUMBER INTEGER SUBTYPE INFO
@@ -88,6 +96,1110 @@ VAR LST, q
 	SUB
 	Sq	0, LST
 end namespace
-; EXC_LBL	L16
+					;    BODY ELAB
+LONGINT_IO = 'LONGINT_IO'
+namespace LONGINT_IO			;---------- GENERIC PACKAGE INSTANTIATION
+elab_spec:				;    SPEC ELAB
+
+BRA post_LD_LONG_INTEGER
+LD_LONG_INTEGER.elab:
+	Lq -1, 0
+	RTD 0
+post_LD_LONG_INTEGER:
+BRA post_ST_LONG_INTEGER
+ST_LONG_INTEGER.elab:
+	SIq -1, 0
+	RTD 0
+post_ST_LONG_INTEGER:
+BRA post_INADR_LONG_INTEGER
+INADR_LONG_INTEGER.elab:
+	RTD 0
+post_INADR_LONG_INTEGER:
+BRA post_OUTADR_LONG_INTEGER
+OUTADR_LONG_INTEGER.elab:
+	La
+	RTD 0
+post_OUTADR_LONG_INTEGER:
+VAR LONG_INTEGER__outadr_ofs, q
+	LCA OUTADR_LONG_INTEGER.elab
+	Sa	 0, LONG_INTEGER__outadr_ofs
+VAR LONG_INTEGER__inadr_ofs, q
+	LCA INADR_LONG_INTEGER.elab
+	Sa	 0, LONG_INTEGER__inadr_ofs
+VAR LONG_INTEGER__st_ofs, q
+	LCA ST_LONG_INTEGER.elab
+	Sa	 0, LONG_INTEGER__st_ofs
+VAR LONG_INTEGER__ld_ofs, q
+	LCA LD_LONG_INTEGER.elab
+	Sa	 0, LONG_INTEGER__ld_ofs
+VAR LONG_INTEGER__u_ofs, q
+	La	 0, STANDARD.LONG_INTEGER.use__info
+	Sa	 0, LONG_INTEGER__u_ofs
+VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
+VAR DEFAULT_WIDTH_disp, d			; variable entiere
+	LI	 20
+	Sd  0,	DEFAULT_WIDTH_disp
+
+VAR DEFAULT_BASE_disp, d			; variable entiere
+	LI	10
+	Sd  0,	DEFAULT_BASE_disp
+
+if defined GET_L61_
+PRO	GET_L61				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM ITEM_ofs				; out
+	PRM WIDTH_ofs				; in
+endPRMS					;    fin parametrage
+ELB 1
+begin:
+	LVA	 0, GFP_disp
+; scalaire in attention generique ou pas
+	Ld	 1, -WIDTH_ofs
+	La 	 1, -ITEM_ofs
+	La 	 1, -FILE_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,GET_L61
+	UNLINK	 1
+	RTD	prm_siz
+endPRO					;---------- end PRO GET
+end if
+if defined GET_L62_
+PRO	GET_L62				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM ITEM_ofs				; out
+	PRM WIDTH_ofs				; in
+endPRMS					;    fin parametrage
+ELB 1
+begin:
+	LVA	 0, GFP_disp
+; scalaire in attention generique ou pas
+	Ld	 1, -WIDTH_ofs
+	La 	 1, -ITEM_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,GET_L62
+	UNLINK	 1
+	RTD	prm_siz
+endPRO					;---------- end PRO GET
+end if
+if defined PUT_L63_
+PRO	PUT_L63				;---------- PRO PUT
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM ITEM_ofs				; in
+	PRM WIDTH_ofs				; in
+	PRM BASE_ofs				; in
+endPRMS					;    fin parametrage
+ELB 1
+begin:
+	LVA	 0, GFP_disp
+; scalaire in attention generique ou pas
+	Ld	 1, -BASE_ofs
+; scalaire in attention generique ou pas
+	Ld	 1, -WIDTH_ofs
+; scalaire in attention generique ou pas
+	Lq	 1, -ITEM_ofs
+	La 	 1, -FILE_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,PUT_L63
+	UNLINK	 1
+	RTD	prm_siz
+endPRO					;---------- end PRO PUT
+end if
+if defined PUT_L64_
+PRO	PUT_L64				;---------- PRO PUT
+PRMS					;    debut parametrage
+	PRM ITEM_ofs				; in
+	PRM WIDTH_ofs				; in
+	PRM BASE_ofs				; in
+endPRMS					;    fin parametrage
+ELB 1
+begin:
+	LVA	 0, GFP_disp
+; scalaire in attention generique ou pas
+	Ld	 1, -BASE_ofs
+; scalaire in attention generique ou pas
+	Ld	 1, -WIDTH_ofs
+; scalaire in attention generique ou pas
+	Lq	 1, -ITEM_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,PUT_L64
+	UNLINK	 1
+	RTD	prm_siz
+endPRO					;---------- end PRO PUT
+end if
+if defined GET_L65_
+PRO	GET_L65				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM FROM_ofs				; in
+	PRM ITEM_ofs				; out
+	PRM LAST_ofs				; out
+endPRMS					;    fin parametrage
+ELB 1
+begin:
+	LVA	 0, GFP_disp
+	La 	 1, -LAST_ofs
+	La 	 1, -ITEM_ofs
+	La 	 1, -FROM_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,GET_L65
+	UNLINK	 1
+	RTD	prm_siz
+endPRO					;---------- end PRO GET
+end if
+if defined PUT_L66_
+PRO	PUT_L66				;---------- PRO PUT
+PRMS					;    debut parametrage
+	PRM TO_ofs				; out
+	PRM ITEM_ofs				; in
+	PRM BASE_ofs				; in
+endPRMS					;    fin parametrage
+ELB 1
+begin:
+	LVA	 0, GFP_disp
+; scalaire in attention generique ou pas
+	Ld	 1, -BASE_ofs
+; scalaire in attention generique ou pas
+	Lq	 1, -ITEM_ofs
+	La 	 1, -TO_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,PUT_L66
+	UNLINK	 1
+	RTD	prm_siz
+endPRO					;---------- end PRO PUT
+end if
+					;---------- end generic package instantiation LONGINT_IO
 end namespace
+
+VAR EPOCH_DIFF_S_disp, q			; variable entiere
+	LI	002208988800
+	Sq  0,	EPOCH_DIFF_S_disp
+
+VAR SCALE_disp, q				; variable entiere
+	LI	000536870912
+	Sq  0,	SCALE_disp
+
+VAR DAYS_1900_disp, q			; variable entiere
+	LI	00693901
+	Sq  0,	DAYS_1900_disp
+
+VAR SECONDS_PER_DAY_disp, q			; variable entiere
+	LI	00086400
+	Sq  0,	SECONDS_PER_DAY_disp
+
+VAR NS_PER_SEC_disp, q			; variable entiere
+	LI	001000000000
+	Sq  0,	NS_PER_SEC_disp
+
+
+if defined DAYS_FROM_CIVIL_L7_
+PRO	DAYS_FROM_CIVIL_L7			;---------- PRO DAYS_FROM_CIVIL
+PRMS					;    debut parametrage
+	PRM Y_IN_ofs				; in
+	PRM M_IN_ofs				; in
+	PRM D_IN_ofs				; in
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 1					;    BODY ELAB
+VAR Y_disp, q				; variable entiere
+
+VAR M_ADJ_disp, q				; variable entiere
+
+VAR ERA_disp, q				; variable entiere
+
+VAR YOE_disp, q				; variable entiere
+
+VAR DOY_disp, q				; variable entiere
+
+VAR DOE_disp, q				; variable entiere
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+					; debut if
+	Lq  1,	-M_IN_ofs
+	LI	2
+	CLE
+	BF	L9
+	Lq  1,	-Y_IN_ofs
+	LI	1
+	SUB
+	Sq  1,	Y_disp
+	Lq  1,	-M_IN_ofs
+	LI	9
+	ADD
+	Sq  1,	M_ADJ_disp
+	BRA	L8
+L9:
+	Lq  1,	-Y_IN_ofs
+	Sq  1,	Y_disp
+	Lq  1,	-M_IN_ofs
+	LI	3
+	SUB
+	Sq  1,	M_ADJ_disp
+L8:					; post if
+					; debut if
+	Lq 1,	Y_disp
+	LI	0
+	CGE
+	BF	L11
+	Lq 1,	Y_disp
+	LI	400
+	DIV
+	Sq  1,	ERA_disp
+	BRA	L10
+L11:
+	Lq 1,	Y_disp
+	LI	399
+	SUB
+	LI	400
+	DIV
+	Sq  1,	ERA_disp
+L10:					; post if
+	Lq 1,	Y_disp
+	Lq 1,	ERA_disp
+	LI	400
+	MUL
+	SUB
+	Sq  1,	YOE_disp
+	LI	153
+	Lq 1,	M_ADJ_disp
+	MUL
+	LI	2
+	ADD
+	LI	5
+	DIV
+	Lq  1,	-D_IN_ofs
+	ADD
+	LI	1
+	SUB
+	Sq  1,	DOY_disp
+	Lq 1,	YOE_disp
+	LI	365
+	MUL
+	Lq 1,	YOE_disp
+	LI	4
+	DIV
+	ADD
+	Lq 1,	YOE_disp
+	LI	100
+	DIV
+	SUB
+	Lq 1,	DOY_disp
+	ADD
+	Sq  1,	DOE_disp
+	Lq 1,	ERA_disp
+	LI	00146097
+	MUL
+	Lq 1,	DOE_disp
+	ADD
+	Sq  1,	-result__ofs
+	BRA ret_lbl
+ret_lbl:
+	UNLINK 1
+	RTD	(prm_siz-8)
+excep:
+endPRO					;---------- end PRO DAYS_FROM_CIVIL
+end if
+
+if defined CIVIL_FROM_DAYS_L12_
+PRO	CIVIL_FROM_DAYS_L12			;---------- PRO CIVIL_FROM_DAYS
+PRMS					;    debut parametrage
+	PRM DAYS_ofs				; in
+	PRM Y_ofs				; out
+	PRM M_ofs				; out
+	PRM D_ofs				; out
+endPRMS					;    fin parametrage
+ELB 1					;    BODY ELAB
+VAR ERA_disp, q				; variable entiere
+
+VAR DOE_disp, q				; variable entiere
+
+VAR YOE_disp, q				; variable entiere
+
+VAR Y_OUT_disp, q				; variable entiere
+
+VAR DOY_disp, q				; variable entiere
+
+VAR MP_disp, q				; variable entiere
+
+VAR M_OUT_disp, q				; variable entiere
+
+VAR D_OUT_disp, q				; variable entiere
+
+VAR TMP_disp, q				; variable entiere
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+					; debut if
+	Lq  1,	-DAYS_ofs
+	LI	0
+	CGE
+	BF	L14
+	Lq  1,	-DAYS_ofs
+	Sq  1,	TMP_disp
+	BRA	L13
+L14:
+	Lq  1,	-DAYS_ofs
+	LI	00146096
+	SUB
+	Sq  1,	TMP_disp
+L13:					; post if
+	Lq 1,	TMP_disp
+	LI	00146097
+	DIV
+	Sq  1,	ERA_disp
+	Lq  1,	-DAYS_ofs
+	Lq 1,	ERA_disp
+	LI	00146097
+	MUL
+	SUB
+	Sq  1,	DOE_disp
+	Lq 1,	DOE_disp
+	Lq 1,	DOE_disp
+	LI	1460
+	DIV
+	SUB
+	Lq 1,	DOE_disp
+	LI	00036524
+	DIV
+	ADD
+	Lq 1,	DOE_disp
+	LI	00146096
+	DIV
+	SUB
+	LI	365
+	DIV
+	Sq  1,	YOE_disp
+	Lq 1,	YOE_disp
+	Lq 1,	ERA_disp
+	LI	400
+	MUL
+	ADD
+	Sq  1,	Y_OUT_disp
+	Lq 1,	DOE_disp
+	LI	365
+	Lq 1,	YOE_disp
+	MUL
+	Lq 1,	YOE_disp
+	LI	4
+	DIV
+	ADD
+	Lq 1,	YOE_disp
+	LI	100
+	DIV
+	SUB
+	SUB
+	Sq  1,	DOY_disp
+	LI	5
+	Lq 1,	DOY_disp
+	MUL
+	LI	2
+	ADD
+	LI	153
+	DIV
+	Sq  1,	MP_disp
+	Lq 1,	DOY_disp
+	LI	153
+	Lq 1,	MP_disp
+	MUL
+	LI	2
+	ADD
+	LI	5
+	DIV
+	SUB
+	LI	1
+	ADD
+	Sq  1,	D_OUT_disp
+					; debut if
+	Lq 1,	MP_disp
+	LI	10
+	CLT
+	BF	L16
+	Lq 1,	MP_disp
+	LI	3
+	ADD
+	Sq  1,	M_OUT_disp
+	BRA	L15
+L16:
+	Lq 1,	MP_disp
+	LI	9
+	SUB
+	Sq  1,	M_OUT_disp
+	Lq 1,	Y_OUT_disp
+	LI	1
+	ADD
+	Sq  1,	Y_OUT_disp
+L15:					; post if
+	Lq 1,	Y_OUT_disp
+	SIq  1,	-Y_ofs
+	Lq 1,	M_OUT_disp
+	SIq  1,	-M_ofs
+	Lq 1,	D_OUT_disp
+	SIq  1,	-D_ofs
+ret_lbl:
+	UNLINK 1
+	RTD	(prm_siz)
+excep:
+endPRO					;---------- end PRO CIVIL_FROM_DAYS
+end if
+
+if defined CLOCK_L1_
+PRO	CLOCK_L1				;---------- PRO CLOCK
+PRMS					;    debut parametrage
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 1					;    BODY ELAB
+
+					; LINUX_TIMEVAL RECORD TYPE INFO
+LINUX_TIMEVAL = 'LINUX_TIMEVAL'
+namespace LINUX_TIMEVAL
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+USEINFO 1, SEC, 	La 0, STANDARD.LONG_INTEGER.use__info
+USEINFO 1, NANOSEC, 	La 0, STANDARD.LONG_INTEGER.use__info
+virtual at 0				; calcul des offsets statiques
+STATOFS SEC, 8
+STATOFS NANOSEC, 8
+size = $
+end virtual
+	LI	 size*8
+	Sd	1, SIZ
+end namespace
+VAR LTV_disp, q				; variable record : pointeur aux data record
+VAR LTV__u, q				; variable record : pointeur aux useinfo
+VAR LTV__dat, STANDARD.CALENDAR.CLOCK_L1.LINUX_TIMEVAL.size
+	LVA	1, LTV__dat
+	Sa	1, LTV_disp				; record fin
+	LVA	1, STANDARD.CALENDAR.CLOCK_L1.LINUX_TIMEVAL.SIZ
+	Sa	1, LTV__u
+
+VAR T_disp, q				; variable entiere
+
+
+if defined GETTIME_SYSCALL_L17_
+PRO	GETTIME_SYSCALL_L17			;---------- PRO GETTIME_SYSCALL
+PRMS					;    debut parametrage
+	PRM TV_ofs				; out
+endPRMS					;    fin parametrage
+ELB 2					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	LIA 2 ,	-8
+	SYS_CLOCK_GETTIME
+ret_lbl:
+	UNLINK 2
+	RTD	(prm_siz)
+excep:
+endPRO					;---------- end PRO GETTIME_SYSCALL
+end if
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	LVA  1,	LTV_disp
+	CALL	STANDARD.CALENDAR.CLOCK_L1. ,GETTIME_SYSCALL_L17
+	LIq	1, LTV_disp, STANDARD.CALENDAR.CLOCK_L1.LINUX_TIMEVAL.SEC
+	Lq 0,	STANDARD.CALENDAR.EPOCH_DIFF_S_disp
+	ADD
+	Lq 0,	STANDARD.CALENDAR.SCALE_disp
+	MUL
+	LIq	1, LTV_disp, STANDARD.CALENDAR.CLOCK_L1.LINUX_TIMEVAL.NANOSEC
+	Lq 0,	STANDARD.CALENDAR.SCALE_disp
+	MUL
+	Lq 0,	STANDARD.CALENDAR.NS_PER_SEC_disp
+	DIV
+	ADD
+	Sq  1,	T_disp
+	Lq 1,	T_disp
+	Sa  1,	-result__ofs
+	BRA ret_lbl
+ret_lbl:
+	UNLINK 1
+	RTD
+excep:
+endPRO					;---------- end PRO CLOCK
+end if
+
+if defined YEAR_L2_
+PRO	YEAR_L2				;---------- PRO YEAR
+PRMS					;    debut parametrage
+	PRM DATE_ofs				; in
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 1					;    BODY ELAB
+VAR Y_disp, q				; variable entiere
+
+VAR M_disp, q				; variable entiere
+
+VAR D_disp, q				; variable entiere
+
+VAR S_disp, q				; variable entiere
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+namespace	BLOCK__1
+ELB 2					;    BODY ELAB
+VAR SECONDS_TOTAL_disp, q			; variable entiere
+
+VAR FRAC_disp, q				; variable entiere
+
+VAR DAYS_FROM_1900_disp, q			; variable entiere
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	La  1,	-DATE_ofs
+	Lq 0,	STANDARD.CALENDAR.SCALE_disp
+	DIV
+	Sq  2,	SECONDS_TOTAL_disp
+	Lq 2,	SECONDS_TOTAL_disp
+	Lq 0,	STANDARD.CALENDAR.SECONDS_PER_DAY_disp
+	DIV
+	Sq  2,	DAYS_FROM_1900_disp
+	LVA  1,	D_disp
+	LVA  1,	M_disp
+	LVA  1,	Y_disp
+	Lq 2,	DAYS_FROM_1900_disp
+	Lq 0,	STANDARD.CALENDAR.DAYS_1900_disp
+	ADD
+	CALL	STANDARD.CALENDAR. ,CIVIL_FROM_DAYS_L12
+	UNLINK 2
+endPRO
+	Lq 1,	Y_disp
+	Sd  1,	-result__ofs
+	BRA ret_lbl
+ret_lbl:
+	UNLINK 1
+	RTD	(prm_siz-8)
+excep:
+endPRO					;---------- end PRO YEAR
+end if
+
+if defined MONTH_L3_
+PRO	MONTH_L3				;---------- PRO MONTH
+PRMS					;    debut parametrage
+	PRM DATE_ofs				; in
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 1					;    BODY ELAB
+VAR Y_disp, q				; variable entiere
+
+VAR M_disp, q				; variable entiere
+
+VAR D_disp, q				; variable entiere
+
+VAR SECONDS_TOTAL_disp, q			; variable entiere
+
+VAR DAYS_FROM_1900_disp, q			; variable entiere
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	La  1,	-DATE_ofs
+	Lq 0,	STANDARD.CALENDAR.SCALE_disp
+	DIV
+	Sq  1,	SECONDS_TOTAL_disp
+	Lq 1,	SECONDS_TOTAL_disp
+	Lq 0,	STANDARD.CALENDAR.SECONDS_PER_DAY_disp
+	DIV
+	Sq  1,	DAYS_FROM_1900_disp
+	LVA  1,	D_disp
+	LVA  1,	M_disp
+	LVA  1,	Y_disp
+	Lq 1,	DAYS_FROM_1900_disp
+	Lq 0,	STANDARD.CALENDAR.DAYS_1900_disp
+	ADD
+	CALL	STANDARD.CALENDAR. ,CIVIL_FROM_DAYS_L12
+	Lq 1,	M_disp
+	Sd  1,	-result__ofs
+	BRA ret_lbl
+ret_lbl:
+	UNLINK 1
+	RTD	(prm_siz-8)
+excep:
+endPRO					;---------- end PRO MONTH
+end if
+
+if defined DAY_L4_
+PRO	DAY_L4				;---------- PRO DAY
+PRMS					;    debut parametrage
+	PRM DATE_ofs				; in
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 1					;    BODY ELAB
+VAR Y_disp, q				; variable entiere
+
+VAR M_disp, q				; variable entiere
+
+VAR D_disp, q				; variable entiere
+
+VAR SECONDS_TOTAL_disp, q			; variable entiere
+
+VAR DAYS_FROM_1900_disp, q			; variable entiere
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	La  1,	-DATE_ofs
+	Lq 0,	STANDARD.CALENDAR.SCALE_disp
+	DIV
+	Sq  1,	SECONDS_TOTAL_disp
+	Lq 1,	SECONDS_TOTAL_disp
+	Lq 0,	STANDARD.CALENDAR.SECONDS_PER_DAY_disp
+	DIV
+	Sq  1,	DAYS_FROM_1900_disp
+	LVA  1,	D_disp
+	LVA  1,	M_disp
+	LVA  1,	Y_disp
+	Lq 1,	DAYS_FROM_1900_disp
+	Lq 0,	STANDARD.CALENDAR.DAYS_1900_disp
+	ADD
+	CALL	STANDARD.CALENDAR. ,CIVIL_FROM_DAYS_L12
+	Lq 1,	D_disp
+	Sd  1,	-result__ofs
+	BRA ret_lbl
+ret_lbl:
+	UNLINK 1
+	RTD	(prm_siz-8)
+excep:
+endPRO					;---------- end PRO DAY
+end if
+
+if defined SECONDS_L5_
+PRO	SECONDS_L5				;---------- PRO SECONDS
+PRMS					;    debut parametrage
+	PRM DATE_ofs				; in
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 1					;    BODY ELAB
+VAR T_disp, q				; variable entiere
+
+VAR SEC_TOTAL_disp, q			; variable entiere
+
+VAR FRAC_PART_disp, q			; variable entiere
+
+VAR SEC_OF_DAY_disp, q			; variable entiere
+
+VAR RESULT_disp, q				; variable entiere
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	La  1,	-DATE_ofs
+	Sq  1,	T_disp
+	Lq 1,	T_disp
+	Lq 0,	STANDARD.CALENDAR.SCALE_disp
+	DIV
+	Sq  1,	SEC_TOTAL_disp
+	Lq 1,	T_disp
+	Lq 1,	SEC_TOTAL_disp
+	Lq 0,	STANDARD.CALENDAR.SCALE_disp
+	MUL
+	SUB
+	Sq  1,	FRAC_PART_disp
+	Lq 1,	SEC_TOTAL_disp
+	Lq 0,	STANDARD.CALENDAR.SECONDS_PER_DAY_disp
+	REMI
+	Sq  1,	SEC_OF_DAY_disp
+					; debut if
+	Lq 1,	SEC_OF_DAY_disp
+	LI	0
+	CLT
+	BF	L19
+	Lq 1,	SEC_OF_DAY_disp
+	Lq 0,	STANDARD.CALENDAR.SECONDS_PER_DAY_disp
+	ADD
+	Sq  1,	SEC_OF_DAY_disp
+	BRA	L18
+L19:
+L18:					; post if
+	Lq 1,	SEC_OF_DAY_disp
+	Lq 0,	STANDARD.CALENDAR.SCALE_disp
+	MUL
+	Lq 1,	FRAC_PART_disp
+	ADD
+	Sq  1,	RESULT_disp
+	BRA ret_lbl
+ret_lbl:
+	UNLINK 1
+	RTD	(prm_siz-8)
+excep:
+endPRO					;---------- end PRO SECONDS
+end if
+
+if defined SPLIT_L6_
+PRO	SPLIT_L6				;---------- PRO SPLIT
+PRMS					;    debut parametrage
+	PRM DATE_ofs				; in
+	PRM YEAR_ofs				; out
+	PRM MONTH_ofs				; out
+	PRM DAY_ofs				; out
+	PRM SECONDS_ofs				; out
+endPRMS					;    fin parametrage
+ELB 1					;    BODY ELAB
+VAR Y_disp, q				; variable entiere
+
+VAR M_disp, q				; variable entiere
+
+VAR D_disp, q				; variable entiere
+
+VAR T_disp, q				; variable entiere
+
+VAR SEC_TOTAL_disp, q			; variable entiere
+
+VAR FRAC_PART_disp, q			; variable entiere
+
+VAR DAYS_FROM_1900_disp, q			; variable entiere
+
+VAR SEC_OF_DAY_disp, q			; variable entiere
+
+VAR DUR_INTERNAL_disp, q			; variable entiere
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	La  1,	-DATE_ofs
+	Sq  1,	T_disp
+	Lq 1,	T_disp
+	Lq 0,	STANDARD.CALENDAR.SCALE_disp
+	DIV
+	Sq  1,	SEC_TOTAL_disp
+	Lq 1,	T_disp
+	Lq 1,	SEC_TOTAL_disp
+	Lq 0,	STANDARD.CALENDAR.SCALE_disp
+	MUL
+	SUB
+	Sq  1,	FRAC_PART_disp
+	Lq 1,	SEC_TOTAL_disp
+	Lq 0,	STANDARD.CALENDAR.SECONDS_PER_DAY_disp
+	DIV
+	Sq  1,	DAYS_FROM_1900_disp
+	Lq 1,	SEC_TOTAL_disp
+	Lq 1,	DAYS_FROM_1900_disp
+	Lq 0,	STANDARD.CALENDAR.SECONDS_PER_DAY_disp
+	MUL
+	SUB
+	Sq  1,	SEC_OF_DAY_disp
+					; debut if
+	Lq 1,	SEC_OF_DAY_disp
+	LI	0
+	CLT
+	BF	L21
+	Lq 1,	SEC_OF_DAY_disp
+	Lq 0,	STANDARD.CALENDAR.SECONDS_PER_DAY_disp
+	ADD
+	Sq  1,	SEC_OF_DAY_disp
+	Lq 1,	DAYS_FROM_1900_disp
+	LI	1
+	SUB
+	Sq  1,	DAYS_FROM_1900_disp
+	BRA	L20
+L21:
+L20:					; post if
+					; debut if
+	Lq 1,	FRAC_PART_disp
+	LI	0
+	CLT
+	BF	L23
+	Lq 1,	FRAC_PART_disp
+	Lq 0,	STANDARD.CALENDAR.SCALE_disp
+	ADD
+	Sq  1,	FRAC_PART_disp
+	Lq 1,	SEC_OF_DAY_disp
+	LI	1
+	SUB
+	Sq  1,	SEC_OF_DAY_disp
+					; debut if
+	Lq 1,	SEC_OF_DAY_disp
+	LI	0
+	CLT
+	BF	L25
+	Lq 1,	SEC_OF_DAY_disp
+	Lq 0,	STANDARD.CALENDAR.SECONDS_PER_DAY_disp
+	ADD
+	Sq  1,	SEC_OF_DAY_disp
+	Lq 1,	DAYS_FROM_1900_disp
+	LI	1
+	SUB
+	Sq  1,	DAYS_FROM_1900_disp
+	BRA	L24
+L25:
+L24:					; post if
+	BRA	L22
+L23:
+L22:					; post if
+	LVA  1,	D_disp
+	LVA  1,	M_disp
+	LVA  1,	Y_disp
+	Lq 1,	DAYS_FROM_1900_disp
+	Lq 0,	STANDARD.CALENDAR.DAYS_1900_disp
+	ADD
+	CALL	STANDARD.CALENDAR. ,CIVIL_FROM_DAYS_L12
+	Lq 1,	SEC_OF_DAY_disp
+	Lq 0,	STANDARD.CALENDAR.SCALE_disp
+	MUL
+	Lq 1,	FRAC_PART_disp
+	ADD
+	Sq  1,	DUR_INTERNAL_disp
+	Lq 1,	Y_disp
+	SId  1,	-YEAR_ofs
+	Lq 1,	M_disp
+	SId  1,	-MONTH_ofs
+	Lq 1,	D_disp
+	SId  1,	-DAY_ofs
+	Lq 1,	DUR_INTERNAL_disp
+	MUL
+	SIq  1,	-SECONDS_ofs
+ret_lbl:
+	UNLINK 1
+	RTD	(prm_siz)
+excep:
+endPRO					;---------- end PRO SPLIT
+end if
+
+if defined TIME_OF_L7_
+PRO	TIME_OF_L7				;---------- PRO TIME_OF
+PRMS					;    debut parametrage
+	PRM YEAR_ofs				; in
+	PRM MONTH_ofs				; in
+	PRM DAY_ofs				; in
+	PRM SECONDS_ofs				; in
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 1					;    BODY ELAB
+VAR DAYS_FROM_HINNANT_disp, q			; variable entiere
+
+VAR DAYS_FROM_1900_LOCAL_disp, q		; variable entiere
+
+VAR DUR_INTERNAL_disp, q			; variable entiere
+
+VAR T_disp, q				; variable entiere
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	LI	0					; lieu resultat sur pile
+	Ld  1,	-DAY_ofs
+	Ld  1,	-MONTH_ofs
+	Ld  1,	-YEAR_ofs
+	CALL	STANDARD.CALENDAR. ,DAYS_FROM_CIVIL_L7
+	Sq  1,	DAYS_FROM_HINNANT_disp
+	Lq 1,	DAYS_FROM_HINNANT_disp
+	Lq 0,	STANDARD.CALENDAR.DAYS_1900_disp
+	SUB
+	Sq  1,	DAYS_FROM_1900_LOCAL_disp
+	Lq  1,	-SECONDS_ofs
+	DIV
+	Sq  1,	DUR_INTERNAL_disp
+	Lq 1,	DAYS_FROM_1900_LOCAL_disp
+	Lq 0,	STANDARD.CALENDAR.SECONDS_PER_DAY_disp
+	MUL
+	Lq 0,	STANDARD.CALENDAR.SCALE_disp
+	MUL
+	Lq 1,	DUR_INTERNAL_disp
+	ADD
+	Sq  1,	T_disp
+	Lq 1,	T_disp
+	Sa  1,	-result__ofs
+	BRA ret_lbl
+; CHOICE_OTHERS in EXCEPTIONS todo
+	BRA	L26
+L27:
+L26:
+ret_lbl:
+	UNLINK 1
+	RTD	(prm_siz-8)
+excep:
+endPRO					;---------- end PRO TIME_OF
+end if
+
+if defined _PLUS__L8_
+PRO	_PLUS__L8				;---------- PRO _PLUS_
+PRMS					;    debut parametrage
+	PRM LEFT_ofs				; in
+	PRM RIGHT_ofs				; in
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 1					;    BODY ELAB
+VAR DUR_INTERNAL_disp, q			; variable entiere
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	Lq  1,	-RIGHT_ofs
+	DIV
+	Sq  1,	DUR_INTERNAL_disp
+	La  1,	-LEFT_ofs
+	Lq 1,	DUR_INTERNAL_disp
+	ADD
+	Sa  1,	-result__ofs
+	BRA ret_lbl
+; CHOICE_OTHERS in EXCEPTIONS todo
+	BRA	L28
+L29:
+L28:
+ret_lbl:
+	UNLINK 1
+	RTD	(prm_siz)
+excep:
+endPRO					;---------- end PRO _PLUS_
+end if
+
+if defined _PLUS__L9_
+PRO	_PLUS__L9				;---------- PRO _PLUS_
+PRMS					;    debut parametrage
+	PRM LEFT_ofs				; in
+	PRM RIGHT_ofs				; in
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 1					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	La  1,	-RIGHT_ofs
+	Lq  1,	-LEFT_ofs
+	ADD
+	Sa  1,	-result__ofs
+	BRA ret_lbl
+ret_lbl:
+	UNLINK 1
+	RTD	(prm_siz)
+excep:
+endPRO					;---------- end PRO _PLUS_
+end if
+
+if defined _MINUS__L10_
+PRO	_MINUS__L10				;---------- PRO _MINUS_
+PRMS					;    debut parametrage
+	PRM LEFT_ofs				; in
+	PRM RIGHT_ofs				; in
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 1					;    BODY ELAB
+VAR DUR_INTERNAL_disp, q			; variable entiere
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	Lq  1,	-RIGHT_ofs
+	DIV
+	Sq  1,	DUR_INTERNAL_disp
+	La  1,	-LEFT_ofs
+	Lq 1,	DUR_INTERNAL_disp
+	SUB
+	Sa  1,	-result__ofs
+	BRA ret_lbl
+; CHOICE_OTHERS in EXCEPTIONS todo
+	BRA	L30
+L31:
+L30:
+ret_lbl:
+	UNLINK 1
+	RTD	(prm_siz)
+excep:
+endPRO					;---------- end PRO _MINUS_
+end if
+
+if defined _MINUS__L11_
+PRO	_MINUS__L11				;---------- PRO _MINUS_
+PRMS					;    debut parametrage
+	PRM LEFT_ofs				; in
+	PRM RIGHT_ofs				; in
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 1					;    BODY ELAB
+VAR DELTA_INTERNAL_disp, q			; variable entiere
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	La  1,	-LEFT_ofs
+	La  1,	-RIGHT_ofs
+	SUB
+	Sq  1,	DELTA_INTERNAL_disp
+	BRA ret_lbl
+; CHOICE_OTHERS in EXCEPTIONS todo
+	BRA	L32
+L33:
+L32:
+ret_lbl:
+	UNLINK 1
+	RTD	(prm_siz)
+excep:
+endPRO					;---------- end PRO _MINUS_
+end if
+
+if defined _LT__L12_
+PRO	_LT__L12				;---------- PRO _LT_
+PRMS					;    debut parametrage
+	PRM LEFT_ofs				; in
+	PRM RIGHT_ofs				; in
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 1					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	La  1,	-LEFT_ofs
+	La  1,	-RIGHT_ofs
+	CLT
+	Sb  1,	-result__ofs
+	BRA ret_lbl
+ret_lbl:
+	UNLINK 1
+	RTD	(prm_siz)
+excep:
+endPRO					;---------- end PRO _LT_
+end if
+
+if defined _LE__L13_
+PRO	_LE__L13				;---------- PRO _LE_
+PRMS					;    debut parametrage
+	PRM LEFT_ofs				; in
+	PRM RIGHT_ofs				; in
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 1					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	La  1,	-LEFT_ofs
+	La  1,	-RIGHT_ofs
+	CLE
+	Sb  1,	-result__ofs
+	BRA ret_lbl
+ret_lbl:
+	UNLINK 1
+	RTD	(prm_siz)
+excep:
+endPRO					;---------- end PRO _LE_
+end if
+
+if defined _GT__L14_
+PRO	_GT__L14				;---------- PRO _GT_
+PRMS					;    debut parametrage
+	PRM LEFT_ofs				; in
+	PRM RIGHT_ofs				; in
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 1					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	La  1,	-LEFT_ofs
+	La  1,	-RIGHT_ofs
+	CGT
+	Sb  1,	-result__ofs
+	BRA ret_lbl
+ret_lbl:
+	UNLINK 1
+	RTD	(prm_siz)
+excep:
+endPRO					;---------- end PRO _GT_
+end if
+
+if defined _GE__L15_
+PRO	_GE__L15				;---------- PRO _GE_
+PRMS					;    debut parametrage
+	PRM LEFT_ofs				; in
+	PRM RIGHT_ofs				; in
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 1					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	La  1,	-LEFT_ofs
+	La  1,	-RIGHT_ofs
+	CGE
+	Sb  1,	-result__ofs
+	BRA ret_lbl
+ret_lbl:
+	UNLINK 1
+	RTD	(prm_siz)
+excep:
+endPRO					;---------- end PRO _GE_
+end if
+begin:					;---------- package BDY INSTRUCTIONS
+end namespace 				;---------- end package BDY CALENDAR
 

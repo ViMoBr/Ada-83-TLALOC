@@ -325,14 +325,20 @@ is					-----
       end	if;
 
     else
-      if	D( SM_OBJ_TYPE, DEFN ).TY in CLASS_SCALAR  then
+      declare
+        OBJ_TYPE	:TREE	:= D( SM_OBJ_TYPE, DEFN );
+      begin
+        while  OBJ_TYPE.TY = DN_PRIVATE  or  OBJ_TYPE.TY = DN_L_PRIVATE  loop
+	OBJ_TYPE := D( SM_TYPE_SPEC, OBJ_TYPE );
+        end loop;
+
+        if  OBJ_TYPE.TY in CLASS_SCALAR  then
         declare
-	SIZ_CHAR	: CHARACTER	:= OPER_SIZ_CHAR( D( SM_OBJ_TYPE, DEFN ) );
+	SIZ_CHAR	: CHARACTER	:= OPER_SIZ_CHAR( OBJ_TYPE );
 	DEFN_LVL	: INTEGER		:= DI( CD_LEVEL, DEFN );
 
         begin
 	PUT( tab & "L" & SIZ_CHAR & ' ' & IMAGE( DEFN_LVL	) & ',' &	tab );
---	if  DEFN_LVL >= INTEGER( CUR_LEVEL )
 	if  DEFN_LVL /= INTEGER( CUR_LEVEL )
 	or else	D( XD_REGION, DEFN ).TY = DN_PACKAGE_ID
 	then
@@ -346,7 +352,6 @@ is					-----
 	DEFN_LVL	: INTEGER		:= DI( CD_LEVEL, DEFN );
         begin
 	PUT( tab & "LVa " &	IMAGE( DEFN_LVL ) &	',' & tab	);
---	if  DEFN_LVL >= INTEGER( CUR_LEVEL )
 	if  DEFN_LVL /= INTEGER( CUR_LEVEL )
 	or else	D( XD_REGION, DEFN ).TY = DN_PACKAGE_ID
 	then
@@ -356,7 +361,7 @@ is					-----
         end;
 
      end if;
-
+      end;
     end if;
 
   end	  LOAD_MEM;
@@ -366,10 +371,17 @@ is					-----
 			--=====--
   procedure		  STORE			( DEST_DEFN	:TREE )
   is			--=====--
-
-    SIZ_CHAR	: CHARACTER	:= OPER_SIZ_CHAR( D( SM_OBJ_TYPE, DEST_DEFN ) );
+    TYPE_SPEC	: TREE	:= D( SM_OBJ_TYPE, DEST_DEFN );
+    SIZ_CHAR	: CHARACTER;
 
   begin
+
+    while  TYPE_SPEC.TY = DN_L_PRIVATE  or  TYPE_SPEC.TY = DN_PRIVATE  loop
+      TYPE_SPEC := D( SM_TYPE_SPEC, TYPE_SPEC );
+    end loop;
+
+    SIZ_CHAR := OPER_SIZ_CHAR( TYPE_SPEC );
+
     if  DEST_DEFN.TY = DN_OUT_ID  or  DEST_DEFN.TY = DN_IN_OUT_ID  then
       PUT_LINE( tab	& "SI" & SIZ_CHAR &	' ' & INTEGER'IMAGE( DI( CD_LEVEL, DEST_DEFN ) ) & ',' & tab & '-' & PRINT_NAME( D( LX_SYMREP, DEST_DEFN ) ) & "_ofs" );
     else
@@ -435,6 +447,27 @@ is					-----
 
   end	  REGIONS_PATH;
 	--============--
+
+
+			--^^^^^^^^^^^^^^^^--
+  function		  LETTERED_SUBNAME			( SUB_NAME : STRING )	return STRING
+  is			--------------------
+  begin
+    if  SUB_NAME( SUB_NAME'FIRST ) = '"'  then
+      if SUB_NAME = """>="""  then return "_GE_";
+      elsif SUB_NAME = """>"""  then return "_GT_";
+      elsif SUB_NAME = """<="""  then return "_LE_";
+      elsif SUB_NAME = """<"""  then return "_LT_";
+      elsif SUB_NAME = """+"""  then return "_PLUS_";
+      elsif SUB_NAME = """-"""  then return "_MINUS_";
+      end if;
+      return  SUB_NAME;
+    else
+      return  SUB_NAME;
+    end if;
+
+  end	  LETTERED_SUBNAME;
+	--================--
 
 
 	-----

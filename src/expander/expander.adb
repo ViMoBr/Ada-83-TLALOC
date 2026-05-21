@@ -39,7 +39,7 @@ is
   ADDR_SIZE			: constant		:= 8;					--| ADRESSES SUR 64	BITS
   BOOL_SIZE			: constant		:= 1;					--| BOOLEEN SUR 1 OCTET
   CHAR_SIZE			: constant		:= 1;					--| CARACTERE SUR 8	BITS
-  INTG_SIZE			: constant		:= 4;					--| ENTIER SUR 32 BITS
+  INTG_SIZE			: constant		:= 8;					--| ENTIER SUR 64 BITS
 
   type LOOP_CODE			is (
 		DEC,   GT,    INC,	 LT		);
@@ -50,6 +50,7 @@ is
   GENERIC_MODEL_DECL_SEQ		: SEQ_TYPE;
   IN_GENERIC_BODY			: BOOLEAN			:= FALSE;					-- Traitement special pour les corps de	generique
   ENCLOSING_GENERIC			: TREE;
+  GENERIC_BASE_LEVEL		: LEVEL_NUM		:= 0;
 
   IN_SPEC_UNIT			: BOOLEAN;
 
@@ -89,6 +90,7 @@ is
   function  IMAGE			( I : NATURAL )			return STRING;
 
   procedure REGIONS_PATH		( ID : TREE; WITH_DOT :BOOLEAN := TRUE );
+  function  LETTERED_SUBNAME		( SUB_NAME : STRING )		return STRING;
 
 
   OPERAND_OVERFLOW			: exception;

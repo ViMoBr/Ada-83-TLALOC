@@ -39,7 +39,7 @@ VAR LST, d
 	Sd	0, SIZ
 	LI	0
 	Sd	0, FST
-	LI	2147483647
+	LI	002147483647
 	Sd	0, LST
 end namespace
 
@@ -56,7 +56,7 @@ VAR LST, d
 	Sd	0, SIZ
 	LI	1
 	Sd	0, FST
-	LI	2147483647
+	LI	002147483647
 	Sd	0, LST
 VAR PARENT__u, q
 	La	0, STANDARD.TEXT_IO.COUNT.use__info
@@ -80,7 +80,7 @@ VAR LST, d
 	Sd	0, SIZ
 	LI	0
 	Sd	0, FST
-	LI	2147483647
+	LI	002147483647
 	Sd	0, LST
 VAR PARENT__u, q
 	La	0, STANDARD.INTEGER.use__info
@@ -2184,7 +2184,7 @@ begin:					;---------- BDY INSTRUCTIONS
 					; debut if
 	La 1, -FILE_ofs
 	LId	, 0, STANDARD.TEXT_IO.FILE_TYPE.COL
-	LI	2147483647
+	LI	002147483647
 	CGT
 	BF	L117
 	BRA	L116
@@ -2233,7 +2233,7 @@ begin:					;---------- BDY INSTRUCTIONS
 					; debut if
 	La 1, -FILE_ofs
 	LId	, 0, STANDARD.TEXT_IO.FILE_TYPE.LINE
-	LI	2147483647
+	LI	002147483647
 	CGT
 	BF	L119
 	BRA	L118
@@ -2282,7 +2282,7 @@ begin:					;---------- BDY INSTRUCTIONS
 					; debut if
 	La 1, -FILE_ofs
 	LId	, 0, STANDARD.TEXT_IO.FILE_TYPE.PAGE
-	LI	2147483647
+	LI	002147483647
 	CGT
 	BF	L121
 	BRA	L120
@@ -2853,7 +2853,9 @@ excep:
 endPRO					;---------- end PRO PUT_LINE
 end if
 INTEGER_IO = 'INTEGER_IO'
-namespace INTEGER_IO			;---------- GENERIC PACKAGE
+namespace INTEGER_IO
+					;---------- GENERIC PACKAGE BODY ----------
+
 PRMS
 	PRM NUM__u_ofs
 	PRM NUM__ld_ofs
@@ -2861,14 +2863,6 @@ PRMS
 	PRM NUM__inadr_ofs
 	PRM NUM__outadr_ofs
 endPRMS
-VAR DEFAULT_WIDTH_disp, d			; variable entiere
-; WIDTH POUR FORMAL TYPE A REVOIR DANS EXPANDER-EXPRESSIONS 
-	Sd  0,	DEFAULT_WIDTH_disp
-
-VAR DEFAULT_BASE_disp, d			; variable entiere
-	LI	10
-	Sd  0,	DEFAULT_BASE_disp
-
 					;    BODY ELAB
 
 if defined GET_L61_
@@ -2925,9 +2919,9 @@ VAR LEN_disp, d				; variable entiere
 	LI	0
 	Sd  1,	LEN_disp
 
-VAR VAL_disp, d				; variable entiere
+VAR VAL_disp, q				; variable entiere
 	LI	0
-	Sd  1,	VAL_disp
+	Sq  1,	VAL_disp
 
 VAR NEG_disp, d				; variable bool char enum
 	LI	0
@@ -3057,7 +3051,7 @@ LOOP__7:
 	CGT
 	BT	L155
 	LI	10
-	Ld 1,	VAL_disp
+	Lq 1,	VAL_disp
 	MUL
 	La	 1, CHN_disp				; array data start address on stack
 	Ld 1,	I_disp
@@ -3072,7 +3066,7 @@ LOOP__7:
 	LI	48
 	SUB
 	ADD
-	Sd  1,	VAL_disp
+	Sq  1,	VAL_disp
 	Ld 1,	I_disp
 	LI	1
 	ADD
@@ -3082,13 +3076,13 @@ L155:					; post loop LOOP__7
 					; debut if
 	Lb 1,	NEG_disp
 	BF	L158
-	Ld 1,	VAL_disp
+	Lq 1,	VAL_disp
 	NEG
-	SId  1,	-ITEM_ofs
+	SIq  1,	-ITEM_ofs
 	BRA	L157
 L158:
-	Ld 1,	VAL_disp
-	SId  1,	-ITEM_ofs
+	Lq 1,	VAL_disp
+	SIq  1,	-ITEM_ofs
 L157:					; post if
 ret_lbl:
 	UNLINK 1
@@ -3150,9 +3144,9 @@ VAR LEN_disp, d				; variable entiere
 	LI	40
 	Sd  1,	LEN_disp
 
-VAR VAL_disp, d				; variable entiere
+VAR VAL_disp, q				; variable entiere
 	LI	0
-	Sd  1,	VAL_disp
+	Sq  1,	VAL_disp
 
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
@@ -3171,7 +3165,7 @@ VAR	LMT_IL160_disp, d			; limite boucle LOOP__8
 	BT	L159
 LOOP__8:					; corps boucle LOOP__8
 	LI	10
-	Ld 1,	VAL_disp
+	Lq 1,	VAL_disp
 	MUL
 	La	 1, CHN_disp				; array data start address on stack
 	Ld	1, IL160_disp
@@ -3186,7 +3180,7 @@ LOOP__8:					; corps boucle LOOP__8
 	ADD
 	LI	48
 	SUB
-	Sd  1,	VAL_disp
+	Sq  1,	VAL_disp
 	Ld  1,	IL160_disp				; test de sortie LOOP__8
 	Ld  1,	LMT_IL160_disp
 	CEQ
@@ -3196,8 +3190,8 @@ LOOP__8:					; corps boucle LOOP__8
 	Sd  1,	IL160_disp
 	BRA	LOOP__8				; iteration suivante LOOP__8
 L159:					; post loop LOOP__8
-	Ld 1,	VAL_disp
-	SId  1,	-ITEM_ofs
+	Lq 1,	VAL_disp
+	SIq  1,	-ITEM_ofs
 	LVa 1,	CHN_disp
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 ret_lbl:
@@ -3217,9 +3211,9 @@ PRMS					;    debut parametrage
 	PRM GFP_ofs
 endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
-VAR VAL_disp, d				; variable entiere
-	Ld  1,	-ITEM_ofs
-	Sd  1,	VAL_disp
+VAR VAL_disp, q				; variable entiere
+	Lq  1,	-ITEM_ofs
+	Sq  1,	VAL_disp
 
 STRING = 'STRING'
 namespace STRING				; array var constrained array type info
@@ -3267,7 +3261,7 @@ VAR POS_disp, d				; variable entiere
 	Sd  1,	POS_disp
 
 VAR IS_NEGATIVE_disp, d			; variable bool char enum
-	Ld  1,	-ITEM_ofs
+	Lq  1,	-ITEM_ofs
 	LI	0
 	CLT
 	Sb  1,	IS_NEGATIVE_disp
@@ -3283,14 +3277,14 @@ begin:					;---------- BDY INSTRUCTIONS
 					; debut if
 	Lb 1,	IS_NEGATIVE_disp
 	BF	L162
-	Ld  1,	-ITEM_ofs
+	Lq  1,	-ITEM_ofs
 	NEG
-	Sd  1,	VAL_disp
+	Sq  1,	VAL_disp
 	BRA	L161
 L162:
 L161:					; post if
 LOOP__9:
-	Ld 1,	VAL_disp
+	Lq 1,	VAL_disp
 	Ld  1,	-BASE_ofs
 	MODI
 	Sd  1,	DIGIT_disp
@@ -3330,11 +3324,11 @@ L165:
 	SUB
 	Sb
 L164:					; post if
-	Ld 1,	VAL_disp
+	Lq 1,	VAL_disp
 	Ld  1,	-BASE_ofs
 	DIV
-	Sd  1,	VAL_disp
-	Ld 1,	VAL_disp
+	Sq  1,	VAL_disp
+	Lq 1,	VAL_disp
 	LI	0
 	CEQ
 	BT	L163
@@ -3528,7 +3522,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	La  1,	-GFP_ofs				; propagation GFP generique
 	Ld  1,	-BASE_ofs
 	Ld  1,	-WIDTH_ofs
-	Ld  1,	-ITEM_ofs
+	Lq  1,	-ITEM_ofs
 	LVa 0,	STANDARD.TEXT_IO.DEFAULT_OUTPUT_disp
 	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,PUT_L63
 ret_lbl:
@@ -3576,7 +3570,9 @@ end if
 begin:					;---------- package BDY INSTRUCTIONS
 end namespace 				;---------- end generic package BDY INTEGER_IO
 FLOAT_IO = 'FLOAT_IO'
-namespace FLOAT_IO				;---------- GENERIC PACKAGE
+namespace FLOAT_IO
+					;---------- GENERIC PACKAGE BODY ----------
+
 PRMS
 	PRM NUM__u_ofs
 	PRM NUM__ld_ofs
@@ -3584,20 +3580,6 @@ PRMS
 	PRM NUM__inadr_ofs
 	PRM NUM__outadr_ofs
 endPRMS
-VAR DEFAULT_FORE_disp, d			; variable entiere
-	LI	2
-	Sd  0,	DEFAULT_FORE_disp
-
-VAR DEFAULT_AFT_disp, d			; variable entiere
-	LI	6
-	LI	1
-	SUB
-	Sd  0,	DEFAULT_AFT_disp
-
-VAR DEFAULT_EXP_disp, d			; variable entiere
-	LI	3
-	Sd  0,	DEFAULT_EXP_disp
-
 					;    BODY ELAB
 
 if defined GET_L67_
@@ -4551,7 +4533,9 @@ end if
 begin:					;---------- package BDY INSTRUCTIONS
 end namespace 				;---------- end generic package BDY FLOAT_IO
 FIXED_IO = 'FIXED_IO'
-namespace FIXED_IO				;---------- GENERIC PACKAGE
+namespace FIXED_IO
+					;---------- GENERIC PACKAGE BODY ----------
+
 PRMS
 	PRM NUM__u_ofs
 	PRM NUM__ld_ofs
@@ -4559,16 +4543,6 @@ PRMS
 	PRM NUM__inadr_ofs
 	PRM NUM__outadr_ofs
 endPRMS
-VAR DEFAULT_FORE_disp, d			; variable entiere
-	Sd  0,	DEFAULT_FORE_disp
-
-VAR DEFAULT_AFT_disp, d			; variable entiere
-	Sd  0,	DEFAULT_AFT_disp
-
-VAR DEFAULT_EXP_disp, d			; variable entiere
-	LI	0
-	Sd  0,	DEFAULT_EXP_disp
-
 					;    BODY ELAB
 
 if defined GET_L73_
@@ -4684,7 +4658,9 @@ end if
 begin:					;---------- package BDY INSTRUCTIONS
 end namespace 				;---------- end generic package BDY FIXED_IO
 ENUMERATION_IO = 'ENUMERATION_IO'
-namespace ENUMERATION_IO			;---------- GENERIC PACKAGE
+namespace ENUMERATION_IO
+					;---------- GENERIC PACKAGE BODY ----------
+
 PRMS
 	PRM ENUM__u_ofs
 	PRM ENUM__ld_ofs
@@ -4692,14 +4668,6 @@ PRMS
 	PRM ENUM__inadr_ofs
 	PRM ENUM__outadr_ofs
 endPRMS
-VAR DEFAULT_WIDTH_disp, d			; variable entiere
-	LI	0
-	Sd  0,	DEFAULT_WIDTH_disp
-
-VAR DEFAULT_SETTING_disp, b			; variable entiere
-	LI	1
-	Sb  0,	DEFAULT_SETTING_disp
-
 					;    BODY ELAB
 
 if defined PUT_L81_
@@ -4749,7 +4717,7 @@ VAR IMAGES_STR__u, q			; variable array : useinfo pointeur au rec info
 	Sa	2, IMAGES_STR__u			; array info ptr from function result
 
 VAR POS_VAL_disp, d				; variable entiere
-	Ld  1,	-ITEM_ofs
+	Lq  1,	-ITEM_ofs
 	Sd  2,	POS_VAL_disp
 
 VAR I_disp, d				; variable entiere
@@ -4962,7 +4930,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	La  1,	-GFP_ofs				; propagation GFP generique
 	Lb  1,	-SET_ofs
 	Ld  1,	-WIDTH_ofs
-	Ld  1,	-ITEM_ofs
+	Lq  1,	-ITEM_ofs
 	LVa 0,	STANDARD.TEXT_IO.DEFAULT_OUTPUT_disp
 	CALL	STANDARD.TEXT_IO.ENUMERATION_IO. ,PUT_L81
 ret_lbl:

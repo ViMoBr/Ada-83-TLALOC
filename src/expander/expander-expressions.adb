@@ -1004,41 +1004,11 @@ put_line(	"; adresse component id" );
 	begin
 	  -- Premiere version : WIDTH des entiers generiques deduit de SIZE.
 	  -- Cela suffit pour INTEGER_IO et evite le trou de pile.
-	  PUT_LINE( "; WIDTH POUR FORMAL TYPE A REVOIR DANS EXPANDER-EXPRESSIONS " );
---	  PUT_LINE( tab & "La " & INTEGER'IMAGE( CODI.CUR_LEVEL ) & ',' & tab & "-GFP_ofs" );
---	  PUT_LINE( tab & "LId , -" & TYPE_STR & "__u_ofs" );
-
-	  -- Convertir SIZE -> WIDTH selon les tailles supportees.
-	  -- Ici on delegue au runtime expanse via une cascade simple.
-	  -- 8 -> 4 ; 16 -> 6 ; 32 -> 11 ; 64 -> 20
---	  PUT_LINE( tab & "LI" & tab & "8" );
---	  PUT_LINE( tab & "CEQ" );
---	  PUT_LINE( tab & "BF" & tab & "width_not_8_"  & "; ERREUR A CORRIGER" ); -- LABEL_STR( LABEL_TYPE( DI( CD_LABEL, PREFIX_NAME ) ) ) );
---	  PUT_LINE( tab & "LI" & tab & "4" );
---	  PUT_LINE( tab & "BRA" & tab & "width_end_"   & "; ERREUR A CORRIGER" ); -- LABEL_STR( LABEL_TYPE( DI( CD_LABEL, PREFIX_NAME ) ) ) );
-
---	  PUT_LINE( "width_not_8_" & "; ERREUR A CORRIGER" ); -- LABEL_STR( LABEL_TYPE( DI( CD_LABEL, PREFIX_NAME ) ) ) & ':' );
---	  PUT_LINE( tab & "La " & INTEGER'IMAGE( CODI.CUR_LEVEL ) & ',' & tab & "-GFP_ofs" );
---	  PUT_LINE( tab & "LId , -" & TYPE_STR & "__u_ofs" );
---	  PUT_LINE( tab & "LI" & tab & "16" );
---	  PUT_LINE( tab & "CEQ" );
---	  PUT_LINE( tab & "BF" & tab & "width_not_16_" & "; ERREUR A CORRIGER" ); -- LABEL_STR( LABEL_TYPE( DI( CD_LABEL, PREFIX_NAME ) ) ) );
---	  PUT_LINE( tab & "LI" & tab & "6" );
---	  PUT_LINE( tab & "BRA" & tab & "width_end_"   & "; ERREUR A CORRIGER" ); -- LABEL_STR( LABEL_TYPE( DI( CD_LABEL, PREFIX_NAME ) ) ) );
-
---	  PUT_LINE( "width_not_16_" & "; ERREUR A CORRIGER" ); -- LABEL_STR( LABEL_TYPE( DI( CD_LABEL, PREFIX_NAME ) ) ) & ':' );
---	  PUT_LINE( tab & "La " & INTEGER'IMAGE( CODI.CUR_LEVEL ) & ',' & tab & "-GFP_ofs" );
---	  PUT_LINE( tab & "LId , -" & TYPE_STR & "__u_ofs" );
---	  PUT_LINE( tab & "LI" & tab & "32" );
---	  PUT_LINE( tab & "CEQ" );
---	  PUT_LINE( tab & "BF" & tab & "width_not_32_" & "; ERREUR A CORRIGER" ); -- LABEL_STR( LABEL_TYPE( DI( CD_LABEL, PREFIX_NAME ) ) ) );
---	  PUT_LINE( tab & "LI" & tab & "11" );
---	  PUT_LINE( tab & "BRA" & tab & "width_end_"   & "; ERREUR A CORRIGER" ); -- LABEL_STR( LABEL_TYPE( DI( CD_LABEL, PREFIX_NAME ) ) ) );
-
---	  PUT_LINE( "width_not_32_" & "; ERREUR A CORRIGER" ); -- LABEL_STR( LABEL_TYPE( DI( CD_LABEL, PREFIX_NAME ) ) ) & ':' );
---	  PUT_LINE( tab & "LI" & tab & "20" );
-
---	  PUT_LINE( "width_end_" & "; ERREUR A CORRIGER" ); -- LABEL_STR( LABEL_TYPE( DI( CD_LABEL, PREFIX_NAME ) ) ) & ':' );
+	  if  CODI.DEBUG  then  PUT_LINE( "; WIDTH POUR FORMAL TYPE" );  end if;
+	  PUT_LINE( tab & "LI" & tab & '0' );								-- lieu resultat sur pile
+	  PUT_LINE( tab & "La " & INTEGER'IMAGE( CODI.CUR_LEVEL ) & ',' & tab & "-GFP_ofs" );			-- Adresse de frame generique
+	  PUT_LINE( tab & "LId , -" & TYPE_STR & "__u_ofs" );						-- Charge le SIZ en bits
+	  PUT_LINE( tab & "CALL" & tab & "STANDARD. ,WIDTH_L3" );						-- Calculer le nombre de chiffres plus signe
 	end;
 
       else
@@ -1060,7 +1030,8 @@ put_line(	"; adresse component id" );
 	      if    BITS <= 8   then return 4;
 	      elsif BITS <= 16  then return 6;
 	      elsif BITS <= 32  then return 11;
-	      else                   return 20;
+	      elsif BITS <= 64  then return 21;
+	      else                   return 40;								-- 128 bits
 	      end if;
               end case;
             end	SIGNED_WIDTH_FROM_SIZE;

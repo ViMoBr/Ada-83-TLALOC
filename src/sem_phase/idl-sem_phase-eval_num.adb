@@ -137,13 +137,15 @@ begin
     end loop;
   end if;
 
+
   if SCALEFACTOR >=	0 then
-    VNUMER.D (VNUMER.L + 1) := 0;
-    return U_INT (VNUMER);
+    VNUMER.D( VNUMER.L + 1 ) := 0;
+    return U_INT( VNUMER );
+
   else
-    V_LOWEST_TERMS (VNUMER, VDENOM);
-    VNUMER.D (VNUMER.L + 1) := 0;
-    VDENOM.D (VDENOM.L + 1) := 0;
-    return U_REAL (VNUMER, VDENOM);
+    V_LOWEST_TERMS( VNUMER, VDENOM );
+    VNUMER.D( VNUMER.L + 1 ) := 0;
+    VDENOM.D( VDENOM.L + 1 ) := 0;
+    return U_REAL( VNUMER, VDENOM );
   end if;
 end EVAL_NUM;

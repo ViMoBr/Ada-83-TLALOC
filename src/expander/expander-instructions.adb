@@ -585,8 +585,7 @@ null;
 
         INVERSE_RECURSE_ON_PARAMETERS;
 
-        if  ACT_PRM.TY = DN_SELECTED
-        then
+        if  ACT_PRM.TY = DN_SELECTED  then
 	EXPRESSIONS.CODE_SELECTED( ACT_PRM );
 
         elsif  ACT_PRM.TY = DN_USED_OBJECT_ID  then
@@ -782,7 +781,7 @@ null;
             PUT_LINE( tab & "Sa " & INTEGER'IMAGE( CODI.CUR_LEVEL ) & ',' & tab & "-result__ofs" );
           elsif  EXPR_TYPE.TY = DN_ENUM_LITERAL_S  then
             EXPRESSIONS.CODE_EXP( EXP );
---            EMIT( SLD, CODI.CODE_DATA_TYPE_OF ( EXP ), INTEGER( LEVEL_NUM( ENCLOSING_LEVEL) - CODI.CUR_LEVEL ), RESULT_OFFSET );
+
 	elsif  EXPR_TYPE.TY = DN_INTEGER  then
 	  EXPRESSIONS.CODE_EXP( EXP );
 	  PUT_LINE( tab & "S" & CODI.EXP_TYPE_CHAR( EXP ) & ' ' & INTEGER'IMAGE( CODI.CUR_LEVEL ) & ',' & tab & "-result__ofs" );

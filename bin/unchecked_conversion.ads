@@ -1,8 +1,6 @@
+generic
+  type SOURCE is private;
+  type TARGET is private;
 		--------------------
-function		UNCHECKED_CONVERSION	( S :SOURCE )		return TARGET
-is		--------------------
-begin
-  null;
-
-end	UNCHECKED_CONVERSION;
-	--------------------
+function		UNCHECKED_CONVERSION	( S :SOURCE )		return TARGET;
+		--------------------

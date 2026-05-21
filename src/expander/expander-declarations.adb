@@ -323,7 +323,9 @@ null;
 --    CODI.TYPE_SYMREP := D( LX_SYMREP,	TYPE_NAME	);
     while	 not IS_EMPTY( SRC_NAME_SEQ )	 loop
       POP( SRC_NAME_SEQ, SRC_NAME );
-      CODE_VC_NAME(	SRC_NAME );
+      if  not CODI.IN_GENERIC_BODY  or else  ( CODI.CUR_LEVEL /= CODI.GENERIC_BASE_LEVEL )  then
+        CODE_VC_NAME( SRC_NAME );
+      end if;
     end loop;
 
   end	CODE_OBJECT_DECL;
@@ -360,7 +362,8 @@ null;
       procedure	COMPILE_VC_NAME_INTEGER	( VC_NAME	:TREE )
       is		-----------------------
 
-        OPER_TYPE		: CHARACTER	:= OPER_SIZ_CHAR( D( SM_OBJ_TYPE, VC_NAME ) );
+--        OPER_TYPE		: CHARACTER	:= OPER_SIZ_CHAR( D( SM_OBJ_TYPE, VC_NAME ) );
+        OPER_TYPE		: CHARACTER	:= OPER_SIZ_CHAR( TYPE_SPEC );
         INIT_EXP		: TREE		:= D( SM_INIT_EXP, VC_NAME );
 
       begin
@@ -384,7 +387,8 @@ null;
       procedure	COMPILE_VC_NAME_FLOAT	( VC_NAME	:TREE )
       is		---------------------
 
-        OPER_TYPE		: CHARACTER	:= OPER_SIZ_CHAR( D( SM_OBJ_TYPE, VC_NAME ) );
+--        OPER_TYPE		: CHARACTER	:= OPER_SIZ_CHAR( D( SM_OBJ_TYPE, VC_NAME ) );
+        OPER_TYPE		: CHARACTER	:= OPER_SIZ_CHAR( TYPE_SPEC );
         INIT_EXP		: TREE		:= D( SM_INIT_EXP, VC_NAME );
 
       begin
@@ -412,7 +416,8 @@ null;
         procedure	COMPILE_VC_NAME_BOOL_CHAR	( VC_NAME	:TREE )
         is	-------------------------
 
-	OPER_TYPE		: CHARACTER	:= OPER_SIZ_CHAR( D( SM_OBJ_TYPE, VC_NAME ) );
+--	OPER_TYPE		: CHARACTER	:= OPER_SIZ_CHAR( D( SM_OBJ_TYPE, VC_NAME ) );
+	OPER_TYPE		: CHARACTER	:= OPER_SIZ_CHAR( TYPE_SPEC );
 	INIT_EXP		: TREE		:= D( SM_INIT_EXP, VC_NAME );
 
         begin
@@ -694,14 +699,18 @@ if  INIT_EXP.TY = DN_AGGREGATE	then
 
     begin
 
-      if	TYPE_SPEC.TY = DN_L_PRIVATE  then
-	TYPE_SPEC	:= D( SM_TYPE_SPEC,	TYPE_SPEC	);
-      end	if;
+--      if	TYPE_SPEC.TY = DN_L_PRIVATE  or  TYPE_SPEC.TY = DN_PRIVATE  then
+--	TYPE_SPEC	:= D( SM_TYPE_SPEC,	TYPE_SPEC	);
+--      end	if;
+
+      while  TYPE_SPEC.TY = DN_L_PRIVATE  or  TYPE_SPEC.TY = DN_PRIVATE  loop
+        TYPE_SPEC := D( SM_TYPE_SPEC, TYPE_SPEC );
+      end	loop;
 
       case TYPE_SPEC.TY is
       when DN_ENUMERATION		=> TYPE_SYMREP := D( XD_SOURCE_NAME, TYPE_SPEC );
 				   COMPILE_VC_NAME_ENUMERATION(	VC_NAME, TYPE_SPEC );
-      when DN_INTEGER		=> COMPILE_VC_NAME_INTEGER(		VC_NAME );
+      when DN_INTEGER | DN_FIXED	=> COMPILE_VC_NAME_INTEGER(		VC_NAME );
       when DN_FLOAT			=> COMPILE_VC_NAME_FLOAT(		VC_NAME );
       when DN_ACCESS		=> COMPILE_ACCESS_VAR(		VC_NAME, TYPE_SPEC );
       when DN_RECORD		=> COMPILE_RECORD_VAR(		VC_NAME, TYPE_SPEC );
@@ -1108,7 +1117,7 @@ if  INIT_EXP.TY = DN_AGGREGATE	then
       if	IN_GENERIC_INSTANTIATION  then
         declare
 	SOURCE_NAME	: TREE		:= D( AS_SOURCE_NAME, SUBPROG_ENTRY_DECL );
-	SUB_NAME		:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, SOURCE_NAME ) );
+	SUB_NAME		:constant	STRING	:= LETTERED_SUBNAME( PRINT_NAME( D( LX_SYMREP, SOURCE_NAME ) ) );
 	LBL		: LABEL_TYPE	:= LABEL_TYPE( DI( CD_LABEL, SOURCE_NAME ) );
         begin
 	PUT_LINE(	"if defined " & SUB_NAME & '_' & LABEL_STR( LBL )	& '_' );
@@ -1152,7 +1161,11 @@ if  INIT_EXP.TY = DN_AGGREGATE	then
 
 	        if  (NAME.TY = DN_IN_ID) and (D( SM_OBJ_TYPE, NAME ).TY in CLASS_SCALAR)  then
 		-- in scalaire : passer par copie (valeur)
-		PUT_LINE(	tab & "Lq" & tab & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL )
+
+put_line( "; scalaire in attention generique ou pas" );
+
+--		PUT_LINE(	tab & "Lq" & tab & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL )
+		PUT_LINE(	tab & 'L' & OPER_SIZ_CHAR( D( SM_OBJ_TYPE, NAME ) ) & tab & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL )
 			& ", -" &	PRINT_NAME( D( LX_SYMREP, NAME ) ) & "_ofs" );
 	        else
 		-- in composite (record, array) ou out / in_out :	propager l'adresse

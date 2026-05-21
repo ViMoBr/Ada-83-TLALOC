@@ -496,26 +496,36 @@ is					---
       declare											--| UN VRAI DN_NUM_VAL
         ENTETE		: TREE		:= DABS( 0, T );						--| ENTETE CONTENANT LE NOMBRE DE DIGITS
         type DOUBLET	is array(	1..2 ) of	SHORT;
-        function TO_DOUBLET	is new UNCHECKED_CONVERSION( TREE, DOUBLET );
+        subtype QUAD_DIG_STR	is STRING( 1 .. 4 );
         ID		: ATTR_NBR	:= 1;
+        function TO_DOUBLET	is new UNCHECKED_CONVERSION( TREE, DOUBLET );
+
+        function TO_QUAD_DIGITS	( S :SHORT )	return STRING
+        is
+	IMAG	:constant STRING	:= SHORT'IMAGE( S );
+	COMPL	: NATURAL	:= 4 - (IMAG'LENGTH - 1);
+        begin
+	return STRING'(1 .. COMPL=>'0') & IMAG( IMAG'FIRST+1 .. IMAG'LAST );
+        end;
+
 		----------------
         function	RECURSE_DOUBLETS		return STRING
         is
 	DD	: DOUBLET		:= TO_DOUBLET( DABS( ID, T ) );
 	DD2	: SHORT		:= DD(2) mod 10_000;
 	DD1	: SHORT		:= DD(1) mod 10_000;
-	STR2	:constant	STRING	:= SHORT'IMAGE( DD2	);
-	STR1	:constant	STRING	:= SHORT'IMAGE( DD1	);
+	STR2	:constant	STRING	:= TO_QUAD_DIGITS( DD2 );
+	STR1	:constant	STRING	:= TO_QUAD_DIGITS( DD1 );
         begin
 	if  ID = ENTETE.NSIZ  then
 	  if  DD2	= 0  then
-	    return STR1( 2 .. STR1'LAST );
+	    return STR1( STR1'FIRST .. STR1'LAST );
 	  else
-	    return STR2( 2 .. STR2'LAST ) & STR1( 2 .. STR1'LAST );
+	    return STR2( STR2'FIRST .. STR2'LAST ) & STR1( STR1'FIRST .. STR1'LAST );
 	  end if;
 	else
 	  ID := ID + 1;
-	  return RECURSE_DOUBLETS & STR2( 2 .. STR2'LAST ) & STR1( 2 .. STR1'LAST );
+	  return RECURSE_DOUBLETS & STR2( STR2'FIRST .. STR2'LAST ) & STR1( STR1'FIRST .. STR1'LAST );
 	end if;
         end	RECURSE_DOUBLETS;
 		----------------

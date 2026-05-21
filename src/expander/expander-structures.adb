@@ -132,7 +132,7 @@ is
 
     LBL			: LABEL_TYPE;
     SOURCE_NAME		: TREE		:= D( AS_SOURCE_NAME, SUBPROGRAM_BODY );
-    SUB_NAME		:constant STRING	:= PRINT_NAME( D( LX_SYMREP, SOURCE_NAME ) );
+    SUB_NAME		:constant STRING	:= LETTERED_SUBNAME( PRINT_NAME( D( LX_SYMREP, SOURCE_NAME ) ) );
     DECL_ID		: TREE		:= D( SM_FIRST, SOURCE_NAME );
     SAVE_ENCLOSING		: TREE		:= ENCLOSING_BODY;
     SAVE_NO_SUB_PARAM	: BOOLEAN		:= CODI.NO_SUBP_PARAMS;
@@ -167,7 +167,8 @@ is
       declare
         UNIT_FILE_NAME	:constant STRING	:= PRINT_NAME( D( XD_LIB_NAME, THE_COMPILATION_UNIT ) );
       begin
-        PUT_LINE( "include '" & UNIT_FILE_NAME( UNIT_FILE_NAME'FIRST .. UNIT_FILE_NAME'LAST-4 )  & '-' & SUB_NAME & ".FINC'" );
+        PUT_LINE( "include '" & UNIT_FILE_NAME( UNIT_FILE_NAME'FIRST .. UNIT_FILE_NAME'LAST-4 )
+			& '-' & SUB_NAME & ".FINC'" );
       end;
 
     else
@@ -224,14 +225,18 @@ is
     PACK_DEF	: TREE		:= D( SM_FIRST, PACK_ID );
     PACK_BODY	: TREE		:= D( AS_BODY, PACKAGE_BODY );
     CAS_NORMAL	: BOOLEAN		:= PACK_NAME /= "STANDARD" and PACK_NAME /= "_STANDRD";
-
   begin
     if  PACK_DEF.TY = DN_GENERIC_ID  then
+      declare
+        SAVE_GENERIC_LEVEL	:LEVEL_NUM	:= CODI.GENERIC_BASE_LEVEL;
+      begin
+      CODI.GENERIC_BASE_LEVEL := CUR_LEVEL;
+
       CODI.IN_GENERIC_BODY := TRUE;
       CODI.ENCLOSING_GENERIC := PACK_DEF;
       PUT_LINE( PACK_NAME & " = " & "'" & PACK_NAME & "'" );
       PUT( "namespace " & PACK_NAME );
-      if  CODI.DEBUG  then PUT( tab50 & ";---------- GENERIC PACKAGE" ); end if;
+      if  CODI.DEBUG  then NEW_LINE; PUT( tab50 & ";---------- GENERIC PACKAGE BODY ----------" ); NEW_LINE; end if;
       NEW_LINE;
 
       PUT_LINE( "PRMS" );
@@ -271,7 +276,8 @@ is
       end if;
       NEW_LINE;
       CODI.IN_GENERIC_BODY := FALSE;
-
+      CODI.GENERIC_BASE_LEVEL := SAVE_GENERIC_LEVEL;
+end;
     else
 
       if  PACK_BODY.TY = DN_STUB  then

@@ -3,26 +3,30 @@
 -- SPDX-License-Identifier: GPL-3.0-or-later
 ------------------------------------------------------------------------------------------------------------------------
 --	1	2	3	4	5	6	7	8	9	0	1	2
+with TEXT_IO; use TEXT_IO;
 
 with MACHINE_CODE;	use MACHINE_CODE;
 					--------
 package body				CALENDAR
 is					--------
 
-  ------------------------------------------------------------------
-  -- Représentation interne :
-  --   TIME = Q35.29 signé, epoch 1900-01-01 00:00:00 UTC
-  --   Unité = 1 / 2**29 s  (≈ 1.86 ns par tick)
-  --   Plage = ±2**34 s ≈ ±544 ans autour de 1900
-  --
-  --   DURATION (dans STANDARD) = même 'SMALL = 2**(-29)
-  --   donc TIME - TIME → DURATION et TIME + DURATION → TIME
-  --   sont de simples soustractions/additions d'entiers 64 bits.
-  ------------------------------------------------------------------
+package LONGINT_IO is new INTEGER_IO( LONG_INTEGER );
+
+	------------------------------------------------------------------
+	-- Représentation interne :
+	--   TIME = Q35.29 signé, epoch 1900-01-01 00:00:00 UTC
+	--   Unité = 1 / 2**29 s  (≈ 1.86 ns par tick, correspond au 'SMALL)
+	--   Plage = ±2**34 s ≈ ±544 ans autour de 1900
+	--
+	--   DURATION (dans STANDARD) = même 'SMALL = 2**(-29)
+	--   defini danz STANDARD : type _duration is delta 2.0**(-29) range -(2.0**34 - 1.0) .. 2.0**34;
+	--   donc TIME - TIME donne DURATION et TIME + DURATION donne TIME
+	--   sont de simples soustractions/additions d'entiers 64 bits.
+	------------------------------------------------------------------
 
   EPOCH_DIFF_S	:constant LONG_INTEGER	:= 2_208_988_800;						-- Décalage entre l'epoch Unix (1970) et notre epoch (1900), en secondes
   SCALE		:constant LONG_INTEGER	:= 16#2000_0000#;						-- 2**29 (échelle de la fraction Q35.29)
-  DAYS_1900	:constant LONG_INTEGER	:= 693_595;						-- Décalage en jours : 1900-01-01 depuis l'epoch Hinnant (0000-03-01)
+  DAYS_1900	:constant LONG_INTEGER	:= 693_901;						-- Décalage en jours : 1900-01-01 depuis l'epoch Hinnant (0000-03-01)
   SECONDS_PER_DAY	:constant LONG_INTEGER	:= 86_400;
   NS_PER_SEC	:constant LONG_INTEGER	:= 1_000_000_000;
 
@@ -46,7 +50,7 @@ is					--------
     else
       ERA := (Y - 399) / 400;
     end if;
-    YOE := Y - ERA * 400;										-- [0..399]
+    YOE := Y - ERA * 400;										-- [7FFD907EF1F00..399]
     DOY := (153 * M_ADJ + 2) / 5 + D_IN - 1;								-- [0..365]
     DOE := YOE * 365 + YOE / 4 - YOE / 100 + DOY;								-- [0..146096]
     return  ERA * 146_097 + DOE;
@@ -63,6 +67,9 @@ is					--------
     TMP					: LONG_INTEGER;
 
   begin
+
+--PUT( "CIVIL_FROM_DAYS DAYS : " ); LONGINT_IO.PUT( DAYS ); NEW_LINE;
+
     if  DAYS >= 0  then
       TMP := DAYS;
     else
@@ -85,6 +92,10 @@ is					--------
     M := M_OUT;
     D := D_OUT;
 
+--PUT( "CIVIL_FROM_DAYS Y : " ); LONGINT_IO.PUT( Y ); NEW_LINE;
+--PUT( "CIVIL_FROM_DAYS M : " ); LONGINT_IO.PUT( M ); NEW_LINE;
+--PUT( "CIVIL_FROM_DAYS D : " ); LONGINT_IO.PUT( D ); NEW_LINE;
+
   end	CIVIL_FROM_DAYS;
 	---------------
 
@@ -103,14 +114,21 @@ is					--------
     procedure	GETTIME_SYSCALL	( TV :out LINUX_TIMEVAL )
     is		---------------
     begin
-        ASM_OP_2'( OPCODE=> La, LVL=> 1, -8 );
+        ASM_OP_2'( OPCODE=> LIa, LVL=> 2, OFS=> -8 );
         ASM_OP_0'( OPCODE=> SYS_CLOCK_GETTIME );
 
     end	GETTIME_SYSCALL;
 	---------------
 
   begin
+    GETTIME_SYSCALL( LTV );
     T := (LTV.SEC + EPOCH_DIFF_S) * SCALE + (LTV.NANOSEC * SCALE) / NS_PER_SEC;
+
+--PUT( "CLOCK : " ); LONGINT_IO.PUT( LONG_INTEGER( T ), 25, 16 ); NEW_LINE;
+--PUT( "SECONDES : " ); LONGINT_IO.PUT( LTV.SEC ); NEW_LINE;
+--PUT( "NANO-SECONDES : " ); LONGINT_IO.PUT( LTV.NANOSEC ); NEW_LINE;
+--PUT( "ANNEES (depuis 1970) : " ); LONGINT_IO.PUT( LTV.SEC / 86400 / 365 ); NEW_LINE;
+
     return TIME( T );
 
   end	CLOCK;
@@ -125,8 +143,12 @@ is					--------
     declare
       SECONDS_TOTAL, FRAC, DAYS_FROM_1900	: LONG_INTEGER;
     begin
+--PUT( "YEAR DATE : " ); LONGINT_IO.PUT( LONG_INTEGER( DATE ), 25, 16 ); NEW_LINE;
       SECONDS_TOTAL   := LONG_INTEGER( DATE ) / SCALE;
+--PUT( "YEAR SECONDS_TOTAL : " ); LONGINT_IO.PUT( SECONDS_TOTAL ); NEW_LINE;
       DAYS_FROM_1900  := SECONDS_TOTAL / SECONDS_PER_DAY;
+--PUT( "YEAR DAYS_FROM_1900 : " ); LONGINT_IO.PUT( DAYS_FROM_1900 ); NEW_LINE;
+
       CIVIL_FROM_DAYS( DAYS_FROM_1900 + DAYS_1900, Y, M, D );
     end;
     return YEAR_NUMBER( Y );
@@ -181,7 +203,7 @@ is					--------
       SEC_OF_DAY := SEC_OF_DAY + SECONDS_PER_DAY;
     end if;
     RESULT := SEC_OF_DAY * SCALE + FRAC_PART;
-    return DAY_DURATION( DURATION'SMALL * RESULT );
+    return  DAY_DURATION( DURATION( DURATION'SMALL ) * DURATION( RESULT ) );
 
   end	SECONDS;
 	-------
@@ -226,7 +248,7 @@ is					--------
     YEAR := YEAR_NUMBER( Y );
     MONTH	:= MONTH_NUMBER( M );
     DAY := DAY_NUMBER( D );
-    SECONDS := DAY_DURATION( DURATION'SMALL * DUR_INTERNAL );
+    SECONDS := DAY_DURATION( DURATION( DURATION'SMALL ) * DURATION( DUR_INTERNAL ) );
 
   end	SPLIT;
 	-----
@@ -249,7 +271,7 @@ is					--------
     -- Conversion SECONDS (DAY_DURATION) en représentation Q35.29 entière.
     -- Comme DURATION'SMALL = 2**(-29), la valeur interne est SECONDS / 2**(-29)
     -- = SECONDS * 2**29, qu'on obtient par division par 'SMALL.
-    DUR_INTERNAL := LONG_INTEGER( SECONDS / DURATION'SMALL );
+    DUR_INTERNAL := LONG_INTEGER( SECONDS / DAY_DURATION( DURATION'SMALL ) );
 
     T := DAYS_FROM_1900_LOCAL * SECONDS_PER_DAY * SCALE + DUR_INTERNAL;
     return TIME( T );
@@ -269,7 +291,7 @@ is					--------
     -- Addition = simple add 64 bits. Conversion via 'SMALL identique.
     DUR_INTERNAL	: LONG_INTEGER;
   begin
-    DUR_INTERNAL := LONG_INTEGER( RIGHT / DURATION'SMALL );
+    DUR_INTERNAL := LONG_INTEGER( RIGHT / DURATION( DURATION'SMALL ) );
     return TIME( LONG_INTEGER( LEFT ) + DUR_INTERNAL );
   exception
     when others =>
@@ -292,9 +314,10 @@ is					--------
   function		"-"		( LEFT : TIME; RIGHT : DURATION )	return TIME
   is			---
     DUR_INTERNAL	: LONG_INTEGER;
+
   begin
-    DUR_INTERNAL := LONG_INTEGER( RIGHT / DURATION'SMALL );
-    return TIME( LONG_INTEGER( LEFT ) - DUR_INTERNAL );
+    DUR_INTERNAL := LONG_INTEGER( RIGHT / DURATION( DURATION'SMALL ) );
+    return  TIME( LONG_INTEGER( LEFT ) - DUR_INTERNAL );
   exception
     when others =>
       raise TIME_ERROR;
@@ -307,9 +330,10 @@ is					--------
   function		"-"		( LEFT : TIME; RIGHT : TIME )		return DURATION
   is			---
     DELTA_INTERNAL	: LONG_INTEGER;
+
   begin
     DELTA_INTERNAL := LONG_INTEGER( LEFT ) - LONG_INTEGER( RIGHT );
-    return DURATION'SMALL * DELTA_INTERNAL;
+    return  DURATION( DURATION( DURATION'SMALL ) * DURATION( DELTA_INTERNAL ) );
   exception
     when others =>
       raise TIME_ERROR;
@@ -357,3 +381,4 @@ is					--------
 	--------
 end	CALENDAR;
 	--------
+

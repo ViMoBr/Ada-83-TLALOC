@@ -488,8 +488,8 @@ begin
     end loop;
 	  
     R := R_PREC;
-    V_MUL	( Q, A, PPROD );	--| QUOTIENT * A
-    if V_LESS ( R, PPROD ) then
+    V_MUL( Q, A, PPROD );	--| QUOTIENT * A
+    if V_LESS( R, PPROD ) then
       raise PROGRAM_ERROR;
     end if;
 

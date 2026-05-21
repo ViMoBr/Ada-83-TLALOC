@@ -128,8 +128,8 @@ VAR DEFAULT_BASE_disp, d			; variable entiere
 	LI	10
 	Sd  1,	DEFAULT_BASE_disp
 
-if defined GET_L61_
-PRO	GET_L61				;---------- PRO GET
+if defined GET_L2_
+PRO	GET_L2				;---------- PRO GET
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM ITEM_ofs				; out
@@ -138,7 +138,8 @@ endPRMS					;    fin parametrage
 ELB 2
 begin:
 	LVA	 1, GFP_disp
-	Lq	 2, -WIDTH_ofs
+; scalaire in attention generique ou pas
+	Ld	 2, -WIDTH_ofs
 	La 	 2, -ITEM_ofs
 	La 	 2, -FILE_ofs
 	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,GET_L61
@@ -146,8 +147,8 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO GET
 end if
-if defined GET_L62_
-PRO	GET_L62				;---------- PRO GET
+if defined GET_L3_
+PRO	GET_L3				;---------- PRO GET
 PRMS					;    debut parametrage
 	PRM ITEM_ofs				; out
 	PRM WIDTH_ofs				; in
@@ -155,15 +156,16 @@ endPRMS					;    fin parametrage
 ELB 2
 begin:
 	LVA	 1, GFP_disp
-	Lq	 2, -WIDTH_ofs
+; scalaire in attention generique ou pas
+	Ld	 2, -WIDTH_ofs
 	La 	 2, -ITEM_ofs
 	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,GET_L62
 	UNLINK	 2
 	RTD	prm_siz
 endPRO					;---------- end PRO GET
 end if
-if defined PUT_L63_
-PRO	PUT_L63				;---------- PRO PUT
+if defined PUT_L4_
+PRO	PUT_L4				;---------- PRO PUT
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM ITEM_ofs				; in
@@ -173,17 +175,20 @@ endPRMS					;    fin parametrage
 ELB 2
 begin:
 	LVA	 1, GFP_disp
-	Lq	 2, -BASE_ofs
-	Lq	 2, -WIDTH_ofs
-	Lq	 2, -ITEM_ofs
+; scalaire in attention generique ou pas
+	Ld	 2, -BASE_ofs
+; scalaire in attention generique ou pas
+	Ld	 2, -WIDTH_ofs
+; scalaire in attention generique ou pas
+	Ld	 2, -ITEM_ofs
 	La 	 2, -FILE_ofs
 	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,PUT_L63
 	UNLINK	 2
 	RTD	prm_siz
 endPRO					;---------- end PRO PUT
 end if
-if defined PUT_L64_
-PRO	PUT_L64				;---------- PRO PUT
+if defined PUT_L5_
+PRO	PUT_L5				;---------- PRO PUT
 PRMS					;    debut parametrage
 	PRM ITEM_ofs				; in
 	PRM WIDTH_ofs				; in
@@ -192,16 +197,19 @@ endPRMS					;    fin parametrage
 ELB 2
 begin:
 	LVA	 1, GFP_disp
-	Lq	 2, -BASE_ofs
-	Lq	 2, -WIDTH_ofs
-	Lq	 2, -ITEM_ofs
+; scalaire in attention generique ou pas
+	Ld	 2, -BASE_ofs
+; scalaire in attention generique ou pas
+	Ld	 2, -WIDTH_ofs
+; scalaire in attention generique ou pas
+	Ld	 2, -ITEM_ofs
 	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,PUT_L64
 	UNLINK	 2
 	RTD	prm_siz
 endPRO					;---------- end PRO PUT
 end if
-if defined GET_L65_
-PRO	GET_L65				;---------- PRO GET
+if defined GET_L6_
+PRO	GET_L6				;---------- PRO GET
 PRMS					;    debut parametrage
 	PRM FROM_ofs				; in
 	PRM ITEM_ofs				; out
@@ -218,8 +226,8 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO GET
 end if
-if defined PUT_L66_
-PRO	PUT_L66				;---------- PRO PUT
+if defined PUT_L7_
+PRO	PUT_L7				;---------- PRO PUT
 PRMS					;    debut parametrage
 	PRM TO_ofs				; out
 	PRM ITEM_ofs				; in
@@ -228,8 +236,10 @@ endPRMS					;    fin parametrage
 ELB 2
 begin:
 	LVA	 1, GFP_disp
-	Lq	 2, -BASE_ofs
-	Lq	 2, -ITEM_ofs
+; scalaire in attention generique ou pas
+	Ld	 2, -BASE_ofs
+; scalaire in attention generique ou pas
+	Ld	 2, -ITEM_ofs
 	La 	 2, -TO_ofs
 	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,PUT_L66
 	UNLINK	 2
@@ -298,8 +308,8 @@ end postpone
 	LCA	SIZ
 	Sa	1, use__info
 end namespace
-if defined CREATE_L1_
-PRO	CREATE_L1				;---------- PRO CREATE
+if defined CREATE_L8_
+PRO	CREATE_L8				;---------- PRO CREATE
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in out
 	PRM MODE_ofs				; in
@@ -311,15 +321,16 @@ begin:
 	LVA	 1, GFP_disp
 	La 	 2, -FORM_ofs
 	La 	 2, -NAME_ofs
-	Lq	 2, -MODE_ofs
+; scalaire in attention generique ou pas
+	Lb	 2, -MODE_ofs
 	La 	 2, -FILE_ofs
 	CALL	STANDARD.SEQUENTIAL_IO. ,CREATE_L1
 	UNLINK	 2
 	RTD	prm_siz
 endPRO					;---------- end PRO CREATE
 end if
-if defined OPEN_L2_
-PRO	OPEN_L2				;---------- PRO OPEN
+if defined OPEN_L9_
+PRO	OPEN_L9				;---------- PRO OPEN
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in out
 	PRM MODE_ofs				; in
@@ -331,15 +342,16 @@ begin:
 	LVA	 1, GFP_disp
 	La 	 2, -FORM_ofs
 	La 	 2, -NAME_ofs
-	Lq	 2, -MODE_ofs
+; scalaire in attention generique ou pas
+	Lb	 2, -MODE_ofs
 	La 	 2, -FILE_ofs
 	CALL	STANDARD.SEQUENTIAL_IO. ,OPEN_L2
 	UNLINK	 2
 	RTD	prm_siz
 endPRO					;---------- end PRO OPEN
 end if
-if defined CLOSE_L3_
-PRO	CLOSE_L3				;---------- PRO CLOSE
+if defined CLOSE_L10_
+PRO	CLOSE_L10				;---------- PRO CLOSE
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in out
 endPRMS					;    fin parametrage
@@ -352,8 +364,8 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO CLOSE
 end if
-if defined DELETE_L4_
-PRO	DELETE_L4				;---------- PRO DELETE
+if defined DELETE_L11_
+PRO	DELETE_L11				;---------- PRO DELETE
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in out
 endPRMS					;    fin parametrage
@@ -366,8 +378,8 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO DELETE
 end if
-if defined RESET_L5_
-PRO	RESET_L5				;---------- PRO RESET
+if defined RESET_L12_
+PRO	RESET_L12				;---------- PRO RESET
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in out
 	PRM MODE_ofs				; in
@@ -375,15 +387,16 @@ endPRMS					;    fin parametrage
 ELB 2
 begin:
 	LVA	 1, GFP_disp
-	Lq	 2, -MODE_ofs
+; scalaire in attention generique ou pas
+	Lb	 2, -MODE_ofs
 	La 	 2, -FILE_ofs
 	CALL	STANDARD.SEQUENTIAL_IO. ,RESET_L5
 	UNLINK	 2
 	RTD	prm_siz
 endPRO					;---------- end PRO RESET
 end if
-if defined RESET_L6_
-PRO	RESET_L6				;---------- PRO RESET
+if defined RESET_L13_
+PRO	RESET_L13				;---------- PRO RESET
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in out
 endPRMS					;    fin parametrage
@@ -396,8 +409,8 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO RESET
 end if
-if defined MODE_L7_
-PRO	MODE_L7				;---------- PRO MODE
+if defined MODE_L14_
+PRO	MODE_L14				;---------- PRO MODE
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM result__ofs				; resultat de fonction
@@ -413,8 +426,8 @@ begin:
 	RTD	(prm_siz-8)
 endPRO					;---------- end PRO MODE
 end if
-if defined NAME_L8_
-PRO	NAME_L8				;---------- PRO NAME
+if defined NAME_L15_
+PRO	NAME_L15				;---------- PRO NAME
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM result__ofs				; resultat de fonction
@@ -430,8 +443,8 @@ begin:
 	RTD	(prm_siz-8)
 endPRO					;---------- end PRO NAME
 end if
-if defined FORM_L9_
-PRO	FORM_L9				;---------- PRO FORM
+if defined FORM_L16_
+PRO	FORM_L16				;---------- PRO FORM
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM result__ofs				; resultat de fonction
@@ -447,8 +460,8 @@ begin:
 	RTD	(prm_siz-8)
 endPRO					;---------- end PRO FORM
 end if
-if defined IS_OPEN_L10_
-PRO	IS_OPEN_L10				;---------- PRO IS_OPEN
+if defined IS_OPEN_L17_
+PRO	IS_OPEN_L17				;---------- PRO IS_OPEN
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM result__ofs				; resultat de fonction
@@ -464,8 +477,8 @@ begin:
 	RTD	(prm_siz-8)
 endPRO					;---------- end PRO IS_OPEN
 end if
-if defined READ_L11_
-PRO	READ_L11				;---------- PRO READ
+if defined READ_L18_
+PRO	READ_L18				;---------- PRO READ
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM ITEM_ofs				; out
@@ -480,8 +493,8 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO READ
 end if
-if defined WRITE_L12_
-PRO	WRITE_L12				;---------- PRO WRITE
+if defined WRITE_L19_
+PRO	WRITE_L19				;---------- PRO WRITE
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM ITEM_ofs				; in
@@ -489,15 +502,16 @@ endPRMS					;    fin parametrage
 ELB 2
 begin:
 	LVA	 1, GFP_disp
-	Lq	 2, -ITEM_ofs
+; scalaire in attention generique ou pas
+	Lb	 2, -ITEM_ofs
 	La 	 2, -FILE_ofs
 	CALL	STANDARD.SEQUENTIAL_IO. ,WRITE_L12
 	UNLINK	 2
 	RTD	prm_siz
 endPRO					;---------- end PRO WRITE
 end if
-if defined END_OF_FILE_L13_
-PRO	END_OF_FILE_L13				;---------- PRO END_OF_FILE
+if defined END_OF_FILE_L20_
+PRO	END_OF_FILE_L20				;---------- PRO END_OF_FILE
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM result__ofs				; resultat de fonction
@@ -633,8 +647,8 @@ end postpone
 	LCA	SIZ
 	Sa	1, use__info
 end namespace
-if defined CREATE_L1_
-PRO	CREATE_L1				;---------- PRO CREATE
+if defined CREATE_L21_
+PRO	CREATE_L21				;---------- PRO CREATE
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in out
 	PRM MODE_ofs				; in
@@ -646,15 +660,16 @@ begin:
 	LVA	 1, GFP_disp
 	La 	 2, -FORM_ofs
 	La 	 2, -NAME_ofs
-	Lq	 2, -MODE_ofs
+; scalaire in attention generique ou pas
+	Lb	 2, -MODE_ofs
 	La 	 2, -FILE_ofs
 	CALL	STANDARD.SEQUENTIAL_IO. ,CREATE_L1
 	UNLINK	 2
 	RTD	prm_siz
 endPRO					;---------- end PRO CREATE
 end if
-if defined OPEN_L2_
-PRO	OPEN_L2				;---------- PRO OPEN
+if defined OPEN_L22_
+PRO	OPEN_L22				;---------- PRO OPEN
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in out
 	PRM MODE_ofs				; in
@@ -666,15 +681,16 @@ begin:
 	LVA	 1, GFP_disp
 	La 	 2, -FORM_ofs
 	La 	 2, -NAME_ofs
-	Lq	 2, -MODE_ofs
+; scalaire in attention generique ou pas
+	Lb	 2, -MODE_ofs
 	La 	 2, -FILE_ofs
 	CALL	STANDARD.SEQUENTIAL_IO. ,OPEN_L2
 	UNLINK	 2
 	RTD	prm_siz
 endPRO					;---------- end PRO OPEN
 end if
-if defined CLOSE_L3_
-PRO	CLOSE_L3				;---------- PRO CLOSE
+if defined CLOSE_L23_
+PRO	CLOSE_L23				;---------- PRO CLOSE
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in out
 endPRMS					;    fin parametrage
@@ -687,8 +703,8 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO CLOSE
 end if
-if defined DELETE_L4_
-PRO	DELETE_L4				;---------- PRO DELETE
+if defined DELETE_L24_
+PRO	DELETE_L24				;---------- PRO DELETE
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in out
 endPRMS					;    fin parametrage
@@ -701,8 +717,8 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO DELETE
 end if
-if defined RESET_L5_
-PRO	RESET_L5				;---------- PRO RESET
+if defined RESET_L25_
+PRO	RESET_L25				;---------- PRO RESET
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in out
 	PRM MODE_ofs				; in
@@ -710,15 +726,16 @@ endPRMS					;    fin parametrage
 ELB 2
 begin:
 	LVA	 1, GFP_disp
-	Lq	 2, -MODE_ofs
+; scalaire in attention generique ou pas
+	Lb	 2, -MODE_ofs
 	La 	 2, -FILE_ofs
 	CALL	STANDARD.SEQUENTIAL_IO. ,RESET_L5
 	UNLINK	 2
 	RTD	prm_siz
 endPRO					;---------- end PRO RESET
 end if
-if defined RESET_L6_
-PRO	RESET_L6				;---------- PRO RESET
+if defined RESET_L26_
+PRO	RESET_L26				;---------- PRO RESET
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in out
 endPRMS					;    fin parametrage
@@ -731,8 +748,8 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO RESET
 end if
-if defined MODE_L7_
-PRO	MODE_L7				;---------- PRO MODE
+if defined MODE_L27_
+PRO	MODE_L27				;---------- PRO MODE
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM result__ofs				; resultat de fonction
@@ -748,8 +765,8 @@ begin:
 	RTD	(prm_siz-8)
 endPRO					;---------- end PRO MODE
 end if
-if defined NAME_L8_
-PRO	NAME_L8				;---------- PRO NAME
+if defined NAME_L28_
+PRO	NAME_L28				;---------- PRO NAME
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM result__ofs				; resultat de fonction
@@ -765,8 +782,8 @@ begin:
 	RTD	(prm_siz-8)
 endPRO					;---------- end PRO NAME
 end if
-if defined FORM_L9_
-PRO	FORM_L9				;---------- PRO FORM
+if defined FORM_L29_
+PRO	FORM_L29				;---------- PRO FORM
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM result__ofs				; resultat de fonction
@@ -782,8 +799,8 @@ begin:
 	RTD	(prm_siz-8)
 endPRO					;---------- end PRO FORM
 end if
-if defined IS_OPEN_L10_
-PRO	IS_OPEN_L10				;---------- PRO IS_OPEN
+if defined IS_OPEN_L30_
+PRO	IS_OPEN_L30				;---------- PRO IS_OPEN
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM result__ofs				; resultat de fonction
@@ -799,8 +816,8 @@ begin:
 	RTD	(prm_siz-8)
 endPRO					;---------- end PRO IS_OPEN
 end if
-if defined READ_L11_
-PRO	READ_L11				;---------- PRO READ
+if defined READ_L31_
+PRO	READ_L31				;---------- PRO READ
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM ITEM_ofs				; out
@@ -815,8 +832,8 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO READ
 end if
-if defined WRITE_L12_
-PRO	WRITE_L12				;---------- PRO WRITE
+if defined WRITE_L32_
+PRO	WRITE_L32				;---------- PRO WRITE
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM ITEM_ofs				; in
@@ -831,8 +848,8 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO WRITE
 end if
-if defined END_OF_FILE_L13_
-PRO	END_OF_FILE_L13				;---------- PRO END_OF_FILE
+if defined END_OF_FILE_L33_
+PRO	END_OF_FILE_L33				;---------- PRO END_OF_FILE
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM result__ofs				; resultat de fonction
@@ -968,8 +985,8 @@ end postpone
 	LCA	SIZ
 	Sa	1, use__info
 end namespace
-if defined CREATE_L1_
-PRO	CREATE_L1				;---------- PRO CREATE
+if defined CREATE_L34_
+PRO	CREATE_L34				;---------- PRO CREATE
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in out
 	PRM MODE_ofs				; in
@@ -981,15 +998,16 @@ begin:
 	LVA	 1, GFP_disp
 	La 	 2, -FORM_ofs
 	La 	 2, -NAME_ofs
-	Lq	 2, -MODE_ofs
+; scalaire in attention generique ou pas
+	Lb	 2, -MODE_ofs
 	La 	 2, -FILE_ofs
 	CALL	STANDARD.SEQUENTIAL_IO. ,CREATE_L1
 	UNLINK	 2
 	RTD	prm_siz
 endPRO					;---------- end PRO CREATE
 end if
-if defined OPEN_L2_
-PRO	OPEN_L2				;---------- PRO OPEN
+if defined OPEN_L35_
+PRO	OPEN_L35				;---------- PRO OPEN
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in out
 	PRM MODE_ofs				; in
@@ -1001,15 +1019,16 @@ begin:
 	LVA	 1, GFP_disp
 	La 	 2, -FORM_ofs
 	La 	 2, -NAME_ofs
-	Lq	 2, -MODE_ofs
+; scalaire in attention generique ou pas
+	Lb	 2, -MODE_ofs
 	La 	 2, -FILE_ofs
 	CALL	STANDARD.SEQUENTIAL_IO. ,OPEN_L2
 	UNLINK	 2
 	RTD	prm_siz
 endPRO					;---------- end PRO OPEN
 end if
-if defined CLOSE_L3_
-PRO	CLOSE_L3				;---------- PRO CLOSE
+if defined CLOSE_L36_
+PRO	CLOSE_L36				;---------- PRO CLOSE
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in out
 endPRMS					;    fin parametrage
@@ -1022,8 +1041,8 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO CLOSE
 end if
-if defined DELETE_L4_
-PRO	DELETE_L4				;---------- PRO DELETE
+if defined DELETE_L37_
+PRO	DELETE_L37				;---------- PRO DELETE
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in out
 endPRMS					;    fin parametrage
@@ -1036,8 +1055,8 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO DELETE
 end if
-if defined RESET_L5_
-PRO	RESET_L5				;---------- PRO RESET
+if defined RESET_L38_
+PRO	RESET_L38				;---------- PRO RESET
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in out
 	PRM MODE_ofs				; in
@@ -1045,15 +1064,16 @@ endPRMS					;    fin parametrage
 ELB 2
 begin:
 	LVA	 1, GFP_disp
-	Lq	 2, -MODE_ofs
+; scalaire in attention generique ou pas
+	Lb	 2, -MODE_ofs
 	La 	 2, -FILE_ofs
 	CALL	STANDARD.SEQUENTIAL_IO. ,RESET_L5
 	UNLINK	 2
 	RTD	prm_siz
 endPRO					;---------- end PRO RESET
 end if
-if defined RESET_L6_
-PRO	RESET_L6				;---------- PRO RESET
+if defined RESET_L39_
+PRO	RESET_L39				;---------- PRO RESET
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in out
 endPRMS					;    fin parametrage
@@ -1066,8 +1086,8 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO RESET
 end if
-if defined MODE_L7_
-PRO	MODE_L7				;---------- PRO MODE
+if defined MODE_L40_
+PRO	MODE_L40				;---------- PRO MODE
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM result__ofs				; resultat de fonction
@@ -1083,8 +1103,8 @@ begin:
 	RTD	(prm_siz-8)
 endPRO					;---------- end PRO MODE
 end if
-if defined NAME_L8_
-PRO	NAME_L8				;---------- PRO NAME
+if defined NAME_L41_
+PRO	NAME_L41				;---------- PRO NAME
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM result__ofs				; resultat de fonction
@@ -1100,8 +1120,8 @@ begin:
 	RTD	(prm_siz-8)
 endPRO					;---------- end PRO NAME
 end if
-if defined FORM_L9_
-PRO	FORM_L9				;---------- PRO FORM
+if defined FORM_L42_
+PRO	FORM_L42				;---------- PRO FORM
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM result__ofs				; resultat de fonction
@@ -1117,8 +1137,8 @@ begin:
 	RTD	(prm_siz-8)
 endPRO					;---------- end PRO FORM
 end if
-if defined IS_OPEN_L10_
-PRO	IS_OPEN_L10				;---------- PRO IS_OPEN
+if defined IS_OPEN_L43_
+PRO	IS_OPEN_L43				;---------- PRO IS_OPEN
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM result__ofs				; resultat de fonction
@@ -1134,8 +1154,8 @@ begin:
 	RTD	(prm_siz-8)
 endPRO					;---------- end PRO IS_OPEN
 end if
-if defined READ_L11_
-PRO	READ_L11				;---------- PRO READ
+if defined READ_L44_
+PRO	READ_L44				;---------- PRO READ
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM ITEM_ofs				; out
@@ -1150,8 +1170,8 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO READ
 end if
-if defined WRITE_L12_
-PRO	WRITE_L12				;---------- PRO WRITE
+if defined WRITE_L45_
+PRO	WRITE_L45				;---------- PRO WRITE
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM ITEM_ofs				; in
@@ -1166,8 +1186,8 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO WRITE
 end if
-if defined END_OF_FILE_L13_
-PRO	END_OF_FILE_L13				;---------- PRO END_OF_FILE
+if defined END_OF_FILE_L46_
+PRO	END_OF_FILE_L46				;---------- PRO END_OF_FILE
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM result__ofs				; resultat de fonction
@@ -1564,7 +1584,7 @@ STR STR_L48, "("				; constante string="("
 	Ld 1,	STANDARD.SEQ_IO_TEST_L1.INT_IO.DEFAULT_WIDTH_disp
 	La 2, -P_ofs
 	LId	, 0, STANDARD.SEQ_IO_TEST_L1.POINT.X
-	CALL	STANDARD.SEQ_IO_TEST_L1.INT_IO. ,PUT_L64
+	CALL	STANDARD.SEQ_IO_TEST_L1.INT_IO. ,PUT_L5
 STR STR_L49, ","				; constante string=","
 	LCA	STR_L49.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
@@ -1572,7 +1592,7 @@ STR STR_L49, ","				; constante string=","
 	Ld 1,	STANDARD.SEQ_IO_TEST_L1.INT_IO.DEFAULT_WIDTH_disp
 	La 2, -P_ofs
 	LId	, 0, STANDARD.SEQ_IO_TEST_L1.POINT.Y
-	CALL	STANDARD.SEQ_IO_TEST_L1.INT_IO. ,PUT_L64
+	CALL	STANDARD.SEQ_IO_TEST_L1.INT_IO. ,PUT_L5
 STR STR_L50, ","				; constante string=","
 	LCA	STR_L50.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
@@ -1580,7 +1600,7 @@ STR STR_L50, ","				; constante string=","
 	Ld 1,	STANDARD.SEQ_IO_TEST_L1.INT_IO.DEFAULT_WIDTH_disp
 	La 2, -P_ofs
 	LId	, 0, STANDARD.SEQ_IO_TEST_L1.POINT.Z
-	CALL	STANDARD.SEQ_IO_TEST_L1.INT_IO. ,PUT_L64
+	CALL	STANDARD.SEQ_IO_TEST_L1.INT_IO. ,PUT_L5
 STR STR_L51, ")"				; constante string=")"
 	LCA	STR_L51.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
@@ -1619,7 +1639,7 @@ STR STR_L53, "["				; constante string="["
 	MUL
 	ADD					; add offset to start address
 	Ld					; charge depuis adresse empilee 
-	CALL	STANDARD.SEQ_IO_TEST_L1.INT_IO. ,PUT_L64
+	CALL	STANDARD.SEQ_IO_TEST_L1.INT_IO. ,PUT_L5
 STR STR_L54, " "				; constante string=" "
 	LCA	STR_L54.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
@@ -1640,7 +1660,7 @@ STR STR_L54, " "				; constante string=" "
 	MUL
 	ADD					; add offset to start address
 	Ld					; charge depuis adresse empilee 
-	CALL	STANDARD.SEQ_IO_TEST_L1.INT_IO. ,PUT_L64
+	CALL	STANDARD.SEQ_IO_TEST_L1.INT_IO. ,PUT_L5
 STR STR_L55, " "				; constante string=" "
 	LCA	STR_L55.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
@@ -1661,7 +1681,7 @@ STR STR_L55, " "				; constante string=" "
 	MUL
 	ADD					; add offset to start address
 	Ld					; charge depuis adresse empilee 
-	CALL	STANDARD.SEQ_IO_TEST_L1.INT_IO. ,PUT_L64
+	CALL	STANDARD.SEQ_IO_TEST_L1.INT_IO. ,PUT_L5
 STR STR_L56, " "				; constante string=" "
 	LCA	STR_L56.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
@@ -1682,7 +1702,7 @@ STR STR_L56, " "				; constante string=" "
 	MUL
 	ADD					; add offset to start address
 	Ld					; charge depuis adresse empilee 
-	CALL	STANDARD.SEQ_IO_TEST_L1.INT_IO. ,PUT_L64
+	CALL	STANDARD.SEQ_IO_TEST_L1.INT_IO. ,PUT_L5
 STR STR_L57, "]"				; constante string="]"
 	LCA	STR_L57.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
@@ -1703,24 +1723,24 @@ STR STR_L60, "couleur_seq.dat"		; constante string="couleur_seq.dat"
 	LCA	STR_L60.data_ptr
 	LI	 1
 	LVA  1,	FC_disp
-	CALL	STANDARD.SEQ_IO_TEST_L1.CLR_SIO. ,CREATE_L1
+	CALL	STANDARD.SEQ_IO_TEST_L1.CLR_SIO. ,CREATE_L8
 	Lb 1,	C1_disp
 	LVa 1,	FC_disp
-	CALL	STANDARD.SEQ_IO_TEST_L1.CLR_SIO. ,WRITE_L12
+	CALL	STANDARD.SEQ_IO_TEST_L1.CLR_SIO. ,WRITE_L19
 	Lb 1,	C2_disp
 	LVa 1,	FC_disp
-	CALL	STANDARD.SEQ_IO_TEST_L1.CLR_SIO. ,WRITE_L12
+	CALL	STANDARD.SEQ_IO_TEST_L1.CLR_SIO. ,WRITE_L19
 	Lb 1,	C3_disp
 	LVa 1,	FC_disp
-	CALL	STANDARD.SEQ_IO_TEST_L1.CLR_SIO. ,WRITE_L12
+	CALL	STANDARD.SEQ_IO_TEST_L1.CLR_SIO. ,WRITE_L19
 	Lb 1,	C4_disp
 	LVa 1,	FC_disp
-	CALL	STANDARD.SEQ_IO_TEST_L1.CLR_SIO. ,WRITE_L12
+	CALL	STANDARD.SEQ_IO_TEST_L1.CLR_SIO. ,WRITE_L19
 	Lb 1,	C5_disp
 	LVa 1,	FC_disp
-	CALL	STANDARD.SEQ_IO_TEST_L1.CLR_SIO. ,WRITE_L12
+	CALL	STANDARD.SEQ_IO_TEST_L1.CLR_SIO. ,WRITE_L19
 	LVA  1,	FC_disp
-	CALL	STANDARD.SEQ_IO_TEST_L1.CLR_SIO. ,CLOSE_L3
+	CALL	STANDARD.SEQ_IO_TEST_L1.CLR_SIO. ,CLOSE_L10
 STR STR_L61, "  create+write+close ok"		; constante string="  create+write+close ok"
 	LCA	STR_L61.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
@@ -1730,45 +1750,45 @@ STR STR_L63, "couleur_seq.dat"		; constante string="couleur_seq.dat"
 	LCA	STR_L63.data_ptr
 	LI	 0
 	LVA  1,	FC_disp
-	CALL	STANDARD.SEQ_IO_TEST_L1.CLR_SIO. ,OPEN_L2
+	CALL	STANDARD.SEQ_IO_TEST_L1.CLR_SIO. ,OPEN_L9
 	LVA  1,	RC_disp
 	LVa 1,	FC_disp
-	CALL	STANDARD.SEQ_IO_TEST_L1.CLR_SIO. ,READ_L11
+	CALL	STANDARD.SEQ_IO_TEST_L1.CLR_SIO. ,READ_L18
 STR STR_L64, "  seq #1 = "			; constante string="  seq #1 = "
 	LCA	STR_L64.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	Ld 1,	STANDARD.SEQ_IO_TEST_L1.INT_IO.DEFAULT_BASE_disp
 	Ld 1,	STANDARD.SEQ_IO_TEST_L1.INT_IO.DEFAULT_WIDTH_disp
 	Lb 1,	RC_disp
-	CALL	STANDARD.SEQ_IO_TEST_L1.INT_IO. ,PUT_L64
+	CALL	STANDARD.SEQ_IO_TEST_L1.INT_IO. ,PUT_L5
 	LI	1
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
 	LVA  1,	RC_disp
 	LVa 1,	FC_disp
-	CALL	STANDARD.SEQ_IO_TEST_L1.CLR_SIO. ,READ_L11
+	CALL	STANDARD.SEQ_IO_TEST_L1.CLR_SIO. ,READ_L18
 STR STR_L65, "  seq #2 = "			; constante string="  seq #2 = "
 	LCA	STR_L65.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	Ld 1,	STANDARD.SEQ_IO_TEST_L1.INT_IO.DEFAULT_BASE_disp
 	Ld 1,	STANDARD.SEQ_IO_TEST_L1.INT_IO.DEFAULT_WIDTH_disp
 	Lb 1,	RC_disp
-	CALL	STANDARD.SEQ_IO_TEST_L1.INT_IO. ,PUT_L64
+	CALL	STANDARD.SEQ_IO_TEST_L1.INT_IO. ,PUT_L5
 	LI	1
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
 	LVA  1,	RC_disp
 	LVa 1,	FC_disp
-	CALL	STANDARD.SEQ_IO_TEST_L1.CLR_SIO. ,READ_L11
+	CALL	STANDARD.SEQ_IO_TEST_L1.CLR_SIO. ,READ_L18
 STR STR_L66, "  seq #3 = "			; constante string="  seq #3 = "
 	LCA	STR_L66.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	Ld 1,	STANDARD.SEQ_IO_TEST_L1.INT_IO.DEFAULT_BASE_disp
 	Ld 1,	STANDARD.SEQ_IO_TEST_L1.INT_IO.DEFAULT_WIDTH_disp
 	Lb 1,	RC_disp
-	CALL	STANDARD.SEQ_IO_TEST_L1.INT_IO. ,PUT_L64
+	CALL	STANDARD.SEQ_IO_TEST_L1.INT_IO. ,PUT_L5
 	LI	1
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
 	LVA  1,	FC_disp
-	CALL	STANDARD.SEQ_IO_TEST_L1.CLR_SIO. ,CLOSE_L3
+	CALL	STANDARD.SEQ_IO_TEST_L1.CLR_SIO. ,CLOSE_L10
 STR STR_L67, "  read+close ok"		; constante string="  read+close ok"
 	LCA	STR_L67.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
@@ -1781,28 +1801,28 @@ STR STR_L70, "point_seq.dat"			; constante string="point_seq.dat"
 	LCA	STR_L70.data_ptr
 	LI	 1
 	LVA  1,	FP_disp
-	CALL	STANDARD.SEQ_IO_TEST_L1.POINT_SIO. ,CREATE_L1
+	CALL	STANDARD.SEQ_IO_TEST_L1.POINT_SIO. ,CREATE_L21
 STR STR_L71, "  POINT'SIZE = "		; constante string="  POINT'SIZE = "
 	LCA	STR_L71.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	Ld 1,	STANDARD.SEQ_IO_TEST_L1.INT_IO.DEFAULT_BASE_disp
 	Ld 1,	STANDARD.SEQ_IO_TEST_L1.INT_IO.DEFAULT_WIDTH_disp
 	LId	 1, STANDARD.SEQ_IO_TEST_L1.POINT.use__info
-	CALL	STANDARD.SEQ_IO_TEST_L1.INT_IO. ,PUT_L64
+	CALL	STANDARD.SEQ_IO_TEST_L1.INT_IO. ,PUT_L5
 STR STR_L72, " bits"			; constante string=" bits"
 	LCA	STR_L72.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
 	LVa 1,	P1_disp
 	LVa 1,	FP_disp
-	CALL	STANDARD.SEQ_IO_TEST_L1.POINT_SIO. ,WRITE_L12
+	CALL	STANDARD.SEQ_IO_TEST_L1.POINT_SIO. ,WRITE_L32
 	LVa 1,	P2_disp
 	LVa 1,	FP_disp
-	CALL	STANDARD.SEQ_IO_TEST_L1.POINT_SIO. ,WRITE_L12
+	CALL	STANDARD.SEQ_IO_TEST_L1.POINT_SIO. ,WRITE_L32
 	LVa 1,	P3_disp
 	LVa 1,	FP_disp
-	CALL	STANDARD.SEQ_IO_TEST_L1.POINT_SIO. ,WRITE_L12
+	CALL	STANDARD.SEQ_IO_TEST_L1.POINT_SIO. ,WRITE_L32
 	LVA  1,	FP_disp
-	CALL	STANDARD.SEQ_IO_TEST_L1.POINT_SIO. ,CLOSE_L3
+	CALL	STANDARD.SEQ_IO_TEST_L1.POINT_SIO. ,CLOSE_L23
 STR STR_L73, "  create+write+close ok"		; constante string="  create+write+close ok"
 	LCA	STR_L73.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
@@ -1812,10 +1832,10 @@ STR STR_L75, "point_seq.dat"			; constante string="point_seq.dat"
 	LCA	STR_L75.data_ptr
 	LI	 0
 	LVA  1,	FP_disp
-	CALL	STANDARD.SEQ_IO_TEST_L1.POINT_SIO. ,OPEN_L2
+	CALL	STANDARD.SEQ_IO_TEST_L1.POINT_SIO. ,OPEN_L22
 	LVA  1,	RP_disp
 	LVa 1,	FP_disp
-	CALL	STANDARD.SEQ_IO_TEST_L1.POINT_SIO. ,READ_L11
+	CALL	STANDARD.SEQ_IO_TEST_L1.POINT_SIO. ,READ_L31
 STR STR_L76, "  seq #1 = "			; constante string="  seq #1 = "
 	LCA	STR_L76.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
@@ -1825,7 +1845,7 @@ STR STR_L76, "  seq #1 = "			; constante string="  seq #1 = "
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
 	LVA  1,	RP_disp
 	LVa 1,	FP_disp
-	CALL	STANDARD.SEQ_IO_TEST_L1.POINT_SIO. ,READ_L11
+	CALL	STANDARD.SEQ_IO_TEST_L1.POINT_SIO. ,READ_L31
 STR STR_L77, "  seq #2 = "			; constante string="  seq #2 = "
 	LCA	STR_L77.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
@@ -1835,7 +1855,7 @@ STR STR_L77, "  seq #2 = "			; constante string="  seq #2 = "
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
 	LVA  1,	RP_disp
 	LVa 1,	FP_disp
-	CALL	STANDARD.SEQ_IO_TEST_L1.POINT_SIO. ,READ_L11
+	CALL	STANDARD.SEQ_IO_TEST_L1.POINT_SIO. ,READ_L31
 STR STR_L78, "  seq #3 = "			; constante string="  seq #3 = "
 	LCA	STR_L78.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
@@ -1844,7 +1864,7 @@ STR STR_L78, "  seq #3 = "			; constante string="  seq #3 = "
 	LI	1
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
 	LVA  1,	FP_disp
-	CALL	STANDARD.SEQ_IO_TEST_L1.POINT_SIO. ,CLOSE_L3
+	CALL	STANDARD.SEQ_IO_TEST_L1.POINT_SIO. ,CLOSE_L23
 STR STR_L79, "  read+close ok"		; constante string="  read+close ok"
 	LCA	STR_L79.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
@@ -1857,28 +1877,28 @@ STR STR_L82, "vec_seq.dat"			; constante string="vec_seq.dat"
 	LCA	STR_L82.data_ptr
 	LI	 1
 	LVA  1,	FV_disp
-	CALL	STANDARD.SEQ_IO_TEST_L1.VEC_SIO. ,CREATE_L1
+	CALL	STANDARD.SEQ_IO_TEST_L1.VEC_SIO. ,CREATE_L34
 STR STR_L83, "  VECTEUR'SIZE = "		; constante string="  VECTEUR'SIZE = "
 	LCA	STR_L83.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	Ld 1,	STANDARD.SEQ_IO_TEST_L1.INT_IO.DEFAULT_BASE_disp
 	Ld 1,	STANDARD.SEQ_IO_TEST_L1.INT_IO.DEFAULT_WIDTH_disp
 	LId	 1, STANDARD.SEQ_IO_TEST_L1.VECTEUR.use__info
-	CALL	STANDARD.SEQ_IO_TEST_L1.INT_IO. ,PUT_L64
+	CALL	STANDARD.SEQ_IO_TEST_L1.INT_IO. ,PUT_L5
 STR STR_L84, " bits"			; constante string=" bits"
 	LCA	STR_L84.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
 	LVa 1,	V1_disp
 	LVa 1,	FV_disp
-	CALL	STANDARD.SEQ_IO_TEST_L1.VEC_SIO. ,WRITE_L12
+	CALL	STANDARD.SEQ_IO_TEST_L1.VEC_SIO. ,WRITE_L45
 	LVa 1,	V2_disp
 	LVa 1,	FV_disp
-	CALL	STANDARD.SEQ_IO_TEST_L1.VEC_SIO. ,WRITE_L12
+	CALL	STANDARD.SEQ_IO_TEST_L1.VEC_SIO. ,WRITE_L45
 	LVa 1,	V3_disp
 	LVa 1,	FV_disp
-	CALL	STANDARD.SEQ_IO_TEST_L1.VEC_SIO. ,WRITE_L12
+	CALL	STANDARD.SEQ_IO_TEST_L1.VEC_SIO. ,WRITE_L45
 	LVA  1,	FV_disp
-	CALL	STANDARD.SEQ_IO_TEST_L1.VEC_SIO. ,CLOSE_L3
+	CALL	STANDARD.SEQ_IO_TEST_L1.VEC_SIO. ,CLOSE_L36
 STR STR_L85, "  create+write+close ok"		; constante string="  create+write+close ok"
 	LCA	STR_L85.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
@@ -1888,10 +1908,10 @@ STR STR_L87, "vec_seq.dat"			; constante string="vec_seq.dat"
 	LCA	STR_L87.data_ptr
 	LI	 0
 	LVA  1,	FV_disp
-	CALL	STANDARD.SEQ_IO_TEST_L1.VEC_SIO. ,OPEN_L2
+	CALL	STANDARD.SEQ_IO_TEST_L1.VEC_SIO. ,OPEN_L35
 	LVA  1,	RV_disp
 	LVa 1,	FV_disp
-	CALL	STANDARD.SEQ_IO_TEST_L1.VEC_SIO. ,READ_L11
+	CALL	STANDARD.SEQ_IO_TEST_L1.VEC_SIO. ,READ_L44
 STR STR_L88, "  seq #1 = "			; constante string="  seq #1 = "
 	LCA	STR_L88.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
@@ -1901,7 +1921,7 @@ STR STR_L88, "  seq #1 = "			; constante string="  seq #1 = "
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
 	LVA  1,	RV_disp
 	LVa 1,	FV_disp
-	CALL	STANDARD.SEQ_IO_TEST_L1.VEC_SIO. ,READ_L11
+	CALL	STANDARD.SEQ_IO_TEST_L1.VEC_SIO. ,READ_L44
 STR STR_L89, "  seq #2 = "			; constante string="  seq #2 = "
 	LCA	STR_L89.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
@@ -1911,7 +1931,7 @@ STR STR_L89, "  seq #2 = "			; constante string="  seq #2 = "
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
 	LVA  1,	RV_disp
 	LVa 1,	FV_disp
-	CALL	STANDARD.SEQ_IO_TEST_L1.VEC_SIO. ,READ_L11
+	CALL	STANDARD.SEQ_IO_TEST_L1.VEC_SIO. ,READ_L44
 STR STR_L90, "  seq #3 = "			; constante string="  seq #3 = "
 	LCA	STR_L90.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
@@ -1920,7 +1940,7 @@ STR STR_L90, "  seq #3 = "			; constante string="  seq #3 = "
 	LI	1
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
 	LVA  1,	FV_disp
-	CALL	STANDARD.SEQ_IO_TEST_L1.VEC_SIO. ,CLOSE_L3
+	CALL	STANDARD.SEQ_IO_TEST_L1.VEC_SIO. ,CLOSE_L36
 STR STR_L91, "  read+close ok"		; constante string="  read+close ok"
 	LCA	STR_L91.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
@@ -1933,14 +1953,14 @@ STR STR_L94, "point_seq.dat"			; constante string="point_seq.dat"
 	LCA	STR_L94.data_ptr
 	LI	 0
 	LVA  1,	FP_disp
-	CALL	STANDARD.SEQ_IO_TEST_L1.POINT_SIO. ,OPEN_L2
+	CALL	STANDARD.SEQ_IO_TEST_L1.POINT_SIO. ,OPEN_L22
 STR STR_L95, "  END_OF_FILE au debut = "	; constante string="  END_OF_FILE au debut = "
 	LCA	STR_L95.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 					; debut if
 	LI	0					; lieu resultat sur pile
 	LVa 1,	FP_disp
-	CALL	STANDARD.SEQ_IO_TEST_L1.POINT_SIO. ,END_OF_FILE_L13
+	CALL	STANDARD.SEQ_IO_TEST_L1.POINT_SIO. ,END_OF_FILE_L33
 	BF	L97
 STR STR_L98, "TRUE (anormal)"			; constante string="TRUE (anormal)"
 	LCA	STR_L98.data_ptr
@@ -1962,20 +1982,20 @@ begin:					;---------- BDY INSTRUCTIONS
 LOOP__3:
 	LI	0					; lieu resultat sur pile
 	LVa 1,	STANDARD.SEQ_IO_TEST_L1.FP_disp
-	CALL	STANDARD.SEQ_IO_TEST_L1.POINT_SIO. ,END_OF_FILE_L13
+	CALL	STANDARD.SEQ_IO_TEST_L1.POINT_SIO. ,END_OF_FILE_L33
 	LI	1
 	OUX
 	BF	L100
 	LVA  1,	RP_disp
 	LVa 1,	STANDARD.SEQ_IO_TEST_L1.FP_disp
-	CALL	STANDARD.SEQ_IO_TEST_L1.POINT_SIO. ,READ_L11
+	CALL	STANDARD.SEQ_IO_TEST_L1.POINT_SIO. ,READ_L31
 STR STR_L101, "  element "			; constante string="  element "
 	LCA	STR_L101.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	Ld 1,	STANDARD.SEQ_IO_TEST_L1.INT_IO.DEFAULT_BASE_disp
 	Ld 1,	STANDARD.SEQ_IO_TEST_L1.INT_IO.DEFAULT_WIDTH_disp
 	Ld 2,	IDX_disp
-	CALL	STANDARD.SEQ_IO_TEST_L1.INT_IO. ,PUT_L64
+	CALL	STANDARD.SEQ_IO_TEST_L1.INT_IO. ,PUT_L5
 STR STR_L102, " = "				; constante string=" = "
 	LCA	STR_L102.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
@@ -1997,7 +2017,7 @@ STR STR_L103, "  END_OF_FILE apres boucle = "	; constante string="  END_OF_FILE 
 					; debut if
 	LI	0					; lieu resultat sur pile
 	LVa 1,	FP_disp
-	CALL	STANDARD.SEQ_IO_TEST_L1.POINT_SIO. ,END_OF_FILE_L13
+	CALL	STANDARD.SEQ_IO_TEST_L1.POINT_SIO. ,END_OF_FILE_L33
 	BF	L105
 STR STR_L106, "TRUE (correct)"		; constante string="TRUE (correct)"
 	LCA	STR_L106.data_ptr
@@ -2009,7 +2029,7 @@ STR STR_L107, "FALSE (anormal)"		; constante string="FALSE (anormal)"
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
 L104:					; post if
 	LVA  1,	FP_disp
-	CALL	STANDARD.SEQ_IO_TEST_L1.POINT_SIO. ,CLOSE_L3
+	CALL	STANDARD.SEQ_IO_TEST_L1.POINT_SIO. ,CLOSE_L23
 STR STR_L108, "  boucle END_OF_FILE ok"		; constante string="  boucle END_OF_FILE ok"
 	LCA	STR_L108.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
@@ -2022,10 +2042,10 @@ STR STR_L111, "point_seq.dat"			; constante string="point_seq.dat"
 	LCA	STR_L111.data_ptr
 	LI	 0
 	LVA  1,	FP_disp
-	CALL	STANDARD.SEQ_IO_TEST_L1.POINT_SIO. ,OPEN_L2
+	CALL	STANDARD.SEQ_IO_TEST_L1.POINT_SIO. ,OPEN_L22
 	LVA  1,	RP_disp
 	LVa 1,	FP_disp
-	CALL	STANDARD.SEQ_IO_TEST_L1.POINT_SIO. ,READ_L11
+	CALL	STANDARD.SEQ_IO_TEST_L1.POINT_SIO. ,READ_L31
 STR STR_L112, "  avant RESET, lu = "		; constante string="  avant RESET, lu = "
 	LCA	STR_L112.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
@@ -2034,13 +2054,13 @@ STR STR_L112, "  avant RESET, lu = "		; constante string="  avant RESET, lu = "
 	LI	1
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
 	LVA  1,	FP_disp
-	CALL	STANDARD.SEQ_IO_TEST_L1.POINT_SIO. ,RESET_L6
+	CALL	STANDARD.SEQ_IO_TEST_L1.POINT_SIO. ,RESET_L26
 STR STR_L113, "  RESET ok"			; constante string="  RESET ok"
 	LCA	STR_L113.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
 	LVA  1,	RP_disp
 	LVa 1,	FP_disp
-	CALL	STANDARD.SEQ_IO_TEST_L1.POINT_SIO. ,READ_L11
+	CALL	STANDARD.SEQ_IO_TEST_L1.POINT_SIO. ,READ_L31
 STR STR_L114, "  apres RESET, lu = "		; constante string="  apres RESET, lu = "
 	LCA	STR_L114.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
@@ -2049,7 +2069,7 @@ STR STR_L114, "  apres RESET, lu = "		; constante string="  apres RESET, lu = "
 	LI	1
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
 	LVA  1,	FP_disp
-	CALL	STANDARD.SEQ_IO_TEST_L1.POINT_SIO. ,CLOSE_L3
+	CALL	STANDARD.SEQ_IO_TEST_L1.POINT_SIO. ,CLOSE_L23
 STR STR_L115, "  RESET ok"			; constante string="  RESET ok"
 	LCA	STR_L115.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
@@ -2062,7 +2082,7 @@ STR STR_L117, "  FP IS_OPEN apres CLOSE = "	; constante string="  FP IS_OPEN apr
 					; debut if
 	LI	0					; lieu resultat sur pile
 	LVa 1,	FP_disp
-	CALL	STANDARD.SEQ_IO_TEST_L1.POINT_SIO. ,IS_OPEN_L10
+	CALL	STANDARD.SEQ_IO_TEST_L1.POINT_SIO. ,IS_OPEN_L30
 	BF	L119
 STR STR_L120, "TRUE (anormal)"		; constante string="TRUE (anormal)"
 	LCA	STR_L120.data_ptr
@@ -2079,14 +2099,14 @@ STR STR_L123, "point_seq.dat"			; constante string="point_seq.dat"
 	LCA	STR_L123.data_ptr
 	LI	 0
 	LVA  1,	FP_disp
-	CALL	STANDARD.SEQ_IO_TEST_L1.POINT_SIO. ,OPEN_L2
+	CALL	STANDARD.SEQ_IO_TEST_L1.POINT_SIO. ,OPEN_L22
 STR STR_L124, "  FP IS_OPEN apres OPEN = "	; constante string="  FP IS_OPEN apres OPEN = "
 	LCA	STR_L124.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 					; debut if
 	LI	0					; lieu resultat sur pile
 	LVa 1,	FP_disp
-	CALL	STANDARD.SEQ_IO_TEST_L1.POINT_SIO. ,IS_OPEN_L10
+	CALL	STANDARD.SEQ_IO_TEST_L1.POINT_SIO. ,IS_OPEN_L30
 	BF	L126
 STR STR_L127, "TRUE (correct)"		; constante string="TRUE (correct)"
 	LCA	STR_L127.data_ptr
@@ -2098,7 +2118,7 @@ STR STR_L128, "FALSE (anormal)"		; constante string="FALSE (anormal)"
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
 L125:					; post if
 	LVA  1,	FP_disp
-	CALL	STANDARD.SEQ_IO_TEST_L1.POINT_SIO. ,CLOSE_L3
+	CALL	STANDARD.SEQ_IO_TEST_L1.POINT_SIO. ,CLOSE_L23
 STR STR_L129, "=== 7. MODE ==="		; constante string="=== 7. MODE ==="
 	LCA	STR_L129.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
@@ -2108,7 +2128,7 @@ STR STR_L131, "couleur_seq.dat"		; constante string="couleur_seq.dat"
 	LCA	STR_L131.data_ptr
 	LI	 0
 	LVA  1,	FC_disp
-	CALL	STANDARD.SEQ_IO_TEST_L1.CLR_SIO. ,OPEN_L2
+	CALL	STANDARD.SEQ_IO_TEST_L1.CLR_SIO. ,OPEN_L9
 STR STR_L132, "  MODE IN_FILE = "		; constante string="  MODE IN_FILE = "
 	LCA	STR_L132.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
@@ -2119,7 +2139,7 @@ begin:					;---------- BDY INSTRUCTIONS
 					; debut if
 	LI	0					; lieu resultat sur pile
 	LVa 1,	STANDARD.SEQ_IO_TEST_L1.FC_disp
-	CALL	STANDARD.SEQ_IO_TEST_L1.CLR_SIO. ,MODE_L7
+	CALL	STANDARD.SEQ_IO_TEST_L1.CLR_SIO. ,MODE_L14
 	LI	 0
 	CEQ
 	BF	L134
@@ -2133,21 +2153,21 @@ STR STR_L136, "OUT_FILE (anormal)"		; constante string="OUT_FILE (anormal)"
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
 L133:					; post if
 	LVA  1,	FC_disp
-	CALL	STANDARD.SEQ_IO_TEST_L1.CLR_SIO. ,CLOSE_L3
+	CALL	STANDARD.SEQ_IO_TEST_L1.CLR_SIO. ,CLOSE_L10
 STR STR_L137, ""				; constante string=""
 	LCA	STR_L137.data_ptr
 STR STR_L138, "couleur_seq2.dat"		; constante string="couleur_seq2.dat"
 	LCA	STR_L138.data_ptr
 	LI	 1
 	LVA  1,	FC_disp
-	CALL	STANDARD.SEQ_IO_TEST_L1.CLR_SIO. ,CREATE_L1
+	CALL	STANDARD.SEQ_IO_TEST_L1.CLR_SIO. ,CREATE_L8
 STR STR_L139, "  MODE OUT_FILE = "		; constante string="  MODE OUT_FILE = "
 	LCA	STR_L139.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 					; debut if
 	LI	0					; lieu resultat sur pile
 	LVa 1,	STANDARD.SEQ_IO_TEST_L1.FC_disp
-	CALL	STANDARD.SEQ_IO_TEST_L1.CLR_SIO. ,MODE_L7
+	CALL	STANDARD.SEQ_IO_TEST_L1.CLR_SIO. ,MODE_L14
 	LI	 1
 	CEQ
 	BF	L141
@@ -2161,7 +2181,7 @@ STR STR_L143, "IN_FILE (anormal)"		; constante string="IN_FILE (anormal)"
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
 L140:					; post if
 	LVA  1,	FC_disp
-	CALL	STANDARD.SEQ_IO_TEST_L1.CLR_SIO. ,CLOSE_L3
+	CALL	STANDARD.SEQ_IO_TEST_L1.CLR_SIO. ,CLOSE_L10
 	UNLINK 2
 endPRO
 STR STR_L144, "=== 8. DELETE ==="		; constante string="=== 8. DELETE ==="

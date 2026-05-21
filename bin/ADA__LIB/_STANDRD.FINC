@@ -1,3 +1,4 @@
+elab_spec:				;    SPEC ELAB
 
 
 
@@ -599,7 +600,7 @@ VAR LST, d
 	Sd	0, SIZ
 	LI	0
 	Sd	0, FST
-	LI	2147483647
+	LI	002147483647
 	Sd	0, LST
 VAR PARENT__u, q
 	La	0, STANDARD.INTEGER.use__info
@@ -619,7 +620,7 @@ VAR LST, d
 	Sd	0, SIZ
 	LI	1
 	Sd	0, FST
-	LI	2147483647
+	LI	002147483647
 	Sd	0, LST
 VAR PARENT__u, q
 	La	0, STANDARD.INTEGER.use__info
@@ -651,12 +652,12 @@ end namespace
 DURATION = 'DURATION'
 namespace DURATION
 VAR use__info, q
-CST SIZ, d, 32
+CST SIZ, d, 64
 	LCA	SIZ
 	Sa	0, use__info
 ; load fixed limites FST LST a faire 
-CST FST, d, 0
-CST LST, d, 0
+CST FST, q, 0
+CST LST, q, 0
 end namespace
 
 					; _ADDRESS TYPE RANGE INFO
@@ -686,5 +687,63 @@ VAR LST, q
 end namespace
 ; EXC_LBL	L2
 
-; EXC_LBL	L3
+					;    BODY ELAB
+
+if defined WIDTH_L3_
+PRO	WIDTH_L3				;---------- PRO WIDTH
+PRMS					;    debut parametrage
+	PRM BIT_SIZE_ofs				; in
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 1					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+					; debut if
+	Ld  1,	-BIT_SIZE_ofs
+	LI	8
+	CLE
+	BF	L5
+	LI	4
+	Sd  1,	-result__ofs
+	BRA ret_lbl
+	BRA	L4
+L5:
+	Ld  1,	-BIT_SIZE_ofs
+	LI	16
+	CLE
+	BF	L6
+	LI	6
+	Sd  1,	-result__ofs
+	BRA ret_lbl
+	BRA	L4
+L6:
+	Ld  1,	-BIT_SIZE_ofs
+	LI	32
+	CLE
+	BF	L7
+	LI	11
+	Sd  1,	-result__ofs
+	BRA ret_lbl
+	BRA	L4
+L7:
+	Ld  1,	-BIT_SIZE_ofs
+	LI	64
+	CLE
+	BF	L8
+	LI	21
+	Sd  1,	-result__ofs
+	BRA ret_lbl
+	BRA	L4
+L8:
+	LI	40
+	Sd  1,	-result__ofs
+	BRA ret_lbl
+L4:					; post if
+ret_lbl:
+	UNLINK 1
+	RTD	(prm_siz-8)
+excep:
+endPRO					;---------- end PRO WIDTH
+end if
+begin:					;---------- package BDY INSTRUCTIONS
 

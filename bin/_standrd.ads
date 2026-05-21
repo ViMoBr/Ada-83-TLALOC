@@ -126,7 +126,7 @@ is				--------
 
       --|	Ce type est invisible, il doit être en minuscules	et sert de type de base pour DURATION
 
-    type _duration is delta 2#1.0#E-14 range - 16#20000.0# .. 16#1FFFF.FFFC#;
+      type _duration is delta 2.0**(-29)	range -2.0**34 .. 2.0**34 - 1.0;
 
       -- Specification of implementation sizes
 	for BOOLEAN'size		use 1;
@@ -136,7 +136,7 @@ is				--------
 	for LONG_INTEGER'size	use 64;
 	for FLOAT'size		use 32;
 	for LONG_FLOAT'size		use 64;
-	for DURATION'size		use 32;
+	for DURATION'size		use 64;
 
 	--------
   end	STANDARD;
