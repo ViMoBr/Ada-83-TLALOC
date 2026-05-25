@@ -4,6 +4,13 @@
 package body			_standrd
 is				--------
 
+  type FIXED_USE_INFO	is record
+			  SIZ		: NATURAL;
+			  FST, LST	: LONG_INTEGER;
+			  NUMER, DENOM	: LONG_INTEGER;
+			end record;
+
+
 			-----
   function		WIDTH	( BIT_SIZE :INTEGER )	return INTEGER
   is			-----

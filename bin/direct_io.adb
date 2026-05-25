@@ -1,12 +1,9 @@
 with SYSTEM, MACHINE_CODE;
 use  SYSTEM, MACHINE_CODE;
-
-with TEXT_IO; use TEXT_IO;
 					----------
 	package body			DIRECT_IO
 is					----------
 
-  package INT_IO is new INTEGER_IO( INTEGER );
 
 			--   F I L E   M A N A G E M E N T
 

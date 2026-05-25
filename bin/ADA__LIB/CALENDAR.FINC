@@ -108,7 +108,7 @@ LD_LONG_INTEGER.elab:
 post_LD_LONG_INTEGER:
 BRA post_ST_LONG_INTEGER
 ST_LONG_INTEGER.elab:
-	SIq -1, 0
+	Sq -1, 0
 	RTD 0
 post_ST_LONG_INTEGER:
 BRA post_INADR_LONG_INTEGER
@@ -154,7 +154,6 @@ endPRMS					;    fin parametrage
 ELB 1
 begin:
 	LVA	 0, GFP_disp
-; scalaire in attention generique ou pas
 	Ld	 1, -WIDTH_ofs
 	La 	 1, -ITEM_ofs
 	La 	 1, -FILE_ofs
@@ -172,7 +171,6 @@ endPRMS					;    fin parametrage
 ELB 1
 begin:
 	LVA	 0, GFP_disp
-; scalaire in attention generique ou pas
 	Ld	 1, -WIDTH_ofs
 	La 	 1, -ITEM_ofs
 	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,GET_L62
@@ -191,11 +189,8 @@ endPRMS					;    fin parametrage
 ELB 1
 begin:
 	LVA	 0, GFP_disp
-; scalaire in attention generique ou pas
 	Ld	 1, -BASE_ofs
-; scalaire in attention generique ou pas
 	Ld	 1, -WIDTH_ofs
-; scalaire in attention generique ou pas
 	Lq	 1, -ITEM_ofs
 	La 	 1, -FILE_ofs
 	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,PUT_L63
@@ -213,11 +208,8 @@ endPRMS					;    fin parametrage
 ELB 1
 begin:
 	LVA	 0, GFP_disp
-; scalaire in attention generique ou pas
 	Ld	 1, -BASE_ofs
-; scalaire in attention generique ou pas
 	Ld	 1, -WIDTH_ofs
-; scalaire in attention generique ou pas
 	Lq	 1, -ITEM_ofs
 	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,PUT_L64
 	UNLINK	 1
@@ -252,9 +244,7 @@ endPRMS					;    fin parametrage
 ELB 1
 begin:
 	LVA	 0, GFP_disp
-; scalaire in attention generique ou pas
 	Ld	 1, -BASE_ofs
-; scalaire in attention generique ou pas
 	Lq	 1, -ITEM_ofs
 	La 	 1, -TO_ofs
 	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,PUT_L66
@@ -390,7 +380,7 @@ L10:					; post if
 	BRA ret_lbl
 ret_lbl:
 	UNLINK 1
-	RTD	(prm_siz-8)
+	RTD	prm_siz-8
 excep:
 endPRO					;---------- end PRO DAYS_FROM_CIVIL
 end if
@@ -532,7 +522,7 @@ L15:					; post if
 	SIq  1,	-D_ofs
 ret_lbl:
 	UNLINK 1
-	RTD	(prm_siz)
+	RTD	prm_siz
 excep:
 endPRO					;---------- end PRO CIVIL_FROM_DAYS
 end if
@@ -584,7 +574,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	SYS_CLOCK_GETTIME
 ret_lbl:
 	UNLINK 2
-	RTD	(prm_siz)
+	RTD	prm_siz
 excep:
 endPRO					;---------- end PRO GETTIME_SYSCALL
 end if
@@ -605,6 +595,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	ADD
 	Sq  1,	T_disp
 	Lq 1,	T_disp
+; EXPRESSIONS.CODE_CONVERSION cible non faite DN_PRIVATE
 	Sa  1,	-result__ofs
 	BRA ret_lbl
 ret_lbl:
@@ -663,7 +654,7 @@ endPRO
 	BRA ret_lbl
 ret_lbl:
 	UNLINK 1
-	RTD	(prm_siz-8)
+	RTD	prm_siz-8
 excep:
 endPRO					;---------- end PRO YEAR
 end if
@@ -707,7 +698,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	BRA ret_lbl
 ret_lbl:
 	UNLINK 1
-	RTD	(prm_siz-8)
+	RTD	prm_siz-8
 excep:
 endPRO					;---------- end PRO MONTH
 end if
@@ -751,7 +742,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	BRA ret_lbl
 ret_lbl:
 	UNLINK 1
-	RTD	(prm_siz-8)
+	RTD	prm_siz-8
 excep:
 endPRO					;---------- end PRO DAY
 end if
@@ -812,7 +803,7 @@ L18:					; post if
 	BRA ret_lbl
 ret_lbl:
 	UNLINK 1
-	RTD	(prm_siz-8)
+	RTD	prm_siz-8
 excep:
 endPRO					;---------- end PRO SECONDS
 end if
@@ -941,7 +932,7 @@ L22:					; post if
 	SIq  1,	-SECONDS_ofs
 ret_lbl:
 	UNLINK 1
-	RTD	(prm_siz)
+	RTD	prm_siz
 excep:
 endPRO					;---------- end PRO SPLIT
 end if
@@ -988,6 +979,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	ADD
 	Sq  1,	T_disp
 	Lq 1,	T_disp
+; EXPRESSIONS.CODE_CONVERSION cible non faite DN_PRIVATE
 	Sa  1,	-result__ofs
 	BRA ret_lbl
 ; CHOICE_OTHERS in EXCEPTIONS todo
@@ -996,7 +988,7 @@ L27:
 L26:
 ret_lbl:
 	UNLINK 1
-	RTD	(prm_siz-8)
+	RTD	prm_siz-8
 excep:
 endPRO					;---------- end PRO TIME_OF
 end if
@@ -1019,6 +1011,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	La  1,	-LEFT_ofs
 	Lq 1,	DUR_INTERNAL_disp
 	ADD
+; EXPRESSIONS.CODE_CONVERSION cible non faite DN_PRIVATE
 	Sa  1,	-result__ofs
 	BRA ret_lbl
 ; CHOICE_OTHERS in EXCEPTIONS todo
@@ -1027,7 +1020,7 @@ L29:
 L28:
 ret_lbl:
 	UNLINK 1
-	RTD	(prm_siz)
+	RTD	prm_siz
 excep:
 endPRO					;---------- end PRO _PLUS_
 end if
@@ -1049,7 +1042,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	BRA ret_lbl
 ret_lbl:
 	UNLINK 1
-	RTD	(prm_siz)
+	RTD	prm_siz
 excep:
 endPRO					;---------- end PRO _PLUS_
 end if
@@ -1072,6 +1065,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	La  1,	-LEFT_ofs
 	Lq 1,	DUR_INTERNAL_disp
 	SUB
+; EXPRESSIONS.CODE_CONVERSION cible non faite DN_PRIVATE
 	Sa  1,	-result__ofs
 	BRA ret_lbl
 ; CHOICE_OTHERS in EXCEPTIONS todo
@@ -1080,7 +1074,7 @@ L31:
 L30:
 ret_lbl:
 	UNLINK 1
-	RTD	(prm_siz)
+	RTD	prm_siz
 excep:
 endPRO					;---------- end PRO _MINUS_
 end if
@@ -1108,7 +1102,7 @@ L33:
 L32:
 ret_lbl:
 	UNLINK 1
-	RTD	(prm_siz)
+	RTD	prm_siz
 excep:
 endPRO					;---------- end PRO _MINUS_
 end if
@@ -1130,7 +1124,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	BRA ret_lbl
 ret_lbl:
 	UNLINK 1
-	RTD	(prm_siz)
+	RTD	prm_siz
 excep:
 endPRO					;---------- end PRO _LT_
 end if
@@ -1152,7 +1146,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	BRA ret_lbl
 ret_lbl:
 	UNLINK 1
-	RTD	(prm_siz)
+	RTD	prm_siz
 excep:
 endPRO					;---------- end PRO _LE_
 end if
@@ -1174,7 +1168,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	BRA ret_lbl
 ret_lbl:
 	UNLINK 1
-	RTD	(prm_siz)
+	RTD	prm_siz
 excep:
 endPRO					;---------- end PRO _GT_
 end if
@@ -1196,7 +1190,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	BRA ret_lbl
 ret_lbl:
 	UNLINK 1
-	RTD	(prm_siz)
+	RTD	prm_siz
 excep:
 endPRO					;---------- end PRO _GE_
 end if

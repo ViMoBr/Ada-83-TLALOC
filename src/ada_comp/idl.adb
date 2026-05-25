@@ -391,6 +391,8 @@ is					---
       elsif ATTR.NSIZ = 1 then
         return INTEGER( -ATTR.ABSS - 1 );
       end	if;
+    elsif  ATTR.NOTY = DN_NUM_VAL  then
+      null;
     end if;
     PUT_LINE( "!! L ATTRIBUT " & ATTR_IMAGE( AN )	& " DU NOEUD " & NODE_REP( T ) & " N EST PAS UN ENTIER");
     raise	PROGRAM_ERROR;

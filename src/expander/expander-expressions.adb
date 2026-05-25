@@ -320,8 +320,26 @@ null;--	     declare
         PUT_LINE( tab & "L" &	TYPE_CHAR	& tab & IMAGE( DI( CD_LEVEL, ITERATION_ID ) ) & ", " & ITERATION_ID_VARSTR );
       end;
 
-    when DN_ENUMERATION_ID | DN_CHARACTER_ID	=> PUT_LINE( ASCII.HT & "LI" & tab & IMAGE( DI( SM_REP, DEFN ) ) );
-    when DN_IN_ID |	DN_IN_OUT_ID		=> LOAD_MEM( DEFN );
+    when DN_ENUMERATION_ID | DN_CHARACTER_ID	=> PUT_LINE( tab & "LI" & tab & IMAGE( DI( SM_REP, DEFN ) ) );
+
+    when DN_IN_ID |	DN_IN_OUT_ID		=>
+      if  not CODI.IN_GENERIC_BODY  then
+        LOAD_MEM( DEFN );
+
+      elsif  EXPRESSIONS.IS_GENERIC_FORMAL_TYPE( D( XD_SOURCE_NAME, D( SM_OBJ_TYPE, DEFN ) ) )  then
+        PUT_LINE( tab & "LVA " & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ','
+		    & tab & '-' & PRINT_NAME( D( LX_SYMREP, DEFN ) ) & "_ofs" );
+
+        PUT_LINE( tab & "La " & LEVEL_NUM'IMAGE( CODI.GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );
+        PUT_LINE( tab & "La , -" & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, D( SM_OBJ_TYPE, DEFN ) ) ) )
+			& "__ld_ofs" );
+        PUT_LINE( tab & "CALLI" );
+
+      else
+        LOAD_MEM( DEFN );
+
+      end if;
+
     when DN_OUT_ID				=>
 	PUT_LINE( "; CODE_USED_OBJECT_ID : OUT_ID a faire " );
 
@@ -970,6 +988,18 @@ put_line(	"; adresse component id" );
 		---------
 
     end	CODE_SIZE;
+	---------
+
+
+		----------
+    procedure	CODE_SMALL
+    is		----------
+      PREFIX_DEFN		: TREE	:= D( SM_DEFN, PREFIX_NAME );
+      TYPE_SPEC		: TREE	:= D( SM_TYPE_SPEC, PREFIX_DEFN );
+    begin
+null;
+
+    end	CODE_SMALL;
 	---------
 
 
@@ -1664,28 +1694,145 @@ SCAN_IDS:
       if	TARGET_TYPE /= TREE_VOID  and	then  TARGET_TYPE.TY in CLASS_TYPE_SPEC	 then
         case  TARGET_TYPE.TY	is
         when DN_INTEGER | DN_ENUMERATION =>
-	-- Verifier si la source est flottante (conversion float ->	entier)
+				--------------
+				INTEGER_TARGET:
 	declare
 	  SRC_TYPE	: TREE	:= D( SM_EXP_TYPE, SRC_EXP );
 	begin
-	  if  SRC_TYPE /= TREE_VOID  and then  SRC_TYPE.TY = DN_FLOAT  then
-	    PUT_LINE( tab &	"CVTFI" );				-- conversion double IEEE 754	-> entier	(troncature)
+	  if  SRC_TYPE /= TREE_VOID  then
+
+	    if  SRC_TYPE.TY = DN_FLOAT  then								-- Verifier si la source est flottante (conversion float ->	entier)
+	      PUT_LINE( tab & "CVTFI" );								-- conversion double IEEE 754	-> entier	(troncature)
+
+	    elsif  SRC_TYPE.TY = DN_FIXED  then
+
+				------------
+				FIXED_TO_INT:
+	      ------------------------------------------------------------
+	      -- Conversion FIXED -> INTEGER.
+	      -- CODE_EXP a empile la MANTISSE entiere m (= valeur / SMALL).
+	      -- On veut round( m * SMALL ) = round( m * NUM / DEN )
+	      -- ou SMALL = NUM/DEN  (CD_IMPL_SMALL du type source).
+	      -- Arrondi Ada 83 : au plus proche.
+	      ------------------------------------------------------------
+	      declare
+	        SMALL_VAL	: TREE		:= D( CD_IMPL_SMALL, SRC_TYPE );
+	        NUM_PART	: INTEGER;
+	        DEN_PART	: INTEGER;
+	        SHIFT	: INTEGER		:= 0;
+	        TMP			: INTEGER;
+	      begin
+	        if  CODI.IN_GENERIC_BODY  and then  IS_GENERIC_FORMAL_TYPE( D( XD_SOURCE_NAME, SRC_TYPE ) )  then		-- Passer par le use__info
+		declare
+		  TYPE_NAME	: TREE := D( XD_SOURCE_NAME, SRC_TYPE );
+		  TYPE_STR	: constant STRING := PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
+		begin
+		  PUT_LINE( tab & "La " & INTEGER'IMAGE( CODI.CUR_LEVEL ) & ',' & tab & "-GFP_ofs" );		-- Adresse de frame generique
+		  PUT_LINE( tab & "LId , -" & TYPE_STR & "__u_ofs, STANDARD.FIXED_USE_INFO.NUMER" );		-- Charge le NUMER
+--		  CODI.REGIONS_PATH( TYPE_NAME );
+--		  PUT_LINE( TYPE_STR & ".NUMER" );
+
+		  PUT_LINE( tab & "MUL" );								-- m * NUM
+
+		  PUT_LINE( tab & "La " & INTEGER'IMAGE( CODI.CUR_LEVEL ) & ',' & tab & "-GFP_ofs" );		-- Adresse de frame generique
+		  PUT_LINE( tab & "LId , -" & TYPE_STR & "__u_ofs, STANDARD.FIXED_USE_INFO.DENOM" );		-- Charge le NUMER
+--		  CODI.REGIONS_PATH( TYPE_NAME );
+--		  PUT_LINE( TYPE_STR & ".DENOM" );
+
+		  PUT_LINE( tab & "LI" & tab & '1' );
+		  PUT_LINE( tab & "SAR" );								-- >> SHIFT (arithmetique)
+
+		  PUT_LINE( tab & "ADD" );								-- + DEN/2 (demi-pas)
+		  PUT_LINE( tab & "La " & INTEGER'IMAGE( CODI.CUR_LEVEL ) & ',' & tab & "-GFP_ofs" );		-- Adresse de frame generique
+		  PUT_LINE( tab & "LId , -" & TYPE_STR & "__u_ofs, STANDARD.FIXED_USE_INFO.NUMER" );		-- Charge le NUMER
+--		  CODI.REGIONS_PATH( TYPE_NAME );
+--		  PUT_LINE( TYPE_STR & ".DENOM" );
+		  PUT_LINE( tab & "DIV" );								-- / DEN
+
+		end;
+
+	        else
+		NUM_PART := INTEGER'VALUE( PRINT_NUM( D( XD_NUMER, SMALL_VAL ) ) );
+		DEN_PART := INTEGER'VALUE( PRINT_NUM( D( XD_DENOM, SMALL_VAL ) ) );
+	        end if;
+--put_line( "; NUMER " & INTEGER'IMAGE( NUM_PART ) );
+--put_line( "; DENOM " & INTEGER'IMAGE( DEN_PART ) );
+
+	        -- Detecter SMALL = 2**(-k), c.a.d. NUM_PART = 1 et DEN_PART = 2**k
+	        if  NUM_PART = 1  then
+	          TMP := DEN_PART;
+	          while  TMP > 1  and then  ( TMP mod 2 ) = 0  loop
+	            TMP := TMP / 2;
+	            SHIFT := SHIFT + 1;
+	          end loop;
+	        end if;
+
+	        if  NUM_PART = 1  and then  TMP = 1  and then  SHIFT > 0  then
+	          ----------------------------------------------------------
+	          -- Cas puissance de 2 : round(m / 2**SHIFT)
+	          --   = (m + 2**(SHIFT-1)) >> SHIFT   (m suppose >= 0 ici ;
+	          --     pour m < 0 le SAR arrondit vers -inf, l'ajout du
+	          --     demi-pas recentre correctement pour les deux signes
+	          --     car le demi-pas est ajoute avant le decalage signe).
+	          ----------------------------------------------------------
+	          PUT_LINE( tab & "LI" & tab & INTEGER'IMAGE( 2 ** ( SHIFT - 1 ) ) );	-- demi-pas
+	          PUT_LINE( tab & "ADD" );						-- m + demi-pas
+	          PUT_LINE( tab & "LI" & tab & INTEGER'IMAGE( SHIFT ) );
+	          PUT_LINE( tab & "SAR" );						-- >> SHIFT (arithmetique)
+	        else
+	          ----------------------------------------------------------
+	          -- Cas general : round(m * NUM / DEN)
+	          --   = (m * NUM * 2 + DEN) / (2 * DEN)   pour arrondi au
+	          --     plus proche sans flottant (m >= 0).
+	          -- Ici on reste simple : (m * NUM + DEN/2) / DEN, valable
+	          -- quand DEN est pair ou que la troncature DEN/2 suffit.
+	          ----------------------------------------------------------
+	          PUT_LINE( tab & "LI" & tab & INTEGER'IMAGE( NUM_PART ) );
+	          PUT_LINE( tab & "MUL" );						-- m * NUM
+	          PUT_LINE( tab & "LI" & tab & INTEGER'IMAGE( DEN_PART / 2 ) );
+	          PUT_LINE( tab & "ADD" );						-- + DEN/2 (demi-pas)
+	          PUT_LINE( tab & "LI" & tab & INTEGER'IMAGE( DEN_PART ) );
+	          PUT_LINE( tab & "DIV" );						-- / DEN
+	        end if;
+	      end		FIXED_TO_INT;
+			------------
+	    end if;
+
 	  end if;
 	  -- entier->entier, enum->entier : no-op, meme representation
-	end;
 
-        when DN_FLOAT =>
-	-- Si la source n'est pas deja flottante, convertir entier -> float
+	end	INTEGER_TARGET;
+		--------------
+
+        when DN_FLOAT =>										-- Cible FLOAT
+				------------
+				FLOAT_TARGET:
 	declare
 	  SRC_TYPE	: TREE	:= D( SM_EXP_TYPE, SRC_EXP );
 	begin
-	  if  SRC_TYPE = TREE_VOID  or else  SRC_TYPE.TY /= DN_FLOAT  then
-	    PUT_LINE( tab &	"CVTIF" );				-- conversion entier signe 64	-> double	IEEE 754
+	  if  SRC_TYPE = TREE_VOID  or else  SRC_TYPE.TY /= DN_FLOAT  then					-- Si la source n'est pas deja flottante, convertir entier -> float
+	    PUT_LINE( tab &	"CVTIF" );								-- conversion entier signe 64	-> double	IEEE 754
 	  end if;
 	  -- float->float :	no-op, meme representation IEEE 754 double
-	end;
+
+	end	FLOAT_TARGET;
+		------------
+
+        when DN_FIXED =>										-- Cible FIXED
+				------------
+				FIXED_TARGET:
+	declare
+	  SRC_TYPE	: TREE	:= D( SM_EXP_TYPE, SRC_EXP );
+	begin
+	  if  SRC_TYPE = TREE_VOID  or else  SRC_TYPE.TY /= DN_FIXED  then					-- INTEGER ou FLOAT a convertir
+	    null;							-- A FAIRE
+	  end if;
+								-- A COMPLETER pour FIXED vers FIXED
+	end	FIXED_TARGET;
+		------------
 
         when others	=>
+	PUT_LINE( "; EXPRESSIONS.CODE_CONVERSION cible non faite " & NODE_NAME'IMAGE( TARGET_TYPE.TY ) );
 	null;
         end case;
       end	if;
@@ -1747,26 +1894,46 @@ put_line( "; CODE_QUALIFIED : DN_QUALIFIED" & NODE_NAME'IMAGE( SRC_EXP.TY ) );
 
 
 				----------
-  procedure			CODE_VC_ID		( CONSTANT_ID :TREE	)
+  procedure			CODE_VC_ID		( VC_ID :TREE	)
   is
-    CST_TYPE	: TREE	:= D( SM_OBJ_TYPE, CONSTANT_ID );
+    VC_TYPE	: TREE		:= D( SM_OBJ_TYPE, VC_ID );
+    VC_LEVEL	: LEVEL_NUM	:= DI( CD_LEVEL, VC_ID );
+
   begin
+    case VC_TYPE.TY is
 
-    case CST_TYPE.TY is
-
-    when DN_INTEGER	| DN_ACCESS | DN_ENUMERATION | DN_FLOAT
+    when DN_INTEGER	| DN_ACCESS | DN_ENUMERATION | DN_FLOAT | DN_FIXED
     =>
-      LOAD_MEM( CONSTANT_ID );
+      if  not CODI.IN_GENERIC_BODY  then
+        LOAD_MEM( VC_ID );
+
+      elsif  IS_GENERIC_FORMAL_TYPE( D( XD_SOURCE_NAME, VC_TYPE ) )  then
+
+	PUT( tab & "LVA " & IMAGE( CUR_LEVEL ) & ',' & tab );
+	if  VC_LEVEL /= INTEGER( CUR_LEVEL )
+	or else	D( XD_REGION, VC_ID ).TY = DN_PACKAGE_ID
+	then
+	  REGIONS_PATH( VC_ID );
+	end if;
+	PUT_LINE(	PRINT_NAME( D( LX_SYMREP, VC_ID ) )  & "_disp" );
+
+	PUT_LINE( tab & "La " & IMAGE( GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );
+	PUT_LINE( tab & "La , -" & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, VC_TYPE ) ) )  & "__ld_ofs" );
+	PUT_LINE( tab & "CALLI" );
+
+      else
+        LOAD_MEM( VC_ID );
+      end if;
 
     when DN_RECORD | DN_L_PRIVATE =>
-      LOAD_MEM( CONSTANT_ID );
+      LOAD_MEM( VC_ID );
 
     when DN_ARRAY |	DN_CONSTRAINED_ARRAY =>
-      LOAD_MEM( CONSTANT_ID );
+      LOAD_MEM( VC_ID );
 
     when others
     =>
-      PUT_LINE( ';'	& tab & "CODE_VC_ID ERROR " &	NODE_NAME'IMAGE( CST_TYPE.TY ) );
+      PUT_LINE( ';'	& tab & "CODE_VC_ID ERROR " &	NODE_NAME'IMAGE( VC_TYPE.TY ) );
       raise PROGRAM_ERROR;
     end case;
 

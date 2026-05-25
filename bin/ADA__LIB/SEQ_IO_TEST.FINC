@@ -92,7 +92,7 @@ LD_INTEGER.elab:
 post_LD_INTEGER:
 BRA post_ST_INTEGER
 ST_INTEGER.elab:
-	SId -1, 0
+	Sd -1, 0
 	RTD 0
 post_ST_INTEGER:
 BRA post_INADR_INTEGER
@@ -138,7 +138,6 @@ endPRMS					;    fin parametrage
 ELB 2
 begin:
 	LVA	 1, GFP_disp
-; scalaire in attention generique ou pas
 	Ld	 2, -WIDTH_ofs
 	La 	 2, -ITEM_ofs
 	La 	 2, -FILE_ofs
@@ -156,7 +155,6 @@ endPRMS					;    fin parametrage
 ELB 2
 begin:
 	LVA	 1, GFP_disp
-; scalaire in attention generique ou pas
 	Ld	 2, -WIDTH_ofs
 	La 	 2, -ITEM_ofs
 	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,GET_L62
@@ -175,11 +173,8 @@ endPRMS					;    fin parametrage
 ELB 2
 begin:
 	LVA	 1, GFP_disp
-; scalaire in attention generique ou pas
 	Ld	 2, -BASE_ofs
-; scalaire in attention generique ou pas
 	Ld	 2, -WIDTH_ofs
-; scalaire in attention generique ou pas
 	Ld	 2, -ITEM_ofs
 	La 	 2, -FILE_ofs
 	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,PUT_L63
@@ -197,11 +192,8 @@ endPRMS					;    fin parametrage
 ELB 2
 begin:
 	LVA	 1, GFP_disp
-; scalaire in attention generique ou pas
 	Ld	 2, -BASE_ofs
-; scalaire in attention generique ou pas
 	Ld	 2, -WIDTH_ofs
-; scalaire in attention generique ou pas
 	Ld	 2, -ITEM_ofs
 	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,PUT_L64
 	UNLINK	 2
@@ -236,9 +228,7 @@ endPRMS					;    fin parametrage
 ELB 2
 begin:
 	LVA	 1, GFP_disp
-; scalaire in attention generique ou pas
 	Ld	 2, -BASE_ofs
-; scalaire in attention generique ou pas
 	Ld	 2, -ITEM_ofs
 	La 	 2, -TO_ofs
 	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,PUT_L66
@@ -260,7 +250,7 @@ LD_COULEUR.elab:
 post_LD_COULEUR:
 BRA post_ST_COULEUR
 ST_COULEUR.elab:
-	SIb -1, 0
+	Sb -1, 0
 	RTD 0
 post_ST_COULEUR:
 BRA post_INADR_COULEUR
@@ -321,7 +311,6 @@ begin:
 	LVA	 1, GFP_disp
 	La 	 2, -FORM_ofs
 	La 	 2, -NAME_ofs
-; scalaire in attention generique ou pas
 	Lb	 2, -MODE_ofs
 	La 	 2, -FILE_ofs
 	CALL	STANDARD.SEQUENTIAL_IO. ,CREATE_L1
@@ -342,7 +331,6 @@ begin:
 	LVA	 1, GFP_disp
 	La 	 2, -FORM_ofs
 	La 	 2, -NAME_ofs
-; scalaire in attention generique ou pas
 	Lb	 2, -MODE_ofs
 	La 	 2, -FILE_ofs
 	CALL	STANDARD.SEQUENTIAL_IO. ,OPEN_L2
@@ -387,7 +375,6 @@ endPRMS					;    fin parametrage
 ELB 2
 begin:
 	LVA	 1, GFP_disp
-; scalaire in attention generique ou pas
 	Lb	 2, -MODE_ofs
 	La 	 2, -FILE_ofs
 	CALL	STANDARD.SEQUENTIAL_IO. ,RESET_L5
@@ -423,7 +410,7 @@ begin:
 	CALL	STANDARD.SEQUENTIAL_IO. ,MODE_L7
 	Sb	 2, -result__ofs			; retour resultat
 	UNLINK	 2
-	RTD	(prm_siz-8)
+	RTD	prm_siz-8
 endPRO					;---------- end PRO MODE
 end if
 if defined NAME_L15_
@@ -440,7 +427,7 @@ begin:
 	CALL	STANDARD.SEQUENTIAL_IO. ,NAME_L8
 ; RESULTAT UNCONSTRAINED A FAIRE
 	UNLINK	 2
-	RTD	(prm_siz-8)
+	RTD	prm_siz-8
 endPRO					;---------- end PRO NAME
 end if
 if defined FORM_L16_
@@ -457,7 +444,7 @@ begin:
 	CALL	STANDARD.SEQUENTIAL_IO. ,FORM_L9
 ; RESULTAT UNCONSTRAINED A FAIRE
 	UNLINK	 2
-	RTD	(prm_siz-8)
+	RTD	prm_siz-8
 endPRO					;---------- end PRO FORM
 end if
 if defined IS_OPEN_L17_
@@ -474,7 +461,7 @@ begin:
 	CALL	STANDARD.SEQUENTIAL_IO. ,IS_OPEN_L10
 	Sb	 2, -result__ofs			; retour resultat
 	UNLINK	 2
-	RTD	(prm_siz-8)
+	RTD	prm_siz-8
 endPRO					;---------- end PRO IS_OPEN
 end if
 if defined READ_L18_
@@ -502,7 +489,6 @@ endPRMS					;    fin parametrage
 ELB 2
 begin:
 	LVA	 1, GFP_disp
-; scalaire in attention generique ou pas
 	Lb	 2, -ITEM_ofs
 	La 	 2, -FILE_ofs
 	CALL	STANDARD.SEQUENTIAL_IO. ,WRITE_L12
@@ -524,7 +510,7 @@ begin:
 	CALL	STANDARD.SEQUENTIAL_IO. ,END_OF_FILE_L13
 	Sb	 2, -result__ofs			; retour resultat
 	UNLINK	 2
-	RTD	(prm_siz-8)
+	RTD	prm_siz-8
 endPRO					;---------- end PRO END_OF_FILE
 end if
 FILE_NAME_BUFFER = 'FILE_NAME_BUFFER'
@@ -660,7 +646,6 @@ begin:
 	LVA	 1, GFP_disp
 	La 	 2, -FORM_ofs
 	La 	 2, -NAME_ofs
-; scalaire in attention generique ou pas
 	Lb	 2, -MODE_ofs
 	La 	 2, -FILE_ofs
 	CALL	STANDARD.SEQUENTIAL_IO. ,CREATE_L1
@@ -681,7 +666,6 @@ begin:
 	LVA	 1, GFP_disp
 	La 	 2, -FORM_ofs
 	La 	 2, -NAME_ofs
-; scalaire in attention generique ou pas
 	Lb	 2, -MODE_ofs
 	La 	 2, -FILE_ofs
 	CALL	STANDARD.SEQUENTIAL_IO. ,OPEN_L2
@@ -726,7 +710,6 @@ endPRMS					;    fin parametrage
 ELB 2
 begin:
 	LVA	 1, GFP_disp
-; scalaire in attention generique ou pas
 	Lb	 2, -MODE_ofs
 	La 	 2, -FILE_ofs
 	CALL	STANDARD.SEQUENTIAL_IO. ,RESET_L5
@@ -762,7 +745,7 @@ begin:
 	CALL	STANDARD.SEQUENTIAL_IO. ,MODE_L7
 	Sb	 2, -result__ofs			; retour resultat
 	UNLINK	 2
-	RTD	(prm_siz-8)
+	RTD	prm_siz-8
 endPRO					;---------- end PRO MODE
 end if
 if defined NAME_L28_
@@ -779,7 +762,7 @@ begin:
 	CALL	STANDARD.SEQUENTIAL_IO. ,NAME_L8
 ; RESULTAT UNCONSTRAINED A FAIRE
 	UNLINK	 2
-	RTD	(prm_siz-8)
+	RTD	prm_siz-8
 endPRO					;---------- end PRO NAME
 end if
 if defined FORM_L29_
@@ -796,7 +779,7 @@ begin:
 	CALL	STANDARD.SEQUENTIAL_IO. ,FORM_L9
 ; RESULTAT UNCONSTRAINED A FAIRE
 	UNLINK	 2
-	RTD	(prm_siz-8)
+	RTD	prm_siz-8
 endPRO					;---------- end PRO FORM
 end if
 if defined IS_OPEN_L30_
@@ -813,7 +796,7 @@ begin:
 	CALL	STANDARD.SEQUENTIAL_IO. ,IS_OPEN_L10
 	Sb	 2, -result__ofs			; retour resultat
 	UNLINK	 2
-	RTD	(prm_siz-8)
+	RTD	prm_siz-8
 endPRO					;---------- end PRO IS_OPEN
 end if
 if defined READ_L31_
@@ -862,7 +845,7 @@ begin:
 	CALL	STANDARD.SEQUENTIAL_IO. ,END_OF_FILE_L13
 	Sb	 2, -result__ofs			; retour resultat
 	UNLINK	 2
-	RTD	(prm_siz-8)
+	RTD	prm_siz-8
 endPRO					;---------- end PRO END_OF_FILE
 end if
 FILE_NAME_BUFFER = 'FILE_NAME_BUFFER'
@@ -998,7 +981,6 @@ begin:
 	LVA	 1, GFP_disp
 	La 	 2, -FORM_ofs
 	La 	 2, -NAME_ofs
-; scalaire in attention generique ou pas
 	Lb	 2, -MODE_ofs
 	La 	 2, -FILE_ofs
 	CALL	STANDARD.SEQUENTIAL_IO. ,CREATE_L1
@@ -1019,7 +1001,6 @@ begin:
 	LVA	 1, GFP_disp
 	La 	 2, -FORM_ofs
 	La 	 2, -NAME_ofs
-; scalaire in attention generique ou pas
 	Lb	 2, -MODE_ofs
 	La 	 2, -FILE_ofs
 	CALL	STANDARD.SEQUENTIAL_IO. ,OPEN_L2
@@ -1064,7 +1045,6 @@ endPRMS					;    fin parametrage
 ELB 2
 begin:
 	LVA	 1, GFP_disp
-; scalaire in attention generique ou pas
 	Lb	 2, -MODE_ofs
 	La 	 2, -FILE_ofs
 	CALL	STANDARD.SEQUENTIAL_IO. ,RESET_L5
@@ -1100,7 +1080,7 @@ begin:
 	CALL	STANDARD.SEQUENTIAL_IO. ,MODE_L7
 	Sb	 2, -result__ofs			; retour resultat
 	UNLINK	 2
-	RTD	(prm_siz-8)
+	RTD	prm_siz-8
 endPRO					;---------- end PRO MODE
 end if
 if defined NAME_L41_
@@ -1117,7 +1097,7 @@ begin:
 	CALL	STANDARD.SEQUENTIAL_IO. ,NAME_L8
 ; RESULTAT UNCONSTRAINED A FAIRE
 	UNLINK	 2
-	RTD	(prm_siz-8)
+	RTD	prm_siz-8
 endPRO					;---------- end PRO NAME
 end if
 if defined FORM_L42_
@@ -1134,7 +1114,7 @@ begin:
 	CALL	STANDARD.SEQUENTIAL_IO. ,FORM_L9
 ; RESULTAT UNCONSTRAINED A FAIRE
 	UNLINK	 2
-	RTD	(prm_siz-8)
+	RTD	prm_siz-8
 endPRO					;---------- end PRO FORM
 end if
 if defined IS_OPEN_L43_
@@ -1151,7 +1131,7 @@ begin:
 	CALL	STANDARD.SEQUENTIAL_IO. ,IS_OPEN_L10
 	Sb	 2, -result__ofs			; retour resultat
 	UNLINK	 2
-	RTD	(prm_siz-8)
+	RTD	prm_siz-8
 endPRO					;---------- end PRO IS_OPEN
 end if
 if defined READ_L44_
@@ -1200,7 +1180,7 @@ begin:
 	CALL	STANDARD.SEQUENTIAL_IO. ,END_OF_FILE_L13
 	Sb	 2, -result__ofs			; retour resultat
 	UNLINK	 2
-	RTD	(prm_siz-8)
+	RTD	prm_siz-8
 endPRO					;---------- end PRO END_OF_FILE
 end if
 FILE_NAME_BUFFER = 'FILE_NAME_BUFFER'
@@ -1606,7 +1586,7 @@ STR STR_L51, ")"				; constante string=")"
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 ret_lbl:
 	UNLINK 2
-	RTD	(prm_siz)
+	RTD	prm_siz
 excep:
 endPRO					;---------- end PRO PUT_POINT
 end if
@@ -1708,7 +1688,7 @@ STR STR_L57, "]"				; constante string="]"
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 ret_lbl:
 	UNLINK 2
-	RTD	(prm_siz)
+	RTD	prm_siz
 excep:
 endPRO					;---------- end PRO PUT_VEC
 end if
@@ -1725,19 +1705,19 @@ STR STR_L60, "couleur_seq.dat"		; constante string="couleur_seq.dat"
 	LVA  1,	FC_disp
 	CALL	STANDARD.SEQ_IO_TEST_L1.CLR_SIO. ,CREATE_L8
 	Lb 1,	C1_disp
-	LVa 1,	FC_disp
+	LVA 1,	FC_disp
 	CALL	STANDARD.SEQ_IO_TEST_L1.CLR_SIO. ,WRITE_L19
 	Lb 1,	C2_disp
-	LVa 1,	FC_disp
+	LVA 1,	FC_disp
 	CALL	STANDARD.SEQ_IO_TEST_L1.CLR_SIO. ,WRITE_L19
 	Lb 1,	C3_disp
-	LVa 1,	FC_disp
+	LVA 1,	FC_disp
 	CALL	STANDARD.SEQ_IO_TEST_L1.CLR_SIO. ,WRITE_L19
 	Lb 1,	C4_disp
-	LVa 1,	FC_disp
+	LVA 1,	FC_disp
 	CALL	STANDARD.SEQ_IO_TEST_L1.CLR_SIO. ,WRITE_L19
 	Lb 1,	C5_disp
-	LVa 1,	FC_disp
+	LVA 1,	FC_disp
 	CALL	STANDARD.SEQ_IO_TEST_L1.CLR_SIO. ,WRITE_L19
 	LVA  1,	FC_disp
 	CALL	STANDARD.SEQ_IO_TEST_L1.CLR_SIO. ,CLOSE_L10
@@ -1752,7 +1732,7 @@ STR STR_L63, "couleur_seq.dat"		; constante string="couleur_seq.dat"
 	LVA  1,	FC_disp
 	CALL	STANDARD.SEQ_IO_TEST_L1.CLR_SIO. ,OPEN_L9
 	LVA  1,	RC_disp
-	LVa 1,	FC_disp
+	LVA 1,	FC_disp
 	CALL	STANDARD.SEQ_IO_TEST_L1.CLR_SIO. ,READ_L18
 STR STR_L64, "  seq #1 = "			; constante string="  seq #1 = "
 	LCA	STR_L64.data_ptr
@@ -1764,7 +1744,7 @@ STR STR_L64, "  seq #1 = "			; constante string="  seq #1 = "
 	LI	1
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
 	LVA  1,	RC_disp
-	LVa 1,	FC_disp
+	LVA 1,	FC_disp
 	CALL	STANDARD.SEQ_IO_TEST_L1.CLR_SIO. ,READ_L18
 STR STR_L65, "  seq #2 = "			; constante string="  seq #2 = "
 	LCA	STR_L65.data_ptr
@@ -1776,7 +1756,7 @@ STR STR_L65, "  seq #2 = "			; constante string="  seq #2 = "
 	LI	1
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
 	LVA  1,	RC_disp
-	LVa 1,	FC_disp
+	LVA 1,	FC_disp
 	CALL	STANDARD.SEQ_IO_TEST_L1.CLR_SIO. ,READ_L18
 STR STR_L66, "  seq #3 = "			; constante string="  seq #3 = "
 	LCA	STR_L66.data_ptr
@@ -1812,14 +1792,14 @@ STR STR_L71, "  POINT'SIZE = "		; constante string="  POINT'SIZE = "
 STR STR_L72, " bits"			; constante string=" bits"
 	LCA	STR_L72.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-	LVa 1,	P1_disp
-	LVa 1,	FP_disp
+	LVA 1,	P1_disp
+	LVA 1,	FP_disp
 	CALL	STANDARD.SEQ_IO_TEST_L1.POINT_SIO. ,WRITE_L32
-	LVa 1,	P2_disp
-	LVa 1,	FP_disp
+	LVA 1,	P2_disp
+	LVA 1,	FP_disp
 	CALL	STANDARD.SEQ_IO_TEST_L1.POINT_SIO. ,WRITE_L32
-	LVa 1,	P3_disp
-	LVa 1,	FP_disp
+	LVA 1,	P3_disp
+	LVA 1,	FP_disp
 	CALL	STANDARD.SEQ_IO_TEST_L1.POINT_SIO. ,WRITE_L32
 	LVA  1,	FP_disp
 	CALL	STANDARD.SEQ_IO_TEST_L1.POINT_SIO. ,CLOSE_L23
@@ -1834,32 +1814,32 @@ STR STR_L75, "point_seq.dat"			; constante string="point_seq.dat"
 	LVA  1,	FP_disp
 	CALL	STANDARD.SEQ_IO_TEST_L1.POINT_SIO. ,OPEN_L22
 	LVA  1,	RP_disp
-	LVa 1,	FP_disp
+	LVA 1,	FP_disp
 	CALL	STANDARD.SEQ_IO_TEST_L1.POINT_SIO. ,READ_L31
 STR STR_L76, "  seq #1 = "			; constante string="  seq #1 = "
 	LCA	STR_L76.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
-	LVa 1,	RP_disp
+	LVA 1,	RP_disp
 	CALL	STANDARD.SEQ_IO_TEST_L1. ,PUT_POINT_L47
 	LI	1
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
 	LVA  1,	RP_disp
-	LVa 1,	FP_disp
+	LVA 1,	FP_disp
 	CALL	STANDARD.SEQ_IO_TEST_L1.POINT_SIO. ,READ_L31
 STR STR_L77, "  seq #2 = "			; constante string="  seq #2 = "
 	LCA	STR_L77.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
-	LVa 1,	RP_disp
+	LVA 1,	RP_disp
 	CALL	STANDARD.SEQ_IO_TEST_L1. ,PUT_POINT_L47
 	LI	1
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
 	LVA  1,	RP_disp
-	LVa 1,	FP_disp
+	LVA 1,	FP_disp
 	CALL	STANDARD.SEQ_IO_TEST_L1.POINT_SIO. ,READ_L31
 STR STR_L78, "  seq #3 = "			; constante string="  seq #3 = "
 	LCA	STR_L78.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
-	LVa 1,	RP_disp
+	LVA 1,	RP_disp
 	CALL	STANDARD.SEQ_IO_TEST_L1. ,PUT_POINT_L47
 	LI	1
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
@@ -1888,14 +1868,14 @@ STR STR_L83, "  VECTEUR'SIZE = "		; constante string="  VECTEUR'SIZE = "
 STR STR_L84, " bits"			; constante string=" bits"
 	LCA	STR_L84.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-	LVa 1,	V1_disp
-	LVa 1,	FV_disp
+	LVA 1,	V1_disp
+	LVA 1,	FV_disp
 	CALL	STANDARD.SEQ_IO_TEST_L1.VEC_SIO. ,WRITE_L45
-	LVa 1,	V2_disp
-	LVa 1,	FV_disp
+	LVA 1,	V2_disp
+	LVA 1,	FV_disp
 	CALL	STANDARD.SEQ_IO_TEST_L1.VEC_SIO. ,WRITE_L45
-	LVa 1,	V3_disp
-	LVa 1,	FV_disp
+	LVA 1,	V3_disp
+	LVA 1,	FV_disp
 	CALL	STANDARD.SEQ_IO_TEST_L1.VEC_SIO. ,WRITE_L45
 	LVA  1,	FV_disp
 	CALL	STANDARD.SEQ_IO_TEST_L1.VEC_SIO. ,CLOSE_L36
@@ -1910,32 +1890,32 @@ STR STR_L87, "vec_seq.dat"			; constante string="vec_seq.dat"
 	LVA  1,	FV_disp
 	CALL	STANDARD.SEQ_IO_TEST_L1.VEC_SIO. ,OPEN_L35
 	LVA  1,	RV_disp
-	LVa 1,	FV_disp
+	LVA 1,	FV_disp
 	CALL	STANDARD.SEQ_IO_TEST_L1.VEC_SIO. ,READ_L44
 STR STR_L88, "  seq #1 = "			; constante string="  seq #1 = "
 	LCA	STR_L88.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
-	LVa 1,	RV_disp
+	LVA 1,	RV_disp
 	CALL	STANDARD.SEQ_IO_TEST_L1. ,PUT_VEC_L52
 	LI	1
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
 	LVA  1,	RV_disp
-	LVa 1,	FV_disp
+	LVA 1,	FV_disp
 	CALL	STANDARD.SEQ_IO_TEST_L1.VEC_SIO. ,READ_L44
 STR STR_L89, "  seq #2 = "			; constante string="  seq #2 = "
 	LCA	STR_L89.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
-	LVa 1,	RV_disp
+	LVA 1,	RV_disp
 	CALL	STANDARD.SEQ_IO_TEST_L1. ,PUT_VEC_L52
 	LI	1
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
 	LVA  1,	RV_disp
-	LVa 1,	FV_disp
+	LVA 1,	FV_disp
 	CALL	STANDARD.SEQ_IO_TEST_L1.VEC_SIO. ,READ_L44
 STR STR_L90, "  seq #3 = "			; constante string="  seq #3 = "
 	LCA	STR_L90.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
-	LVa 1,	RV_disp
+	LVA 1,	RV_disp
 	CALL	STANDARD.SEQ_IO_TEST_L1. ,PUT_VEC_L52
 	LI	1
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
@@ -1959,7 +1939,7 @@ STR STR_L95, "  END_OF_FILE au debut = "	; constante string="  END_OF_FILE au de
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 					; debut if
 	LI	0					; lieu resultat sur pile
-	LVa 1,	FP_disp
+	LVA 1,	FP_disp
 	CALL	STANDARD.SEQ_IO_TEST_L1.POINT_SIO. ,END_OF_FILE_L33
 	BF	L97
 STR STR_L98, "TRUE (anormal)"			; constante string="TRUE (anormal)"
@@ -1981,13 +1961,13 @@ VAR IDX_disp, d				; variable entiere
 begin:					;---------- BDY INSTRUCTIONS
 LOOP__3:
 	LI	0					; lieu resultat sur pile
-	LVa 1,	STANDARD.SEQ_IO_TEST_L1.FP_disp
+	LVA 1,	STANDARD.SEQ_IO_TEST_L1.FP_disp
 	CALL	STANDARD.SEQ_IO_TEST_L1.POINT_SIO. ,END_OF_FILE_L33
 	LI	1
 	OUX
 	BF	L100
 	LVA  1,	RP_disp
-	LVa 1,	STANDARD.SEQ_IO_TEST_L1.FP_disp
+	LVA 1,	STANDARD.SEQ_IO_TEST_L1.FP_disp
 	CALL	STANDARD.SEQ_IO_TEST_L1.POINT_SIO. ,READ_L31
 STR STR_L101, "  element "			; constante string="  element "
 	LCA	STR_L101.data_ptr
@@ -1999,7 +1979,7 @@ STR STR_L101, "  element "			; constante string="  element "
 STR STR_L102, " = "				; constante string=" = "
 	LCA	STR_L102.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
-	LVa 1,	STANDARD.SEQ_IO_TEST_L1.RP_disp
+	LVA 1,	STANDARD.SEQ_IO_TEST_L1.RP_disp
 	CALL	STANDARD.SEQ_IO_TEST_L1. ,PUT_POINT_L47
 	LI	1
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
@@ -2016,7 +1996,7 @@ STR STR_L103, "  END_OF_FILE apres boucle = "	; constante string="  END_OF_FILE 
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 					; debut if
 	LI	0					; lieu resultat sur pile
-	LVa 1,	FP_disp
+	LVA 1,	FP_disp
 	CALL	STANDARD.SEQ_IO_TEST_L1.POINT_SIO. ,END_OF_FILE_L33
 	BF	L105
 STR STR_L106, "TRUE (correct)"		; constante string="TRUE (correct)"
@@ -2044,12 +2024,12 @@ STR STR_L111, "point_seq.dat"			; constante string="point_seq.dat"
 	LVA  1,	FP_disp
 	CALL	STANDARD.SEQ_IO_TEST_L1.POINT_SIO. ,OPEN_L22
 	LVA  1,	RP_disp
-	LVa 1,	FP_disp
+	LVA 1,	FP_disp
 	CALL	STANDARD.SEQ_IO_TEST_L1.POINT_SIO. ,READ_L31
 STR STR_L112, "  avant RESET, lu = "		; constante string="  avant RESET, lu = "
 	LCA	STR_L112.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
-	LVa 1,	RP_disp
+	LVA 1,	RP_disp
 	CALL	STANDARD.SEQ_IO_TEST_L1. ,PUT_POINT_L47
 	LI	1
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
@@ -2059,12 +2039,12 @@ STR STR_L113, "  RESET ok"			; constante string="  RESET ok"
 	LCA	STR_L113.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
 	LVA  1,	RP_disp
-	LVa 1,	FP_disp
+	LVA 1,	FP_disp
 	CALL	STANDARD.SEQ_IO_TEST_L1.POINT_SIO. ,READ_L31
 STR STR_L114, "  apres RESET, lu = "		; constante string="  apres RESET, lu = "
 	LCA	STR_L114.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
-	LVa 1,	RP_disp
+	LVA 1,	RP_disp
 	CALL	STANDARD.SEQ_IO_TEST_L1. ,PUT_POINT_L47
 	LI	1
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
@@ -2081,7 +2061,7 @@ STR STR_L117, "  FP IS_OPEN apres CLOSE = "	; constante string="  FP IS_OPEN apr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 					; debut if
 	LI	0					; lieu resultat sur pile
-	LVa 1,	FP_disp
+	LVA 1,	FP_disp
 	CALL	STANDARD.SEQ_IO_TEST_L1.POINT_SIO. ,IS_OPEN_L30
 	BF	L119
 STR STR_L120, "TRUE (anormal)"		; constante string="TRUE (anormal)"
@@ -2105,7 +2085,7 @@ STR STR_L124, "  FP IS_OPEN apres OPEN = "	; constante string="  FP IS_OPEN apre
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 					; debut if
 	LI	0					; lieu resultat sur pile
-	LVa 1,	FP_disp
+	LVA 1,	FP_disp
 	CALL	STANDARD.SEQ_IO_TEST_L1.POINT_SIO. ,IS_OPEN_L30
 	BF	L126
 STR STR_L127, "TRUE (correct)"		; constante string="TRUE (correct)"
@@ -2138,7 +2118,7 @@ ELB 2					;    BODY ELAB
 begin:					;---------- BDY INSTRUCTIONS
 					; debut if
 	LI	0					; lieu resultat sur pile
-	LVa 1,	STANDARD.SEQ_IO_TEST_L1.FC_disp
+	LVA 1,	STANDARD.SEQ_IO_TEST_L1.FC_disp
 	CALL	STANDARD.SEQ_IO_TEST_L1.CLR_SIO. ,MODE_L14
 	LI	 0
 	CEQ
@@ -2166,7 +2146,7 @@ STR STR_L139, "  MODE OUT_FILE = "		; constante string="  MODE OUT_FILE = "
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 					; debut if
 	LI	0					; lieu resultat sur pile
-	LVa 1,	STANDARD.SEQ_IO_TEST_L1.FC_disp
+	LVA 1,	STANDARD.SEQ_IO_TEST_L1.FC_disp
 	CALL	STANDARD.SEQ_IO_TEST_L1.CLR_SIO. ,MODE_L14
 	LI	 1
 	CEQ

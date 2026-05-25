@@ -266,7 +266,12 @@ is					-----
   begin
     -- Les flottants sont toujours en double IEEE	754 = 64 bits = qword
     if  DEFN.TY = DN_FLOAT  then return	'q'; end if;
-
+    if  SIZ <= 0  then PUT_LINE( "'; EXPANDER.UTILS.OPER_SIZ_CHAR SIZ = 0 ! "
+	& NODE_NAME'IMAGE( DEFN.TY )
+	& ' ' & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, DEFN ) ) )
+	);
+      raise  PROGRAM_ERROR;
+    end if;
     if	 SIZ <= 8		then return 'b';
     elsif	 SIZ <= 16	then return 'w';
     elsif	 SIZ <= 32	then return 'd';
@@ -351,7 +356,7 @@ is					-----
         declare
 	DEFN_LVL	: INTEGER		:= DI( CD_LEVEL, DEFN );
         begin
-	PUT( tab & "LVa " &	IMAGE( DEFN_LVL ) &	',' & tab	);
+	PUT( tab & "LVA " &	IMAGE( DEFN_LVL ) &	',' & tab	);
 	if  DEFN_LVL /= INTEGER( CUR_LEVEL )
 	or else	D( XD_REGION, DEFN ).TY = DN_PACKAGE_ID
 	then
@@ -368,9 +373,9 @@ is					-----
 	--========--
 
 
-			--=====--
+			--^^^^^--
   procedure		  STORE			( DEST_DEFN	:TREE )
-  is			--=====--
+  is			---------
     TYPE_SPEC	: TREE	:= D( SM_OBJ_TYPE, DEST_DEFN );
     SIZ_CHAR	: CHARACTER;
 
@@ -412,7 +417,7 @@ is					-----
 
 
 			--^--
-  function		  IMAGE			( I : NATURAL )	return STRING
+  function		IMAGE			( I : NATURAL )	return STRING
   is			-----
 
     STR	:constant	STRING	:= NATURAL'IMAGE( I	);
@@ -424,9 +429,9 @@ is					-----
 	--=====--
 
 
-			--============--
+			--^^^^^^^^^^^^--
   procedure		  REGIONS_PATH		( ID : TREE; WITH_DOT :BOOLEAN := TRUE )
-  is			--============--
+  is			----------------
 
     REGION	: TREE		:= D( XD_REGION, ID	);
     RGN_NAME	:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, REGION ) );

@@ -64,7 +64,7 @@ is			--------------
   RC   : COULEUR  := VERT;
   RP   : POINT    := ( X => 0, Y => 0, Z => 0 );
   RV   : VECTEUR  := ( 0, 0, 0, 0 );
-  TMP  : CLR_DIO.COUNT := 0;
+--  TMP  : CLR_DIO.COUNT := 0;
 
   --
   --  Helper : afficher un POINT
@@ -267,7 +267,7 @@ begin
   PUT_LINE( "=== 5. RESET et reecriture partielle (sur POINT) ===" );
   -- ---------------------------------------------------------------
 
-  -- Ouvrir en INOUT_FILE, reecrire element 2 et 4
+				-- Ouvrir en INOUT_FILE, reecrire element 2 et 4
   POINT_DIO.OPEN( FP, POINT_DIO.INOUT_FILE, "point_direct.dat" );
   PUT_LINE( "  open INOUT_FILE ok" );
 
@@ -276,12 +276,12 @@ begin
   begin
     PUT( "  P_NEW X (en bloc) = " ); PUT( P_NEW.X ); PUT( " Y=" ); PUT( P_NEW.Y ); PUT( " Z=" ); PUT( P_NEW.Z ); NEW_LINE;
 
---    POINT_DIO.WRITE( FP, P_NEW, 2 );
+    POINT_DIO.WRITE( FP, P_NEW, 2 );
     POINT_DIO.WRITE( FP, POINT'( X => 777, Y => 888, Z => 999 ), 2 );
     POINT_DIO.WRITE( FP, P_NEG, 4 );
   end;
 
-  -- RESET en IN_FILE pour relire
+				-- RESET en IN_FILE pour relire
   POINT_DIO.RESET( FP, POINT_DIO.IN_FILE );
   PUT_LINE( "  RESET IN_FILE ok" );
 
@@ -330,7 +330,7 @@ begin
   PUT_LINE( "=== 7. Boucle de lecture sequentielle avec END_OF_FILE ===" );
   -- ---------------------------------------------------------------
 
-  -- Relire le fichier VECTEUR en boucle
+				-- Relire le fichier VECTEUR en boucle
   VEC_DIO.OPEN( FV, VEC_DIO.IN_FILE, "vec_direct.dat" );
   PUT_LINE( "  parcours sequentiel vec_direct.dat :" );
 

@@ -1026,9 +1026,9 @@ macro			CALL?	prefix, subname			; CALL par offset
   dd ofs
   ofs = prefix#subname#_ - $
 end macro
-;			-------------------------
+;			---------------------------
 macro			CALLI?	; prefix, subname			; CALL indirect par RAX
-;			-------------------------
+;			---------------------------
 ;  postpone
 ;    if ~definite prefix#subname#_
 ;      prefix#subname#_ = prefix#subname#.elab				; le nom finissant en _ determine l'assemblage de	la routine
@@ -1038,9 +1038,10 @@ macro			CALLI?	; prefix, subname			; CALL indirect par RAX
   POP_RAX
   db 0xFF, 0xD0							; CALL RAX empile sur la micro-pile des adresses de retour (qui	croit vers le bas)
 end macro
-;			--------------------
-macro			RTD?	prm_size:0
-;			--------------------
+;			----------------------
+macro			RTD?	param_size:0
+;			----------------------
+  prm_size = param_size
   assert prm_size >= 0						; la taille de desallocation est donnee	positive
   if prm_size <> 0							; s'il y a une desallocation
     if prm_size < 128						; de petite taille
@@ -1094,7 +1095,6 @@ macro			UNLINK?	lvl				; DISPOSE	VARS LOCALES ET RESTORE FRAME	PTR
   FP_IN_RBP	lvl						; (throw locals)
   POP_RAX
   RAX_IN_FP	lvl						; (restore stored FP)
-
 			; Gerer la co-pile pour liberer les allocations de taille dynamique eventuelles
 
   db 0x4D, 0x8B, 0x6D, 0x00						; mov r13, [r13]

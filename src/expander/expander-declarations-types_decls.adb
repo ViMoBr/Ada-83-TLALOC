@@ -201,6 +201,11 @@ is
     TYPE_STR		:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, TYPE_ID ) );
     FIXED_SPEC		: TREE		:= D( SM_TYPE_SPEC,	TYPE_ID );
     SIZE_CHAR		: CHARACTER	:= OPER_SIZ_CHAR( FIXED_SPEC );
+    SMALL_VAL		: TREE		:= D( CD_IMPL_SMALL, FIXED_SPEC );
+    FIXED_RANGE		: TREE		:= D( SM_RANGE, FIXED_SPEC );
+    EXP_FST		: TREE		:= D( AS_EXP1, FIXED_RANGE );
+    EXP_LST		: TREE		:= D( AS_EXP2, FIXED_RANGE );
+    LVL_STR		:constant	STRING	:= IMAGE(	CODI.CUR_LEVEL );
 
   begin
     DI( CD_LEVEL,	  FIXED_SPEC, INTEGER( CODI.CUR_LEVEL )	);
@@ -212,13 +217,29 @@ is
     PUT_LINE( "namespace " & TYPE_STR );
 
     PUT_LINE( "VAR use__info, q" );
-    PUT_LINE( "CST SIZ, d," &	INTEGER'IMAGE( DI( CD_IMPL_SIZE, FIXED_SPEC ) ) );
-    PUT_LINE( tab &	"LCA" & tab & "SIZ" );
-    PUT_LINE( tab &	"Sa" & tab & IMAGE( CODI.CUR_LEVEL ) & ", use__info" );
+    PUT_LINE( "VAR SIZ, d" );
+    PUT_LINE( tab &	"LVA" & tab & LVL_STR & ", SIZ" );
+    PUT_LINE( tab &	"Sa" & tab & LVL_STR & ", use__info" );
 
-    PUT_LINE( "; load fixed limites FST LST a faire " );
-    PUT_LINE( "CST FST, " & SIZE_CHAR & ", 0" );
-    PUT_LINE( "CST LST, " & SIZE_CHAR & ", 0" );
+    PUT_LINE( tab &	"LI" & tab & IMAGE(	DI( CD_IMPL_SIZE, FIXED_SPEC ) ) );
+    PUT_LINE( tab &	"Sd" & tab & LVL_STR & ", SIZ" );
+
+    PUT_LINE( "VAR FST, " & SIZE_CHAR );
+    PUT_LINE( "VAR LST, " & SIZE_CHAR );
+
+    EXPRESSIONS.CODE_EXP( EXP_FST );
+    PUT_LINE( tab &	'S' & SIZE_CHAR & tab & LVL_STR & ", FST" );
+
+    EXPRESSIONS.CODE_EXP( EXP_LST );
+    PUT_LINE( tab &	'S' & SIZE_CHAR & tab & LVL_STR & ", LST" );
+
+    PUT_LINE( "VAR NUMER, d" );
+    PUT_LINE( "VAR DENOM, d" );
+
+    PUT_LINE( tab &	"LI" & tab & PRINT_NUM( D( XD_NUMER, SMALL_VAL ) ) );
+    PUT_LINE( tab &	"Sd" & tab & LVL_STR & ", NUMER" );
+    PUT_LINE( tab &	"LI" & tab & PRINT_NUM( D( XD_DENOM, SMALL_VAL ) ) );
+    PUT_LINE( tab &	"Sd" & tab & LVL_STR & ", DENOM" );
 
     PUT_LINE( "end namespace"	);
 

@@ -384,6 +384,52 @@ null;
 
 
 		---------------------
+      procedure	COMPILE_VC_NAME_FIXED	( VC_NAME	:TREE )
+      is		---------------------
+
+        OPER_TYPE		: CHARACTER;
+        INIT_EXP		: TREE		:= D( SM_INIT_EXP, VC_NAME );
+        IS_GENERIC_FORMAL	: BOOLEAN		:= FALSE;
+        VAR_NAME		:constant STRING	:= PRINT_NAME( D( LX_SYMREP, VC_NAME ) );
+      begin
+        if  not CODI.IN_GENERIC_BODY  then
+	OPER_TYPE := OPER_SIZ_CHAR( TYPE_SPEC );
+
+        elsif  EXPRESSIONS.IS_GENERIC_FORMAL_TYPE( D( XD_SOURCE_NAME, TYPE_SPEC ) ) then
+	IS_GENERIC_FORMAL := TRUE;
+	OPER_TYPE := 'q';										-- Place maximale, on ne sait pas quelle taille actuelle sera prise
+
+        else
+	OPER_TYPE := OPER_SIZ_CHAR( TYPE_SPEC );
+        end if;
+
+<<NORMALE>>
+       PUT( "VAR "	& VAR_NAME & "_disp, " & OPER_TYPE );
+       if  CODI.DEBUG  then PUT( tab50	& "; variable fixed" ); end	if;
+	NEW_LINE;
+	DI( CD_LEVEL,     VC_NAME, INTEGER( CODI.CUR_LEVEL ) );
+
+        if  INIT_EXP /= TREE_VOID  then
+	if  IS_GENERIC_FORMAL  then
+	  PUT_LINE( tab & "LVA" & LEVEL_NUM'IMAGE( CUR_LEVEL ) & ", " & VAR_NAME );
+	end if;
+
+	EXPRESSIONS.CODE_EXP( INIT_EXP );
+	if  not IS_GENERIC_FORMAL  then
+	  CODI.STORE( VC_NAME );
+
+	else											-- Acceder a variable de type instancie
+	  PUT_LINE( tab & "La " & LEVEL_NUM'IMAGE( GENERIC_BASE_LEVEL ) & ',' & tab & "-GFP_ofs" );
+	  PUT_LINE( tab & "La , -" & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, TYPE_SPEC ) ) )  & "__st_ofs" );
+	  PUT_LINE( tab & "CALLI" );
+	end if;
+        end if;
+
+      end	COMPILE_VC_NAME_FIXED;
+	---------------------
+
+
+		---------------------
       procedure	COMPILE_VC_NAME_FLOAT	( VC_NAME	:TREE )
       is		---------------------
 
@@ -710,7 +756,8 @@ if  INIT_EXP.TY = DN_AGGREGATE	then
       case TYPE_SPEC.TY is
       when DN_ENUMERATION		=> TYPE_SYMREP := D( XD_SOURCE_NAME, TYPE_SPEC );
 				   COMPILE_VC_NAME_ENUMERATION(	VC_NAME, TYPE_SPEC );
-      when DN_INTEGER | DN_FIXED	=> COMPILE_VC_NAME_INTEGER(		VC_NAME );
+      when DN_INTEGER		=> COMPILE_VC_NAME_INTEGER(		VC_NAME );
+      when DN_FIXED			=> COMPILE_VC_NAME_FIXED(		VC_NAME );
       when DN_FLOAT			=> COMPILE_VC_NAME_FLOAT(		VC_NAME );
       when DN_ACCESS		=> COMPILE_ACCESS_VAR(		VC_NAME, TYPE_SPEC );
       when DN_RECORD		=> COMPILE_RECORD_VAR(		VC_NAME, TYPE_SPEC );
@@ -961,7 +1008,8 @@ if  INIT_EXP.TY = DN_AGGREGATE	then
 		-- ST : pile = [@param_out, valeur] →	pile = []
 	      PUT_LINE(	"BRA post_ST_" & DEFN_STR );
 	      PUT_LINE(	"ST_" & DEFN_STR & ".elab:" );
-	      PUT_LINE(	tab & "SI" & SIZ_CHAR & " -1, 0" );
+--	      PUT_LINE(	tab & "SI" & SIZ_CHAR & " -1, 0" );
+	      PUT_LINE(	tab & "S" & SIZ_CHAR & " -1, 0" );
 	      PUT_LINE(	tab & "RTD 0" );
 	      PUT_LINE(	"post_ST_" & DEFN_STR & ":" );
 		-- ADR : pile = [@param_out, valeur] → pile = []
@@ -1161,12 +1209,9 @@ if  INIT_EXP.TY = DN_AGGREGATE	then
 
 	        if  (NAME.TY = DN_IN_ID) and (D( SM_OBJ_TYPE, NAME ).TY in CLASS_SCALAR)  then
 		-- in scalaire : passer par copie (valeur)
-
-put_line( "; scalaire in attention generique ou pas" );
-
---		PUT_LINE(	tab & "Lq" & tab & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL )
 		PUT_LINE(	tab & 'L' & OPER_SIZ_CHAR( D( SM_OBJ_TYPE, NAME ) ) & tab & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL )
 			& ", -" &	PRINT_NAME( D( LX_SYMREP, NAME ) ) & "_ofs" );
+
 	        else
 		-- in composite (record, array) ou out / in_out :	propager l'adresse
 		PUT_LINE(	tab & "La " & tab &	LEVEL_NUM'IMAGE( CODI.CUR_LEVEL )
@@ -1231,7 +1276,7 @@ put_line( "; scalaire in attention generique ou pas" );
 
 	PUT_LINE(	tab & "UNLINK" & tab & LEVEL_NUM'IMAGE(	CODI.CUR_LEVEL ) );
 	if  SOURCE_NAME.TY = DN_FUNCTION_ID  then
-	  PUT_LINE( tab & "RTD" & tab	& "(prm_siz-8)" );
+	  PUT_LINE( tab & "RTD" & tab	& "prm_siz-8" );
 	else
 	  PUT_LINE( tab & "RTD" & tab	& "prm_siz" );
 	end if;

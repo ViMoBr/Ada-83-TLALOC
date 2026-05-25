@@ -125,6 +125,7 @@ end	UTILS;
     procedure CODE_SELECTED		( SELECTED	:TREE; IS_SOURCE :BOOLEAN := TRUE; CONTEXT :TREE := TREE_VOID );
     procedure CODE_SLICE		( SLICE		:TREE; IS_DESTINATION :BOOLEAN := TRUE );
     procedure CODE_AGGREGATE		( AGGREGATE	:TREE );
+    function  IS_GENERIC_FORMAL_TYPE	( TYPE_DEFN	:TREE )		return BOOLEAN;
 
 
   private
@@ -151,7 +152,7 @@ end	UTILS;
     procedure CODE_RANGE_MEMBERSHIP	( RANGE_MEMBERSHIP	:TREE );
     procedure CODE_TYPE_MEMBERSHIP	( TYPE_MEMBERSHIP	:TREE );
 
-    procedure CODE_VC_ID		( CONSTANT_ID	:TREE );
+    procedure CODE_VC_ID		( VC_ID		:TREE );
 
 	-----------
   end	EXPRESSIONS;

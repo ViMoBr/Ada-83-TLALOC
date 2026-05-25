@@ -619,7 +619,20 @@ null;
 	    end if;
 
 	  elsif  DEFN.TY = DN_IN_ID  then								-- Appel avec un parametre entrant de la procedure englobante
+
+	    if  not CODI.IN_GENERIC_BODY  then
 	      LOAD_MEM( DEFN );
+	    elsif  EXPRESSIONS.IS_GENERIC_FORMAL_TYPE( D( XD_SOURCE_NAME, D( SM_OBJ_TYPE, DEFN ) ) )  then
+	      PUT_LINE( tab & "LVA " & IMAGE( DI( CD_LEVEL, DEFN ) ) & ','
+		    & tab & '-' & PRINT_NAME( D( LX_SYMREP, DEFN ) ) & "_ofs" );
+	      PUT_LINE( tab & "La" & LEVEL_NUM'IMAGE( CUR_LEVEL ) & ',' & tab & "-GFP_ofs" );
+	      PUT_LINE( tab & "La , -" & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, D( SM_OBJ_TYPE, DEFN ) ) ) )
+			& "__ld_ofs" );
+	      PUT_LINE( tab & "CALLI" );
+
+	    else
+	      LOAD_MEM( DEFN );
+	    end if;
 
 	  elsif  DEFN.TY = DN_OUT_ID  or  DEFN.TY = DN_IN_OUT_ID  then					-- Param out/in_out de la procedure englobante
 	    if  FRM_PRM_ID.TY = DN_IN_ID  then
@@ -1035,7 +1048,8 @@ null;
 	    -- ST fait SIb -1,0 : POP_RBX (valeur), INDIRECT_BASE_IN_RAX (deref @param → @dest), STORE
 	begin
 	  if  CODI.IN_GENERIC_BODY
-	  and then  ( DEFN.TY = DN_OUT_ID  or  DEFN.TY = DN_IN_OUT_ID )
+	  and then  ( DEFN.TY = DN_OUT_ID  or  DEFN.TY = DN_IN_OUT_ID
+			or  EXPRESSIONS.IS_GENERIC_FORMAL_TYPE( D( XD_SOURCE_NAME, NAME_TYPE ) ) )
 	  then
 	    declare
 	      FORMAL_TYPE_NAME :constant STRING := PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, NAME_TYPE ) ) );
@@ -1075,18 +1089,31 @@ null;
 
 	elsif  NAME_TYPE.TY = DN_ENUMERATION  then							-- OBJET ASSIGNE ENUMERATION (DONT BOOLEAN, CHARACTER)
 	  if  CODI.IN_GENERIC_BODY  and then  ( DEFN.TY = DN_OUT_ID  or  DEFN.TY = DN_IN_OUT_ID )  then
-	    PUT_LINE( tab & "LVa " & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' & tab & '-' & PRINT_NAME( D( LX_SYMREP, DEFN ) ) & "_ofs" );
+	    PUT_LINE( tab & "LVA " & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ','
+		    & tab & '-' & PRINT_NAME( D( LX_SYMREP, DEFN ) ) & "_ofs" );
+	    PUT_LINE( tab & "La" );
 	  end if;
 	  EXPRESSIONS.CODE_EXP( SRC_EXP );
 	  STORE_OR_CALLI;
 
-	elsif  NAME_TYPE.TY = DN_INTEGER  then								-- OBJET ASSIGNE ENTIER
-	  EXPRESSIONS.CODE_EXP( SRC_EXP );
-	  CODI.STORE( DEFN );
+	elsif  NAME_TYPE.TY = DN_INTEGER  or  NAME_TYPE.TY = DN_FIXED  or  NAME_TYPE.TY = DN_FLOAT  then		-- OBJET ASSIGNE SCALAIRE
 
-	elsif  NAME_TYPE.TY = DN_FLOAT  then								-- OBJET ASSIGNE FLOTTANT
+	  if  CODI.IN_GENERIC_BODY  then
+
+	    if  DEFN.TY = DN_OUT_ID  or  DEFN.TY = DN_IN_OUT_ID  then
+	      PUT_LINE( tab & "LVA " & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ','
+		    & tab & '-' & PRINT_NAME( D( LX_SYMREP, DEFN ) ) & "_ofs" );
+	      PUT_LINE( tab & "La" );
+
+	    elsif  EXPRESSIONS.IS_GENERIC_FORMAL_TYPE( D( XD_SOURCE_NAME, NAME_TYPE ) )  then
+	      PUT_LINE( tab & "LVA " & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ','
+		    & tab & PRINT_NAME( D( LX_SYMREP, DEFN ) ) & "_disp" );
+	    end if;
+
+	  end if;
+
 	  EXPRESSIONS.CODE_EXP( SRC_EXP );
-	  CODI.STORE( DEFN );
+	  STORE_OR_CALLI;
 
 	elsif  NAME_TYPE.TY = DN_RECORD  then								-- OBJET ASSIGNE RECORD
 	  CODI.LOAD_MEM( DEFN );									-- @variable (adresse du doublet @data @use__info)
@@ -1094,16 +1121,17 @@ null;
 
 	  PUT( tab & "LI" & tab );
 	  CODI.REGIONS_PATH( D( XD_SOURCE_NAME, NAME_TYPE ) );
-	  PUT_LINE( PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, NAME_TYPE ) ) ) & ".size" );	-- LEN (taille en octets, calculee par FASM)
+	  PUT_LINE( PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, NAME_TYPE ) ) ) & ".size" );			-- LEN (taille en octets, calculee par FASM)
 
 	  EXPRESSIONS.CODE_EXP( SRC_EXP );								-- @variable (adresse du doublet)
 	  PUT_LINE( tab & "La" );									-- @SRC (adresse des data)
 
 	  PUT_LINE( tab & "BLKMOV" );									-- COPY_BLOCK  @DST LEN @SRC
 
-	else										-- AUTRE TYPE SCALAIRE (type formel generique, etc.)
+	else											-- AUTRE TYPE SCALAIRE (type formel generique, etc.)
 	  if  CODI.IN_GENERIC_BODY  and then  ( DEFN.TY = DN_OUT_ID  or  DEFN.TY = DN_IN_OUT_ID )  then
 	    PUT_LINE( tab & "LVa " & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' & tab & '-' & PRINT_NAME( D( LX_SYMREP, DEFN ) ) & "_ofs" );
+	    PUT_LINE( tab & "La" );
 	  end if;
 	  EXPRESSIONS.CODE_EXP( SRC_EXP );
 	  STORE_OR_CALLI;

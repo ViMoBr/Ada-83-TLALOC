@@ -4,9 +4,6 @@ end if
 if ~ definite MACHINE_CODE
 include 'MACHINE_CODE.FINC'
 end if
-if ~ definite TEXT_IO
-include 'TEXT_IO.FINC'
-end if
 DIRECT_IO = 'DIRECT_IO'
 namespace DIRECT_IO
 					;---------- GENERIC PACKAGE BODY ----------
@@ -136,172 +133,6 @@ end virtual
 	Sd	0, SIZ
 end namespace
 					;    BODY ELAB
-INT_IO = 'INT_IO'
-namespace INT_IO				;---------- GENERIC PACKAGE INSTANTIATION
-elab_spec:				;    SPEC ELAB
-
-BRA post_LD_INTEGER
-LD_INTEGER.elab:
-	Ld -1, 0
-	RTD 0
-post_LD_INTEGER:
-BRA post_ST_INTEGER
-ST_INTEGER.elab:
-	SId -1, 0
-	RTD 0
-post_ST_INTEGER:
-BRA post_INADR_INTEGER
-INADR_INTEGER.elab:
-	RTD 0
-post_INADR_INTEGER:
-BRA post_OUTADR_INTEGER
-OUTADR_INTEGER.elab:
-	La
-	RTD 0
-post_OUTADR_INTEGER:
-VAR INTEGER__outadr_ofs, q
-	LCA OUTADR_INTEGER.elab
-	Sa	 0, INTEGER__outadr_ofs
-VAR INTEGER__inadr_ofs, q
-	LCA INADR_INTEGER.elab
-	Sa	 0, INTEGER__inadr_ofs
-VAR INTEGER__st_ofs, q
-	LCA ST_INTEGER.elab
-	Sa	 0, INTEGER__st_ofs
-VAR INTEGER__ld_ofs, q
-	LCA LD_INTEGER.elab
-	Sa	 0, INTEGER__ld_ofs
-VAR INTEGER__u_ofs, q
-	La	 0, STANDARD.INTEGER.use__info
-	Sa	 0, INTEGER__u_ofs
-VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
-if defined GET_L61_
-PRO	GET_L61				;---------- PRO GET
-PRMS					;    debut parametrage
-	PRM FILE_ofs				; in
-	PRM ITEM_ofs				; out
-	PRM WIDTH_ofs				; in
-	PRM GFP_ofs
-endPRMS					;    fin parametrage
-ELB 1
-begin:
-	LVA	 0, GFP_disp
-; scalaire in attention generique ou pas
-	Ld	 1, -WIDTH_ofs
-	La 	 1, -ITEM_ofs
-	La 	 1, -FILE_ofs
-	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,GET_L61
-	UNLINK	 1
-	RTD	prm_siz
-endPRO					;---------- end PRO GET
-end if
-if defined GET_L62_
-PRO	GET_L62				;---------- PRO GET
-PRMS					;    debut parametrage
-	PRM ITEM_ofs				; out
-	PRM WIDTH_ofs				; in
-	PRM GFP_ofs
-endPRMS					;    fin parametrage
-ELB 1
-begin:
-	LVA	 0, GFP_disp
-; scalaire in attention generique ou pas
-	Ld	 1, -WIDTH_ofs
-	La 	 1, -ITEM_ofs
-	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,GET_L62
-	UNLINK	 1
-	RTD	prm_siz
-endPRO					;---------- end PRO GET
-end if
-if defined PUT_L63_
-PRO	PUT_L63				;---------- PRO PUT
-PRMS					;    debut parametrage
-	PRM FILE_ofs				; in
-	PRM ITEM_ofs				; in
-	PRM WIDTH_ofs				; in
-	PRM BASE_ofs				; in
-	PRM GFP_ofs
-endPRMS					;    fin parametrage
-ELB 1
-begin:
-	LVA	 0, GFP_disp
-; scalaire in attention generique ou pas
-	Ld	 1, -BASE_ofs
-; scalaire in attention generique ou pas
-	Ld	 1, -WIDTH_ofs
-; scalaire in attention generique ou pas
-	Ld	 1, -ITEM_ofs
-	La 	 1, -FILE_ofs
-	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,PUT_L63
-	UNLINK	 1
-	RTD	prm_siz
-endPRO					;---------- end PRO PUT
-end if
-if defined PUT_L64_
-PRO	PUT_L64				;---------- PRO PUT
-PRMS					;    debut parametrage
-	PRM ITEM_ofs				; in
-	PRM WIDTH_ofs				; in
-	PRM BASE_ofs				; in
-	PRM GFP_ofs
-endPRMS					;    fin parametrage
-ELB 1
-begin:
-	LVA	 0, GFP_disp
-; scalaire in attention generique ou pas
-	Ld	 1, -BASE_ofs
-; scalaire in attention generique ou pas
-	Ld	 1, -WIDTH_ofs
-; scalaire in attention generique ou pas
-	Ld	 1, -ITEM_ofs
-	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,PUT_L64
-	UNLINK	 1
-	RTD	prm_siz
-endPRO					;---------- end PRO PUT
-end if
-if defined GET_L65_
-PRO	GET_L65				;---------- PRO GET
-PRMS					;    debut parametrage
-	PRM FROM_ofs				; in
-	PRM ITEM_ofs				; out
-	PRM LAST_ofs				; out
-	PRM GFP_ofs
-endPRMS					;    fin parametrage
-ELB 1
-begin:
-	LVA	 0, GFP_disp
-	La 	 1, -LAST_ofs
-	La 	 1, -ITEM_ofs
-	La 	 1, -FROM_ofs
-	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,GET_L65
-	UNLINK	 1
-	RTD	prm_siz
-endPRO					;---------- end PRO GET
-end if
-if defined PUT_L66_
-PRO	PUT_L66				;---------- PRO PUT
-PRMS					;    debut parametrage
-	PRM TO_ofs				; out
-	PRM ITEM_ofs				; in
-	PRM BASE_ofs				; in
-	PRM GFP_ofs
-endPRMS					;    fin parametrage
-ELB 1
-begin:
-	LVA	 0, GFP_disp
-; scalaire in attention generique ou pas
-	Ld	 1, -BASE_ofs
-; scalaire in attention generique ou pas
-	Ld	 1, -ITEM_ofs
-	La 	 1, -TO_ofs
-	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,PUT_L66
-	UNLINK	 1
-	RTD	prm_siz
-endPRO					;---------- end PRO PUT
-end if
-					;---------- end generic package instantiation INT_IO
-end namespace
-
 
 if defined CREATE_L1_
 PRO	CREATE_L1				;---------- PRO CREATE
@@ -316,8 +147,8 @@ ELB 1					;    BODY ELAB
 VAR ERR_OR_ID_disp, d			; variable entiere
 
 
-if defined CREATE_SYSTEM_CALL_L7_
-PRO	CREATE_SYSTEM_CALL_L7			;---------- PRO CREATE_SYSTEM_CALL
+if defined CREATE_SYSTEM_CALL_L1_
+PRO	CREATE_SYSTEM_CALL_L1			;---------- PRO CREATE_SYSTEM_CALL
 PRMS					;    debut parametrage
 	PRM NAME_ofs				; in
 	PRM GFP_ofs
@@ -331,7 +162,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	SD 2 ,	-24
 ret_lbl:
 	UNLINK 2
-	RTD	(prm_siz-8)
+	RTD	prm_siz-8
 excep:
 endPRO					;---------- end PRO CREATE_SYSTEM_CALL
 end if
@@ -340,13 +171,13 @@ begin:					;---------- BDY INSTRUCTIONS
 	LI	0					; lieu resultat sur pile
 	La  1,	-GFP_ofs				; propagation GFP generique
 	La  1,	-NAME_ofs
-	CALL	STANDARD.DIRECT_IO.CREATE_L1. ,CREATE_SYSTEM_CALL_L7
+	CALL	STANDARD.DIRECT_IO.CREATE_L1. ,CREATE_SYSTEM_CALL_L1
 	Sd  1,	ERR_OR_ID_disp
 					; debut if
 	Ld 1,	ERR_OR_ID_disp
 	LI	0
 	CGE
-	BF	L9
+	BF	L3
 	La 1, -FILE_ofs
 	LIVa 	, 0, STANDARD.DIRECT_IO.FILE_TYPE.ID
 	Ld 1,	ERR_OR_ID_disp
@@ -396,12 +227,12 @@ begin:					;---------- BDY INSTRUCTIONS
 	LIVa 	, 0, STANDARD.DIRECT_IO.FILE_TYPE.AT_END_OF_FILE
 	LI	0
 	Sb
-	BRA	L8
-L9:
-L8:					; post if
+	BRA	L2
+L3:
+L2:					; post if
 ret_lbl:
 	UNLINK 1
-	RTD	(prm_siz)
+	RTD	prm_siz
 excep:
 endPRO					;---------- end PRO CREATE
 end if
@@ -419,8 +250,8 @@ ELB 1					;    BODY ELAB
 VAR ERR_OR_ID_disp, d			; variable entiere
 
 
-if defined OPEN_SYSTEM_CALL_L10_
-PRO	OPEN_SYSTEM_CALL_L10			;---------- PRO OPEN_SYSTEM_CALL
+if defined OPEN_SYSTEM_CALL_L4_
+PRO	OPEN_SYSTEM_CALL_L4			;---------- PRO OPEN_SYSTEM_CALL
 PRMS					;    debut parametrage
 	PRM NAME_ofs				; in
 	PRM GFP_ofs
@@ -434,7 +265,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	SD 2 ,	-24
 ret_lbl:
 	UNLINK 2
-	RTD	(prm_siz-8)
+	RTD	prm_siz-8
 excep:
 endPRO					;---------- end PRO OPEN_SYSTEM_CALL
 end if
@@ -443,13 +274,13 @@ begin:					;---------- BDY INSTRUCTIONS
 	LI	0					; lieu resultat sur pile
 	La  1,	-GFP_ofs				; propagation GFP generique
 	La  1,	-NAME_ofs
-	CALL	STANDARD.DIRECT_IO.OPEN_L2. ,OPEN_SYSTEM_CALL_L10
+	CALL	STANDARD.DIRECT_IO.OPEN_L2. ,OPEN_SYSTEM_CALL_L4
 	Sd  1,	ERR_OR_ID_disp
 					; debut if
 	Ld 1,	ERR_OR_ID_disp
 	LI	0
 	CGE
-	BF	L12
+	BF	L6
 	La 1, -FILE_ofs
 	LIVa 	, 0, STANDARD.DIRECT_IO.FILE_TYPE.ID
 	Ld 1,	ERR_OR_ID_disp
@@ -499,12 +330,12 @@ begin:					;---------- BDY INSTRUCTIONS
 	LIVa 	, 0, STANDARD.DIRECT_IO.FILE_TYPE.AT_END_OF_FILE
 	LI	0
 	Sb
-	BRA	L11
-L12:
-L11:					; post if
+	BRA	L5
+L6:
+L5:					; post if
 ret_lbl:
 	UNLINK 1
-	RTD	(prm_siz)
+	RTD	prm_siz
 excep:
 endPRO					;---------- end PRO OPEN
 end if
@@ -519,8 +350,8 @@ ELB 1					;    BODY ELAB
 VAR ERR_CODE_disp, d			; variable entiere
 
 
-if defined CLOSE_SYSTEM_CALL_L13_
-PRO	CLOSE_SYSTEM_CALL_L13			;---------- PRO CLOSE_SYSTEM_CALL
+if defined CLOSE_SYSTEM_CALL_L7_
+PRO	CLOSE_SYSTEM_CALL_L7			;---------- PRO CLOSE_SYSTEM_CALL
 PRMS					;    debut parametrage
 	PRM FILE_ID_ofs				; in
 	PRM GFP_ofs
@@ -534,7 +365,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	SD 2 ,	-24
 ret_lbl:
 	UNLINK 2
-	RTD	(prm_siz-8)
+	RTD	prm_siz-8
 excep:
 endPRO					;---------- end PRO CLOSE_SYSTEM_CALL
 end if
@@ -544,7 +375,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	La  1,	-GFP_ofs				; propagation GFP generique
 	La 1, -FILE_ofs
 	LId	, 0, STANDARD.DIRECT_IO.FILE_TYPE.ID
-	CALL	STANDARD.DIRECT_IO.CLOSE_L3. ,CLOSE_SYSTEM_CALL_L13
+	CALL	STANDARD.DIRECT_IO.CLOSE_L3. ,CLOSE_SYSTEM_CALL_L7
 	Sd  1,	ERR_CODE_disp
 	La 1, -FILE_ofs
 	LIVa 	, 0, STANDARD.DIRECT_IO.FILE_TYPE.ID
@@ -557,7 +388,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	Sb
 ret_lbl:
 	UNLINK 1
-	RTD	(prm_siz)
+	RTD	prm_siz
 excep:
 endPRO					;---------- end PRO CLOSE
 end if
@@ -572,8 +403,8 @@ ELB 1					;    BODY ELAB
 VAR ERR_CODE_disp, d			; variable entiere
 
 
-if defined DELETE_SYSTEM_CALL_L14_
-PRO	DELETE_SYSTEM_CALL_L14			;---------- PRO DELETE_SYSTEM_CALL
+if defined DELETE_SYSTEM_CALL_L8_
+PRO	DELETE_SYSTEM_CALL_L8			;---------- PRO DELETE_SYSTEM_CALL
 PRMS					;    debut parametrage
 	PRM NAME_ofs				; in
 	PRM GFP_ofs
@@ -587,7 +418,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	SD 2 ,	-24
 ret_lbl:
 	UNLINK 2
-	RTD	(prm_siz-8)
+	RTD	prm_siz-8
 excep:
 endPRO					;---------- end PRO DELETE_SYSTEM_CALL
 end if
@@ -597,16 +428,16 @@ begin:					;---------- BDY INSTRUCTIONS
 	La  1,	-GFP_ofs				; propagation GFP generique
 	La 1, -FILE_ofs
 	LIVa 	, 0, STANDARD.DIRECT_IO.FILE_TYPE.NAME
-namespace ANON_131_37			; ensemble doublet @data/@info pour slice anonyme source
-VAR ANON_131_37_disp, q
-VAR ANON_131_37__u, q
+namespace ANON_128_37			; ensemble doublet @data/@info pour slice anonyme source
+VAR ANON_128_37_disp, q
+VAR ANON_128_37__u, q
 VAR SIZ, d
 VAR COMP_SIZ, d
 VAR FST_1, d
 VAR LST_1, d
-	Sa	1, ANON_131_37_disp
+	Sa	1, ANON_128_37_disp
 	LVA	1, SIZ
-	Sa	1, ANON_131_37__u
+	Sa	1, ANON_128_37__u
 	LI	8
 	Sd	1, COMP_SIZ
 	LI	1
@@ -621,9 +452,9 @@ VAR LST_1, d
 	LI	8
 	MUL
 	Sd	1, SIZ
-	LVA	1, ANON_131_37_disp
+	LVA	1, ANON_128_37_disp
 end namespace
-	CALL	STANDARD.DIRECT_IO.DELETE_L4. ,DELETE_SYSTEM_CALL_L14
+	CALL	STANDARD.DIRECT_IO.DELETE_L4. ,DELETE_SYSTEM_CALL_L8
 	Sd  1,	ERR_CODE_disp
 	La 1, -FILE_ofs
 	LIVa 	, 0, STANDARD.DIRECT_IO.FILE_TYPE.IS_OPENED
@@ -631,7 +462,7 @@ end namespace
 	Sb
 ret_lbl:
 	UNLINK 1
-	RTD	(prm_siz)
+	RTD	prm_siz
 excep:
 endPRO					;---------- end PRO DELETE
 end if
@@ -647,8 +478,8 @@ ELB 1					;    BODY ELAB
 VAR ERR_CODE_disp, d			; variable entiere
 
 
-if defined SEEK_SYSTEM_CALL_L15_
-PRO	SEEK_SYSTEM_CALL_L15			;---------- PRO SEEK_SYSTEM_CALL
+if defined SEEK_SYSTEM_CALL_L9_
+PRO	SEEK_SYSTEM_CALL_L9			;---------- PRO SEEK_SYSTEM_CALL
 PRMS					;    debut parametrage
 	PRM FILE_ID_ofs				; in
 	PRM GFP_ofs
@@ -663,7 +494,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	SD 2 ,	-24
 ret_lbl:
 	UNLINK 2
-	RTD	(prm_siz-8)
+	RTD	prm_siz-8
 excep:
 endPRO					;---------- end PRO SEEK_SYSTEM_CALL
 end if
@@ -674,15 +505,15 @@ begin:					;---------- BDY INSTRUCTIONS
 	LIb	, 0, STANDARD.DIRECT_IO.FILE_TYPE.IS_OPENED
 	LI	0
 	CEQ
-	BF	L17
-	BRA	L16
-L17:
-L16:					; post if
+	BF	L11
+	BRA	L10
+L11:
+L10:					; post if
 	LI	0					; lieu resultat sur pile
 	La  1,	-GFP_ofs				; propagation GFP generique
 	La 1, -FILE_ofs
 	LId	, 0, STANDARD.DIRECT_IO.FILE_TYPE.ID
-	CALL	STANDARD.DIRECT_IO.RESET_L5. ,SEEK_SYSTEM_CALL_L15
+	CALL	STANDARD.DIRECT_IO.RESET_L5. ,SEEK_SYSTEM_CALL_L9
 	Sd  1,	ERR_CODE_disp
 	La 1, -FILE_ofs
 	LIVa 	, 0, STANDARD.DIRECT_IO.FILE_TYPE.MODE
@@ -698,7 +529,7 @@ L16:					; post if
 	Sb
 ret_lbl:
 	UNLINK 1
-	RTD	(prm_siz)
+	RTD	prm_siz
 excep:
 endPRO					;---------- end PRO RESET
 end if
@@ -717,10 +548,10 @@ begin:					;---------- BDY INSTRUCTIONS
 	LIb	, 0, STANDARD.DIRECT_IO.FILE_TYPE.IS_OPENED
 	LI	0
 	CEQ
-	BF	L19
-	BRA	L18
-L19:
-L18:					; post if
+	BF	L13
+	BRA	L12
+L13:
+L12:					; post if
 	La  1,	-GFP_ofs				; propagation GFP generique
 	La 1, -FILE_ofs
 	LIb	, 0, STANDARD.DIRECT_IO.FILE_TYPE.MODE
@@ -728,7 +559,7 @@ L18:					; post if
 	CALL	STANDARD.DIRECT_IO. ,RESET_L5
 ret_lbl:
 	UNLINK 1
-	RTD	(prm_siz)
+	RTD	prm_siz
 excep:
 endPRO					;---------- end PRO RESET
 end if
@@ -748,17 +579,17 @@ begin:					;---------- BDY INSTRUCTIONS
 	LIb	, 0, STANDARD.DIRECT_IO.FILE_TYPE.IS_OPENED
 	LI	0
 	CEQ
-	BF	L21
-	BRA	L20
-L21:
-L20:					; post if
+	BF	L15
+	BRA	L14
+L15:
+L14:					; post if
 	La 1, -FILE_ofs
 	LIb	, 0, STANDARD.DIRECT_IO.FILE_TYPE.MODE
 	Sb  1,	-result__ofs
 	BRA ret_lbl
 ret_lbl:
 	UNLINK 1
-	RTD	(prm_siz-8)
+	RTD	prm_siz-8
 excep:
 endPRO					;---------- end PRO MODE
 end if
@@ -778,10 +609,10 @@ begin:					;---------- BDY INSTRUCTIONS
 	LIb	, 0, STANDARD.DIRECT_IO.FILE_TYPE.IS_OPENED
 	LI	0
 	CEQ
-	BF	L23
-	BRA	L22
-L23:
-L22:					; post if
+	BF	L17
+	BRA	L16
+L17:
+L16:					; post if
 	La 1, -FILE_ofs
 	LIVa 	, 0, STANDARD.DIRECT_IO.FILE_TYPE.NAME
 	La 1, -FILE_ofs
@@ -795,7 +626,7 @@ L22:					; post if
 	BRA ret_lbl
 ret_lbl:
 	UNLINK 1
-	RTD	(prm_siz-8)
+	RTD	prm_siz-8
 excep:
 endPRO					;---------- end PRO NAME
 end if
@@ -815,14 +646,14 @@ begin:					;---------- BDY INSTRUCTIONS
 	LIb	, 0, STANDARD.DIRECT_IO.FILE_TYPE.IS_OPENED
 	LI	0
 	CEQ
-	BF	L25
-	BRA	L24
-L25:
-L24:					; post if
+	BF	L19
+	BRA	L18
+L19:
+L18:					; post if
 	BRA ret_lbl
 ret_lbl:
 	UNLINK 1
-	RTD	(prm_siz-8)
+	RTD	prm_siz-8
 excep:
 endPRO					;---------- end PRO FORM
 end if
@@ -843,7 +674,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	BRA ret_lbl
 ret_lbl:
 	UNLINK 1
-	RTD	(prm_siz-8)
+	RTD	prm_siz-8
 excep:
 endPRO					;---------- end PRO IS_OPEN
 end if
@@ -869,8 +700,8 @@ VAR SIZE_BYTES_disp, d			; variable entiere
 VAR DUMMY_disp, d				; variable entiere
 
 
-if defined SEEK_SYSTEM_CALL_L26_
-PRO	SEEK_SYSTEM_CALL_L26			;---------- PRO SEEK_SYSTEM_CALL
+if defined SEEK_SYSTEM_CALL_L20_
+PRO	SEEK_SYSTEM_CALL_L20			;---------- PRO SEEK_SYSTEM_CALL
 PRMS					;    debut parametrage
 	PRM FILE_ID_ofs				; in
 	PRM OFFSET_ofs				; in
@@ -886,13 +717,13 @@ begin:					;---------- BDY INSTRUCTIONS
 	SD 2 ,	-32
 ret_lbl:
 	UNLINK 2
-	RTD	(prm_siz-8)
+	RTD	prm_siz-8
 excep:
 endPRO					;---------- end PRO SEEK_SYSTEM_CALL
 end if
 
-if defined READ_SYSTEM_CALL_L27_
-PRO	READ_SYSTEM_CALL_L27			;---------- PRO READ_SYSTEM_CALL
+if defined READ_SYSTEM_CALL_L21_
+PRO	READ_SYSTEM_CALL_L21			;---------- PRO READ_SYSTEM_CALL
 PRMS					;    debut parametrage
 	PRM FILE_ID_ofs				; in
 	PRM LENGTH_ofs				; in
@@ -910,7 +741,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	SD 2 ,	-32
 ret_lbl:
 	UNLINK 2
-	RTD	(prm_siz-8)
+	RTD	prm_siz-8
 excep:
 endPRO					;---------- end PRO READ_SYSTEM_CALL
 end if
@@ -921,27 +752,27 @@ begin:					;---------- BDY INSTRUCTIONS
 	LIb	, 0, STANDARD.DIRECT_IO.FILE_TYPE.IS_OPENED
 	LI	0
 	CEQ
-	BF	L29
-	BRA	L28
-L29:
-L28:					; post if
+	BF	L23
+	BRA	L22
+L23:
+L22:					; post if
 					; debut if
 	La 1, -FILE_ofs
 	LIb	, 0, STANDARD.DIRECT_IO.FILE_TYPE.MODE
 	LI	2
 	CEQ
-	BF	L31
-	BRA	L30
-L31:
-L30:					; post if
+	BF	L25
+	BRA	L24
+L25:
+L24:					; post if
 					; debut if
 	Ld  1,	-FROM_ofs
 	LI	0
 	CLE
-	BF	L33
-	BRA	L32
-L33:
-L32:					; post if
+	BF	L27
+	BRA	L26
+L27:
+L26:					; post if
 	LI	0					; lieu resultat sur pile
 	La  1,	-GFP_ofs				; propagation GFP generique
 	Ld  1,	-FROM_ofs
@@ -951,7 +782,7 @@ L32:					; post if
 	MUL
 	La 1, -FILE_ofs
 	LId	, 0, STANDARD.DIRECT_IO.FILE_TYPE.ID
-	CALL	STANDARD.DIRECT_IO.READ_L11. ,SEEK_SYSTEM_CALL_L26
+	CALL	STANDARD.DIRECT_IO.READ_L11. ,SEEK_SYSTEM_CALL_L20
 	Sd  1,	DUMMY_disp
 	LI	0					; lieu resultat sur pile
 	La  1,	-GFP_ofs				; propagation GFP generique
@@ -962,19 +793,19 @@ L32:					; post if
 	Ld 1,	SIZE_BYTES_disp
 	La 1, -FILE_ofs
 	LId	, 0, STANDARD.DIRECT_IO.FILE_TYPE.ID
-	CALL	STANDARD.DIRECT_IO.READ_L11. ,READ_SYSTEM_CALL_L27
+	CALL	STANDARD.DIRECT_IO.READ_L11. ,READ_SYSTEM_CALL_L21
 	Sd  1,	BYTES_READ_disp
 					; debut if
 	Ld 1,	BYTES_READ_disp
 	Ld 1,	SIZE_BYTES_disp
 	CLT
-	BF	L35
-	BRA	L34
-L35:
-L34:					; post if
+	BF	L29
+	BRA	L28
+L29:
+L28:					; post if
 ret_lbl:
 	UNLINK 1
-	RTD	(prm_siz)
+	RTD	prm_siz
 excep:
 endPRO					;---------- end PRO READ
 end if
@@ -997,8 +828,8 @@ VAR SIZE_BYTES_disp, d			; variable entiere
 	Sd  1,	SIZE_BYTES_disp
 
 
-if defined READ_SYSTEM_CALL_L36_
-PRO	READ_SYSTEM_CALL_L36			;---------- PRO READ_SYSTEM_CALL
+if defined READ_SYSTEM_CALL_L30_
+PRO	READ_SYSTEM_CALL_L30			;---------- PRO READ_SYSTEM_CALL
 PRMS					;    debut parametrage
 	PRM FILE_ID_ofs				; in
 	PRM LENGTH_ofs				; in
@@ -1016,7 +847,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	SD 2 ,	-32
 ret_lbl:
 	UNLINK 2
-	RTD	(prm_siz-8)
+	RTD	prm_siz-8
 excep:
 endPRO					;---------- end PRO READ_SYSTEM_CALL
 end if
@@ -1027,19 +858,19 @@ begin:					;---------- BDY INSTRUCTIONS
 	LIb	, 0, STANDARD.DIRECT_IO.FILE_TYPE.IS_OPENED
 	LI	0
 	CEQ
-	BF	L38
-	BRA	L37
-L38:
-L37:					; post if
+	BF	L32
+	BRA	L31
+L32:
+L31:					; post if
 					; debut if
 	La 1, -FILE_ofs
 	LIb	, 0, STANDARD.DIRECT_IO.FILE_TYPE.MODE
 	LI	2
 	CEQ
-	BF	L40
-	BRA	L39
-L40:
-L39:					; post if
+	BF	L34
+	BRA	L33
+L34:
+L33:					; post if
 	LI	0					; lieu resultat sur pile
 	La  1,	-GFP_ofs				; propagation GFP generique
 	LVa	1, -ITEM_ofs
@@ -1049,19 +880,19 @@ L39:					; post if
 	Ld 1,	SIZE_BYTES_disp
 	La 1, -FILE_ofs
 	LId	, 0, STANDARD.DIRECT_IO.FILE_TYPE.ID
-	CALL	STANDARD.DIRECT_IO.READ_L12. ,READ_SYSTEM_CALL_L36
+	CALL	STANDARD.DIRECT_IO.READ_L12. ,READ_SYSTEM_CALL_L30
 	Sd  1,	BYTES_READ_disp
 					; debut if
 	Ld 1,	BYTES_READ_disp
 	Ld 1,	SIZE_BYTES_disp
 	CLT
-	BF	L42
-	BRA	L41
-L42:
-L41:					; post if
+	BF	L36
+	BRA	L35
+L36:
+L35:					; post if
 ret_lbl:
 	UNLINK 1
-	RTD	(prm_siz)
+	RTD	prm_siz
 excep:
 endPRO					;---------- end PRO READ
 end if
@@ -1087,8 +918,8 @@ VAR SIZE_BYTES_disp, d			; variable entiere
 VAR DUMMY_disp, d				; variable entiere
 
 
-if defined SEEK_SYSTEM_CALL_L43_
-PRO	SEEK_SYSTEM_CALL_L43			;---------- PRO SEEK_SYSTEM_CALL
+if defined SEEK_SYSTEM_CALL_L37_
+PRO	SEEK_SYSTEM_CALL_L37			;---------- PRO SEEK_SYSTEM_CALL
 PRMS					;    debut parametrage
 	PRM FILE_ID_ofs				; in
 	PRM OFFSET_ofs				; in
@@ -1104,13 +935,13 @@ begin:					;---------- BDY INSTRUCTIONS
 	SD 2 ,	-32
 ret_lbl:
 	UNLINK 2
-	RTD	(prm_siz-8)
+	RTD	prm_siz-8
 excep:
 endPRO					;---------- end PRO SEEK_SYSTEM_CALL
 end if
 
-if defined WRITE_SYSTEM_CALL_L44_
-PRO	WRITE_SYSTEM_CALL_L44			;---------- PRO WRITE_SYSTEM_CALL
+if defined WRITE_SYSTEM_CALL_L38_
+PRO	WRITE_SYSTEM_CALL_L38			;---------- PRO WRITE_SYSTEM_CALL
 PRMS					;    debut parametrage
 	PRM FILE_ID_ofs				; in
 	PRM LENGTH_ofs				; in
@@ -1128,7 +959,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	SD 2 ,	-32
 ret_lbl:
 	UNLINK 2
-	RTD	(prm_siz-8)
+	RTD	prm_siz-8
 excep:
 endPRO					;---------- end PRO WRITE_SYSTEM_CALL
 end if
@@ -1139,27 +970,27 @@ begin:					;---------- BDY INSTRUCTIONS
 	LIb	, 0, STANDARD.DIRECT_IO.FILE_TYPE.IS_OPENED
 	LI	0
 	CEQ
-	BF	L46
-	BRA	L45
-L46:
-L45:					; post if
+	BF	L40
+	BRA	L39
+L40:
+L39:					; post if
 					; debut if
 	La 1, -FILE_ofs
 	LIb	, 0, STANDARD.DIRECT_IO.FILE_TYPE.MODE
 	LI	0
 	CEQ
-	BF	L48
-	BRA	L47
-L48:
-L47:					; post if
+	BF	L42
+	BRA	L41
+L42:
+L41:					; post if
 					; debut if
 	Ld  1,	-TO_ofs
 	LI	0
 	CLE
-	BF	L50
-	BRA	L49
-L50:
-L49:					; post if
+	BF	L44
+	BRA	L43
+L44:
+L43:					; post if
 	LI	0					; lieu resultat sur pile
 	La  1,	-GFP_ofs				; propagation GFP generique
 	Ld  1,	-TO_ofs
@@ -1169,7 +1000,7 @@ L49:					; post if
 	MUL
 	La 1, -FILE_ofs
 	LId	, 0, STANDARD.DIRECT_IO.FILE_TYPE.ID
-	CALL	STANDARD.DIRECT_IO.WRITE_L13. ,SEEK_SYSTEM_CALL_L43
+	CALL	STANDARD.DIRECT_IO.WRITE_L13. ,SEEK_SYSTEM_CALL_L37
 	Sd  1,	DUMMY_disp
 	LI	0					; lieu resultat sur pile
 	La  1,	-GFP_ofs				; propagation GFP generique
@@ -1180,11 +1011,11 @@ L49:					; post if
 	Ld 1,	SIZE_BYTES_disp
 	La 1, -FILE_ofs
 	LId	, 0, STANDARD.DIRECT_IO.FILE_TYPE.ID
-	CALL	STANDARD.DIRECT_IO.WRITE_L13. ,WRITE_SYSTEM_CALL_L44
+	CALL	STANDARD.DIRECT_IO.WRITE_L13. ,WRITE_SYSTEM_CALL_L38
 	Sd  1,	ERR_CODE_disp
 ret_lbl:
 	UNLINK 1
-	RTD	(prm_siz)
+	RTD	prm_siz
 excep:
 endPRO					;---------- end PRO WRITE
 end if
@@ -1207,8 +1038,8 @@ VAR SIZE_BYTES_disp, d			; variable entiere
 	Sd  1,	SIZE_BYTES_disp
 
 
-if defined WRITE_SYSTEM_CALL_L51_
-PRO	WRITE_SYSTEM_CALL_L51			;---------- PRO WRITE_SYSTEM_CALL
+if defined WRITE_SYSTEM_CALL_L45_
+PRO	WRITE_SYSTEM_CALL_L45			;---------- PRO WRITE_SYSTEM_CALL
 PRMS					;    debut parametrage
 	PRM FILE_ID_ofs				; in
 	PRM LENGTH_ofs				; in
@@ -1226,7 +1057,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	SD 2 ,	-32
 ret_lbl:
 	UNLINK 2
-	RTD	(prm_siz-8)
+	RTD	prm_siz-8
 excep:
 endPRO					;---------- end PRO WRITE_SYSTEM_CALL
 end if
@@ -1237,19 +1068,19 @@ begin:					;---------- BDY INSTRUCTIONS
 	LIb	, 0, STANDARD.DIRECT_IO.FILE_TYPE.IS_OPENED
 	LI	0
 	CEQ
-	BF	L53
-	BRA	L52
-L53:
-L52:					; post if
+	BF	L47
+	BRA	L46
+L47:
+L46:					; post if
 					; debut if
 	La 1, -FILE_ofs
 	LIb	, 0, STANDARD.DIRECT_IO.FILE_TYPE.MODE
 	LI	0
 	CEQ
-	BF	L55
-	BRA	L54
-L55:
-L54:					; post if
+	BF	L49
+	BRA	L48
+L49:
+L48:					; post if
 	LI	0					; lieu resultat sur pile
 	La  1,	-GFP_ofs				; propagation GFP generique
 	LVa	1, -ITEM_ofs
@@ -1259,11 +1090,11 @@ L54:					; post if
 	Ld 1,	SIZE_BYTES_disp
 	La 1, -FILE_ofs
 	LId	, 0, STANDARD.DIRECT_IO.FILE_TYPE.ID
-	CALL	STANDARD.DIRECT_IO.WRITE_L14. ,WRITE_SYSTEM_CALL_L51
+	CALL	STANDARD.DIRECT_IO.WRITE_L14. ,WRITE_SYSTEM_CALL_L45
 	Sd  1,	ERR_CODE_disp
 ret_lbl:
 	UNLINK 1
-	RTD	(prm_siz)
+	RTD	prm_siz
 excep:
 endPRO					;---------- end PRO WRITE
 end if
@@ -1286,8 +1117,8 @@ VAR SIZE_BYTES_disp, d			; variable entiere
 	Sd  1,	SIZE_BYTES_disp
 
 
-if defined SEEK_SYSTEM_CALL_L56_
-PRO	SEEK_SYSTEM_CALL_L56			;---------- PRO SEEK_SYSTEM_CALL
+if defined SEEK_SYSTEM_CALL_L50_
+PRO	SEEK_SYSTEM_CALL_L50			;---------- PRO SEEK_SYSTEM_CALL
 PRMS					;    debut parametrage
 	PRM FILE_ID_ofs				; in
 	PRM OFFSET_ofs				; in
@@ -1303,7 +1134,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	SD 2 ,	-32
 ret_lbl:
 	UNLINK 2
-	RTD	(prm_siz-8)
+	RTD	prm_siz-8
 excep:
 endPRO					;---------- end PRO SEEK_SYSTEM_CALL
 end if
@@ -1314,18 +1145,18 @@ begin:					;---------- BDY INSTRUCTIONS
 	LIb	, 0, STANDARD.DIRECT_IO.FILE_TYPE.IS_OPENED
 	LI	0
 	CEQ
-	BF	L58
-	BRA	L57
-L58:
-L57:					; post if
+	BF	L52
+	BRA	L51
+L52:
+L51:					; post if
 					; debut if
 	Ld  1,	-TO_ofs
 	LI	0
 	CLE
-	BF	L60
-	BRA	L59
-L60:
-L59:					; post if
+	BF	L54
+	BRA	L53
+L54:
+L53:					; post if
 	LI	0					; lieu resultat sur pile
 	La  1,	-GFP_ofs				; propagation GFP generique
 	Ld  1,	-TO_ofs
@@ -1335,11 +1166,11 @@ L59:					; post if
 	MUL
 	La 1, -FILE_ofs
 	LId	, 0, STANDARD.DIRECT_IO.FILE_TYPE.ID
-	CALL	STANDARD.DIRECT_IO.SET_INDEX_L15. ,SEEK_SYSTEM_CALL_L56
+	CALL	STANDARD.DIRECT_IO.SET_INDEX_L15. ,SEEK_SYSTEM_CALL_L50
 	Sd  1,	ERR_CODE_disp
 ret_lbl:
 	UNLINK 1
-	RTD	(prm_siz)
+	RTD	prm_siz
 excep:
 endPRO					;---------- end PRO SET_INDEX
 end if
@@ -1362,8 +1193,8 @@ VAR SIZE_BYTES_disp, d			; variable entiere
 	Sd  1,	SIZE_BYTES_disp
 
 
-if defined GET_POS_SYSTEM_CALL_L61_
-PRO	GET_POS_SYSTEM_CALL_L61			;---------- PRO GET_POS_SYSTEM_CALL
+if defined GET_POS_SYSTEM_CALL_L55_
+PRO	GET_POS_SYSTEM_CALL_L55			;---------- PRO GET_POS_SYSTEM_CALL
 PRMS					;    debut parametrage
 	PRM FILE_ID_ofs				; in
 	PRM GFP_ofs
@@ -1377,7 +1208,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	SD 2 ,	-24
 ret_lbl:
 	UNLINK 2
-	RTD	(prm_siz-8)
+	RTD	prm_siz-8
 excep:
 endPRO					;---------- end PRO GET_POS_SYSTEM_CALL
 end if
@@ -1388,15 +1219,15 @@ begin:					;---------- BDY INSTRUCTIONS
 	LIb	, 0, STANDARD.DIRECT_IO.FILE_TYPE.IS_OPENED
 	LI	0
 	CEQ
-	BF	L63
-	BRA	L62
-L63:
-L62:					; post if
+	BF	L57
+	BRA	L56
+L57:
+L56:					; post if
 	LI	0					; lieu resultat sur pile
 	La  1,	-GFP_ofs				; propagation GFP generique
 	La 1, -FILE_ofs
 	LId	, 0, STANDARD.DIRECT_IO.FILE_TYPE.ID
-	CALL	STANDARD.DIRECT_IO.INDEX_L16. ,GET_POS_SYSTEM_CALL_L61
+	CALL	STANDARD.DIRECT_IO.INDEX_L16. ,GET_POS_SYSTEM_CALL_L55
 	Sd  1,	BYTES_disp
 	Ld 1,	BYTES_disp
 	Ld 1,	SIZE_BYTES_disp
@@ -1407,7 +1238,7 @@ L62:					; post if
 	BRA ret_lbl
 ret_lbl:
 	UNLINK 1
-	RTD	(prm_siz-8)
+	RTD	prm_siz-8
 excep:
 endPRO					;---------- end PRO INDEX
 end if
@@ -1430,8 +1261,8 @@ VAR SIZE_BYTES_disp, d			; variable entiere
 	Sd  1,	SIZE_BYTES_disp
 
 
-if defined GET_SIZE_SYSTEM_CALL_L64_
-PRO	GET_SIZE_SYSTEM_CALL_L64			;---------- PRO GET_SIZE_SYSTEM_CALL
+if defined GET_SIZE_SYSTEM_CALL_L58_
+PRO	GET_SIZE_SYSTEM_CALL_L58			;---------- PRO GET_SIZE_SYSTEM_CALL
 PRMS					;    debut parametrage
 	PRM FILE_ID_ofs				; in
 	PRM GFP_ofs
@@ -1445,7 +1276,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	SD 2 ,	-24
 ret_lbl:
 	UNLINK 2
-	RTD	(prm_siz-8)
+	RTD	prm_siz-8
 excep:
 endPRO					;---------- end PRO GET_SIZE_SYSTEM_CALL
 end if
@@ -1456,15 +1287,15 @@ begin:					;---------- BDY INSTRUCTIONS
 	LIb	, 0, STANDARD.DIRECT_IO.FILE_TYPE.IS_OPENED
 	LI	0
 	CEQ
-	BF	L66
-	BRA	L65
-L66:
-L65:					; post if
+	BF	L60
+	BRA	L59
+L60:
+L59:					; post if
 	LI	0					; lieu resultat sur pile
 	La  1,	-GFP_ofs				; propagation GFP generique
 	La 1, -FILE_ofs
 	LId	, 0, STANDARD.DIRECT_IO.FILE_TYPE.ID
-	CALL	STANDARD.DIRECT_IO.SIZE_L17. ,GET_SIZE_SYSTEM_CALL_L64
+	CALL	STANDARD.DIRECT_IO.SIZE_L17. ,GET_SIZE_SYSTEM_CALL_L58
 	Sd  1,	BYTES_disp
 	Ld 1,	BYTES_disp
 	Ld 1,	SIZE_BYTES_disp
@@ -1473,7 +1304,7 @@ L65:					; post if
 	BRA ret_lbl
 ret_lbl:
 	UNLINK 1
-	RTD	(prm_siz-8)
+	RTD	prm_siz-8
 excep:
 endPRO					;---------- end PRO SIZE
 end if
@@ -1491,8 +1322,8 @@ VAR POS_BYTES_disp, d			; variable entiere
 VAR SIZ_BYTES_disp, d			; variable entiere
 
 
-if defined GET_POS_SYSTEM_CALL_L67_
-PRO	GET_POS_SYSTEM_CALL_L67			;---------- PRO GET_POS_SYSTEM_CALL
+if defined GET_POS_SYSTEM_CALL_L61_
+PRO	GET_POS_SYSTEM_CALL_L61			;---------- PRO GET_POS_SYSTEM_CALL
 PRMS					;    debut parametrage
 	PRM FILE_ID_ofs				; in
 	PRM GFP_ofs
@@ -1506,13 +1337,13 @@ begin:					;---------- BDY INSTRUCTIONS
 	SD 2 ,	-24
 ret_lbl:
 	UNLINK 2
-	RTD	(prm_siz-8)
+	RTD	prm_siz-8
 excep:
 endPRO					;---------- end PRO GET_POS_SYSTEM_CALL
 end if
 
-if defined GET_SIZE_SYSTEM_CALL_L68_
-PRO	GET_SIZE_SYSTEM_CALL_L68			;---------- PRO GET_SIZE_SYSTEM_CALL
+if defined GET_SIZE_SYSTEM_CALL_L62_
+PRO	GET_SIZE_SYSTEM_CALL_L62			;---------- PRO GET_SIZE_SYSTEM_CALL
 PRMS					;    debut parametrage
 	PRM FILE_ID_ofs				; in
 	PRM GFP_ofs
@@ -1526,7 +1357,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	SD 2 ,	-24
 ret_lbl:
 	UNLINK 2
-	RTD	(prm_siz-8)
+	RTD	prm_siz-8
 excep:
 endPRO					;---------- end PRO GET_SIZE_SYSTEM_CALL
 end if
@@ -1537,30 +1368,30 @@ begin:					;---------- BDY INSTRUCTIONS
 	LIb	, 0, STANDARD.DIRECT_IO.FILE_TYPE.IS_OPENED
 	LI	0
 	CEQ
-	BF	L70
-	BRA	L69
-L70:
-L69:					; post if
+	BF	L64
+	BRA	L63
+L64:
+L63:					; post if
 					; debut if
 	La 1, -FILE_ofs
 	LIb	, 0, STANDARD.DIRECT_IO.FILE_TYPE.MODE
 	LI	2
 	CEQ
-	BF	L72
-	BRA	L71
-L72:
-L71:					; post if
+	BF	L66
+	BRA	L65
+L66:
+L65:					; post if
 	LI	0					; lieu resultat sur pile
 	La  1,	-GFP_ofs				; propagation GFP generique
 	La 1, -FILE_ofs
 	LId	, 0, STANDARD.DIRECT_IO.FILE_TYPE.ID
-	CALL	STANDARD.DIRECT_IO.END_OF_FILE_L18. ,GET_POS_SYSTEM_CALL_L67
+	CALL	STANDARD.DIRECT_IO.END_OF_FILE_L18. ,GET_POS_SYSTEM_CALL_L61
 	Sd  1,	POS_BYTES_disp
 	LI	0					; lieu resultat sur pile
 	La  1,	-GFP_ofs				; propagation GFP generique
 	La 1, -FILE_ofs
 	LId	, 0, STANDARD.DIRECT_IO.FILE_TYPE.ID
-	CALL	STANDARD.DIRECT_IO.END_OF_FILE_L18. ,GET_SIZE_SYSTEM_CALL_L68
+	CALL	STANDARD.DIRECT_IO.END_OF_FILE_L18. ,GET_SIZE_SYSTEM_CALL_L62
 	Sd  1,	SIZ_BYTES_disp
 	Ld 1,	POS_BYTES_disp
 	Ld 1,	SIZ_BYTES_disp
@@ -1569,7 +1400,7 @@ L71:					; post if
 	BRA ret_lbl
 ret_lbl:
 	UNLINK 1
-	RTD	(prm_siz-8)
+	RTD	prm_siz-8
 excep:
 endPRO					;---------- end PRO END_OF_FILE
 end if
