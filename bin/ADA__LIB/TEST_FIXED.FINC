@@ -1,0 +1,438 @@
+if ~ definite TEXT_IO
+include 'TEXT_IO.FINC'
+end if
+PRO	TEST_FIXED_L1				;---------- PRO TEST_FIXED
+ELB 1					;    BODY ELAB
+
+					; DURAT_ION FIXED TYPE INFO
+DURAT_ION = 'DURAT_ION'
+namespace DURAT_ION
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+	LI	64
+	Sd	1, SIZ
+VAR FST, q
+VAR LST, q
+	LIF	2.0
+; CODE_NUMERIC_LITERAL NUM_LIT_TYPE.TY DN_UNIVERSAL_REAL
+	CVTFI
+	LI	34
+	FEXP
+	NEG
+	Sq	1, FST
+	LIF	2.0
+; CODE_NUMERIC_LITERAL NUM_LIT_TYPE.TY DN_UNIVERSAL_REAL
+	CVTFI
+	LI	34
+	FEXP
+	LIF	1.0
+; CODE_NUMERIC_LITERAL NUM_LIT_TYPE.TY DN_UNIVERSAL_REAL
+	CVTFI
+	SUB
+	Sq	1, LST
+VAR NUMER, d
+VAR DENOM, d
+	LI	 1
+	Sd	1, NUMER
+	LI	001073741824
+	Sd	1, DENOM
+end namespace
+
+					; SUPPLY_POWER FIXED TYPE INFO
+SUPPLY_POWER = 'SUPPLY_POWER'
+namespace SUPPLY_POWER
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+	LI	64
+	Sd	1, SIZ
+VAR FST, q
+VAR LST, q
+	LIF	50.0
+; CODE_NUMERIC_LITERAL NUM_LIT_TYPE.TY DN_UNIVERSAL_REAL
+	CVTFI
+	NEG
+	Sq	1, FST
+	LIF	70.0
+; CODE_NUMERIC_LITERAL NUM_LIT_TYPE.TY DN_UNIVERSAL_REAL
+	CVTFI
+	Sq	1, LST
+VAR NUMER, d
+VAR DENOM, d
+	LI	 1
+	Sd	1, NUMER
+	LI	 16
+	Sd	1, DENOM
+end namespace
+INT_IO = 'INT_IO'
+namespace INT_IO				;---------- GENERIC PACKAGE INSTANTIATION
+elab_spec:				;    SPEC ELAB
+
+BRA post_LD_INTEGER
+LD_INTEGER.elab:
+	Ld -1, 0
+	RTD 0
+post_LD_INTEGER:
+BRA post_ST_INTEGER
+ST_INTEGER.elab:
+	Sd -1, 0
+	RTD 0
+post_ST_INTEGER:
+BRA post_INADR_INTEGER
+INADR_INTEGER.elab:
+	RTD 0
+post_INADR_INTEGER:
+BRA post_OUTADR_INTEGER
+OUTADR_INTEGER.elab:
+	La
+	RTD 0
+post_OUTADR_INTEGER:
+VAR INTEGER__outadr_ofs, q
+	LCA OUTADR_INTEGER.elab
+	Sa	 1, INTEGER__outadr_ofs
+VAR INTEGER__inadr_ofs, q
+	LCA INADR_INTEGER.elab
+	Sa	 1, INTEGER__inadr_ofs
+VAR INTEGER__st_ofs, q
+	LCA ST_INTEGER.elab
+	Sa	 1, INTEGER__st_ofs
+VAR INTEGER__ld_ofs, q
+	LCA LD_INTEGER.elab
+	Sa	 1, INTEGER__ld_ofs
+VAR INTEGER__u_ofs, q
+	La	 0, STANDARD.INTEGER.use__info
+	Sa	 1, INTEGER__u_ofs
+VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
+VAR DEFAULT_WIDTH_disp, d			; variable entiere
+	LI	 11
+	Sd  1,	DEFAULT_WIDTH_disp
+
+VAR DEFAULT_BASE_disp, d			; variable entiere
+	LI	10
+	Sd  1,	DEFAULT_BASE_disp
+
+if defined GET_L2_
+PRO	GET_L2				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM ITEM_ofs				; out
+	PRM WIDTH_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Ld	 2, -WIDTH_ofs
+	La 	 2, -ITEM_ofs
+	La 	 2, -FILE_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,GET_L61
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO GET
+end if
+if defined GET_L3_
+PRO	GET_L3				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM ITEM_ofs				; out
+	PRM WIDTH_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Ld	 2, -WIDTH_ofs
+	La 	 2, -ITEM_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,GET_L62
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO GET
+end if
+if defined PUT_L4_
+PRO	PUT_L4				;---------- PRO PUT
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM ITEM_ofs				; in
+	PRM WIDTH_ofs				; in
+	PRM BASE_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Ld	 2, -BASE_ofs
+	Ld	 2, -WIDTH_ofs
+	Ld	 2, -ITEM_ofs
+	La 	 2, -FILE_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,PUT_L63
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO PUT
+end if
+if defined PUT_L5_
+PRO	PUT_L5				;---------- PRO PUT
+PRMS					;    debut parametrage
+	PRM ITEM_ofs				; in
+	PRM WIDTH_ofs				; in
+	PRM BASE_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Ld	 2, -BASE_ofs
+	Ld	 2, -WIDTH_ofs
+	Ld	 2, -ITEM_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,PUT_L64
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO PUT
+end if
+if defined GET_L6_
+PRO	GET_L6				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM FROM_ofs				; in
+	PRM ITEM_ofs				; out
+	PRM LAST_ofs				; out
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	La 	 2, -LAST_ofs
+	La 	 2, -ITEM_ofs
+	La 	 2, -FROM_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,GET_L65
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO GET
+end if
+if defined PUT_L7_
+PRO	PUT_L7				;---------- PRO PUT
+PRMS					;    debut parametrage
+	PRM TO_ofs				; out
+	PRM ITEM_ofs				; in
+	PRM BASE_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Ld	 2, -BASE_ofs
+	Ld	 2, -ITEM_ofs
+	La 	 2, -TO_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,PUT_L66
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO PUT
+end if
+					;---------- end generic package instantiation INT_IO
+end namespace
+
+POWER_IO = 'POWER_IO'
+namespace POWER_IO				;---------- GENERIC PACKAGE INSTANTIATION
+elab_spec:				;    SPEC ELAB
+
+BRA post_LD_SUPPLY_POWER
+LD_SUPPLY_POWER.elab:
+	Lq -1, 0
+	RTD 0
+post_LD_SUPPLY_POWER:
+BRA post_ST_SUPPLY_POWER
+ST_SUPPLY_POWER.elab:
+	Sq -1, 0
+	RTD 0
+post_ST_SUPPLY_POWER:
+BRA post_INADR_SUPPLY_POWER
+INADR_SUPPLY_POWER.elab:
+	RTD 0
+post_INADR_SUPPLY_POWER:
+BRA post_OUTADR_SUPPLY_POWER
+OUTADR_SUPPLY_POWER.elab:
+	La
+	RTD 0
+post_OUTADR_SUPPLY_POWER:
+VAR SUPPLY_POWER__outadr_ofs, q
+	LCA OUTADR_SUPPLY_POWER.elab
+	Sa	 1, SUPPLY_POWER__outadr_ofs
+VAR SUPPLY_POWER__inadr_ofs, q
+	LCA INADR_SUPPLY_POWER.elab
+	Sa	 1, SUPPLY_POWER__inadr_ofs
+VAR SUPPLY_POWER__st_ofs, q
+	LCA ST_SUPPLY_POWER.elab
+	Sa	 1, SUPPLY_POWER__st_ofs
+VAR SUPPLY_POWER__ld_ofs, q
+	LCA LD_SUPPLY_POWER.elab
+	Sa	 1, SUPPLY_POWER__ld_ofs
+VAR SUPPLY_POWER__u_ofs, q
+	La	 1, STANDARD.TEST_FIXED_L1.SUPPLY_POWER.use__info
+	Sa	 1, SUPPLY_POWER__u_ofs
+VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
+VAR DEFAULT_FORE_disp, d			; variable entiere
+	LI	1
+	Sd  1,	DEFAULT_FORE_disp
+
+VAR DEFAULT_AFT_disp, d			; variable entiere
+	LI	3
+	Sd  1,	DEFAULT_AFT_disp
+
+VAR DEFAULT_EXP_disp, d			; variable entiere
+	LI	0
+	Sd  1,	DEFAULT_EXP_disp
+
+if defined GET_L8_
+PRO	GET_L8				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM ITEM_ofs				; out
+	PRM WIDTH_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Ld	 2, -WIDTH_ofs
+	La 	 2, -ITEM_ofs
+	La 	 2, -FILE_ofs
+	CALL	STANDARD.TEXT_IO.FIXED_IO. ,GET_L73
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO GET
+end if
+if defined GET_L9_
+PRO	GET_L9				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM ITEM_ofs				; out
+	PRM WIDTH_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Ld	 2, -WIDTH_ofs
+	La 	 2, -ITEM_ofs
+	CALL	STANDARD.TEXT_IO.FIXED_IO. ,GET_L74
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO GET
+end if
+if defined PUT_L10_
+PRO	PUT_L10				;---------- PRO PUT
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM ITEM_ofs				; in
+	PRM FORE_ofs				; in
+	PRM AFT_ofs				; in
+	PRM EXP_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Ld	 2, -EXP_ofs
+	Ld	 2, -AFT_ofs
+	Ld	 2, -FORE_ofs
+	Lq	 2, -ITEM_ofs
+	La 	 2, -FILE_ofs
+	CALL	STANDARD.TEXT_IO.FIXED_IO. ,PUT_L75
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO PUT
+end if
+if defined PUT_L11_
+PRO	PUT_L11				;---------- PRO PUT
+PRMS					;    debut parametrage
+	PRM ITEM_ofs				; in
+	PRM FORE_ofs				; in
+	PRM AFT_ofs				; in
+	PRM EXP_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Ld	 2, -EXP_ofs
+	Ld	 2, -AFT_ofs
+	Ld	 2, -FORE_ofs
+	Lq	 2, -ITEM_ofs
+	CALL	STANDARD.TEXT_IO.FIXED_IO. ,PUT_L76
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO PUT
+end if
+if defined GET_L12_
+PRO	GET_L12				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM FROM_ofs				; in
+	PRM ITEM_ofs				; out
+	PRM LAST_ofs				; out
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	La 	 2, -LAST_ofs
+	La 	 2, -ITEM_ofs
+	La 	 2, -FROM_ofs
+	CALL	STANDARD.TEXT_IO.FIXED_IO. ,GET_L77
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO GET
+end if
+if defined PUT_L13_
+PRO	PUT_L13				;---------- PRO PUT
+PRMS					;    debut parametrage
+	PRM TO_ofs				; out
+	PRM ITEM_ofs				; in
+	PRM AFT_ofs				; in
+	PRM EXP_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Ld	 2, -EXP_ofs
+	Ld	 2, -AFT_ofs
+	Lq	 2, -ITEM_ofs
+	La 	 2, -TO_ofs
+	CALL	STANDARD.TEXT_IO.FIXED_IO. ,PUT_L78
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO PUT
+end if
+					;---------- end generic package instantiation POWER_IO
+end namespace
+
+VAR P_disp, q				; variable fixed
+	LIF	15.5
+; CODE_NUMERIC_LITERAL NUM_LIT_TYPE.TY DN_FIXED
+	LI	 16
+	CVTIF
+	FMUL
+	CVTFI
+	Sq  1,	P_disp
+
+VAR ENT_P_disp, d				; variable entiere
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	Lq 1,	P_disp
+	LI	 8
+	ADD
+	LI	 4
+	SAR
+	Sd  1,	ENT_P_disp
+STR STR_L14, "ENT_P = "			; constante string="ENT_P = "
+	LCA	STR_L14.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	Ld 1,	STANDARD.TEST_FIXED_L1.INT_IO.DEFAULT_BASE_disp
+	Ld 1,	STANDARD.TEST_FIXED_L1.INT_IO.DEFAULT_WIDTH_disp
+	Ld 1,	ENT_P_disp
+	CALL	STANDARD.TEST_FIXED_L1.INT_IO. ,PUT_L5
+	LI	1
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
+STR STR_L15, "P = "				; constante string="P = "
+	LCA	STR_L15.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	Ld 1,	STANDARD.TEST_FIXED_L1.POWER_IO.DEFAULT_EXP_disp
+	Ld 1,	STANDARD.TEST_FIXED_L1.POWER_IO.DEFAULT_AFT_disp
+	Ld 1,	STANDARD.TEST_FIXED_L1.POWER_IO.DEFAULT_FORE_disp
+	Lq 1,	P_disp
+	CALL	STANDARD.TEST_FIXED_L1.POWER_IO. ,PUT_L11
+	LI	1
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
+ret_lbl:
+	UNLINK 1
+	RTD
+excep:
+endPRO					;---------- end PRO TEST_FIXED

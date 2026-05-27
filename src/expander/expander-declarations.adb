@@ -411,15 +411,19 @@ null;
 
         if  INIT_EXP /= TREE_VOID  then
 	if  IS_GENERIC_FORMAL  then
-	  PUT_LINE( tab & "LVA" & LEVEL_NUM'IMAGE( CUR_LEVEL ) & ", " & VAR_NAME );
+	  PUT_LINE( tab & "LVA " & IMAGE( CUR_LEVEL ) & ", " & VAR_NAME & "_disp" );
 	end if;
 
 	EXPRESSIONS.CODE_EXP( INIT_EXP );
+	if  D( SM_EXP_TYPE, INIT_EXP ).TY = DN_FIXED  then
+null;
+	end if;
+
 	if  not IS_GENERIC_FORMAL  then
 	  CODI.STORE( VC_NAME );
 
 	else											-- Acceder a variable de type instancie
-	  PUT_LINE( tab & "La " & LEVEL_NUM'IMAGE( GENERIC_BASE_LEVEL ) & ',' & tab & "-GFP_ofs" );
+	  PUT_LINE( tab & "La " & IMAGE( GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );
 	  PUT_LINE( tab & "La , -" & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, TYPE_SPEC ) ) )  & "__st_ofs" );
 	  PUT_LINE( tab & "CALLI" );
 	end if;

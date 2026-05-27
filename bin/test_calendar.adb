@@ -8,7 +8,7 @@ is		-------------
   package INT_IO	is new INTEGER_IO( INTEGER );
   package DUR_IO	is new FIXED_IO( DURATION );
 
-  T	: TIME;
+  T, T1	: TIME;
   Y	: YEAR_NUMBER;
   M	: MONTH_NUMBER;
   D	: DAY_NUMBER;
@@ -25,6 +25,10 @@ begin
   PUT( " JOUR " ); INT_IO.PUT( D ); NEW_LINE;
   S := SECONDS( T );
   PUT( " SECONDES " ); DUR_IO.PUT( S ); NEW_LINE;
+
+--  T1 := CALENDAR.CLOCK;
+--  PUT( "DELTA " ); DUR_IO.PUT( T1 - T ); NEW_LINE;
+
 
 --  SPLIT( T, Y, M, D, S );
 

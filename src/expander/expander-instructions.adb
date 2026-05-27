@@ -626,7 +626,7 @@ null;
 	      PUT_LINE( tab & "LVA " & IMAGE( DI( CD_LEVEL, DEFN ) ) & ','
 		    & tab & '-' & PRINT_NAME( D( LX_SYMREP, DEFN ) ) & "_ofs" );
 	      PUT_LINE( tab & "La" & LEVEL_NUM'IMAGE( CUR_LEVEL ) & ',' & tab & "-GFP_ofs" );
-	      PUT_LINE( tab & "La , -" & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, D( SM_OBJ_TYPE, DEFN ) ) ) )
+	      PUT_LINE( tab & "La ," & tab & '-' & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, D( SM_OBJ_TYPE, DEFN ) ) ) )
 			& "__ld_ofs" );
 	      PUT_LINE( tab & "CALLI" );
 
@@ -727,7 +727,7 @@ null;
 
   begin
     if  IS_IN_CURRENT_GENERIC( PROC_ID )  then
-      PUT( tab & "La " & INTEGER'IMAGE( CODI.CUR_LEVEL ) & ',' & tab & "-GFP_ofs" );
+      PUT( tab & "La " & INTEGER'IMAGE( CODI.GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );
       if  CODI.DEBUG  then PUT( tab50 & "; propagation GFP generique" ); end if;
       NEW_LINE;
     end if;
@@ -779,8 +779,8 @@ null;
   is
   begin
     declare
-      EXP		: TREE	:= D( AS_EXP, ADA_RETURN );
-      BLOCK_BODY	: TREE		:= D( AS_BODY, CODI.ENCLOSING_BODY );
+      EXP			: TREE		:= D( AS_EXP, ADA_RETURN );
+      BLOCK_BODY		: TREE		:= D( AS_BODY, CODI.ENCLOSING_BODY );
       ENCLOSING_LEVEL	: INTEGER		:= DI( CD_LEVEL, BLOCK_BODY );
     begin
       if  EXP /= TREE_VOID  then
@@ -789,15 +789,20 @@ null;
         declare
           EXPR_TYPE		: TREE		:= D ( SM_EXP_TYPE, EXP );
         begin
-          if  EXPR_TYPE.TY = DN_ARRAY  then
-            EXPRESSIONS.CODE_EXP( EXP );
-            PUT_LINE( tab & "Sa " & INTEGER'IMAGE( CODI.CUR_LEVEL ) & ',' & tab & "-result__ofs" );
-          elsif  EXPR_TYPE.TY = DN_ENUM_LITERAL_S  then
-            EXPRESSIONS.CODE_EXP( EXP );
 
-	elsif  EXPR_TYPE.TY = DN_INTEGER  then
+put_line( "; CODE_RETURN : EXPR TYPE = " & NODE_NAME'IMAGE( EXPR_TYPE.TY ) );
+
+	if  EXPR_TYPE.TY in CLASS_SCALAR  then
 	  EXPRESSIONS.CODE_EXP( EXP );
 	  PUT_LINE( tab & "S" & CODI.EXP_TYPE_CHAR( EXP ) & ' ' & INTEGER'IMAGE( CODI.CUR_LEVEL ) & ',' & tab & "-result__ofs" );
+
+          elsif  EXPR_TYPE.TY = DN_ARRAY  then
+            EXPRESSIONS.CODE_EXP( EXP );
+            PUT_LINE( tab & "Sa " & INTEGER'IMAGE( CODI.CUR_LEVEL ) & ',' & tab & "-result__ofs" );
+
+          elsif  EXPR_TYPE.TY = DN_ENUM_LITERAL_S  then
+            EXPRESSIONS.CODE_EXP( EXP );
+raise PROGRAM_ERROR;
 
 	elsif  EXPR_TYPE.TY = DN_RECORD
 	or     EXPR_TYPE.TY = DN_L_PRIVATE
@@ -807,9 +812,6 @@ null;
 	  EXPRESSIONS.CODE_EXP( EXP );
 	  PUT_LINE( tab & "Sa " & INTEGER'IMAGE( CODI.CUR_LEVEL ) & ',' & tab & "-result__ofs" );
 
-	elsif  EXPR_TYPE.TY = DN_ENUMERATION  then
-	  EXPRESSIONS.CODE_EXP( EXP );
-	  PUT_LINE( tab & "S" & CODI.EXP_TYPE_CHAR( EXP ) & ' ' & INTEGER'IMAGE( CODI.CUR_LEVEL ) & ',' & tab & "-result__ofs" );
 
           end if;
         end	STORE_FUNCTION_RESULT;
@@ -1057,7 +1059,7 @@ null;
 	        -- Charger l'adresse de ST via le GFP
 	        -- Utiliser le niveau du parametre (= niveau de la procedure, pas du bloc declare)
 	      PUT_LINE( tab & "La " & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' & tab & "-GFP_ofs" );
-	      PUT_LINE( tab & "La , -" & FORMAL_TYPE_NAME & "__st_ofs" );
+	      PUT_LINE( tab & "La ," & tab & '-' & FORMAL_TYPE_NAME & "__st_ofs" );
 	      PUT_LINE( tab & "CALLI" );
 	    end;
 	  else

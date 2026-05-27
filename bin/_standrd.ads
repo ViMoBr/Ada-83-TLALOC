@@ -106,27 +106,29 @@ is				--------
     subtype NATURAL		is INTEGER range 0 .. 2147483647;
     subtype POSITIVE	is INTEGER range 1 .. 2147483647;
 
-    type STRING	is array (POSITIVE range <>) of CHARACTER;
+    type STRING		is array (POSITIVE range <>) of CHARACTER;
 	-- pragma	PACK(STRING);
 
-    type DURATION	is delta 2#1.0#E-14	range -86_400.0 .. 86_400.0;
+--    type DURATION		is delta 2.0**(-29) range -2.0**34 .. 2.0**34 - 1.0;				-- type DURATION souhaite, ecriture trop complexe
+    type DURATION		is delta 0.00000000186 range -17179869184.0 .. 17179869183.0;			-- Ecrire comme ceci sinon les puissances ne passent pas
 
     CONSTRAINT_ERROR	: exception;
-    NUMERIC_ERROR	: exception;
-    PROGRAM_ERROR	: exception;
-    STORAGE_ERROR	: exception;
-    TASKING_ERROR	: exception;
+    NUMERIC_ERROR		: exception;
+    PROGRAM_ERROR		: exception;
+    STORAGE_ERROR		: exception;
+    TASKING_ERROR		: exception;
 
 		--| Type de base invisible renommé en ADDRESS (le	type visible) dans SYSTEM
 
-    type _address	is new LONG_INTEGER;
+    type _address		is new LONG_INTEGER;
 
 
     private
 
       --|	Ce type est invisible, il doit être en minuscules	et sert de type de base pour DURATION
 
-      type _duration is delta 2.0**(-29)	range -2.0**34 .. 2.0**34 - 1.0;
+--      type _duration	is delta 2.0**(-29)	range -2.0**34 .. 2.0**34 - 1.0;				-- type _duration souhaite, ecriture trop complexe
+      type _duration	is delta 0.00000000186 range -17179869184.0 .. 17179869183.0;			-- Ecrire comme ceci sinon les puissances ne passent pas
 
       -- Specification of implementation sizes
 	for BOOLEAN'size		use 1;

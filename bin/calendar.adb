@@ -198,12 +198,24 @@ package LONGINT_IO is new INTEGER_IO( LONG_INTEGER );
     T          := LONG_INTEGER( DATE );
     SEC_TOTAL  := T / SCALE;
     FRAC_PART  := T - SEC_TOTAL * SCALE;								-- Dans [0..2**29-1]
+
+PUT( "T : " ); LONGINT_IO.PUT( T ); NEW_LINE;
+PUT( "SEC_TOTAL : " ); LONGINT_IO.PUT( SEC_TOTAL ); NEW_LINE;
+PUT( "FRAC_PART : " ); LONGINT_IO.PUT( FRAC_PART ); NEW_LINE;
+
+
     SEC_OF_DAY := SEC_TOTAL rem SECONDS_PER_DAY;
+
+PUT( "SEC_OF_DAY : " ); LONGINT_IO.PUT( SEC_OF_DAY ); NEW_LINE;
+
     if  SEC_OF_DAY < 0  then										-- normaliser pour DATE < 1900
       SEC_OF_DAY := SEC_OF_DAY + SECONDS_PER_DAY;
     end if;
-    RESULT := SEC_OF_DAY * SCALE + FRAC_PART;
-    return  DAY_DURATION( DURATION( DURATION'SMALL ) * DURATION( RESULT ) );
+    RESULT := SEC_OF_DAY; -- * SCALE + FRAC_PART;
+
+PUT( "RESULT : " ); LONGINT_IO.PUT( RESULT ); NEW_LINE;
+
+    return  DAY_DURATION( DURATION( RESULT ) );
 
   end	SECONDS;
 	-------

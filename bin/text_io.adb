@@ -1457,11 +1457,11 @@ is					-------
 
     			---
     procedure		PUT		( FILE :in FILE_TYPE;
-				  ITEM :in NUM;
-				  FORE :in FIELD 		:= DEFAULT_FORE;
-				  AFT  :in FIELD		:= DEFAULT_AFT;
-				  EXP  :in FIELD		:= DEFAULT_EXP
-				)
+					  ITEM :in NUM;
+					  FORE :in FIELD 		:= DEFAULT_FORE;
+					  AFT  :in FIELD		:= DEFAULT_AFT;
+					  EXP  :in FIELD		:= DEFAULT_EXP
+					)
     is			---
 
       VAL		: NUM		:= ITEM;
@@ -1480,10 +1480,10 @@ is					-------
       ----------------------------------------------------------------
       -- Cas EXP = 0 : notation decimale etendue [-]ddd.ddd (defaut fixed)
       ----------------------------------------------------------------
-      if  EXP = 0  then
+--      if  EXP = 0  then
 
         -- Separer partie entiere et partie fractionnaire
-        INT_PART := NUM( INTEGER( VAL - NUM( 0.5 * NUM'DELTA ) ) );						-- troncature vers 0
+        INT_PART := NUM( INTEGER( VAL ) );
         if  INT_PART > VAL  then									-- securite si arrondi par exces
           INT_PART := INT_PART - 1.0;
         end if;
@@ -1492,9 +1492,10 @@ is					-------
         -- Construire la chaine des chiffres de la partie entiere (au moins un '0')
         declare
           IBUF	: STRING( 1 .. 40 );
-          NB	: NATURAL	:= 0;
-          IPART	: INTEGER	:= INTEGER( INT_PART );
+          NB	: NATURAL		:= 0;
+	IPART	: INTEGER		:= INTEGER( INT_PART );
           FLEN	: NATURAL;
+
         begin
           if  IPART = 0  then
             NB := 1;
@@ -1536,7 +1537,7 @@ is					-------
         -- Chiffres apres le point
         for  K in 1 .. AFT  loop
           FRC_PART := FRC_PART * 10;
-          DIGIT := INTEGER( FRC_PART - NUM( 0.5 * NUM'DELTA ) );						-- troncature
+          DIGIT := INTEGER( FRC_PART - NUM( 0.5 * NUM'SMALL ) );						-- troncature
           if  DIGIT > 9  then DIGIT := 9; end if;
           if  DIGIT < 0  then DIGIT := 0; end if;
           PUT( FILE, CHARACTER'VAL( CHARACTER'POS( '0' ) + DIGIT ) );
@@ -1546,88 +1547,88 @@ is					-------
       ----------------------------------------------------------------
       -- Cas EXP > 0 : notation scientifique [-]d.dddE[+|-]dd
       ----------------------------------------------------------------
-      else
+--      else
 
         -- Normaliser 1.0 <= VAL < 10.0 et calculer l'exposant
-        if  VAL /= 0.0  then
-          while  VAL >= 10.0  loop
-            VAL := VAL / 10;
-            E := E + 1;
-          end loop;
-          while  VAL < 1.0  loop
-            VAL := VAL * 10;
-            E := E - 1;
-          end loop;
-        end if;
+--        if  VAL /= 0.0  then
+--          while  VAL >= 10.0  loop
+--            VAL := VAL / 10;
+--            E := E + 1;
+--          end loop;
+--          while  VAL < 1.0  loop
+--            VAL := VAL * 10;
+--            E := E - 1;
+--          end loop;
+--        end if;
 
         -- Padding FORE : 1 chiffre avant le point (+ signe eventuel)
-        declare
-          FORE_LEN	: NATURAL	:= 1;
-        begin
-          if  IS_NEGATIVE  then
-            FORE_LEN := 2;
-          end if;
-          if  FORE > FORE_LEN  then
-            for  K in 1 .. FORE - FORE_LEN  loop
-              PUT( FILE, ' ' );
-            end loop;
-          end if;
-        end;
+--        declare
+--          FORE_LEN	: NATURAL	:= 1;
+--        begin
+--          if  IS_NEGATIVE  then
+--            FORE_LEN := 2;
+--          end if;
+--          if  FORE > FORE_LEN  then
+--            for  K in 1 .. FORE - FORE_LEN  loop
+--              PUT( FILE, ' ' );
+--            end loop;
+--          end if;
+--        end;
 
         -- Signe
-        if  IS_NEGATIVE  then
-          PUT( FILE, '-' );
-        end if;
+--        if  IS_NEGATIVE  then
+--          PUT( FILE, '-' );
+--        end if;
 
         -- Chiffre avant le point
-        DIGIT := INTEGER( VAL - NUM( 0.5 * NUM'DELTA ) );
-        if  DIGIT > 9  then DIGIT := 9; end if;
-        if  DIGIT < 0  then DIGIT := 0; end if;
-        PUT( FILE, CHARACTER'VAL( CHARACTER'POS( '0' ) + DIGIT ) );
-        VAL := ( VAL - NUM( DIGIT ) ) * 10;
+--        DIGIT := INTEGER( VAL - NUM( 0.5 * NUM'DELTA ) );
+--        if  DIGIT > 9  then DIGIT := 9; end if;
+--        if  DIGIT < 0  then DIGIT := 0; end if;
+--        PUT( FILE, CHARACTER'VAL( CHARACTER'POS( '0' ) + DIGIT ) );
+--        VAL := ( VAL - NUM( DIGIT ) ) * 10;
 
         -- Point decimal
-        PUT( FILE, '.' );
+--        PUT( FILE, '.' );
 
         -- Chiffres apres le point
-        for  K in 1 .. AFT  loop
-          DIGIT := INTEGER( VAL - NUM( 0.5 * NUM'DELTA ) );
-          if  DIGIT > 9  then DIGIT := 9; end if;
-          if  DIGIT < 0  then DIGIT := 0; end if;
-          PUT( FILE, CHARACTER'VAL( CHARACTER'POS( '0' ) + DIGIT ) );
-          VAL := ( VAL - NUM( DIGIT ) ) * 10;
-        end loop;
+--        for  K in 1 .. AFT  loop
+--          DIGIT := INTEGER( VAL - NUM( 0.5 * NUM'DELTA ) );
+--          if  DIGIT > 9  then DIGIT := 9; end if;
+--          if  DIGIT < 0  then DIGIT := 0; end if;
+--          PUT( FILE, CHARACTER'VAL( CHARACTER'POS( '0' ) + DIGIT ) );
+--          VAL := ( VAL - NUM( DIGIT ) ) * 10;
+--        end loop;
 
         -- Exposant
-        PUT( FILE, 'E' );
-        if  E < 0  then
-          PUT( FILE, '-' );
-          E := -E;
-        else
-          PUT( FILE, '+' );
-        end if;
-        declare
-          EXP_STR	: STRING( 1 .. EXP );
-          EVAL	: INTEGER	:= E;
-        begin
-          for  K in reverse 1 .. EXP  loop
-            EXP_STR( K ) := CHARACTER'VAL( CHARACTER'POS( '0' ) + EVAL mod 10 );
-            EVAL := EVAL / 10;
-          end loop;
-          PUT( FILE, EXP_STR );
-        end;
+--        PUT( FILE, 'E' );
+--        if  E < 0  then
+--          PUT( FILE, '-' );
+--          E := -E;
+--        else
+--          PUT( FILE, '+' );
+--        end if;
+--        declare
+--          EXP_STR	: STRING( 1 .. EXP );
+--          EVAL	: INTEGER	:= E;
+--        begin
+--          for  K in reverse 1 .. EXP  loop
+--            EXP_STR( K ) := CHARACTER'VAL( CHARACTER'POS( '0' ) + EVAL mod 10 );
+--            EVAL := EVAL / 10;
+--          end loop;
+--          PUT( FILE, EXP_STR );
+--        end;
 
-      end if;
+--      end if;
 
     end	PUT;
-    ----
+	---
 
 			---
     procedure		PUT		( ITEM :in NUM;
-				  FORE :in FIELD		:= DEFAULT_FORE;
-				  AFT  :in FIELD		:= DEFAULT_AFT;
-				  EXP  :in FIELD		:= DEFAULT_EXP
-				)
+					  FORE :in FIELD		:= DEFAULT_FORE;
+					  AFT  :in FIELD		:= DEFAULT_AFT;
+					  EXP  :in FIELD		:= DEFAULT_EXP
+					)
     is			---
     begin
       PUT( DEFAULT_OUTPUT, ITEM, FORE, AFT, EXP );
@@ -1637,9 +1638,9 @@ is					-------
 
 			---
     procedure		GET		( FROM :in STRING;
-				  ITEM :out NUM;
-				  LAST :out POSITIVE
-				)
+					  ITEM :out NUM;
+					  LAST :out POSITIVE
+					)
     is			---
     begin null;
 
@@ -1648,10 +1649,10 @@ is					-------
 
 			---
     procedure		PUT		( TO   :out STRING;
-				  ITEM :in NUM;
-				  AFT  :in FIELD		:= DEFAULT_AFT;
-				  EXP  :in INTEGER		:= DEFAULT_EXP
-				)
+					  ITEM :in NUM;
+					  AFT  :in FIELD		:= DEFAULT_AFT;
+					  EXP  :in INTEGER		:= DEFAULT_EXP
+					)
     is			---
     begin null;
 

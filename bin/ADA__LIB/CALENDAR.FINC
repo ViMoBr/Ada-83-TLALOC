@@ -371,6 +371,7 @@ L10:					; post if
 	Lq 1,	DOY_disp
 	ADD
 	Sq  1,	DOE_disp
+; CODE_RETURN : EXPR TYPE = DN_INTEGER
 	Lq 1,	ERA_disp
 	LI	00146097
 	MUL
@@ -594,6 +595,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	DIV
 	ADD
 	Sq  1,	T_disp
+; CODE_RETURN : EXPR TYPE = DN_PRIVATE
 	Lq 1,	T_disp
 ; EXPRESSIONS.CODE_CONVERSION cible non faite DN_PRIVATE
 	Sa  1,	-result__ofs
@@ -649,6 +651,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	CALL	STANDARD.CALENDAR. ,CIVIL_FROM_DAYS_L12
 	UNLINK 2
 endPRO
+; CODE_RETURN : EXPR TYPE = DN_INTEGER
 	Lq 1,	Y_disp
 	Sd  1,	-result__ofs
 	BRA ret_lbl
@@ -693,6 +696,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	Lq 0,	STANDARD.CALENDAR.DAYS_1900_disp
 	ADD
 	CALL	STANDARD.CALENDAR. ,CIVIL_FROM_DAYS_L12
+; CODE_RETURN : EXPR TYPE = DN_INTEGER
 	Lq 1,	M_disp
 	Sd  1,	-result__ofs
 	BRA ret_lbl
@@ -737,6 +741,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	Lq 0,	STANDARD.CALENDAR.DAYS_1900_disp
 	ADD
 	CALL	STANDARD.CALENDAR. ,CIVIL_FROM_DAYS_L12
+; CODE_RETURN : EXPR TYPE = DN_INTEGER
 	Lq 1,	D_disp
 	Sd  1,	-result__ofs
 	BRA ret_lbl
@@ -778,28 +783,77 @@ begin:					;---------- BDY INSTRUCTIONS
 	MUL
 	SUB
 	Sq  1,	FRAC_PART_disp
+STR STR_L18, "T : "				; constante string="T : "
+	LCA	STR_L18.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	Ld 0,	STANDARD.CALENDAR.LONGINT_IO.DEFAULT_BASE_disp
+	Ld 0,	STANDARD.CALENDAR.LONGINT_IO.DEFAULT_WIDTH_disp
+	Lq 1,	T_disp
+	CALL	STANDARD.CALENDAR.LONGINT_IO. ,PUT_L64
+	LI	1
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
+STR STR_L19, "SEC_TOTAL : "			; constante string="SEC_TOTAL : "
+	LCA	STR_L19.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	Ld 0,	STANDARD.CALENDAR.LONGINT_IO.DEFAULT_BASE_disp
+	Ld 0,	STANDARD.CALENDAR.LONGINT_IO.DEFAULT_WIDTH_disp
+	Lq 1,	SEC_TOTAL_disp
+	CALL	STANDARD.CALENDAR.LONGINT_IO. ,PUT_L64
+	LI	1
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
+STR STR_L20, "FRAC_PART : "			; constante string="FRAC_PART : "
+	LCA	STR_L20.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	Ld 0,	STANDARD.CALENDAR.LONGINT_IO.DEFAULT_BASE_disp
+	Ld 0,	STANDARD.CALENDAR.LONGINT_IO.DEFAULT_WIDTH_disp
+	Lq 1,	FRAC_PART_disp
+	CALL	STANDARD.CALENDAR.LONGINT_IO. ,PUT_L64
+	LI	1
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
 	Lq 1,	SEC_TOTAL_disp
 	Lq 0,	STANDARD.CALENDAR.SECONDS_PER_DAY_disp
 	REMI
 	Sq  1,	SEC_OF_DAY_disp
+STR STR_L21, "SEC_OF_DAY : "			; constante string="SEC_OF_DAY : "
+	LCA	STR_L21.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	Ld 0,	STANDARD.CALENDAR.LONGINT_IO.DEFAULT_BASE_disp
+	Ld 0,	STANDARD.CALENDAR.LONGINT_IO.DEFAULT_WIDTH_disp
+	Lq 1,	SEC_OF_DAY_disp
+	CALL	STANDARD.CALENDAR.LONGINT_IO. ,PUT_L64
+	LI	1
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
 					; debut if
 	Lq 1,	SEC_OF_DAY_disp
 	LI	0
 	CLT
-	BF	L19
+	BF	L23
 	Lq 1,	SEC_OF_DAY_disp
 	Lq 0,	STANDARD.CALENDAR.SECONDS_PER_DAY_disp
 	ADD
 	Sq  1,	SEC_OF_DAY_disp
-	BRA	L18
-L19:
-L18:					; post if
+	BRA	L22
+L23:
+L22:					; post if
 	Lq 1,	SEC_OF_DAY_disp
-	Lq 0,	STANDARD.CALENDAR.SCALE_disp
-	MUL
-	Lq 1,	FRAC_PART_disp
-	ADD
 	Sq  1,	RESULT_disp
+STR STR_L24, "RESULT : "			; constante string="RESULT : "
+	LCA	STR_L24.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	Ld 0,	STANDARD.CALENDAR.LONGINT_IO.DEFAULT_BASE_disp
+	Ld 0,	STANDARD.CALENDAR.LONGINT_IO.DEFAULT_WIDTH_disp
+	Lq 1,	RESULT_disp
+	CALL	STANDARD.CALENDAR.LONGINT_IO. ,PUT_L64
+	LI	1
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
+; CODE_RETURN : EXPR TYPE = DN_FIXED
+	Lq 1,	RESULT_disp
+	LI	050000000000
+	MUL
+	LI	 93
+	DIV
+; FIXED to FIXED a faire
+	Sq  1,	-result__ofs
 	BRA ret_lbl
 ret_lbl:
 	UNLINK 1
@@ -864,7 +918,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	Lq 1,	SEC_OF_DAY_disp
 	LI	0
 	CLT
-	BF	L21
+	BF	L26
 	Lq 1,	SEC_OF_DAY_disp
 	Lq 0,	STANDARD.CALENDAR.SECONDS_PER_DAY_disp
 	ADD
@@ -873,14 +927,14 @@ begin:					;---------- BDY INSTRUCTIONS
 	LI	1
 	SUB
 	Sq  1,	DAYS_FROM_1900_disp
-	BRA	L20
-L21:
-L20:					; post if
+	BRA	L25
+L26:
+L25:					; post if
 					; debut if
 	Lq 1,	FRAC_PART_disp
 	LI	0
 	CLT
-	BF	L23
+	BF	L28
 	Lq 1,	FRAC_PART_disp
 	Lq 0,	STANDARD.CALENDAR.SCALE_disp
 	ADD
@@ -893,7 +947,7 @@ L20:					; post if
 	Lq 1,	SEC_OF_DAY_disp
 	LI	0
 	CLT
-	BF	L25
+	BF	L30
 	Lq 1,	SEC_OF_DAY_disp
 	Lq 0,	STANDARD.CALENDAR.SECONDS_PER_DAY_disp
 	ADD
@@ -902,12 +956,12 @@ L20:					; post if
 	LI	1
 	SUB
 	Sq  1,	DAYS_FROM_1900_disp
-	BRA	L24
-L25:
-L24:					; post if
-	BRA	L22
-L23:
-L22:					; post if
+	BRA	L29
+L30:
+L29:					; post if
+	BRA	L27
+L28:
+L27:					; post if
 	LVA  1,	D_disp
 	LVA  1,	M_disp
 	LVA  1,	Y_disp
@@ -927,7 +981,19 @@ L22:					; post if
 	SId  1,	-MONTH_ofs
 	Lq 1,	D_disp
 	SId  1,	-DAY_ofs
+	LIF	 1.86000000000000E-09
+	LI	050000000000
+	CVTIF
+	FMUL
+	LI	 93
+	CVTIF
+	FDIV
+	CVTFI
 	Lq 1,	DUR_INTERNAL_disp
+	LI	050000000000
+	MUL
+	LI	 93
+	DIV
 	MUL
 	SIq  1,	-SECONDS_ofs
 ret_lbl:
@@ -968,6 +1034,14 @@ begin:					;---------- BDY INSTRUCTIONS
 	SUB
 	Sq  1,	DAYS_FROM_1900_LOCAL_disp
 	Lq  1,	-SECONDS_ofs
+	LIF	 1.86000000000000E-09
+	LI	050000000000
+	CVTIF
+	FMUL
+	LI	 93
+	CVTIF
+	FDIV
+	CVTFI
 	DIV
 	Sq  1,	DUR_INTERNAL_disp
 	Lq 1,	DAYS_FROM_1900_LOCAL_disp
@@ -978,14 +1052,15 @@ begin:					;---------- BDY INSTRUCTIONS
 	Lq 1,	DUR_INTERNAL_disp
 	ADD
 	Sq  1,	T_disp
+; CODE_RETURN : EXPR TYPE = DN_PRIVATE
 	Lq 1,	T_disp
 ; EXPRESSIONS.CODE_CONVERSION cible non faite DN_PRIVATE
 	Sa  1,	-result__ofs
 	BRA ret_lbl
 ; CHOICE_OTHERS in EXCEPTIONS todo
-	BRA	L26
-L27:
-L26:
+	BRA	L31
+L32:
+L31:
 ret_lbl:
 	UNLINK 1
 	RTD	prm_siz-8
@@ -1006,8 +1081,17 @@ VAR DUR_INTERNAL_disp, q			; variable entiere
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 	Lq  1,	-RIGHT_ofs
+	LIF	 1.86000000000000E-09
+	LI	050000000000
+	CVTIF
+	FMUL
+	LI	 93
+	CVTIF
+	FDIV
+	CVTFI
 	DIV
 	Sq  1,	DUR_INTERNAL_disp
+; CODE_RETURN : EXPR TYPE = DN_PRIVATE
 	La  1,	-LEFT_ofs
 	Lq 1,	DUR_INTERNAL_disp
 	ADD
@@ -1015,9 +1099,9 @@ begin:					;---------- BDY INSTRUCTIONS
 	Sa  1,	-result__ofs
 	BRA ret_lbl
 ; CHOICE_OTHERS in EXCEPTIONS todo
-	BRA	L28
-L29:
-L28:
+	BRA	L33
+L34:
+L33:
 ret_lbl:
 	UNLINK 1
 	RTD	prm_siz
@@ -1035,6 +1119,7 @@ endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
+; CODE_RETURN : EXPR TYPE = DN_PRIVATE
 	La  1,	-RIGHT_ofs
 	Lq  1,	-LEFT_ofs
 	ADD
@@ -1060,8 +1145,17 @@ VAR DUR_INTERNAL_disp, q			; variable entiere
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 	Lq  1,	-RIGHT_ofs
+	LIF	 1.86000000000000E-09
+	LI	050000000000
+	CVTIF
+	FMUL
+	LI	 93
+	CVTIF
+	FDIV
+	CVTFI
 	DIV
 	Sq  1,	DUR_INTERNAL_disp
+; CODE_RETURN : EXPR TYPE = DN_PRIVATE
 	La  1,	-LEFT_ofs
 	Lq 1,	DUR_INTERNAL_disp
 	SUB
@@ -1069,9 +1163,9 @@ begin:					;---------- BDY INSTRUCTIONS
 	Sa  1,	-result__ofs
 	BRA ret_lbl
 ; CHOICE_OTHERS in EXCEPTIONS todo
-	BRA	L30
-L31:
-L30:
+	BRA	L35
+L36:
+L35:
 ret_lbl:
 	UNLINK 1
 	RTD	prm_siz
@@ -1095,11 +1189,27 @@ begin:					;---------- BDY INSTRUCTIONS
 	La  1,	-RIGHT_ofs
 	SUB
 	Sq  1,	DELTA_INTERNAL_disp
+; CODE_RETURN : EXPR TYPE = DN_FIXED
+	LIF	 1.86000000000000E-09
+	LI	050000000000
+	CVTIF
+	FMUL
+	LI	 93
+	CVTIF
+	FDIV
+	CVTFI
+	Lq 1,	DELTA_INTERNAL_disp
+	LI	050000000000
+	MUL
+	LI	 93
+	DIV
+	MUL
+	Sq  1,	-result__ofs
 	BRA ret_lbl
 ; CHOICE_OTHERS in EXCEPTIONS todo
-	BRA	L32
-L33:
-L32:
+	BRA	L37
+L38:
+L37:
 ret_lbl:
 	UNLINK 1
 	RTD	prm_siz
@@ -1117,6 +1227,7 @@ endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
+; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
 	La  1,	-LEFT_ofs
 	La  1,	-RIGHT_ofs
 	CLT
@@ -1139,6 +1250,7 @@ endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
+; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
 	La  1,	-LEFT_ofs
 	La  1,	-RIGHT_ofs
 	CLE
@@ -1161,6 +1273,7 @@ endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
+; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
 	La  1,	-LEFT_ofs
 	La  1,	-RIGHT_ofs
 	CGT
@@ -1183,6 +1296,7 @@ endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
+; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
 	La  1,	-LEFT_ofs
 	La  1,	-RIGHT_ofs
 	CGE

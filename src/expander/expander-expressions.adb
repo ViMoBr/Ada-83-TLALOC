@@ -331,7 +331,7 @@ null;--	     declare
 		    & tab & '-' & PRINT_NAME( D( LX_SYMREP, DEFN ) ) & "_ofs" );
 
         PUT_LINE( tab & "La " & LEVEL_NUM'IMAGE( CODI.GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );
-        PUT_LINE( tab & "La , -" & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, D( SM_OBJ_TYPE, DEFN ) ) ) )
+        PUT_LINE( tab & "La ," & tab & '-' & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, D( SM_OBJ_TYPE, DEFN ) ) ) )
 			& "__ld_ofs" );
         PUT_LINE( tab & "CALLI" );
 
@@ -400,7 +400,7 @@ null;--	     declare
 
         -- Charger FST_n depuis useinfo
         if  IS_PARAM  then
-	PUT_LINE(	tab & "LVa" & tab &	LVL_IMG &	", -" & ARRAY_NAME & "_ofs" );
+	PUT_LINE(	tab & "LVA" & tab &	LVL_IMG &	", -" & ARRAY_NAME & "_ofs" );
 	PUT_LINE(	tab & "LIa" & tab &	", ," & INTEGER'IMAGE( CODI.ADDR_SIZE )	);
 	PUT( tab & "Ld" & tab & ", " );
         else
@@ -414,7 +414,7 @@ null;--	     declare
 
         -- Charger COMP_SIZ depuis useinfo
         if  IS_PARAM  then
-	PUT_LINE(	tab & "LVa" & tab &	LVL_IMG &	", -" & ARRAY_NAME & "_ofs" );
+	PUT_LINE(	tab & "LVA" & tab &	LVL_IMG &	", -" & ARRAY_NAME & "_ofs" );
 	PUT_LINE(	tab & "LIa" & tab &	", ," & INTEGER'IMAGE( CODI.ADDR_SIZE )	);
 	PUT( tab & "Ld" & tab & ", " );
         else
@@ -439,7 +439,7 @@ null;--	     declare
         if  ARRAY_DEFN.TY in CLASS_PARAM_NAME  then
 	-- Parametre composite : charger ptr_data via le doublet
 	IS_PARAM := TRUE;
-	PUT_LINE(	tab & "LVa" & tab &	IMAGE( ARRAY_LVL ) & ", -" & ARRAY_NAME	& "_ofs" );
+	PUT_LINE(	tab & "LVA" & tab &	IMAGE( ARRAY_LVL ) & ", -" & ARRAY_NAME	& "_ofs" );
 	PUT(  tab	& "LIa" &	tab & ", , 0" );
         else
 	-- Variable locale : acces direct a _disp dans le	frame
@@ -587,10 +587,6 @@ put_line(	"; adresse component id" );
 	  if  D( SM_EXP_TYPE, DESIGNATOR ).TY in CLASS_SCALAR  then
 	    DESIGNATOR_LEVEL := DI( CD_LEVEL, DESIGNATOR_DEFN );
 	    PUT_LINE( tab &	"L" & OPER_SIZ_CHAR( DESIGNATOR_DEFN ) & tab & IMAGE( DESIGNATOR_LEVEL ) & ", "	& DESIGNATOR_STR  );
-
---	  else
---	    PUT_LINE( tab &	"LVA" & tab & IMAGE( DESIGNATOR_LEVEL ) & ", " &	DESIGNATOR_STR   );
-
 	  end if;
 
 	elsif  DESIGNATOR_DEFN.TY = DN_COMPONENT_ID  then
@@ -609,7 +605,7 @@ put_line(	"; adresse component id" );
 	        PUT( tab & "LI" & OPER_SIZ_CHAR( D( SM_EXP_TYPE, DESIGNATOR )	) );
 
 	      else
-	        PUT( tab & "LIVa " );
+	        PUT( tab & "LIVA " );
 	      end	if;
 
 	      PUT( tab & ", 0, " );
@@ -622,7 +618,7 @@ put_line(	"; adresse component id" );
 	      if	D( SM_EXP_TYPE, DESIGNATOR ).TY in CLASS_SCALAR  and  IS_SOURCE  then
 	        PUT( tab & "LI" & OPER_SIZ_CHAR( D( SM_EXP_TYPE, DESIGNATOR )	) );
 	      else
-	        PUT( tab & "LIVa " );
+	        PUT( tab & "LIVA " );
 	      end	if;
 
 	      PUT( tab & IMAGE( DI( CD_LEVEL, D( SM_DEFN,	NAME ) ) ) & ", " );
@@ -748,12 +744,12 @@ put_line(	"; adresse component id" );
       if  CODI.IN_GENERIC_BODY  then
 
         if  PREFIX_DEFN.TY = DN_IN_ID  then
-	PUT_LINE( tab & "LVa"	& tab & IMAGE( PREFIX_LVL ) & ", -" & CHN_PREFIX & "_ofs" );
+	PUT_LINE( tab & "LVA"	& tab & IMAGE( PREFIX_LVL ) & ", -" & CHN_PREFIX & "_ofs" );
           PUT_LINE( tab & "La " & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL ) & ',' & tab & "-GFP_ofs" );
           PUT_LINE( tab & "La" & tab & ", -" & TYPE_STR & "__inadr_ofs" );					-- Conversion pout IN
 
         elsif  PREFIX_DEFN.TY  in  CLASS_PARAM_IO_O  then
-	PUT_LINE( tab & "LVa"	& tab & IMAGE( PREFIX_LVL ) & ", -" & CHN_PREFIX & "_ofs" );
+	PUT_LINE( tab & "LVA"	& tab & IMAGE( PREFIX_LVL ) & ", -" & CHN_PREFIX & "_ofs" );
           PUT_LINE( tab & "La " & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL ) & ',' & tab & "-GFP_ofs" );
           PUT_LINE( tab & "La" & tab & ", -" & TYPE_STR & "__outadr_ofs" );					-- Conversion pour OUT ou IN_OUT
 
@@ -872,7 +868,7 @@ put_line(	"; adresse component id" );
 	  if DIM_EXP /= TREE_VOID then
 	    NUM_DIM := DI( SM_VALUE, DIM_EXP );
 	  end if;
-	  PUT_LINE( tab & "LVa" & tab	& IMAGE( ARRAY_LVL ) & ", -" & CHN_PREFIX & "_ofs" );
+	  PUT_LINE( tab & "LVA" & tab	& IMAGE( ARRAY_LVL ) & ", -" & CHN_PREFIX & "_ofs" );
 	  PUT_LINE( tab & "LIa" & tab	& ", ," &	INTEGER'IMAGE( CODI.ADDR_SIZE	) );
 	  PUT( tab & "Ld" &	tab & ", " & TYPE_STR );
 	  if  IS_LAST  then
@@ -994,13 +990,43 @@ put_line(	"; adresse component id" );
 		----------
     procedure	CODE_SMALL
     is		----------
-      PREFIX_DEFN		: TREE	:= D( SM_DEFN, PREFIX_NAME );
-      TYPE_SPEC		: TREE	:= D( SM_TYPE_SPEC, PREFIX_DEFN );
+      PREFIX_DEFN		: TREE		:= D( SM_DEFN, PREFIX_NAME );
+      TYPE_SPEC		: TREE		:= D( SM_TYPE_SPEC, PREFIX_DEFN );
+
     begin
-null;
+      if  CODI.IN_GENERIC_BODY  and then  IS_GENERIC_FORMAL_TYPE( D( XD_SOURCE_NAME, TYPE_SPEC ) )  then		-- Passer par le use__info
+        declare
+	TYPE_NAME		: TREE		:= D( XD_SOURCE_NAME, TYPE_SPEC );
+	TYPE_STR		: constant STRING	:= PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
+        begin
+	PUT_LINE( tab & "La " & IMAGE( GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );			-- Adresse de frame generique
+	PUT_LINE( tab & "LIq , -" & TYPE_STR & "__u_ofs, STANDARD.FIXED_USE_INFO.NUMER " );			-- Charge l'entier NUMER
+	PUT_LINE( tab & "CVTIF" );
+
+	PUT_LINE( tab & "La " & IMAGE( GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );			-- Adresse de frame generique
+	PUT_LINE( tab & "LIq , -" & TYPE_STR & "__u_ofs, STANDARD.FIXED_USE_INFO.DENOM" );			-- Charge l'entier DENOM
+	PUT_LINE( tab & "CVTIF" );
+	PUT_LINE( tab & "FDIV" );									-- / DENOM
+        end;
+
+      else
+        declare
+	BASE_TYPE		: TREE		:= D( SM_BASE_TYPE, TYPE_SPEC );
+	BASE_TYPE_NAME	: TREE		:= D( XD_SOURCE_NAME, BASE_TYPE );
+	BASE_SPEC		: TREE		:= D( SM_TYPE_SPEC, BASE_TYPE_NAME );
+	SMALL_VAL		: TREE		:= D( CD_IMPL_SMALL, BASE_SPEC );
+
+	NUM_PART		: LONG_INTEGER	:= LONG_INTEGER'VALUE( PRINT_NUM( D( XD_NUMER, SMALL_VAL ) ) );
+	DEN_PART		: LONG_INTEGER	:= LONG_INTEGER'VALUE( PRINT_NUM( D( XD_DENOM, SMALL_VAL ) ) );
+	REAL_SMALL	: LONG_FLOAT	:= LONG_FLOAT( NUM_PART ) / LONG_FLOAT( DEN_PART );
+	package LF_IO	is new FLOAT_IO( LONG_FLOAT );
+        begin
+	PUT( tab & "LIF" & tab ); LF_IO.PUT( REAL_SMALL ); NEW_LINE;
+        end;
+      end if;
 
     end	CODE_SMALL;
-	---------
+	----------
 
 
 		----------
@@ -1087,7 +1113,7 @@ null;
 
     when	'A' =>
       if	CHN_ATTR(	2 ) = 'D'	 then CODE_ADDRESS;			-- ADDRESS
-      else null;						-- AFT
+      else PUT_LINE( tab & "LI" & tab & '3' );			-- AFT a revoir
       end	if;
 
     when	'B' => null;					-- BASE
@@ -1146,7 +1172,7 @@ null;
     when	'F' =>
       if	CHN_ATTR(	2 ) = 'I'	 then				-- FIRST
         CODE_FIRST_LAST( IS_LAST => FALSE );
-      else null;						-- FORE
+      else PUT_LINE( tab & "LI" & tab & '1' );			-- FORE a revoir
       end	if;
 
     when	'I' => null;					-- IMAGE
@@ -1186,8 +1212,8 @@ null;
     when	'R' => null;					-- RANGE
 
     when	'S' =>
-      if	CHN_ATTR(	2 ) = 'I'	 then CODE_SIZE;			-- SIZE
-      elsif  CHN_ATTR( 2 ) = 'M'  then	 null;			-- SMALL
+      if	CHN_ATTR(	2 ) = 'I'		then CODE_SIZE;		-- SIZE
+      elsif  CHN_ATTR( 2 ) = 'M'	then CODE_SMALL;		-- SMALL
       elsif  CHN_ATTR( 2 ) = 'T'  then	 null;			-- STORAGE
       elsif  CHN_ATTR( 2 ) = 'U'  then				-- SUCC
         -- T'SUCC(X) : retourne X+1
@@ -1239,18 +1265,23 @@ null;
       begin
         POP( PRM_S,	PRM_1 );
         CODE_EXP( PRM_1 );
-        if IS_EMPTY( PRM_S ) then goto UNARY; end	if;
+        if  IS_EMPTY( PRM_S )  then goto UNARY; end if;
         POP( PRM_S,	PRM_2 );
         CODE_EXP( PRM_2 );
 
         -- Pour les	comparaisons le type resultat	est BOOLEAN,
         -- il faut tester le type du premier operande
         if  not IS_FLOAT  then
-	declare
-	  PRM_TYPE	: TREE	:= D( SM_EXP_TYPE, PRM_1 );
-	begin
-	  IS_FLOAT := PRM_TYPE /= TREE_VOID and	then PRM_TYPE.TY = DN_FLOAT;
-	end;
+	if  PRM_1.TY = DN_NUMERIC_LITERAL  and then
+		D( SM_VALUE, PRM_1 ).PT /= HI  and then  D( SM_VALUE, PRM_1 ).TY = DN_REAL_VAL  then
+	  IS_FLOAT := TRUE;
+	else
+	  declare
+	    PRM_TYPE	: TREE	:= D( SM_EXP_TYPE, PRM_1 );
+	  begin
+	    IS_FLOAT := PRM_TYPE.TY = DN_FLOAT;
+	  end;
+	end if;
         end if;
 
         if    OP_STR = """+"""   then
@@ -1275,12 +1306,15 @@ null;
 	if IS_FLOAT then PUT_LINE( tab & "FCGE"	); else PUT_LINE( tab & "CGE"	); end if;
         elsif OP_STR = """<=""" then
 	if IS_FLOAT then PUT_LINE( tab & "FCLE"	); else PUT_LINE( tab & "CLE"	); end if;
+
         elsif OP_STR = """**""" then
 	if  IS_FLOAT  then
 	  PUT_LINE( tab & "FEXP" );
-	elsif  PRM_1.TY = DN_NUMERIC_LITERAL and then DI(	SM_VALUE,	PRM_1 ) =	2  then
+
+	elsif  PRM_1.TY = DN_NUMERIC_LITERAL  and then  DI( SM_VALUE, PRM_1 ) = 2  then
 	  PUT_LINE( tab & "DEC" );
 	  PUT_LINE( tab & "SHL" );
+
 	else
 	  PUT_LINE( "; CODE_DN_BLTN_OPERATOR_ID : EXP ENTIERE GENERALE A FAIRE" );
 	end if;
@@ -1590,18 +1624,64 @@ SCAN_IDS:
 				--------------------
   procedure			CODE_NUMERIC_LITERAL	( NUMERIC_LITERAL :TREE )
   is				--------------------
-    VAL	: TREE	:= D( SM_VALUE, NUMERIC_LITERAL );
+    VAL		: TREE	:= D( SM_VALUE, NUMERIC_LITERAL );
+    NUM_LIT_TYPE	: TREE	:= D( SM_EXP_TYPE, NUMERIC_LITERAL );
   begin
     if  VAL.PT = HI	 and then	 VAl.NOTY	= DN_NUM_VAL
     then
       PUT_LINE( tab	& "LI" & tab & IMAGE( DI( SM_VALUE, NUMERIC_LITERAL ) ) );
 
-    elsif	 VAL.TY =	DN_NUM_VAL  then
+    elsif	 VAL.TY =	DN_NUM_VAL  then									-- INTEGER
       PUT_LINE( tab	& "LI" & tab & PRINT_NUM( VAL	) );
 
-    elsif	 VAL.TY =	DN_REAL_VAL  then
-      PUT_LINE( tab	& "LIF" &	tab & PRINT_NAME( D( LX_NUMREP, NUMERIC_LITERAL )	) );
+    elsif	 VAL.TY =	DN_REAL_VAL  then									-- FLOAT ou FIXED
+				------------------------
+				PUSH_REAL_FLOAT_OR_FIXED:						-- Cible FIXED LONG_FLOAT deja empile
+      declare
+        LIT_STR	:constant STRING	:= PRINT_NAME( D( LX_NUMREP, NUMERIC_LITERAL ) );
+      begin
+        PUT_LINE( tab	& "LIF" &	tab & LIT_STR );
 
+put_line( "; CODE_NUMERIC_LITERAL NUM_LIT_TYPE.TY " & NODE_NAME'IMAGE( NUM_LIT_TYPE.TY ) );
+
+        if  LIT_STR /= "0.0"  and then  NUM_LIT_TYPE.TY = DN_FIXED  then
+
+	if  CODI.IN_GENERIC_BODY  and then  IS_GENERIC_FORMAL_TYPE( D( XD_SOURCE_NAME, NUM_LIT_TYPE ) )  then	-- Passer par le use__info
+	  declare
+	    TYPE_NAME	: TREE		:= D( XD_SOURCE_NAME, NUM_LIT_TYPE );
+	    TYPE_STR	: constant STRING	:= PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
+
+	  begin											-- LONG_FLOAT deja empile a diviser par 'SMALL
+	    PUT_LINE( tab & "La " & IMAGE( GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );			-- Adresse de frame generique
+	    PUT_LINE( tab & "LIq , -" & TYPE_STR & "__u_ofs, STANDARD.FIXED_USE_INFO.DENOM" );			-- Charge l'entier DENOM
+	    PUT_LINE( tab & "CVTIF" );
+	    PUT_LINE( tab & "FMUL" );
+
+	    PUT_LINE( tab & "La " & IMAGE( GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );			-- Adresse de frame generique
+	    PUT_LINE( tab & "LIq , -" & TYPE_STR & "__u_ofs, STANDARD.FIXED_USE_INFO.NUMER" );			-- Charge l'entier NUMER
+	    PUT_LINE( tab & "CVTIF" );
+	    PUT_LINE( tab & "FDIV" );
+	  end;
+
+	else
+	  declare
+	    TARGET_SMALL	: TREE	:= D( CD_IMPL_SMALL, NUM_LIT_TYPE );
+	    NUMER		: INTEGER	:= DI( XD_NUMER, TARGET_SMALL );
+	  begin
+	    PUT_LINE( tab & "LI" & tab & PRINT_NUM( D( XD_DENOM, TARGET_SMALL ) ) );
+	    PUT_LINE( tab & "CVTIF" );
+	    PUT_LINE( tab & "FMUL" );
+	    if  NUMER /= 1  then
+	      PUT_LINE( tab & "LI" & tab & PRINT_NUM( D( XD_NUMER, TARGET_SMALL ) ) );
+	      PUT_LINE( tab & "CVTIF" );
+	      PUT_LINE( tab & "FDIV" );
+	    end if;
+	  end;
+	end if;
+        end if;
+        PUT_LINE( tab & "CVTFI" );
+      end		PUSH_REAL_FLOAT_OR_FIXED;
+		------------------------
     end if;
 
   end	CODE_NUMERIC_LITERAL;
@@ -1665,7 +1745,7 @@ SCAN_IDS:
   procedure			CODE_CONVERSION		( CONVERSION :TREE )
   is				---------------
 
-    SRC_EXP		: TREE		:= D( AS_EXP,      CONVERSION	);
+    SRC_EXP	: TREE		:= D( AS_EXP,      CONVERSION	);
     TARGET_TYPE	: TREE		:= D( SM_EXP_TYPE, CONVERSION	);
     VAL		: TREE		:= D( SM_VALUE,    CONVERSION	);
 
@@ -1716,47 +1796,36 @@ SCAN_IDS:
 	      -- Arrondi Ada 83 : au plus proche.
 	      ------------------------------------------------------------
 	      declare
-	        SMALL_VAL	: TREE		:= D( CD_IMPL_SMALL, SRC_TYPE );
-	        NUM_PART	: INTEGER;
-	        DEN_PART	: INTEGER;
-	        SHIFT	: INTEGER		:= 0;
-	        TMP			: INTEGER;
+	        SMALL_VAL		: TREE		:= D( CD_IMPL_SMALL, SRC_TYPE );
+	        NUM_PART		: LONG_INTEGER;
+	        DEN_PART		: LONG_INTEGER;
+	        SHIFT		: INTEGER		:= 0;
+	        TMP		: LONG_INTEGER;
 	      begin
-	        if  CODI.IN_GENERIC_BODY  and then  IS_GENERIC_FORMAL_TYPE( D( XD_SOURCE_NAME, SRC_TYPE ) )  then		-- Passer par le use__info
+	        if  CODI.IN_GENERIC_BODY  and then  IS_GENERIC_FORMAL_TYPE( D( XD_SOURCE_NAME, SRC_TYPE ) )  then	-- Passer par le use__info
 		declare
 		  TYPE_NAME	: TREE := D( XD_SOURCE_NAME, SRC_TYPE );
 		  TYPE_STR	: constant STRING := PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
-		begin
-		  PUT_LINE( tab & "La " & INTEGER'IMAGE( CODI.CUR_LEVEL ) & ',' & tab & "-GFP_ofs" );		-- Adresse de frame generique
-		  PUT_LINE( tab & "LId , -" & TYPE_STR & "__u_ofs, STANDARD.FIXED_USE_INFO.NUMER" );		-- Charge le NUMER
---		  CODI.REGIONS_PATH( TYPE_NAME );
---		  PUT_LINE( TYPE_STR & ".NUMER" );
 
-		  PUT_LINE( tab & "MUL" );								-- m * NUM
+		begin										-- L'entier MANTISSA est empilé
+		  PUT_LINE( tab & "La " & IMAGE( GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );		-- Adresse de frame generique
+		  PUT_LINE( tab & "LId , -" & TYPE_STR & "__u_ofs, STANDARD.FIXED_USE_INFO.NUMER" );		-- Charge l'entier NUMER
+		  PUT_LINE( tab & "MUL" );								-- m * NUMER
 
-		  PUT_LINE( tab & "La " & INTEGER'IMAGE( CODI.CUR_LEVEL ) & ',' & tab & "-GFP_ofs" );		-- Adresse de frame generique
-		  PUT_LINE( tab & "LId , -" & TYPE_STR & "__u_ofs, STANDARD.FIXED_USE_INFO.DENOM" );		-- Charge le NUMER
---		  CODI.REGIONS_PATH( TYPE_NAME );
---		  PUT_LINE( TYPE_STR & ".DENOM" );
-
+		  PUT_LINE( tab & "La " & IMAGE( GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );		-- Adresse de frame generique
+		  PUT_LINE( tab & "LIq , -" & TYPE_STR & "__u_ofs, STANDARD.FIXED_USE_INFO.DENOM" );		-- Charge l'entier DENOM
 		  PUT_LINE( tab & "LI" & tab & '1' );
 		  PUT_LINE( tab & "SAR" );								-- >> SHIFT (arithmetique)
 
 		  PUT_LINE( tab & "ADD" );								-- + DEN/2 (demi-pas)
-		  PUT_LINE( tab & "La " & INTEGER'IMAGE( CODI.CUR_LEVEL ) & ',' & tab & "-GFP_ofs" );		-- Adresse de frame generique
-		  PUT_LINE( tab & "LId , -" & TYPE_STR & "__u_ofs, STANDARD.FIXED_USE_INFO.NUMER" );		-- Charge le NUMER
---		  CODI.REGIONS_PATH( TYPE_NAME );
---		  PUT_LINE( TYPE_STR & ".DENOM" );
-		  PUT_LINE( tab & "DIV" );								-- / DEN
-
+		  PUT_LINE( tab & "La " & IMAGE( GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );		-- Adresse de frame generique
+		  PUT_LINE( tab & "LIq , -" & TYPE_STR & "__u_ofs, STANDARD.FIXED_USE_INFO.DENOM" );		-- Recharge le DENOM
+		  PUT_LINE( tab & "DIV" );								-- / DENOM
 		end;
 
 	        else
-		NUM_PART := INTEGER'VALUE( PRINT_NUM( D( XD_NUMER, SMALL_VAL ) ) );
-		DEN_PART := INTEGER'VALUE( PRINT_NUM( D( XD_DENOM, SMALL_VAL ) ) );
-	        end if;
---put_line( "; NUMER " & INTEGER'IMAGE( NUM_PART ) );
---put_line( "; DENOM " & INTEGER'IMAGE( DEN_PART ) );
+		NUM_PART := LONG_INTEGER'VALUE( PRINT_NUM( D( XD_NUMER, SMALL_VAL ) ) );
+		DEN_PART := LONG_INTEGER'VALUE( PRINT_NUM( D( XD_DENOM, SMALL_VAL ) ) );
 
 	        -- Detecter SMALL = 2**(-k), c.a.d. NUM_PART = 1 et DEN_PART = 2**k
 	        if  NUM_PART = 1  then
@@ -1787,13 +1856,15 @@ SCAN_IDS:
 	          -- Ici on reste simple : (m * NUM + DEN/2) / DEN, valable
 	          -- quand DEN est pair ou que la troncature DEN/2 suffit.
 	          ----------------------------------------------------------
-	          PUT_LINE( tab & "LI" & tab & INTEGER'IMAGE( NUM_PART ) );
+	          PUT_LINE( tab & "LI" & tab & LONG_INTEGER'IMAGE( NUM_PART ) );
 	          PUT_LINE( tab & "MUL" );						-- m * NUM
-	          PUT_LINE( tab & "LI" & tab & INTEGER'IMAGE( DEN_PART / 2 ) );
+	          PUT_LINE( tab & "LI" & tab & LONG_INTEGER'IMAGE( DEN_PART / 2 ) );
 	          PUT_LINE( tab & "ADD" );						-- + DEN/2 (demi-pas)
-	          PUT_LINE( tab & "LI" & tab & INTEGER'IMAGE( DEN_PART ) );
+	          PUT_LINE( tab & "LI" & tab & LONG_INTEGER'IMAGE( DEN_PART ) );
 	          PUT_LINE( tab & "DIV" );						-- / DEN
 	        end if;
+	        end if;
+
 	      end		FIXED_TO_INT;
 			------------
 	    end if;
@@ -1823,9 +1894,46 @@ SCAN_IDS:
 				FIXED_TARGET:
 	declare
 	  SRC_TYPE	: TREE	:= D( SM_EXP_TYPE, SRC_EXP );
+	  TARGET_BASE_TYPE	: TREE	:= D( SM_BASE_TYPE,TARGET_TYPE );
+	  TARGET_NAME	: TREE	:= D( XD_SOURCE_NAME, TARGET_BASE_TYPE );
+	  TARGET_BASE_SPEC	: TREE	:= D( SM_TYPE_SPEC, TARGET_NAME );
+	  TARGET_SMALL	: TREE	:= D( CD_IMPL_SMALL, TARGET_BASE_SPEC );
+
 	begin
-	  if  SRC_TYPE = TREE_VOID  or else  SRC_TYPE.TY /= DN_FIXED  then					-- INTEGER ou FLOAT a convertir
-	    null;							-- A FAIRE
+	  if  CODI.IN_GENERIC_BODY  and then  IS_GENERIC_FORMAL_TYPE( D( XD_SOURCE_NAME, TARGET_TYPE ) )  then	-- Passer par le use__info
+	    declare
+	      TYPE_NAME		: TREE		:= D( XD_SOURCE_NAME, TARGET_TYPE );
+	      TARGET_TYPE_STR	: constant STRING	:= PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
+	    begin
+	      PUT_LINE( tab & "La " & IMAGE( GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );			-- Adresse de frame generique
+	      PUT_LINE( tab & "LIq , -" & TARGET_TYPE_STR & "__u_ofs, STANDARD.FIXED_USE_INFO.DENOM" );		-- Charge l'entier DENOM
+	      PUT_LINE( tab & "MUL" );								-- MANTISSA * DENOM
+
+	      PUT_LINE( tab & "La " & IMAGE( GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );			-- Adresse de frame generique
+	      PUT_LINE( tab & "LIq , -" & TARGET_TYPE_STR & "__u_ofs, STANDARD.FIXED_USE_INFO.NUMER" );		-- Charge l'entier NUMER
+	      PUT_LINE( tab & "DIV" );								-- / NUMER
+	    end;
+	  else
+--	  if  SRC_TYPE /= TREE_VOID  then
+	    if  SRC_TYPE.TY = DN_INTEGER  then								-- INTEGER deja empile
+	      PUT_LINE( tab & "LI" & tab & PRINT_NUM( D( XD_DENOM, TARGET_SMALL ) ) );
+	      PUT_LINE( tab & "MUL" );
+	      PUT_LINE( tab & "LI" & tab & PRINT_NUM( D( XD_NUMER, TARGET_SMALL ) ) );
+	      PUT_LINE( tab & "DIV" );
+
+	    elsif  SRC_TYPE.TY = DN_FLOAT  or  SRC_TYPE.TY = DN_UNIVERSAL_REAL  then				-- LONG_FLOAT deja empile
+	      PUT_LINE( tab & "LI" & tab & PRINT_NUM( D( XD_DENOM, TARGET_SMALL ) ) );
+	      PUT_LINE( tab & "CVTIF" );
+	      PUT_LINE( tab & "FMUL" );
+	      PUT_LINE( tab & "LI" & tab & PRINT_NUM( D( XD_NUMER, TARGET_SMALL ) ) );
+	      PUT_LINE( tab & "CVTIF" );
+	      PUT_LINE( tab & "FDIV" );
+	      PUT_LINE( tab & "CVTFI" );
+
+	    elsif  SRC_TYPE.TY = DN_FIXED  and then  TARGET_TYPE /= SRC_TYPE  then
+	      PUT_LINE( "; FIXED to FIXED a faire" );
+	      null;
+	    end if;
 	  end if;
 								-- A COMPLETER pour FIXED vers FIXED
 	end	FIXED_TARGET;
@@ -1847,7 +1955,7 @@ SCAN_IDS:
   procedure			CODE_QUALIFIED		( QUALIFIED :TREE )
   is				--------------
 
-    SRC_EXP		: TREE		:= D( AS_EXP,      QUALIFIED );
+    SRC_EXP	: TREE		:= D( AS_EXP,      QUALIFIED );
     VAL		: TREE		:= D( SM_VALUE,    QUALIFIED );
 
   begin
@@ -1909,7 +2017,7 @@ put_line( "; CODE_QUALIFIED : DN_QUALIFIED" & NODE_NAME'IMAGE( SRC_EXP.TY ) );
 
       elsif  IS_GENERIC_FORMAL_TYPE( D( XD_SOURCE_NAME, VC_TYPE ) )  then
 
-	PUT( tab & "LVA " & IMAGE( CUR_LEVEL ) & ',' & tab );
+	PUT( tab & "LVA " & IMAGE( VC_LEVEL ) & ',' & tab );
 	if  VC_LEVEL /= INTEGER( CUR_LEVEL )
 	or else	D( XD_REGION, VC_ID ).TY = DN_PACKAGE_ID
 	then
@@ -1918,7 +2026,7 @@ put_line( "; CODE_QUALIFIED : DN_QUALIFIED" & NODE_NAME'IMAGE( SRC_EXP.TY ) );
 	PUT_LINE(	PRINT_NAME( D( LX_SYMREP, VC_ID ) )  & "_disp" );
 
 	PUT_LINE( tab & "La " & IMAGE( GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );
-	PUT_LINE( tab & "La , -" & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, VC_TYPE ) ) )  & "__ld_ofs" );
+	PUT_LINE( tab & "La ," & tab & '-' & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, VC_TYPE ) ) )  & "__ld_ofs" );
 	PUT_LINE( tab & "CALLI" );
 
       else

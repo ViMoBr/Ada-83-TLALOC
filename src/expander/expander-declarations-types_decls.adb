@@ -233,13 +233,13 @@ is
     EXPRESSIONS.CODE_EXP( EXP_LST );
     PUT_LINE( tab &	'S' & SIZE_CHAR & tab & LVL_STR & ", LST" );
 
-    PUT_LINE( "VAR NUMER, d" );
-    PUT_LINE( "VAR DENOM, d" );
+    PUT_LINE( "VAR NUMER, q" );
+    PUT_LINE( "VAR DENOM, q" );
 
     PUT_LINE( tab &	"LI" & tab & PRINT_NUM( D( XD_NUMER, SMALL_VAL ) ) );
-    PUT_LINE( tab &	"Sd" & tab & LVL_STR & ", NUMER" );
+    PUT_LINE( tab &	"Sq" & tab & LVL_STR & ", NUMER" );
     PUT_LINE( tab &	"LI" & tab & PRINT_NUM( D( XD_DENOM, SMALL_VAL ) ) );
-    PUT_LINE( tab &	"Sd" & tab & LVL_STR & ", DENOM" );
+    PUT_LINE( tab &	"Sq" & tab & LVL_STR & ", DENOM" );
 
     PUT_LINE( "end namespace"	);
 

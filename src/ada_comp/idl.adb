@@ -382,17 +382,17 @@ is					---
 			--
   function		DI		( AN :ATTRIBUTE_NAME; T :TREE) return INTEGER
   is			--
-
     ATTR		: TREE		:= D( AN,	T );
+
   begin
-    if ATTR.PT = HI	and then ATTR.NOTY = DN_NUM_VAL then
-      if ATTR.NSIZ = 0 then
-        return INTEGER( ATTR.ABSS );
-      elsif ATTR.NSIZ = 1 then
-        return INTEGER( -ATTR.ABSS - 1 );
+    if  ATTR.PT = HI  and then  ATTR.NOTY = DN_NUM_VAL  then
+      if  ATTR.NSIZ = 0  then
+        return  INTEGER( ATTR.ABSS );
+      elsif  ATTR.NSIZ = 1  then
+        return  INTEGER( -ATTR.ABSS - 1 );
       end	if;
     elsif  ATTR.NOTY = DN_NUM_VAL  then
-      null;
+      return  INTEGER'VALUE( PRINT_NUM( ATTR ) );
     end if;
     PUT_LINE( "!! L ATTRIBUT " & ATTR_IMAGE( AN )	& " DU NOEUD " & NODE_REP( T ) & " N EST PAS UN ENTIER");
     raise	PROGRAM_ERROR;
