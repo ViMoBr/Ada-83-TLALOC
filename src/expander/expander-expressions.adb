@@ -1881,11 +1881,18 @@ put_line( "; CODE_NUMERIC_LITERAL NUM_LIT_TYPE.TY " & NODE_NAME'IMAGE( NUM_LIT_T
 	declare
 	  SRC_TYPE	: TREE	:= D( SM_EXP_TYPE, SRC_EXP );
 	begin
-	  if  SRC_TYPE = TREE_VOID  or else  SRC_TYPE.TY /= DN_FLOAT  then					-- Si la source n'est pas deja flottante, convertir entier -> float
-	    PUT_LINE( tab &	"CVTIF" );								-- conversion entier signe 64	-> double	IEEE 754
+	  if  SRC_TYPE.TY /= DN_FLOAT  and  SRC_TYPE.TY /= DN_UNIVERSAL_REAL  then				-- Si la source n'est pas deja flottante, convertir entier -> float
+	    if  SRC_TYPE.TY = DN_FIXED  then								-- Source FIXED
+	      PUT( "; CODE_CONVERSION FLOAT TARGET FROM FIXED " & NODE_NAME'IMAGE( SRC_TYPE.TY ) );		-- A FAIRE
+	    else
+	      PUT( tab &	"CVTIF" );								-- conversion entier signe 64	-> double	IEEE 754
+	      if  CODI.DEBUG  then
+	        PUT( TAB50 & "; CODE_CONVERSION FLOAT TARGET FROM " & NODE_NAME'IMAGE( SRC_TYPE.TY ) );
+	      end if;
+	      NEW_LINE;
+	    end if;
 	  end if;
 	  -- float->float :	no-op, meme representation IEEE 754 double
-
 	end	FLOAT_TARGET;
 		------------
 
@@ -2033,7 +2040,7 @@ put_line( "; CODE_QUALIFIED : DN_QUALIFIED" & NODE_NAME'IMAGE( SRC_EXP.TY ) );
         LOAD_MEM( VC_ID );
       end if;
 
-    when DN_RECORD | DN_L_PRIVATE =>
+    when DN_RECORD | DN_PRIVATE | DN_L_PRIVATE =>
       LOAD_MEM( VC_ID );
 
     when DN_ARRAY |	DN_CONSTRAINED_ARRAY =>

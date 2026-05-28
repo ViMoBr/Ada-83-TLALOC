@@ -332,9 +332,9 @@ end if
 					;---------- end generic package instantiation DUR_IO
 end namespace
 
-VAR T_disp, q				; variable entiere
+VAR T_disp, q				; variable fixed
 
-VAR T1_disp, q				; variable entiere
+VAR T1_disp, q				; variable fixed
 
 VAR Y_disp, d				; variable entiere
 
@@ -401,6 +401,21 @@ STR STR_L17, " SECONDES "			; constante string=" SECONDES "
 	Ld 1,	STANDARD.TEST_CALENDAR_L1.DUR_IO.DEFAULT_AFT_disp
 	Ld 1,	STANDARD.TEST_CALENDAR_L1.DUR_IO.DEFAULT_FORE_disp
 	Lq 1,	S_disp
+	CALL	STANDARD.TEST_CALENDAR_L1.DUR_IO. ,PUT_L11
+	LI	1
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
+	LI	0					; lieu resultat sur pile
+	CALL	STANDARD.CALENDAR. ,CLOCK_L1
+	Sq  1,	T1_disp
+STR STR_L18, "DELTA "			; constante string="DELTA "
+	LCA	STR_L18.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	Ld 1,	STANDARD.TEST_CALENDAR_L1.DUR_IO.DEFAULT_EXP_disp
+	LI	8
+	Ld 1,	STANDARD.TEST_CALENDAR_L1.DUR_IO.DEFAULT_FORE_disp
+	Lq 1,	T1_disp
+	Lq 1,	T_disp
+	SUB
 	CALL	STANDARD.TEST_CALENDAR_L1.DUR_IO. ,PUT_L11
 	LI	1
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26

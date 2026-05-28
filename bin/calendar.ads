@@ -43,7 +43,7 @@ is					--------
 
 private
 
-  type TIME	is new LONG_INTEGER;
+  type TIME	is new DURATION;
 
 
 	--------

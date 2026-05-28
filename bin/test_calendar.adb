@@ -26,8 +26,8 @@ begin
   S := SECONDS( T );
   PUT( " SECONDES " ); DUR_IO.PUT( S ); NEW_LINE;
 
---  T1 := CALENDAR.CLOCK;
---  PUT( "DELTA " ); DUR_IO.PUT( T1 - T ); NEW_LINE;
+  T1 := CALENDAR.CLOCK;
+  PUT( "DELTA " ); DUR_IO.PUT( T1 - T, AFT=> 8 ); NEW_LINE;
 
 
 --  SPLIT( T, Y, M, D, S );

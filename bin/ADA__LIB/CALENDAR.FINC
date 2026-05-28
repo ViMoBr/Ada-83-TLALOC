@@ -71,30 +71,32 @@ VAR PARENT__u, q
 end namespace
 ;  CODE_SUBTYPE_DECL : TYPE_SPEC.TY PAS FAIT DN_FIXED
 
-					; TIME TYPE RANGE INFO
+					; TIME FIXED TYPE INFO
 TIME = 'TIME'
 namespace TIME
 VAR use__info, q
 VAR SIZ, d
 	LVA	0, SIZ
 	Sa	0, use__info
-VAR FST, q
-VAR LST, q
 	LI	64
 	Sd	0, SIZ
-	LI	2
-	LI	63
-	DEC
-	SHL
+VAR FST, q
+VAR LST, q
+	LIF	17179869184.0
+; CODE_NUMERIC_LITERAL NUM_LIT_TYPE.TY DN_UNIVERSAL_REAL
+	CVTFI
 	NEG
 	Sq	0, FST
-	LI	2
-	LI	63
-	DEC
-	SHL
-	LI	1
-	SUB
+	LIF	17179869183.0
+; CODE_NUMERIC_LITERAL NUM_LIT_TYPE.TY DN_UNIVERSAL_REAL
+	CVTFI
 	Sq	0, LST
+VAR NUMER, q
+VAR DENOM, q
+	LI	 93
+	Sq	0, NUMER
+	LI	050000000000
+	Sq	0, DENOM
 end namespace
 					;    BODY ELAB
 LONGINT_IO = 'LONGINT_IO'
@@ -759,99 +761,66 @@ PRMS					;    debut parametrage
 	PRM result__ofs				; resultat de fonction
 endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
-VAR T_disp, q				; variable entiere
+VAR NB_SMALLS_disp, q			; variable entiere
+	La  1,	-DATE_ofs
+	Sq  1,	NB_SMALLS_disp
 
 VAR SEC_TOTAL_disp, q			; variable entiere
-
-VAR FRAC_PART_disp, q			; variable entiere
-
-VAR SEC_OF_DAY_disp, q			; variable entiere
-
-VAR RESULT_disp, q				; variable entiere
-
-					;    end elab
-begin:					;---------- BDY INSTRUCTIONS
-	La  1,	-DATE_ofs
-	Sq  1,	T_disp
-	Lq 1,	T_disp
+	Lq 1,	NB_SMALLS_disp
 	Lq 0,	STANDARD.CALENDAR.SCALE_disp
 	DIV
 	Sq  1,	SEC_TOTAL_disp
-	Lq 1,	T_disp
+
+VAR FRAC_SMALLS_disp, q			; variable entiere
+	Lq 1,	NB_SMALLS_disp
 	Lq 1,	SEC_TOTAL_disp
 	Lq 0,	STANDARD.CALENDAR.SCALE_disp
 	MUL
 	SUB
+	Sq  1,	FRAC_SMALLS_disp
+
+VAR FRAC_PART_disp, q			; variable fixed
+	Lq 1,	FRAC_SMALLS_disp
+	CVTIF					; CODE_CONVERSION FLOAT TARGET FROM DN_INTEGER
+	LIF	 1.86000000000000E-09
+	FMUL
+	LI	050000000000
+	CVTIF
+	FMUL
+	LI	 93
+	CVTIF
+	FDIV
+	CVTFI
 	Sq  1,	FRAC_PART_disp
-STR STR_L18, "T : "				; constante string="T : "
-	LCA	STR_L18.data_ptr
-	CALL	STANDARD.TEXT_IO. ,PUT_L56
-	Ld 0,	STANDARD.CALENDAR.LONGINT_IO.DEFAULT_BASE_disp
-	Ld 0,	STANDARD.CALENDAR.LONGINT_IO.DEFAULT_WIDTH_disp
-	Lq 1,	T_disp
-	CALL	STANDARD.CALENDAR.LONGINT_IO. ,PUT_L64
-	LI	1
-	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
-STR STR_L19, "SEC_TOTAL : "			; constante string="SEC_TOTAL : "
-	LCA	STR_L19.data_ptr
-	CALL	STANDARD.TEXT_IO. ,PUT_L56
-	Ld 0,	STANDARD.CALENDAR.LONGINT_IO.DEFAULT_BASE_disp
-	Ld 0,	STANDARD.CALENDAR.LONGINT_IO.DEFAULT_WIDTH_disp
-	Lq 1,	SEC_TOTAL_disp
-	CALL	STANDARD.CALENDAR.LONGINT_IO. ,PUT_L64
-	LI	1
-	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
-STR STR_L20, "FRAC_PART : "			; constante string="FRAC_PART : "
-	LCA	STR_L20.data_ptr
-	CALL	STANDARD.TEXT_IO. ,PUT_L56
-	Ld 0,	STANDARD.CALENDAR.LONGINT_IO.DEFAULT_BASE_disp
-	Ld 0,	STANDARD.CALENDAR.LONGINT_IO.DEFAULT_WIDTH_disp
-	Lq 1,	FRAC_PART_disp
-	CALL	STANDARD.CALENDAR.LONGINT_IO. ,PUT_L64
-	LI	1
-	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
+
+VAR SEC_OF_DAY_disp, q			; variable entiere
 	Lq 1,	SEC_TOTAL_disp
 	Lq 0,	STANDARD.CALENDAR.SECONDS_PER_DAY_disp
 	REMI
 	Sq  1,	SEC_OF_DAY_disp
-STR STR_L21, "SEC_OF_DAY : "			; constante string="SEC_OF_DAY : "
-	LCA	STR_L21.data_ptr
-	CALL	STANDARD.TEXT_IO. ,PUT_L56
-	Ld 0,	STANDARD.CALENDAR.LONGINT_IO.DEFAULT_BASE_disp
-	Ld 0,	STANDARD.CALENDAR.LONGINT_IO.DEFAULT_WIDTH_disp
-	Lq 1,	SEC_OF_DAY_disp
-	CALL	STANDARD.CALENDAR.LONGINT_IO. ,PUT_L64
-	LI	1
-	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
 					; debut if
 	Lq 1,	SEC_OF_DAY_disp
 	LI	0
 	CLT
-	BF	L23
+	BF	L19
 	Lq 1,	SEC_OF_DAY_disp
 	Lq 0,	STANDARD.CALENDAR.SECONDS_PER_DAY_disp
 	ADD
 	Sq  1,	SEC_OF_DAY_disp
-	BRA	L22
-L23:
-L22:					; post if
-	Lq 1,	SEC_OF_DAY_disp
-	Sq  1,	RESULT_disp
-STR STR_L24, "RESULT : "			; constante string="RESULT : "
-	LCA	STR_L24.data_ptr
-	CALL	STANDARD.TEXT_IO. ,PUT_L56
-	Ld 0,	STANDARD.CALENDAR.LONGINT_IO.DEFAULT_BASE_disp
-	Ld 0,	STANDARD.CALENDAR.LONGINT_IO.DEFAULT_WIDTH_disp
-	Lq 1,	RESULT_disp
-	CALL	STANDARD.CALENDAR.LONGINT_IO. ,PUT_L64
-	LI	1
-	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
+	BRA	L18
+L19:
+L18:					; post if
 ; CODE_RETURN : EXPR TYPE = DN_FIXED
-	Lq 1,	RESULT_disp
+	Lq 1,	SEC_OF_DAY_disp
 	LI	050000000000
 	MUL
 	LI	 93
 	DIV
+	Lq 1,	FRAC_PART_disp
+	ADD
 ; FIXED to FIXED a faire
 	Sq  1,	-result__ofs
 	BRA ret_lbl
@@ -918,7 +887,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	Lq 1,	SEC_OF_DAY_disp
 	LI	0
 	CLT
-	BF	L26
+	BF	L21
 	Lq 1,	SEC_OF_DAY_disp
 	Lq 0,	STANDARD.CALENDAR.SECONDS_PER_DAY_disp
 	ADD
@@ -927,14 +896,14 @@ begin:					;---------- BDY INSTRUCTIONS
 	LI	1
 	SUB
 	Sq  1,	DAYS_FROM_1900_disp
-	BRA	L25
-L26:
-L25:					; post if
+	BRA	L20
+L21:
+L20:					; post if
 					; debut if
 	Lq 1,	FRAC_PART_disp
 	LI	0
 	CLT
-	BF	L28
+	BF	L23
 	Lq 1,	FRAC_PART_disp
 	Lq 0,	STANDARD.CALENDAR.SCALE_disp
 	ADD
@@ -947,7 +916,7 @@ L25:					; post if
 	Lq 1,	SEC_OF_DAY_disp
 	LI	0
 	CLT
-	BF	L30
+	BF	L25
 	Lq 1,	SEC_OF_DAY_disp
 	Lq 0,	STANDARD.CALENDAR.SECONDS_PER_DAY_disp
 	ADD
@@ -956,12 +925,12 @@ L25:					; post if
 	LI	1
 	SUB
 	Sq  1,	DAYS_FROM_1900_disp
-	BRA	L29
-L30:
-L29:					; post if
-	BRA	L27
-L28:
-L27:					; post if
+	BRA	L24
+L25:
+L24:					; post if
+	BRA	L22
+L23:
+L22:					; post if
 	LVA  1,	D_disp
 	LVA  1,	M_disp
 	LVA  1,	Y_disp
@@ -1058,9 +1027,9 @@ begin:					;---------- BDY INSTRUCTIONS
 	Sa  1,	-result__ofs
 	BRA ret_lbl
 ; CHOICE_OTHERS in EXCEPTIONS todo
-	BRA	L31
-L32:
-L31:
+	BRA	L26
+L27:
+L26:
 ret_lbl:
 	UNLINK 1
 	RTD	prm_siz-8
@@ -1099,9 +1068,9 @@ begin:					;---------- BDY INSTRUCTIONS
 	Sa  1,	-result__ofs
 	BRA ret_lbl
 ; CHOICE_OTHERS in EXCEPTIONS todo
-	BRA	L33
-L34:
-L33:
+	BRA	L28
+L29:
+L28:
 ret_lbl:
 	UNLINK 1
 	RTD	prm_siz
@@ -1163,9 +1132,9 @@ begin:					;---------- BDY INSTRUCTIONS
 	Sa  1,	-result__ofs
 	BRA ret_lbl
 ; CHOICE_OTHERS in EXCEPTIONS todo
-	BRA	L35
-L36:
-L35:
+	BRA	L30
+L31:
+L30:
 ret_lbl:
 	UNLINK 1
 	RTD	prm_siz
@@ -1207,9 +1176,9 @@ begin:					;---------- BDY INSTRUCTIONS
 	Sq  1,	-result__ofs
 	BRA ret_lbl
 ; CHOICE_OTHERS in EXCEPTIONS todo
-	BRA	L37
-L38:
-L37:
+	BRA	L32
+L33:
+L32:
 ret_lbl:
 	UNLINK 1
 	RTD	prm_siz

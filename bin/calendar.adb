@@ -11,6 +11,7 @@ package body				CALENDAR
 is					--------
 
 package LONGINT_IO is new INTEGER_IO( LONG_INTEGER );
+--package DURATION_IO is new FIXED_IO( DURATION_IO );
 
 	------------------------------------------------------------------
 	-- Représentation interne :
@@ -190,32 +191,18 @@ package LONGINT_IO is new INTEGER_IO( LONG_INTEGER );
 			-------
   function		SECONDS		( DATE :TIME )		return DAY_DURATION
   is			-------
-    -- Renvoie le nombre de secondes écoulées depuis minuit du jour de DATE.
-    -- Le résultat est exprimé en DURATION (Q35.29) :
-    --   sec_in_day * 2**29 + (frac dans la seconde courante)
-    T, SEC_TOTAL, FRAC_PART, SEC_OF_DAY, RESULT	: LONG_INTEGER;
+
+    NB_SMALLS	: LONG_INTEGER	:= LONG_INTEGER( DATE );
+    SEC_TOTAL	: LONG_INTEGER	:= NB_SMALLS / SCALE;
+    FRAC_SMALLS	: LONG_INTEGER	:= NB_SMALLS - SEC_TOTAL * SCALE;
+    FRAC_PART	: DURATION	:= DURATION( LONG_FLOAT( FRAC_SMALLS ) * LONG_FLOAT( DURATION'SMALL ) );
+    SEC_OF_DAY	: LONG_INTEGER	:= SEC_TOTAL rem SECONDS_PER_DAY;
+
   begin
-    T          := LONG_INTEGER( DATE );
-    SEC_TOTAL  := T / SCALE;
-    FRAC_PART  := T - SEC_TOTAL * SCALE;								-- Dans [0..2**29-1]
-
-PUT( "T : " ); LONGINT_IO.PUT( T ); NEW_LINE;
-PUT( "SEC_TOTAL : " ); LONGINT_IO.PUT( SEC_TOTAL ); NEW_LINE;
-PUT( "FRAC_PART : " ); LONGINT_IO.PUT( FRAC_PART ); NEW_LINE;
-
-
-    SEC_OF_DAY := SEC_TOTAL rem SECONDS_PER_DAY;
-
-PUT( "SEC_OF_DAY : " ); LONGINT_IO.PUT( SEC_OF_DAY ); NEW_LINE;
-
     if  SEC_OF_DAY < 0  then										-- normaliser pour DATE < 1900
       SEC_OF_DAY := SEC_OF_DAY + SECONDS_PER_DAY;
     end if;
-    RESULT := SEC_OF_DAY; -- * SCALE + FRAC_PART;
-
-PUT( "RESULT : " ); LONGINT_IO.PUT( RESULT ); NEW_LINE;
-
-    return  DAY_DURATION( DURATION( RESULT ) );
+    return  DAY_DURATION( DURATION( SEC_OF_DAY ) + FRAC_PART );
 
   end	SECONDS;
 	-------
