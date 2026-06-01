@@ -48,6 +48,7 @@ VAR FST, d
 VAR LST, d
 	LI	32
 	Sd	0, SIZ
+; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
 	LI	0
 	Sd	0, FST
 	LI	002147483647
@@ -65,6 +66,7 @@ VAR FST, d
 VAR LST, d
 	LI	32
 	Sd	0, SIZ
+; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	Sd	0, FST
 	LI	002147483647
@@ -85,8 +87,10 @@ VAR LST_1, d
 	LI	8
 	Sd	0, COMP_SIZ
 	Ld	0, COMP_SIZ
+; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	Sd	0, FST_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	256
 	Sd	0, LST_1
 	Ld	0, LST_1
@@ -175,6 +179,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	Sd  1,	ERR_OR_ID_disp
 					; debut if
 	Ld 1,	ERR_OR_ID_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	CGE
 	BF	L3
@@ -193,6 +198,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	Ld	, STRING.FST_1
 	SUB
 	INC
+; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SUB
 	LI	1
@@ -221,6 +227,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	Sb
 	La 1, -FILE_ofs
 	LIVA 	, 0, STANDARD.DIRECT_IO.FILE_TYPE.INDEX
+; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	Sd
 	La 1, -FILE_ofs
@@ -278,6 +285,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	Sd  1,	ERR_OR_ID_disp
 					; debut if
 	Ld 1,	ERR_OR_ID_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	CGE
 	BF	L6
@@ -296,6 +304,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	Ld	, STRING.FST_1
 	SUB
 	INC
+; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SUB
 	LI	1
@@ -324,6 +333,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	Sb
 	La 1, -FILE_ofs
 	LIVA 	, 0, STANDARD.DIRECT_IO.FILE_TYPE.INDEX
+; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	Sd
 	La 1, -FILE_ofs
@@ -379,6 +389,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	Sd  1,	ERR_CODE_disp
 	La 1, -FILE_ofs
 	LIVA 	, 0, STANDARD.DIRECT_IO.FILE_TYPE.ID
+; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	NEG
 	Sd
@@ -440,6 +451,7 @@ VAR LST_1, d
 	Sa	1, ANON_128_37__u
 	LI	8
 	Sd	1, COMP_SIZ
+; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	Sd	1, FST_1
 	La 1, -FILE_ofs
@@ -521,6 +533,7 @@ L10:					; post if
 	Sb
 	La 1, -FILE_ofs
 	LIVA 	, 0, STANDARD.DIRECT_IO.FILE_TYPE.INDEX
+; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	Sd
 	La 1, -FILE_ofs
@@ -620,6 +633,7 @@ L16:					; post if
 	La 1, -FILE_ofs
 	LId	, 0, STANDARD.DIRECT_IO.FILE_TYPE.NAME_LEN
 	INC
+; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SUB
 	LI	1
@@ -771,6 +785,8 @@ L25:
 L24:					; post if
 					; debut if
 	Ld  1,	-FROM_ofs
+; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
+; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	CLE
 	BF	L27
@@ -780,6 +796,8 @@ L26:					; post if
 	LI	0					; lieu resultat sur pile
 	La  1,	-GFP_ofs				; propagation GFP generique
 	Ld  1,	-FROM_ofs
+; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
+; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SUB
 	Ld 1,	SIZE_BYTES_disp
@@ -989,6 +1007,8 @@ L42:
 L41:					; post if
 					; debut if
 	Ld  1,	-TO_ofs
+; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
+; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	CLE
 	BF	L44
@@ -998,6 +1018,8 @@ L43:					; post if
 	LI	0					; lieu resultat sur pile
 	La  1,	-GFP_ofs				; propagation GFP generique
 	Ld  1,	-TO_ofs
+; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
+; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SUB
 	Ld 1,	SIZE_BYTES_disp
@@ -1155,6 +1177,8 @@ L52:
 L51:					; post if
 					; debut if
 	Ld  1,	-TO_ofs
+; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
+; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	CLE
 	BF	L54
@@ -1164,6 +1188,8 @@ L53:					; post if
 	LI	0					; lieu resultat sur pile
 	La  1,	-GFP_ofs				; propagation GFP generique
 	Ld  1,	-TO_ofs
+; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
+; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SUB
 	Ld 1,	SIZE_BYTES_disp
@@ -1237,8 +1263,10 @@ L56:					; post if
 	Ld 1,	BYTES_disp
 	Ld 1,	SIZE_BYTES_disp
 	DIV
+; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
 	Sd  1,	-result__ofs
 	BRA ret_lbl
 ret_lbl:
@@ -1306,6 +1334,7 @@ L59:					; post if
 	Ld 1,	BYTES_disp
 	Ld 1,	SIZE_BYTES_disp
 	DIV
+; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
 	Sd  1,	-result__ofs
 	BRA ret_lbl
 ret_lbl:

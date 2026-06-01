@@ -625,7 +625,7 @@ null;
 	    elsif  EXPRESSIONS.IS_GENERIC_FORMAL_TYPE( D( XD_SOURCE_NAME, D( SM_OBJ_TYPE, DEFN ) ) )  then
 	      PUT_LINE( tab & "LVA " & IMAGE( DI( CD_LEVEL, DEFN ) ) & ','
 		    & tab & '-' & PRINT_NAME( D( LX_SYMREP, DEFN ) ) & "_ofs" );
-	      PUT_LINE( tab & "La" & LEVEL_NUM'IMAGE( CUR_LEVEL ) & ',' & tab & "-GFP_ofs" );
+	      PUT_LINE( tab & "La" & LEVEL_NUM'IMAGE( CODI.GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );
 	      PUT_LINE( tab & "La ," & tab & '-' & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, D( SM_OBJ_TYPE, DEFN ) ) ) )
 			& "__ld_ofs" );
 	      PUT_LINE( tab & "CALLI" );
@@ -1058,7 +1058,8 @@ raise PROGRAM_ERROR;
 	    begin
 	        -- Charger l'adresse de ST via le GFP
 	        -- Utiliser le niveau du parametre (= niveau de la procedure, pas du bloc declare)
-	      PUT_LINE( tab & "La " & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' & tab & "-GFP_ofs" );
+	      PUT_LINE( tab & "La " & INTEGER'IMAGE( CODI.GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );
+--	      PUT_LINE( tab & "La " & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' & tab & "-GFP_ofs" );
 	      PUT_LINE( tab & "La ," & tab & '-' & FORMAL_TYPE_NAME & "__st_ofs" );
 	      PUT_LINE( tab & "CALLI" );
 	    end;

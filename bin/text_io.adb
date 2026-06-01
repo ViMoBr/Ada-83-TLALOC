@@ -1257,10 +1257,30 @@ is					-------
           VAL := VAL / 10.0;
           E := E + 1;
         end loop;
+
         while  VAL < 1.0  loop
           VAL := VAL * 10.0;
           E := E - 1;
         end loop;
+      end if;
+
+      -- Arrondir la mantisse au nombre de chiffres demandes.
+      -- L'extraction ulterieure des chiffres est volontairement tronquee.
+      declare
+        ROUNDING	: NUM	:= 0.5;
+      begin
+        for  I in  1 .. AFT  loop
+          ROUNDING := ROUNDING / 10.0;
+        end loop;
+
+        VAL := VAL + ROUNDING;
+      end;
+
+      -- Propager une retenue issue de l'arrondi :
+      -- 9.9999996E+n devient 1.000000E+(n+1).
+      if  VAL >= 10.0  then
+        VAL := VAL / 10.0;
+        E := E + 1;
       end if;
 
       -- Padding FORE : le champ FORE inclut le signe et le chiffre avant le point
@@ -1483,7 +1503,7 @@ is					-------
 --      if  EXP = 0  then
 
         -- Separer partie entiere et partie fractionnaire
-        INT_PART := NUM( INTEGER( VAL ) );
+        INT_PART := NUM( LONG_INTEGER( VAL ) );
         if  INT_PART > VAL  then									-- securite si arrondi par exces
           INT_PART := INT_PART - 1.0;
         end if;
@@ -1492,8 +1512,8 @@ is					-------
         -- Construire la chaine des chiffres de la partie entiere (au moins un '0')
         declare
           IBUF	: STRING( 1 .. 40 );
-          NB	: NATURAL		:= 0;
-	IPART	: INTEGER		:= INTEGER( INT_PART );
+          NB	: NATURAL			:= 0;
+	IPART	: LONG_INTEGER		:= LONG_INTEGER( INT_PART );
           FLEN	: NATURAL;
 
         begin
@@ -1536,12 +1556,12 @@ is					-------
 
         -- Chiffres apres le point
         for  K in 1 .. AFT  loop
-          FRC_PART := FRC_PART * 10;
-          DIGIT := INTEGER( FRC_PART - NUM( 0.5 * NUM'SMALL ) );						-- troncature
-          if  DIGIT > 9  then DIGIT := 9; end if;
-          if  DIGIT < 0  then DIGIT := 0; end if;
-          PUT( FILE, CHARACTER'VAL( CHARACTER'POS( '0' ) + DIGIT ) );
-          FRC_PART := FRC_PART - NUM( DIGIT );
+	FRC_PART := FRC_PART * 10;
+	DIGIT := INTEGER( FRC_PART - NUM( 0.5 * NUM'SMALL ) );						-- troncature
+	if  DIGIT > 9  then DIGIT := 9; end if;
+	if  DIGIT < 0  then DIGIT := 0; end if;
+	PUT( FILE, CHARACTER'VAL( CHARACTER'POS( '0' ) + DIGIT ) );
+	FRC_PART := FRC_PART - NUM( DIGIT );
         end loop;
 
       ----------------------------------------------------------------

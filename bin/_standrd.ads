@@ -110,7 +110,7 @@ is				--------
 	-- pragma	PACK(STRING);
 
 --    type DURATION		is delta 2.0**(-29) range -2.0**34 .. 2.0**34 - 1.0;				-- type DURATION souhaite, ecriture trop complexe
-    type DURATION		is delta 0.00000000186 range -17179869184.0 .. 17179869183.0;			-- Ecrire comme ceci sinon les puissances ne passent pas
+      type DURATION		is delta 0.00000000186264514923095703125 range -17179869184.0 .. 17179869183.0;
 
     CONSTRAINT_ERROR	: exception;
     NUMERIC_ERROR		: exception;
@@ -128,7 +128,7 @@ is				--------
       --|	Ce type est invisible, il doit être en minuscules	et sert de type de base pour DURATION
 
 --      type _duration	is delta 2.0**(-29)	range -2.0**34 .. 2.0**34 - 1.0;				-- type _duration souhaite, ecriture trop complexe
-      type _duration	is delta 0.00000000186 range -17179869184.0 .. 17179869183.0;			-- Ecrire comme ceci sinon les puissances ne passent pas
+      type _duration	is delta 0.00000000186264514923095703125 range -17179869184.0 .. 17179869183.0;
 
       -- Specification of implementation sizes
 	for BOOLEAN'size		use 1;

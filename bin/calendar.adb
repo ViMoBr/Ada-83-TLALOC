@@ -3,27 +3,11 @@
 -- SPDX-License-Identifier: GPL-3.0-or-later
 ------------------------------------------------------------------------------------------------------------------------
 --	1	2	3	4	5	6	7	8	9	0	1	2
-with TEXT_IO; use TEXT_IO;
 
 with MACHINE_CODE;	use MACHINE_CODE;
 					--------
 package body				CALENDAR
 is					--------
-
-package LONGINT_IO is new INTEGER_IO( LONG_INTEGER );
---package DURATION_IO is new FIXED_IO( DURATION_IO );
-
-	------------------------------------------------------------------
-	-- Représentation interne :
-	--   TIME = Q35.29 signé, epoch 1900-01-01 00:00:00 UTC
-	--   Unité = 1 / 2**29 s  (≈ 1.86 ns par tick, correspond au 'SMALL)
-	--   Plage = ±2**34 s ≈ ±544 ans autour de 1900
-	--
-	--   DURATION (dans STANDARD) = même 'SMALL = 2**(-29)
-	--   defini danz STANDARD : type _duration is delta 2.0**(-29) range -(2.0**34 - 1.0) .. 2.0**34;
-	--   donc TIME - TIME donne DURATION et TIME + DURATION donne TIME
-	--   sont de simples soustractions/additions d'entiers 64 bits.
-	------------------------------------------------------------------
 
   EPOCH_DIFF_S	:constant LONG_INTEGER	:= 2_208_988_800;						-- Décalage entre l'epoch Unix (1970) et notre epoch (1900), en secondes
   SCALE		:constant LONG_INTEGER	:= 16#2000_0000#;						-- 2**29 (échelle de la fraction Q35.29)
@@ -68,9 +52,6 @@ package LONGINT_IO is new INTEGER_IO( LONG_INTEGER );
     TMP					: LONG_INTEGER;
 
   begin
-
---PUT( "CIVIL_FROM_DAYS DAYS : " ); LONGINT_IO.PUT( DAYS ); NEW_LINE;
-
     if  DAYS >= 0  then
       TMP := DAYS;
     else
@@ -93,10 +74,6 @@ package LONGINT_IO is new INTEGER_IO( LONG_INTEGER );
     M := M_OUT;
     D := D_OUT;
 
---PUT( "CIVIL_FROM_DAYS Y : " ); LONGINT_IO.PUT( Y ); NEW_LINE;
---PUT( "CIVIL_FROM_DAYS M : " ); LONGINT_IO.PUT( M ); NEW_LINE;
---PUT( "CIVIL_FROM_DAYS D : " ); LONGINT_IO.PUT( D ); NEW_LINE;
-
   end	CIVIL_FROM_DAYS;
 	---------------
 
@@ -109,8 +86,8 @@ package LONGINT_IO is new INTEGER_IO( LONG_INTEGER );
 			  SEC, NANOSEC	: LONG_INTEGER;
 			end record;
     LTV		: LINUX_TIMEVAL;
-    T		: LONG_INTEGER;
-
+    T		: DURATION;
+    NANOSEC_PART	: DURATION;
 		---------------
     procedure	GETTIME_SYSCALL	( TV :out LINUX_TIMEVAL )
     is		---------------
@@ -123,36 +100,42 @@ package LONGINT_IO is new INTEGER_IO( LONG_INTEGER );
 
   begin
     GETTIME_SYSCALL( LTV );
-    T := (LTV.SEC + EPOCH_DIFF_S) * SCALE + (LTV.NANOSEC * SCALE) / NS_PER_SEC;
-
---PUT( "CLOCK : " ); LONGINT_IO.PUT( LONG_INTEGER( T ), 25, 16 ); NEW_LINE;
---PUT( "SECONDES : " ); LONGINT_IO.PUT( LTV.SEC ); NEW_LINE;
---PUT( "NANO-SECONDES : " ); LONGINT_IO.PUT( LTV.NANOSEC ); NEW_LINE;
---PUT( "ANNEES (depuis 1970) : " ); LONGINT_IO.PUT( LTV.SEC / 86400 / 365 ); NEW_LINE;
-
-    return TIME( T );
+    NANOSEC_PART := DURATION( LONG_FLOAT( LTV.NANOSEC ) * 1.0E-9 );
+    T := DURATION( LTV.SEC + EPOCH_DIFF_S ) + NANOSEC_PART;
+    return  TIME( T );
 
   end	CLOCK;
 	-----
 
 
+			-------------
+  function		WHOLE_SECONDS	( DATE : TIME )	return LONG_INTEGER
+  is			-------------
+
+    D	: DURATION	:= DURATION( DATE );
+
+  begin
+    if  D = 0.0  then
+      return  0;
+    else
+      return  LONG_INTEGER( D - 0.5 );
+    end if;
+
+  end	WHOLE_SECONDS;
+	-------------
+
+
 			----
   function		YEAR		( DATE :TIME )		return YEAR_NUMBER
   is			----
-    Y, M, D, S	: LONG_INTEGER;
-  begin
-    declare
-      SECONDS_TOTAL, FRAC, DAYS_FROM_1900	: LONG_INTEGER;
-    begin
---PUT( "YEAR DATE : " ); LONGINT_IO.PUT( LONG_INTEGER( DATE ), 25, 16 ); NEW_LINE;
-      SECONDS_TOTAL   := LONG_INTEGER( DATE ) / SCALE;
---PUT( "YEAR SECONDS_TOTAL : " ); LONGINT_IO.PUT( SECONDS_TOTAL ); NEW_LINE;
-      DAYS_FROM_1900  := SECONDS_TOTAL / SECONDS_PER_DAY;
---PUT( "YEAR DAYS_FROM_1900 : " ); LONGINT_IO.PUT( DAYS_FROM_1900 ); NEW_LINE;
 
-      CIVIL_FROM_DAYS( DAYS_FROM_1900 + DAYS_1900, Y, M, D );
-    end;
-    return YEAR_NUMBER( Y );
+    SECONDS_TOTAL		: LONG_INTEGER	:= WHOLE_SECONDS( DATE );
+    DAYS_FROM_1900		: LONG_INTEGER	:= SECONDS_TOTAL / SECONDS_PER_DAY;
+    Y, M, D		: LONG_INTEGER;
+
+  begin
+    CIVIL_FROM_DAYS( DAYS_FROM_1900 + DAYS_1900, Y, M, D );
+    return  YEAR_NUMBER( Y );
 
   end	YEAR;
 	----
@@ -161,13 +144,14 @@ package LONGINT_IO is new INTEGER_IO( LONG_INTEGER );
 			-----
   function		MONTH		( DATE :TIME )		return MONTH_NUMBER
   is			-----
-    Y, M, D			: LONG_INTEGER;
-    SECONDS_TOTAL, DAYS_FROM_1900	: LONG_INTEGER;
+
+    SECONDS_TOTAL		: LONG_INTEGER	:= WHOLE_SECONDS( DATE );
+    DAYS_FROM_1900		: LONG_INTEGER	:= SECONDS_TOTAL / SECONDS_PER_DAY;
+    Y, M, D		: LONG_INTEGER;
+
   begin
-    SECONDS_TOTAL  := LONG_INTEGER( DATE ) / SCALE;
-    DAYS_FROM_1900 := SECONDS_TOTAL / SECONDS_PER_DAY;
     CIVIL_FROM_DAYS( DAYS_FROM_1900 + DAYS_1900, Y, M, D );
-    return MONTH_NUMBER( M );
+    return  MONTH_NUMBER( M );
 
   end	MONTH;
 	-----
@@ -176,13 +160,14 @@ package LONGINT_IO is new INTEGER_IO( LONG_INTEGER );
 			---
   function		DAY		( DATE :TIME )		return DAY_NUMBER
   is			---
-    Y, M, D			: LONG_INTEGER;
-    SECONDS_TOTAL, DAYS_FROM_1900	: LONG_INTEGER;
+
+    SECONDS_TOTAL		: LONG_INTEGER	:= WHOLE_SECONDS( DATE );
+    DAYS_FROM_1900		: LONG_INTEGER	:= SECONDS_TOTAL / SECONDS_PER_DAY;
+    Y, M, D		: LONG_INTEGER;
+
   begin
-    SECONDS_TOTAL  := LONG_INTEGER( DATE ) / SCALE;
-    DAYS_FROM_1900 := SECONDS_TOTAL / SECONDS_PER_DAY;
     CIVIL_FROM_DAYS( DAYS_FROM_1900 + DAYS_1900, Y, M, D );
-    return DAY_NUMBER( D );
+    return  DAY_NUMBER( D );
 
   end	DAY;
 	---
@@ -192,17 +177,12 @@ package LONGINT_IO is new INTEGER_IO( LONG_INTEGER );
   function		SECONDS		( DATE :TIME )		return DAY_DURATION
   is			-------
 
-    NB_SMALLS	: LONG_INTEGER	:= LONG_INTEGER( DATE );
-    SEC_TOTAL	: LONG_INTEGER	:= NB_SMALLS / SCALE;
-    FRAC_SMALLS	: LONG_INTEGER	:= NB_SMALLS - SEC_TOTAL * SCALE;
-    FRAC_PART	: DURATION	:= DURATION( LONG_FLOAT( FRAC_SMALLS ) * LONG_FLOAT( DURATION'SMALL ) );
-    SEC_OF_DAY	: LONG_INTEGER	:= SEC_TOTAL rem SECONDS_PER_DAY;
+    SECONDS_TOTAL		: LONG_INTEGER	:= WHOLE_SECONDS( DATE );
+    SEC_OF_DAY		: LONG_INTEGER	:= SECONDS_TOTAL rem SECONDS_PER_DAY;
+    FRAC_PART		: DURATION	:= DURATION( DATE ) - DURATION( SECONDS_TOTAL );
 
   begin
-    if  SEC_OF_DAY < 0  then										-- normaliser pour DATE < 1900
-      SEC_OF_DAY := SEC_OF_DAY + SECONDS_PER_DAY;
-    end if;
-    return  DAY_DURATION( DURATION( SEC_OF_DAY ) + FRAC_PART );
+    return DAY_DURATION( DURATION( SEC_OF_DAY ) + FRAC_PART );
 
   end	SECONDS;
 	-------
@@ -216,38 +196,19 @@ package LONGINT_IO is new INTEGER_IO( LONG_INTEGER );
 					  SECONDS	:out DAY_DURATION
 					)
   is			-----
-    Y, M, D				: LONG_INTEGER;
-    T, SEC_TOTAL, FRAC_PART, DAYS_FROM_1900,
-    SEC_OF_DAY, DUR_INTERNAL			: LONG_INTEGER;
+
+    SEC_TOTAL		: LONG_INTEGER	:= WHOLE_SECONDS( DATE );
+    DAYS_FROM_1900		: LONG_INTEGER	:= SEC_TOTAL / SECONDS_PER_DAY;
+    SEC_OF_DAY		: LONG_INTEGER	:= SEC_TOTAL rem SECONDS_PER_DAY;
+    FRAC_PART		: DURATION	:= DURATION( DATE ) - DURATION( SEC_TOTAL );
+    Y, M, D		: LONG_INTEGER;
 
   begin
-    T              := LONG_INTEGER( DATE );
-    SEC_TOTAL      := T / SCALE;
-    FRAC_PART      := T - SEC_TOTAL * SCALE;
-    DAYS_FROM_1900 := SEC_TOTAL / SECONDS_PER_DAY;
-    SEC_OF_DAY     := SEC_TOTAL - DAYS_FROM_1900 * SECONDS_PER_DAY;
-
-
-    if  SEC_OF_DAY < 0  then		   								-- Si DATE < 1900-01-01 (T négatif), normaliser pour avoir
-      SEC_OF_DAY     := SEC_OF_DAY + SECONDS_PER_DAY;	 						-- SEC_OF_DAY dans [0..86400) et DAYS_FROM_1900 entier correct.
-      DAYS_FROM_1900 := DAYS_FROM_1900 - 1;
-    end if;
-    if  FRAC_PART < 0  then										-- ne devrait pas arriver
-      FRAC_PART      := FRAC_PART + SCALE;
-      SEC_OF_DAY     := SEC_OF_DAY - 1;
-      if  SEC_OF_DAY < 0  then
-        SEC_OF_DAY     := SEC_OF_DAY + SECONDS_PER_DAY;
-        DAYS_FROM_1900 := DAYS_FROM_1900 - 1;
-      end if;
-    end if;
-
     CIVIL_FROM_DAYS( DAYS_FROM_1900 + DAYS_1900, Y, M, D );
-
-    DUR_INTERNAL := SEC_OF_DAY * SCALE + FRAC_PART;
-    YEAR := YEAR_NUMBER( Y );
-    MONTH	:= MONTH_NUMBER( M );
-    DAY := DAY_NUMBER( D );
-    SECONDS := DAY_DURATION( DURATION( DURATION'SMALL ) * DURATION( DUR_INTERNAL ) );
+    YEAR    := YEAR_NUMBER( Y );
+    MONTH   := MONTH_NUMBER( M );
+    DAY     := DAY_NUMBER( D );
+    SECONDS := DAY_DURATION( DURATION( SEC_OF_DAY ) + FRAC_PART );
 
   end	SPLIT;
 	-----
@@ -259,67 +220,43 @@ package LONGINT_IO is new INTEGER_IO( LONG_INTEGER );
 					  DAY	: DAY_NUMBER;
 					  SECONDS	: DAY_DURATION := 0.0 )	return TIME
   is			-------
-    DAYS_FROM_HINNANT, DAYS_FROM_1900_LOCAL,
-    DUR_INTERNAL, T				: LONG_INTEGER;
+
+    DAYS_FROM_HINNANT	: LONG_INTEGER
+			  := DAYS_FROM_CIVIL( LONG_INTEGER( YEAR ), LONG_INTEGER( MONTH ), LONG_INTEGER( DAY ) );
+    DAYS_FROM_1900_LOCAL	: LONG_INTEGER	:= DAYS_FROM_HINNANT - DAYS_1900;
 
   begin
-
-    DAYS_FROM_HINNANT := DAYS_FROM_CIVIL( LONG_INTEGER( YEAR ), LONG_INTEGER( MONTH ), LONG_INTEGER( DAY ) );		-- Calcul des jours depuis 0000-03-01 puis depuis 1900-01-01.
-    DAYS_FROM_1900_LOCAL := DAYS_FROM_HINNANT - DAYS_1900;
-
-    -- Conversion SECONDS (DAY_DURATION) en représentation Q35.29 entière.
-    -- Comme DURATION'SMALL = 2**(-29), la valeur interne est SECONDS / 2**(-29)
-    -- = SECONDS * 2**29, qu'on obtient par division par 'SMALL.
-    DUR_INTERNAL := LONG_INTEGER( SECONDS / DAY_DURATION( DURATION'SMALL ) );
-
-    T := DAYS_FROM_1900_LOCAL * SECONDS_PER_DAY * SCALE + DUR_INTERNAL;
-    return TIME( T );
-
-  exception
-    when others =>
-      raise TIME_ERROR;
+    return TIME( DAYS_FROM_1900_LOCAL * SECONDS_PER_DAY ) + SECONDS;
 
   end	TIME_OF;
 	-------
 
 
 			---
-  function		"+"		( LEFT : TIME;	RIGHT : DURATION )	return TIME
+  function		"+"		( LEFT :TIME; RIGHT :DURATION )	return TIME
   is			---
-    -- LEFT et RIGHT ont la même échelle binaire (Q35.29).
-    -- Addition = simple add 64 bits. Conversion via 'SMALL identique.
-    DUR_INTERNAL	: LONG_INTEGER;
   begin
-    DUR_INTERNAL := LONG_INTEGER( RIGHT / DURATION( DURATION'SMALL ) );
-    return TIME( LONG_INTEGER( LEFT ) + DUR_INTERNAL );
-  exception
-    when others =>
-      raise TIME_ERROR;
+    return  TIME( DURATION( LEFT ) + RIGHT );
 
   end	"+";
 	---
 
 
 			---
-  function		"+"		( LEFT : DURATION; RIGHT : TIME )	return TIME
+  function		"+"		( LEFT :DURATION; RIGHT :TIME )	return TIME
   is			---
   begin
-    return RIGHT + LEFT;
+    return  TIME( LEFT + DURATION( RIGHT ) );
+
   end	"+";
 	---
 
 
 			---
-  function		"-"		( LEFT : TIME; RIGHT : DURATION )	return TIME
+  function		"-"		( LEFT :TIME; RIGHT :DURATION )	return TIME
   is			---
-    DUR_INTERNAL	: LONG_INTEGER;
-
   begin
-    DUR_INTERNAL := LONG_INTEGER( RIGHT / DURATION( DURATION'SMALL ) );
-    return  TIME( LONG_INTEGER( LEFT ) - DUR_INTERNAL );
-  exception
-    when others =>
-      raise TIME_ERROR;
+    return  TIME( DURATION( LEFT ) - RIGHT );
 
   end	"-";
 	---
@@ -328,14 +265,8 @@ package LONGINT_IO is new INTEGER_IO( LONG_INTEGER );
 			---
   function		"-"		( LEFT : TIME; RIGHT : TIME )		return DURATION
   is			---
-    DELTA_INTERNAL	: LONG_INTEGER;
-
   begin
-    DELTA_INTERNAL := LONG_INTEGER( LEFT ) - LONG_INTEGER( RIGHT );
-    return  DURATION( DURATION( DURATION'SMALL ) * DURATION( DELTA_INTERNAL ) );
-  exception
-    when others =>
-      raise TIME_ERROR;
+    return  DURATION( LEFT ) - DURATION( RIGHT );
 
   end	"-";
 	---
@@ -345,7 +276,8 @@ package LONGINT_IO is new INTEGER_IO( LONG_INTEGER );
   function		"<"		( LEFT, RIGHT : TIME )		return BOOLEAN
   is			---
   begin
-    return LONG_INTEGER( LEFT ) < LONG_INTEGER( RIGHT );
+    return  LEFT < RIGHT;
+
   end	"<";
 	---
 
@@ -354,7 +286,8 @@ package LONGINT_IO is new INTEGER_IO( LONG_INTEGER );
   function		"<="		( LEFT, RIGHT : TIME )		return BOOLEAN
   is			----
   begin
-    return LONG_INTEGER( LEFT ) <= LONG_INTEGER( RIGHT );
+    return  LEFT <= RIGHT;
+
   end	"<=";
 	----
 
@@ -363,7 +296,8 @@ package LONGINT_IO is new INTEGER_IO( LONG_INTEGER );
   function		">"		( LEFT, RIGHT : TIME )		return BOOLEAN
   is			---
   begin
-    return LONG_INTEGER( LEFT ) > LONG_INTEGER( RIGHT );
+    return  LEFT > RIGHT;
+
   end	">";
 	---
 
@@ -372,7 +306,8 @@ package LONGINT_IO is new INTEGER_IO( LONG_INTEGER );
   function		">="		( LEFT, RIGHT : TIME )		return BOOLEAN
   is			----
   begin
-    return LONG_INTEGER( LEFT ) >= LONG_INTEGER( RIGHT );
+    return  LEFT >=  RIGHT;
+
   end	">=";
 	----
 

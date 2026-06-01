@@ -192,7 +192,6 @@ is
 	-----------------
 
 
-
 			---------------
   procedure		CODE_FIXED_DECL		( TYPE_DECL :TREE )
   is			---------------
@@ -227,11 +226,18 @@ is
     PUT_LINE( "VAR FST, " & SIZE_CHAR );
     PUT_LINE( "VAR LST, " & SIZE_CHAR );
 
-    EXPRESSIONS.CODE_EXP( EXP_FST );
-    PUT_LINE( tab &	'S' & SIZE_CHAR & tab & LVL_STR & ", FST" );
+    EXPRESSIONS.CODE_STATIC_FIXED_VALUE( D( SM_VALUE, EXP_FST ), FIXED_SPEC );
+    PUT_LINE( tab & 'S' & SIZE_CHAR & tab & LVL_STR & ", FST" );
 
-    EXPRESSIONS.CODE_EXP( EXP_LST );
-    PUT_LINE( tab &	'S' & SIZE_CHAR & tab & LVL_STR & ", LST" );
+    EXPRESSIONS.CODE_STATIC_FIXED_VALUE( D( SM_VALUE, EXP_LST ), FIXED_SPEC );
+    PUT_LINE( tab & 'S' & SIZE_CHAR & tab & LVL_STR & ", LST" );
+
+
+--    EXPRESSIONS.CODE_EXP( EXP_FST );
+--    PUT_LINE( tab &	'S' & SIZE_CHAR & tab & LVL_STR & ", FST" );
+
+--    EXPRESSIONS.CODE_EXP( EXP_LST );
+--    PUT_LINE( tab &	'S' & SIZE_CHAR & tab & LVL_STR & ", LST" );
 
     PUT_LINE( "VAR NUMER, q" );
     PUT_LINE( "VAR DENOM, q" );
