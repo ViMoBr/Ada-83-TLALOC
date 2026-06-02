@@ -290,7 +290,8 @@ separate ( EXPANDER )
 
       declare
         ITERATION_ID	: TREE		:= D( AS_SOURCE_NAME, ITERATION );
-        ITERATION_RANGE	: TREE		:= D( AS_DISCRETE_RANGE, ITERATION );
+--        ITERATION_RANGE	: TREE		:= D( AS_DISCRETE_RANGE, ITERATION );
+        ITERATION_RANGE	: TREE		:= D( SM_RANGE, D( SM_OBJ_TYPE, ITERATION_ID ) );
         RANGE_LOW		: TREE		:= D( AS_EXP1, ITERATION_RANGE );
         RANGE_HIGH		: TREE		:= D( AS_EXP2, ITERATION_RANGE );
         TYPE_CHAR		: CHARACTER	:= OPER_SIZ_CHAR( D( SM_OBJ_TYPE, ITERATION_ID ) );
@@ -383,7 +384,7 @@ separate ( EXPANDER )
         NEW_LINE;
 
       end			FOR_OR_REVERSE_LOOP;
-
+			-------------------
     end if;
 
     PUT( AFTER_LOOP_LBL_STR & ':' );
@@ -695,7 +696,6 @@ null;
 	declare
 	  ANONYMOUS_STR	:constant STRING	:= ANONYMOUS_NAME_AT( ACT_PRM );
 	  TYPE_SPEC	: TREE		:= D( SM_EXP_TYPE, ACT_PRM );
---	  TYPE_SIZE	: INTEGER		:= DI( CD_IMPL_SIZE, TYPE_SPEC ) / CODI.STORAGE_UNIT;
 	  TYPE_NAME	: TREE		:= D( XD_SOURCE_NAME, TYPE_SPEC );
 	  TYPE_NAME_STR	:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
 	begin
@@ -714,7 +714,7 @@ null;
 	  PUT_LINE( tab & "Sa " & IMAGE( CODI.CUR_LEVEL ) & ", " & ANONYMOUS_STR & "__u" );
 
 	  PUT_LINE( tab & "LVA " & IMAGE( CODI.CUR_LEVEL ) & ", " & ANONYMOUS_STR & "__dat" );
-	  EXPRESSIONS.CODE_AGGREGATE( ACT_PRM );
+	  EXPRESSIONS.CODE_AGGREGATE( ACT_PRM, TYPE_SPEC );
 	  PUT_LINE( tab & "LVA " & IMAGE( CODI.CUR_LEVEL ) & ", " & ANONYMOUS_STR & "_disp" );
 	end;
 

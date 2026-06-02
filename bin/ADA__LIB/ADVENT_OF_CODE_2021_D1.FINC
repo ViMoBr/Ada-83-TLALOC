@@ -1,0 +1,403 @@
+if ~ definite TEXT_IO
+include 'TEXT_IO.FINC'
+end if
+PRO	ADVENT_OF_CODE_2021_D1_L1			;---------- PRO ADVENT_OF_CODE_2021_D1
+ELB 1					;    BODY ELAB
+VAR DEPTHS_FILE_disp, q			; variable record : pointeur aux data record
+VAR DEPTHS_FILE__u, q			; variable record : pointeur aux useinfo
+VAR DEPTHS_FILE__dat, STANDARD.TEXT_IO.FILE_TYPE.size
+	LVA	1, DEPTHS_FILE__dat
+	Sa	1, DEPTHS_FILE_disp			; record fin
+	LVA	1, STANDARD.TEXT_IO.FILE_TYPE.SIZ
+	Sa	1, DEPTHS_FILE__u
+	LIVa 1, DEPTHS_FILE_disp, STANDARD.TEXT_IO.FILE_TYPE.ID
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	NEG
+	Sd
+	LIVa 1, DEPTHS_FILE_disp, STANDARD.TEXT_IO.FILE_TYPE.IS_OPENED
+	LI	0
+	Sb
+	LIVa 1, DEPTHS_FILE_disp, STANDARD.TEXT_IO.FILE_TYPE.PAGE_LENGTH
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	72
+	Sd
+	LIVa 1, DEPTHS_FILE_disp, STANDARD.TEXT_IO.FILE_TYPE.LINE_LENGTH
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	256
+	Sd
+	LIVa 1, DEPTHS_FILE_disp, STANDARD.TEXT_IO.FILE_TYPE.PAGE
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd
+	LIVa 1, DEPTHS_FILE_disp, STANDARD.TEXT_IO.FILE_TYPE.LINE
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd
+	LIVa 1, DEPTHS_FILE_disp, STANDARD.TEXT_IO.FILE_TYPE.COL
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd
+	LIVa 1, DEPTHS_FILE_disp, STANDARD.TEXT_IO.FILE_TYPE.IS_DEFAULT_IO
+	LI	0
+	Sb
+	LIVa 1, DEPTHS_FILE_disp, STANDARD.TEXT_IO.FILE_TYPE.LOOK_AHEAD
+	LI	 0
+	Sb
+	LIVa 1, DEPTHS_FILE_disp, STANDARD.TEXT_IO.FILE_TYPE.HAS_LOOK_AHEAD
+	LI	0
+	Sb
+	LIVa 1, DEPTHS_FILE_disp, STANDARD.TEXT_IO.FILE_TYPE.AT_END_OF_FILE
+	LI	0
+	Sb
+
+VAR NUMBER_OF_INCREASES_disp, d		; variable entiere
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	Sd  1,	NUMBER_OF_INCREASES_disp
+
+DEPTH_IO = 'DEPTH_IO'
+namespace DEPTH_IO				;---------- GENERIC PACKAGE INSTANTIATION
+elab_spec:				;    SPEC ELAB
+
+BRA post_LD_NATURAL
+LD_NATURAL.elab:
+	Ld -1, 0
+	RTD 0
+post_LD_NATURAL:
+BRA post_ST_NATURAL
+ST_NATURAL.elab:
+	Sd -1, 0
+	RTD 0
+post_ST_NATURAL:
+BRA post_INADR_NATURAL
+INADR_NATURAL.elab:
+	RTD 0
+post_INADR_NATURAL:
+BRA post_OUTADR_NATURAL
+OUTADR_NATURAL.elab:
+	La
+	RTD 0
+post_OUTADR_NATURAL:
+VAR NATURAL__outadr_ofs, q
+	LCA OUTADR_NATURAL.elab
+	Sa	 1, NATURAL__outadr_ofs
+VAR NATURAL__inadr_ofs, q
+	LCA INADR_NATURAL.elab
+	Sa	 1, NATURAL__inadr_ofs
+VAR NATURAL__st_ofs, q
+	LCA ST_NATURAL.elab
+	Sa	 1, NATURAL__st_ofs
+VAR NATURAL__ld_ofs, q
+	LCA LD_NATURAL.elab
+	Sa	 1, NATURAL__ld_ofs
+VAR NATURAL__u_ofs, q
+	La	 0, STANDARD.NATURAL.use__info
+	Sa	 1, NATURAL__u_ofs
+VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
+VAR DEFAULT_WIDTH_disp, d			; variable entiere
+	LI	 11
+	Sd  1,	DEFAULT_WIDTH_disp
+
+VAR DEFAULT_BASE_disp, d			; variable entiere
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	10
+	Sd  1,	DEFAULT_BASE_disp
+
+if defined GET_L2_
+PRO	GET_L2				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM ITEM_ofs				; out
+	PRM WIDTH_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Ld	 2, -WIDTH_ofs
+	La 	 2, -ITEM_ofs
+	La 	 2, -FILE_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,GET_L61
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO GET
+end if
+if defined GET_L3_
+PRO	GET_L3				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM ITEM_ofs				; out
+	PRM WIDTH_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Ld	 2, -WIDTH_ofs
+	La 	 2, -ITEM_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,GET_L62
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO GET
+end if
+if defined PUT_L4_
+PRO	PUT_L4				;---------- PRO PUT
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM ITEM_ofs				; in
+	PRM WIDTH_ofs				; in
+	PRM BASE_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Ld	 2, -BASE_ofs
+	Ld	 2, -WIDTH_ofs
+	Ld	 2, -ITEM_ofs
+	La 	 2, -FILE_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,PUT_L63
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO PUT
+end if
+if defined PUT_L5_
+PRO	PUT_L5				;---------- PRO PUT
+PRMS					;    debut parametrage
+	PRM ITEM_ofs				; in
+	PRM WIDTH_ofs				; in
+	PRM BASE_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Ld	 2, -BASE_ofs
+	Ld	 2, -WIDTH_ofs
+	Ld	 2, -ITEM_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,PUT_L64
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO PUT
+end if
+if defined GET_L6_
+PRO	GET_L6				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM FROM_ofs				; in
+	PRM ITEM_ofs				; out
+	PRM LAST_ofs				; out
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	La 	 2, -LAST_ofs
+	La 	 2, -ITEM_ofs
+	La 	 2, -FROM_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,GET_L65
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO GET
+end if
+if defined PUT_L7_
+PRO	PUT_L7				;---------- PRO PUT
+PRMS					;    debut parametrage
+	PRM TO_ofs				; out
+	PRM ITEM_ofs				; in
+	PRM BASE_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Ld	 2, -BASE_ofs
+	Ld	 2, -ITEM_ofs
+	La 	 2, -TO_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,PUT_L66
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO PUT
+end if
+					;---------- end generic package instantiation DEPTH_IO
+end namespace
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+namespace	INPUT_DEPTHS_FILE_NAME
+ELB 2					;    BODY ELAB
+STRING = 'STRING'
+namespace STRING				; array var constrained array type info
+VAR use__info, q
+VAR SIZ, d
+	LVA	2, SIZ
+	Sa	2, use__info
+VAR COMP_SIZ, d
+VAR FST_1, d
+VAR LST_1, d
+	LI	8
+	Sd	2, COMP_SIZ
+	Ld	2, COMP_SIZ
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd	2, FST_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	128
+	Sd	2, LST_1
+	Ld	2, LST_1
+	INC
+	Ld	2, FST_1
+	SUB
+	MUL
+	Sd	2, SIZ
+  virtual at 4
+COMP_SIZ = $
+	rd 1 
+FST_1 = $
+	rd 1 
+LST_1 = $
+	rd 1 
+  end virtual
+end namespace
+VAR FILE_NAME_BUFFER_disp, q			; variable array : pointeur aux data
+VAR FILE_NAME_BUFFER__u, q			; variable array : useinfo pointeur au rec info
+	La 2, STRING.use__info
+	Sa	2, FILE_NAME_BUFFER__u			; array info ptr at __u
+	Ld	2, STRING.SIZ
+	LI	8
+	DIV
+	CO_VAR
+	Sa	2, FILE_NAME_BUFFER_disp			; array data ptr at _disp
+
+VAR FILE_NAME_LENGTH_disp, d			; variable entiere
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+STR STR_L8, "PLEASE ENTER DEPTHS FILE NAME : "	; constante string="PLEASE ENTER DEPTHS FILE NAME : "
+	LCA	STR_L8.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	LVA  2,	FILE_NAME_LENGTH_disp
+	LVA  2,	FILE_NAME_BUFFER_disp
+	CALL	STANDARD.TEXT_IO. ,GET_LINE_L58
+STR STR_L9, ""				; constante string=""
+	LCA	STR_L9.data_ptr
+	La 2, FILE_NAME_BUFFER_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	LId	2, FILE_NAME_BUFFER__u, STRING.FST_1
+	SUB
+	LI	1
+	MUL
+	ADD
+namespace ANON_20_33			; ensemble doublet @data/@info pour slice anonyme source
+VAR ANON_20_33_disp, q
+VAR ANON_20_33__u, q
+VAR SIZ, d
+VAR COMP_SIZ, d
+VAR FST_1, d
+VAR LST_1, d
+	Sa	2, ANON_20_33_disp
+	LVA	2, SIZ
+	Sa	2, ANON_20_33__u
+	LI	8
+	Sd	2, COMP_SIZ
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd	2, FST_1
+	Ld 2,	FILE_NAME_LENGTH_disp
+	Sd	2, LST_1
+	Ld	2, LST_1
+	INC
+	Ld	2, FST_1
+	SUB
+	LI	8
+	MUL
+	Sd	2, SIZ
+	LVA	2, ANON_20_33_disp
+end namespace
+	LI  0
+	LVA  1,	DEPTHS_FILE_disp
+	CALL	STANDARD.TEXT_IO. ,OPEN_L2
+STR STR_L10, "OK THANKS, COMPUTING THE NUMBER OF DEPTH INCREASES..."	; constante string="OK THANKS, COMPUTING THE NUMBER OF DEPTH INCREASES..."
+	LCA	STR_L10.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	UNLINK 2
+endPRO
+namespace	COMPUTE_DEPTH_INCREASES
+ELB 2					;    BODY ELAB
+VAR PRESENT_DEPTH_disp, d			; variable entiere
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	Sd  2,	PRESENT_DEPTH_disp
+
+VAR NEXT_DEPTH_disp, d			; variable entiere
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+LOOP__1:
+	LI	0					; lieu resultat sur pile
+	LVA 1,	STANDARD.ADVENT_OF_CODE_2021_D1_L1.DEPTHS_FILE_disp
+	CALL	STANDARD.TEXT_IO. ,END_OF_FILE_L37
+	LI	1
+	OUX
+	BF	L11
+STR STR_L12, "present depth : "		; constante string="present depth : "
+	LCA	STR_L12.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	Ld 1,	STANDARD.ADVENT_OF_CODE_2021_D1_L1.DEPTH_IO.DEFAULT_BASE_disp
+	Ld 1,	STANDARD.ADVENT_OF_CODE_2021_D1_L1.DEPTH_IO.DEFAULT_WIDTH_disp
+	Ld 2,	PRESENT_DEPTH_disp
+	CALL	STANDARD.ADVENT_OF_CODE_2021_D1_L1.DEPTH_IO. ,PUT_L5
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	LVA  2,	NEXT_DEPTH_disp
+	LVA 1,	STANDARD.ADVENT_OF_CODE_2021_D1_L1.DEPTHS_FILE_disp
+	CALL	STANDARD.ADVENT_OF_CODE_2021_D1_L1.DEPTH_IO. ,GET_L2
+STR STR_L13, "   next depth :"		; constante string="   next depth :"
+	LCA	STR_L13.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	Ld 1,	STANDARD.ADVENT_OF_CODE_2021_D1_L1.DEPTH_IO.DEFAULT_BASE_disp
+	Ld 1,	STANDARD.ADVENT_OF_CODE_2021_D1_L1.DEPTH_IO.DEFAULT_WIDTH_disp
+	Ld 2,	NEXT_DEPTH_disp
+	CALL	STANDARD.ADVENT_OF_CODE_2021_D1_L1.DEPTH_IO. ,PUT_L5
+					; debut if
+	Ld 2,	NEXT_DEPTH_disp
+	Ld 2,	PRESENT_DEPTH_disp
+	CGT
+	BF	L15
+	Ld 1,	STANDARD.ADVENT_OF_CODE_2021_D1_L1.NUMBER_OF_INCREASES_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd  1,	NUMBER_OF_INCREASES_disp
+STR STR_L16, " increase"			; constante string=" increase"
+	LCA	STR_L16.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	Ld 2,	NEXT_DEPTH_disp
+	Sd  2,	PRESENT_DEPTH_disp
+	BRA	L14
+L15:
+L14:					; post if
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
+	BRA	LOOP__1
+L11:					; post loop LOOP__1
+	UNLINK 2
+endPRO
+	LVA  1,	DEPTHS_FILE_disp
+	CALL	STANDARD.TEXT_IO. ,CLOSE_L3
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
+STR STR_L17, "THE NUMBER OF DEPTH INCREASES IS : "	; constante string="THE NUMBER OF DEPTH INCREASES IS : "
+	LCA	STR_L17.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	Ld 1,	STANDARD.ADVENT_OF_CODE_2021_D1_L1.DEPTH_IO.DEFAULT_BASE_disp
+	Ld 1,	STANDARD.ADVENT_OF_CODE_2021_D1_L1.DEPTH_IO.DEFAULT_WIDTH_disp
+	Ld 1,	NUMBER_OF_INCREASES_disp
+	CALL	STANDARD.ADVENT_OF_CODE_2021_D1_L1.DEPTH_IO. ,PUT_L5
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	2
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
+STR STR_L18, "BYE"				; constante string="BYE"
+	LCA	STR_L18.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+ret_lbl:
+	UNLINK 1
+	RTD
+excep:
+endPRO					;---------- end PRO ADVENT_OF_CODE_2021_D1

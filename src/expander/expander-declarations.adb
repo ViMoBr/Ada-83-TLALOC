@@ -626,7 +626,7 @@ null;--	  LOAD_TYPE_SIZE( TYPE_SPEC  );
 	    NEW_LINE;
 
 	    PUT_LINE( tab &	"La" & tab & LVL_STR & ", " &	VC_STR & "_disp" );
-	    EXPRESSIONS.CODE_AGGREGATE( INIT_EXP );
+	    EXPRESSIONS.CODE_AGGREGATE( INIT_EXP, TYPE_SPEC );
 
 	  else
 	    PUT_LINE( "; COMPILE_ARRAY_VAR ASSOC.TY non gere " & NODE_NAME'IMAGE( INIT_EXP.TY ) );
@@ -689,10 +689,9 @@ null;--	  LOAD_TYPE_SIZE( TYPE_SPEC  );
         DI( CD_LEVEL,     VC_NAME, INTEGER( LVL )	);
         DB( CD_COMPILED,  VC_NAME, TRUE	);
 
-if  INIT_EXP.TY = DN_AGGREGATE	then
-
+        if  INIT_EXP.TY = DN_AGGREGATE	then
 	PUT_LINE( tab & "La " & LVL_STR & ", " & VC_STR & "_disp" );					-- Adresse de debut data
-	EXPRESSIONS.CODE_AGGREGATE( INIT_EXP );
+	EXPRESSIONS.CODE_AGGREGATE( INIT_EXP, TYPE_SPEC );
 
         else
 				-- No explicit aggregate : initialize
@@ -712,8 +711,8 @@ if  INIT_EXP.TY = DN_AGGREGATE	then
 	        POP( COMP_ID_S, COMP_ID );
 	        declare
 		FIELD_INIT	: TREE		:= D( SM_INIT_EXP, COMP_ID );
-		COMP_TYPE	: TREE		:= D( SM_OBJ_TYPE, COMP_ID );
-		COMP_STR	:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, COMP_ID ) );
+		COMP_TYPE		: TREE		:= D( SM_OBJ_TYPE, COMP_ID );
+		COMP_STR		:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, COMP_ID ) );
 	        begin
 		if  FIELD_INIT /= TREE_VOID  then
 		  if  FIELD_INIT.TY = DN_AGGREGATE  then						-- composant composite : descente recursive
@@ -723,7 +722,7 @@ if  INIT_EXP.TY = DN_AGGREGATE	then
 		    CODI.REGIONS_PATH( TYPE_NAME );
 		    PUT_LINE( TYPE_NAME_STR & "."
 		      & COMP_STR );
-		    EXPRESSIONS.CODE_AGGREGATE( FIELD_INIT );					-- l'adresse du champ est sur la pile, CODE_AGGREGATE la consomme
+		    EXPRESSIONS.CODE_AGGREGATE( FIELD_INIT, COMP_TYPE );					-- l'adresse du champ est sur la pile, CODE_AGGREGATE la consomme
 
 		  else										-- composant scalaire : store direct
 		    PUT( tab & "LIVa "
@@ -790,8 +789,16 @@ if  INIT_EXP.TY = DN_AGGREGATE	then
   --|-------------------------------------------------------------------------------------------
   procedure	CODE_RENAMES_OBJ_DECL ( RENAMES_OBJ_DECL :TREE )
   is
+    SOURCE_NAME	: TREE	:= D( AS_SOURCE_NAME, RENAMES_OBJ_DECL );
   begin
-    null;
+    if  SOURCE_NAME.TY = DN_VARIABLE_ID  then
+      declare
+        VAR_LEVEL	: NATURAL	:= DI( CD_LEVEL, D( SM_DEFN, D( AS_NAME, RENAMES_OBJ_DECL ) ) );
+      begin
+        DI( CD_LEVEL, SOURCE_NAME, VAR_LEVEL );
+        DB( CD_COMPILED, SOURCE_NAME, TRUE );
+      end;
+    end if;
   end;
 
   --|-------------------------------------------------------------------------------------------
@@ -965,32 +972,37 @@ if  INIT_EXP.TY = DN_AGGREGATE	then
   procedure		CODE_GENERIC_ACTUALS	( UNIT_KIND :TREE )
   is			--------------------
 
-    GNAME_SEQ		: SEQ_TYPE	:= LIST( D( AS_GENERAL_ASSOC_S, UNIT_KIND ) );
+    GNAME_SEQ	: SEQ_TYPE	:= LIST( D( AS_GENERAL_ASSOC_S, UNIT_KIND ) );
     GNAME		: TREE;
   begin
     while  not IS_EMPTY( GNAME_SEQ )  loop
       POP( GNAME_SEQ, GNAME );
+
+      if  GNAME.TY = DN_ASSOC  then
+        GNAME := D( AS_EXP, GNAME );
+      end if;
+
       declare
         DEFN		: TREE		:= D( SM_DEFN, GNAME );
-        GNAME_STR	:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, GNAME ) );
+        GNAME_STR		:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, GNAME ) );
       begin
-        if  DEFN.TY = DN_SUBTYPE_ID	 then
-	declare
-	      DEFN_TYPE_SPEC	: TREE		:= D( SM_TYPE_SPEC,	DEFN );
-	      DEFN_TYPE_RANGE	: TREE		:= D( SM_RANGE, DEFN_TYPE_SPEC );
-	begin
-	  if	DEFN_TYPE_SPEC.TY =	DN_INTEGER  then
-	    PUT_LINE( "VAR " & GNAME_STR & "_last_ofs, q" );
-	    PUT_LINE( "LI" & tab & PRINT_NAME( D( LX_NUMREP, D(	AS_EXP2, DEFN_TYPE_RANGE ) ) ) );
-	    PUT_LINE( "Sd" & tab & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL ) & ", " & GNAME_STR & "_last_ofs" );
+--        if  DEFN.TY = DN_SUBTYPE_ID	 then
+--	declare
+--	      DEFN_TYPE_SPEC	: TREE		:= D( SM_TYPE_SPEC,	DEFN );
+--	      DEFN_TYPE_RANGE	: TREE		:= D( SM_RANGE, DEFN_TYPE_SPEC );
+--	begin
+--	  if	DEFN_TYPE_SPEC.TY =	DN_INTEGER  then
+--	    PUT_LINE( "VAR " & GNAME_STR & "_last_ofs, q" );
+--	    PUT_LINE( "LI" & tab & PRINT_NAME( D( LX_NUMREP, D(	AS_EXP2, DEFN_TYPE_RANGE ) ) ) );
+--	    PUT_LINE( "Sd" & tab & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL ) & ", " & GNAME_STR & "_last_ofs" );
 
-	    PUT_LINE( "VAR " & GNAME_STR & "_first_ofs, q" );
-	    PUT_LINE( "LI" & tab & PRINT_NAME( D( LX_NUMREP, D(	AS_EXP1, DEFN_TYPE_RANGE ) ) ) );
-	    PUT_LINE( "Sd" & tab & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL ) & ", " & GNAME_STR & "_first_ofs" );
-	  end if;
-	end;
+--	    PUT_LINE( "VAR " & GNAME_STR & "_first_ofs, q" );
+--	    PUT_LINE( "LI" & tab & PRINT_NAME( D( LX_NUMREP, D(	AS_EXP1, DEFN_TYPE_RANGE ) ) ) );
+--	    PUT_LINE( "Sd" & tab & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL ) & ", " & GNAME_STR & "_first_ofs" );
+--	  end if;
+--	end;
 
-        elsif  DEFN.TY = DN_TYPE_ID	 then
+        if  DEFN.TY = DN_TYPE_ID  or  DEFN.TY = DN_SUBTYPE_ID  then
 	declare
 	      DEFN_TYPE_SPEC	: TREE		:= D( SM_TYPE_SPEC,	DEFN );
 	      DEFN_STR		:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, DEFN ) );
@@ -1053,8 +1065,8 @@ if  INIT_EXP.TY = DN_AGGREGATE	then
 	     or  DEFN_TYPE_SPEC.TY  in  CLASS_CONSTRAINED  then
 					-- A REVOIR
 
-	    declare
-	      SIZ_CHAR	: CHARACTER	:= OPER_SIZ_CHAR( DEFN_TYPE_SPEC );
+--	    declare
+--	      SIZ_CHAR	: CHARACTER	:= OPER_SIZ_CHAR( DEFN_TYPE_SPEC );
 	    begin
 		-- LD : pile = [adresse] → pile = [valeur]
 	      PUT_LINE(	"BRA post_LD_" & DEFN_STR );

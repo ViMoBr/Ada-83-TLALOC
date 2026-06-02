@@ -4,6 +4,8 @@ use  TEXT_IO;
 procedure			TEST_AGREGATS
 is			-------------
 
+  S		: STRING (1 .. 128)		:= (others=> '#');
+
   package INT_IO	is new INTEGER_IO( INTEGER );
 
   type POINT	is record

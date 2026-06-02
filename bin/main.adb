@@ -1,122 +1,142 @@
-with Unchecked_Deallocation;
-with Text_IO;
-with System;
-procedure Main is
+with UNCHECKED_DEALLOCATION;
+with TEXT_IO;
+with SYSTEM;
+			----
+procedure			MAIN
+is			----
 
-   Loop_Error : exception;
+  LOOP_ERROR	: exception;
 
-   S : String (1 .. 128) := (others => '#');
-   L : Natural := 0;
+  S		: STRING (1 .. 128)		:= (others=> '#');
+  L		: NATURAL			:= 0;
 
-   type Depth_Type is range 0 .. 9000;
+  type DEPTH_TYPE		is range 0 .. 9000;
+  type DEPTH_COUNT 		is range 0 .. SYSTEM.MAX_INT;
+  package DPTH_IO		is new TEXT_IO.INTEGER_IO( DEPTH_TYPE );
+  package DECO_IO		is new TEXT_IO.INTEGER_IO( DEPTH_COUNT );
 
-   type Depth_Count is range 0 .. System.Max_Int;
+  F		: TEXT_IO.FILE_TYPE;
 
-   package Dpth_IO is new Text_IO.Integer_IO (Depth_Type);
+		--------------------------
+  function	GET_NUMBER_OF_MEASUREMENTS		return DEPTH_COUNT
+  is		--------------------------
+    type LOOP_INDEX		is range 1 .. SYSTEM.MAX_INT;
+    LAST			: DEPTH_COUNT := 0;
+    UNUSED_DEPTH		: DEPTH_TYPE;
 
-   package Deco_IO is new Text_IO.Integer_IO (Depth_Count);
+  begin
+    TEXT_IO.OPEN( FILE=> F, MODE=> TEXT_IO.IN_FILE, NAME=> S( 1 .. L ) );
+    for  I in LOOP_INDEX range 1 .. SYSTEM.MAX_INT  loop
+      exit when  TEXT_IO.END_OF_FILE( F );
+      DPTH_IO.GET( FILE => F, ITEM => UNUSED_DEPTH );
+      LAST := LAST + 1;
+    end loop;
 
-   F : Text_IO.File_Type;
-
-   function Get_Number_Of_Measurements return Depth_Count is
-      type Loop_Index is range 1 .. System.Max_Int;
-      Last : Depth_Count := 0;
-      Unused_Depth : Depth_Type;
-   begin
-      Text_IO.Open (File => F,
-                    Mode => Text_IO.In_File,
-                    Name => S (1 .. L));
-      for I in Loop_Index range 1 .. System.Max_Int loop
-         exit when Text_IO.End_Of_File (F);
-         Dpth_IO.Get (File => F,
-                      Item => Unused_Depth);
-         Last := Last + 1;
-      end loop;
-      if not Text_IO.End_Of_File (F) then
-         raise Loop_Error;
+    if  not TEXT_IO.END_OF_FILE( F )  then
+         raise  LOOP_ERROR;
       end if;
-      Text_IO.Close (F);
-      return Last;
-   end Get_Number_Of_Measurements;
+      TEXT_IO.CLOSE( F );
+      return  LAST;
 
-   procedure Run is
+   end	GET_NUMBER_OF_MEASUREMENTS;
+	--------------------------
 
-      N : constant Depth_Count := Get_Number_Of_Measurements;
 
-      subtype Depth_Index is Depth_Count range 1 .. Depth_Count'Last;
+			---
+  procedure		RUN
+  is			---
 
-      type Depth_Array is array (Depth_Index range <>) of Depth_Type;
+    N	: constant DEPTH_COUNT := GET_NUMBER_OF_MEASUREMENTS;
 
-      procedure Run_Main (Depth : in out Depth_Array) is
-         Number_Of_Increases : Depth_Count := 0;
-         D : Depth_Array renames Depth;
-      begin
-         Text_IO.Open (File => F,
-                       Mode => Text_IO.In_File,
-                       Name => S (1 .. L));
+    subtype DEPTH_INDEX	is DEPTH_COUNT range 1 .. DEPTH_COUNT'LAST;
+    type DEPTH_ARRAY	is array (DEPTH_INDEX range <>) of DEPTH_TYPE;
 
-         for I in Depth_Index range 1 .. D'Last loop
-            Dpth_IO.Get (File => F,
-                         Item => D (I));
-         end loop;
-         Text_IO.Close (F);
+		--------
+    procedure	RUN_MAIN		( DEPTH :in out DEPTH_ARRAY )
+    is		--------
 
-         for I in Depth_Index range 2 .. D'Last loop
-            if D (I) > D (I - 1) then
-               Number_Of_Increases := Number_Of_Increases + 1;
-            end if;
-         end loop;
-         Text_IO.Put ("Answer: ");
-         Deco_IO.Put (Item  => Number_Of_Increases,
-                      Width => 0);
-         Text_IO.New_Line;
-      end Run_Main;
+      NUMBER_OF_INCREASES	: DEPTH_COUNT	:= 0;
+      D			: DEPTH_ARRAY renames DEPTH;
 
-      procedure Use_File is
-         type Depth_Access is access Depth_Array;
+    begin
+      TEXT_IO.OPEN( FILE => F, MODE => TEXT_IO.IN_FILE, NAME => S( 1 .. L ) );
 
-         D : Depth_Access;
+      for I in DEPTH_INDEX range 1 .. D'LAST loop
+        DPTH_IO.GET( FILE => F, ITEM => D( I ) );
+      end loop;
+      TEXT_IO.CLOSE( F );
 
-         procedure Free is new Unchecked_Deallocation
-           (Object => Depth_Array,
-            Name   => Depth_Access);
-      begin
-         D := new Depth_Array (1 .. N);
-         Run_Main (D.all);
-         Free (D);
-      exception
-         when others =>
-            Free (D);
-            raise;
-      end Use_File;
+      for  I in DEPTH_INDEX range 2 .. D'LAST  loop
+        if  D( I ) > D( I-1 )  then
+	NUMBER_OF_INCREASES := NUMBER_OF_INCREASES + 1;
+        end if;
+      end loop;
 
-      procedure Read_Text_File is
-      begin
-         Use_File;
-         if Text_IO.Is_Open (F) then
-            Text_IO.Close (F);
-         end if;
-      exception
-         when others =>
-            if Text_IO.Is_Open (F) then
-               Text_IO.Close (F);
-            end if;
-            raise;
-      end Read_Text_File;
+      TEXT_IO.PUT( "ANSWER: " );
+      DECO_IO.PUT( ITEM  => NUMBER_OF_INCREASES, WIDTH => 0 );
+      TEXT_IO.NEW_LINE;
 
-   begin
-      Read_Text_File;
-   end Run;
+    end	RUN_MAIN;
+	--------
 
+			--------
+    procedure		USE_FILE
+    is			--------
+
+      type DEPTH_ACCESS	is access DEPTH_ARRAY;
+      D			: DEPTH_ACCESS;
+
+      procedure FREE	is new UNCHECKED_DEALLOCATION( OBJECT=> DEPTH_ARRAY, NAME=> DEPTH_ACCESS );
+
+    begin
+      D := new DEPTH_ARRAY( 1 .. N );
+      RUN_MAIN( D.all );
+      FREE( D );
+
+    exception
+      when others =>
+        FREE( D );
+        raise;
+
+    end	USE_FILE;
+	--------
+
+
+		--------------
+  procedure	READ_TEXT_FILE
+  is		--------------
+  begin
+    USE_FILE;
+    if TEXT_IO.IS_OPEN( F ) then
+      TEXT_IO.CLOSE( F );
+    end if;
+
+  exception
+    when others =>
+      if  TEXT_IO.IS_OPEN( F )  then
+        TEXT_IO.CLOSE( F );
+      end if;
+      raise;
+
+  end	READ_TEXT_FILE;
+	--------------
+
+  begin
+    READ_TEXT_FILE;
+
+  end	RUN;
+	---
 begin
-   Text_IO.Get_Line (S, L);
-   --  Put (S (1 .. L));
-   --  New_Line;
+   TEXT_IO.GET_LINE( S, L );
+   PUT( S( 1 .. L ) );
+   NEW_LINE;
    case L is
       when 0 =>
-         Text_IO.Put ("Specify one command argument, the input file.");
-         Text_IO.New_Line;
+         TEXT_IO.PUT( "SPECIFY ONE COMMAND ARGUMENT, THE INPUT FILE." );
+         TEXT_IO.NEW_LINE;
          return;
-      when others => Run;
+      when others => RUN;
    end case;
-end Main;
+
+end	MAIN;
+	----

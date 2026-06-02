@@ -125,14 +125,14 @@ end	UTILS;
     procedure CODE_SELECTED		( SELECTED	:TREE; IS_SOURCE :BOOLEAN := TRUE; CONTEXT :TREE := TREE_VOID );
     procedure CODE_SLICE		( SLICE		:TREE; IS_DESTINATION :BOOLEAN := TRUE );
     procedure CODE_STATIC_FIXED_VALUE	( VALUE, FIXED_TYPE :TREE );
-    procedure CODE_AGGREGATE		( AGGREGATE	:TREE );
+    procedure CODE_AGGREGATE		( AGGREGATE, TYPE_SPEC	:TREE );
     function  IS_GENERIC_FORMAL_TYPE	( TYPE_DEFN	:TREE )		return BOOLEAN;
 
 
   private
 
     procedure CODE_NAME		( NAME : TREE );
-    procedure CODE_EXP_EXP		( EXP_EXP	:TREE );
+    procedure CODE_EXP_EXP		( EXP_EXP	:TREE; TYPE_SPEC_HINT :TREE := TREE_VOID );
     procedure CODE_USED_OP		( USED_OP		:TREE );
     procedure CODE_USED_NAME_ID	( USED_NAME_ID	:TREE );
     procedure CODE_USED_CHAR		( USED_CHAR :TREE );

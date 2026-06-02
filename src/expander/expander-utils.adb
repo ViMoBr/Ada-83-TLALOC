@@ -260,24 +260,24 @@ is					-----
 			--=============--
   function		  OPER_SIZ_CHAR		( DEFN :TREE )		return CHARACTER
   is			--=============--
-
-    SIZ		: NATURAL		:= DI( CD_IMPL_SIZE, DEFN );
-
   begin
-    -- Les flottants sont toujours en double IEEE	754 = 64 bits = qword
-    if  DEFN.TY = DN_FLOAT  then return	'q'; end if;
-    if  SIZ <= 0  then PUT_LINE( "'; EXPANDER.UTILS.OPER_SIZ_CHAR SIZ = 0 ! "
+    if  DEFN.TY = DN_FLOAT  or  DEFN.TY = DN_ACCESS  then return 'q'; end if;
+    declare
+      SIZ		: NATURAL		:= DI( CD_IMPL_SIZE, DEFN );
+    begin
+      if  SIZ <= 0  then PUT_LINE( "'; EXPANDER.UTILS.OPER_SIZ_CHAR SIZ = 0 ! "
 	& NODE_NAME'IMAGE( DEFN.TY )
 	& ' ' & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, DEFN ) ) )
 	);
       raise  PROGRAM_ERROR;
-    end if;
-    if	 SIZ <= 8		then return 'b';
-    elsif	 SIZ <= 16	then return 'w';
-    elsif	 SIZ <= 32	then return 'd';
-    elsif	 SIZ <= 64	then return 'q';
-    else return 'v';
-    end if;
+      end if;
+      if	 SIZ <= 8		then return 'b';
+      elsif SIZ <= 16	then return 'w';
+      elsif SIZ <= 32	then return 'd';
+      elsif SIZ <= 64	then return 'q';
+      else return 'v';
+      end if;
+    end;
 
   end	  OPER_SIZ_CHAR;
 	--=============--

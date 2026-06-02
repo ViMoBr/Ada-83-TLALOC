@@ -4,6 +4,8 @@
 ------------------------------------------------------------------------------------------------------------------------
 --	1	2	3	4	5	6	7	8	9	0	1	2
 
+with TEXT_IO; use TEXT_IO;
+
 separate ( EXPANDER	)
 
 				-----------
@@ -140,7 +142,7 @@ is
 
 
 				------------
-  procedure			CODE_EXP_EXP		( EXP_EXP	:TREE )
+  procedure			CODE_EXP_EXP		( EXP_EXP	:TREE; TYPE_SPEC_HINT :TREE := TREE_VOID )
   is				------------
 
 			------------
@@ -212,11 +214,11 @@ is
 	------------
 
 			------------
-    procedure		CODE_AGG_EXP		( AGG_EXP	:TREE )
+    procedure		CODE_AGG_EXP		( AGG_EXP, TYPE_SPEC_HINT :TREE )
     is
     begin
       if AGG_EXP.TY	= DN_AGGREGATE  then
-        CODE_AGGREGATE( AGG_EXP );
+        CODE_AGGREGATE( AGG_EXP, TYPE_SPEC_HINT );
 
       elsif AGG_EXP.TY = DN_STRING_LITERAL  then
         CODE_STRING_LITERAL( AGG_EXP, "A VOIR !" );
@@ -230,7 +232,7 @@ is
       CODE_EXP_VAL ( EXP_EXP );
 
     elsif	EXP_EXP.TY in CLASS_AGG_EXP  then
-      CODE_AGG_EXP(	EXP_EXP );
+      CODE_AGG_EXP(	EXP_EXP, TYPE_SPEC_HINT );
 
     elsif	EXP_EXP.TY = DN_QUALIFIED_ALLOCATOR  then
       CODE_QUALIFIED_ALLOCATOR( EXP_EXP	);
@@ -434,6 +436,7 @@ null;--	     declare
 
     begin
       if ARRAY_DEFN.TY /= DN_COMPONENT_ID  then
+
         ARRAY_LVL := DI( CD_LEVEL, ARRAY_DEFN );
 
         if  ARRAY_DEFN.TY in CLASS_PARAM_NAME  then
@@ -1422,23 +1425,21 @@ put_line(	"; adresse component id" );
 
 
 				--------------
-  procedure			CODE_AGGREGATE		( AGGREGATE :TREE )
+  procedure			CODE_AGGREGATE		( AGGREGATE, TYPE_SPEC :TREE )
   is				--------------
-    TYPE_SPEC		: TREE			:= D( SM_EXP_TYPE, AGGREGATE );
+
     TYPE_NAME		: TREE			:= D( XD_SOURCE_NAME, TYPE_SPEC );
     TYPE_NAME_STR		:constant	STRING		:= PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
     LVL_STR		:constant	STRING		:= IMAGE(	CODI.CUR_LEVEL );
     NORM_SEQ		: SEQ_TYPE		:= LIST( D( SM_NORMALIZED_COMP_S, AGGREGATE ) );
+
   begin
-
-
     if  TYPE_SPEC.TY = DN_CONSTRAINED_ARRAY  or  TYPE_SPEC.TY = DN_ARRAY  then					-- L'adresse de debut data est deja empilee
 
 				----------------------
 				ASSIGN_ARRAY_AGGREGATE:
       declare
-        BASE_TYPE	: TREE		:= D( SM_BASE_TYPE, TYPE_SPEC );
-        INDEX_S	: SEQ_TYPE	:= LIST( D( SM_INDEX_S, BASE_TYPE ) );
+        INDEX_S	: SEQ_TYPE	:= LIST( D( SM_INDEX_SUBTYPE_S, TYPE_SPEC ) );
         NB_DIMS	: NATURAL		:= 0;
 
         -- Tableaux de dimensions et de strides (max 8 dimensions suffit en Ada 83 pratique)
@@ -1449,7 +1450,7 @@ put_line(	"; adresse component id" );
 			end record;
         DIM_TBL	: array( 1 .. 8 ) of DIM_INFO;
 
-        COMP_SIZ_BITS	: INTEGER		:= DI( CD_IMPL_SIZE, D( SM_COMP_TYPE, BASE_TYPE ) );
+        COMP_SIZ_BITS	: INTEGER		:= DI( CD_IMPL_SIZE, D( SM_COMP_TYPE, D( SM_BASE_TYPE, TYPE_SPEC ) ) );
         COMP_SIZ_BYTES	: INTEGER		:= COMP_SIZ_BITS / 8;
 
 		-----------------
@@ -1483,7 +1484,7 @@ put_line(	"; adresse component id" );
 		-- Feuille : l'élément du tableau est un agrégat (record, ou
 		-- éventuellement tableau imbriqué via type d'élément composite).
 		-- Délégation à CODE_AGGREGATE qui gère DN_RECORD / DN_ARRAY.
-	      CODE_AGGREGATE( COMP );
+	      CODE_AGGREGATE( COMP, TYPE_SPEC );
 	    end if;
 
 	  elsif  COMP.TY  in  CLASS_EXP  then
@@ -1557,11 +1558,15 @@ put_line(	"; adresse component id" );
 	  POP( INDEX_S, INDEX_NODE );
 	  NB_DIMS := NB_DIMS + 1;
 	  declare
-	    IDX_TYPE	: TREE	:= D( SM_TYPE_SPEC, INDEX_NODE );
-	    RNG		: TREE	:= D( SM_RANGE, IDX_TYPE );
+--	    IDX_TYPE	: TREE	:= D( SM_TYPE_SPEC, INDEX_NODE );
+	    RNG		: TREE	:= D( SM_RANGE, INDEX_NODE );
 	  begin
 	    DIM_TBL( NB_DIMS ).FST := DI( SM_VALUE, D( AS_EXP1, RNG ) );
 	    DIM_TBL( NB_DIMS ).LST := DI( SM_VALUE, D( AS_EXP2, RNG ) );
+
+put_line( ";CODE_AGGREGATE fst" & INTEGER'IMAGE( DIM_TBL( NB_DIMS ).FST ) );
+put_line( ";CODE_AGGREGATE lst" & INTEGER'IMAGE( DIM_TBL( NB_DIMS ).LST ) );
+
 	  end;
 	end loop;
         end;
@@ -1576,8 +1581,8 @@ put_line(	"; adresse component id" );
         -- Étape 3 : émettre récursivement
         EMIT_AGG_AT_DEPTH( AGGREGATE, 1 );
 
-      end				ASSIGN_ARRAY_AGGREGATE;
-				----------------------
+      end		ASSIGN_ARRAY_AGGREGATE;
+		----------------------
 
     elsif  TYPE_SPEC.TY = DN_RECORD  then								-- L'adresse du doublet est deja empilee
 				-----------------------
@@ -1611,7 +1616,7 @@ SCAN_IDS:
 	        PUT( tab & "LVA" & tab & ", " );							-- composant composite : calculer adresse dans zone parent
 	        CODI.REGIONS_PATH( TYPE_NAME );
 	        PUT_LINE( TYPE_NAME_STR & "." & COMP_STR );
-	        CODE_AGGREGATE( COMP_EXP );								-- adresse du sous-composant empilée, appel récursif
+	        CODE_AGGREGATE( COMP_EXP, COMP_TYPE );							-- adresse du sous-composant empilée, appel récursif
 
               else
 	        PUT_LINE( tab & "DUP" );								-- Duplicata de l'adresse de debut de data record
