@@ -452,7 +452,8 @@ null;--	     declare
         NEW_LINE;
 
       else
-put_line(	"; adresse component id" );
+
+put_line(	"; EXPRESSIONS.CODE_INDEXED adresse component id" );
 
       end	if;
       declare
@@ -486,23 +487,16 @@ put_line(	"; adresse component id" );
     elsif	 NAME.TY = DN_USED_OBJECT_ID	then
       declare
 	DEFN		: TREE		:= D( SM_DEFN, NAME	);
-	DEFN_LVL	: INTEGER		:= DI( CD_LEVEL, DEFN );
-	DEFN_STR	:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, DEFN ) );
+	DEFN_LVL		: INTEGER		:= DI( CD_LEVEL, DEFN );
+	DEFN_STR		:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, DEFN ) );
       begin
-				-- Adresse de debut	des donnees du tableau
-	PUT_LINE(	tab & "La " & IMAGE( DEFN_LVL	)
-		& ", " & DEFN_STR &	"_disp" );
-				-- Ajuster par offset du debut du slice
-				-- @slice	= @data +	(EXP1 - FST_1) * COMP_SIZ/STORAGE_UNIT
+	PUT_LINE(	tab & "La " & IMAGE( DEFN_LVL	) & ", " & DEFN_STR & "_disp" );
 	CODE_EXP(	D( AS_EXP1, DISCRETE_RANGE ) );
-	PUT_LINE(	tab & "LId" & tab &	IMAGE( DEFN_LVL )
-		& ", " & DEFN_STR &	"__u"
-		& ", " & PRINT_NAME( D( LX_SYMREP,
-		    D( XD_SOURCE_NAME, SLICE_TYPE ) ) )
+	PUT_LINE(	tab & "LId " & IMAGE( DEFN_LVL ) & ", " & DEFN_STR & "__u"
+		& ", " & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, SLICE_TYPE ) ) )
 		& ".FST_1" );
 	PUT_LINE(	tab & "SUB" );
-	PUT_LINE(	tab & "LI" & tab
-		& IMAGE( COMP_SIZE / CODI.STORAGE_UNIT ) );
+	PUT_LINE(	tab & "LI" & tab & IMAGE( COMP_SIZE / CODI.STORAGE_UNIT ) );
 	PUT_LINE(	tab & "MUL" );
 	PUT_LINE(	tab & "ADD" );
       end;
@@ -597,14 +591,11 @@ put_line(	"; adresse component id" );
 	  if  NAME.TY = DN_USED_OBJECT_ID  then
 
 	    if  D( SM_DEFN,	NAME ).TY	in  CLASS_PARAM_NAME  then
-				-- Parameter : doublet address on stack
-				-- Need extra dereference to get _disp
 	      PUT_LINE( tab	& "La "
 		& IMAGE( DI( CD_LEVEL, D( SM_DEFN, NAME	) ) ) & ", "
 		& '-' & PRINT_NAME(	D(LX_SYMREP, NAME )	) & "_ofs" );
 
 	      if	D( SM_EXP_TYPE, DESIGNATOR ).TY in CLASS_SCALAR  and  IS_SOURCE  then
-
 	        PUT( tab & "LI" & OPER_SIZ_CHAR( D( SM_EXP_TYPE, DESIGNATOR )	) );
 
 	      else
@@ -616,8 +607,6 @@ put_line(	"; adresse component id" );
 	      PUT_LINE( DESIGNATOR_STR );
 
 	    else
-				-- Local/package variable : _disp in frame
-				-- One dereference is enough
 	      if	D( SM_EXP_TYPE, DESIGNATOR ).TY in CLASS_SCALAR  and  IS_SOURCE  then
 	        PUT( tab & "LI" & OPER_SIZ_CHAR( D( SM_EXP_TYPE, DESIGNATOR )	) );
 	      else
@@ -1046,8 +1035,7 @@ put_line(	"; adresse component id" );
         TYPE_SPEC := D( SM_OBJ_TYPE, PREFIX_DEFN );
 
       else
-        PUT_LINE( "; ATTRIBUTE WIDTH : PREFIX NON TRAITE "
-		& NODE_NAME'IMAGE( PREFIX_DEFN.TY ) );
+        PUT_LINE( "; ATTRIBUTE WIDTH : PREFIX NON TRAITE " & NODE_NAME'IMAGE( PREFIX_DEFN.TY ) );
         PUT_LINE( tab & "LI" & tab & "0" );
         return;
       end if;
@@ -1061,8 +1049,6 @@ put_line(	"; adresse component id" );
 	  TYPE_NAME	: TREE := D( XD_SOURCE_NAME, TYPE_SPEC );
 	  TYPE_STR	: constant STRING := PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
 	begin
-	  -- Premiere version : WIDTH des entiers generiques deduit de SIZE.
-	  -- Cela suffit pour INTEGER_IO et evite le trou de pile.
 	  if  CODI.DEBUG  then  PUT_LINE( "; WIDTH POUR FORMAL TYPE" );  end if;
 	  PUT_LINE( tab & "LI" & tab & '0' );								-- lieu resultat sur pile
 	  PUT_LINE( tab & "La " & INTEGER'IMAGE( CODI.CUR_LEVEL ) & ',' & tab & "-GFP_ofs" );			-- Adresse de frame generique
@@ -1084,8 +1070,6 @@ put_line(	"; adresse component id" );
 	    when 32 => return 11;  -- -2147483648 .. 2147483647
 	    when 64 => return 20;  -- -9223372036854775808 .. 9223372036854775807
 	    when others =>
-        -- Repli conservatif.
-        -- Evite tout trou de pile et couvre les tailles exotiques de facon raisonnable.
 	      if    BITS <= 8   then return 4;
 	      elsif BITS <= 16  then return 6;
 	      elsif BITS <= 32  then return 11;
@@ -1093,6 +1077,7 @@ put_line(	"; adresse component id" );
 	      else                   return 40;								-- 128 bits
 	      end if;
               end case;
+
             end	SIGNED_WIDTH_FROM_SIZE;
 		----------------------
 
@@ -1469,26 +1454,17 @@ put_line(	"; adresse component id" );
 		-------------
 	procedure	EMIT_ONE_COMP	( COMP :TREE )
 	is	-------------
-            -- COMP est un élément à émettre à la position courante.
-            -- À l'entrée et à la sortie : l'adresse de la position courante
-            -- est au sommet de la pile (préservée par DUP/ADD).
-            -- Cette procédure DUPlique, remplit, puis ajoute STRIDE.
-	begin
+ 	begin
 	  PUT_LINE( tab & "DUP" );
 
 	  if  COMP.TY = DN_AGGREGATE  then
 	    if  DEPTH < NB_DIMS  then
-                -- Sous-agrégat tableau de dimension interne (pas de SM_EXP_TYPE)
-	      EMIT_AGG_AT_DEPTH( COMP, DEPTH + 1 );
+ 	      EMIT_AGG_AT_DEPTH( COMP, DEPTH + 1 );
 	    else
-		-- Feuille : l'élément du tableau est un agrégat (record, ou
-		-- éventuellement tableau imbriqué via type d'élément composite).
-		-- Délégation à CODE_AGGREGATE qui gère DN_RECORD / DN_ARRAY.
 	      CODE_AGGREGATE( COMP, TYPE_SPEC );
 	    end if;
 
-	  elsif  COMP.TY  in  CLASS_EXP  then
-		-- Composante scalaire — possible uniquement à DEPTH = NB_DIMS
+	  elsif  COMP.TY in CLASS_EXP  then
 	    EXPRESSIONS.CODE_EXP( COMP );
 	    PUT_LINE( tab & "S" & EXP_TYPE_CHAR( COMP ) );
 
@@ -1548,9 +1524,9 @@ put_line(	"; adresse component id" );
         end	EMIT_AGG_AT_DEPTH;
 		-----------------
 
-      begin    		-- ASSIGN_ARRAY_AGGREGATE
-
-        -- Étape 1 : extraire les dimensions
+      begin    											-- ASSIGN_ARRAY_AGGREGATE
+				------------------
+				EXTRACT_DIMENSIONS:
         declare
 	INDEX_NODE	: TREE;
         begin
@@ -1558,31 +1534,24 @@ put_line(	"; adresse component id" );
 	  POP( INDEX_S, INDEX_NODE );
 	  NB_DIMS := NB_DIMS + 1;
 	  declare
---	    IDX_TYPE	: TREE	:= D( SM_TYPE_SPEC, INDEX_NODE );
 	    RNG		: TREE	:= D( SM_RANGE, INDEX_NODE );
 	  begin
 	    DIM_TBL( NB_DIMS ).FST := DI( SM_VALUE, D( AS_EXP1, RNG ) );
 	    DIM_TBL( NB_DIMS ).LST := DI( SM_VALUE, D( AS_EXP2, RNG ) );
-
-put_line( ";CODE_AGGREGATE fst" & INTEGER'IMAGE( DIM_TBL( NB_DIMS ).FST ) );
-put_line( ";CODE_AGGREGATE lst" & INTEGER'IMAGE( DIM_TBL( NB_DIMS ).LST ) );
-
 	  end;
 	end loop;
-        end;
 
-		-- Étape 2 : calculer les strides de la dimension la plus interne
-		-- vers la dimension la plus externe.
+        end	EXTRACT_DIMENSIONS;
+		------------------
+
         DIM_TBL( NB_DIMS ).STRIDE := COMP_SIZ_BYTES;
         for  K  in reverse  1 .. NB_DIMS - 1  loop
 	DIM_TBL( K ).STRIDE := DIM_TBL( K + 1 ).STRIDE * ( DIM_TBL( K + 1 ).LST - DIM_TBL( K + 1 ).FST + 1 );
         end loop;
-
-        -- Étape 3 : émettre récursivement
         EMIT_AGG_AT_DEPTH( AGGREGATE, 1 );
 
-      end		ASSIGN_ARRAY_AGGREGATE;
-		----------------------
+      end	ASSIGN_ARRAY_AGGREGATE;
+	----------------------
 
     elsif  TYPE_SPEC.TY = DN_RECORD  then								-- L'adresse du doublet est deja empilee
 				-----------------------
@@ -1635,8 +1604,8 @@ SCAN_IDS:
         end loop		SCAN_DECLS;
         PUT_LINE( tab & "DROP" );									-- Enlever l'adresse de debut data record de reference
 
-      end			ASSIGN_RECORD_AGGREGATE;
-			-----------------------
+      end		ASSIGN_RECORD_AGGREGATE;
+		-----------------------
     end if;
 
   end	CODE_AGGREGATE;
@@ -1646,8 +1615,10 @@ SCAN_IDS:
 				-------------------
   procedure			CODE_STRING_LITERAL		( STRING_LITERAL :TREE; STR_NAME :STRING )
   is				-------------------
+
     CST_CHN	:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, STRING_LITERAL ) );
     STR_CONST	:STRING		renames	CST_CHN( CST_CHN'FIRST+1 .. CST_CHN'LAST-1 );
+
   begin
     PUT( "STR " & STR_NAME & ", """ & STR_CONST & '"' );
     if CODI.DEBUG then PUT( tab50 & "; constante string=""" & STR_CONST & """" );	end if;
@@ -1683,23 +1654,20 @@ SCAN_IDS:
         VALUE		: TREE		:= D( SM_VALUE, NUMERIC_LITERAL );
 
       begin
-        if  NUM_LIT_TYPE.TY = DN_FIXED  then					-- Valeur FIXED limitation temporaire NUMER = 1
+        if  NUM_LIT_TYPE.TY = DN_FIXED  then								-- Valeur FIXED limitation temporaire NUMER = 1
 
 	if  CODI.IN_GENERIC_BODY  and then  IS_GENERIC_FORMAL_TYPE( D( XD_SOURCE_NAME, NUM_LIT_TYPE ) )  then	-- Passer par le use__info
 	  declare
 	    TYPE_NAME	: TREE		:= D( XD_SOURCE_NAME, NUM_LIT_TYPE );
 	    TYPE_STR	: constant STRING	:= PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
 
-	  begin							-- ATTENTION HYPOTHESE NUMER_SMALL = 1
+	  begin											-- ATTENTION HYPOTHESE NUMER_SMALL = 1
 	    PUT_LINE( tab & "LI" & tab & PRINT_NUM( D( XD_NUMER, VALUE ) ) );					-- Numerateur valeur NV
 
 	    PUT_LINE( tab & "La " & IMAGE( GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );			-- Adresse de frame generique
 	    PUT_LINE( tab & "LIq , -" & TYPE_STR & "__u_ofs, STANDARD.FIXED_USE_INFO.DENOM" );			-- Charge l'entier DENOM small
 
 	    PUT_LINE( tab & "LI" & tab & PRINT_NUM( D( XD_DENOM, VALUE ) ) );					-- Denominateur valeur DV
-
---	    PUT_LINE( tab & "La " & IMAGE( GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );
---	    PUT_LINE( tab & "LIq , -" & TYPE_STR & "__u_ofs, STANDARD.FIXED_USE_INFO.NUMER" );			-- Charge l'entier NUMER small
 
 	    PUT_LINE( tab & "CVTIX" );								-- (NV DS) / (DV NS)
 	  end;
@@ -1710,7 +1678,7 @@ SCAN_IDS:
 	    NUMER_SMALL	: LONG_INTEGER	:= LONG_INTEGER'VALUE( PRINT_NUM( D( XD_NUMER, TARGET_SMALL ) ) );
 	    DENOM_SMALL	: LONG_INTEGER	:= LONG_INTEGER'VALUE( PRINT_NUM( D( XD_DENOM, TARGET_SMALL ) ) );
 
-	  begin							-- ATTENTION HYPOTHESE NUMER_SMALL = 1
+	  begin											-- ATTENTION HYPOTHESE NUMER_SMALL = 1
 	    PUT_LINE( tab & "LI" & tab & PRINT_NUM( D( XD_NUMER, VALUE ) ) );					-- NV
 	    PUT_LINE( tab & "LI" & tab & PRINT_NUM( D( XD_DENOM, TARGET_SMALL ) ) );				-- DS
 	    PUT_LINE( tab & "LI" & tab & PRINT_NUM( D( XD_DENOM, VALUE ) ) );					-- DV
@@ -1752,23 +1720,22 @@ SCAN_IDS:
     LBL_SKIP	:constant	STRING	:= NEW_LABEL;
 
   begin
-    -- Evaluer la premiere expression
     CODE_EXP( EXP1 );
 
     if  OP.TY = DN_AND_THEN  then
       -- A and then	B : si A est FALSE,	resultat = FALSE (ne pas evaluer B)
-      PUT_LINE( tab	& "DUP" );					-- dupliquer A pour	le test
-      PUT_LINE( tab	& "BF" & tab & LBL_SKIP );			-- si A=FALSE, sauter (garder	FALSE sur	la pile)
-      PUT_LINE( tab	& "DROP" );					-- jeter le duplicat de A (A etait TRUE)
-      CODE_EXP( EXP2 );						-- evaluer B, resultat = B
+      PUT_LINE( tab	& "DUP" );									-- dupliquer A pour	le test
+      PUT_LINE( tab	& "BF" & tab & LBL_SKIP );								-- si A=FALSE, sauter (garder	FALSE sur	la pile)
+      PUT_LINE( tab	& "DROP" );									-- jeter le duplicat de A (A etait TRUE)
+      CODE_EXP( EXP2 );										-- evaluer B, resultat = B
       PUT_LINE( LBL_SKIP & ':' );
 
     elsif	 OP.TY = DN_OR_ELSE	 then
       -- A or else B : si A est TRUE, resultat = TRUE (ne pas evaluer	B)
-      PUT_LINE( tab	& "DUP" );					-- dupliquer A pour	le test
-      PUT_LINE( tab	& "BT" & tab & LBL_SKIP );			-- si A=TRUE, sauter (garder TRUE sur la pile)
-      PUT_LINE( tab	& "DROP" );					-- jeter le duplicat de A (A etait FALSE)
-      CODE_EXP( EXP2 );						-- evaluer B, resultat = B
+      PUT_LINE( tab	& "DUP" );									-- dupliquer A pour	le test
+      PUT_LINE( tab	& "BT" & tab & LBL_SKIP );								-- si A=TRUE, sauter (garder TRUE sur la pile)
+      PUT_LINE( tab	& "DROP" );									-- jeter le duplicat de A (A etait FALSE)
+      CODE_EXP( EXP2 );										-- evaluer B, resultat = B
       PUT_LINE( LBL_SKIP & ':' );
 
     end if;
@@ -1782,6 +1749,7 @@ SCAN_IDS:
   is				------------------
   begin
     CODE_EXP( D( AS_EXP, PARENTHESIZED ) );
+
   end	CODE_PARENTHESIZED;
 	------------------
 

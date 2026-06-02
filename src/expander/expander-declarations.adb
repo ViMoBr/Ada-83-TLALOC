@@ -985,23 +985,8 @@ null;--	  LOAD_TYPE_SIZE( TYPE_SPEC  );
       declare
         DEFN		: TREE		:= D( SM_DEFN, GNAME );
         GNAME_STR		:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, GNAME ) );
+
       begin
---        if  DEFN.TY = DN_SUBTYPE_ID	 then
---	declare
---	      DEFN_TYPE_SPEC	: TREE		:= D( SM_TYPE_SPEC,	DEFN );
---	      DEFN_TYPE_RANGE	: TREE		:= D( SM_RANGE, DEFN_TYPE_SPEC );
---	begin
---	  if	DEFN_TYPE_SPEC.TY =	DN_INTEGER  then
---	    PUT_LINE( "VAR " & GNAME_STR & "_last_ofs, q" );
---	    PUT_LINE( "LI" & tab & PRINT_NAME( D( LX_NUMREP, D(	AS_EXP2, DEFN_TYPE_RANGE ) ) ) );
---	    PUT_LINE( "Sd" & tab & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL ) & ", " & GNAME_STR & "_last_ofs" );
-
---	    PUT_LINE( "VAR " & GNAME_STR & "_first_ofs, q" );
---	    PUT_LINE( "LI" & tab & PRINT_NAME( D( LX_NUMREP, D(	AS_EXP1, DEFN_TYPE_RANGE ) ) ) );
---	    PUT_LINE( "Sd" & tab & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL ) & ", " & GNAME_STR & "_first_ofs" );
---	  end if;
---	end;
-
         if  DEFN.TY = DN_TYPE_ID  or  DEFN.TY = DN_SUBTYPE_ID  then
 	declare
 	      DEFN_TYPE_SPEC	: TREE		:= D( SM_TYPE_SPEC,	DEFN );
@@ -1024,7 +1009,6 @@ null;--	  LOAD_TYPE_SIZE( TYPE_SPEC  );
 		-- ST : pile = [@param_out, valeur] →	pile = []
 	      PUT_LINE(	"BRA post_ST_" & DEFN_STR );
 	      PUT_LINE(	"ST_" & DEFN_STR & ".elab:" );
---	      PUT_LINE(	tab & "SI" & SIZ_CHAR & " -1, 0" );
 	      PUT_LINE(	tab & "S" & SIZ_CHAR & " -1, 0" );
 	      PUT_LINE(	tab & "RTD 0" );
 	      PUT_LINE(	"post_ST_" & DEFN_STR & ":" );
@@ -1065,8 +1049,6 @@ null;--	  LOAD_TYPE_SIZE( TYPE_SPEC  );
 	     or  DEFN_TYPE_SPEC.TY  in  CLASS_CONSTRAINED  then
 					-- A REVOIR
 
---	    declare
---	      SIZ_CHAR	: CHARACTER	:= OPER_SIZ_CHAR( DEFN_TYPE_SPEC );
 	    begin
 		-- LD : pile = [adresse] → pile = [valeur]
 	      PUT_LINE(	"BRA post_LD_" & DEFN_STR );
@@ -1281,7 +1263,6 @@ null;--	  LOAD_TYPE_SIZE( TYPE_SPEC  );
 		& tab & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL	) & ", -result__ofs"  );
 	        if  CODI.DEBUG  then PUT( tab50	& "; retour resultat" ); end if;
 	        NEW_LINE;
---	  DI( CD_RESULT_SIZE, SOURCE_NAME, DI( CD_IMPL_SIZE, RESULT_TYPE_SPEC	) );
 	      else
 	        PUT_LINE( "; RESULTAT PAR REFERENCE A FAIRE" );
 	        raise PROGRAM_ERROR;
@@ -1311,10 +1292,6 @@ null;--	  LOAD_TYPE_SIZE( TYPE_SPEC  );
 
     end;
     DEC_LEVEL;
-
---    if  D( AS_UNIT_KIND, SUBPROG_ENTRY_DECL ).TY = DN_INSTANTIATION  then
---     CODI.IN_GENERIC_INSTANTIATION := FALSE;
---    end if;
 
    end	  CODE_SUBPROG_ENTRY_DECL;
 	--=======================--
@@ -1382,7 +1359,7 @@ null;--	  LOAD_TYPE_SIZE( TYPE_SPEC  );
 
     if  CAS_NORMAL	then
       PUT_LINE( "end namespace" );
-DB( CD_COMPILED, D(	AS_SOURCE_NAME, PACKAGE_DECL ), TRUE );
+      DB( CD_COMPILED, D(	AS_SOURCE_NAME, PACKAGE_DECL ), TRUE );
     end if;
     if  CODI.DEBUG	then  NEW_LINE; end	if;
 
