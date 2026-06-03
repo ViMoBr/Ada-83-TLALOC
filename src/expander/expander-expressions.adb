@@ -1850,31 +1850,60 @@ SCAN_IDS:
 			FLOAT_TARGET:
 	begin
 	  if  SRC_TYPE.TY /= DN_FLOAT  and  SRC_TYPE.TY /= DN_UNIVERSAL_REAL  then				-- Si la source n'est pas deja flottante, convertir entier -> float
+
 	    if  SRC_TYPE.TY = DN_FIXED  then								-- Source FIXED
 				--------------
 				FIXED_TO_FLOAT:
-	      declare
-	        SOURCE_SMALL	: TREE		:= D( CD_IMPL_SMALL, SRC_TYPE );
-	        NUMER_SMALL		: LONG_INTEGER
-				  := LONG_INTEGER'VALUE( PRINT_NUM( D( XD_NUMER, SOURCE_SMALL ) ) );
-	        DENOM_SMALL		: LONG_INTEGER
-				  := LONG_INTEGER'VALUE( PRINT_NUM( D( XD_DENOM, SOURCE_SMALL ) ) );
 	      begin
-	        PUT_LINE( tab & "CVTIF" );								-- La mantisse fixed est deja au sommet de la pile.
+	        if  CODI.IN_GENERIC_BODY  and then  IS_GENERIC_FORMAL_TYPE( D( XD_SOURCE_NAME, SRC_TYPE ) )  then	-- Passer par le use__info
+					-------------------------
+					FIXED_TO_FLOAT_IN_GENERIC:
+		declare
+		  TYPE_NAME	: TREE		:= D( XD_SOURCE_NAME, SRC_TYPE );
+		  SRC_TYPE_STR	: constant STRING	:= PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
+		begin
+		  PUT_LINE( tab & "CVTIF" );								-- La mantisse fixed est deja au sommet de la pile.
+		  PUT_LINE( tab & "La " & IMAGE( GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );		-- Adresse de frame generique
+		  PUT_LINE( tab & "LIq , -" & SRC_TYPE_STR & "__u_ofs, STANDARD.FIXED_USE_INFO.NUMER" );		-- Charge l'entier NUMER
+		  PUT_LINE( tab & "CVTIF" );
+		  PUT_LINE( tab & "FMUL" );
+		  PUT_LINE( tab & "La " & IMAGE( GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );		-- Adresse de frame generique
+		  PUT_LINE( tab & "LIq , -" & SRC_TYPE_STR & "__u_ofs, STANDARD.FIXED_USE_INFO.DENOM" );		-- Charge l'entier DENOM
+		  PUT_LINE( tab & "CVTIF" );
+		  PUT_LINE( tab & "FDIV" );
 
-	        if NUMER_SMALL /= 1 then
-		PUT_LINE( tab & "LI" & tab & PRINT_NUM( D( XD_NUMER, SOURCE_SMALL ) ) );
-		PUT_LINE( tab & "CVTIF" );
-		PUT_LINE( tab & "FMUL" );
-	        end if;
+		end	FIXED_TO_FLOAT_IN_GENERIC;
+			-------------------------
+	        else
+					-------------------------
+					FIXED_TO_FLOAT_USUAL:
+		declare
+		  SOURCE_SMALL	: TREE		:= D( CD_IMPL_SMALL, SRC_TYPE );
+		  NUMER_SMALL	: LONG_INTEGER
+				  := LONG_INTEGER'VALUE( PRINT_NUM( D( XD_NUMER, SOURCE_SMALL ) ) );
+		  DENOM_SMALL	: LONG_INTEGER
+				  := LONG_INTEGER'VALUE( PRINT_NUM( D( XD_DENOM, SOURCE_SMALL ) ) );
+		begin
+		  PUT_LINE( tab & "CVTIF" );								-- La mantisse fixed est deja au sommet de la pile.
 
-	        if DENOM_SMALL /= 1 then
-		PUT_LINE( tab & "LI" & tab & PRINT_NUM( D( XD_DENOM, SOURCE_SMALL ) ) );
-		PUT_LINE( tab & "CVTIF" );
-		PUT_LINE( tab & "FDIV" );
+		  if  NUMER_SMALL /= 1  then
+		    PUT_LINE( tab & "LI" & tab & PRINT_NUM( D( XD_NUMER, SOURCE_SMALL ) ) );
+		    PUT_LINE( tab & "CVTIF" );
+		    PUT_LINE( tab & "FMUL" );
+		  end if;
+
+		  if DENOM_SMALL /= 1 then
+		    PUT_LINE( tab & "LI" & tab & PRINT_NUM( D( XD_DENOM, SOURCE_SMALL ) ) );
+		    PUT_LINE( tab & "CVTIF" );
+		    PUT_LINE( tab & "FDIV" );
+		  end if;
+	          end	FIXED_TO_FLOAT_USUAL;
+			--------------------
 	        end if;
-	      end		FIXED_TO_FLOAT;
-			--------------
+	      end	FIXED_TO_FLOAT;
+		--------------
+
+
 	    else
 	      PUT( tab &	"CVTIF" );								-- conversion entier signe 64	-> double	IEEE 754
 	      if  CODI.DEBUG  then
@@ -1883,7 +1912,7 @@ SCAN_IDS:
 	      NEW_LINE;
 	    end if;
 	  end if;
-	  -- float->float :	no-op, meme representation IEEE 754 double
+			-- float->float :	no-op, meme representation IEEE 754 double
 	end	FLOAT_TARGET;
 		------------
 
@@ -1898,6 +1927,9 @@ SCAN_IDS:
 	  if  CODI.IN_GENERIC_BODY  and then  IS_GENERIC_FORMAL_TYPE( D( XD_SOURCE_NAME, TARGET_TYPE ) )  then	-- Passer par le use__info
 
 	      if  SRC_TYPE.TY = DN_FLOAT  or  SRC_TYPE.TY = DN_UNIVERSAL_REAL  then
+
+					-------------------------
+					FLOAT_TO_FIXED_IN_GENERIC:
 	        declare
 		TYPE_NAME		: TREE		:= D( XD_SOURCE_NAME, TARGET_TYPE );
 		TARGET_TYPE_STR	: constant STRING	:= PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
@@ -1906,18 +1938,18 @@ SCAN_IDS:
 		PUT_LINE( tab & "LIq , -" & TARGET_TYPE_STR & "__u_ofs, STANDARD.FIXED_USE_INFO.DENOM" );		-- Charge l'entier DENOM
 		PUT_LINE( tab & "CVTIF" );
 		PUT_LINE( tab & "FMUL" );								-- MANTISSA * DENOM
-
-		PUT_LINE( tab & "La " & IMAGE( GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );			-- Adresse de frame generique
+		PUT_LINE( tab & "La " & IMAGE( GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );		-- Adresse de frame generique
 		PUT_LINE( tab & "LIq , -" & TARGET_TYPE_STR & "__u_ofs, STANDARD.FIXED_USE_INFO.NUMER" );		-- Charge l'entier NUMER
 		PUT_LINE( tab & "CVTIF" );
 		PUT_LINE( tab & "FDIV" );								-- / NUMER
+		PUT_LINE( tab & "CVTFIR" );
 
-		PUT_LINE( tab & "CVTFI" );
-	        end;
+	        end	FLOAT_TO_FIXED_IN_GENERIC;
+			-------------------------
 
 	      elsif  SRC_TYPE.TY = DN_INTEGER  or  SRC_TYPE.TY = DN_UNIVERSAL_INTEGER  then
-				----------------
-				INTEGER_TO_FIXED:
+				---------------------------
+				INTEGER_TO_FIXED_IN_GENERIC:
 	        declare
 		TYPE_NAME		: TREE		:= D( XD_SOURCE_NAME, TARGET_TYPE );
 		TARGET_TYPE_STR	: constant STRING	:= PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
@@ -1928,12 +1960,12 @@ SCAN_IDS:
 		PUT_LINE( tab & "LIq , -" & TARGET_TYPE_STR & "__u_ofs, STANDARD.FIXED_USE_INFO.NUMER" );		-- Charge l'entier NUMER
 		PUT_LINE( tab & "CVTIX" );
 
-	        end	INTEGER_TO_FIXED;
-			----------------
+	        end	INTEGER_TO_FIXED_IN_GENERIC;
+			---------------------------
 
 	      elsif  SRC_TYPE.TY = DN_FIXED  then
-				--------------
-				FIXED_TO_FIXED:
+				-------------------------
+				FIXED_TO_FIXED_IN_GENERIC:
 	        declare
 		SOURCE_SMALL	: TREE	:= D( CD_IMPL_SMALL, SRC_TYPE );
 	        begin
@@ -1945,8 +1977,9 @@ SCAN_IDS:
 		else
 		  PUT_LINE( "; FIXED TO FIXED WITH DIFFERENT SMALL A FAIRE" );
 		end if;
-	        end	FIXED_TO_FIXED;
-			--------------
+
+	        end	FIXED_TO_FIXED_IN_GENERIC;
+			-------------------------
 	      end if;
 
 	  else
@@ -1956,8 +1989,8 @@ SCAN_IDS:
 	      PUT_LINE( tab & "CVTIX" );
 
 	    elsif  SRC_TYPE.TY = DN_FLOAT  or  SRC_TYPE.TY = DN_UNIVERSAL_REAL  then				-- LONG_FLOAT deja empile
-				--------------
-				FLOAT_TO_FIXED:
+				--------------------
+				FLOAT_TO_FIXED_USUAL:
 	      declare
 	        NUMER_SMALL	: LONG_INTEGER	:= LONG_INTEGER'VALUE( PRINT_NUM( D( XD_NUMER, TARGET_SMALL ) ) );
 	        DENOM_SMALL	: LONG_INTEGER	:= LONG_INTEGER'VALUE( PRINT_NUM( D( XD_DENOM, TARGET_SMALL ) ) );
@@ -1977,8 +2010,8 @@ SCAN_IDS:
 
 	        PUT_LINE( tab & "CVTFIR" );
 
-	    end	FLOAT_TO_FIXED;
-		--------------
+	    end	FLOAT_TO_FIXED_USUAL;
+		--------------------
 
 	    elsif  SRC_TYPE.TY = DN_FIXED  and then  TARGET_TYPE /= SRC_TYPE  then
 	      PUT_LINE( "; FIXED to FIXED a faire" );

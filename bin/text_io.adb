@@ -920,6 +920,7 @@ is					-------
   end	GET_LINE;
 	--------
 
+
 			--------
   procedure		GET_LINE		( ITEM :out STRING; LAST :out NATURAL )
   is			--------
@@ -1151,71 +1152,158 @@ is					-------
 					)
     is			---
 
-      CHN	: STRING( 1 .. 80 );
-      LEN	: NATURAL		:= 0;
-      VAL	: NUM		:= 0.0;
+      CH		: CHARACTER;
+      VAL		: NUM		:= 0.0;
       FRAC	: NUM		:= 0.1;
-      NEG	: BOOLEAN		:= FALSE;
-      I	: NATURAL;
-      IN_FRAC	: BOOLEAN		:= FALSE;
-      IN_EXP	: BOOLEAN		:= FALSE;
-      EXP_VAL	: INTEGER		:= 0;
-      EXP_NEG	: BOOLEAN		:= FALSE;
+      NEG		: BOOLEAN	:= FALSE;
+      IN_FRAC	: BOOLEAN	:= FALSE;
+      EXP_VAL	: INTEGER	:= 0;
+      EXP_NEG	: BOOLEAN	:= FALSE;
+      CHARS_READ	: NATURAL	:= 0;
+      DONE		: BOOLEAN	:= FALSE;
 
     begin
-      GET_LINE( FILE, CHN, LEN );
-      I := 1;
-      -- Sauter les espaces de tete
-      while  I <= LEN  and then  CHN( I ) = ' '  loop
-        I := I + 1;
-      end loop;
-      -- Signe optionnel
-      if  I <= LEN  and then  CHN( I ) = '-'  then
-        NEG := TRUE;
-        I := I + 1;
-      elsif  I <= LEN  and then  CHN( I ) = '+'  then
-        I := I + 1;
+
+      if  WIDTH = 0  then
+        loop
+          exit when  FILE.AT_END_OF_FILE;
+          GET( FILE, CH );
+          exit when  FILE.AT_END_OF_FILE;
+          exit when  CH /= ' '  and then  CH /= ASCII.HT
+                              and then  CH /= ASCII.LF
+                              and then  CH /= ASCII.CR;
+        end loop;
+      else
+        GET( FILE, CH );
+        CHARS_READ := 0;
       end if;
-      -- Partie entiere et fractionnaire
-      while  I <= LEN  loop
-        if  CHN( I ) = '.'  then
-          IN_FRAC := TRUE;
-        elsif  CHN( I ) = 'E'  or  CHN( I ) = 'e'  then
-          IN_EXP := TRUE;
-          I := I + 1;
-          if  I <= LEN  and then  CHN( I ) = '-'  then
-            EXP_NEG := TRUE;
-            I := I + 1;
-          elsif  I <= LEN  and then  CHN( I ) = '+'  then
-            I := I + 1;
-          end if;
-          while  I <= LEN  and then  CHN( I ) >= '0'  and then  CHN( I ) <= '9'  loop
-            EXP_VAL := 10 * EXP_VAL + CHARACTER'POS( CHN( I ) ) - CHARACTER'POS( '0' );
-            I := I + 1;
-          end loop;
-          exit;
-        elsif  CHN( I ) >= '0'  and then  CHN( I ) <= '9'  then
-          if  IN_FRAC  then
-            VAL := VAL + FRAC * NUM( CHARACTER'POS( CHN( I ) ) - CHARACTER'POS( '0' ) );
-            FRAC := FRAC / 10.0;
-          else
-            VAL := 10.0 * VAL + NUM( CHARACTER'POS( CHN( I ) ) - CHARACTER'POS( '0' ) );
+
+      -- Signe optionnel
+      if  not FILE.AT_END_OF_FILE  and then  CH = '-'  then
+        NEG := TRUE;
+        if  WIDTH > 0  then
+          CHARS_READ := CHARS_READ + 1;
+          if  CHARS_READ >= WIDTH  then  DONE := TRUE;
+          else  GET( FILE, CH );
           end if;
         else
-          exit;
+          GET( FILE, CH );
         end if;
-        I := I + 1;
+      elsif  not FILE.AT_END_OF_FILE  and then  CH = '+'  then
+        if  WIDTH > 0  then
+          CHARS_READ := CHARS_READ + 1;
+          if  CHARS_READ >= WIDTH  then  DONE := TRUE;
+          else  GET( FILE, CH );
+          end if;
+        else
+          GET( FILE, CH );
+        end if;
+      end if;
+
+      -- Mantisse et exposant
+      loop
+        exit when  DONE  or else  FILE.AT_END_OF_FILE;
+        if  WIDTH > 0  and then  CHARS_READ >= WIDTH  then  exit;  end if;
+
+        if  CH = '.'  then
+          IN_FRAC := TRUE;
+          if  WIDTH > 0  then
+            CHARS_READ := CHARS_READ + 1;
+            if  CHARS_READ >= WIDTH  then  DONE := TRUE;
+            else  GET( FILE, CH );
+            end if;
+          else
+            GET( FILE, CH );
+          end if;
+
+        elsif  CH = 'E'  or else  CH = 'e'  then
+          if  WIDTH > 0  then
+            CHARS_READ := CHARS_READ + 1;
+            if  CHARS_READ >= WIDTH  then  DONE := TRUE;
+            else  GET( FILE, CH );
+            end if;
+          else
+            GET( FILE, CH );
+          end if;
+          if  not DONE  and then  not FILE.AT_END_OF_FILE  then
+            if  CH = '-'  then
+              EXP_NEG := TRUE;
+              if  WIDTH > 0  then
+                CHARS_READ := CHARS_READ + 1;
+                if  CHARS_READ >= WIDTH  then  DONE := TRUE;
+                else  GET( FILE, CH );
+                end if;
+              else
+                GET( FILE, CH );
+              end if;
+            elsif  CH = '+'  then
+              if  WIDTH > 0  then
+                CHARS_READ := CHARS_READ + 1;
+                if  CHARS_READ >= WIDTH  then  DONE := TRUE;
+                else  GET( FILE, CH );
+                end if;
+              else
+                GET( FILE, CH );
+              end if;
+            end if;
+          end if;
+          -- Chiffres de l'exposant
+          loop
+            exit when  DONE  or else  FILE.AT_END_OF_FILE;
+            exit when  CH < '0'  or else  CH > '9';
+            EXP_VAL := 10 * EXP_VAL
+                           + CHARACTER'POS( CH ) - CHARACTER'POS( '0' );
+            if  WIDTH > 0  then
+              CHARS_READ := CHARS_READ + 1;
+              if  CHARS_READ >= WIDTH  then  DONE := TRUE;
+              else  GET( FILE, CH );
+              end if;
+            else
+              GET( FILE, CH );
+            end if;
+          end loop;
+          if  WIDTH = 0  and then  not FILE.AT_END_OF_FILE
+                         and then  ( CH < '0'  or else  CH > '9' )  then
+            FILE.LOOK_AHEAD     := CH;
+            FILE.HAS_LOOK_AHEAD := TRUE;
+          end if;
+          DONE := TRUE;
+
+        elsif  CH >= '0'  and then  CH <= '9'  then
+          if  IN_FRAC  then
+            VAL  := VAL + FRAC
+                        * NUM( CHARACTER'POS( CH ) - CHARACTER'POS( '0' ) );
+            FRAC := FRAC / 10.0;
+          else
+            VAL  := 10.0 * VAL
+                        + NUM( CHARACTER'POS( CH ) - CHARACTER'POS( '0' ) );
+          end if;
+          if  WIDTH > 0  then
+            CHARS_READ := CHARS_READ + 1;
+            if  CHARS_READ >= WIDTH  then  DONE := TRUE;
+            else  GET( FILE, CH );
+            end if;
+          else
+            GET( FILE, CH );
+          end if;
+
+        else
+          if  WIDTH = 0  then
+            FILE.LOOK_AHEAD     := CH;
+            FILE.HAS_LOOK_AHEAD := TRUE;
+          end if;
+          DONE := TRUE;
+        end if;
       end loop;
-      -- Appliquer exposant
+
       if  EXP_NEG  then
         for  J in 1 .. EXP_VAL  loop  VAL := VAL / 10.0;  end loop;
       else
         for  J in 1 .. EXP_VAL  loop  VAL := VAL * 10.0;  end loop;
       end if;
-      if  NEG  then
-        ITEM := -VAL;
-      else
-        ITEM := VAL;
+
+      if  NEG  then  ITEM := -VAL;
+      else           ITEM :=  VAL;
       end if;
 
     end	GET;
@@ -1398,73 +1486,162 @@ is					-------
 					)
     is			---
 
-      CHN		: STRING( 1 .. 80 );
-      LEN		: NATURAL		:= 0;
-      VAL		: NUM		:= 0.0;
-      FRAC	: NUM		:= NUM'DELTA;
-      NEG		: BOOLEAN		:= FALSE;
-      I		: NATURAL;
-      IN_FRAC	: BOOLEAN		:= FALSE;
-      EXP_VAL	: INTEGER		:= 0;
-      EXP_NEG	: BOOLEAN		:= FALSE;
+      CH		: CHARACTER;
+      VAL		: LONG_FLOAT	:= 0.0;
+      FRAC	: LONG_FLOAT	:= 0.1;
+      NEG		: BOOLEAN	:= FALSE;
+      IN_FRAC	: BOOLEAN	:= FALSE;
+      EXP_VAL	: INTEGER	:= 0;
+      EXP_NEG	: BOOLEAN	:= FALSE;
+      CHARS_READ	: NATURAL	:= 0;
+      DONE		: BOOLEAN	:= FALSE;
 
     begin
-      GET_LINE( FILE, CHN, LEN );
-      I := 1;
-      -- Sauter les espaces de tete
-      while  I <= LEN  and then  CHN( I ) = ' '  loop
-        I := I + 1;
-      end loop;
-      -- Signe optionnel
-      if  I <= LEN  and then  CHN( I ) = '-'  then
-        NEG := TRUE;
-        I := I + 1;
-      elsif  I <= LEN  and then  CHN( I ) = '+'  then
-        I := I + 1;
+
+      if  WIDTH = 0  then
+        loop
+          exit when  FILE.AT_END_OF_FILE;
+          GET( FILE, CH );
+          exit when  FILE.AT_END_OF_FILE;
+          exit when  CH /= ' '  and then  CH /= ASCII.HT
+                              and then  CH /= ASCII.LF
+                              and then  CH /= ASCII.CR;
+        end loop;
+      else
+        GET( FILE, CH );
+        CHARS_READ := 0;
       end if;
-      -- Partie entiere et fractionnaire
-      while  I <= LEN  loop
-        if  CHN( I ) = '.'  then
-          IN_FRAC := TRUE;
-        elsif  CHN( I ) = 'E'  or  CHN( I ) = 'e'  then
-          I := I + 1;
-          if  I <= LEN  and then  CHN( I ) = '-'  then
-            EXP_NEG := TRUE;
-            I := I + 1;
-          elsif  I <= LEN  and then  CHN( I ) = '+'  then
-            I := I + 1;
-          end if;
-          while  I <= LEN  and then  CHN( I ) >= '0'  and then  CHN( I ) <= '9'  loop
-            EXP_VAL := 10 * EXP_VAL + CHARACTER'POS( CHN( I ) ) - CHARACTER'POS( '0' );
-            I := I + 1;
-          end loop;
-          exit;
-        elsif  CHN( I ) >= '0'  and then  CHN( I ) <= '9'  then
-          if  IN_FRAC  then
-            VAL := VAL + NUM( FRAC * NUM( CHARACTER'POS( CHN( I ) ) - CHARACTER'POS( '0' ) ) );
-            FRAC := FRAC / 10;
-          else
-            VAL := 10 * VAL + NUM( CHARACTER'POS( CHN( I ) ) - CHARACTER'POS( '0' ) );
+
+      -- Signe optionnel
+      if  not FILE.AT_END_OF_FILE  and then  CH = '-'  then
+        NEG := TRUE;
+        if  WIDTH > 0  then
+          CHARS_READ := CHARS_READ + 1;
+          if  CHARS_READ >= WIDTH  then  DONE := TRUE;
+          else  GET( FILE, CH );
           end if;
         else
-          exit;
+          GET( FILE, CH );
         end if;
-        I := I + 1;
-      end loop;
-      -- Appliquer exposant (rarement present pour un fixed, mais accepte)
-      if  EXP_NEG  then
-        for  J in 1 .. EXP_VAL  loop  VAL := VAL / 10;  end loop;
-      else
-        for  J in 1 .. EXP_VAL  loop  VAL := VAL * 10;  end loop;
+      elsif  not FILE.AT_END_OF_FILE  and then  CH = '+'  then
+        if  WIDTH > 0  then
+          CHARS_READ := CHARS_READ + 1;
+          if  CHARS_READ >= WIDTH  then  DONE := TRUE;
+          else  GET( FILE, CH );
+          end if;
+        else
+          GET( FILE, CH );
+        end if;
       end if;
-      if  NEG  then
-        ITEM := -VAL;
+
+      -- Mantisse et exposant
+      loop
+        exit when  DONE  or else  FILE.AT_END_OF_FILE;
+        if  WIDTH > 0  and then  CHARS_READ >= WIDTH  then  exit;  end if;
+
+        if  CH = '.'  then
+          IN_FRAC := TRUE;
+          if  WIDTH > 0  then
+            CHARS_READ := CHARS_READ + 1;
+            if  CHARS_READ >= WIDTH  then  DONE := TRUE;
+            else  GET( FILE, CH );
+            end if;
+          else
+            GET( FILE, CH );
+          end if;
+
+        elsif  CH = 'E'  or else  CH = 'e'  then
+          if  WIDTH > 0  then
+            CHARS_READ := CHARS_READ + 1;
+            if  CHARS_READ >= WIDTH  then  DONE := TRUE;
+            else  GET( FILE, CH );
+            end if;
+          else
+            GET( FILE, CH );
+          end if;
+          if  not DONE  and then  not FILE.AT_END_OF_FILE  then
+            if  CH = '-'  then
+              EXP_NEG := TRUE;
+              if  WIDTH > 0  then
+                CHARS_READ := CHARS_READ + 1;
+                if  CHARS_READ >= WIDTH  then  DONE := TRUE;
+                else  GET( FILE, CH );
+                end if;
+              else
+                GET( FILE, CH );
+              end if;
+            elsif  CH = '+'  then
+              if  WIDTH > 0  then
+                CHARS_READ := CHARS_READ + 1;
+                if  CHARS_READ >= WIDTH  then  DONE := TRUE;
+                else  GET( FILE, CH );
+                end if;
+              else
+                GET( FILE, CH );
+              end if;
+            end if;
+          end if;
+          loop
+            exit when  DONE  or else  FILE.AT_END_OF_FILE;
+            exit when  CH < '0'  or else  CH > '9';
+            EXP_VAL := 10 * EXP_VAL
+                           + CHARACTER'POS( CH ) - CHARACTER'POS( '0' );
+            if  WIDTH > 0  then
+              CHARS_READ := CHARS_READ + 1;
+              if  CHARS_READ >= WIDTH  then  DONE := TRUE;
+              else  GET( FILE, CH );
+              end if;
+            else
+              GET( FILE, CH );
+            end if;
+          end loop;
+          if  WIDTH = 0  and then  not FILE.AT_END_OF_FILE
+                         and then  ( CH < '0'  or else  CH > '9' )  then
+            FILE.LOOK_AHEAD     := CH;
+            FILE.HAS_LOOK_AHEAD := TRUE;
+          end if;
+          DONE := TRUE;
+
+        elsif  CH >= '0'  and then  CH <= '9'  then
+          if  IN_FRAC  then
+            VAL  := VAL + FRAC
+                        * LONG_FLOAT( CHARACTER'POS( CH ) - CHARACTER'POS( '0' ) );
+            FRAC := FRAC / 10.0;
+          else
+            VAL  := 10.0 * VAL
+                        + LONG_FLOAT( CHARACTER'POS( CH ) - CHARACTER'POS( '0' ) );
+          end if;
+          if  WIDTH > 0  then
+            CHARS_READ := CHARS_READ + 1;
+            if  CHARS_READ >= WIDTH  then  DONE := TRUE;
+            else  GET( FILE, CH );
+            end if;
+          else
+            GET( FILE, CH );
+          end if;
+
+        else
+          if  WIDTH = 0  then
+            FILE.LOOK_AHEAD     := CH;
+            FILE.HAS_LOOK_AHEAD := TRUE;
+          end if;
+          DONE := TRUE;
+        end if;
+      end loop;
+
+      if  EXP_NEG  then
+        for  J in 1 .. EXP_VAL  loop  VAL := VAL / 10.0;  end loop;
       else
-        ITEM := VAL;
+        for  J in 1 .. EXP_VAL  loop  VAL := VAL * 10.0;  end loop;
+      end if;
+
+      if  NEG  then  ITEM := NUM( -VAL );
+      else           ITEM := NUM(  VAL );
       end if;
 
     end	GET;
-	----
+	---
+
 
 			---
     procedure		GET		( ITEM  :out NUM; WIDTH :in FIELD := 0 )
@@ -1475,6 +1652,7 @@ is					-------
     end	GET;
 	----
 
+
     			---
     procedure		PUT		( FILE :in FILE_TYPE;
 					  ITEM :in NUM;
@@ -1484,164 +1662,103 @@ is					-------
 					)
     is			---
 
-      VAL		: NUM		:= ITEM;
-      IS_NEGATIVE	: BOOLEAN		:= ITEM < 0.0;
-      E		: INTEGER		:= 0;
-      DIGIT	: INTEGER;
-      INT_PART	: NUM;
-      FRC_PART	: NUM;
+      VAL		: LONG_FLOAT	:= LONG_FLOAT( ITEM );
+      IS_NEGATIVE	: BOOLEAN		:= LONG_FLOAT( ITEM ) < 0.0;
+      ROUNDING	: LONG_FLOAT	:= 0.5;
+      INT_PART	: LONG_FLOAT;
+      FRC_PART	: LONG_FLOAT;
+      DIGIT	: LONG_INTEGER;
+
+			---------
+      function		FLOOR_POS		( X : LONG_FLOAT )		return LONG_INTEGER
+      is			---------
+        R		: LONG_INTEGER	:= LONG_INTEGER( X );
+
+      begin
+        if  LONG_FLOAT( R ) > X  then
+	R := R - 1;
+        end if;
+        return  R;
+
+      end	FLOOR_POS;
+	---------
 
     begin
-      -- Traiter le signe : on travaille sur la valeur absolue
       if  IS_NEGATIVE  then
-        VAL := -ITEM;
+        VAL := -VAL;
       end if;
 
-      ----------------------------------------------------------------
-      -- Cas EXP = 0 : notation decimale etendue [-]ddd.ddd (defaut fixed)
-      ----------------------------------------------------------------
---      if  EXP = 0  then
+      if  EXP = 0  then
 
-        -- Separer partie entiere et partie fractionnaire
-        INT_PART := NUM( LONG_INTEGER( VAL ) );
-        if  INT_PART > VAL  then									-- securite si arrondi par exces
-          INT_PART := INT_PART - 1.0;
-        end if;
+        -- Arrondir a AFT chiffres avant extraction.
+        for  K in 1 .. AFT  loop
+	ROUNDING := ROUNDING / 10.0;
+        end loop;
+
+        VAL := VAL + ROUNDING;
+
+        INT_PART := LONG_FLOAT( FLOOR_POS( VAL ) );
         FRC_PART := VAL - INT_PART;
 
-        -- Construire la chaine des chiffres de la partie entiere (au moins un '0')
         declare
-          IBUF	: STRING( 1 .. 40 );
-          NB	: NATURAL			:= 0;
-	IPART	: LONG_INTEGER		:= LONG_INTEGER( INT_PART );
-          FLEN	: NATURAL;
-
+	IBUF	: STRING( 1 .. 40 );
+	NB	: NATURAL		:= 0;
+	IPART	: LONG_INTEGER	:= LONG_INTEGER( INT_PART );
+	FLEN	: NATURAL;
         begin
-          if  IPART = 0  then
-            NB := 1;
-            IBUF( 1 ) := '0';
-          else
-            while  IPART > 0  loop
-              NB := NB + 1;
-              IBUF( NB ) := CHARACTER'VAL( CHARACTER'POS( '0' ) + IPART mod 10 );
-              IPART := IPART / 10;
-            end loop;
+	if  IPART = 0  then
+	  NB := 1;
+	  IBUF( 1 ) := '0';
+	else
+	  while  IPART > 0  loop
+	    NB := NB + 1;
+	    IBUF( NB ) := CHARACTER'VAL( CHARACTER'POS( '0' ) + IPART mod 10 );
+	    IPART := IPART / 10;
+	  end loop;
           end if;
 
-          -- Longueur du champ avant le point : chiffres + signe eventuel
           FLEN := NB;
           if  IS_NEGATIVE  then
             FLEN := FLEN + 1;
           end if;
-          -- Padding a gauche pour atteindre FORE
-          if  FORE > FLEN  then
-            for  K in 1 .. FORE - FLEN  loop
-              PUT( FILE, ' ' );
-            end loop;
-          end if;
 
-          -- Signe
-          if  IS_NEGATIVE  then
-            PUT( FILE, '-' );
-          end if;
+	if  FORE > FLEN  then
+	  for  K in 1 .. FORE - FLEN  loop
+	    PUT( FILE, ' ' );
+	  end loop;
+	end if;
 
-          -- Chiffres de la partie entiere (IBUF est en ordre inverse)
-          for  K in reverse 1 .. NB  loop
-            PUT( FILE, IBUF( K ) );
-          end loop;
+	if  IS_NEGATIVE  then
+	  PUT( FILE, '-' );
+	end if;
+
+	for  K in reverse 1 .. NB  loop
+	  PUT( FILE, IBUF( K ) );
+	end loop;
         end;
 
-        -- Point decimal
         PUT( FILE, '.' );
 
-        -- Chiffres apres le point
         for  K in 1 .. AFT  loop
-	FRC_PART := FRC_PART * 10;
-	DIGIT := INTEGER( FRC_PART - NUM( 0.5 * NUM'SMALL ) );						-- troncature
+	FRC_PART := FRC_PART * 10.0;
+	DIGIT := FLOOR_POS( FRC_PART );
+
 	if  DIGIT > 9  then DIGIT := 9; end if;
 	if  DIGIT < 0  then DIGIT := 0; end if;
-	PUT( FILE, CHARACTER'VAL( CHARACTER'POS( '0' ) + DIGIT ) );
-	FRC_PART := FRC_PART - NUM( DIGIT );
+
+	PUT( FILE, CHARACTER'VAL( CHARACTER'POS( '0' ) + INTEGER( DIGIT ) ) );
+          FRC_PART := FRC_PART - LONG_FLOAT( DIGIT );
         end loop;
 
-      ----------------------------------------------------------------
-      -- Cas EXP > 0 : notation scientifique [-]d.dddE[+|-]dd
-      ----------------------------------------------------------------
---      else
-
-        -- Normaliser 1.0 <= VAL < 10.0 et calculer l'exposant
---        if  VAL /= 0.0  then
---          while  VAL >= 10.0  loop
---            VAL := VAL / 10;
---            E := E + 1;
---          end loop;
---          while  VAL < 1.0  loop
---            VAL := VAL * 10;
---            E := E - 1;
---          end loop;
---        end if;
-
-        -- Padding FORE : 1 chiffre avant le point (+ signe eventuel)
---        declare
---          FORE_LEN	: NATURAL	:= 1;
---        begin
---          if  IS_NEGATIVE  then
---            FORE_LEN := 2;
---          end if;
---          if  FORE > FORE_LEN  then
---            for  K in 1 .. FORE - FORE_LEN  loop
---              PUT( FILE, ' ' );
---            end loop;
---          end if;
---        end;
-
-        -- Signe
---        if  IS_NEGATIVE  then
---          PUT( FILE, '-' );
---        end if;
-
-        -- Chiffre avant le point
---        DIGIT := INTEGER( VAL - NUM( 0.5 * NUM'DELTA ) );
---        if  DIGIT > 9  then DIGIT := 9; end if;
---        if  DIGIT < 0  then DIGIT := 0; end if;
---        PUT( FILE, CHARACTER'VAL( CHARACTER'POS( '0' ) + DIGIT ) );
---        VAL := ( VAL - NUM( DIGIT ) ) * 10;
-
-        -- Point decimal
---        PUT( FILE, '.' );
-
-        -- Chiffres apres le point
---        for  K in 1 .. AFT  loop
---          DIGIT := INTEGER( VAL - NUM( 0.5 * NUM'DELTA ) );
---          if  DIGIT > 9  then DIGIT := 9; end if;
---          if  DIGIT < 0  then DIGIT := 0; end if;
---          PUT( FILE, CHARACTER'VAL( CHARACTER'POS( '0' ) + DIGIT ) );
---          VAL := ( VAL - NUM( DIGIT ) ) * 10;
---        end loop;
-
-        -- Exposant
---        PUT( FILE, 'E' );
---        if  E < 0  then
---          PUT( FILE, '-' );
---          E := -E;
---        else
---          PUT( FILE, '+' );
---        end if;
---        declare
---          EXP_STR	: STRING( 1 .. EXP );
---          EVAL	: INTEGER	:= E;
---        begin
---          for  K in reverse 1 .. EXP  loop
---            EXP_STR( K ) := CHARACTER'VAL( CHARACTER'POS( '0' ) + EVAL mod 10 );
---            EVAL := EVAL / 10;
---          end loop;
---          PUT( FILE, EXP_STR );
---        end;
-
---      end if;
+      else
+        -- Branche scientifique a ajouter ensuite,
+        -- sur le meme principe que FLOAT_IO.PUT corrige.
+        null;
+      end if;
 
     end	PUT;
 	---
+
 
 			---
     procedure		PUT		( ITEM :in NUM;
