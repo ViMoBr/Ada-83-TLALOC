@@ -602,9 +602,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	BF	L6
 	La 1, -FILE_ofs
 	LIVA 	, 0, STANDARD.TEXT_IO.FILE_TYPE.ID
-	LI	0					; lieu resultat sur pile
-	La  1,	-NAME_ofs
-	CALL	STANDARD.TEXT_IO.OPEN_L2. ,OPEN_SYSTEM_CALL_L4
+	Ld 1,	ERR_OR_ID_disp
 	Sd
 	La 1, -FILE_ofs
 	LIVA 	, 0, STANDARD.TEXT_IO.FILE_TYPE.NAME
@@ -776,16 +774,16 @@ begin:					;---------- BDY INSTRUCTIONS
 	LI	0					; lieu resultat sur pile
 	La 1, -FILE_ofs
 	LIVA 	, 0, STANDARD.TEXT_IO.FILE_TYPE.NAME
-namespace ANON_153_37			; ensemble doublet @data/@info pour slice anonyme source
-VAR ANON_153_37_disp, q
-VAR ANON_153_37__u, q
+namespace ANON_155_37			; ensemble doublet @data/@info pour slice anonyme source
+VAR ANON_155_37_disp, q
+VAR ANON_155_37__u, q
 VAR SIZ, d
 VAR COMP_SIZ, d
 VAR FST_1, d
 VAR LST_1, d
-	Sa	1, ANON_153_37_disp
+	Sa	1, ANON_155_37_disp
 	LVA	1, SIZ
-	Sa	1, ANON_153_37__u
+	Sa	1, ANON_155_37__u
 	LI	8
 	Sd	1, COMP_SIZ
 ; CODE_NUMERIC_LITERAL DN_INTEGER
@@ -801,7 +799,7 @@ VAR LST_1, d
 	LI	8
 	MUL
 	Sd	1, SIZ
-	LVA	1, ANON_153_37_disp
+	LVA	1, ANON_155_37_disp
 end namespace
 	CALL	STANDARD.TEXT_IO.DELETE_L4. ,DELETE_SYSTEM_CALL_L8
 	Sd  1,	ERR_CODE_disp
@@ -2684,9 +2682,13 @@ L134:					; post loop LOOP__4
 	BRA	L132
 L133:
 	LI	0					; lieu resultat sur pile
-	LId	1, ITEM__u, STRING.LST
+	LVA	1, -ITEM_ofs
+	LIa	, , 8
+	Ld	, STRING.LST_1
 	INC
-	LId	1, ITEM__u, STRING.FST
+	LVA	1, -ITEM_ofs
+	LIa	, , 8
+	Ld	, STRING.FST_1
 	SUB
 	La 1, -FILE_ofs
 	LId	, 0, STANDARD.TEXT_IO.FILE_TYPE.ID
@@ -2987,53 +2989,7 @@ PRMS					;    debut parametrage
 	PRM GFP_ofs
 endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
-STRING = 'STRING'
-namespace STRING				; array var constrained array type info
-VAR use__info, q
-VAR SIZ, d
-	LVA	1, SIZ
-	Sa	1, use__info
-VAR COMP_SIZ, d
-VAR FST_1, d
-VAR LST_1, d
-	LI	8
-	Sd	1, COMP_SIZ
-	Ld	1, COMP_SIZ
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	1
-	Sd	1, FST_1
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	40
-	Sd	1, LST_1
-	Ld	1, LST_1
-	INC
-	Ld	1, FST_1
-	SUB
-	MUL
-	Sd	1, SIZ
-  virtual at 4
-COMP_SIZ = $
-	rd 1 
-FST_1 = $
-	rd 1 
-LST_1 = $
-	rd 1 
-  end virtual
-end namespace
-VAR CHN_disp, q				; variable array : pointeur aux data
-VAR CHN__u, q				; variable array : useinfo pointeur au rec info
-	La 1, STRING.use__info
-	Sa	1, CHN__u				; array info ptr at __u
-	Ld	1, STRING.SIZ
-	LI	8
-	DIV
-	CO_VAR
-	Sa	1, CHN_disp				; array data ptr at _disp
-
-VAR LEN_disp, d				; variable entiere
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	0
-	Sd  1,	LEN_disp
+VAR CH_disp, d				; variable bool char enum
 
 VAR VAL_disp, q				; variable entiere
 ; CODE_NUMERIC_LITERAL DN_INTEGER
@@ -3044,190 +3000,519 @@ VAR NEG_disp, d				; variable bool char enum
 	LI	0
 	Sb  1,	NEG_disp
 
-VAR I_disp, d				; variable entiere
+VAR CHARS_READ_disp, d			; variable entiere
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	Sd  1,	CHARS_READ_disp
+
+VAR DONE_disp, d				; variable bool char enum
+	LI	0
+	Sb  1,	DONE_disp
+
+VAR BASE_disp, q				; variable entiere
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	10
+	Sq  1,	BASE_disp
+
+VAR IN_BASED_disp, d			; variable bool char enum
+	LI	0
+	Sb  1,	IN_BASED_disp
 
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-	LVA  1,	LEN_disp
-	LVA  1,	CHN_disp
-	La  1,	-FILE_ofs
-	CALL	STANDARD.TEXT_IO. ,GET_LINE_L57
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	1
-	Sd  1,	I_disp
-LOOP__6:
-	Ld 1,	I_disp
-	Ld 1,	LEN_disp
-	CLE
-	DUP
-	BF	L149
-	DROP
-	La	 1, CHN_disp				; array data start address on stack
-	Ld 1,	I_disp
-	LId	1, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
-	SUB
-	LId	1, CHN__u, STANDARD.STRING.COMP_SIZ
-	LI	8
-	DIV
-	MUL
-	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
-	LI	32
-	CEQ
-L149:
-	BF	L148
-	Ld 1,	I_disp
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	1
-	ADD
-	Sd  1,	I_disp
-	BRA	LOOP__6
-L148:					; post loop LOOP__6
 					; debut if
-	Ld 1,	I_disp
-	Ld 1,	LEN_disp
-	CLE
-	DUP
-	BF	L152
-	DROP
-	La	 1, CHN_disp				; array data start address on stack
-	Ld 1,	I_disp
-	LId	1, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
-	SUB
-	LId	1, CHN__u, STANDARD.STRING.COMP_SIZ
-	LI	8
-	DIV
-	MUL
-	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
-	LI	45
-	CEQ
-L152:
-	BF	L151
-	LI	1
-	Sb  1,	NEG_disp
-	Ld 1,	I_disp
+	Ld  1,	-WIDTH_ofs
 ; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	1
-	ADD
-	Sd  1,	I_disp
-	BRA	L150
-L151:
-	Ld 1,	I_disp
-	Ld 1,	LEN_disp
-	CLE
+	LI	0
+	CEQ
+	BF	L149
+LOOP__6:
+	La 1, -FILE_ofs
+	LIb	, 0, STANDARD.TEXT_IO.FILE_TYPE.AT_END_OF_FILE
+	BT	L150
+	LVA  1,	CH_disp
+	La  1,	-FILE_ofs
+	CALL	STANDARD.TEXT_IO. ,GET_L49
+	La 1, -FILE_ofs
+	LIb	, 0, STANDARD.TEXT_IO.FILE_TYPE.AT_END_OF_FILE
+	BT	L150
+	Lb 1,	CH_disp
+	LI	32
+	CNE
+	DUP
+	BF	L156
+	DROP
+	Lb 1,	CH_disp
+	LI	 9
+	CNE
+L156:
+	DUP
+	BF	L155
+	DROP
+	Lb 1,	CH_disp
+	LI	 10
+	CNE
+L155:
 	DUP
 	BF	L154
 	DROP
-	La	 1, CHN_disp				; array data start address on stack
-	Ld 1,	I_disp
-	LId	1, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
-	SUB
-	LId	1, CHN__u, STANDARD.STRING.COMP_SIZ
-	LI	8
-	DIV
-	MUL
-	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
-	LI	43
-	CEQ
+	Lb 1,	CH_disp
+	LI	 13
+	CNE
 L154:
-	BF	L153
-	Ld 1,	I_disp
+	BT	L150
+	BRA	LOOP__6
+L150:					; post loop LOOP__6
+	BRA	L148
+L149:
+	LVA  1,	CH_disp
+	La  1,	-FILE_ofs
+	CALL	STANDARD.TEXT_IO. ,GET_L49
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	Sd  1,	CHARS_READ_disp
+L148:					; post if
+					; debut if
+	La 1, -FILE_ofs
+	LIb	, 0, STANDARD.TEXT_IO.FILE_TYPE.AT_END_OF_FILE
+	LI	1
+	OUX
+	DUP
+	BF	L159
+	DROP
+	Lb 1,	CH_disp
+	LI	45
+	CEQ
+L159:
+	BF	L158
+	LI	1
+	Sb  1,	NEG_disp
+					; debut if
+	Ld  1,	-WIDTH_ofs
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	CGT
+	BF	L161
+	Ld 1,	CHARS_READ_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
-	Sd  1,	I_disp
-	BRA	L150
-L153:
-L150:					; post if
-LOOP__7:
-	Ld 1,	I_disp
-	Ld 1,	LEN_disp
-	CLE
-	BF	L155
-	La	 1, CHN_disp				; array data start address on stack
-	Ld 1,	I_disp
-	LId	1, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
-	SUB
-	LId	1, CHN__u, STANDARD.STRING.COMP_SIZ
-	LI	8
-	DIV
-	MUL
-	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
-	LI	48
-	CLT
-	La	 1, CHN_disp				; array data start address on stack
-	Ld 1,	I_disp
-	LId	1, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
-	SUB
-	LId	1, CHN__u, STANDARD.STRING.COMP_SIZ
-	LI	8
-	DIV
-	MUL
-	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
-	LI	57
-	CGT
-	BT	L155
-	LVA  1,	VAL_disp
+	Sd  1,	CHARS_READ_disp
+					; debut if
+	Ld 1,	CHARS_READ_disp
+	Ld  1,	-WIDTH_ofs
+	CGE
+	BF	L163
+	LI	1
+	Sb  1,	DONE_disp
+	BRA	L162
+L163:
+	LVA  1,	CH_disp
+	La  1,	-FILE_ofs
+	CALL	STANDARD.TEXT_IO. ,GET_L49
+L162:					; post if
+	BRA	L160
+L161:
+	LVA  1,	CH_disp
+	La  1,	-FILE_ofs
+	CALL	STANDARD.TEXT_IO. ,GET_L49
+L160:					; post if
+	BRA	L157
+L158:
+	La 1, -FILE_ofs
+	LIb	, 0, STANDARD.TEXT_IO.FILE_TYPE.AT_END_OF_FILE
+	LI	1
+	OUX
+	DUP
+	BF	L165
+	DROP
+	Lb 1,	CH_disp
+	LI	43
+	CEQ
+L165:
+	BF	L164
+					; debut if
+	Ld  1,	-WIDTH_ofs
 ; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	10
-	LVA 1,	VAL_disp
-	La 1,	-GFP_ofs
-	La ,	-NUM__ld_ofs
-	CALLI
+	LI	0
+	CGT
+	BF	L167
+	Ld 1,	CHARS_READ_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd  1,	CHARS_READ_disp
+					; debut if
+	Ld 1,	CHARS_READ_disp
+	Ld  1,	-WIDTH_ofs
+	CGE
+	BF	L169
+	LI	1
+	Sb  1,	DONE_disp
+	BRA	L168
+L169:
+	LVA  1,	CH_disp
+	La  1,	-FILE_ofs
+	CALL	STANDARD.TEXT_IO. ,GET_L49
+L168:					; post if
+	BRA	L166
+L167:
+	LVA  1,	CH_disp
+	La  1,	-FILE_ofs
+	CALL	STANDARD.TEXT_IO. ,GET_L49
+L166:					; post if
+	BRA	L157
+L164:
+L157:					; post if
+LOOP__7:
+	Lb 1,	DONE_disp
+	DUP
+	BT	L172
+	DROP
+	La 1, -FILE_ofs
+	LIb	, 0, STANDARD.TEXT_IO.FILE_TYPE.AT_END_OF_FILE
+L172:
+	BT	L170
+					; debut if
+	Ld  1,	-WIDTH_ofs
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	CGT
+	DUP
+	BF	L175
+	DROP
+	Ld 1,	CHARS_READ_disp
+	Ld  1,	-WIDTH_ofs
+	CGE
+L175:
+	BF	L174
+	BRA	L170
+	BRA	L173
+L174:
+L173:					; post if
+					; debut if
+	Lb 1,	CH_disp
+	LI	48
+	CGE
+	DUP
+	BF	L179
+	DROP
+	Lb 1,	CH_disp
+	LI	57
+	CLE
+L179:
+	BF	L178
+	Lq 1,	BASE_disp
+	Lq 1,	VAL_disp
 	MUL
-	La	 1, CHN_disp				; array data start address on stack
-	Ld 1,	I_disp
-	LId	1, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
-	SUB
-	LId	1, CHN__u, STANDARD.STRING.COMP_SIZ
-	LI	8
-	DIV
-	MUL
-	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
+	Lb 1,	CH_disp
 	LI	48
 	SUB
 ; CODE CONVERSION SOURCE DN_UNIVERSAL_INTEGER TARGET DN_INTEGER
 	ADD
-	La  1,	-GFP_ofs
-	La ,	-NUM__st_ofs
-	CALLI
-	Ld 1,	I_disp
+	Sq  1,	VAL_disp
+					; debut if
+	Ld  1,	-WIDTH_ofs
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	CGT
+	BF	L181
+	Ld 1,	CHARS_READ_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
-	Sd  1,	I_disp
+	Sd  1,	CHARS_READ_disp
+					; debut if
+	Ld 1,	CHARS_READ_disp
+	Ld  1,	-WIDTH_ofs
+	CGE
+	BF	L183
+	LI	1
+	Sb  1,	DONE_disp
+	BRA	L182
+L183:
+	LVA  1,	CH_disp
+	La  1,	-FILE_ofs
+	CALL	STANDARD.TEXT_IO. ,GET_L49
+L182:					; post if
+	BRA	L180
+L181:
+	LVA  1,	CH_disp
+	La  1,	-FILE_ofs
+	CALL	STANDARD.TEXT_IO. ,GET_L49
+L180:					; post if
+	BRA	L177
+L178:
+	Lb 1,	CH_disp
+	LI	65
+	CEQ
+	DUP
+	BT	L196
+	DROP
+	Lb 1,	CH_disp
+	LI	66
+	CEQ
+L196:
+	DUP
+	BT	L195
+	DROP
+	Lb 1,	CH_disp
+	LI	67
+	CEQ
+L195:
+	DUP
+	BT	L194
+	DROP
+	Lb 1,	CH_disp
+	LI	68
+	CEQ
+L194:
+	DUP
+	BT	L193
+	DROP
+	Lb 1,	CH_disp
+	LI	69
+	CEQ
+L193:
+	DUP
+	BT	L192
+	DROP
+	Lb 1,	CH_disp
+	LI	70
+	CEQ
+L192:
+	DUP
+	BT	L191
+	DROP
+	Lb 1,	CH_disp
+	LI	97
+	CEQ
+L191:
+	DUP
+	BT	L190
+	DROP
+	Lb 1,	CH_disp
+	LI	98
+	CEQ
+L190:
+	DUP
+	BT	L189
+	DROP
+	Lb 1,	CH_disp
+	LI	99
+	CEQ
+L189:
+	DUP
+	BT	L188
+	DROP
+	Lb 1,	CH_disp
+	LI	100
+	CEQ
+L188:
+	DUP
+	BT	L187
+	DROP
+	Lb 1,	CH_disp
+	LI	101
+	CEQ
+L187:
+	DUP
+	BT	L186
+	DROP
+	Lb 1,	CH_disp
+	LI	102
+	CEQ
+L186:
+	DUP
+	BF	L185
+	DROP
+	Lb 1,	IN_BASED_disp
+L185:
+	BF	L184
+					; debut if
+	Lb 1,	CH_disp
+	LI	97
+	CGE
+	BF	L198
+	Lq 1,	BASE_disp
+	Lq 1,	VAL_disp
+	MUL
+	Lb 1,	CH_disp
+	LI	97
+	SUB
+; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
+	LI	10
+	ADD
+; CODE CONVERSION SOURCE DN_UNIVERSAL_INTEGER TARGET DN_INTEGER
+	ADD
+	Sq  1,	VAL_disp
+	BRA	L197
+L198:
+	Lq 1,	BASE_disp
+	Lq 1,	VAL_disp
+	MUL
+	Lb 1,	CH_disp
+	LI	65
+	SUB
+; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
+	LI	10
+	ADD
+; CODE CONVERSION SOURCE DN_UNIVERSAL_INTEGER TARGET DN_INTEGER
+	ADD
+	Sq  1,	VAL_disp
+L197:					; post if
+					; debut if
+	Ld  1,	-WIDTH_ofs
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	CGT
+	BF	L200
+	Ld 1,	CHARS_READ_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd  1,	CHARS_READ_disp
+					; debut if
+	Ld 1,	CHARS_READ_disp
+	Ld  1,	-WIDTH_ofs
+	CGE
+	BF	L202
+	LI	1
+	Sb  1,	DONE_disp
+	BRA	L201
+L202:
+	LVA  1,	CH_disp
+	La  1,	-FILE_ofs
+	CALL	STANDARD.TEXT_IO. ,GET_L49
+L201:					; post if
+	BRA	L199
+L200:
+	LVA  1,	CH_disp
+	La  1,	-FILE_ofs
+	CALL	STANDARD.TEXT_IO. ,GET_L49
+L199:					; post if
+	BRA	L177
+L184:
+	Lb 1,	CH_disp
+	LI	35
+	CEQ
+	DUP
+	BF	L204
+	DROP
+	Lb 1,	IN_BASED_disp
+	LI	1
+	OUX
+L204:
+	BF	L203
+	Lq 1,	VAL_disp
+	Sq  1,	BASE_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	Sq  1,	VAL_disp
+	LI	1
+	Sb  1,	IN_BASED_disp
+					; debut if
+	Ld  1,	-WIDTH_ofs
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	CGT
+	BF	L206
+	Ld 1,	CHARS_READ_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd  1,	CHARS_READ_disp
+					; debut if
+	Ld 1,	CHARS_READ_disp
+	Ld  1,	-WIDTH_ofs
+	CGE
+	BF	L208
+	LI	1
+	Sb  1,	DONE_disp
+	BRA	L207
+L208:
+	LVA  1,	CH_disp
+	La  1,	-FILE_ofs
+	CALL	STANDARD.TEXT_IO. ,GET_L49
+L207:					; post if
+	BRA	L205
+L206:
+	LVA  1,	CH_disp
+	La  1,	-FILE_ofs
+	CALL	STANDARD.TEXT_IO. ,GET_L49
+L205:					; post if
+	BRA	L177
+L203:
+	Lb 1,	CH_disp
+	LI	35
+	CEQ
+	DUP
+	BF	L210
+	DROP
+	Lb 1,	IN_BASED_disp
+L210:
+	BF	L209
+					; debut if
+	Ld  1,	-WIDTH_ofs
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	CGT
+	BF	L212
+	Ld 1,	CHARS_READ_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd  1,	CHARS_READ_disp
+	BRA	L211
+L212:
+L211:					; post if
+	LI	1
+	Sb  1,	DONE_disp
+	BRA	L177
+L209:
+					; debut if
+	Ld  1,	-WIDTH_ofs
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	CEQ
+	BF	L214
+	La 1, -FILE_ofs
+	LIVA 	, 0, STANDARD.TEXT_IO.FILE_TYPE.LOOK_AHEAD
+	Lb 1,	CH_disp
+	Sb
+	La 1, -FILE_ofs
+	LIVA 	, 0, STANDARD.TEXT_IO.FILE_TYPE.HAS_LOOK_AHEAD
+	LI	1
+	Sb
+	BRA	L213
+L214:
+L213:					; post if
+	LI	1
+	Sb  1,	DONE_disp
+L177:					; post if
 	BRA	LOOP__7
-L155:					; post loop LOOP__7
+L170:					; post loop LOOP__7
 					; debut if
 	Lb 1,	NEG_disp
-	BF	L158
+	BF	L216
 	LVA  1,	-ITEM_ofs
 	La
-	LVA 1,	VAL_disp
-	La 1,	-GFP_ofs
-	La ,	-NUM__ld_ofs
-	CALLI
+	Lq 1,	VAL_disp
+; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
 	NEG
 	La  1,	-GFP_ofs
 	La ,	-NUM__st_ofs
 	CALLI
-	BRA	L157
-L158:
+	BRA	L215
+L216:
 	LVA  1,	-ITEM_ofs
 	La
-	LVA 1,	VAL_disp
-	La 1,	-GFP_ofs
-	La ,	-NUM__ld_ofs
-	CALLI
+	Lq 1,	VAL_disp
+; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
 	La  1,	-GFP_ofs
 	La ,	-NUM__st_ofs
 	CALLI
-L157:					; post if
+L215:					; post if
 ret_lbl:
 	UNLINK 1
 	RTD	prm_siz
@@ -3243,120 +3528,13 @@ PRMS					;    debut parametrage
 	PRM GFP_ofs
 endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
-STRING = 'STRING'
-namespace STRING				; array var constrained array type info
-VAR use__info, q
-VAR SIZ, d
-	LVA	1, SIZ
-	Sa	1, use__info
-VAR COMP_SIZ, d
-VAR FST_1, d
-VAR LST_1, d
-	LI	8
-	Sd	1, COMP_SIZ
-	Ld	1, COMP_SIZ
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	1
-	Sd	1, FST_1
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	40
-	Sd	1, LST_1
-	Ld	1, LST_1
-	INC
-	Ld	1, FST_1
-	SUB
-	MUL
-	Sd	1, SIZ
-  virtual at 4
-COMP_SIZ = $
-	rd 1 
-FST_1 = $
-	rd 1 
-LST_1 = $
-	rd 1 
-  end virtual
-end namespace
-VAR CHN_disp, q				; variable array : pointeur aux data
-VAR CHN__u, q				; variable array : useinfo pointeur au rec info
-	La 1, STRING.use__info
-	Sa	1, CHN__u				; array info ptr at __u
-	Ld	1, STRING.SIZ
-	LI	8
-	DIV
-	CO_VAR
-	Sa	1, CHN_disp				; array data ptr at _disp
-
-VAR LEN_disp, d				; variable entiere
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	40
-	Sd  1,	LEN_disp
-
-VAR VAL_disp, q				; variable entiere
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	0
-	Sq  1,	VAL_disp
-
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-	LVA  1,	LEN_disp
-	LVA  1,	CHN_disp
-	CALL	STANDARD.TEXT_IO. ,GET_LINE_L58
-VAR	IL160_disp, d				; compteur boucle LOOP__8
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	1
-	Sd  1,	IL160_disp
-VAR	LMT_IL160_disp, d			; limite boucle LOOP__8
-	Ld 1,	LEN_disp
-	Sd  1,	LMT_IL160_disp
-	Ld  1,	IL160_disp				; test null range LOOP__8
-	Ld  1,	LMT_IL160_disp
-	CGT
-	BT	L159
-LOOP__8:					; corps boucle LOOP__8
-	LVA  1,	VAL_disp
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	10
-	LVA 1,	VAL_disp
-	La 1,	-GFP_ofs
-	La ,	-NUM__ld_ofs
-	CALLI
-	MUL
-	La	 1, CHN_disp				; array data start address on stack
-	Ld	1, IL160_disp
-	LId	1, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
-	SUB
-	LId	1, CHN__u, STANDARD.STRING.COMP_SIZ
-	LI	8
-	DIV
-	MUL
-	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
-	ADD
-	LI	48
-	SUB
-	La  1,	-GFP_ofs
-	La ,	-NUM__st_ofs
-	CALLI
-	Ld  1,	IL160_disp				; test de sortie LOOP__8
-	Ld  1,	LMT_IL160_disp
-	CEQ
-	BT	L159
-	Ld  1,	IL160_disp				; mise a jour compteur LOOP__8
-	INC
-	Sd  1,	IL160_disp
-	BRA	LOOP__8				; iteration suivante LOOP__8
-L159:					; post loop LOOP__8
-	LVA  1,	-ITEM_ofs
-	La
-	LVA 1,	VAL_disp
-	La 1,	-GFP_ofs
-	La ,	-NUM__ld_ofs
-	CALLI
-	La  1,	-GFP_ofs
-	La ,	-NUM__st_ofs
-	CALLI
-	LVA 1,	CHN_disp
-	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	La  1,	-GFP_ofs				; propagation GFP generique
+	Ld  1,	-WIDTH_ofs
+	La  1,	-ITEM_ofs
+	LVA 0,	STANDARD.TEXT_IO.DEFAULT_INPUT_disp
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,GET_L61
 ret_lbl:
 	UNLINK 1
 	RTD	prm_siz
@@ -3374,12 +3552,12 @@ PRMS					;    debut parametrage
 	PRM GFP_ofs
 endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
-VAR VAL_disp, q				; variable entiere
-	LVA  1,	-ITEM_ofs
-	La  1,	-GFP_ofs
-	La ,	-NUM__ld_ofs
-	CALLI
-	Sq  1,	VAL_disp
+VAR LBASE_disp, q				; variable entiere
+	Ld  1,	-BASE_ofs
+; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
+	Sq  1,	LBASE_disp
+
+VAR AVAL_disp, q				; variable entiere
 
 STRING = 'STRING'
 namespace STRING				; array var constrained array type info
@@ -3448,26 +3626,26 @@ VAR TLEN_disp, d				; variable entiere
 begin:					;---------- BDY INSTRUCTIONS
 					; debut if
 	Lb 1,	IS_NEGATIVE_disp
-	BF	L162
-	LVA  1,	VAL_disp
+	BF	L218
 	LVA  1,	-ITEM_ofs
 	La  1,	-GFP_ofs
 	La ,	-NUM__ld_ofs
 	CALLI
+; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
 	NEG
+	Sq  1,	AVAL_disp
+	BRA	L217
+L218:
+	LVA  1,	-ITEM_ofs
 	La  1,	-GFP_ofs
-	La ,	-NUM__st_ofs
-	CALLI
-	BRA	L161
-L162:
-L161:					; post if
-LOOP__9:
-	LVA 1,	VAL_disp
-	La 1,	-GFP_ofs
 	La ,	-NUM__ld_ofs
 	CALLI
-	Ld  1,	-BASE_ofs
 ; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
+	Sq  1,	AVAL_disp
+L217:					; post if
+LOOP__8:
+	Lq 1,	AVAL_disp
+	Lq 1,	LBASE_disp
 	MODI
 ; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
 	Sd  1,	DIGIT_disp
@@ -3476,7 +3654,7 @@ LOOP__9:
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	10
 	CLT
-	BF	L165
+	BF	L221
 	La	 1, STR_disp				; array data start address on stack
 	Ld 1,	POS_disp
 	LId	1, STR__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
@@ -3490,8 +3668,8 @@ LOOP__9:
 	Ld 1,	DIGIT_disp
 	ADD
 	Sb
-	BRA	L164
-L165:
+	BRA	L220
+L221:
 	La	 1, STR_disp				; array data start address on stack
 	Ld 1,	POS_disp
 	LId	1, STR__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
@@ -3508,33 +3686,23 @@ L165:
 	LI	10
 	SUB
 	Sb
-L164:					; post if
-	LVA  1,	VAL_disp
-	LVA 1,	VAL_disp
-	La 1,	-GFP_ofs
-	La ,	-NUM__ld_ofs
-	CALLI
-	Ld  1,	-BASE_ofs
-; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
+L220:					; post if
+	Lq 1,	AVAL_disp
+	Lq 1,	LBASE_disp
 	DIV
-	La  1,	-GFP_ofs
-	La ,	-NUM__st_ofs
-	CALLI
-	LVA 1,	VAL_disp
-	La 1,	-GFP_ofs
-	La ,	-NUM__ld_ofs
-	CALLI
+	Sq  1,	AVAL_disp
+	Lq 1,	AVAL_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	CEQ
-	BT	L163
+	BT	L219
 	Ld 1,	POS_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SUB
 	Sd  1,	POS_disp
-	BRA	LOOP__9
-L163:					; post loop LOOP__9
+	BRA	LOOP__8
+L219:					; post loop LOOP__8
 	LId	1, STR__u, STRING.LST_1
 	Ld 1,	POS_disp
 	SUB
@@ -3546,98 +3714,98 @@ L163:					; post loop LOOP__9
 	Sd  1,	TLEN_disp
 					; debut if
 	Lb 1,	IS_NEGATIVE_disp
-	BF	L168
+	BF	L224
 	Ld 1,	TLEN_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
 	Sd  1,	TLEN_disp
-	BRA	L167
-L168:
-L167:					; post if
+	BRA	L223
+L224:
+L223:					; post if
 					; debut if
 	Ld  1,	-BASE_ofs
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	10
 	CNE
-	BF	L170
+	BF	L226
 					; debut if
 	Ld  1,	-BASE_ofs
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	10
 	CGE
-	BF	L172
+	BF	L228
 	Ld 1,	TLEN_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	4
 	ADD
 	Sd  1,	TLEN_disp
-	BRA	L171
-L172:
+	BRA	L227
+L228:
 	Ld 1,	TLEN_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	3
 	ADD
 	Sd  1,	TLEN_disp
-L171:					; post if
-	BRA	L169
-L170:
-L169:					; post if
+L227:					; post if
+	BRA	L225
+L226:
+L225:					; post if
 					; debut if
 	Ld  1,	-WIDTH_ofs
 	Ld 1,	TLEN_disp
 	CGT
-	BF	L174
-VAR	IL176_disp, d				; compteur boucle LOOP__10
+	BF	L230
+VAR	IL232_disp, d				; compteur boucle LOOP__9
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
-	Sd  1,	IL176_disp
-VAR	LMT_IL176_disp, d			; limite boucle LOOP__10
+	Sd  1,	IL232_disp
+VAR	LMT_IL232_disp, d			; limite boucle LOOP__9
 	Ld  1,	-WIDTH_ofs
 	Ld 1,	TLEN_disp
 	SUB
-	Sd  1,	LMT_IL176_disp
-	Ld  1,	IL176_disp				; test null range LOOP__10
-	Ld  1,	LMT_IL176_disp
+	Sd  1,	LMT_IL232_disp
+	Ld  1,	IL232_disp				; test null range LOOP__9
+	Ld  1,	LMT_IL232_disp
 	CGT
-	BT	L175
-LOOP__10:					; corps boucle LOOP__10
+	BT	L231
+LOOP__9:					; corps boucle LOOP__9
 	LI	32
 	La  1,	-FILE_ofs
 	CALL	STANDARD.TEXT_IO. ,PUT_L51
-	Ld  1,	IL176_disp				; test de sortie LOOP__10
-	Ld  1,	LMT_IL176_disp
+	Ld  1,	IL232_disp				; test de sortie LOOP__9
+	Ld  1,	LMT_IL232_disp
 	CEQ
-	BT	L175
-	Ld  1,	IL176_disp				; mise a jour compteur LOOP__10
+	BT	L231
+	Ld  1,	IL232_disp				; mise a jour compteur LOOP__9
 	INC
-	Sd  1,	IL176_disp
-	BRA	LOOP__10				; iteration suivante LOOP__10
-L175:					; post loop LOOP__10
-	BRA	L173
-L174:
-L173:					; post if
+	Sd  1,	IL232_disp
+	BRA	LOOP__9				; iteration suivante LOOP__9
+L231:					; post loop LOOP__9
+	BRA	L229
+L230:
+L229:					; post if
 					; debut if
 	Lb 1,	IS_NEGATIVE_disp
-	BF	L178
+	BF	L234
 	LI	45
 	La  1,	-FILE_ofs
 	CALL	STANDARD.TEXT_IO. ,PUT_L51
-	BRA	L177
-L178:
-L177:					; post if
+	BRA	L233
+L234:
+L233:					; post if
 					; debut if
 	Ld  1,	-BASE_ofs
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	10
 	CNE
-	BF	L180
+	BF	L236
 					; debut if
 	Ld  1,	-BASE_ofs
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	10
 	CGE
-	BF	L182
+	BF	L238
 	LI	49
 	La  1,	-FILE_ofs
 	CALL	STANDARD.TEXT_IO. ,PUT_L51
@@ -3649,20 +3817,20 @@ L177:					; post if
 	SUB
 	La  1,	-FILE_ofs
 	CALL	STANDARD.TEXT_IO. ,PUT_L51
-	BRA	L181
-L182:
+	BRA	L237
+L238:
 	LI	48
 	Ld  1,	-BASE_ofs
 	ADD
 	La  1,	-FILE_ofs
 	CALL	STANDARD.TEXT_IO. ,PUT_L51
-L181:					; post if
+L237:					; post if
 	LI	35
 	La  1,	-FILE_ofs
 	CALL	STANDARD.TEXT_IO. ,PUT_L51
-	BRA	L179
-L180:
-L179:					; post if
+	BRA	L235
+L236:
+L235:					; post if
 	La 1, STR_disp
 	Ld 1,	POS_disp
 	LId 1, STR__u, STRING.FST_1
@@ -3670,16 +3838,16 @@ L179:					; post if
 	LI	1
 	MUL
 	ADD
-namespace ANON_1094_18			; ensemble doublet @data/@info pour slice anonyme source
-VAR ANON_1094_18_disp, q
-VAR ANON_1094_18__u, q
+namespace ANON_1219_18			; ensemble doublet @data/@info pour slice anonyme source
+VAR ANON_1219_18_disp, q
+VAR ANON_1219_18__u, q
 VAR SIZ, d
 VAR COMP_SIZ, d
 VAR FST_1, d
 VAR LST_1, d
-	Sa	1, ANON_1094_18_disp
+	Sa	1, ANON_1219_18_disp
 	LVA	1, SIZ
-	Sa	1, ANON_1094_18__u
+	Sa	1, ANON_1219_18__u
 	LI	8
 	Sd	1, COMP_SIZ
 	Ld 1,	POS_disp
@@ -3693,7 +3861,7 @@ VAR LST_1, d
 	LI	8
 	MUL
 	Sd	1, SIZ
-	LVA	1, ANON_1094_18_disp
+	LVA	1, ANON_1219_18_disp
 end namespace
 	La  1,	-FILE_ofs
 	CALL	STANDARD.TEXT_IO. ,PUT_L55
@@ -3702,13 +3870,13 @@ end namespace
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	10
 	CNE
-	BF	L184
+	BF	L240
 	LI	35
 	La  1,	-FILE_ofs
 	CALL	STANDARD.TEXT_IO. ,PUT_L51
-	BRA	L183
-L184:
-L183:					; post if
+	BRA	L239
+L240:
+L239:					; post if
 ret_lbl:
 	UNLINK 1
 	RTD	prm_siz
@@ -3752,8 +3920,407 @@ PRMS					;    debut parametrage
 	PRM GFP_ofs
 endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
+VAR POS_disp, d				; variable entiere
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STRING.FST_1
+	Sd  1,	POS_disp
+
+VAR VAL_disp, d				; variable entiere
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	Sd  1,	VAL_disp
+
+VAR NEG_disp, d				; variable bool char enum
+	LI	0
+	Sb  1,	NEG_disp
+
+VAR DONE_disp, d				; variable bool char enum
+	LI	0
+	Sb  1,	DONE_disp
+
+VAR BASE_disp, d				; variable entiere
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	10
+	Sd  1,	BASE_disp
+
+VAR IN_BASED_disp, d			; variable bool char enum
+	LI	0
+	Sb  1,	IN_BASED_disp
+
+VAR CH_disp, d				; variable bool char enum
+
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
+LOOP__10:
+	Ld 1,	POS_disp
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STRING.LST_1
+	CLE
+	DUP
+	BF	L242
+	DROP
+	LVA	1, -FROM_ofs
+	LIa	, , 0				; array data start address on stack
+	Ld 1,	POS_disp
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
+	SUB
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	LI	32
+	CEQ
+	DUP
+	BT	L243
+	DROP
+	LVA	1, -FROM_ofs
+	LIa	, , 0				; array data start address on stack
+	Ld 1,	POS_disp
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
+	SUB
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	LI	 9
+	CEQ
+L243:
+L242:
+	BF	L241
+	Ld 1,	POS_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd  1,	POS_disp
+	BRA	LOOP__10
+L241:					; post loop LOOP__10
+					; debut if
+	Ld 1,	POS_disp
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STRING.LST_1
+	CLE
+	BF	L245
+	LVA	1, -FROM_ofs
+	LIa	, , 0				; array data start address on stack
+	Ld 1,	POS_disp
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
+	SUB
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	Sb  1,	CH_disp
+					; debut if
+	Lb 1,	CH_disp
+	LI	45
+	CEQ
+	BF	L247
+	LI	1
+	Sb  1,	NEG_disp
+	Ld 1,	POS_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd  1,	POS_disp
+	BRA	L246
+L247:
+	Lb 1,	CH_disp
+	LI	43
+	CEQ
+	BF	L248
+	Ld 1,	POS_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd  1,	POS_disp
+	BRA	L246
+L248:
+L246:					; post if
+	BRA	L244
+L245:
+L244:					; post if
+LOOP__11:
+	Lb 1,	DONE_disp
+	DUP
+	BT	L251
+	DROP
+	Ld 1,	POS_disp
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STRING.LST_1
+	CGT
+L251:
+	BT	L249
+	LVA	1, -FROM_ofs
+	LIa	, , 0				; array data start address on stack
+	Ld 1,	POS_disp
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
+	SUB
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	Sb  1,	CH_disp
+					; debut if
+	Lb 1,	CH_disp
+	LI	48
+	CGE
+	DUP
+	BF	L254
+	DROP
+	Lb 1,	CH_disp
+	LI	57
+	CLE
+L254:
+	BF	L253
+	Ld 1,	BASE_disp
+	Ld 1,	VAL_disp
+	MUL
+	Lb 1,	CH_disp
+	LI	48
+	SUB
+; CODE CONVERSION SOURCE DN_UNIVERSAL_INTEGER TARGET DN_INTEGER
+	ADD
+	Sd  1,	VAL_disp
+	LVA  1,	-LAST_ofs
+	La
+	Ld 1,	POS_disp
+	SId  1,	-LAST_ofs
+	Ld 1,	POS_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd  1,	POS_disp
+	BRA	L252
+L253:
+	Lb 1,	CH_disp
+	LI	65
+	CEQ
+	DUP
+	BT	L267
+	DROP
+	Lb 1,	CH_disp
+	LI	66
+	CEQ
+L267:
+	DUP
+	BT	L266
+	DROP
+	Lb 1,	CH_disp
+	LI	67
+	CEQ
+L266:
+	DUP
+	BT	L265
+	DROP
+	Lb 1,	CH_disp
+	LI	68
+	CEQ
+L265:
+	DUP
+	BT	L264
+	DROP
+	Lb 1,	CH_disp
+	LI	69
+	CEQ
+L264:
+	DUP
+	BT	L263
+	DROP
+	Lb 1,	CH_disp
+	LI	70
+	CEQ
+L263:
+	DUP
+	BT	L262
+	DROP
+	Lb 1,	CH_disp
+	LI	97
+	CEQ
+L262:
+	DUP
+	BT	L261
+	DROP
+	Lb 1,	CH_disp
+	LI	98
+	CEQ
+L261:
+	DUP
+	BT	L260
+	DROP
+	Lb 1,	CH_disp
+	LI	99
+	CEQ
+L260:
+	DUP
+	BT	L259
+	DROP
+	Lb 1,	CH_disp
+	LI	100
+	CEQ
+L259:
+	DUP
+	BT	L258
+	DROP
+	Lb 1,	CH_disp
+	LI	101
+	CEQ
+L258:
+	DUP
+	BT	L257
+	DROP
+	Lb 1,	CH_disp
+	LI	102
+	CEQ
+L257:
+	DUP
+	BF	L256
+	DROP
+	Lb 1,	IN_BASED_disp
+L256:
+	BF	L255
+					; debut if
+	Lb 1,	CH_disp
+	LI	97
+	CGE
+	BF	L269
+	Ld 1,	BASE_disp
+	Ld 1,	VAL_disp
+	MUL
+	Lb 1,	CH_disp
+	LI	97
+	SUB
+; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
+	LI	10
+	ADD
+; CODE CONVERSION SOURCE DN_UNIVERSAL_INTEGER TARGET DN_INTEGER
+	ADD
+	Sd  1,	VAL_disp
+	BRA	L268
+L269:
+	Ld 1,	BASE_disp
+	Ld 1,	VAL_disp
+	MUL
+	Lb 1,	CH_disp
+	LI	65
+	SUB
+; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
+	LI	10
+	ADD
+; CODE CONVERSION SOURCE DN_UNIVERSAL_INTEGER TARGET DN_INTEGER
+	ADD
+	Sd  1,	VAL_disp
+L268:					; post if
+	LVA  1,	-LAST_ofs
+	La
+	Ld 1,	POS_disp
+	SId  1,	-LAST_ofs
+	Ld 1,	POS_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd  1,	POS_disp
+	BRA	L252
+L255:
+	Lb 1,	CH_disp
+	LI	35
+	CEQ
+	DUP
+	BF	L271
+	DROP
+	Lb 1,	IN_BASED_disp
+	LI	1
+	OUX
+L271:
+	BF	L270
+	Ld 1,	VAL_disp
+	Sd  1,	BASE_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	Sd  1,	VAL_disp
+	LI	1
+	Sb  1,	IN_BASED_disp
+	LVA  1,	-LAST_ofs
+	La
+	Ld 1,	POS_disp
+	SId  1,	-LAST_ofs
+	Ld 1,	POS_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd  1,	POS_disp
+	BRA	L252
+L270:
+	Lb 1,	CH_disp
+	LI	35
+	CEQ
+	DUP
+	BF	L273
+	DROP
+	Lb 1,	IN_BASED_disp
+L273:
+	BF	L272
+	LVA  1,	-LAST_ofs
+	La
+	Ld 1,	POS_disp
+	SId  1,	-LAST_ofs
+	LI	1
+	Sb  1,	DONE_disp
+	BRA	L252
+L272:
+	LI	1
+	Sb  1,	DONE_disp
+L252:					; post if
+	BRA	LOOP__11
+L249:					; post loop LOOP__11
+					; debut if
+	Lb 1,	NEG_disp
+	BF	L275
+	LVA  1,	-ITEM_ofs
+	La
+	Ld 1,	VAL_disp
+; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
+	NEG
+	La  1,	-GFP_ofs
+	La ,	-NUM__st_ofs
+	CALLI
+	BRA	L274
+L275:
+	LVA  1,	-ITEM_ofs
+	La
+	Ld 1,	VAL_disp
+; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
+	La  1,	-GFP_ofs
+	La ,	-NUM__st_ofs
+	CALLI
+L274:					; post if
 ret_lbl:
 	UNLINK 1
 	RTD	prm_siz
@@ -3770,8 +4337,544 @@ PRMS					;    debut parametrage
 	PRM GFP_ofs
 endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
+VAR LBASE_disp, q				; variable entiere
+	Ld  1,	-BASE_ofs
+; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
+	Sq  1,	LBASE_disp
+
+VAR AVAL_disp, q				; variable entiere
+
+STRING = 'STRING'
+namespace STRING				; array var constrained array type info
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+VAR COMP_SIZ, d
+VAR FST_1, d
+VAR LST_1, d
+	LI	8
+	Sd	1, COMP_SIZ
+	Ld	1, COMP_SIZ
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd	1, FST_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	68
+	Sd	1, LST_1
+	Ld	1, LST_1
+	INC
+	Ld	1, FST_1
+	SUB
+	MUL
+	Sd	1, SIZ
+  virtual at 4
+COMP_SIZ = $
+	rd 1 
+FST_1 = $
+	rd 1 
+LST_1 = $
+	rd 1 
+  end virtual
+end namespace
+VAR STR_disp, q				; variable array : pointeur aux data
+VAR STR__u, q				; variable array : useinfo pointeur au rec info
+	La 1, STRING.use__info
+	Sa	1, STR__u				; array info ptr at __u
+	Ld	1, STRING.SIZ
+	LI	8
+	DIV
+	CO_VAR
+	Sa	1, STR_disp				; array data ptr at _disp
+
+VAR POS_disp, d				; variable entiere
+	LId	1, STR__u, STRING.LST_1
+	Sd  1,	POS_disp
+
+VAR IS_NEGATIVE_disp, d			; variable bool char enum
+	LVA  1,	-ITEM_ofs
+	La  1,	-GFP_ofs
+	La ,	-NUM__ld_ofs
+	CALLI
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	CLT
+	Sb  1,	IS_NEGATIVE_disp
+
+VAR DIGIT_disp, d				; variable entiere
+
+VAR DLEN_disp, d				; variable entiere
+
+VAR TLEN_disp, d				; variable entiere
+
+VAR DST_disp, d				; variable entiere
+
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
+					; debut if
+	Lb 1,	IS_NEGATIVE_disp
+	BF	L277
+	LVA  1,	-ITEM_ofs
+	La  1,	-GFP_ofs
+	La ,	-NUM__ld_ofs
+	CALLI
+; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
+	NEG
+	Sq  1,	AVAL_disp
+	BRA	L276
+L277:
+	LVA  1,	-ITEM_ofs
+	La  1,	-GFP_ofs
+	La ,	-NUM__ld_ofs
+	CALLI
+; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
+	Sq  1,	AVAL_disp
+L276:					; post if
+LOOP__12:
+	Lq 1,	AVAL_disp
+	Lq 1,	LBASE_disp
+	MODI
+; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
+	Sd  1,	DIGIT_disp
+					; debut if
+	Ld 1,	DIGIT_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	10
+	CLT
+	BF	L280
+	La	 1, STR_disp				; array data start address on stack
+	Ld 1,	POS_disp
+	LId	1, STR__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, STR__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	LI	48
+	Ld 1,	DIGIT_disp
+	ADD
+	Sb
+	BRA	L279
+L280:
+	La	 1, STR_disp				; array data start address on stack
+	Ld 1,	POS_disp
+	LId	1, STR__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, STR__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	LI	65
+	Ld 1,	DIGIT_disp
+	ADD
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	10
+	SUB
+	Sb
+L279:					; post if
+	Lq 1,	AVAL_disp
+	Lq 1,	LBASE_disp
+	DIV
+	Sq  1,	AVAL_disp
+	Lq 1,	AVAL_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	CEQ
+	BT	L278
+	Ld 1,	POS_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	SUB
+	Sd  1,	POS_disp
+	BRA	LOOP__12
+L278:					; post loop LOOP__12
+	LId	1, STR__u, STRING.LST_1
+	Ld 1,	POS_disp
+	SUB
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd  1,	DLEN_disp
+	Ld 1,	DLEN_disp
+	Sd  1,	TLEN_disp
+					; debut if
+	Lb 1,	IS_NEGATIVE_disp
+	BF	L283
+	Ld 1,	TLEN_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd  1,	TLEN_disp
+	BRA	L282
+L283:
+L282:					; post if
+					; debut if
+	Ld  1,	-BASE_ofs
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	10
+	CNE
+	BF	L285
+					; debut if
+	Ld  1,	-BASE_ofs
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	10
+	CGE
+	BF	L287
+	Ld 1,	TLEN_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	4
+	ADD
+	Sd  1,	TLEN_disp
+	BRA	L286
+L287:
+	Ld 1,	TLEN_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	3
+	ADD
+	Sd  1,	TLEN_disp
+L286:					; post if
+	BRA	L284
+L285:
+L284:					; post if
+					; debut if
+	Ld 1,	TLEN_disp
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STRING.LST_1
+	INC
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STRING.FST_1
+	SUB
+	CGT
+	BF	L289
+VAR	IL291_disp, d				; compteur boucle LOOP__13
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STRING.FST_1
+	Sd  1,	IL291_disp
+VAR	LMT_IL291_disp, d			; limite boucle LOOP__13
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STRING.LST_1
+	Sd  1,	LMT_IL291_disp
+	Ld  1,	IL291_disp				; test null range LOOP__13
+	Ld  1,	LMT_IL291_disp
+	CGT
+	BT	L290
+LOOP__13:					; corps boucle LOOP__13
+	LVA	1, -TO_ofs
+	LIa	, , 0				; array data start address on stack
+	Ld	1, IL291_disp
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
+	SUB
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	LI	42
+	Sb
+	Ld  1,	IL291_disp				; test de sortie LOOP__13
+	Ld  1,	LMT_IL291_disp
+	CEQ
+	BT	L290
+	Ld  1,	IL291_disp				; mise a jour compteur LOOP__13
+	INC
+	Sd  1,	IL291_disp
+	BRA	LOOP__13				; iteration suivante LOOP__13
+L290:					; post loop LOOP__13
+	BRA ret_lbl
+	BRA	L288
+L289:
+L288:					; post if
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STRING.FST_1
+	Sd  1,	DST_disp
+					; debut if
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STRING.LST_1
+	INC
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STRING.FST_1
+	SUB
+	Ld 1,	TLEN_disp
+	CGT
+	BF	L293
+VAR	IL295_disp, d				; compteur boucle LOOP__14
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd  1,	IL295_disp
+VAR	LMT_IL295_disp, d			; limite boucle LOOP__14
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STRING.LST_1
+	INC
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STRING.FST_1
+	SUB
+	Ld 1,	TLEN_disp
+	SUB
+	Sd  1,	LMT_IL295_disp
+	Ld  1,	IL295_disp				; test null range LOOP__14
+	Ld  1,	LMT_IL295_disp
+	CGT
+	BT	L294
+LOOP__14:					; corps boucle LOOP__14
+	LVA	1, -TO_ofs
+	LIa	, , 0				; array data start address on stack
+	Ld 1,	DST_disp
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
+	SUB
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	LI	32
+	Sb
+	Ld 1,	DST_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd  1,	DST_disp
+	Ld  1,	IL295_disp				; test de sortie LOOP__14
+	Ld  1,	LMT_IL295_disp
+	CEQ
+	BT	L294
+	Ld  1,	IL295_disp				; mise a jour compteur LOOP__14
+	INC
+	Sd  1,	IL295_disp
+	BRA	LOOP__14				; iteration suivante LOOP__14
+L294:					; post loop LOOP__14
+	BRA	L292
+L293:
+L292:					; post if
+					; debut if
+	Lb 1,	IS_NEGATIVE_disp
+	BF	L297
+	LVA	1, -TO_ofs
+	LIa	, , 0				; array data start address on stack
+	Ld 1,	DST_disp
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
+	SUB
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	LI	45
+	Sb
+	Ld 1,	DST_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd  1,	DST_disp
+	BRA	L296
+L297:
+L296:					; post if
+					; debut if
+	Ld  1,	-BASE_ofs
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	10
+	CNE
+	BF	L299
+					; debut if
+	Ld  1,	-BASE_ofs
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	10
+	CGE
+	BF	L301
+	LVA	1, -TO_ofs
+	LIa	, , 0				; array data start address on stack
+	Ld 1,	DST_disp
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
+	SUB
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	LI	49
+	Sb
+	Ld 1,	DST_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd  1,	DST_disp
+	LVA	1, -TO_ofs
+	LIa	, , 0				; array data start address on stack
+	Ld 1,	DST_disp
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
+	SUB
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	LI	48
+	Ld  1,	-BASE_ofs
+	ADD
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	10
+	SUB
+	Sb
+	Ld 1,	DST_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd  1,	DST_disp
+	BRA	L300
+L301:
+	LVA	1, -TO_ofs
+	LIa	, , 0				; array data start address on stack
+	Ld 1,	DST_disp
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
+	SUB
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	LI	48
+	Ld  1,	-BASE_ofs
+	ADD
+	Sb
+	Ld 1,	DST_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd  1,	DST_disp
+L300:					; post if
+	LVA	1, -TO_ofs
+	LIa	, , 0				; array data start address on stack
+	Ld 1,	DST_disp
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
+	SUB
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	LI	35
+	Sb
+	Ld 1,	DST_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd  1,	DST_disp
+	BRA	L298
+L299:
+L298:					; post if
+VAR	IL303_disp, d				; compteur boucle LOOP__15
+	Ld 1,	POS_disp
+	Sd  1,	IL303_disp
+VAR	LMT_IL303_disp, d			; limite boucle LOOP__15
+	LId	1, STR__u, STRING.LST_1
+	Sd  1,	LMT_IL303_disp
+	Ld  1,	IL303_disp				; test null range LOOP__15
+	Ld  1,	LMT_IL303_disp
+	CGT
+	BT	L302
+LOOP__15:					; corps boucle LOOP__15
+	LVA	1, -TO_ofs
+	LIa	, , 0				; array data start address on stack
+	Ld 1,	DST_disp
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
+	SUB
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	La	 1, STR_disp				; array data start address on stack
+	Ld	1, IL303_disp
+	LId	1, STR__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, STR__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	Sb
+	Ld 1,	DST_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd  1,	DST_disp
+	Ld  1,	IL303_disp				; test de sortie LOOP__15
+	Ld  1,	LMT_IL303_disp
+	CEQ
+	BT	L302
+	Ld  1,	IL303_disp				; mise a jour compteur LOOP__15
+	INC
+	Sd  1,	IL303_disp
+	BRA	LOOP__15				; iteration suivante LOOP__15
+L302:					; post loop LOOP__15
+					; debut if
+	Ld  1,	-BASE_ofs
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	10
+	CNE
+	BF	L305
+	LVA	1, -TO_ofs
+	LIa	, , 0				; array data start address on stack
+	Ld 1,	DST_disp
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
+	SUB
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	LI	35
+	Sb
+	BRA	L304
+L305:
+L304:					; post if
 ret_lbl:
 	UNLINK 1
 	RTD	prm_siz
@@ -3847,1352 +4950,8 @@ begin:					;---------- BDY INSTRUCTIONS
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	CEQ
-	BF	L186
-LOOP__11:
-	La 1, -FILE_ofs
-	LIb	, 0, STANDARD.TEXT_IO.FILE_TYPE.AT_END_OF_FILE
-	BT	L187
-	LVA  1,	CH_disp
-	La  1,	-FILE_ofs
-	CALL	STANDARD.TEXT_IO. ,GET_L49
-	La 1, -FILE_ofs
-	LIb	, 0, STANDARD.TEXT_IO.FILE_TYPE.AT_END_OF_FILE
-	BT	L187
-	Lb 1,	CH_disp
-	LI	32
-	CNE
-	DUP
-	BF	L193
-	DROP
-	Lb 1,	CH_disp
-	LI	 9
-	CNE
-L193:
-	DUP
-	BF	L192
-	DROP
-	Lb 1,	CH_disp
-	LI	 10
-	CNE
-L192:
-	DUP
-	BF	L191
-	DROP
-	Lb 1,	CH_disp
-	LI	 13
-	CNE
-L191:
-	BT	L187
-	BRA	LOOP__11
-L187:					; post loop LOOP__11
-	BRA	L185
-L186:
-	LVA  1,	CH_disp
-	La  1,	-FILE_ofs
-	CALL	STANDARD.TEXT_IO. ,GET_L49
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	0
-	Sd  1,	CHARS_READ_disp
-L185:					; post if
-					; debut if
-	La 1, -FILE_ofs
-	LIb	, 0, STANDARD.TEXT_IO.FILE_TYPE.AT_END_OF_FILE
-	LI	1
-	OUX
-	DUP
-	BF	L196
-	DROP
-	Lb 1,	CH_disp
-	LI	45
-	CEQ
-L196:
-	BF	L195
-	LI	1
-	Sb  1,	NEG_disp
-					; debut if
-	Ld  1,	-WIDTH_ofs
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	0
-	CGT
-	BF	L198
-	Ld 1,	CHARS_READ_disp
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	1
-	ADD
-	Sd  1,	CHARS_READ_disp
-					; debut if
-	Ld 1,	CHARS_READ_disp
-	Ld  1,	-WIDTH_ofs
-	CGE
-	BF	L200
-	LI	1
-	Sb  1,	DONE_disp
-	BRA	L199
-L200:
-	LVA  1,	CH_disp
-	La  1,	-FILE_ofs
-	CALL	STANDARD.TEXT_IO. ,GET_L49
-L199:					; post if
-	BRA	L197
-L198:
-	LVA  1,	CH_disp
-	La  1,	-FILE_ofs
-	CALL	STANDARD.TEXT_IO. ,GET_L49
-L197:					; post if
-	BRA	L194
-L195:
-	La 1, -FILE_ofs
-	LIb	, 0, STANDARD.TEXT_IO.FILE_TYPE.AT_END_OF_FILE
-	LI	1
-	OUX
-	DUP
-	BF	L202
-	DROP
-	Lb 1,	CH_disp
-	LI	43
-	CEQ
-L202:
-	BF	L201
-					; debut if
-	Ld  1,	-WIDTH_ofs
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	0
-	CGT
-	BF	L204
-	Ld 1,	CHARS_READ_disp
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	1
-	ADD
-	Sd  1,	CHARS_READ_disp
-					; debut if
-	Ld 1,	CHARS_READ_disp
-	Ld  1,	-WIDTH_ofs
-	CGE
-	BF	L206
-	LI	1
-	Sb  1,	DONE_disp
-	BRA	L205
-L206:
-	LVA  1,	CH_disp
-	La  1,	-FILE_ofs
-	CALL	STANDARD.TEXT_IO. ,GET_L49
-L205:					; post if
-	BRA	L203
-L204:
-	LVA  1,	CH_disp
-	La  1,	-FILE_ofs
-	CALL	STANDARD.TEXT_IO. ,GET_L49
-L203:					; post if
-	BRA	L194
-L201:
-L194:					; post if
-LOOP__12:
-	Lb 1,	DONE_disp
-	DUP
-	BT	L209
-	DROP
-	La 1, -FILE_ofs
-	LIb	, 0, STANDARD.TEXT_IO.FILE_TYPE.AT_END_OF_FILE
-L209:
-	BT	L207
-					; debut if
-	Ld  1,	-WIDTH_ofs
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	0
-	CGT
-	DUP
-	BF	L212
-	DROP
-	Ld 1,	CHARS_READ_disp
-	Ld  1,	-WIDTH_ofs
-	CGE
-L212:
-	BF	L211
-	BRA	L207
-	BRA	L210
-L211:
-L210:					; post if
-					; debut if
-	Lb 1,	CH_disp
-	LI	46
-	CEQ
-	BF	L215
-	LI	1
-	Sb  1,	IN_FRAC_disp
-					; debut if
-	Ld  1,	-WIDTH_ofs
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	0
-	CGT
-	BF	L217
-	Ld 1,	CHARS_READ_disp
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	1
-	ADD
-	Sd  1,	CHARS_READ_disp
-					; debut if
-	Ld 1,	CHARS_READ_disp
-	Ld  1,	-WIDTH_ofs
-	CGE
-	BF	L219
-	LI	1
-	Sb  1,	DONE_disp
-	BRA	L218
-L219:
-	LVA  1,	CH_disp
-	La  1,	-FILE_ofs
-	CALL	STANDARD.TEXT_IO. ,GET_L49
-L218:					; post if
-	BRA	L216
-L217:
-	LVA  1,	CH_disp
-	La  1,	-FILE_ofs
-	CALL	STANDARD.TEXT_IO. ,GET_L49
-L216:					; post if
-	BRA	L214
-L215:
-	Lb 1,	CH_disp
-	LI	69
-	CEQ
-	DUP
-	BT	L221
-	DROP
-	Lb 1,	CH_disp
-	LI	101
-	CEQ
-L221:
-	BF	L220
-					; debut if
-	Ld  1,	-WIDTH_ofs
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	0
-	CGT
-	BF	L223
-	Ld 1,	CHARS_READ_disp
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	1
-	ADD
-	Sd  1,	CHARS_READ_disp
-					; debut if
-	Ld 1,	CHARS_READ_disp
-	Ld  1,	-WIDTH_ofs
-	CGE
-	BF	L225
-	LI	1
-	Sb  1,	DONE_disp
-	BRA	L224
-L225:
-	LVA  1,	CH_disp
-	La  1,	-FILE_ofs
-	CALL	STANDARD.TEXT_IO. ,GET_L49
-L224:					; post if
-	BRA	L222
-L223:
-	LVA  1,	CH_disp
-	La  1,	-FILE_ofs
-	CALL	STANDARD.TEXT_IO. ,GET_L49
-L222:					; post if
-					; debut if
-	Lb 1,	DONE_disp
-	LI	1
-	OUX
-	DUP
-	BF	L228
-	DROP
-	La 1, -FILE_ofs
-	LIb	, 0, STANDARD.TEXT_IO.FILE_TYPE.AT_END_OF_FILE
-	LI	1
-	OUX
-L228:
-	BF	L227
-					; debut if
-	Lb 1,	CH_disp
-	LI	45
-	CEQ
-	BF	L230
-	LI	1
-	Sb  1,	EXP_NEG_disp
-					; debut if
-	Ld  1,	-WIDTH_ofs
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	0
-	CGT
-	BF	L232
-	Ld 1,	CHARS_READ_disp
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	1
-	ADD
-	Sd  1,	CHARS_READ_disp
-					; debut if
-	Ld 1,	CHARS_READ_disp
-	Ld  1,	-WIDTH_ofs
-	CGE
-	BF	L234
-	LI	1
-	Sb  1,	DONE_disp
-	BRA	L233
-L234:
-	LVA  1,	CH_disp
-	La  1,	-FILE_ofs
-	CALL	STANDARD.TEXT_IO. ,GET_L49
-L233:					; post if
-	BRA	L231
-L232:
-	LVA  1,	CH_disp
-	La  1,	-FILE_ofs
-	CALL	STANDARD.TEXT_IO. ,GET_L49
-L231:					; post if
-	BRA	L229
-L230:
-	Lb 1,	CH_disp
-	LI	43
-	CEQ
-	BF	L235
-					; debut if
-	Ld  1,	-WIDTH_ofs
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	0
-	CGT
-	BF	L237
-	Ld 1,	CHARS_READ_disp
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	1
-	ADD
-	Sd  1,	CHARS_READ_disp
-					; debut if
-	Ld 1,	CHARS_READ_disp
-	Ld  1,	-WIDTH_ofs
-	CGE
-	BF	L239
-	LI	1
-	Sb  1,	DONE_disp
-	BRA	L238
-L239:
-	LVA  1,	CH_disp
-	La  1,	-FILE_ofs
-	CALL	STANDARD.TEXT_IO. ,GET_L49
-L238:					; post if
-	BRA	L236
-L237:
-	LVA  1,	CH_disp
-	La  1,	-FILE_ofs
-	CALL	STANDARD.TEXT_IO. ,GET_L49
-L236:					; post if
-	BRA	L229
-L235:
-L229:					; post if
-	BRA	L226
-L227:
-L226:					; post if
-LOOP__13:
-	Lb 1,	DONE_disp
-	DUP
-	BT	L242
-	DROP
-	La 1, -FILE_ofs
-	LIb	, 0, STANDARD.TEXT_IO.FILE_TYPE.AT_END_OF_FILE
-L242:
-	BT	L240
-	Lb 1,	CH_disp
-	LI	48
-	CLT
-	DUP
-	BT	L244
-	DROP
-	Lb 1,	CH_disp
-	LI	57
-	CGT
-L244:
-	BT	L240
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	10
-	Ld 1,	EXP_VAL_disp
-	MUL
-	Lb 1,	CH_disp
-	ADD
-	LI	48
-	SUB
-	Sd  1,	EXP_VAL_disp
-					; debut if
-	Ld  1,	-WIDTH_ofs
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	0
-	CGT
-	BF	L246
-	Ld 1,	CHARS_READ_disp
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	1
-	ADD
-	Sd  1,	CHARS_READ_disp
-					; debut if
-	Ld 1,	CHARS_READ_disp
-	Ld  1,	-WIDTH_ofs
-	CGE
-	BF	L248
-	LI	1
-	Sb  1,	DONE_disp
-	BRA	L247
-L248:
-	LVA  1,	CH_disp
-	La  1,	-FILE_ofs
-	CALL	STANDARD.TEXT_IO. ,GET_L49
-L247:					; post if
-	BRA	L245
-L246:
-	LVA  1,	CH_disp
-	La  1,	-FILE_ofs
-	CALL	STANDARD.TEXT_IO. ,GET_L49
-L245:					; post if
-	BRA	LOOP__13
-L240:					; post loop LOOP__13
-					; debut if
-	Ld  1,	-WIDTH_ofs
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	0
-	CEQ
-	DUP
-	BF	L252
-	DROP
-	La 1, -FILE_ofs
-	LIb	, 0, STANDARD.TEXT_IO.FILE_TYPE.AT_END_OF_FILE
-	LI	1
-	OUX
-L252:
-	DUP
-	BF	L251
-	DROP
-	Lb 1,	CH_disp
-	LI	48
-	CLT
-	DUP
-	BT	L253
-	DROP
-	Lb 1,	CH_disp
-	LI	57
-	CGT
-L253:
-L251:
-	BF	L250
-	La 1, -FILE_ofs
-	LIVA 	, 0, STANDARD.TEXT_IO.FILE_TYPE.LOOK_AHEAD
-	Lb 1,	CH_disp
-	Sb
-	La 1, -FILE_ofs
-	LIVA 	, 0, STANDARD.TEXT_IO.FILE_TYPE.HAS_LOOK_AHEAD
-	LI	1
-	Sb
-	BRA	L249
-L250:
-L249:					; post if
-	LI	1
-	Sb  1,	DONE_disp
-	BRA	L214
-L220:
-	Lb 1,	CH_disp
-	LI	48
-	CGE
-	DUP
-	BF	L255
-	DROP
-	Lb 1,	CH_disp
-	LI	57
-	CLE
-L255:
-	BF	L254
-					; debut if
-	Lb 1,	IN_FRAC_disp
-	BF	L257
-	LVA  1,	VAL_disp
-	LVA 1,	VAL_disp
-	La 1,	-GFP_ofs
-	La ,	-NUM__ld_ofs
-	CALLI
-	LVA 1,	FRAC_disp
-	La 1,	-GFP_ofs
-	La ,	-NUM__ld_ofs
-	CALLI
-	Lb 1,	CH_disp
-	LI	48
-	SUB
-; CODE CONVERSION SOURCE DN_UNIVERSAL_INTEGER TARGET DN_FLOAT
-	CVTIF					; CODE_CONVERSION FLOAT TARGET FROM DN_UNIVERSAL_INTEGER
-	FMUL
-	FADD
-	La  1,	-GFP_ofs
-	La ,	-NUM__st_ofs
-	CALLI
-	LVA  1,	FRAC_disp
-	LVA 1,	FRAC_disp
-	La 1,	-GFP_ofs
-	La ,	-NUM__ld_ofs
-	CALLI
-; CODE_NUMERIC_LITERAL DN_FLOAT
-	LIF	10.0
-	FDIV
-	La  1,	-GFP_ofs
-	La ,	-NUM__st_ofs
-	CALLI
-	BRA	L256
-L257:
-	LVA  1,	VAL_disp
-; CODE_NUMERIC_LITERAL DN_FLOAT
-	LIF	10.0
-	LVA 1,	VAL_disp
-	La 1,	-GFP_ofs
-	La ,	-NUM__ld_ofs
-	CALLI
-	FMUL
-	Lb 1,	CH_disp
-	LI	48
-	SUB
-; CODE CONVERSION SOURCE DN_UNIVERSAL_INTEGER TARGET DN_FLOAT
-	CVTIF					; CODE_CONVERSION FLOAT TARGET FROM DN_UNIVERSAL_INTEGER
-	FADD
-	La  1,	-GFP_ofs
-	La ,	-NUM__st_ofs
-	CALLI
-L256:					; post if
-					; debut if
-	Ld  1,	-WIDTH_ofs
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	0
-	CGT
-	BF	L259
-	Ld 1,	CHARS_READ_disp
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	1
-	ADD
-	Sd  1,	CHARS_READ_disp
-					; debut if
-	Ld 1,	CHARS_READ_disp
-	Ld  1,	-WIDTH_ofs
-	CGE
-	BF	L261
-	LI	1
-	Sb  1,	DONE_disp
-	BRA	L260
-L261:
-	LVA  1,	CH_disp
-	La  1,	-FILE_ofs
-	CALL	STANDARD.TEXT_IO. ,GET_L49
-L260:					; post if
-	BRA	L258
-L259:
-	LVA  1,	CH_disp
-	La  1,	-FILE_ofs
-	CALL	STANDARD.TEXT_IO. ,GET_L49
-L258:					; post if
-	BRA	L214
-L254:
-					; debut if
-	Ld  1,	-WIDTH_ofs
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	0
-	CEQ
-	BF	L263
-	La 1, -FILE_ofs
-	LIVA 	, 0, STANDARD.TEXT_IO.FILE_TYPE.LOOK_AHEAD
-	Lb 1,	CH_disp
-	Sb
-	La 1, -FILE_ofs
-	LIVA 	, 0, STANDARD.TEXT_IO.FILE_TYPE.HAS_LOOK_AHEAD
-	LI	1
-	Sb
-	BRA	L262
-L263:
-L262:					; post if
-	LI	1
-	Sb  1,	DONE_disp
-L214:					; post if
-	BRA	LOOP__12
-L207:					; post loop LOOP__12
-					; debut if
-	Lb 1,	EXP_NEG_disp
-	BF	L265
-VAR	JL267_disp, d				; compteur boucle LOOP__14
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	1
-	Sd  1,	JL267_disp
-VAR	LMT_JL267_disp, d			; limite boucle LOOP__14
-	Ld 1,	EXP_VAL_disp
-	Sd  1,	LMT_JL267_disp
-	Ld  1,	JL267_disp				; test null range LOOP__14
-	Ld  1,	LMT_JL267_disp
-	CGT
-	BT	L266
-LOOP__14:					; corps boucle LOOP__14
-	LVA  1,	VAL_disp
-	LVA 1,	VAL_disp
-	La 1,	-GFP_ofs
-	La ,	-NUM__ld_ofs
-	CALLI
-; CODE_NUMERIC_LITERAL DN_FLOAT
-	LIF	10.0
-	FDIV
-	La  1,	-GFP_ofs
-	La ,	-NUM__st_ofs
-	CALLI
-	Ld  1,	JL267_disp				; test de sortie LOOP__14
-	Ld  1,	LMT_JL267_disp
-	CEQ
-	BT	L266
-	Ld  1,	JL267_disp				; mise a jour compteur LOOP__14
-	INC
-	Sd  1,	JL267_disp
-	BRA	LOOP__14				; iteration suivante LOOP__14
-L266:					; post loop LOOP__14
-	BRA	L264
-L265:
-VAR	JL269_disp, d				; compteur boucle LOOP__15
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	1
-	Sd  1,	JL269_disp
-VAR	LMT_JL269_disp, d			; limite boucle LOOP__15
-	Ld 1,	EXP_VAL_disp
-	Sd  1,	LMT_JL269_disp
-	Ld  1,	JL269_disp				; test null range LOOP__15
-	Ld  1,	LMT_JL269_disp
-	CGT
-	BT	L268
-LOOP__15:					; corps boucle LOOP__15
-	LVA  1,	VAL_disp
-	LVA 1,	VAL_disp
-	La 1,	-GFP_ofs
-	La ,	-NUM__ld_ofs
-	CALLI
-; CODE_NUMERIC_LITERAL DN_FLOAT
-	LIF	10.0
-	FMUL
-	La  1,	-GFP_ofs
-	La ,	-NUM__st_ofs
-	CALLI
-	Ld  1,	JL269_disp				; test de sortie LOOP__15
-	Ld  1,	LMT_JL269_disp
-	CEQ
-	BT	L268
-	Ld  1,	JL269_disp				; mise a jour compteur LOOP__15
-	INC
-	Sd  1,	JL269_disp
-	BRA	LOOP__15				; iteration suivante LOOP__15
-L268:					; post loop LOOP__15
-L264:					; post if
-					; debut if
-	Lb 1,	NEG_disp
-	BF	L271
-	LVA  1,	-ITEM_ofs
-	La
-	LVA 1,	VAL_disp
-	La 1,	-GFP_ofs
-	La ,	-NUM__ld_ofs
-	CALLI
-	FNEG
-	La  1,	-GFP_ofs
-	La ,	-NUM__st_ofs
-	CALLI
-	BRA	L270
-L271:
-	LVA  1,	-ITEM_ofs
-	La
-	LVA 1,	VAL_disp
-	La 1,	-GFP_ofs
-	La ,	-NUM__ld_ofs
-	CALLI
-	La  1,	-GFP_ofs
-	La ,	-NUM__st_ofs
-	CALLI
-L270:					; post if
-ret_lbl:
-	UNLINK 1
-	RTD	prm_siz
-excep:
-endPRO					;---------- end PRO GET
-end if
-
-if defined GET_L68_
-PRO	GET_L68				;---------- PRO GET
-PRMS					;    debut parametrage
-	PRM ITEM_ofs				; out
-	PRM WIDTH_ofs				; in
-	PRM GFP_ofs
-endPRMS					;    fin parametrage
-ELB 1					;    BODY ELAB
-					;    end elab
-begin:					;---------- BDY INSTRUCTIONS
-	La  1,	-GFP_ofs				; propagation GFP generique
-	Ld  1,	-WIDTH_ofs
-	La  1,	-ITEM_ofs
-	LVA 0,	STANDARD.TEXT_IO.DEFAULT_INPUT_disp
-	CALL	STANDARD.TEXT_IO.FLOAT_IO. ,GET_L67
-ret_lbl:
-	UNLINK 1
-	RTD	prm_siz
-excep:
-endPRO					;---------- end PRO GET
-end if
-
-if defined PUT_L69_
-PRO	PUT_L69				;---------- PRO PUT
-PRMS					;    debut parametrage
-	PRM FILE_ofs				; in
-	PRM ITEM_ofs				; in
-	PRM FORE_ofs				; in
-	PRM AFT_ofs				; in
-	PRM EXP_ofs				; in
-	PRM GFP_ofs
-endPRMS					;    fin parametrage
-ELB 1					;    BODY ELAB
-VAR VAL_disp, q				; variable flottante
-	LVA  1,	-ITEM_ofs
-	La  1,	-GFP_ofs
-	La ,	-NUM__ld_ofs
-	CALLI
-	Sq  1,	VAL_disp
-
-VAR IS_NEGATIVE_disp, d			; variable bool char enum
-	LVA  1,	-ITEM_ofs
-	La  1,	-GFP_ofs
-	La ,	-NUM__ld_ofs
-	CALLI
-; CODE_NUMERIC_LITERAL DN_FLOAT
-	LIF	0.0
-	FCLT
-	Sb  1,	IS_NEGATIVE_disp
-
-VAR E_disp, d				; variable entiere
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	0
-	Sd  1,	E_disp
-
-VAR DIGIT_disp, d				; variable entiere
-
-VAR FORE_LEN_disp, d			; variable entiere
-
-					;    end elab
-begin:					;---------- BDY INSTRUCTIONS
-					; debut if
-	Lb 1,	IS_NEGATIVE_disp
-	BF	L273
-	LVA  1,	VAL_disp
-	LVA  1,	-ITEM_ofs
-	La  1,	-GFP_ofs
-	La ,	-NUM__ld_ofs
-	CALLI
-	FNEG
-	La  1,	-GFP_ofs
-	La ,	-NUM__st_ofs
-	CALLI
-	BRA	L272
-L273:
-L272:					; post if
-					; debut if
-	LVA 1,	VAL_disp
-	La 1,	-GFP_ofs
-	La ,	-NUM__ld_ofs
-	CALLI
-; CODE_NUMERIC_LITERAL DN_FLOAT
-	LIF	0.0
-	FCNE
-	BF	L275
-LOOP__16:
-	LVA 1,	VAL_disp
-	La 1,	-GFP_ofs
-	La ,	-NUM__ld_ofs
-	CALLI
-; CODE_NUMERIC_LITERAL DN_FLOAT
-	LIF	10.0
-	FCGE
-	BF	L276
-	LVA  1,	VAL_disp
-	LVA 1,	VAL_disp
-	La 1,	-GFP_ofs
-	La ,	-NUM__ld_ofs
-	CALLI
-; CODE_NUMERIC_LITERAL DN_FLOAT
-	LIF	10.0
-	FDIV
-	La  1,	-GFP_ofs
-	La ,	-NUM__st_ofs
-	CALLI
-	Ld 1,	E_disp
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	1
-	ADD
-	Sd  1,	E_disp
-	BRA	LOOP__16
-L276:					; post loop LOOP__16
-LOOP__17:
-	LVA 1,	VAL_disp
-	La 1,	-GFP_ofs
-	La ,	-NUM__ld_ofs
-	CALLI
-; CODE_NUMERIC_LITERAL DN_FLOAT
-	LIF	1.0
-	FCLT
-	BF	L277
-	LVA  1,	VAL_disp
-	LVA 1,	VAL_disp
-	La 1,	-GFP_ofs
-	La ,	-NUM__ld_ofs
-	CALLI
-; CODE_NUMERIC_LITERAL DN_FLOAT
-	LIF	10.0
-	FMUL
-	La  1,	-GFP_ofs
-	La ,	-NUM__st_ofs
-	CALLI
-	Ld 1,	E_disp
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	1
-	SUB
-	Sd  1,	E_disp
-	BRA	LOOP__17
-L277:					; post loop LOOP__17
-	BRA	L274
-L275:
-L274:					; post if
-namespace	BLOCK__18
-ELB 2					;    BODY ELAB
-VAR ROUNDING_disp, q			; variable flottante
-; CODE_NUMERIC_LITERAL DN_FLOAT
-	LIF	0.5
-	Sq  2,	ROUNDING_disp
-
-					;    end elab
-begin:					;---------- BDY INSTRUCTIONS
-VAR	IL279_disp, d				; compteur boucle LOOP__22
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	1
-	Sd  2,	IL279_disp
-VAR	LMT_IL279_disp, d			; limite boucle LOOP__22
-	Ld  1,	-AFT_ofs
-	Sd  2,	LMT_IL279_disp
-	Ld  2,	IL279_disp				; test null range LOOP__22
-	Ld  2,	LMT_IL279_disp
-	CGT
-	BT	L278
-LOOP__22:					; corps boucle LOOP__22
-	LVA  2,	ROUNDING_disp
-	LVA 2,	ROUNDING_disp
-	La 1,	-GFP_ofs
-	La ,	-NUM__ld_ofs
-	CALLI
-; CODE_NUMERIC_LITERAL DN_FLOAT
-	LIF	10.0
-	FDIV
-	La  1,	-GFP_ofs
-	La ,	-NUM__st_ofs
-	CALLI
-	Ld  2,	IL279_disp				; test de sortie LOOP__22
-	Ld  2,	LMT_IL279_disp
-	CEQ
-	BT	L278
-	Ld  2,	IL279_disp				; mise a jour compteur LOOP__22
-	INC
-	Sd  2,	IL279_disp
-	BRA	LOOP__22				; iteration suivante LOOP__22
-L278:					; post loop LOOP__22
-	LVA  1,	VAL_disp
-	LVA 1,	STANDARD.TEXT_IO.FLOAT_IO.PUT_L69.VAL_disp
-	La 1,	-GFP_ofs
-	La ,	-NUM__ld_ofs
-	CALLI
-	LVA 2,	ROUNDING_disp
-	La 1,	-GFP_ofs
-	La ,	-NUM__ld_ofs
-	CALLI
-	FADD
-	La  1,	-GFP_ofs
-	La ,	-NUM__st_ofs
-	CALLI
-	UNLINK 2
-endPRO
-					; debut if
-	LVA 1,	VAL_disp
-	La 1,	-GFP_ofs
-	La ,	-NUM__ld_ofs
-	CALLI
-; CODE_NUMERIC_LITERAL DN_FLOAT
-	LIF	10.0
-	FCGE
-	BF	L281
-	LVA  1,	VAL_disp
-	LVA 1,	VAL_disp
-	La 1,	-GFP_ofs
-	La ,	-NUM__ld_ofs
-	CALLI
-; CODE_NUMERIC_LITERAL DN_FLOAT
-	LIF	10.0
-	FDIV
-	La  1,	-GFP_ofs
-	La ,	-NUM__st_ofs
-	CALLI
-	Ld 1,	E_disp
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	1
-	ADD
-	Sd  1,	E_disp
-	BRA	L280
-L281:
-L280:					; post if
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	1
-	Sd  1,	FORE_LEN_disp
-					; debut if
-	Lb 1,	IS_NEGATIVE_disp
-	BF	L283
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	2
-	Sd  1,	FORE_LEN_disp
-	BRA	L282
-L283:
-L282:					; post if
-					; debut if
-	Ld  1,	-FORE_ofs
-	Ld 1,	FORE_LEN_disp
-	CGT
-	BF	L285
-VAR	IL287_disp, d				; compteur boucle LOOP__19
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	1
-	Sd  1,	IL287_disp
-VAR	LMT_IL287_disp, d			; limite boucle LOOP__19
-	Ld  1,	-FORE_ofs
-	Ld 1,	FORE_LEN_disp
-	SUB
-	Sd  1,	LMT_IL287_disp
-	Ld  1,	IL287_disp				; test null range LOOP__19
-	Ld  1,	LMT_IL287_disp
-	CGT
-	BT	L286
-LOOP__19:					; corps boucle LOOP__19
-	LI	32
-	La  1,	-FILE_ofs
-	CALL	STANDARD.TEXT_IO. ,PUT_L51
-	Ld  1,	IL287_disp				; test de sortie LOOP__19
-	Ld  1,	LMT_IL287_disp
-	CEQ
-	BT	L286
-	Ld  1,	IL287_disp				; mise a jour compteur LOOP__19
-	INC
-	Sd  1,	IL287_disp
-	BRA	LOOP__19				; iteration suivante LOOP__19
-L286:					; post loop LOOP__19
-	BRA	L284
-L285:
-L284:					; post if
-					; debut if
-	Lb 1,	IS_NEGATIVE_disp
-	BF	L289
-	LI	45
-	La  1,	-FILE_ofs
-	CALL	STANDARD.TEXT_IO. ,PUT_L51
-	BRA	L288
-L289:
-L288:					; post if
-	LVA 1,	VAL_disp
-	La 1,	-GFP_ofs
-	La ,	-NUM__ld_ofs
-	CALLI
-; CODE CONVERSION SOURCE DN_FLOAT TARGET DN_INTEGER
-	CVTFI
-	Sd  1,	DIGIT_disp
-					; debut if
-	Ld 1,	DIGIT_disp
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	9
-	CGT
-	BF	L291
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	9
-	Sd  1,	DIGIT_disp
-	BRA	L290
-L291:
-L290:					; post if
-					; debut if
-	Ld 1,	DIGIT_disp
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	0
-	CLT
-	BF	L293
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	0
-	Sd  1,	DIGIT_disp
-	BRA	L292
-L293:
-L292:					; post if
-	LI	48
-	Ld 1,	DIGIT_disp
-	ADD
-	La  1,	-FILE_ofs
-	CALL	STANDARD.TEXT_IO. ,PUT_L51
-	LVA  1,	VAL_disp
-	LVA 1,	VAL_disp
-	La 1,	-GFP_ofs
-	La ,	-NUM__ld_ofs
-	CALLI
-	Ld 1,	DIGIT_disp
-; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_FLOAT
-	CVTIF					; CODE_CONVERSION FLOAT TARGET FROM DN_INTEGER
-	FSUB
-; CODE_NUMERIC_LITERAL DN_FLOAT
-	LIF	10.0
-	FMUL
-	La  1,	-GFP_ofs
-	La ,	-NUM__st_ofs
-	CALLI
-	LI	46
-	La  1,	-FILE_ofs
-	CALL	STANDARD.TEXT_IO. ,PUT_L51
-VAR	IL295_disp, d				; compteur boucle LOOP__20
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	1
-	Sd  1,	IL295_disp
-VAR	LMT_IL295_disp, d			; limite boucle LOOP__20
-	Ld  1,	-AFT_ofs
-	Sd  1,	LMT_IL295_disp
-	Ld  1,	IL295_disp				; test null range LOOP__20
-	Ld  1,	LMT_IL295_disp
-	CGT
-	BT	L294
-LOOP__20:					; corps boucle LOOP__20
-	LVA 1,	VAL_disp
-	La 1,	-GFP_ofs
-	La ,	-NUM__ld_ofs
-	CALLI
-; CODE CONVERSION SOURCE DN_FLOAT TARGET DN_INTEGER
-	CVTFI
-	Sd  1,	DIGIT_disp
-					; debut if
-	Ld 1,	DIGIT_disp
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	9
-	CGT
-	BF	L297
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	9
-	Sd  1,	DIGIT_disp
-	BRA	L296
-L297:
-L296:					; post if
-					; debut if
-	Ld 1,	DIGIT_disp
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	0
-	CLT
-	BF	L299
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	0
-	Sd  1,	DIGIT_disp
-	BRA	L298
-L299:
-L298:					; post if
-	LI	48
-	Ld 1,	DIGIT_disp
-	ADD
-	La  1,	-FILE_ofs
-	CALL	STANDARD.TEXT_IO. ,PUT_L51
-	LVA  1,	VAL_disp
-	LVA 1,	VAL_disp
-	La 1,	-GFP_ofs
-	La ,	-NUM__ld_ofs
-	CALLI
-	Ld 1,	DIGIT_disp
-; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_FLOAT
-	CVTIF					; CODE_CONVERSION FLOAT TARGET FROM DN_INTEGER
-	FSUB
-; CODE_NUMERIC_LITERAL DN_FLOAT
-	LIF	10.0
-	FMUL
-	La  1,	-GFP_ofs
-	La ,	-NUM__st_ofs
-	CALLI
-	Ld  1,	IL295_disp				; test de sortie LOOP__20
-	Ld  1,	LMT_IL295_disp
-	CEQ
-	BT	L294
-	Ld  1,	IL295_disp				; mise a jour compteur LOOP__20
-	INC
-	Sd  1,	IL295_disp
-	BRA	LOOP__20				; iteration suivante LOOP__20
-L294:					; post loop LOOP__20
-					; debut if
-	Ld  1,	-EXP_ofs
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	0
-	CGT
-	BF	L301
-	LI	69
-	La  1,	-FILE_ofs
-	CALL	STANDARD.TEXT_IO. ,PUT_L51
-					; debut if
-	Ld 1,	E_disp
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	0
-	CLT
-	BF	L303
-	LI	45
-	La  1,	-FILE_ofs
-	CALL	STANDARD.TEXT_IO. ,PUT_L51
-	Ld 1,	E_disp
-	NEG
-	Sd  1,	E_disp
-	BRA	L302
-L303:
-	LI	43
-	La  1,	-FILE_ofs
-	CALL	STANDARD.TEXT_IO. ,PUT_L51
-L302:					; post if
-namespace	BLOCK__21
-ELB 2					;    BODY ELAB
-STRING = 'STRING'
-namespace STRING				; array var constrained array type info
-VAR use__info, q
-VAR SIZ, d
-	LVA	2, SIZ
-	Sa	2, use__info
-VAR COMP_SIZ, d
-VAR FST_1, d
-VAR LST_1, d
-	LI	8
-	Sd	2, COMP_SIZ
-	Ld	2, COMP_SIZ
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	1
-	Sd	2, FST_1
-	Ld  1,	-EXP_ofs
-	Sd	2, LST_1
-	Ld	2, LST_1
-	INC
-	Ld	2, FST_1
-	SUB
-	MUL
-	Sd	2, SIZ
-  virtual at 4
-COMP_SIZ = $
-	rd 1 
-FST_1 = $
-	rd 1 
-LST_1 = $
-	rd 1 
-  end virtual
-end namespace
-VAR EXP_STR_disp, q				; variable array : pointeur aux data
-VAR EXP_STR__u, q				; variable array : useinfo pointeur au rec info
-	La 2, STRING.use__info
-	Sa	2, EXP_STR__u				; array info ptr at __u
-	Ld	2, STRING.SIZ
-	LI	8
-	DIV
-	CO_VAR
-	Sa	2, EXP_STR_disp				; array data ptr at _disp
-
-VAR POS_disp, d				; variable entiere
-	Ld  1,	-EXP_ofs
-	Sd  2,	POS_disp
-
-VAR EVAL_disp, d				; variable entiere
-	Ld 1,	STANDARD.TEXT_IO.FLOAT_IO.PUT_L69.E_disp
-	Sd  2,	EVAL_disp
-
-					;    end elab
-begin:					;---------- BDY INSTRUCTIONS
-VAR	IL305_disp, d				; compteur boucle LOOP__23
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	1
-	Sd  2,	IL305_disp
-VAR	LMT_IL305_disp, d			; limite boucle LOOP__23
-	Ld  1,	-EXP_ofs
-	Sd  2,	LMT_IL305_disp
-	Ld  2,	IL305_disp				; test null range LOOP__23
-	Ld  2,	LMT_IL305_disp
-	CGT
-	BT	L304
-	Ld  2,	IL305_disp				; inversion range LOOP__23
-	Ld  2,	LMT_IL305_disp
-	Sd  2,	IL305_disp
-	Sd  2,	LMT_IL305_disp
-LOOP__23:					; corps boucle LOOP__23
-	La	 2, EXP_STR_disp			; array data start address on stack
-	Ld	2, IL305_disp
-	LId	2, EXP_STR__u, STANDARD.STRING.FST_1	; (index - FST_1) * SIZ_1
-	SUB
-	LId	2, EXP_STR__u, STANDARD.STRING.COMP_SIZ
-	LI	8
-	DIV
-	MUL
-	ADD					; add offset to start address
-	LI	48
-	Ld 2,	EVAL_disp
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	10
-	MODI
-	ADD
-	Sb
-	Ld 2,	EVAL_disp
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	10
-	DIV
-	Sd  2,	EVAL_disp
-	Ld  2,	IL305_disp				; test de sortie LOOP__23
-	Ld  2,	LMT_IL305_disp
-	CEQ
-	BT	L304
-	Ld  2,	IL305_disp				; mise a jour compteur LOOP__23
-	DEC
-	Sd  2,	IL305_disp
-	BRA	LOOP__23				; iteration suivante LOOP__23
-L304:					; post loop LOOP__23
-	LVA 2,	EXP_STR_disp
-	La  1,	-FILE_ofs
-	CALL	STANDARD.TEXT_IO. ,PUT_L55
-	UNLINK 2
-endPRO
-	BRA	L300
-L301:
-L300:					; post if
-ret_lbl:
-	UNLINK 1
-	RTD	prm_siz
-excep:
-endPRO					;---------- end PRO PUT
-end if
-
-if defined PUT_L70_
-PRO	PUT_L70				;---------- PRO PUT
-PRMS					;    debut parametrage
-	PRM ITEM_ofs				; in
-	PRM FORE_ofs				; in
-	PRM AFT_ofs				; in
-	PRM EXP_ofs				; in
-	PRM GFP_ofs
-endPRMS					;    fin parametrage
-ELB 1					;    BODY ELAB
-					;    end elab
-begin:					;---------- BDY INSTRUCTIONS
-	La  1,	-GFP_ofs				; propagation GFP generique
-	Ld  1,	-EXP_ofs
-	Ld  1,	-AFT_ofs
-	Ld  1,	-FORE_ofs
-	LVA 1,	-ITEM_ofs
-	La 1,	-GFP_ofs
-	La ,	-NUM__ld_ofs
-	CALLI
-	LVA 0,	STANDARD.TEXT_IO.DEFAULT_OUTPUT_disp
-	CALL	STANDARD.TEXT_IO.FLOAT_IO. ,PUT_L69
-ret_lbl:
-	UNLINK 1
-	RTD	prm_siz
-excep:
-endPRO					;---------- end PRO PUT
-end if
-
-if defined GET_L71_
-PRO	GET_L71				;---------- PRO GET
-PRMS					;    debut parametrage
-	PRM FROM_ofs				; in
-	PRM ITEM_ofs				; out
-	PRM LAST_ofs				; out
-	PRM GFP_ofs
-endPRMS					;    fin parametrage
-ELB 1					;    BODY ELAB
-					;    end elab
-begin:					;---------- BDY INSTRUCTIONS
-ret_lbl:
-	UNLINK 1
-	RTD	prm_siz
-excep:
-endPRO					;---------- end PRO GET
-end if
-
-if defined PUT_L72_
-PRO	PUT_L72				;---------- PRO PUT
-PRMS					;    debut parametrage
-	PRM TO_ofs				; out
-	PRM ITEM_ofs				; in
-	PRM AFT_ofs				; in
-	PRM EXP_ofs				; in
-	PRM GFP_ofs
-endPRMS					;    fin parametrage
-ELB 1					;    BODY ELAB
-					;    end elab
-begin:					;---------- BDY INSTRUCTIONS
-ret_lbl:
-	UNLINK 1
-	RTD	prm_siz
-excep:
-endPRO					;---------- end PRO PUT
-end if
-begin:					;---------- package BDY INSTRUCTIONS
-end namespace 				;---------- end generic package BDY FLOAT_IO
-FIXED_IO = 'FIXED_IO'
-namespace FIXED_IO
-					;---------- GENERIC PACKAGE BODY ----------
-
-PRMS
-	PRM NUM__u_ofs
-	PRM NUM__ld_ofs
-	PRM NUM__st_ofs
-	PRM NUM__inadr_ofs
-	PRM NUM__outadr_ofs
-endPRMS
-					;    BODY ELAB
-
-if defined GET_L73_
-PRO	GET_L73				;---------- PRO GET
-PRMS					;    debut parametrage
-	PRM FILE_ofs				; in
-	PRM ITEM_ofs				; out
-	PRM WIDTH_ofs				; in
-	PRM GFP_ofs
-endPRMS					;    fin parametrage
-ELB 1					;    BODY ELAB
-VAR CH_disp, d				; variable bool char enum
-
-VAR VAL_disp, q				; variable flottante
-; CODE_NUMERIC_LITERAL DN_FLOAT
-	LIF	0.0
-	Sq  1,	VAL_disp
-
-VAR FRAC_disp, q				; variable flottante
-; CODE_NUMERIC_LITERAL DN_FLOAT
-	LIF	0.1
-	Sq  1,	FRAC_disp
-
-VAR NEG_disp, d				; variable bool char enum
-	LI	0
-	Sb  1,	NEG_disp
-
-VAR IN_FRAC_disp, d				; variable bool char enum
-	LI	0
-	Sb  1,	IN_FRAC_disp
-
-VAR EXP_VAL_disp, d				; variable entiere
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	0
-	Sd  1,	EXP_VAL_disp
-
-VAR EXP_NEG_disp, d				; variable bool char enum
-	LI	0
-	Sb  1,	EXP_NEG_disp
-
-VAR CHARS_READ_disp, d			; variable entiere
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	0
-	Sd  1,	CHARS_READ_disp
-
-VAR DONE_disp, d				; variable bool char enum
-	LI	0
-	Sb  1,	DONE_disp
-
-					;    end elab
-begin:					;---------- BDY INSTRUCTIONS
-					; debut if
-	Ld  1,	-WIDTH_ofs
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	0
-	CEQ
 	BF	L307
-LOOP__24:
+LOOP__16:
 	La 1, -FILE_ofs
 	LIb	, 0, STANDARD.TEXT_IO.FILE_TYPE.AT_END_OF_FILE
 	BT	L308
@@ -5227,8 +4986,8 @@ L313:
 	CNE
 L312:
 	BT	L308
-	BRA	LOOP__24
-L308:					; post loop LOOP__24
+	BRA	LOOP__16
+L308:					; post loop LOOP__16
 	BRA	L306
 L307:
 	LVA  1,	CH_disp
@@ -5330,7 +5089,7 @@ L324:					; post if
 	BRA	L315
 L322:
 L315:					; post if
-LOOP__25:
+LOOP__17:
 	Lb 1,	DONE_disp
 	DUP
 	BT	L330
@@ -5528,7 +5287,7 @@ L350:					; post if
 	BRA	L347
 L348:
 L347:					; post if
-LOOP__26:
+LOOP__18:
 	Lb 1,	DONE_disp
 	DUP
 	BT	L363
@@ -5587,8 +5346,8 @@ L367:
 	La  1,	-FILE_ofs
 	CALL	STANDARD.TEXT_IO. ,GET_L49
 L366:					; post if
-	BRA	LOOP__26
-L361:					; post loop LOOP__26
+	BRA	LOOP__18
+L361:					; post loop LOOP__18
 					; debut if
 	Ld  1,	-WIDTH_ofs
 ; CODE_NUMERIC_LITERAL DN_INTEGER
@@ -5646,8 +5405,15 @@ L376:
 					; debut if
 	Lb 1,	IN_FRAC_disp
 	BF	L378
-	Lq 1,	VAL_disp
-	Lq 1,	FRAC_disp
+	LVA  1,	VAL_disp
+	LVA 1,	VAL_disp
+	La 1,	-GFP_ofs
+	La ,	-NUM__ld_ofs
+	CALLI
+	LVA 1,	FRAC_disp
+	La 1,	-GFP_ofs
+	La ,	-NUM__ld_ofs
+	CALLI
 	Lb 1,	CH_disp
 	LI	48
 	SUB
@@ -5656,16 +5422,24 @@ L376:
 	FMUL
 	FADD
 	Sq  1,	VAL_disp
-	Lq 1,	FRAC_disp
+	LVA  1,	FRAC_disp
+	LVA 1,	FRAC_disp
+	La 1,	-GFP_ofs
+	La ,	-NUM__ld_ofs
+	CALLI
 ; CODE_NUMERIC_LITERAL DN_FLOAT
 	LIF	10.0
 	FDIV
 	Sq  1,	FRAC_disp
 	BRA	L377
 L378:
+	LVA  1,	VAL_disp
 ; CODE_NUMERIC_LITERAL DN_FLOAT
 	LIF	10.0
-	Lq 1,	VAL_disp
+	LVA 1,	VAL_disp
+	La 1,	-GFP_ofs
+	La ,	-NUM__ld_ofs
+	CALLI
 	FMUL
 	Lb 1,	CH_disp
 	LI	48
@@ -5727,69 +5501,2874 @@ L383:					; post if
 	LI	1
 	Sb  1,	DONE_disp
 L335:					; post if
-	BRA	LOOP__25
-L328:					; post loop LOOP__25
+	BRA	LOOP__17
+L328:					; post loop LOOP__17
 					; debut if
 	Lb 1,	EXP_NEG_disp
 	BF	L386
-VAR	JL388_disp, d				; compteur boucle LOOP__27
+VAR	JL388_disp, d				; compteur boucle LOOP__19
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	Sd  1,	JL388_disp
-VAR	LMT_JL388_disp, d			; limite boucle LOOP__27
+VAR	LMT_JL388_disp, d			; limite boucle LOOP__19
 	Ld 1,	EXP_VAL_disp
 	Sd  1,	LMT_JL388_disp
-	Ld  1,	JL388_disp				; test null range LOOP__27
+	Ld  1,	JL388_disp				; test null range LOOP__19
 	Ld  1,	LMT_JL388_disp
 	CGT
 	BT	L387
+LOOP__19:					; corps boucle LOOP__19
+	LVA  1,	VAL_disp
+	LVA 1,	VAL_disp
+	La 1,	-GFP_ofs
+	La ,	-NUM__ld_ofs
+	CALLI
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	10.0
+	FDIV
+	Sq  1,	VAL_disp
+	Ld  1,	JL388_disp				; test de sortie LOOP__19
+	Ld  1,	LMT_JL388_disp
+	CEQ
+	BT	L387
+	Ld  1,	JL388_disp				; mise a jour compteur LOOP__19
+	INC
+	Sd  1,	JL388_disp
+	BRA	LOOP__19				; iteration suivante LOOP__19
+L387:					; post loop LOOP__19
+	BRA	L385
+L386:
+VAR	JL390_disp, d				; compteur boucle LOOP__20
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd  1,	JL390_disp
+VAR	LMT_JL390_disp, d			; limite boucle LOOP__20
+	Ld 1,	EXP_VAL_disp
+	Sd  1,	LMT_JL390_disp
+	Ld  1,	JL390_disp				; test null range LOOP__20
+	Ld  1,	LMT_JL390_disp
+	CGT
+	BT	L389
+LOOP__20:					; corps boucle LOOP__20
+	LVA  1,	VAL_disp
+	LVA 1,	VAL_disp
+	La 1,	-GFP_ofs
+	La ,	-NUM__ld_ofs
+	CALLI
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	10.0
+	FMUL
+	Sq  1,	VAL_disp
+	Ld  1,	JL390_disp				; test de sortie LOOP__20
+	Ld  1,	LMT_JL390_disp
+	CEQ
+	BT	L389
+	Ld  1,	JL390_disp				; mise a jour compteur LOOP__20
+	INC
+	Sd  1,	JL390_disp
+	BRA	LOOP__20				; iteration suivante LOOP__20
+L389:					; post loop LOOP__20
+L385:					; post if
+					; debut if
+	Lb 1,	NEG_disp
+	BF	L392
+	LVA  1,	-ITEM_ofs
+	La
+	LVA 1,	VAL_disp
+	La 1,	-GFP_ofs
+	La ,	-NUM__ld_ofs
+	CALLI
+	FNEG
+	La  1,	-GFP_ofs
+	La ,	-NUM__st_ofs
+	CALLI
+	BRA	L391
+L392:
+	LVA  1,	-ITEM_ofs
+	La
+	LVA 1,	VAL_disp
+	La 1,	-GFP_ofs
+	La ,	-NUM__ld_ofs
+	CALLI
+	La  1,	-GFP_ofs
+	La ,	-NUM__st_ofs
+	CALLI
+L391:					; post if
+ret_lbl:
+	UNLINK 1
+	RTD	prm_siz
+excep:
+endPRO					;---------- end PRO GET
+end if
+
+if defined GET_L68_
+PRO	GET_L68				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM ITEM_ofs				; out
+	PRM WIDTH_ofs				; in
+	PRM GFP_ofs
+endPRMS					;    fin parametrage
+ELB 1					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	La  1,	-GFP_ofs				; propagation GFP generique
+	Ld  1,	-WIDTH_ofs
+	La  1,	-ITEM_ofs
+	LVA 0,	STANDARD.TEXT_IO.DEFAULT_INPUT_disp
+	CALL	STANDARD.TEXT_IO.FLOAT_IO. ,GET_L67
+ret_lbl:
+	UNLINK 1
+	RTD	prm_siz
+excep:
+endPRO					;---------- end PRO GET
+end if
+
+if defined PUT_L69_
+PRO	PUT_L69				;---------- PRO PUT
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM ITEM_ofs				; in
+	PRM FORE_ofs				; in
+	PRM AFT_ofs				; in
+	PRM EXP_ofs				; in
+	PRM GFP_ofs
+endPRMS					;    fin parametrage
+ELB 1					;    BODY ELAB
+VAR VAL_disp, q				; variable flottante
+	LVA  1,	-ITEM_ofs
+	La  1,	-GFP_ofs
+	La ,	-NUM__ld_ofs
+	CALLI
+	Sq  1,	VAL_disp
+
+VAR IS_NEGATIVE_disp, d			; variable bool char enum
+	LVA  1,	-ITEM_ofs
+	La  1,	-GFP_ofs
+	La ,	-NUM__ld_ofs
+	CALLI
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	0.0
+	FCLT
+	Sb  1,	IS_NEGATIVE_disp
+
+VAR E_disp, d				; variable entiere
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	Sd  1,	E_disp
+
+VAR DIGIT_disp, d				; variable entiere
+
+VAR FORE_LEN_disp, d			; variable entiere
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+					; debut if
+	Lb 1,	IS_NEGATIVE_disp
+	BF	L394
+	LVA  1,	VAL_disp
+	LVA  1,	-ITEM_ofs
+	La  1,	-GFP_ofs
+	La ,	-NUM__ld_ofs
+	CALLI
+	FNEG
+	Sq  1,	VAL_disp
+	BRA	L393
+L394:
+L393:					; post if
+					; debut if
+	LVA 1,	VAL_disp
+	La 1,	-GFP_ofs
+	La ,	-NUM__ld_ofs
+	CALLI
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	0.0
+	FCNE
+	BF	L396
+LOOP__21:
+	LVA 1,	VAL_disp
+	La 1,	-GFP_ofs
+	La ,	-NUM__ld_ofs
+	CALLI
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	10.0
+	FCGE
+	BF	L397
+	LVA  1,	VAL_disp
+	LVA 1,	VAL_disp
+	La 1,	-GFP_ofs
+	La ,	-NUM__ld_ofs
+	CALLI
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	10.0
+	FDIV
+	Sq  1,	VAL_disp
+	Ld 1,	E_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd  1,	E_disp
+	BRA	LOOP__21
+L397:					; post loop LOOP__21
+LOOP__22:
+	LVA 1,	VAL_disp
+	La 1,	-GFP_ofs
+	La ,	-NUM__ld_ofs
+	CALLI
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	1.0
+	FCLT
+	BF	L398
+	LVA  1,	VAL_disp
+	LVA 1,	VAL_disp
+	La 1,	-GFP_ofs
+	La ,	-NUM__ld_ofs
+	CALLI
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	10.0
+	FMUL
+	Sq  1,	VAL_disp
+	Ld 1,	E_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	SUB
+	Sd  1,	E_disp
+	BRA	LOOP__22
+L398:					; post loop LOOP__22
+	BRA	L395
+L396:
+L395:					; post if
+namespace	BLOCK__23
+ELB 2					;    BODY ELAB
+VAR ROUNDING_disp, q			; variable flottante
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	0.5
+	Sq  2,	ROUNDING_disp
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+VAR	IL400_disp, d				; compteur boucle LOOP__27
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd  2,	IL400_disp
+VAR	LMT_IL400_disp, d			; limite boucle LOOP__27
+	Ld  1,	-AFT_ofs
+	Sd  2,	LMT_IL400_disp
+	Ld  2,	IL400_disp				; test null range LOOP__27
+	Ld  2,	LMT_IL400_disp
+	CGT
+	BT	L399
 LOOP__27:					; corps boucle LOOP__27
+	LVA  2,	ROUNDING_disp
+	LVA 2,	ROUNDING_disp
+	La 1,	-GFP_ofs
+	La ,	-NUM__ld_ofs
+	CALLI
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	10.0
+	FDIV
+	Sq  2,	ROUNDING_disp
+	Ld  2,	IL400_disp				; test de sortie LOOP__27
+	Ld  2,	LMT_IL400_disp
+	CEQ
+	BT	L399
+	Ld  2,	IL400_disp				; mise a jour compteur LOOP__27
+	INC
+	Sd  2,	IL400_disp
+	BRA	LOOP__27				; iteration suivante LOOP__27
+L399:					; post loop LOOP__27
+	LVA  1,	VAL_disp
+	LVA 1,	STANDARD.TEXT_IO.FLOAT_IO.PUT_L69.VAL_disp
+	La 1,	-GFP_ofs
+	La ,	-NUM__ld_ofs
+	CALLI
+	LVA 2,	ROUNDING_disp
+	La 1,	-GFP_ofs
+	La ,	-NUM__ld_ofs
+	CALLI
+	FADD
+	Sq  1,	VAL_disp
+	UNLINK 2
+endPRO
+					; debut if
+	LVA 1,	VAL_disp
+	La 1,	-GFP_ofs
+	La ,	-NUM__ld_ofs
+	CALLI
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	10.0
+	FCGE
+	BF	L402
+	LVA  1,	VAL_disp
+	LVA 1,	VAL_disp
+	La 1,	-GFP_ofs
+	La ,	-NUM__ld_ofs
+	CALLI
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	10.0
+	FDIV
+	Sq  1,	VAL_disp
+	Ld 1,	E_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd  1,	E_disp
+	BRA	L401
+L402:
+L401:					; post if
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd  1,	FORE_LEN_disp
+					; debut if
+	Lb 1,	IS_NEGATIVE_disp
+	BF	L404
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	2
+	Sd  1,	FORE_LEN_disp
+	BRA	L403
+L404:
+L403:					; post if
+					; debut if
+	Ld  1,	-FORE_ofs
+	Ld 1,	FORE_LEN_disp
+	CGT
+	BF	L406
+VAR	IL408_disp, d				; compteur boucle LOOP__24
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd  1,	IL408_disp
+VAR	LMT_IL408_disp, d			; limite boucle LOOP__24
+	Ld  1,	-FORE_ofs
+	Ld 1,	FORE_LEN_disp
+	SUB
+	Sd  1,	LMT_IL408_disp
+	Ld  1,	IL408_disp				; test null range LOOP__24
+	Ld  1,	LMT_IL408_disp
+	CGT
+	BT	L407
+LOOP__24:					; corps boucle LOOP__24
+	LI	32
+	La  1,	-FILE_ofs
+	CALL	STANDARD.TEXT_IO. ,PUT_L51
+	Ld  1,	IL408_disp				; test de sortie LOOP__24
+	Ld  1,	LMT_IL408_disp
+	CEQ
+	BT	L407
+	Ld  1,	IL408_disp				; mise a jour compteur LOOP__24
+	INC
+	Sd  1,	IL408_disp
+	BRA	LOOP__24				; iteration suivante LOOP__24
+L407:					; post loop LOOP__24
+	BRA	L405
+L406:
+L405:					; post if
+					; debut if
+	Lb 1,	IS_NEGATIVE_disp
+	BF	L410
+	LI	45
+	La  1,	-FILE_ofs
+	CALL	STANDARD.TEXT_IO. ,PUT_L51
+	BRA	L409
+L410:
+L409:					; post if
+	LVA 1,	VAL_disp
+	La 1,	-GFP_ofs
+	La ,	-NUM__ld_ofs
+	CALLI
+; CODE CONVERSION SOURCE DN_FLOAT TARGET DN_INTEGER
+	CVTFI
+	Sd  1,	DIGIT_disp
+					; debut if
+	Ld 1,	DIGIT_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	9
+	CGT
+	BF	L412
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	9
+	Sd  1,	DIGIT_disp
+	BRA	L411
+L412:
+L411:					; post if
+					; debut if
+	Ld 1,	DIGIT_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	CLT
+	BF	L414
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	Sd  1,	DIGIT_disp
+	BRA	L413
+L414:
+L413:					; post if
+	LI	48
+	Ld 1,	DIGIT_disp
+	ADD
+	La  1,	-FILE_ofs
+	CALL	STANDARD.TEXT_IO. ,PUT_L51
+	LVA  1,	VAL_disp
+	LVA 1,	VAL_disp
+	La 1,	-GFP_ofs
+	La ,	-NUM__ld_ofs
+	CALLI
+	Ld 1,	DIGIT_disp
+; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_FLOAT
+	CVTIF					; CODE_CONVERSION FLOAT TARGET FROM DN_INTEGER
+	FSUB
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	10.0
+	FMUL
+	Sq  1,	VAL_disp
+	LI	46
+	La  1,	-FILE_ofs
+	CALL	STANDARD.TEXT_IO. ,PUT_L51
+VAR	IL416_disp, d				; compteur boucle LOOP__25
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd  1,	IL416_disp
+VAR	LMT_IL416_disp, d			; limite boucle LOOP__25
+	Ld  1,	-AFT_ofs
+	Sd  1,	LMT_IL416_disp
+	Ld  1,	IL416_disp				; test null range LOOP__25
+	Ld  1,	LMT_IL416_disp
+	CGT
+	BT	L415
+LOOP__25:					; corps boucle LOOP__25
+	LVA 1,	VAL_disp
+	La 1,	-GFP_ofs
+	La ,	-NUM__ld_ofs
+	CALLI
+; CODE CONVERSION SOURCE DN_FLOAT TARGET DN_INTEGER
+	CVTFI
+	Sd  1,	DIGIT_disp
+					; debut if
+	Ld 1,	DIGIT_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	9
+	CGT
+	BF	L418
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	9
+	Sd  1,	DIGIT_disp
+	BRA	L417
+L418:
+L417:					; post if
+					; debut if
+	Ld 1,	DIGIT_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	CLT
+	BF	L420
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	Sd  1,	DIGIT_disp
+	BRA	L419
+L420:
+L419:					; post if
+	LI	48
+	Ld 1,	DIGIT_disp
+	ADD
+	La  1,	-FILE_ofs
+	CALL	STANDARD.TEXT_IO. ,PUT_L51
+	LVA  1,	VAL_disp
+	LVA 1,	VAL_disp
+	La 1,	-GFP_ofs
+	La ,	-NUM__ld_ofs
+	CALLI
+	Ld 1,	DIGIT_disp
+; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_FLOAT
+	CVTIF					; CODE_CONVERSION FLOAT TARGET FROM DN_INTEGER
+	FSUB
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	10.0
+	FMUL
+	Sq  1,	VAL_disp
+	Ld  1,	IL416_disp				; test de sortie LOOP__25
+	Ld  1,	LMT_IL416_disp
+	CEQ
+	BT	L415
+	Ld  1,	IL416_disp				; mise a jour compteur LOOP__25
+	INC
+	Sd  1,	IL416_disp
+	BRA	LOOP__25				; iteration suivante LOOP__25
+L415:					; post loop LOOP__25
+					; debut if
+	Ld  1,	-EXP_ofs
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	CGT
+	BF	L422
+	LI	69
+	La  1,	-FILE_ofs
+	CALL	STANDARD.TEXT_IO. ,PUT_L51
+					; debut if
+	Ld 1,	E_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	CLT
+	BF	L424
+	LI	45
+	La  1,	-FILE_ofs
+	CALL	STANDARD.TEXT_IO. ,PUT_L51
+	Ld 1,	E_disp
+	NEG
+	Sd  1,	E_disp
+	BRA	L423
+L424:
+	LI	43
+	La  1,	-FILE_ofs
+	CALL	STANDARD.TEXT_IO. ,PUT_L51
+L423:					; post if
+namespace	BLOCK__26
+ELB 2					;    BODY ELAB
+STRING = 'STRING'
+namespace STRING				; array var constrained array type info
+VAR use__info, q
+VAR SIZ, d
+	LVA	2, SIZ
+	Sa	2, use__info
+VAR COMP_SIZ, d
+VAR FST_1, d
+VAR LST_1, d
+	LI	8
+	Sd	2, COMP_SIZ
+	Ld	2, COMP_SIZ
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd	2, FST_1
+	Ld  1,	-EXP_ofs
+	Sd	2, LST_1
+	Ld	2, LST_1
+	INC
+	Ld	2, FST_1
+	SUB
+	MUL
+	Sd	2, SIZ
+  virtual at 4
+COMP_SIZ = $
+	rd 1 
+FST_1 = $
+	rd 1 
+LST_1 = $
+	rd 1 
+  end virtual
+end namespace
+VAR EXP_STR_disp, q				; variable array : pointeur aux data
+VAR EXP_STR__u, q				; variable array : useinfo pointeur au rec info
+	La 2, STRING.use__info
+	Sa	2, EXP_STR__u				; array info ptr at __u
+	Ld	2, STRING.SIZ
+	LI	8
+	DIV
+	CO_VAR
+	Sa	2, EXP_STR_disp				; array data ptr at _disp
+
+VAR POS_disp, d				; variable entiere
+	Ld  1,	-EXP_ofs
+	Sd  2,	POS_disp
+
+VAR EVAL_disp, d				; variable entiere
+	Ld 1,	STANDARD.TEXT_IO.FLOAT_IO.PUT_L69.E_disp
+	Sd  2,	EVAL_disp
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+VAR	IL426_disp, d				; compteur boucle LOOP__28
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd  2,	IL426_disp
+VAR	LMT_IL426_disp, d			; limite boucle LOOP__28
+	Ld  1,	-EXP_ofs
+	Sd  2,	LMT_IL426_disp
+	Ld  2,	IL426_disp				; test null range LOOP__28
+	Ld  2,	LMT_IL426_disp
+	CGT
+	BT	L425
+	Ld  2,	IL426_disp				; inversion range LOOP__28
+	Ld  2,	LMT_IL426_disp
+	Sd  2,	IL426_disp
+	Sd  2,	LMT_IL426_disp
+LOOP__28:					; corps boucle LOOP__28
+	La	 2, EXP_STR_disp			; array data start address on stack
+	Ld	2, IL426_disp
+	LId	2, EXP_STR__u, STANDARD.STRING.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	2, EXP_STR__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	LI	48
+	Ld 2,	EVAL_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	10
+	MODI
+	ADD
+	Sb
+	Ld 2,	EVAL_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	10
+	DIV
+	Sd  2,	EVAL_disp
+	Ld  2,	IL426_disp				; test de sortie LOOP__28
+	Ld  2,	LMT_IL426_disp
+	CEQ
+	BT	L425
+	Ld  2,	IL426_disp				; mise a jour compteur LOOP__28
+	DEC
+	Sd  2,	IL426_disp
+	BRA	LOOP__28				; iteration suivante LOOP__28
+L425:					; post loop LOOP__28
+	LVA 2,	EXP_STR_disp
+	La  1,	-FILE_ofs
+	CALL	STANDARD.TEXT_IO. ,PUT_L55
+	UNLINK 2
+endPRO
+	BRA	L421
+L422:
+L421:					; post if
+ret_lbl:
+	UNLINK 1
+	RTD	prm_siz
+excep:
+endPRO					;---------- end PRO PUT
+end if
+
+if defined PUT_L70_
+PRO	PUT_L70				;---------- PRO PUT
+PRMS					;    debut parametrage
+	PRM ITEM_ofs				; in
+	PRM FORE_ofs				; in
+	PRM AFT_ofs				; in
+	PRM EXP_ofs				; in
+	PRM GFP_ofs
+endPRMS					;    fin parametrage
+ELB 1					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	La  1,	-GFP_ofs				; propagation GFP generique
+	Ld  1,	-EXP_ofs
+	Ld  1,	-AFT_ofs
+	Ld  1,	-FORE_ofs
+	LVA 1,	-ITEM_ofs
+	La 1,	-GFP_ofs
+	La ,	-NUM__ld_ofs
+	CALLI
+	LVA 0,	STANDARD.TEXT_IO.DEFAULT_OUTPUT_disp
+	CALL	STANDARD.TEXT_IO.FLOAT_IO. ,PUT_L69
+ret_lbl:
+	UNLINK 1
+	RTD	prm_siz
+excep:
+endPRO					;---------- end PRO PUT
+end if
+
+if defined GET_L71_
+PRO	GET_L71				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM FROM_ofs				; in
+	PRM ITEM_ofs				; out
+	PRM LAST_ofs				; out
+	PRM GFP_ofs
+endPRMS					;    fin parametrage
+ELB 1					;    BODY ELAB
+VAR POS_disp, d				; variable entiere
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STRING.FST_1
+	Sd  1,	POS_disp
+
+VAR VAL_disp, q				; variable flottante
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	0.0
+	Sq  1,	VAL_disp
+
+VAR FRAC_disp, q				; variable flottante
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	0.1
+	Sq  1,	FRAC_disp
+
+VAR NEG_disp, d				; variable bool char enum
+	LI	0
+	Sb  1,	NEG_disp
+
+VAR IN_FRAC_disp, d				; variable bool char enum
+	LI	0
+	Sb  1,	IN_FRAC_disp
+
+VAR EXP_VAL_disp, d				; variable entiere
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	Sd  1,	EXP_VAL_disp
+
+VAR EXP_NEG_disp, d				; variable bool char enum
+	LI	0
+	Sb  1,	EXP_NEG_disp
+
+VAR DONE_disp, d				; variable bool char enum
+	LI	0
+	Sb  1,	DONE_disp
+
+VAR CH_disp, d				; variable bool char enum
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+LOOP__29:
+	Ld 1,	POS_disp
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STRING.LST_1
+	CLE
+	DUP
+	BF	L428
+	DROP
+	LVA	1, -FROM_ofs
+	LIa	, , 0				; array data start address on stack
+	Ld 1,	POS_disp
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
+	SUB
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	LI	32
+	CEQ
+	DUP
+	BT	L429
+	DROP
+	LVA	1, -FROM_ofs
+	LIa	, , 0				; array data start address on stack
+	Ld 1,	POS_disp
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
+	SUB
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	LI	 9
+	CEQ
+L429:
+L428:
+	BF	L427
+	Ld 1,	POS_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd  1,	POS_disp
+	BRA	LOOP__29
+L427:					; post loop LOOP__29
+					; debut if
+	Ld 1,	POS_disp
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STRING.LST_1
+	CLE
+	BF	L431
+	LVA	1, -FROM_ofs
+	LIa	, , 0				; array data start address on stack
+	Ld 1,	POS_disp
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
+	SUB
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	Sb  1,	CH_disp
+					; debut if
+	Lb 1,	CH_disp
+	LI	45
+	CEQ
+	BF	L433
+	LI	1
+	Sb  1,	NEG_disp
+	Ld 1,	POS_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd  1,	POS_disp
+	BRA	L432
+L433:
+	Lb 1,	CH_disp
+	LI	43
+	CEQ
+	BF	L434
+	Ld 1,	POS_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd  1,	POS_disp
+	BRA	L432
+L434:
+L432:					; post if
+	BRA	L430
+L431:
+L430:					; post if
+LOOP__30:
+	Lb 1,	DONE_disp
+	DUP
+	BT	L437
+	DROP
+	Ld 1,	POS_disp
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STRING.LST_1
+	CGT
+L437:
+	BT	L435
+	LVA	1, -FROM_ofs
+	LIa	, , 0				; array data start address on stack
+	Ld 1,	POS_disp
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
+	SUB
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	Sb  1,	CH_disp
+					; debut if
+	Lb 1,	CH_disp
+	LI	46
+	CEQ
+	BF	L439
+	LI	1
+	Sb  1,	IN_FRAC_disp
+	LVA  1,	-LAST_ofs
+	La
+	Ld 1,	POS_disp
+	SId  1,	-LAST_ofs
+	Ld 1,	POS_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd  1,	POS_disp
+	BRA	L438
+L439:
+	Lb 1,	CH_disp
+	LI	69
+	CEQ
+	DUP
+	BT	L441
+	DROP
+	Lb 1,	CH_disp
+	LI	101
+	CEQ
+L441:
+	BF	L440
+	LVA  1,	-LAST_ofs
+	La
+	Ld 1,	POS_disp
+	SId  1,	-LAST_ofs
+	Ld 1,	POS_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd  1,	POS_disp
+					; debut if
+	Ld 1,	POS_disp
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STRING.LST_1
+	CLE
+	BF	L443
+	LVA	1, -FROM_ofs
+	LIa	, , 0				; array data start address on stack
+	Ld 1,	POS_disp
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
+	SUB
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	Sb  1,	CH_disp
+					; debut if
+	Lb 1,	CH_disp
+	LI	45
+	CEQ
+	BF	L445
+	LI	1
+	Sb  1,	EXP_NEG_disp
+	LVA  1,	-LAST_ofs
+	La
+	Ld 1,	POS_disp
+	SId  1,	-LAST_ofs
+	Ld 1,	POS_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd  1,	POS_disp
+	BRA	L444
+L445:
+	Lb 1,	CH_disp
+	LI	43
+	CEQ
+	BF	L446
+	LVA  1,	-LAST_ofs
+	La
+	Ld 1,	POS_disp
+	SId  1,	-LAST_ofs
+	Ld 1,	POS_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd  1,	POS_disp
+	BRA	L444
+L446:
+L444:					; post if
+	BRA	L442
+L443:
+L442:					; post if
+LOOP__31:
+	Ld 1,	POS_disp
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STRING.LST_1
+	CGT
+	BT	L447
+	LVA	1, -FROM_ofs
+	LIa	, , 0				; array data start address on stack
+	Ld 1,	POS_disp
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
+	SUB
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	Sb  1,	CH_disp
+	Lb 1,	CH_disp
+	LI	48
+	CLT
+	DUP
+	BT	L450
+	DROP
+	Lb 1,	CH_disp
+	LI	57
+	CGT
+L450:
+	BT	L447
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	10
+	Ld 1,	EXP_VAL_disp
+	MUL
+	Lb 1,	CH_disp
+	ADD
+	LI	48
+	SUB
+	Sd  1,	EXP_VAL_disp
+	LVA  1,	-LAST_ofs
+	La
+	Ld 1,	POS_disp
+	SId  1,	-LAST_ofs
+	Ld 1,	POS_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd  1,	POS_disp
+	BRA	LOOP__31
+L447:					; post loop LOOP__31
+	LI	1
+	Sb  1,	DONE_disp
+	BRA	L438
+L440:
+	Lb 1,	CH_disp
+	LI	48
+	CGE
+	DUP
+	BF	L452
+	DROP
+	Lb 1,	CH_disp
+	LI	57
+	CLE
+L452:
+	BF	L451
+					; debut if
+	Lb 1,	IN_FRAC_disp
+	BF	L454
+	LVA  1,	VAL_disp
+	LVA 1,	VAL_disp
+	La 1,	-GFP_ofs
+	La ,	-NUM__ld_ofs
+	CALLI
+	LVA 1,	FRAC_disp
+	La 1,	-GFP_ofs
+	La ,	-NUM__ld_ofs
+	CALLI
+	Lb 1,	CH_disp
+	LI	48
+	SUB
+; CODE CONVERSION SOURCE DN_UNIVERSAL_INTEGER TARGET DN_FLOAT
+	CVTIF					; CODE_CONVERSION FLOAT TARGET FROM DN_UNIVERSAL_INTEGER
+	FMUL
+	FADD
+	Sq  1,	VAL_disp
+	LVA  1,	FRAC_disp
+	LVA 1,	FRAC_disp
+	La 1,	-GFP_ofs
+	La ,	-NUM__ld_ofs
+	CALLI
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	10.0
+	FDIV
+	Sq  1,	FRAC_disp
+	BRA	L453
+L454:
+	LVA  1,	VAL_disp
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	10.0
+	LVA 1,	VAL_disp
+	La 1,	-GFP_ofs
+	La ,	-NUM__ld_ofs
+	CALLI
+	FMUL
+	Lb 1,	CH_disp
+	LI	48
+	SUB
+; CODE CONVERSION SOURCE DN_UNIVERSAL_INTEGER TARGET DN_FLOAT
+	CVTIF					; CODE_CONVERSION FLOAT TARGET FROM DN_UNIVERSAL_INTEGER
+	FADD
+	Sq  1,	VAL_disp
+L453:					; post if
+	LVA  1,	-LAST_ofs
+	La
+	Ld 1,	POS_disp
+	SId  1,	-LAST_ofs
+	Ld 1,	POS_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd  1,	POS_disp
+	BRA	L438
+L451:
+	LI	1
+	Sb  1,	DONE_disp
+L438:					; post if
+	BRA	LOOP__30
+L435:					; post loop LOOP__30
+					; debut if
+	Lb 1,	EXP_NEG_disp
+	BF	L456
+VAR	JL458_disp, d				; compteur boucle LOOP__32
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd  1,	JL458_disp
+VAR	LMT_JL458_disp, d			; limite boucle LOOP__32
+	Ld 1,	EXP_VAL_disp
+	Sd  1,	LMT_JL458_disp
+	Ld  1,	JL458_disp				; test null range LOOP__32
+	Ld  1,	LMT_JL458_disp
+	CGT
+	BT	L457
+LOOP__32:					; corps boucle LOOP__32
+	LVA  1,	VAL_disp
+	LVA 1,	VAL_disp
+	La 1,	-GFP_ofs
+	La ,	-NUM__ld_ofs
+	CALLI
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	10.0
+	FDIV
+	Sq  1,	VAL_disp
+	Ld  1,	JL458_disp				; test de sortie LOOP__32
+	Ld  1,	LMT_JL458_disp
+	CEQ
+	BT	L457
+	Ld  1,	JL458_disp				; mise a jour compteur LOOP__32
+	INC
+	Sd  1,	JL458_disp
+	BRA	LOOP__32				; iteration suivante LOOP__32
+L457:					; post loop LOOP__32
+	BRA	L455
+L456:
+VAR	JL460_disp, d				; compteur boucle LOOP__33
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd  1,	JL460_disp
+VAR	LMT_JL460_disp, d			; limite boucle LOOP__33
+	Ld 1,	EXP_VAL_disp
+	Sd  1,	LMT_JL460_disp
+	Ld  1,	JL460_disp				; test null range LOOP__33
+	Ld  1,	LMT_JL460_disp
+	CGT
+	BT	L459
+LOOP__33:					; corps boucle LOOP__33
+	LVA  1,	VAL_disp
+	LVA 1,	VAL_disp
+	La 1,	-GFP_ofs
+	La ,	-NUM__ld_ofs
+	CALLI
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	10.0
+	FMUL
+	Sq  1,	VAL_disp
+	Ld  1,	JL460_disp				; test de sortie LOOP__33
+	Ld  1,	LMT_JL460_disp
+	CEQ
+	BT	L459
+	Ld  1,	JL460_disp				; mise a jour compteur LOOP__33
+	INC
+	Sd  1,	JL460_disp
+	BRA	LOOP__33				; iteration suivante LOOP__33
+L459:					; post loop LOOP__33
+L455:					; post if
+					; debut if
+	Lb 1,	NEG_disp
+	BF	L462
+	LVA  1,	-ITEM_ofs
+	La
+	LVA 1,	VAL_disp
+	La 1,	-GFP_ofs
+	La ,	-NUM__ld_ofs
+	CALLI
+	FNEG
+	La  1,	-GFP_ofs
+	La ,	-NUM__st_ofs
+	CALLI
+	BRA	L461
+L462:
+	LVA  1,	-ITEM_ofs
+	La
+	LVA 1,	VAL_disp
+	La 1,	-GFP_ofs
+	La ,	-NUM__ld_ofs
+	CALLI
+	La  1,	-GFP_ofs
+	La ,	-NUM__st_ofs
+	CALLI
+L461:					; post if
+ret_lbl:
+	UNLINK 1
+	RTD	prm_siz
+excep:
+endPRO					;---------- end PRO GET
+end if
+
+if defined PUT_L72_
+PRO	PUT_L72				;---------- PRO PUT
+PRMS					;    debut parametrage
+	PRM TO_ofs				; out
+	PRM ITEM_ofs				; in
+	PRM AFT_ofs				; in
+	PRM EXP_ofs				; in
+	PRM GFP_ofs
+endPRMS					;    fin parametrage
+ELB 1					;    BODY ELAB
+STRING = 'STRING'
+namespace STRING				; array var constrained array type info
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+VAR COMP_SIZ, d
+VAR FST_1, d
+VAR LST_1, d
+	LI	8
+	Sd	1, COMP_SIZ
+	Ld	1, COMP_SIZ
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd	1, FST_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	80
+	Sd	1, LST_1
+	Ld	1, LST_1
+	INC
+	Ld	1, FST_1
+	SUB
+	MUL
+	Sd	1, SIZ
+  virtual at 4
+COMP_SIZ = $
+	rd 1 
+FST_1 = $
+	rd 1 
+LST_1 = $
+	rd 1 
+  end virtual
+end namespace
+VAR IMAGE_disp, q				; variable array : pointeur aux data
+VAR IMAGE__u, q				; variable array : useinfo pointeur au rec info
+	La 1, STRING.use__info
+	Sa	1, IMAGE__u				; array info ptr at __u
+	Ld	1, STRING.SIZ
+	LI	8
+	DIV
+	CO_VAR
+	Sa	1, IMAGE_disp				; array data ptr at _disp
+
+VAR LEN_disp, d				; variable entiere
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	Sd  1,	LEN_disp
+
+VAR POS_disp, d				; variable entiere
+
+VAR PAD_disp, d				; variable entiere
+
+VAR VAL_disp, q				; variable flottante
+	LVA  1,	-ITEM_ofs
+	La  1,	-GFP_ofs
+	La ,	-NUM__ld_ofs
+	CALLI
+; CODE CONVERSION SOURCE DN_FLOAT TARGET DN_FLOAT
+	Sq  1,	VAL_disp
+
+VAR ROUNDING_disp, q			; variable flottante
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	0.5
+	Sq  1,	ROUNDING_disp
+
+VAR FRC_PART_disp, q			; variable flottante
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	0.0
+	Sq  1,	FRC_PART_disp
+
+VAR IS_NEGATIVE_disp, d			; variable bool char enum
+	LI	0
+	Sb  1,	IS_NEGATIVE_disp
+
+VAR BAD_LAYOUT_disp, d			; variable bool char enum
+	LI	0
+	Sb  1,	BAD_LAYOUT_disp
+
+VAR DIGIT_disp, d				; variable entiere
+
+VAR IPART_disp, q				; variable entiere
+
+VAR IPART_WORK_disp, q			; variable entiere
+
+STRING = 'STRING'
+namespace STRING				; array var constrained array type info
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+VAR COMP_SIZ, d
+VAR FST_1, d
+VAR LST_1, d
+	LI	8
+	Sd	1, COMP_SIZ
+	Ld	1, COMP_SIZ
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd	1, FST_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	40
+	Sd	1, LST_1
+	Ld	1, LST_1
+	INC
+	Ld	1, FST_1
+	SUB
+	MUL
+	Sd	1, SIZ
+  virtual at 4
+COMP_SIZ = $
+	rd 1 
+FST_1 = $
+	rd 1 
+LST_1 = $
+	rd 1 
+  end virtual
+end namespace
+VAR IBUF_disp, q				; variable array : pointeur aux data
+VAR IBUF__u, q				; variable array : useinfo pointeur au rec info
+	La 1, STRING.use__info
+	Sa	1, IBUF__u				; array info ptr at __u
+	Ld	1, STRING.SIZ
+	LI	8
+	DIV
+	CO_VAR
+	Sa	1, IBUF_disp				; array data ptr at _disp
+
+VAR NB_disp, d				; variable entiere
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	Sd  1,	NB_disp
+
+VAR E_disp, d				; variable entiere
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	Sd  1,	E_disp
+
+
+if defined FLOOR_POS_L463_
+PRO	FLOOR_POS_L463				;---------- PRO FLOOR_POS
+PRMS					;    debut parametrage
+	PRM X_ofs				; in
+	PRM GFP_ofs
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 2					;    BODY ELAB
+VAR R_disp, q				; variable entiere
+	Lq  2,	-X_ofs
+; CODE CONVERSION SOURCE DN_FLOAT TARGET DN_INTEGER
+	CVTFI
+	Sq  2,	R_disp
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+					; debut if
+	Lq 2,	R_disp
+; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_FLOAT
+	CVTIF					; CODE_CONVERSION FLOAT TARGET FROM DN_INTEGER
+	Lq  2,	-X_ofs
+	FCGT
+	BF	L465
+	Lq 2,	R_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	SUB
+	Sq  2,	R_disp
+	BRA	L464
+L465:
+L464:					; post if
+; CODE_RETURN : EXPR TYPE = DN_INTEGER
+	Lq 2,	R_disp
+	Sq  2,	-result__ofs
+	BRA ret_lbl
+ret_lbl:
+	UNLINK 2
+	RTD	prm_siz-8
+excep:
+endPRO					;---------- end PRO FLOOR_POS
+end if
+
+if defined EMIT_L466_
+PRO	EMIT_L466				;---------- PRO EMIT
+PRMS					;    debut parametrage
+	PRM CH_ofs				; in
+	PRM GFP_ofs
+endPRMS					;    fin parametrage
+ELB 2					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+					; debut if
+	Ld 1,	STANDARD.TEXT_IO.FLOAT_IO.PUT_L72.LEN_disp
+	LId	1, IMAGE__u, STRING.LST_1
+	CLT
+	BF	L468
+	Ld 1,	STANDARD.TEXT_IO.FLOAT_IO.PUT_L72.LEN_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd  1,	LEN_disp
+	La	 1, IMAGE_disp				; array data start address on stack
+	Ld 1,	STANDARD.TEXT_IO.FLOAT_IO.PUT_L72.LEN_disp
+	LId	1, IMAGE__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, IMAGE__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb  2,	-CH_ofs
+	Sb
+	BRA	L467
+L468:
+	LI	1
+	Sb  1,	BAD_LAYOUT_disp
+L467:					; post if
+ret_lbl:
+	UNLINK 2
+	RTD	prm_siz
+excep:
+endPRO					;---------- end PRO EMIT
+end if
+
+if defined EMIT_FRACTION_L469_
+PRO	EMIT_FRACTION_L469			;---------- PRO EMIT_FRACTION
+PRMS					;    debut parametrage
+	PRM FRACTION_ofs				; in
+	PRM GFP_ofs
+endPRMS					;    fin parametrage
+ELB 2					;    BODY ELAB
+VAR F_disp, q				; variable flottante
+	Lq  2,	-FRACTION_ofs
+	Sq  2,	F_disp
+
+VAR D_disp, d				; variable entiere
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+VAR	KL471_disp, d				; compteur boucle LOOP__34
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd  2,	KL471_disp
+VAR	LMT_KL471_disp, d			; limite boucle LOOP__34
+	Ld  1,	-AFT_ofs
+	Sd  2,	LMT_KL471_disp
+	Ld  2,	KL471_disp				; test null range LOOP__34
+	Ld  2,	LMT_KL471_disp
+	CGT
+	BT	L470
+LOOP__34:					; corps boucle LOOP__34
+	Lq 2,	F_disp
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	10.0
+	FMUL
+	Sq  2,	F_disp
+	LI	0					; lieu resultat sur pile
+	La  1,	-GFP_ofs				; propagation GFP generique
+	Lq 2,	F_disp
+	CALL	STANDARD.TEXT_IO.FLOAT_IO.PUT_L72. ,FLOOR_POS_L463
+; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
+	Sd  2,	D_disp
+					; debut if
+	Ld 2,	D_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	9
+	CGT
+	BF	L473
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	9
+	Sd  2,	D_disp
+	BRA	L472
+L473:
+	Ld 2,	D_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	CLT
+	BF	L474
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	Sd  2,	D_disp
+	BRA	L472
+L474:
+L472:					; post if
+	La  1,	-GFP_ofs				; propagation GFP generique
+	LI	48
+	Ld 2,	D_disp
+	ADD
+	CALL	STANDARD.TEXT_IO.FLOAT_IO.PUT_L72. ,EMIT_L466
+	Lq 2,	F_disp
+	Ld 2,	D_disp
+; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_FLOAT
+	CVTIF					; CODE_CONVERSION FLOAT TARGET FROM DN_INTEGER
+	FSUB
+	Sq  2,	F_disp
+	Ld  2,	KL471_disp				; test de sortie LOOP__34
+	Ld  2,	LMT_KL471_disp
+	CEQ
+	BT	L470
+	Ld  2,	KL471_disp				; mise a jour compteur LOOP__34
+	INC
+	Sd  2,	KL471_disp
+	BRA	LOOP__34				; iteration suivante LOOP__34
+L470:					; post loop LOOP__34
+ret_lbl:
+	UNLINK 2
+	RTD	prm_siz
+excep:
+endPRO					;---------- end PRO EMIT_FRACTION
+end if
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+					; debut if
+	Lq 1,	VAL_disp
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	0.0
+	FCLT
+	BF	L476
+	LI	1
+	Sb  1,	IS_NEGATIVE_disp
+	Lq 1,	VAL_disp
+	FNEG
+	Sq  1,	VAL_disp
+	BRA	L475
+L476:
+L475:					; post if
+					; debut if
+	Lb 1,	IS_NEGATIVE_disp
+	BF	L478
+	La  1,	-GFP_ofs				; propagation GFP generique
+	LI	45
+	CALL	STANDARD.TEXT_IO.FLOAT_IO.PUT_L72. ,EMIT_L466
+	BRA	L477
+L478:
+L477:					; post if
+					; debut if
+	Ld  1,	-EXP_ofs
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	CLE
+	BF	L480
+VAR	KL482_disp, d				; compteur boucle LOOP__35
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd  1,	KL482_disp
+VAR	LMT_KL482_disp, d			; limite boucle LOOP__35
+	Ld  1,	-AFT_ofs
+	Sd  1,	LMT_KL482_disp
+	Ld  1,	KL482_disp				; test null range LOOP__35
+	Ld  1,	LMT_KL482_disp
+	CGT
+	BT	L481
+LOOP__35:					; corps boucle LOOP__35
+	Lq 1,	ROUNDING_disp
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	10.0
+	FDIV
+	Sq  1,	ROUNDING_disp
+	Ld  1,	KL482_disp				; test de sortie LOOP__35
+	Ld  1,	LMT_KL482_disp
+	CEQ
+	BT	L481
+	Ld  1,	KL482_disp				; mise a jour compteur LOOP__35
+	INC
+	Sd  1,	KL482_disp
+	BRA	LOOP__35				; iteration suivante LOOP__35
+L481:					; post loop LOOP__35
+					; debut if
+	Lq 1,	VAL_disp
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	0.0
+	FCNE
+	BF	L484
+	Lq 1,	VAL_disp
+	Lq 1,	ROUNDING_disp
+	FADD
+	Sq  1,	VAL_disp
+	BRA	L483
+L484:
+L483:					; post if
+	LI	0					; lieu resultat sur pile
+	La  1,	-GFP_ofs				; propagation GFP generique
+	Lq 1,	VAL_disp
+	CALL	STANDARD.TEXT_IO.FLOAT_IO.PUT_L72. ,FLOOR_POS_L463
+	Sq  1,	IPART_disp
+	Lq 1,	VAL_disp
+	Lq 1,	IPART_disp
+; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_FLOAT
+	CVTIF					; CODE_CONVERSION FLOAT TARGET FROM DN_INTEGER
+	FSUB
+	Sq  1,	FRC_PART_disp
+	Lq 1,	IPART_disp
+	Sq  1,	IPART_WORK_disp
+					; debut if
+	Lq 1,	IPART_WORK_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	CEQ
+	BF	L486
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd  1,	NB_disp
+	La	 1, IBUF_disp				; array data start address on stack
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	LId	1, IBUF__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, IBUF__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	LI	48
+	Sb
+	BRA	L485
+L486:
+LOOP__36:
+	Lq 1,	IPART_WORK_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	CGT
+	BF	L487
+	Ld 1,	NB_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd  1,	NB_disp
+	La	 1, IBUF_disp				; array data start address on stack
+	Ld 1,	NB_disp
+	LId	1, IBUF__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, IBUF__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	LI	48
+	Lq 1,	IPART_WORK_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	10
+	MODI
+; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
+	ADD
+	Sb
+	Lq 1,	IPART_WORK_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	10
+	DIV
+	Sq  1,	IPART_WORK_disp
+	BRA	LOOP__36
+L487:					; post loop LOOP__36
+L485:					; post if
+VAR	KL489_disp, d				; compteur boucle LOOP__37
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd  1,	KL489_disp
+VAR	LMT_KL489_disp, d			; limite boucle LOOP__37
+	Ld 1,	NB_disp
+	Sd  1,	LMT_KL489_disp
+	Ld  1,	KL489_disp				; test null range LOOP__37
+	Ld  1,	LMT_KL489_disp
+	CGT
+	BT	L488
+	Ld  1,	KL489_disp				; inversion range LOOP__37
+	Ld  1,	LMT_KL489_disp
+	Sd  1,	KL489_disp
+	Sd  1,	LMT_KL489_disp
+LOOP__37:					; corps boucle LOOP__37
+	La  1,	-GFP_ofs				; propagation GFP generique
+	La	 1, IBUF_disp				; array data start address on stack
+	Ld	1, KL489_disp
+	LId	1, IBUF__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, IBUF__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	CALL	STANDARD.TEXT_IO.FLOAT_IO.PUT_L72. ,EMIT_L466
+	Ld  1,	KL489_disp				; test de sortie LOOP__37
+	Ld  1,	LMT_KL489_disp
+	CEQ
+	BT	L488
+	Ld  1,	KL489_disp				; mise a jour compteur LOOP__37
+	DEC
+	Sd  1,	KL489_disp
+	BRA	LOOP__37				; iteration suivante LOOP__37
+L488:					; post loop LOOP__37
+	La  1,	-GFP_ofs				; propagation GFP generique
+	LI	46
+	CALL	STANDARD.TEXT_IO.FLOAT_IO.PUT_L72. ,EMIT_L466
+	La  1,	-GFP_ofs				; propagation GFP generique
+	Lq 1,	FRC_PART_disp
+	CALL	STANDARD.TEXT_IO.FLOAT_IO.PUT_L72. ,EMIT_FRACTION_L469
+	BRA	L479
+L480:
+					; debut if
+	Lq 1,	VAL_disp
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	0.0
+	FCNE
+	BF	L491
+LOOP__38:
+	Lq 1,	VAL_disp
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	10.0
+	FCGE
+	BF	L492
 	Lq 1,	VAL_disp
 ; CODE_NUMERIC_LITERAL DN_FLOAT
 	LIF	10.0
 	FDIV
 	Sq  1,	VAL_disp
-	Ld  1,	JL388_disp				; test de sortie LOOP__27
-	Ld  1,	LMT_JL388_disp
-	CEQ
-	BT	L387
-	Ld  1,	JL388_disp				; mise a jour compteur LOOP__27
-	INC
-	Sd  1,	JL388_disp
-	BRA	LOOP__27				; iteration suivante LOOP__27
-L387:					; post loop LOOP__27
-	BRA	L385
-L386:
-VAR	JL390_disp, d				; compteur boucle LOOP__28
+	Ld 1,	E_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
-	Sd  1,	JL390_disp
-VAR	LMT_JL390_disp, d			; limite boucle LOOP__28
-	Ld 1,	EXP_VAL_disp
-	Sd  1,	LMT_JL390_disp
-	Ld  1,	JL390_disp				; test null range LOOP__28
-	Ld  1,	LMT_JL390_disp
-	CGT
-	BT	L389
-LOOP__28:					; corps boucle LOOP__28
+	ADD
+	Sd  1,	E_disp
+	BRA	LOOP__38
+L492:					; post loop LOOP__38
+LOOP__39:
+	Lq 1,	VAL_disp
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	1.0
+	FCLT
+	BF	L493
 	Lq 1,	VAL_disp
 ; CODE_NUMERIC_LITERAL DN_FLOAT
 	LIF	10.0
 	FMUL
 	Sq  1,	VAL_disp
-	Ld  1,	JL390_disp				; test de sortie LOOP__28
-	Ld  1,	LMT_JL390_disp
+	Ld 1,	E_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	SUB
+	Sd  1,	E_disp
+	BRA	LOOP__39
+L493:					; post loop LOOP__39
+	BRA	L490
+L491:
+L490:					; post if
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	0.5
+	Sq  1,	ROUNDING_disp
+VAR	KL495_disp, d				; compteur boucle LOOP__40
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd  1,	KL495_disp
+VAR	LMT_KL495_disp, d			; limite boucle LOOP__40
+	Ld  1,	-AFT_ofs
+	Sd  1,	LMT_KL495_disp
+	Ld  1,	KL495_disp				; test null range LOOP__40
+	Ld  1,	LMT_KL495_disp
+	CGT
+	BT	L494
+LOOP__40:					; corps boucle LOOP__40
+	Lq 1,	ROUNDING_disp
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	10.0
+	FDIV
+	Sq  1,	ROUNDING_disp
+	Ld  1,	KL495_disp				; test de sortie LOOP__40
+	Ld  1,	LMT_KL495_disp
 	CEQ
-	BT	L389
-	Ld  1,	JL390_disp				; mise a jour compteur LOOP__28
+	BT	L494
+	Ld  1,	KL495_disp				; mise a jour compteur LOOP__40
 	INC
-	Sd  1,	JL390_disp
-	BRA	LOOP__28				; iteration suivante LOOP__28
-L389:					; post loop LOOP__28
-L385:					; post if
+	Sd  1,	KL495_disp
+	BRA	LOOP__40				; iteration suivante LOOP__40
+L494:					; post loop LOOP__40
+					; debut if
+	Lq 1,	VAL_disp
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	0.0
+	FCNE
+	BF	L497
+	Lq 1,	VAL_disp
+	Lq 1,	ROUNDING_disp
+	FADD
+	Sq  1,	VAL_disp
+	BRA	L496
+L497:
+L496:					; post if
+					; debut if
+	Lq 1,	VAL_disp
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	10.0
+	FCGE
+	BF	L499
+	Lq 1,	VAL_disp
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	10.0
+	FDIV
+	Sq  1,	VAL_disp
+	Ld 1,	E_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd  1,	E_disp
+	BRA	L498
+L499:
+L498:					; post if
+	LI	0					; lieu resultat sur pile
+	La  1,	-GFP_ofs				; propagation GFP generique
+	Lq 1,	VAL_disp
+	CALL	STANDARD.TEXT_IO.FLOAT_IO.PUT_L72. ,FLOOR_POS_L463
+; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
+	Sd  1,	DIGIT_disp
+					; debut if
+	Ld 1,	DIGIT_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	9
+	CGT
+	BF	L501
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	9
+	Sd  1,	DIGIT_disp
+	BRA	L500
+L501:
+	Ld 1,	DIGIT_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	CLT
+	BF	L502
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	Sd  1,	DIGIT_disp
+	BRA	L500
+L502:
+L500:					; post if
+	La  1,	-GFP_ofs				; propagation GFP generique
+	LI	48
+	Ld 1,	DIGIT_disp
+	ADD
+	CALL	STANDARD.TEXT_IO.FLOAT_IO.PUT_L72. ,EMIT_L466
+	Lq 1,	VAL_disp
+	Ld 1,	DIGIT_disp
+; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_FLOAT
+	CVTIF					; CODE_CONVERSION FLOAT TARGET FROM DN_INTEGER
+	FSUB
+	Sq  1,	FRC_PART_disp
+	La  1,	-GFP_ofs				; propagation GFP generique
+	LI	46
+	CALL	STANDARD.TEXT_IO.FLOAT_IO.PUT_L72. ,EMIT_L466
+	La  1,	-GFP_ofs				; propagation GFP generique
+	Lq 1,	FRC_PART_disp
+	CALL	STANDARD.TEXT_IO.FLOAT_IO.PUT_L72. ,EMIT_FRACTION_L469
+	La  1,	-GFP_ofs				; propagation GFP generique
+	LI	69
+	CALL	STANDARD.TEXT_IO.FLOAT_IO.PUT_L72. ,EMIT_L466
+					; debut if
+	Ld 1,	E_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	CLT
+	BF	L504
+	La  1,	-GFP_ofs				; propagation GFP generique
+	LI	45
+	CALL	STANDARD.TEXT_IO.FLOAT_IO.PUT_L72. ,EMIT_L466
+	Ld 1,	E_disp
+	NEG
+	Sd  1,	E_disp
+	BRA	L503
+L504:
+	La  1,	-GFP_ofs				; propagation GFP generique
+	LI	43
+	CALL	STANDARD.TEXT_IO.FLOAT_IO.PUT_L72. ,EMIT_L466
+L503:					; post if
+namespace	BLOCK__41
+ELB 2					;    BODY ELAB
+STRING = 'STRING'
+namespace STRING				; array var constrained array type info
+VAR use__info, q
+VAR SIZ, d
+	LVA	2, SIZ
+	Sa	2, use__info
+VAR COMP_SIZ, d
+VAR FST_1, d
+VAR LST_1, d
+	LI	8
+	Sd	2, COMP_SIZ
+	Ld	2, COMP_SIZ
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd	2, FST_1
+	Ld  1,	-EXP_ofs
+	Sd	2, LST_1
+	Ld	2, LST_1
+	INC
+	Ld	2, FST_1
+	SUB
+	MUL
+	Sd	2, SIZ
+  virtual at 4
+COMP_SIZ = $
+	rd 1 
+FST_1 = $
+	rd 1 
+LST_1 = $
+	rd 1 
+  end virtual
+end namespace
+VAR EXP_STR_disp, q				; variable array : pointeur aux data
+VAR EXP_STR__u, q				; variable array : useinfo pointeur au rec info
+	La 2, STRING.use__info
+	Sa	2, EXP_STR__u				; array info ptr at __u
+	Ld	2, STRING.SIZ
+	LI	8
+	DIV
+	CO_VAR
+	Sa	2, EXP_STR_disp				; array data ptr at _disp
+
+VAR EVAL_disp, d				; variable entiere
+	Ld 1,	STANDARD.TEXT_IO.FLOAT_IO.PUT_L72.E_disp
+	Sd  2,	EVAL_disp
+
+VAR CHECK_disp, d				; variable entiere
+	Ld 1,	STANDARD.TEXT_IO.FLOAT_IO.PUT_L72.E_disp
+	Sd  2,	CHECK_disp
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+VAR	KL506_disp, d				; compteur boucle LOOP__45
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd  2,	KL506_disp
+VAR	LMT_KL506_disp, d			; limite boucle LOOP__45
+	Ld  1,	-EXP_ofs
+	Sd  2,	LMT_KL506_disp
+	Ld  2,	KL506_disp				; test null range LOOP__45
+	Ld  2,	LMT_KL506_disp
+	CGT
+	BT	L505
+LOOP__45:					; corps boucle LOOP__45
+	Ld 2,	CHECK_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	10
+	DIV
+	Sd  2,	CHECK_disp
+	Ld  2,	KL506_disp				; test de sortie LOOP__45
+	Ld  2,	LMT_KL506_disp
+	CEQ
+	BT	L505
+	Ld  2,	KL506_disp				; mise a jour compteur LOOP__45
+	INC
+	Sd  2,	KL506_disp
+	BRA	LOOP__45				; iteration suivante LOOP__45
+L505:					; post loop LOOP__45
+					; debut if
+	Ld 2,	CHECK_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	CNE
+	BF	L508
+	LI	1
+	Sb  1,	BAD_LAYOUT_disp
+	BRA	L507
+L508:
+L507:					; post if
+VAR	KL510_disp, d				; compteur boucle LOOP__46
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd  2,	KL510_disp
+VAR	LMT_KL510_disp, d			; limite boucle LOOP__46
+	Ld  1,	-EXP_ofs
+	Sd  2,	LMT_KL510_disp
+	Ld  2,	KL510_disp				; test null range LOOP__46
+	Ld  2,	LMT_KL510_disp
+	CGT
+	BT	L509
+	Ld  2,	KL510_disp				; inversion range LOOP__46
+	Ld  2,	LMT_KL510_disp
+	Sd  2,	KL510_disp
+	Sd  2,	LMT_KL510_disp
+LOOP__46:					; corps boucle LOOP__46
+	La	 2, EXP_STR_disp			; array data start address on stack
+	Ld	2, KL510_disp
+	LId	2, EXP_STR__u, STANDARD.STRING.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	2, EXP_STR__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	LI	48
+	Ld 2,	EVAL_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	10
+	MODI
+	ADD
+	Sb
+	Ld 2,	EVAL_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	10
+	DIV
+	Sd  2,	EVAL_disp
+	Ld  2,	KL510_disp				; test de sortie LOOP__46
+	Ld  2,	LMT_KL510_disp
+	CEQ
+	BT	L509
+	Ld  2,	KL510_disp				; mise a jour compteur LOOP__46
+	DEC
+	Sd  2,	KL510_disp
+	BRA	LOOP__46				; iteration suivante LOOP__46
+L509:					; post loop LOOP__46
+VAR	KL512_disp, d				; compteur boucle LOOP__47
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd  2,	KL512_disp
+VAR	LMT_KL512_disp, d			; limite boucle LOOP__47
+	Ld  1,	-EXP_ofs
+	Sd  2,	LMT_KL512_disp
+	Ld  2,	KL512_disp				; test null range LOOP__47
+	Ld  2,	LMT_KL512_disp
+	CGT
+	BT	L511
+LOOP__47:					; corps boucle LOOP__47
+	La  1,	-GFP_ofs				; propagation GFP generique
+	La	 2, EXP_STR_disp			; array data start address on stack
+	Ld	2, KL512_disp
+	LId	2, EXP_STR__u, STANDARD.STRING.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	2, EXP_STR__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	CALL	STANDARD.TEXT_IO.FLOAT_IO.PUT_L72. ,EMIT_L466
+	Ld  2,	KL512_disp				; test de sortie LOOP__47
+	Ld  2,	LMT_KL512_disp
+	CEQ
+	BT	L511
+	Ld  2,	KL512_disp				; mise a jour compteur LOOP__47
+	INC
+	Sd  2,	KL512_disp
+	BRA	LOOP__47				; iteration suivante LOOP__47
+L511:					; post loop LOOP__47
+	UNLINK 2
+endPRO
+L479:					; post if
+					; debut if
+	Lb 1,	BAD_LAYOUT_disp
+	DUP
+	BT	L515
+	DROP
+	Ld 1,	LEN_disp
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STRING.LST_1
+	INC
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STRING.FST_1
+	SUB
+	CGT
+L515:
+	BF	L514
+VAR	KL517_disp, d				; compteur boucle LOOP__42
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STRING.FST_1
+	Sd  1,	KL517_disp
+VAR	LMT_KL517_disp, d			; limite boucle LOOP__42
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STRING.LST_1
+	Sd  1,	LMT_KL517_disp
+	Ld  1,	KL517_disp				; test null range LOOP__42
+	Ld  1,	LMT_KL517_disp
+	CGT
+	BT	L516
+LOOP__42:					; corps boucle LOOP__42
+	LVA	1, -TO_ofs
+	LIa	, , 0				; array data start address on stack
+	Ld	1, KL517_disp
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
+	SUB
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	LI	42
+	Sb
+	Ld  1,	KL517_disp				; test de sortie LOOP__42
+	Ld  1,	LMT_KL517_disp
+	CEQ
+	BT	L516
+	Ld  1,	KL517_disp				; mise a jour compteur LOOP__42
+	INC
+	Sd  1,	KL517_disp
+	BRA	LOOP__42				; iteration suivante LOOP__42
+L516:					; post loop LOOP__42
+	BRA	L513
+L514:
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STRING.LST_1
+	INC
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STRING.FST_1
+	SUB
+	Ld 1,	LEN_disp
+	SUB
+	Sd  1,	PAD_disp
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STRING.FST_1
+	Sd  1,	POS_disp
+VAR	KL519_disp, d				; compteur boucle LOOP__43
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd  1,	KL519_disp
+VAR	LMT_KL519_disp, d			; limite boucle LOOP__43
+	Ld 1,	PAD_disp
+	Sd  1,	LMT_KL519_disp
+	Ld  1,	KL519_disp				; test null range LOOP__43
+	Ld  1,	LMT_KL519_disp
+	CGT
+	BT	L518
+LOOP__43:					; corps boucle LOOP__43
+	LVA	1, -TO_ofs
+	LIa	, , 0				; array data start address on stack
+	Ld 1,	POS_disp
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
+	SUB
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	LI	32
+	Sb
+	Ld 1,	POS_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd  1,	POS_disp
+	Ld  1,	KL519_disp				; test de sortie LOOP__43
+	Ld  1,	LMT_KL519_disp
+	CEQ
+	BT	L518
+	Ld  1,	KL519_disp				; mise a jour compteur LOOP__43
+	INC
+	Sd  1,	KL519_disp
+	BRA	LOOP__43				; iteration suivante LOOP__43
+L518:					; post loop LOOP__43
+VAR	KL521_disp, d				; compteur boucle LOOP__44
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd  1,	KL521_disp
+VAR	LMT_KL521_disp, d			; limite boucle LOOP__44
+	Ld 1,	LEN_disp
+	Sd  1,	LMT_KL521_disp
+	Ld  1,	KL521_disp				; test null range LOOP__44
+	Ld  1,	LMT_KL521_disp
+	CGT
+	BT	L520
+LOOP__44:					; corps boucle LOOP__44
+	LVA	1, -TO_ofs
+	LIa	, , 0				; array data start address on stack
+	Ld 1,	POS_disp
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
+	SUB
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	La	 1, IMAGE_disp				; array data start address on stack
+	Ld	1, KL521_disp
+	LId	1, IMAGE__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, IMAGE__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	Sb
+	Ld 1,	POS_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd  1,	POS_disp
+	Ld  1,	KL521_disp				; test de sortie LOOP__44
+	Ld  1,	LMT_KL521_disp
+	CEQ
+	BT	L520
+	Ld  1,	KL521_disp				; mise a jour compteur LOOP__44
+	INC
+	Sd  1,	KL521_disp
+	BRA	LOOP__44				; iteration suivante LOOP__44
+L520:					; post loop LOOP__44
+L513:					; post if
+ret_lbl:
+	UNLINK 1
+	RTD	prm_siz
+excep:
+endPRO					;---------- end PRO PUT
+end if
+begin:					;---------- package BDY INSTRUCTIONS
+end namespace 				;---------- end generic package BDY FLOAT_IO
+FIXED_IO = 'FIXED_IO'
+namespace FIXED_IO
+					;---------- GENERIC PACKAGE BODY ----------
+
+PRMS
+	PRM NUM__u_ofs
+	PRM NUM__ld_ofs
+	PRM NUM__st_ofs
+	PRM NUM__inadr_ofs
+	PRM NUM__outadr_ofs
+endPRMS
+					;    BODY ELAB
+
+if defined GET_L73_
+PRO	GET_L73				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM ITEM_ofs				; out
+	PRM WIDTH_ofs				; in
+	PRM GFP_ofs
+endPRMS					;    fin parametrage
+ELB 1					;    BODY ELAB
+VAR CH_disp, d				; variable bool char enum
+
+VAR VAL_disp, q				; variable flottante
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	0.0
+	Sq  1,	VAL_disp
+
+VAR FRAC_disp, q				; variable flottante
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	0.1
+	Sq  1,	FRAC_disp
+
+VAR NEG_disp, d				; variable bool char enum
+	LI	0
+	Sb  1,	NEG_disp
+
+VAR IN_FRAC_disp, d				; variable bool char enum
+	LI	0
+	Sb  1,	IN_FRAC_disp
+
+VAR EXP_VAL_disp, d				; variable entiere
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	Sd  1,	EXP_VAL_disp
+
+VAR EXP_NEG_disp, d				; variable bool char enum
+	LI	0
+	Sb  1,	EXP_NEG_disp
+
+VAR CHARS_READ_disp, d			; variable entiere
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	Sd  1,	CHARS_READ_disp
+
+VAR DONE_disp, d				; variable bool char enum
+	LI	0
+	Sb  1,	DONE_disp
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+					; debut if
+	Ld  1,	-WIDTH_ofs
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	CEQ
+	BF	L523
+LOOP__48:
+	La 1, -FILE_ofs
+	LIb	, 0, STANDARD.TEXT_IO.FILE_TYPE.AT_END_OF_FILE
+	BT	L524
+	LVA  1,	CH_disp
+	La  1,	-FILE_ofs
+	CALL	STANDARD.TEXT_IO. ,GET_L49
+	La 1, -FILE_ofs
+	LIb	, 0, STANDARD.TEXT_IO.FILE_TYPE.AT_END_OF_FILE
+	BT	L524
+	Lb 1,	CH_disp
+	LI	32
+	CNE
+	DUP
+	BF	L530
+	DROP
+	Lb 1,	CH_disp
+	LI	 9
+	CNE
+L530:
+	DUP
+	BF	L529
+	DROP
+	Lb 1,	CH_disp
+	LI	 10
+	CNE
+L529:
+	DUP
+	BF	L528
+	DROP
+	Lb 1,	CH_disp
+	LI	 13
+	CNE
+L528:
+	BT	L524
+	BRA	LOOP__48
+L524:					; post loop LOOP__48
+	BRA	L522
+L523:
+	LVA  1,	CH_disp
+	La  1,	-FILE_ofs
+	CALL	STANDARD.TEXT_IO. ,GET_L49
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	Sd  1,	CHARS_READ_disp
+L522:					; post if
+					; debut if
+	La 1, -FILE_ofs
+	LIb	, 0, STANDARD.TEXT_IO.FILE_TYPE.AT_END_OF_FILE
+	LI	1
+	OUX
+	DUP
+	BF	L533
+	DROP
+	Lb 1,	CH_disp
+	LI	45
+	CEQ
+L533:
+	BF	L532
+	LI	1
+	Sb  1,	NEG_disp
+					; debut if
+	Ld  1,	-WIDTH_ofs
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	CGT
+	BF	L535
+	Ld 1,	CHARS_READ_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd  1,	CHARS_READ_disp
+					; debut if
+	Ld 1,	CHARS_READ_disp
+	Ld  1,	-WIDTH_ofs
+	CGE
+	BF	L537
+	LI	1
+	Sb  1,	DONE_disp
+	BRA	L536
+L537:
+	LVA  1,	CH_disp
+	La  1,	-FILE_ofs
+	CALL	STANDARD.TEXT_IO. ,GET_L49
+L536:					; post if
+	BRA	L534
+L535:
+	LVA  1,	CH_disp
+	La  1,	-FILE_ofs
+	CALL	STANDARD.TEXT_IO. ,GET_L49
+L534:					; post if
+	BRA	L531
+L532:
+	La 1, -FILE_ofs
+	LIb	, 0, STANDARD.TEXT_IO.FILE_TYPE.AT_END_OF_FILE
+	LI	1
+	OUX
+	DUP
+	BF	L539
+	DROP
+	Lb 1,	CH_disp
+	LI	43
+	CEQ
+L539:
+	BF	L538
+					; debut if
+	Ld  1,	-WIDTH_ofs
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	CGT
+	BF	L541
+	Ld 1,	CHARS_READ_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd  1,	CHARS_READ_disp
+					; debut if
+	Ld 1,	CHARS_READ_disp
+	Ld  1,	-WIDTH_ofs
+	CGE
+	BF	L543
+	LI	1
+	Sb  1,	DONE_disp
+	BRA	L542
+L543:
+	LVA  1,	CH_disp
+	La  1,	-FILE_ofs
+	CALL	STANDARD.TEXT_IO. ,GET_L49
+L542:					; post if
+	BRA	L540
+L541:
+	LVA  1,	CH_disp
+	La  1,	-FILE_ofs
+	CALL	STANDARD.TEXT_IO. ,GET_L49
+L540:					; post if
+	BRA	L531
+L538:
+L531:					; post if
+LOOP__49:
+	Lb 1,	DONE_disp
+	DUP
+	BT	L546
+	DROP
+	La 1, -FILE_ofs
+	LIb	, 0, STANDARD.TEXT_IO.FILE_TYPE.AT_END_OF_FILE
+L546:
+	BT	L544
+					; debut if
+	Ld  1,	-WIDTH_ofs
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	CGT
+	DUP
+	BF	L549
+	DROP
+	Ld 1,	CHARS_READ_disp
+	Ld  1,	-WIDTH_ofs
+	CGE
+L549:
+	BF	L548
+	BRA	L544
+	BRA	L547
+L548:
+L547:					; post if
+					; debut if
+	Lb 1,	CH_disp
+	LI	46
+	CEQ
+	BF	L552
+	LI	1
+	Sb  1,	IN_FRAC_disp
+					; debut if
+	Ld  1,	-WIDTH_ofs
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	CGT
+	BF	L554
+	Ld 1,	CHARS_READ_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd  1,	CHARS_READ_disp
+					; debut if
+	Ld 1,	CHARS_READ_disp
+	Ld  1,	-WIDTH_ofs
+	CGE
+	BF	L556
+	LI	1
+	Sb  1,	DONE_disp
+	BRA	L555
+L556:
+	LVA  1,	CH_disp
+	La  1,	-FILE_ofs
+	CALL	STANDARD.TEXT_IO. ,GET_L49
+L555:					; post if
+	BRA	L553
+L554:
+	LVA  1,	CH_disp
+	La  1,	-FILE_ofs
+	CALL	STANDARD.TEXT_IO. ,GET_L49
+L553:					; post if
+	BRA	L551
+L552:
+	Lb 1,	CH_disp
+	LI	69
+	CEQ
+	DUP
+	BT	L558
+	DROP
+	Lb 1,	CH_disp
+	LI	101
+	CEQ
+L558:
+	BF	L557
+					; debut if
+	Ld  1,	-WIDTH_ofs
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	CGT
+	BF	L560
+	Ld 1,	CHARS_READ_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd  1,	CHARS_READ_disp
+					; debut if
+	Ld 1,	CHARS_READ_disp
+	Ld  1,	-WIDTH_ofs
+	CGE
+	BF	L562
+	LI	1
+	Sb  1,	DONE_disp
+	BRA	L561
+L562:
+	LVA  1,	CH_disp
+	La  1,	-FILE_ofs
+	CALL	STANDARD.TEXT_IO. ,GET_L49
+L561:					; post if
+	BRA	L559
+L560:
+	LVA  1,	CH_disp
+	La  1,	-FILE_ofs
+	CALL	STANDARD.TEXT_IO. ,GET_L49
+L559:					; post if
+					; debut if
+	Lb 1,	DONE_disp
+	LI	1
+	OUX
+	DUP
+	BF	L565
+	DROP
+	La 1, -FILE_ofs
+	LIb	, 0, STANDARD.TEXT_IO.FILE_TYPE.AT_END_OF_FILE
+	LI	1
+	OUX
+L565:
+	BF	L564
+					; debut if
+	Lb 1,	CH_disp
+	LI	45
+	CEQ
+	BF	L567
+	LI	1
+	Sb  1,	EXP_NEG_disp
+					; debut if
+	Ld  1,	-WIDTH_ofs
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	CGT
+	BF	L569
+	Ld 1,	CHARS_READ_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd  1,	CHARS_READ_disp
+					; debut if
+	Ld 1,	CHARS_READ_disp
+	Ld  1,	-WIDTH_ofs
+	CGE
+	BF	L571
+	LI	1
+	Sb  1,	DONE_disp
+	BRA	L570
+L571:
+	LVA  1,	CH_disp
+	La  1,	-FILE_ofs
+	CALL	STANDARD.TEXT_IO. ,GET_L49
+L570:					; post if
+	BRA	L568
+L569:
+	LVA  1,	CH_disp
+	La  1,	-FILE_ofs
+	CALL	STANDARD.TEXT_IO. ,GET_L49
+L568:					; post if
+	BRA	L566
+L567:
+	Lb 1,	CH_disp
+	LI	43
+	CEQ
+	BF	L572
+					; debut if
+	Ld  1,	-WIDTH_ofs
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	CGT
+	BF	L574
+	Ld 1,	CHARS_READ_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd  1,	CHARS_READ_disp
+					; debut if
+	Ld 1,	CHARS_READ_disp
+	Ld  1,	-WIDTH_ofs
+	CGE
+	BF	L576
+	LI	1
+	Sb  1,	DONE_disp
+	BRA	L575
+L576:
+	LVA  1,	CH_disp
+	La  1,	-FILE_ofs
+	CALL	STANDARD.TEXT_IO. ,GET_L49
+L575:					; post if
+	BRA	L573
+L574:
+	LVA  1,	CH_disp
+	La  1,	-FILE_ofs
+	CALL	STANDARD.TEXT_IO. ,GET_L49
+L573:					; post if
+	BRA	L566
+L572:
+L566:					; post if
+	BRA	L563
+L564:
+L563:					; post if
+LOOP__50:
+	Lb 1,	DONE_disp
+	DUP
+	BT	L579
+	DROP
+	La 1, -FILE_ofs
+	LIb	, 0, STANDARD.TEXT_IO.FILE_TYPE.AT_END_OF_FILE
+L579:
+	BT	L577
+	Lb 1,	CH_disp
+	LI	48
+	CLT
+	DUP
+	BT	L581
+	DROP
+	Lb 1,	CH_disp
+	LI	57
+	CGT
+L581:
+	BT	L577
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	10
+	Ld 1,	EXP_VAL_disp
+	MUL
+	Lb 1,	CH_disp
+	ADD
+	LI	48
+	SUB
+	Sd  1,	EXP_VAL_disp
+					; debut if
+	Ld  1,	-WIDTH_ofs
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	CGT
+	BF	L583
+	Ld 1,	CHARS_READ_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd  1,	CHARS_READ_disp
+					; debut if
+	Ld 1,	CHARS_READ_disp
+	Ld  1,	-WIDTH_ofs
+	CGE
+	BF	L585
+	LI	1
+	Sb  1,	DONE_disp
+	BRA	L584
+L585:
+	LVA  1,	CH_disp
+	La  1,	-FILE_ofs
+	CALL	STANDARD.TEXT_IO. ,GET_L49
+L584:					; post if
+	BRA	L582
+L583:
+	LVA  1,	CH_disp
+	La  1,	-FILE_ofs
+	CALL	STANDARD.TEXT_IO. ,GET_L49
+L582:					; post if
+	BRA	LOOP__50
+L577:					; post loop LOOP__50
+					; debut if
+	Ld  1,	-WIDTH_ofs
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	CEQ
+	DUP
+	BF	L589
+	DROP
+	La 1, -FILE_ofs
+	LIb	, 0, STANDARD.TEXT_IO.FILE_TYPE.AT_END_OF_FILE
+	LI	1
+	OUX
+L589:
+	DUP
+	BF	L588
+	DROP
+	Lb 1,	CH_disp
+	LI	48
+	CLT
+	DUP
+	BT	L590
+	DROP
+	Lb 1,	CH_disp
+	LI	57
+	CGT
+L590:
+L588:
+	BF	L587
+	La 1, -FILE_ofs
+	LIVA 	, 0, STANDARD.TEXT_IO.FILE_TYPE.LOOK_AHEAD
+	Lb 1,	CH_disp
+	Sb
+	La 1, -FILE_ofs
+	LIVA 	, 0, STANDARD.TEXT_IO.FILE_TYPE.HAS_LOOK_AHEAD
+	LI	1
+	Sb
+	BRA	L586
+L587:
+L586:					; post if
+	LI	1
+	Sb  1,	DONE_disp
+	BRA	L551
+L557:
+	Lb 1,	CH_disp
+	LI	48
+	CGE
+	DUP
+	BF	L592
+	DROP
+	Lb 1,	CH_disp
+	LI	57
+	CLE
+L592:
+	BF	L591
+					; debut if
+	Lb 1,	IN_FRAC_disp
+	BF	L594
+	Lq 1,	VAL_disp
+	Lq 1,	FRAC_disp
+	Lb 1,	CH_disp
+	LI	48
+	SUB
+; CODE CONVERSION SOURCE DN_UNIVERSAL_INTEGER TARGET DN_FLOAT
+	CVTIF					; CODE_CONVERSION FLOAT TARGET FROM DN_UNIVERSAL_INTEGER
+	FMUL
+	FADD
+	Sq  1,	VAL_disp
+	Lq 1,	FRAC_disp
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	10.0
+	FDIV
+	Sq  1,	FRAC_disp
+	BRA	L593
+L594:
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	10.0
+	Lq 1,	VAL_disp
+	FMUL
+	Lb 1,	CH_disp
+	LI	48
+	SUB
+; CODE CONVERSION SOURCE DN_UNIVERSAL_INTEGER TARGET DN_FLOAT
+	CVTIF					; CODE_CONVERSION FLOAT TARGET FROM DN_UNIVERSAL_INTEGER
+	FADD
+	Sq  1,	VAL_disp
+L593:					; post if
+					; debut if
+	Ld  1,	-WIDTH_ofs
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	CGT
+	BF	L596
+	Ld 1,	CHARS_READ_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd  1,	CHARS_READ_disp
+					; debut if
+	Ld 1,	CHARS_READ_disp
+	Ld  1,	-WIDTH_ofs
+	CGE
+	BF	L598
+	LI	1
+	Sb  1,	DONE_disp
+	BRA	L597
+L598:
+	LVA  1,	CH_disp
+	La  1,	-FILE_ofs
+	CALL	STANDARD.TEXT_IO. ,GET_L49
+L597:					; post if
+	BRA	L595
+L596:
+	LVA  1,	CH_disp
+	La  1,	-FILE_ofs
+	CALL	STANDARD.TEXT_IO. ,GET_L49
+L595:					; post if
+	BRA	L551
+L591:
+					; debut if
+	Ld  1,	-WIDTH_ofs
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	CEQ
+	BF	L600
+	La 1, -FILE_ofs
+	LIVA 	, 0, STANDARD.TEXT_IO.FILE_TYPE.LOOK_AHEAD
+	Lb 1,	CH_disp
+	Sb
+	La 1, -FILE_ofs
+	LIVA 	, 0, STANDARD.TEXT_IO.FILE_TYPE.HAS_LOOK_AHEAD
+	LI	1
+	Sb
+	BRA	L599
+L600:
+L599:					; post if
+	LI	1
+	Sb  1,	DONE_disp
+L551:					; post if
+	BRA	LOOP__49
+L544:					; post loop LOOP__49
+					; debut if
+	Lb 1,	EXP_NEG_disp
+	BF	L602
+VAR	JL604_disp, d				; compteur boucle LOOP__51
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd  1,	JL604_disp
+VAR	LMT_JL604_disp, d			; limite boucle LOOP__51
+	Ld 1,	EXP_VAL_disp
+	Sd  1,	LMT_JL604_disp
+	Ld  1,	JL604_disp				; test null range LOOP__51
+	Ld  1,	LMT_JL604_disp
+	CGT
+	BT	L603
+LOOP__51:					; corps boucle LOOP__51
+	Lq 1,	VAL_disp
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	10.0
+	FDIV
+	Sq  1,	VAL_disp
+	Ld  1,	JL604_disp				; test de sortie LOOP__51
+	Ld  1,	LMT_JL604_disp
+	CEQ
+	BT	L603
+	Ld  1,	JL604_disp				; mise a jour compteur LOOP__51
+	INC
+	Sd  1,	JL604_disp
+	BRA	LOOP__51				; iteration suivante LOOP__51
+L603:					; post loop LOOP__51
+	BRA	L601
+L602:
+VAR	JL606_disp, d				; compteur boucle LOOP__52
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd  1,	JL606_disp
+VAR	LMT_JL606_disp, d			; limite boucle LOOP__52
+	Ld 1,	EXP_VAL_disp
+	Sd  1,	LMT_JL606_disp
+	Ld  1,	JL606_disp				; test null range LOOP__52
+	Ld  1,	LMT_JL606_disp
+	CGT
+	BT	L605
+LOOP__52:					; corps boucle LOOP__52
+	Lq 1,	VAL_disp
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	10.0
+	FMUL
+	Sq  1,	VAL_disp
+	Ld  1,	JL606_disp				; test de sortie LOOP__52
+	Ld  1,	LMT_JL606_disp
+	CEQ
+	BT	L605
+	Ld  1,	JL606_disp				; mise a jour compteur LOOP__52
+	INC
+	Sd  1,	JL606_disp
+	BRA	LOOP__52				; iteration suivante LOOP__52
+L605:					; post loop LOOP__52
+L601:					; post if
 					; debut if
 	Lb 1,	NEG_disp
-	BF	L392
+	BF	L608
 	LVA  1,	-ITEM_ofs
 	La
 	Lq 1,	VAL_disp
@@ -5807,8 +8386,8 @@ L385:					; post if
 	La  1,	-GFP_ofs
 	La ,	-NUM__st_ofs
 	CALLI
-	BRA	L391
-L392:
+	BRA	L607
+L608:
 	LVA  1,	-ITEM_ofs
 	La
 	Lq 1,	VAL_disp
@@ -5825,7 +8404,7 @@ L392:
 	La  1,	-GFP_ofs
 	La ,	-NUM__st_ofs
 	CALLI
-L391:					; post if
+L607:					; post if
 ret_lbl:
 	UNLINK 1
 	RTD	prm_siz
@@ -5914,9 +8493,70 @@ VAR FRC_PART_disp, q			; variable flottante
 
 VAR DIGIT_disp, q				; variable entiere
 
+VAR BAD_LAYOUT_disp, d			; variable bool char enum
+	LI	0
+	Sb  1,	BAD_LAYOUT_disp
 
-if defined FLOOR_POS_L393_
-PRO	FLOOR_POS_L393				;---------- PRO FLOOR_POS
+VAR IPART_disp, q				; variable entiere
+
+VAR IPART_WORK_disp, q			; variable entiere
+
+STRING = 'STRING'
+namespace STRING				; array var constrained array type info
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+VAR COMP_SIZ, d
+VAR FST_1, d
+VAR LST_1, d
+	LI	8
+	Sd	1, COMP_SIZ
+	Ld	1, COMP_SIZ
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd	1, FST_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	40
+	Sd	1, LST_1
+	Ld	1, LST_1
+	INC
+	Ld	1, FST_1
+	SUB
+	MUL
+	Sd	1, SIZ
+  virtual at 4
+COMP_SIZ = $
+	rd 1 
+FST_1 = $
+	rd 1 
+LST_1 = $
+	rd 1 
+  end virtual
+end namespace
+VAR IBUF_disp, q				; variable array : pointeur aux data
+VAR IBUF__u, q				; variable array : useinfo pointeur au rec info
+	La 1, STRING.use__info
+	Sa	1, IBUF__u				; array info ptr at __u
+	Ld	1, STRING.SIZ
+	LI	8
+	DIV
+	CO_VAR
+	Sa	1, IBUF_disp				; array data ptr at _disp
+
+VAR NB_disp, d				; variable entiere
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	Sd  1,	NB_disp
+
+VAR E_disp, d				; variable entiere
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	Sd  1,	E_disp
+
+
+if defined FLOOR_POS_L609_
+PRO	FLOOR_POS_L609				;---------- PRO FLOOR_POS
 PRMS					;    debut parametrage
 	PRM X_ofs				; in
 	PRM GFP_ofs
@@ -5937,15 +8577,15 @@ begin:					;---------- BDY INSTRUCTIONS
 	CVTIF					; CODE_CONVERSION FLOAT TARGET FROM DN_INTEGER
 	Lq  2,	-X_ofs
 	FCGT
-	BF	L395
+	BF	L611
 	Lq 2,	R_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SUB
 	Sq  2,	R_disp
-	BRA	L394
-L395:
-L394:					; post if
+	BRA	L610
+L611:
+L610:					; post if
 ; CODE_RETURN : EXPR TYPE = DN_INTEGER
 	Lq 2,	R_disp
 	Sq  2,	-result__ofs
@@ -5956,49 +8596,136 @@ ret_lbl:
 excep:
 endPRO					;---------- end PRO FLOOR_POS
 end if
+
+if defined EMIT_FRACTION_L612_
+PRO	EMIT_FRACTION_L612			;---------- PRO EMIT_FRACTION
+PRMS					;    debut parametrage
+	PRM FRACTION_ofs				; in
+	PRM GFP_ofs
+endPRMS					;    fin parametrage
+ELB 2					;    BODY ELAB
+VAR F_disp, q				; variable flottante
+	Lq  2,	-FRACTION_ofs
+	Sq  2,	F_disp
+
+VAR D_disp, d				; variable entiere
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+VAR	KL614_disp, d				; compteur boucle LOOP__53
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd  2,	KL614_disp
+VAR	LMT_KL614_disp, d			; limite boucle LOOP__53
+	Ld  1,	-AFT_ofs
+	Sd  2,	LMT_KL614_disp
+	Ld  2,	KL614_disp				; test null range LOOP__53
+	Ld  2,	LMT_KL614_disp
+	CGT
+	BT	L613
+LOOP__53:					; corps boucle LOOP__53
+	Lq 2,	F_disp
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	10.0
+	FMUL
+	Sq  2,	F_disp
+	LI	0					; lieu resultat sur pile
+	La  1,	-GFP_ofs				; propagation GFP generique
+	Lq 2,	F_disp
+	CALL	STANDARD.TEXT_IO.FIXED_IO.PUT_L75. ,FLOOR_POS_L609
+; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
+	Sd  2,	D_disp
+					; debut if
+	Ld 2,	D_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	9
+	CGT
+	BF	L616
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	9
+	Sd  2,	D_disp
+	BRA	L615
+L616:
+	Ld 2,	D_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	CLT
+	BF	L617
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	Sd  2,	D_disp
+	BRA	L615
+L617:
+L615:					; post if
+	LI	48
+	Ld 2,	D_disp
+	ADD
+	La  1,	-FILE_ofs
+	CALL	STANDARD.TEXT_IO. ,PUT_L51
+	Lq 2,	F_disp
+	Ld 2,	D_disp
+; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_FLOAT
+	CVTIF					; CODE_CONVERSION FLOAT TARGET FROM DN_INTEGER
+	FSUB
+	Sq  2,	F_disp
+	Ld  2,	KL614_disp				; test de sortie LOOP__53
+	Ld  2,	LMT_KL614_disp
+	CEQ
+	BT	L613
+	Ld  2,	KL614_disp				; mise a jour compteur LOOP__53
+	INC
+	Sd  2,	KL614_disp
+	BRA	LOOP__53				; iteration suivante LOOP__53
+L613:					; post loop LOOP__53
+ret_lbl:
+	UNLINK 2
+	RTD	prm_siz
+excep:
+endPRO					;---------- end PRO EMIT_FRACTION
+end if
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 					; debut if
 	Lb 1,	IS_NEGATIVE_disp
-	BF	L397
+	BF	L619
 	Lq 1,	VAL_disp
 	FNEG
 	Sq  1,	VAL_disp
-	BRA	L396
-L397:
-L396:					; post if
+	BRA	L618
+L619:
+L618:					; post if
 					; debut if
 	Ld  1,	-EXP_ofs
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	CEQ
-	BF	L399
-VAR	KL401_disp, d				; compteur boucle LOOP__29
+	BF	L621
+VAR	KL623_disp, d				; compteur boucle LOOP__54
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
-	Sd  1,	KL401_disp
-VAR	LMT_KL401_disp, d			; limite boucle LOOP__29
+	Sd  1,	KL623_disp
+VAR	LMT_KL623_disp, d			; limite boucle LOOP__54
 	Ld  1,	-AFT_ofs
-	Sd  1,	LMT_KL401_disp
-	Ld  1,	KL401_disp				; test null range LOOP__29
-	Ld  1,	LMT_KL401_disp
+	Sd  1,	LMT_KL623_disp
+	Ld  1,	KL623_disp				; test null range LOOP__54
+	Ld  1,	LMT_KL623_disp
 	CGT
-	BT	L400
-LOOP__29:					; corps boucle LOOP__29
+	BT	L622
+LOOP__54:					; corps boucle LOOP__54
 	Lq 1,	ROUNDING_disp
 ; CODE_NUMERIC_LITERAL DN_FLOAT
 	LIF	10.0
 	FDIV
 	Sq  1,	ROUNDING_disp
-	Ld  1,	KL401_disp				; test de sortie LOOP__29
-	Ld  1,	LMT_KL401_disp
+	Ld  1,	KL623_disp				; test de sortie LOOP__54
+	Ld  1,	LMT_KL623_disp
 	CEQ
-	BT	L400
-	Ld  1,	KL401_disp				; mise a jour compteur LOOP__29
+	BT	L622
+	Ld  1,	KL623_disp				; mise a jour compteur LOOP__54
 	INC
-	Sd  1,	KL401_disp
-	BRA	LOOP__29				; iteration suivante LOOP__29
-L400:					; post loop LOOP__29
+	Sd  1,	KL623_disp
+	BRA	LOOP__54				; iteration suivante LOOP__54
+L622:					; post loop LOOP__54
 	Lq 1,	VAL_disp
 	Lq 1,	ROUNDING_disp
 	FADD
@@ -6006,7 +8733,7 @@ L400:					; post loop LOOP__29
 	LI	0					; lieu resultat sur pile
 	La  1,	-GFP_ofs				; propagation GFP generique
 	Lq 1,	VAL_disp
-	CALL	STANDARD.TEXT_IO.FIXED_IO.PUT_L75. ,FLOOR_POS_L393
+	CALL	STANDARD.TEXT_IO.FIXED_IO.PUT_L75. ,FLOOR_POS_L609
 ; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_FLOAT
 	CVTIF					; CODE_CONVERSION FLOAT TARGET FROM DN_INTEGER
 	Sq  1,	INT_PART_disp
@@ -6014,7 +8741,7 @@ L400:					; post loop LOOP__29
 	Lq 1,	INT_PART_disp
 	FSUB
 	Sq  1,	FRC_PART_disp
-namespace	BLOCK__30
+namespace	BLOCK__55
 ELB 2					;    BODY ELAB
 STRING = 'STRING'
 namespace STRING				; array var constrained array type info
@@ -6079,7 +8806,7 @@ begin:					;---------- BDY INSTRUCTIONS
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	CEQ
-	BF	L403
+	BF	L625
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	Sd  2,	NB_disp
@@ -6095,14 +8822,14 @@ begin:					;---------- BDY INSTRUCTIONS
 	ADD					; add offset to start address
 	LI	48
 	Sb
-	BRA	L402
-L403:
-LOOP__32:
+	BRA	L624
+L625:
+LOOP__61:
 	Lq 2,	IPART_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	CGT
-	BF	L404
+	BF	L626
 	Ld 2,	NB_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
@@ -6129,83 +8856,83 @@ LOOP__32:
 	LI	10
 	DIV
 	Sq  2,	IPART_disp
-	BRA	LOOP__32
-L404:					; post loop LOOP__32
-L402:					; post if
+	BRA	LOOP__61
+L626:					; post loop LOOP__61
+L624:					; post if
 	Ld 2,	NB_disp
 	Sd  2,	FLEN_disp
 					; debut if
 	Lb 1,	STANDARD.TEXT_IO.FIXED_IO.PUT_L75.IS_NEGATIVE_disp
-	BF	L406
+	BF	L628
 	Ld 2,	FLEN_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
 	Sd  2,	FLEN_disp
-	BRA	L405
-L406:
-L405:					; post if
+	BRA	L627
+L628:
+L627:					; post if
 					; debut if
 	Ld  1,	-FORE_ofs
 	Ld 2,	FLEN_disp
 	CGT
-	BF	L408
-VAR	KL410_disp, d				; compteur boucle LOOP__33
+	BF	L630
+VAR	KL632_disp, d				; compteur boucle LOOP__62
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
-	Sd  2,	KL410_disp
-VAR	LMT_KL410_disp, d			; limite boucle LOOP__33
+	Sd  2,	KL632_disp
+VAR	LMT_KL632_disp, d			; limite boucle LOOP__62
 	Ld  1,	-FORE_ofs
 	Ld 2,	FLEN_disp
 	SUB
-	Sd  2,	LMT_KL410_disp
-	Ld  2,	KL410_disp				; test null range LOOP__33
-	Ld  2,	LMT_KL410_disp
+	Sd  2,	LMT_KL632_disp
+	Ld  2,	KL632_disp				; test null range LOOP__62
+	Ld  2,	LMT_KL632_disp
 	CGT
-	BT	L409
-LOOP__33:					; corps boucle LOOP__33
+	BT	L631
+LOOP__62:					; corps boucle LOOP__62
 	LI	32
 	La  1,	-FILE_ofs
 	CALL	STANDARD.TEXT_IO. ,PUT_L51
-	Ld  2,	KL410_disp				; test de sortie LOOP__33
-	Ld  2,	LMT_KL410_disp
+	Ld  2,	KL632_disp				; test de sortie LOOP__62
+	Ld  2,	LMT_KL632_disp
 	CEQ
-	BT	L409
-	Ld  2,	KL410_disp				; mise a jour compteur LOOP__33
+	BT	L631
+	Ld  2,	KL632_disp				; mise a jour compteur LOOP__62
 	INC
-	Sd  2,	KL410_disp
-	BRA	LOOP__33				; iteration suivante LOOP__33
-L409:					; post loop LOOP__33
-	BRA	L407
-L408:
-L407:					; post if
+	Sd  2,	KL632_disp
+	BRA	LOOP__62				; iteration suivante LOOP__62
+L631:					; post loop LOOP__62
+	BRA	L629
+L630:
+L629:					; post if
 					; debut if
 	Lb 1,	STANDARD.TEXT_IO.FIXED_IO.PUT_L75.IS_NEGATIVE_disp
-	BF	L412
+	BF	L634
 	LI	45
 	La  1,	-FILE_ofs
 	CALL	STANDARD.TEXT_IO. ,PUT_L51
-	BRA	L411
-L412:
-L411:					; post if
-VAR	KL414_disp, d				; compteur boucle LOOP__34
+	BRA	L633
+L634:
+L633:					; post if
+VAR	KL636_disp, d				; compteur boucle LOOP__63
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
-	Sd  2,	KL414_disp
-VAR	LMT_KL414_disp, d			; limite boucle LOOP__34
+	Sd  2,	KL636_disp
+VAR	LMT_KL636_disp, d			; limite boucle LOOP__63
 	Ld 2,	NB_disp
-	Sd  2,	LMT_KL414_disp
-	Ld  2,	KL414_disp				; test null range LOOP__34
-	Ld  2,	LMT_KL414_disp
+	Sd  2,	LMT_KL636_disp
+	Ld  2,	KL636_disp				; test null range LOOP__63
+	Ld  2,	LMT_KL636_disp
 	CGT
-	BT	L413
-	Ld  2,	KL414_disp				; inversion range LOOP__34
-	Ld  2,	LMT_KL414_disp
-	Sd  2,	KL414_disp
-	Sd  2,	LMT_KL414_disp
-LOOP__34:					; corps boucle LOOP__34
+	BT	L635
+	Ld  2,	KL636_disp				; inversion range LOOP__63
+	Ld  2,	LMT_KL636_disp
+	Sd  2,	KL636_disp
+	Sd  2,	LMT_KL636_disp
+LOOP__63:					; corps boucle LOOP__63
 	La	 2, IBUF_disp				; array data start address on stack
-	Ld	2, KL414_disp
+	Ld	2, KL636_disp
 	LId	2, IBUF__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	2, IBUF__u, STANDARD.STRING.COMP_SIZ
@@ -6216,32 +8943,32 @@ LOOP__34:					; corps boucle LOOP__34
 	Lb					; charge depuis adresse empilee 
 	La  1,	-FILE_ofs
 	CALL	STANDARD.TEXT_IO. ,PUT_L51
-	Ld  2,	KL414_disp				; test de sortie LOOP__34
-	Ld  2,	LMT_KL414_disp
+	Ld  2,	KL636_disp				; test de sortie LOOP__63
+	Ld  2,	LMT_KL636_disp
 	CEQ
-	BT	L413
-	Ld  2,	KL414_disp				; mise a jour compteur LOOP__34
+	BT	L635
+	Ld  2,	KL636_disp				; mise a jour compteur LOOP__63
 	DEC
-	Sd  2,	KL414_disp
-	BRA	LOOP__34				; iteration suivante LOOP__34
-L413:					; post loop LOOP__34
+	Sd  2,	KL636_disp
+	BRA	LOOP__63				; iteration suivante LOOP__63
+L635:					; post loop LOOP__63
 	UNLINK 2
 endPRO
 	LI	46
 	La  1,	-FILE_ofs
 	CALL	STANDARD.TEXT_IO. ,PUT_L51
-VAR	KL416_disp, d				; compteur boucle LOOP__31
+VAR	KL638_disp, d				; compteur boucle LOOP__56
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
-	Sd  1,	KL416_disp
-VAR	LMT_KL416_disp, d			; limite boucle LOOP__31
+	Sd  1,	KL638_disp
+VAR	LMT_KL638_disp, d			; limite boucle LOOP__56
 	Ld  1,	-AFT_ofs
-	Sd  1,	LMT_KL416_disp
-	Ld  1,	KL416_disp				; test null range LOOP__31
-	Ld  1,	LMT_KL416_disp
+	Sd  1,	LMT_KL638_disp
+	Ld  1,	KL638_disp				; test null range LOOP__56
+	Ld  1,	LMT_KL638_disp
 	CGT
-	BT	L415
-LOOP__31:					; corps boucle LOOP__31
+	BT	L637
+LOOP__56:					; corps boucle LOOP__56
 	Lq 1,	FRC_PART_disp
 ; CODE_NUMERIC_LITERAL DN_FLOAT
 	LIF	10.0
@@ -6250,32 +8977,32 @@ LOOP__31:					; corps boucle LOOP__31
 	LI	0					; lieu resultat sur pile
 	La  1,	-GFP_ofs				; propagation GFP generique
 	Lq 1,	FRC_PART_disp
-	CALL	STANDARD.TEXT_IO.FIXED_IO.PUT_L75. ,FLOOR_POS_L393
+	CALL	STANDARD.TEXT_IO.FIXED_IO.PUT_L75. ,FLOOR_POS_L609
 	Sq  1,	DIGIT_disp
 					; debut if
 	Lq 1,	DIGIT_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	9
 	CGT
-	BF	L418
+	BF	L640
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	9
 	Sq  1,	DIGIT_disp
-	BRA	L417
-L418:
-L417:					; post if
+	BRA	L639
+L640:
+L639:					; post if
 					; debut if
 	Lq 1,	DIGIT_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	CLT
-	BF	L420
+	BF	L642
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	Sq  1,	DIGIT_disp
-	BRA	L419
-L420:
-L419:					; post if
+	BRA	L641
+L642:
+L641:					; post if
 	LI	48
 	Lq 1,	DIGIT_disp
 ; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
@@ -6288,18 +9015,362 @@ L419:					; post if
 	CVTIF					; CODE_CONVERSION FLOAT TARGET FROM DN_INTEGER
 	FSUB
 	Sq  1,	FRC_PART_disp
-	Ld  1,	KL416_disp				; test de sortie LOOP__31
-	Ld  1,	LMT_KL416_disp
+	Ld  1,	KL638_disp				; test de sortie LOOP__56
+	Ld  1,	LMT_KL638_disp
 	CEQ
-	BT	L415
-	Ld  1,	KL416_disp				; mise a jour compteur LOOP__31
+	BT	L637
+	Ld  1,	KL638_disp				; mise a jour compteur LOOP__56
 	INC
-	Sd  1,	KL416_disp
-	BRA	LOOP__31				; iteration suivante LOOP__31
-L415:					; post loop LOOP__31
-	BRA	L398
-L399:
-L398:					; post if
+	Sd  1,	KL638_disp
+	BRA	LOOP__56				; iteration suivante LOOP__56
+L637:					; post loop LOOP__56
+	BRA	L620
+L621:
+					; debut if
+	Lq 1,	VAL_disp
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	0.0
+	FCNE
+	BF	L644
+LOOP__57:
+	Lq 1,	VAL_disp
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	10.0
+	FCGE
+	BF	L645
+	Lq 1,	VAL_disp
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	10.0
+	FDIV
+	Sq  1,	VAL_disp
+	Ld 1,	E_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd  1,	E_disp
+	BRA	LOOP__57
+L645:					; post loop LOOP__57
+LOOP__58:
+	Lq 1,	VAL_disp
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	1.0
+	FCLT
+	BF	L646
+	Lq 1,	VAL_disp
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	10.0
+	FMUL
+	Sq  1,	VAL_disp
+	Ld 1,	E_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	SUB
+	Sd  1,	E_disp
+	BRA	LOOP__58
+L646:					; post loop LOOP__58
+	BRA	L643
+L644:
+L643:					; post if
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	0.5
+	Sq  1,	ROUNDING_disp
+VAR	KL648_disp, d				; compteur boucle LOOP__59
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd  1,	KL648_disp
+VAR	LMT_KL648_disp, d			; limite boucle LOOP__59
+	Ld  1,	-AFT_ofs
+	Sd  1,	LMT_KL648_disp
+	Ld  1,	KL648_disp				; test null range LOOP__59
+	Ld  1,	LMT_KL648_disp
+	CGT
+	BT	L647
+LOOP__59:					; corps boucle LOOP__59
+	Lq 1,	ROUNDING_disp
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	10.0
+	FDIV
+	Sq  1,	ROUNDING_disp
+	Ld  1,	KL648_disp				; test de sortie LOOP__59
+	Ld  1,	LMT_KL648_disp
+	CEQ
+	BT	L647
+	Ld  1,	KL648_disp				; mise a jour compteur LOOP__59
+	INC
+	Sd  1,	KL648_disp
+	BRA	LOOP__59				; iteration suivante LOOP__59
+L647:					; post loop LOOP__59
+					; debut if
+	Lq 1,	VAL_disp
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	0.0
+	FCNE
+	BF	L650
+	Lq 1,	VAL_disp
+	Lq 1,	ROUNDING_disp
+	FADD
+	Sq  1,	VAL_disp
+	BRA	L649
+L650:
+L649:					; post if
+					; debut if
+	Lq 1,	VAL_disp
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	10.0
+	FCGE
+	BF	L652
+	Lq 1,	VAL_disp
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	10.0
+	FDIV
+	Sq  1,	VAL_disp
+	Ld 1,	E_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd  1,	E_disp
+	BRA	L651
+L652:
+L651:					; post if
+	LI	0					; lieu resultat sur pile
+	La  1,	-GFP_ofs				; propagation GFP generique
+	Lq 1,	VAL_disp
+	CALL	STANDARD.TEXT_IO.FIXED_IO.PUT_L75. ,FLOOR_POS_L609
+; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
+	Sq  1,	DIGIT_disp
+					; debut if
+	Lq 1,	DIGIT_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	9
+	CGT
+	BF	L654
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	9
+	Sq  1,	DIGIT_disp
+	BRA	L653
+L654:
+	Lq 1,	DIGIT_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	CLT
+	BF	L655
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	Sq  1,	DIGIT_disp
+	BRA	L653
+L655:
+L653:					; post if
+	LI	48
+	Lq 1,	DIGIT_disp
+	ADD
+	La  1,	-FILE_ofs
+	CALL	STANDARD.TEXT_IO. ,PUT_L51
+	Lq 1,	VAL_disp
+	Lq 1,	DIGIT_disp
+; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_FLOAT
+	CVTIF					; CODE_CONVERSION FLOAT TARGET FROM DN_INTEGER
+	FSUB
+	Sq  1,	FRC_PART_disp
+	LI	46
+	La  1,	-FILE_ofs
+	CALL	STANDARD.TEXT_IO. ,PUT_L51
+	La  1,	-GFP_ofs				; propagation GFP generique
+	Lq 1,	FRC_PART_disp
+	CALL	STANDARD.TEXT_IO.FIXED_IO.PUT_L75. ,EMIT_FRACTION_L612
+	LI	69
+	La  1,	-FILE_ofs
+	CALL	STANDARD.TEXT_IO. ,PUT_L51
+					; debut if
+	Ld 1,	E_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	CLT
+	BF	L657
+	LI	45
+	La  1,	-FILE_ofs
+	CALL	STANDARD.TEXT_IO. ,PUT_L51
+	Ld 1,	E_disp
+	NEG
+	Sd  1,	E_disp
+	BRA	L656
+L657:
+	LI	43
+	La  1,	-FILE_ofs
+	CALL	STANDARD.TEXT_IO. ,PUT_L51
+L656:					; post if
+namespace	BLOCK__60
+ELB 2					;    BODY ELAB
+STRING = 'STRING'
+namespace STRING				; array var constrained array type info
+VAR use__info, q
+VAR SIZ, d
+	LVA	2, SIZ
+	Sa	2, use__info
+VAR COMP_SIZ, d
+VAR FST_1, d
+VAR LST_1, d
+	LI	8
+	Sd	2, COMP_SIZ
+	Ld	2, COMP_SIZ
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd	2, FST_1
+	Ld  1,	-EXP_ofs
+	Sd	2, LST_1
+	Ld	2, LST_1
+	INC
+	Ld	2, FST_1
+	SUB
+	MUL
+	Sd	2, SIZ
+  virtual at 4
+COMP_SIZ = $
+	rd 1 
+FST_1 = $
+	rd 1 
+LST_1 = $
+	rd 1 
+  end virtual
+end namespace
+VAR EXP_STR_disp, q				; variable array : pointeur aux data
+VAR EXP_STR__u, q				; variable array : useinfo pointeur au rec info
+	La 2, STRING.use__info
+	Sa	2, EXP_STR__u				; array info ptr at __u
+	Ld	2, STRING.SIZ
+	LI	8
+	DIV
+	CO_VAR
+	Sa	2, EXP_STR_disp				; array data ptr at _disp
+
+VAR EVAL_disp, d				; variable entiere
+	Ld 1,	STANDARD.TEXT_IO.FIXED_IO.PUT_L75.E_disp
+	Sd  2,	EVAL_disp
+
+VAR CHECK_disp, d				; variable entiere
+	Ld 1,	STANDARD.TEXT_IO.FIXED_IO.PUT_L75.E_disp
+	Sd  2,	CHECK_disp
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+VAR	KL659_disp, d				; compteur boucle LOOP__64
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd  2,	KL659_disp
+VAR	LMT_KL659_disp, d			; limite boucle LOOP__64
+	Ld  1,	-EXP_ofs
+	Sd  2,	LMT_KL659_disp
+	Ld  2,	KL659_disp				; test null range LOOP__64
+	Ld  2,	LMT_KL659_disp
+	CGT
+	BT	L658
+LOOP__64:					; corps boucle LOOP__64
+	Ld 2,	CHECK_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	10
+	DIV
+	Sd  2,	CHECK_disp
+	Ld  2,	KL659_disp				; test de sortie LOOP__64
+	Ld  2,	LMT_KL659_disp
+	CEQ
+	BT	L658
+	Ld  2,	KL659_disp				; mise a jour compteur LOOP__64
+	INC
+	Sd  2,	KL659_disp
+	BRA	LOOP__64				; iteration suivante LOOP__64
+L658:					; post loop LOOP__64
+					; debut if
+	Ld 2,	CHECK_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	CNE
+	BF	L661
+	LI	1
+	Sb  1,	BAD_LAYOUT_disp
+	BRA	L660
+L661:
+L660:					; post if
+VAR	KL663_disp, d				; compteur boucle LOOP__65
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd  2,	KL663_disp
+VAR	LMT_KL663_disp, d			; limite boucle LOOP__65
+	Ld  1,	-EXP_ofs
+	Sd  2,	LMT_KL663_disp
+	Ld  2,	KL663_disp				; test null range LOOP__65
+	Ld  2,	LMT_KL663_disp
+	CGT
+	BT	L662
+	Ld  2,	KL663_disp				; inversion range LOOP__65
+	Ld  2,	LMT_KL663_disp
+	Sd  2,	KL663_disp
+	Sd  2,	LMT_KL663_disp
+LOOP__65:					; corps boucle LOOP__65
+	La	 2, EXP_STR_disp			; array data start address on stack
+	Ld	2, KL663_disp
+	LId	2, EXP_STR__u, STANDARD.STRING.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	2, EXP_STR__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	LI	48
+	Ld 2,	EVAL_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	10
+	MODI
+	ADD
+	Sb
+	Ld 2,	EVAL_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	10
+	DIV
+	Sd  2,	EVAL_disp
+	Ld  2,	KL663_disp				; test de sortie LOOP__65
+	Ld  2,	LMT_KL663_disp
+	CEQ
+	BT	L662
+	Ld  2,	KL663_disp				; mise a jour compteur LOOP__65
+	DEC
+	Sd  2,	KL663_disp
+	BRA	LOOP__65				; iteration suivante LOOP__65
+L662:					; post loop LOOP__65
+VAR	KL665_disp, d				; compteur boucle LOOP__66
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd  2,	KL665_disp
+VAR	LMT_KL665_disp, d			; limite boucle LOOP__66
+	Ld  1,	-EXP_ofs
+	Sd  2,	LMT_KL665_disp
+	Ld  2,	KL665_disp				; test null range LOOP__66
+	Ld  2,	LMT_KL665_disp
+	CGT
+	BT	L664
+LOOP__66:					; corps boucle LOOP__66
+	La	 2, EXP_STR_disp			; array data start address on stack
+	Ld	2, KL665_disp
+	LId	2, EXP_STR__u, STANDARD.STRING.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	2, EXP_STR__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	La  1,	-FILE_ofs
+	CALL	STANDARD.TEXT_IO. ,PUT_L51
+	Ld  2,	KL665_disp				; test de sortie LOOP__66
+	Ld  2,	LMT_KL665_disp
+	CEQ
+	BT	L664
+	Ld  2,	KL665_disp				; mise a jour compteur LOOP__66
+	INC
+	Sd  2,	KL665_disp
+	BRA	LOOP__66				; iteration suivante LOOP__66
+L664:					; post loop LOOP__66
+	UNLINK 2
+endPRO
+L620:					; post if
 ret_lbl:
 	UNLINK 1
 	RTD	prm_siz
@@ -6345,8 +9416,732 @@ PRMS					;    debut parametrage
 	PRM GFP_ofs
 endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
+VAR I_disp, d				; variable entiere
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STRING.FST_1
+	Sd  1,	I_disp
+
+VAR VAL_disp, q				; variable flottante
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	0.0
+	Sq  1,	VAL_disp
+
+VAR FRAC_disp, q				; variable flottante
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	0.1
+	Sq  1,	FRAC_disp
+
+VAR NEG_disp, d				; variable bool char enum
+	LI	0
+	Sb  1,	NEG_disp
+
+VAR IN_FRAC_disp, d				; variable bool char enum
+	LI	0
+	Sb  1,	IN_FRAC_disp
+
+VAR HAVE_DIGIT_disp, d			; variable bool char enum
+	LI	0
+	Sb  1,	HAVE_DIGIT_disp
+
+VAR HAVE_FRAC_DIGIT_disp, d			; variable bool char enum
+	LI	0
+	Sb  1,	HAVE_FRAC_DIGIT_disp
+
+VAR EXP_SEEN_disp, d			; variable bool char enum
+	LI	0
+	Sb  1,	EXP_SEEN_disp
+
+VAR EXP_VAL_disp, d				; variable entiere
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	Sd  1,	EXP_VAL_disp
+
+VAR EXP_NEG_disp, d				; variable bool char enum
+	LI	0
+	Sb  1,	EXP_NEG_disp
+
+VAR HAVE_EXP_DIGIT_disp, d			; variable bool char enum
+	LI	0
+	Sb  1,	HAVE_EXP_DIGIT_disp
+
+VAR BAD_IMAGE_disp, d			; variable bool char enum
+	LI	0
+	Sb  1,	BAD_IMAGE_disp
+
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
+LOOP__67:
+	Ld 1,	I_disp
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STRING.LST_1
+	CLE
+	DUP
+	BF	L667
+	DROP
+	LVA	1, -FROM_ofs
+	LIa	, , 0				; array data start address on stack
+	Ld 1,	I_disp
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
+	SUB
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	LI	32
+	CEQ
+	DUP
+	BT	L668
+	DROP
+	LVA	1, -FROM_ofs
+	LIa	, , 0				; array data start address on stack
+	Ld 1,	I_disp
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
+	SUB
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	LI	 9
+	CEQ
+L668:
+L667:
+	BF	L666
+	Ld 1,	I_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd  1,	I_disp
+	BRA	LOOP__67
+L666:					; post loop LOOP__67
+					; debut if
+	Ld 1,	I_disp
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STRING.LST_1
+	CLE
+	DUP
+	BF	L671
+	DROP
+	LVA	1, -FROM_ofs
+	LIa	, , 0				; array data start address on stack
+	Ld 1,	I_disp
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
+	SUB
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	LI	45
+	CEQ
+L671:
+	BF	L670
+	LI	1
+	Sb  1,	NEG_disp
+	Ld 1,	I_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd  1,	I_disp
+	BRA	L669
+L670:
+	Ld 1,	I_disp
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STRING.LST_1
+	CLE
+	DUP
+	BF	L673
+	DROP
+	LVA	1, -FROM_ofs
+	LIa	, , 0				; array data start address on stack
+	Ld 1,	I_disp
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
+	SUB
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	LI	43
+	CEQ
+L673:
+	BF	L672
+	Ld 1,	I_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd  1,	I_disp
+	BRA	L669
+L672:
+L669:					; post if
+LOOP__68:
+	Ld 1,	I_disp
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STRING.LST_1
+	CLE
+	BF	L674
+					; debut if
+	LVA	1, -FROM_ofs
+	LIa	, , 0				; array data start address on stack
+	Ld 1,	I_disp
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
+	SUB
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	LI	48
+	CGE
+	DUP
+	BF	L677
+	DROP
+	LVA	1, -FROM_ofs
+	LIa	, , 0				; array data start address on stack
+	Ld 1,	I_disp
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
+	SUB
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	LI	57
+	CLE
+L677:
+	BF	L676
+	LI	1
+	Sb  1,	HAVE_DIGIT_disp
+					; debut if
+	Lb 1,	IN_FRAC_disp
+	BF	L679
+	LI	1
+	Sb  1,	HAVE_FRAC_DIGIT_disp
+	Lq 1,	VAL_disp
+	Lq 1,	FRAC_disp
+	LVA	1, -FROM_ofs
+	LIa	, , 0				; array data start address on stack
+	Ld 1,	I_disp
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
+	SUB
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	LI	48
+	SUB
+; CODE CONVERSION SOURCE DN_UNIVERSAL_INTEGER TARGET DN_FLOAT
+	CVTIF					; CODE_CONVERSION FLOAT TARGET FROM DN_UNIVERSAL_INTEGER
+	FMUL
+	FADD
+	Sq  1,	VAL_disp
+	Lq 1,	FRAC_disp
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	10.0
+	FDIV
+	Sq  1,	FRAC_disp
+	BRA	L678
+L679:
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	10.0
+	Lq 1,	VAL_disp
+	FMUL
+	LVA	1, -FROM_ofs
+	LIa	, , 0				; array data start address on stack
+	Ld 1,	I_disp
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
+	SUB
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	LI	48
+	SUB
+; CODE CONVERSION SOURCE DN_UNIVERSAL_INTEGER TARGET DN_FLOAT
+	CVTIF					; CODE_CONVERSION FLOAT TARGET FROM DN_UNIVERSAL_INTEGER
+	FADD
+	Sq  1,	VAL_disp
+L678:					; post if
+	Ld 1,	I_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd  1,	I_disp
+	BRA	L675
+L676:
+	LVA	1, -FROM_ofs
+	LIa	, , 0				; array data start address on stack
+	Ld 1,	I_disp
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
+	SUB
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	LI	46
+	CEQ
+	DUP
+	BF	L681
+	DROP
+	Lb 1,	IN_FRAC_disp
+	LI	1
+	OUX
+L681:
+	BF	L680
+	LI	1
+	Sb  1,	IN_FRAC_disp
+	Ld 1,	I_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd  1,	I_disp
+	BRA	L675
+L680:
+	LVA	1, -FROM_ofs
+	LIa	, , 0				; array data start address on stack
+	Ld 1,	I_disp
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
+	SUB
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	LI	69
+	CEQ
+	DUP
+	BT	L684
+	DROP
+	LVA	1, -FROM_ofs
+	LIa	, , 0				; array data start address on stack
+	Ld 1,	I_disp
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
+	SUB
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	LI	101
+	CEQ
+L684:
+	DUP
+	BF	L683
+	DROP
+	Lb 1,	HAVE_DIGIT_disp
+L683:
+	BF	L682
+	LI	1
+	Sb  1,	EXP_SEEN_disp
+	Ld 1,	I_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd  1,	I_disp
+					; debut if
+	Ld 1,	I_disp
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STRING.LST_1
+	CLE
+	DUP
+	BF	L687
+	DROP
+	LVA	1, -FROM_ofs
+	LIa	, , 0				; array data start address on stack
+	Ld 1,	I_disp
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
+	SUB
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	LI	45
+	CEQ
+L687:
+	BF	L686
+	LI	1
+	Sb  1,	EXP_NEG_disp
+	Ld 1,	I_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd  1,	I_disp
+	BRA	L685
+L686:
+	Ld 1,	I_disp
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STRING.LST_1
+	CLE
+	DUP
+	BF	L689
+	DROP
+	LVA	1, -FROM_ofs
+	LIa	, , 0				; array data start address on stack
+	Ld 1,	I_disp
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
+	SUB
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	LI	43
+	CEQ
+L689:
+	BF	L688
+	Ld 1,	I_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd  1,	I_disp
+	BRA	L685
+L688:
+L685:					; post if
+LOOP__69:
+	Ld 1,	I_disp
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STRING.LST_1
+	CLE
+	DUP
+	BF	L692
+	DROP
+	LVA	1, -FROM_ofs
+	LIa	, , 0				; array data start address on stack
+	Ld 1,	I_disp
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
+	SUB
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	LI	48
+	CGE
+L692:
+	DUP
+	BF	L691
+	DROP
+	LVA	1, -FROM_ofs
+	LIa	, , 0				; array data start address on stack
+	Ld 1,	I_disp
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
+	SUB
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	LI	57
+	CLE
+L691:
+	BF	L690
+	LI	1
+	Sb  1,	HAVE_EXP_DIGIT_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	10
+	Ld 1,	EXP_VAL_disp
+	MUL
+	LVA	1, -FROM_ofs
+	LIa	, , 0				; array data start address on stack
+	Ld 1,	I_disp
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
+	SUB
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	ADD
+	LI	48
+	SUB
+	Sd  1,	EXP_VAL_disp
+	Ld 1,	I_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd  1,	I_disp
+	BRA	LOOP__69
+L690:					; post loop LOOP__69
+	BRA	L674
+	BRA	L675
+L682:
+	BRA	L674
+L675:					; post if
+	BRA	LOOP__68
+L674:					; post loop LOOP__68
+	Lb 1,	HAVE_DIGIT_disp
+	LI	1
+	OUX
+	DUP
+	BT	L696
+	DROP
+	Lb 1,	IN_FRAC_disp
+	DUP
+	BF	L697
+	DROP
+	Lb 1,	HAVE_FRAC_DIGIT_disp
+	LI	1
+	OUX
+L697:
+L696:
+	DUP
+	BT	L695
+	DROP
+	Lb 1,	EXP_SEEN_disp
+	DUP
+	BF	L698
+	DROP
+	Lb 1,	HAVE_EXP_DIGIT_disp
+	LI	1
+	OUX
+L698:
+L695:
+	Sb  1,	BAD_IMAGE_disp
+					; debut if
+	Lb 1,	BAD_IMAGE_disp
+	BF	L700
+	LVA  1,	-ITEM_ofs
+	La
+; CODE_NUMERIC_LITERAL DN_UNIVERSAL_REAL
+	LIF	0.0
+; CODE CONVERSION SOURCE DN_UNIVERSAL_REAL TARGET DN_FIXED
+	La 1,	-GFP_ofs
+	LIq , -NUM__u_ofs, STANDARD.FIXED_USE_INFO.DENOM
+	CVTIF
+	FMUL
+	La 1,	-GFP_ofs
+	LIq , -NUM__u_ofs, STANDARD.FIXED_USE_INFO.NUMER
+	CVTIF
+	FDIV
+	CVTFIR
+	La  1,	-GFP_ofs
+	La ,	-NUM__st_ofs
+	CALLI
+					; debut if
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STRING.FST_1
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STRING.LST_1
+	CLE
+	BF	L702
+	LVA  1,	-LAST_ofs
+	La
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STRING.FST_1
+	SId  1,	-LAST_ofs
+	BRA	L701
+L702:
+	LVA  1,	-LAST_ofs
+	La
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	SId  1,	-LAST_ofs
+L701:					; post if
+	BRA ret_lbl
+	BRA	L699
+L700:
+L699:					; post if
+					; debut if
+	Lb 1,	EXP_NEG_disp
+	BF	L704
+VAR	JL706_disp, d				; compteur boucle LOOP__70
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd  1,	JL706_disp
+VAR	LMT_JL706_disp, d			; limite boucle LOOP__70
+	Ld 1,	EXP_VAL_disp
+	Sd  1,	LMT_JL706_disp
+	Ld  1,	JL706_disp				; test null range LOOP__70
+	Ld  1,	LMT_JL706_disp
+	CGT
+	BT	L705
+LOOP__70:					; corps boucle LOOP__70
+	Lq 1,	VAL_disp
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	10.0
+	FDIV
+	Sq  1,	VAL_disp
+	Ld  1,	JL706_disp				; test de sortie LOOP__70
+	Ld  1,	LMT_JL706_disp
+	CEQ
+	BT	L705
+	Ld  1,	JL706_disp				; mise a jour compteur LOOP__70
+	INC
+	Sd  1,	JL706_disp
+	BRA	LOOP__70				; iteration suivante LOOP__70
+L705:					; post loop LOOP__70
+	BRA	L703
+L704:
+VAR	JL708_disp, d				; compteur boucle LOOP__71
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd  1,	JL708_disp
+VAR	LMT_JL708_disp, d			; limite boucle LOOP__71
+	Ld 1,	EXP_VAL_disp
+	Sd  1,	LMT_JL708_disp
+	Ld  1,	JL708_disp				; test null range LOOP__71
+	Ld  1,	LMT_JL708_disp
+	CGT
+	BT	L707
+LOOP__71:					; corps boucle LOOP__71
+	Lq 1,	VAL_disp
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	10.0
+	FMUL
+	Sq  1,	VAL_disp
+	Ld  1,	JL708_disp				; test de sortie LOOP__71
+	Ld  1,	LMT_JL708_disp
+	CEQ
+	BT	L707
+	Ld  1,	JL708_disp				; mise a jour compteur LOOP__71
+	INC
+	Sd  1,	JL708_disp
+	BRA	LOOP__71				; iteration suivante LOOP__71
+L707:					; post loop LOOP__71
+L703:					; post if
+	LVA  1,	-LAST_ofs
+	La
+	Ld 1,	I_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	SUB
+; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
+	SId  1,	-LAST_ofs
+					; debut if
+	Lb 1,	NEG_disp
+	BF	L710
+	LVA  1,	-ITEM_ofs
+	La
+	Lq 1,	VAL_disp
+	FNEG
+; CODE CONVERSION SOURCE DN_FLOAT TARGET DN_FIXED
+	La 1,	-GFP_ofs
+	LIq , -NUM__u_ofs, STANDARD.FIXED_USE_INFO.DENOM
+	CVTIF
+	FMUL
+	La 1,	-GFP_ofs
+	LIq , -NUM__u_ofs, STANDARD.FIXED_USE_INFO.NUMER
+	CVTIF
+	FDIV
+	CVTFIR
+	La  1,	-GFP_ofs
+	La ,	-NUM__st_ofs
+	CALLI
+	BRA	L709
+L710:
+	LVA  1,	-ITEM_ofs
+	La
+	Lq 1,	VAL_disp
+; CODE CONVERSION SOURCE DN_FLOAT TARGET DN_FIXED
+	La 1,	-GFP_ofs
+	LIq , -NUM__u_ofs, STANDARD.FIXED_USE_INFO.DENOM
+	CVTIF
+	FMUL
+	La 1,	-GFP_ofs
+	LIq , -NUM__u_ofs, STANDARD.FIXED_USE_INFO.NUMER
+	CVTIF
+	FDIV
+	CVTFIR
+	La  1,	-GFP_ofs
+	La ,	-NUM__st_ofs
+	CALLI
+L709:					; post if
 ret_lbl:
 	UNLINK 1
 	RTD	prm_siz
@@ -6364,8 +10159,1023 @@ PRMS					;    debut parametrage
 	PRM GFP_ofs
 endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
+STRING = 'STRING'
+namespace STRING				; array var constrained array type info
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+VAR COMP_SIZ, d
+VAR FST_1, d
+VAR LST_1, d
+	LI	8
+	Sd	1, COMP_SIZ
+	Ld	1, COMP_SIZ
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd	1, FST_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	80
+	Sd	1, LST_1
+	Ld	1, LST_1
+	INC
+	Ld	1, FST_1
+	SUB
+	MUL
+	Sd	1, SIZ
+  virtual at 4
+COMP_SIZ = $
+	rd 1 
+FST_1 = $
+	rd 1 
+LST_1 = $
+	rd 1 
+  end virtual
+end namespace
+VAR IMAGE_disp, q				; variable array : pointeur aux data
+VAR IMAGE__u, q				; variable array : useinfo pointeur au rec info
+	La 1, STRING.use__info
+	Sa	1, IMAGE__u				; array info ptr at __u
+	Ld	1, STRING.SIZ
+	LI	8
+	DIV
+	CO_VAR
+	Sa	1, IMAGE_disp				; array data ptr at _disp
+
+VAR LEN_disp, d				; variable entiere
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	Sd  1,	LEN_disp
+
+VAR POS_disp, d				; variable entiere
+
+VAR PAD_disp, d				; variable entiere
+
+VAR VAL_disp, q				; variable flottante
+	LVA  1,	-ITEM_ofs
+	La  1,	-GFP_ofs
+	La ,	-NUM__ld_ofs
+	CALLI
+; CODE CONVERSION SOURCE DN_FIXED TARGET DN_FLOAT
+	CVTIF
+	La 1,	-GFP_ofs
+	LIq , -NUM__u_ofs, STANDARD.FIXED_USE_INFO.NUMER
+	CVTIF
+	FMUL
+	La 1,	-GFP_ofs
+	LIq , -NUM__u_ofs, STANDARD.FIXED_USE_INFO.DENOM
+	CVTIF
+	FDIV
+	Sq  1,	VAL_disp
+
+VAR ROUNDING_disp, q			; variable flottante
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	0.5
+	Sq  1,	ROUNDING_disp
+
+VAR FRC_PART_disp, q			; variable flottante
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	0.0
+	Sq  1,	FRC_PART_disp
+
+VAR IS_NEGATIVE_disp, d			; variable bool char enum
+	LI	0
+	Sb  1,	IS_NEGATIVE_disp
+
+VAR BAD_LAYOUT_disp, d			; variable bool char enum
+	LI	0
+	Sb  1,	BAD_LAYOUT_disp
+
+VAR DIGIT_disp, d				; variable entiere
+
+VAR IPART_disp, q				; variable entiere
+
+VAR IPART_WORK_disp, q			; variable entiere
+
+STRING = 'STRING'
+namespace STRING				; array var constrained array type info
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+VAR COMP_SIZ, d
+VAR FST_1, d
+VAR LST_1, d
+	LI	8
+	Sd	1, COMP_SIZ
+	Ld	1, COMP_SIZ
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd	1, FST_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	40
+	Sd	1, LST_1
+	Ld	1, LST_1
+	INC
+	Ld	1, FST_1
+	SUB
+	MUL
+	Sd	1, SIZ
+  virtual at 4
+COMP_SIZ = $
+	rd 1 
+FST_1 = $
+	rd 1 
+LST_1 = $
+	rd 1 
+  end virtual
+end namespace
+VAR IBUF_disp, q				; variable array : pointeur aux data
+VAR IBUF__u, q				; variable array : useinfo pointeur au rec info
+	La 1, STRING.use__info
+	Sa	1, IBUF__u				; array info ptr at __u
+	Ld	1, STRING.SIZ
+	LI	8
+	DIV
+	CO_VAR
+	Sa	1, IBUF_disp				; array data ptr at _disp
+
+VAR NB_disp, d				; variable entiere
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	Sd  1,	NB_disp
+
+VAR E_disp, d				; variable entiere
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	Sd  1,	E_disp
+
+
+if defined FLOOR_POS_L711_
+PRO	FLOOR_POS_L711				;---------- PRO FLOOR_POS
+PRMS					;    debut parametrage
+	PRM X_ofs				; in
+	PRM GFP_ofs
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 2					;    BODY ELAB
+VAR R_disp, q				; variable entiere
+	Lq  2,	-X_ofs
+; CODE CONVERSION SOURCE DN_FLOAT TARGET DN_INTEGER
+	CVTFI
+	Sq  2,	R_disp
+
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
+					; debut if
+	Lq 2,	R_disp
+; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_FLOAT
+	CVTIF					; CODE_CONVERSION FLOAT TARGET FROM DN_INTEGER
+	Lq  2,	-X_ofs
+	FCGT
+	BF	L713
+	Lq 2,	R_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	SUB
+	Sq  2,	R_disp
+	BRA	L712
+L713:
+L712:					; post if
+; CODE_RETURN : EXPR TYPE = DN_INTEGER
+	Lq 2,	R_disp
+	Sq  2,	-result__ofs
+	BRA ret_lbl
+ret_lbl:
+	UNLINK 2
+	RTD	prm_siz-8
+excep:
+endPRO					;---------- end PRO FLOOR_POS
+end if
+
+if defined EMIT_L714_
+PRO	EMIT_L714				;---------- PRO EMIT
+PRMS					;    debut parametrage
+	PRM CH_ofs				; in
+	PRM GFP_ofs
+endPRMS					;    fin parametrage
+ELB 2					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+					; debut if
+	Ld 1,	STANDARD.TEXT_IO.FIXED_IO.PUT_L78.LEN_disp
+	LId	1, IMAGE__u, STRING.LST_1
+	CLT
+	BF	L716
+	Ld 1,	STANDARD.TEXT_IO.FIXED_IO.PUT_L78.LEN_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd  1,	LEN_disp
+	La	 1, IMAGE_disp				; array data start address on stack
+	Ld 1,	STANDARD.TEXT_IO.FIXED_IO.PUT_L78.LEN_disp
+	LId	1, IMAGE__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, IMAGE__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb  2,	-CH_ofs
+	Sb
+	BRA	L715
+L716:
+	LI	1
+	Sb  1,	BAD_LAYOUT_disp
+L715:					; post if
+ret_lbl:
+	UNLINK 2
+	RTD	prm_siz
+excep:
+endPRO					;---------- end PRO EMIT
+end if
+
+if defined EMIT_FRACTION_L717_
+PRO	EMIT_FRACTION_L717			;---------- PRO EMIT_FRACTION
+PRMS					;    debut parametrage
+	PRM FRACTION_ofs				; in
+	PRM GFP_ofs
+endPRMS					;    fin parametrage
+ELB 2					;    BODY ELAB
+VAR F_disp, q				; variable flottante
+	Lq  2,	-FRACTION_ofs
+	Sq  2,	F_disp
+
+VAR D_disp, d				; variable entiere
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+VAR	KL719_disp, d				; compteur boucle LOOP__72
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd  2,	KL719_disp
+VAR	LMT_KL719_disp, d			; limite boucle LOOP__72
+	Ld  1,	-AFT_ofs
+	Sd  2,	LMT_KL719_disp
+	Ld  2,	KL719_disp				; test null range LOOP__72
+	Ld  2,	LMT_KL719_disp
+	CGT
+	BT	L718
+LOOP__72:					; corps boucle LOOP__72
+	Lq 2,	F_disp
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	10.0
+	FMUL
+	Sq  2,	F_disp
+	LI	0					; lieu resultat sur pile
+	La  1,	-GFP_ofs				; propagation GFP generique
+	Lq 2,	F_disp
+	CALL	STANDARD.TEXT_IO.FIXED_IO.PUT_L78. ,FLOOR_POS_L711
+; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
+	Sd  2,	D_disp
+					; debut if
+	Ld 2,	D_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	9
+	CGT
+	BF	L721
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	9
+	Sd  2,	D_disp
+	BRA	L720
+L721:
+	Ld 2,	D_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	CLT
+	BF	L722
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	Sd  2,	D_disp
+	BRA	L720
+L722:
+L720:					; post if
+	La  1,	-GFP_ofs				; propagation GFP generique
+	LI	48
+	Ld 2,	D_disp
+	ADD
+	CALL	STANDARD.TEXT_IO.FIXED_IO.PUT_L78. ,EMIT_L714
+	Lq 2,	F_disp
+	Ld 2,	D_disp
+; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_FLOAT
+	CVTIF					; CODE_CONVERSION FLOAT TARGET FROM DN_INTEGER
+	FSUB
+	Sq  2,	F_disp
+	Ld  2,	KL719_disp				; test de sortie LOOP__72
+	Ld  2,	LMT_KL719_disp
+	CEQ
+	BT	L718
+	Ld  2,	KL719_disp				; mise a jour compteur LOOP__72
+	INC
+	Sd  2,	KL719_disp
+	BRA	LOOP__72				; iteration suivante LOOP__72
+L718:					; post loop LOOP__72
+ret_lbl:
+	UNLINK 2
+	RTD	prm_siz
+excep:
+endPRO					;---------- end PRO EMIT_FRACTION
+end if
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+					; debut if
+	Lq 1,	VAL_disp
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	0.0
+	FCLT
+	BF	L724
+	LI	1
+	Sb  1,	IS_NEGATIVE_disp
+	Lq 1,	VAL_disp
+	FNEG
+	Sq  1,	VAL_disp
+	BRA	L723
+L724:
+L723:					; post if
+					; debut if
+	Lb 1,	IS_NEGATIVE_disp
+	BF	L726
+	La  1,	-GFP_ofs				; propagation GFP generique
+	LI	45
+	CALL	STANDARD.TEXT_IO.FIXED_IO.PUT_L78. ,EMIT_L714
+	BRA	L725
+L726:
+L725:					; post if
+					; debut if
+	Ld  1,	-EXP_ofs
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	CLE
+	BF	L728
+VAR	KL730_disp, d				; compteur boucle LOOP__73
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd  1,	KL730_disp
+VAR	LMT_KL730_disp, d			; limite boucle LOOP__73
+	Ld  1,	-AFT_ofs
+	Sd  1,	LMT_KL730_disp
+	Ld  1,	KL730_disp				; test null range LOOP__73
+	Ld  1,	LMT_KL730_disp
+	CGT
+	BT	L729
+LOOP__73:					; corps boucle LOOP__73
+	Lq 1,	ROUNDING_disp
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	10.0
+	FDIV
+	Sq  1,	ROUNDING_disp
+	Ld  1,	KL730_disp				; test de sortie LOOP__73
+	Ld  1,	LMT_KL730_disp
+	CEQ
+	BT	L729
+	Ld  1,	KL730_disp				; mise a jour compteur LOOP__73
+	INC
+	Sd  1,	KL730_disp
+	BRA	LOOP__73				; iteration suivante LOOP__73
+L729:					; post loop LOOP__73
+					; debut if
+	Lq 1,	VAL_disp
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	0.0
+	FCNE
+	BF	L732
+	Lq 1,	VAL_disp
+	Lq 1,	ROUNDING_disp
+	FADD
+	Sq  1,	VAL_disp
+	BRA	L731
+L732:
+L731:					; post if
+	LI	0					; lieu resultat sur pile
+	La  1,	-GFP_ofs				; propagation GFP generique
+	Lq 1,	VAL_disp
+	CALL	STANDARD.TEXT_IO.FIXED_IO.PUT_L78. ,FLOOR_POS_L711
+	Sq  1,	IPART_disp
+	Lq 1,	VAL_disp
+	Lq 1,	IPART_disp
+; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_FLOAT
+	CVTIF					; CODE_CONVERSION FLOAT TARGET FROM DN_INTEGER
+	FSUB
+	Sq  1,	FRC_PART_disp
+	Lq 1,	IPART_disp
+	Sq  1,	IPART_WORK_disp
+					; debut if
+	Lq 1,	IPART_WORK_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	CEQ
+	BF	L734
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd  1,	NB_disp
+	La	 1, IBUF_disp				; array data start address on stack
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	LId	1, IBUF__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, IBUF__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	LI	48
+	Sb
+	BRA	L733
+L734:
+LOOP__74:
+	Lq 1,	IPART_WORK_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	CGT
+	BF	L735
+	Ld 1,	NB_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd  1,	NB_disp
+	La	 1, IBUF_disp				; array data start address on stack
+	Ld 1,	NB_disp
+	LId	1, IBUF__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, IBUF__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	LI	48
+	Lq 1,	IPART_WORK_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	10
+	MODI
+; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
+	ADD
+	Sb
+	Lq 1,	IPART_WORK_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	10
+	DIV
+	Sq  1,	IPART_WORK_disp
+	BRA	LOOP__74
+L735:					; post loop LOOP__74
+L733:					; post if
+VAR	KL737_disp, d				; compteur boucle LOOP__75
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd  1,	KL737_disp
+VAR	LMT_KL737_disp, d			; limite boucle LOOP__75
+	Ld 1,	NB_disp
+	Sd  1,	LMT_KL737_disp
+	Ld  1,	KL737_disp				; test null range LOOP__75
+	Ld  1,	LMT_KL737_disp
+	CGT
+	BT	L736
+	Ld  1,	KL737_disp				; inversion range LOOP__75
+	Ld  1,	LMT_KL737_disp
+	Sd  1,	KL737_disp
+	Sd  1,	LMT_KL737_disp
+LOOP__75:					; corps boucle LOOP__75
+	La  1,	-GFP_ofs				; propagation GFP generique
+	La	 1, IBUF_disp				; array data start address on stack
+	Ld	1, KL737_disp
+	LId	1, IBUF__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, IBUF__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	CALL	STANDARD.TEXT_IO.FIXED_IO.PUT_L78. ,EMIT_L714
+	Ld  1,	KL737_disp				; test de sortie LOOP__75
+	Ld  1,	LMT_KL737_disp
+	CEQ
+	BT	L736
+	Ld  1,	KL737_disp				; mise a jour compteur LOOP__75
+	DEC
+	Sd  1,	KL737_disp
+	BRA	LOOP__75				; iteration suivante LOOP__75
+L736:					; post loop LOOP__75
+	La  1,	-GFP_ofs				; propagation GFP generique
+	LI	46
+	CALL	STANDARD.TEXT_IO.FIXED_IO.PUT_L78. ,EMIT_L714
+	La  1,	-GFP_ofs				; propagation GFP generique
+	Lq 1,	FRC_PART_disp
+	CALL	STANDARD.TEXT_IO.FIXED_IO.PUT_L78. ,EMIT_FRACTION_L717
+	BRA	L727
+L728:
+					; debut if
+	Lq 1,	VAL_disp
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	0.0
+	FCNE
+	BF	L739
+LOOP__76:
+	Lq 1,	VAL_disp
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	10.0
+	FCGE
+	BF	L740
+	Lq 1,	VAL_disp
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	10.0
+	FDIV
+	Sq  1,	VAL_disp
+	Ld 1,	E_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd  1,	E_disp
+	BRA	LOOP__76
+L740:					; post loop LOOP__76
+LOOP__77:
+	Lq 1,	VAL_disp
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	1.0
+	FCLT
+	BF	L741
+	Lq 1,	VAL_disp
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	10.0
+	FMUL
+	Sq  1,	VAL_disp
+	Ld 1,	E_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	SUB
+	Sd  1,	E_disp
+	BRA	LOOP__77
+L741:					; post loop LOOP__77
+	BRA	L738
+L739:
+L738:					; post if
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	0.5
+	Sq  1,	ROUNDING_disp
+VAR	KL743_disp, d				; compteur boucle LOOP__78
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd  1,	KL743_disp
+VAR	LMT_KL743_disp, d			; limite boucle LOOP__78
+	Ld  1,	-AFT_ofs
+	Sd  1,	LMT_KL743_disp
+	Ld  1,	KL743_disp				; test null range LOOP__78
+	Ld  1,	LMT_KL743_disp
+	CGT
+	BT	L742
+LOOP__78:					; corps boucle LOOP__78
+	Lq 1,	ROUNDING_disp
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	10.0
+	FDIV
+	Sq  1,	ROUNDING_disp
+	Ld  1,	KL743_disp				; test de sortie LOOP__78
+	Ld  1,	LMT_KL743_disp
+	CEQ
+	BT	L742
+	Ld  1,	KL743_disp				; mise a jour compteur LOOP__78
+	INC
+	Sd  1,	KL743_disp
+	BRA	LOOP__78				; iteration suivante LOOP__78
+L742:					; post loop LOOP__78
+					; debut if
+	Lq 1,	VAL_disp
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	0.0
+	FCNE
+	BF	L745
+	Lq 1,	VAL_disp
+	Lq 1,	ROUNDING_disp
+	FADD
+	Sq  1,	VAL_disp
+	BRA	L744
+L745:
+L744:					; post if
+					; debut if
+	Lq 1,	VAL_disp
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	10.0
+	FCGE
+	BF	L747
+	Lq 1,	VAL_disp
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	10.0
+	FDIV
+	Sq  1,	VAL_disp
+	Ld 1,	E_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd  1,	E_disp
+	BRA	L746
+L747:
+L746:					; post if
+	LI	0					; lieu resultat sur pile
+	La  1,	-GFP_ofs				; propagation GFP generique
+	Lq 1,	VAL_disp
+	CALL	STANDARD.TEXT_IO.FIXED_IO.PUT_L78. ,FLOOR_POS_L711
+; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
+	Sd  1,	DIGIT_disp
+					; debut if
+	Ld 1,	DIGIT_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	9
+	CGT
+	BF	L749
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	9
+	Sd  1,	DIGIT_disp
+	BRA	L748
+L749:
+	Ld 1,	DIGIT_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	CLT
+	BF	L750
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	Sd  1,	DIGIT_disp
+	BRA	L748
+L750:
+L748:					; post if
+	La  1,	-GFP_ofs				; propagation GFP generique
+	LI	48
+	Ld 1,	DIGIT_disp
+	ADD
+	CALL	STANDARD.TEXT_IO.FIXED_IO.PUT_L78. ,EMIT_L714
+	Lq 1,	VAL_disp
+	Ld 1,	DIGIT_disp
+; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_FLOAT
+	CVTIF					; CODE_CONVERSION FLOAT TARGET FROM DN_INTEGER
+	FSUB
+	Sq  1,	FRC_PART_disp
+	La  1,	-GFP_ofs				; propagation GFP generique
+	LI	46
+	CALL	STANDARD.TEXT_IO.FIXED_IO.PUT_L78. ,EMIT_L714
+	La  1,	-GFP_ofs				; propagation GFP generique
+	Lq 1,	FRC_PART_disp
+	CALL	STANDARD.TEXT_IO.FIXED_IO.PUT_L78. ,EMIT_FRACTION_L717
+	La  1,	-GFP_ofs				; propagation GFP generique
+	LI	69
+	CALL	STANDARD.TEXT_IO.FIXED_IO.PUT_L78. ,EMIT_L714
+					; debut if
+	Ld 1,	E_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	CLT
+	BF	L752
+	La  1,	-GFP_ofs				; propagation GFP generique
+	LI	45
+	CALL	STANDARD.TEXT_IO.FIXED_IO.PUT_L78. ,EMIT_L714
+	Ld 1,	E_disp
+	NEG
+	Sd  1,	E_disp
+	BRA	L751
+L752:
+	La  1,	-GFP_ofs				; propagation GFP generique
+	LI	43
+	CALL	STANDARD.TEXT_IO.FIXED_IO.PUT_L78. ,EMIT_L714
+L751:					; post if
+namespace	BLOCK__79
+ELB 2					;    BODY ELAB
+STRING = 'STRING'
+namespace STRING				; array var constrained array type info
+VAR use__info, q
+VAR SIZ, d
+	LVA	2, SIZ
+	Sa	2, use__info
+VAR COMP_SIZ, d
+VAR FST_1, d
+VAR LST_1, d
+	LI	8
+	Sd	2, COMP_SIZ
+	Ld	2, COMP_SIZ
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd	2, FST_1
+	Ld  1,	-EXP_ofs
+	Sd	2, LST_1
+	Ld	2, LST_1
+	INC
+	Ld	2, FST_1
+	SUB
+	MUL
+	Sd	2, SIZ
+  virtual at 4
+COMP_SIZ = $
+	rd 1 
+FST_1 = $
+	rd 1 
+LST_1 = $
+	rd 1 
+  end virtual
+end namespace
+VAR EXP_STR_disp, q				; variable array : pointeur aux data
+VAR EXP_STR__u, q				; variable array : useinfo pointeur au rec info
+	La 2, STRING.use__info
+	Sa	2, EXP_STR__u				; array info ptr at __u
+	Ld	2, STRING.SIZ
+	LI	8
+	DIV
+	CO_VAR
+	Sa	2, EXP_STR_disp				; array data ptr at _disp
+
+VAR EVAL_disp, d				; variable entiere
+	Ld 1,	STANDARD.TEXT_IO.FIXED_IO.PUT_L78.E_disp
+	Sd  2,	EVAL_disp
+
+VAR CHECK_disp, d				; variable entiere
+	Ld 1,	STANDARD.TEXT_IO.FIXED_IO.PUT_L78.E_disp
+	Sd  2,	CHECK_disp
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+VAR	KL754_disp, d				; compteur boucle LOOP__83
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd  2,	KL754_disp
+VAR	LMT_KL754_disp, d			; limite boucle LOOP__83
+	Ld  1,	-EXP_ofs
+	Sd  2,	LMT_KL754_disp
+	Ld  2,	KL754_disp				; test null range LOOP__83
+	Ld  2,	LMT_KL754_disp
+	CGT
+	BT	L753
+LOOP__83:					; corps boucle LOOP__83
+	Ld 2,	CHECK_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	10
+	DIV
+	Sd  2,	CHECK_disp
+	Ld  2,	KL754_disp				; test de sortie LOOP__83
+	Ld  2,	LMT_KL754_disp
+	CEQ
+	BT	L753
+	Ld  2,	KL754_disp				; mise a jour compteur LOOP__83
+	INC
+	Sd  2,	KL754_disp
+	BRA	LOOP__83				; iteration suivante LOOP__83
+L753:					; post loop LOOP__83
+					; debut if
+	Ld 2,	CHECK_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	CNE
+	BF	L756
+	LI	1
+	Sb  1,	BAD_LAYOUT_disp
+	BRA	L755
+L756:
+L755:					; post if
+VAR	KL758_disp, d				; compteur boucle LOOP__84
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd  2,	KL758_disp
+VAR	LMT_KL758_disp, d			; limite boucle LOOP__84
+	Ld  1,	-EXP_ofs
+	Sd  2,	LMT_KL758_disp
+	Ld  2,	KL758_disp				; test null range LOOP__84
+	Ld  2,	LMT_KL758_disp
+	CGT
+	BT	L757
+	Ld  2,	KL758_disp				; inversion range LOOP__84
+	Ld  2,	LMT_KL758_disp
+	Sd  2,	KL758_disp
+	Sd  2,	LMT_KL758_disp
+LOOP__84:					; corps boucle LOOP__84
+	La	 2, EXP_STR_disp			; array data start address on stack
+	Ld	2, KL758_disp
+	LId	2, EXP_STR__u, STANDARD.STRING.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	2, EXP_STR__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	LI	48
+	Ld 2,	EVAL_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	10
+	MODI
+	ADD
+	Sb
+	Ld 2,	EVAL_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	10
+	DIV
+	Sd  2,	EVAL_disp
+	Ld  2,	KL758_disp				; test de sortie LOOP__84
+	Ld  2,	LMT_KL758_disp
+	CEQ
+	BT	L757
+	Ld  2,	KL758_disp				; mise a jour compteur LOOP__84
+	DEC
+	Sd  2,	KL758_disp
+	BRA	LOOP__84				; iteration suivante LOOP__84
+L757:					; post loop LOOP__84
+VAR	KL760_disp, d				; compteur boucle LOOP__85
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd  2,	KL760_disp
+VAR	LMT_KL760_disp, d			; limite boucle LOOP__85
+	Ld  1,	-EXP_ofs
+	Sd  2,	LMT_KL760_disp
+	Ld  2,	KL760_disp				; test null range LOOP__85
+	Ld  2,	LMT_KL760_disp
+	CGT
+	BT	L759
+LOOP__85:					; corps boucle LOOP__85
+	La  1,	-GFP_ofs				; propagation GFP generique
+	La	 2, EXP_STR_disp			; array data start address on stack
+	Ld	2, KL760_disp
+	LId	2, EXP_STR__u, STANDARD.STRING.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	2, EXP_STR__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	CALL	STANDARD.TEXT_IO.FIXED_IO.PUT_L78. ,EMIT_L714
+	Ld  2,	KL760_disp				; test de sortie LOOP__85
+	Ld  2,	LMT_KL760_disp
+	CEQ
+	BT	L759
+	Ld  2,	KL760_disp				; mise a jour compteur LOOP__85
+	INC
+	Sd  2,	KL760_disp
+	BRA	LOOP__85				; iteration suivante LOOP__85
+L759:					; post loop LOOP__85
+	UNLINK 2
+endPRO
+L727:					; post if
+					; debut if
+	Lb 1,	BAD_LAYOUT_disp
+	DUP
+	BT	L763
+	DROP
+	Ld 1,	LEN_disp
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STRING.LST_1
+	INC
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STRING.FST_1
+	SUB
+	CGT
+L763:
+	BF	L762
+VAR	KL765_disp, d				; compteur boucle LOOP__80
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STRING.FST_1
+	Sd  1,	KL765_disp
+VAR	LMT_KL765_disp, d			; limite boucle LOOP__80
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STRING.LST_1
+	Sd  1,	LMT_KL765_disp
+	Ld  1,	KL765_disp				; test null range LOOP__80
+	Ld  1,	LMT_KL765_disp
+	CGT
+	BT	L764
+LOOP__80:					; corps boucle LOOP__80
+	LVA	1, -TO_ofs
+	LIa	, , 0				; array data start address on stack
+	Ld	1, KL765_disp
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
+	SUB
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	LI	42
+	Sb
+	Ld  1,	KL765_disp				; test de sortie LOOP__80
+	Ld  1,	LMT_KL765_disp
+	CEQ
+	BT	L764
+	Ld  1,	KL765_disp				; mise a jour compteur LOOP__80
+	INC
+	Sd  1,	KL765_disp
+	BRA	LOOP__80				; iteration suivante LOOP__80
+L764:					; post loop LOOP__80
+	BRA	L761
+L762:
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STRING.LST_1
+	INC
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STRING.FST_1
+	SUB
+	Ld 1,	LEN_disp
+	SUB
+	Sd  1,	PAD_disp
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STRING.FST_1
+	Sd  1,	POS_disp
+VAR	KL767_disp, d				; compteur boucle LOOP__81
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd  1,	KL767_disp
+VAR	LMT_KL767_disp, d			; limite boucle LOOP__81
+	Ld 1,	PAD_disp
+	Sd  1,	LMT_KL767_disp
+	Ld  1,	KL767_disp				; test null range LOOP__81
+	Ld  1,	LMT_KL767_disp
+	CGT
+	BT	L766
+LOOP__81:					; corps boucle LOOP__81
+	LVA	1, -TO_ofs
+	LIa	, , 0				; array data start address on stack
+	Ld 1,	POS_disp
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
+	SUB
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	LI	32
+	Sb
+	Ld 1,	POS_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd  1,	POS_disp
+	Ld  1,	KL767_disp				; test de sortie LOOP__81
+	Ld  1,	LMT_KL767_disp
+	CEQ
+	BT	L766
+	Ld  1,	KL767_disp				; mise a jour compteur LOOP__81
+	INC
+	Sd  1,	KL767_disp
+	BRA	LOOP__81				; iteration suivante LOOP__81
+L766:					; post loop LOOP__81
+VAR	KL769_disp, d				; compteur boucle LOOP__82
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd  1,	KL769_disp
+VAR	LMT_KL769_disp, d			; limite boucle LOOP__82
+	Ld 1,	LEN_disp
+	Sd  1,	LMT_KL769_disp
+	Ld  1,	KL769_disp				; test null range LOOP__82
+	Ld  1,	LMT_KL769_disp
+	CGT
+	BT	L768
+LOOP__82:					; corps boucle LOOP__82
+	LVA	1, -TO_ofs
+	LIa	, , 0				; array data start address on stack
+	Ld 1,	POS_disp
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
+	SUB
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	La	 1, IMAGE_disp				; array data start address on stack
+	Ld	1, KL769_disp
+	LId	1, IMAGE__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, IMAGE__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	Sb
+	Ld 1,	POS_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd  1,	POS_disp
+	Ld  1,	KL769_disp				; test de sortie LOOP__82
+	Ld  1,	LMT_KL769_disp
+	CEQ
+	BT	L768
+	Ld  1,	KL769_disp				; mise a jour compteur LOOP__82
+	INC
+	Sd  1,	KL769_disp
+	BRA	LOOP__82				; iteration suivante LOOP__82
+L768:					; post loop LOOP__82
+L761:					; post if
 ret_lbl:
 	UNLINK 1
 	RTD	prm_siz
@@ -6398,8 +11208,8 @@ PRMS					;    debut parametrage
 endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
 
-if defined GET_ENUM_IMAGES_L421_
-PRO	GET_ENUM_IMAGES_L421			;---------- PRO GET_ENUM_IMAGES
+if defined GET_ENUM_IMAGES_L770_
+PRO	GET_ENUM_IMAGES_L770			;---------- PRO GET_ENUM_IMAGES
 PRMS					;    debut parametrage
 	PRM GFP_ofs
 	PRM result__ofs				; resultat de fonction
@@ -6418,7 +11228,7 @@ endPRO					;---------- end PRO GET_ENUM_IMAGES
 end if
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-namespace	BLOCK__35
+namespace	BLOCK__86
 ELB 2					;    BODY ELAB
 VAR IMAGES_STR_disp, q			; variable array : pointeur aux data
 VAR IMAGES_STR__u, q			; variable array : useinfo pointeur au rec info
@@ -6426,7 +11236,7 @@ VAR IMAGES_STR__u, q			; variable array : useinfo pointeur au rec info
 	Sa	2, IMAGES_STR__u			; array info ptr at __u
 	LI	0					; lieu resultat sur pile
 	La  1,	-GFP_ofs				; propagation GFP generique
-	CALL	STANDARD.TEXT_IO.ENUMERATION_IO.PUT_L81. ,GET_ENUM_IMAGES_L421
+	CALL	STANDARD.TEXT_IO.ENUMERATION_IO.PUT_L81. ,GET_ENUM_IMAGES_L770
 	DUP
 	La
 	Sa	2, IMAGES_STR_disp			; array data ptr from function result
@@ -6454,11 +11264,11 @@ VAR PAD_disp, d				; variable entiere
 
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-LOOP__36:
+LOOP__87:
 	Ld 2,	I_disp
 	LId	2, IMAGES_STR__u, STRING.LST_1
 	CLE
-	BF	L422
+	BF	L771
 	La	 2, IMAGES_STR_disp			; array data start address on stack
 	Ld 2,	I_disp
 	LId	2, IMAGES_STR__u, STANDARD.STRING.FST_1	; (index - FST_1) * SIZ_1
@@ -6488,7 +11298,7 @@ LOOP__36:
 	Ld 2,	REP_disp
 	Ld 2,	POS_VAL_disp
 	CEQ
-	BF	L424
+	BF	L773
 	Ld 2,	I_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	2
@@ -6503,60 +11313,60 @@ LOOP__36:
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	CGT
-	BF	L426
-VAR	JL428_disp, d				; compteur boucle LOOP__37
+	BF	L775
+VAR	JL777_disp, d				; compteur boucle LOOP__88
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
-	Sd  2,	JL428_disp
-VAR	LMT_JL428_disp, d			; limite boucle LOOP__37
+	Sd  2,	JL777_disp
+VAR	LMT_JL777_disp, d			; limite boucle LOOP__88
 	Ld 2,	PAD_disp
-	Sd  2,	LMT_JL428_disp
-	Ld  2,	JL428_disp				; test null range LOOP__37
-	Ld  2,	LMT_JL428_disp
+	Sd  2,	LMT_JL777_disp
+	Ld  2,	JL777_disp				; test null range LOOP__88
+	Ld  2,	LMT_JL777_disp
 	CGT
-	BT	L427
-LOOP__37:					; corps boucle LOOP__37
+	BT	L776
+LOOP__88:					; corps boucle LOOP__88
 	LI	32
 	La  1,	-FILE_ofs
 	CALL	STANDARD.TEXT_IO. ,PUT_L51
-	Ld  2,	JL428_disp				; test de sortie LOOP__37
-	Ld  2,	LMT_JL428_disp
+	Ld  2,	JL777_disp				; test de sortie LOOP__88
+	Ld  2,	LMT_JL777_disp
 	CEQ
-	BT	L427
-	Ld  2,	JL428_disp				; mise a jour compteur LOOP__37
+	BT	L776
+	Ld  2,	JL777_disp				; mise a jour compteur LOOP__88
 	INC
-	Sd  2,	JL428_disp
-	BRA	LOOP__37				; iteration suivante LOOP__37
-L427:					; post loop LOOP__37
-	BRA	L425
-L426:
-L425:					; post if
-VAR	JL430_disp, d				; compteur boucle LOOP__38
+	Sd  2,	JL777_disp
+	BRA	LOOP__88				; iteration suivante LOOP__88
+L776:					; post loop LOOP__88
+	BRA	L774
+L775:
+L774:					; post if
+VAR	JL779_disp, d				; compteur boucle LOOP__89
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
-	Sd  2,	JL430_disp
-VAR	LMT_JL430_disp, d			; limite boucle LOOP__38
+	Sd  2,	JL779_disp
+VAR	LMT_JL779_disp, d			; limite boucle LOOP__89
 	Ld 2,	LEN_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SUB
-	Sd  2,	LMT_JL430_disp
-	Ld  2,	JL430_disp				; test null range LOOP__38
-	Ld  2,	LMT_JL430_disp
+	Sd  2,	LMT_JL779_disp
+	Ld  2,	JL779_disp				; test null range LOOP__89
+	Ld  2,	LMT_JL779_disp
 	CGT
-	BT	L429
-LOOP__38:					; corps boucle LOOP__38
+	BT	L778
+LOOP__89:					; corps boucle LOOP__89
 					; debut if
 	Lb  1,	-SET_ofs
 	LI	0
 	CEQ
-	BF	L432
-namespace	BLOCK__39
+	BF	L781
+namespace	BLOCK__90
 ELB 3					;    BODY ELAB
 VAR CH_disp, d				; variable bool char enum
 	La	 2, IMAGES_STR_disp			; array data start address on stack
-	Ld 2,	STANDARD.TEXT_IO.ENUMERATION_IO.PUT_L81.BLOCK__35.IMG_START_disp
-	Ld	2, JL430_disp
+	Ld 2,	STANDARD.TEXT_IO.ENUMERATION_IO.PUT_L81.BLOCK__86.IMG_START_disp
+	Ld	2, JL779_disp
 	ADD
 	LId	2, IMAGES_STR__u, STANDARD.STRING.FST_1	; (index - FST_1) * SIZ_1
 	SUB
@@ -6575,31 +11385,31 @@ begin:					;---------- BDY INSTRUCTIONS
 	LI	65
 	CGE
 	DUP
-	BF	L435
+	BF	L784
 	DROP
 	Lb 3,	CH_disp
 	LI	90
 	CLE
-L435:
-	BF	L434
+L784:
+	BF	L783
 	Lb 3,	CH_disp
 ; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
 	LI	32
 	ADD
 	Sb  3,	CH_disp
-	BRA	L433
-L434:
-L433:					; post if
+	BRA	L782
+L783:
+L782:					; post if
 	Lb 3,	CH_disp
 	La  1,	-FILE_ofs
 	CALL	STANDARD.TEXT_IO. ,PUT_L51
 	UNLINK 3
 endPRO
-	BRA	L431
-L432:
+	BRA	L780
+L781:
 	La	 2, IMAGES_STR_disp			; array data start address on stack
 	Ld 2,	IMG_START_disp
-	Ld	2, JL430_disp
+	Ld	2, JL779_disp
 	ADD
 	LId	2, IMAGES_STR__u, STANDARD.STRING.FST_1	; (index - FST_1) * SIZ_1
 	SUB
@@ -6611,21 +11421,21 @@ L432:
 	Lb					; charge depuis adresse empilee 
 	La  1,	-FILE_ofs
 	CALL	STANDARD.TEXT_IO. ,PUT_L51
-L431:					; post if
-	Ld  2,	JL430_disp				; test de sortie LOOP__38
-	Ld  2,	LMT_JL430_disp
+L780:					; post if
+	Ld  2,	JL779_disp				; test de sortie LOOP__89
+	Ld  2,	LMT_JL779_disp
 	CEQ
-	BT	L429
-	Ld  2,	JL430_disp				; mise a jour compteur LOOP__38
+	BT	L778
+	Ld  2,	JL779_disp				; mise a jour compteur LOOP__89
 	INC
-	Sd  2,	JL430_disp
-	BRA	LOOP__38				; iteration suivante LOOP__38
-L429:					; post loop LOOP__38
+	Sd  2,	JL779_disp
+	BRA	LOOP__89				; iteration suivante LOOP__89
+L778:					; post loop LOOP__89
 	UNLINK 2
 	BRA ret_lbl
-	BRA	L423
-L424:
-L423:					; post if
+	BRA	L772
+L773:
+L772:					; post if
 	Ld 2,	I_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	2
@@ -6633,8 +11443,8 @@ L423:					; post if
 	Ld 2,	LEN_disp
 	ADD
 	Sd  2,	I_disp
-	BRA	LOOP__36
-L422:					; post loop LOOP__36
+	BRA	LOOP__87
+L771:					; post loop LOOP__87
 	UNLINK 2
 endPRO
 ret_lbl:
@@ -6680,8 +11490,8 @@ PRMS					;    debut parametrage
 endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
 
-if defined GET_ENUM_IMAGES_L436_
-PRO	GET_ENUM_IMAGES_L436			;---------- PRO GET_ENUM_IMAGES
+if defined GET_ENUM_IMAGES_L785_
+PRO	GET_ENUM_IMAGES_L785			;---------- PRO GET_ENUM_IMAGES
 PRMS					;    debut parametrage
 	PRM GFP_ofs
 	PRM result__ofs				; resultat de fonction
@@ -6700,7 +11510,7 @@ endPRO					;---------- end PRO GET_ENUM_IMAGES
 end if
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-namespace	BLOCK__40
+namespace	BLOCK__91
 ELB 2					;    BODY ELAB
 VAR IMAGES_STR_disp, q			; variable array : pointeur aux data
 VAR IMAGES_STR__u, q			; variable array : useinfo pointeur au rec info
@@ -6708,7 +11518,7 @@ VAR IMAGES_STR__u, q			; variable array : useinfo pointeur au rec info
 	Sa	2, IMAGES_STR__u			; array info ptr at __u
 	LI	0					; lieu resultat sur pile
 	La  1,	-GFP_ofs				; propagation GFP generique
-	CALL	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L79. ,GET_ENUM_IMAGES_L436
+	CALL	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L79. ,GET_ENUM_IMAGES_L785
 	DUP
 	La
 	Sa	2, IMAGES_STR_disp			; array data ptr from function result
@@ -6792,12 +11602,12 @@ begin:					;---------- BDY INSTRUCTIONS
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	Sd  2,	I_disp
-LOOP__41:
+LOOP__92:
 	Ld 2,	I_disp
 	Ld 2,	LEN_disp
 	CLE
 	DUP
-	BF	L438
+	BF	L787
 	DROP
 	La	 2, CHN_disp				; array data start address on stack
 	Ld 2,	I_disp
@@ -6811,22 +11621,22 @@ LOOP__41:
 	Lb					; charge depuis adresse empilee 
 	LI	32
 	CEQ
-L438:
-	BF	L437
+L787:
+	BF	L786
 	Ld 2,	I_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
 	Sd  2,	I_disp
-	BRA	LOOP__41
-L437:					; post loop LOOP__41
+	BRA	LOOP__92
+L786:					; post loop LOOP__92
 	Ld 2,	I_disp
 	Sd  2,	TOK_START_disp
-LOOP__42:
+LOOP__93:
 	Ld 2,	I_disp
 	Ld 2,	LEN_disp
 	CLE
-	BF	L439
+	BF	L788
 					; debut if
 	La	 2, CHN_disp				; array data start address on stack
 	Ld 2,	I_disp
@@ -6841,7 +11651,7 @@ LOOP__42:
 	LI	65
 	CGE
 	DUP
-	BF	L442
+	BF	L791
 	DROP
 	La	 2, CHN_disp				; array data start address on stack
 	Ld 2,	I_disp
@@ -6855,15 +11665,15 @@ LOOP__42:
 	Lb					; charge depuis adresse empilee 
 	LI	90
 	CLE
-L442:
-	BF	L441
+L791:
+	BF	L790
 	Ld 2,	I_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
 	Sd  2,	I_disp
-	BRA	L440
-L441:
+	BRA	L789
+L790:
 	La	 2, CHN_disp				; array data start address on stack
 	Ld 2,	I_disp
 	LId	2, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
@@ -6877,7 +11687,7 @@ L441:
 	LI	97
 	CGE
 	DUP
-	BF	L444
+	BF	L793
 	DROP
 	La	 2, CHN_disp				; array data start address on stack
 	Ld 2,	I_disp
@@ -6891,15 +11701,15 @@ L441:
 	Lb					; charge depuis adresse empilee 
 	LI	122
 	CLE
-L444:
-	BF	L443
+L793:
+	BF	L792
 	Ld 2,	I_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
 	Sd  2,	I_disp
-	BRA	L440
-L443:
+	BRA	L789
+L792:
 	La	 2, CHN_disp				; array data start address on stack
 	Ld 2,	I_disp
 	LId	2, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
@@ -6913,7 +11723,7 @@ L443:
 	LI	48
 	CGE
 	DUP
-	BF	L446
+	BF	L795
 	DROP
 	La	 2, CHN_disp				; array data start address on stack
 	Ld 2,	I_disp
@@ -6927,15 +11737,15 @@ L443:
 	Lb					; charge depuis adresse empilee 
 	LI	57
 	CLE
-L446:
-	BF	L445
+L795:
+	BF	L794
 	Ld 2,	I_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
 	Sd  2,	I_disp
-	BRA	L440
-L445:
+	BRA	L789
+L794:
 	La	 2, CHN_disp				; array data start address on stack
 	Ld 2,	I_disp
 	LId	2, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
@@ -6948,29 +11758,29 @@ L445:
 	Lb					; charge depuis adresse empilee 
 	LI	95
 	CEQ
-	BF	L447
+	BF	L796
 	Ld 2,	I_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
 	Sd  2,	I_disp
-	BRA	L440
-L447:
-	BRA	L439
-L440:					; post if
-	BRA	LOOP__42
-L439:					; post loop LOOP__42
+	BRA	L789
+L796:
+	BRA	L788
+L789:					; post if
+	BRA	LOOP__93
+L788:					; post loop LOOP__93
 	Ld 2,	I_disp
 	Ld 2,	TOK_START_disp
 	SUB
 	Sd  2,	TOK_LEN_disp
 	LId	2, IMAGES_STR__u, STRING.FST_1
 	Sd  2,	I_disp
-LOOP__43:
+LOOP__94:
 	Ld 2,	I_disp
 	LId	2, IMAGES_STR__u, STRING.LST_1
 	CLE
-	BF	L449
+	BF	L798
 	La	 2, IMAGES_STR_disp			; array data start address on stack
 	Ld 2,	I_disp
 	LId	2, IMAGES_STR__u, STANDARD.STRING.FST_1	; (index - FST_1) * SIZ_1
@@ -7005,27 +11815,27 @@ LOOP__43:
 	Ld 2,	IMG_LEN_disp
 	Ld 2,	TOK_LEN_disp
 	CEQ
-	BF	L451
+	BF	L800
 	LI	1
 	Sb  2,	FOUND_disp
-VAR	JL453_disp, d				; compteur boucle LOOP__44
+VAR	JL802_disp, d				; compteur boucle LOOP__95
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
-	Sd  2,	JL453_disp
-VAR	LMT_JL453_disp, d			; limite boucle LOOP__44
+	Sd  2,	JL802_disp
+VAR	LMT_JL802_disp, d			; limite boucle LOOP__95
 	Ld 2,	IMG_LEN_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SUB
-	Sd  2,	LMT_JL453_disp
-	Ld  2,	JL453_disp				; test null range LOOP__44
-	Ld  2,	LMT_JL453_disp
+	Sd  2,	LMT_JL802_disp
+	Ld  2,	JL802_disp				; test null range LOOP__95
+	Ld  2,	LMT_JL802_disp
 	CGT
-	BT	L452
-LOOP__44:					; corps boucle LOOP__44
+	BT	L801
+LOOP__95:					; corps boucle LOOP__95
 	La	 2, IMAGES_STR_disp			; array data start address on stack
 	Ld 2,	IMG_START_disp
-	Ld	2, JL453_disp
+	Ld	2, JL802_disp
 	ADD
 	LId	2, IMAGES_STR__u, STANDARD.STRING.FST_1	; (index - FST_1) * SIZ_1
 	SUB
@@ -7038,7 +11848,7 @@ LOOP__44:					; corps boucle LOOP__44
 	Sb  2,	IMG_CH_disp
 	La	 2, CHN_disp				; array data start address on stack
 	Ld 2,	TOK_START_disp
-	Ld	2, JL453_disp
+	Ld	2, JL802_disp
 	ADD
 	LId	2, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
@@ -7054,43 +11864,43 @@ LOOP__44:					; corps boucle LOOP__44
 	LI	97
 	CGE
 	DUP
-	BF	L456
+	BF	L805
 	DROP
 	Lb 2,	TOK_CH_disp
 	LI	122
 	CLE
-L456:
-	BF	L455
+L805:
+	BF	L804
 	Lb 2,	TOK_CH_disp
 ; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
 	LI	32
 	SUB
 	Sb  2,	TOK_CH_disp
-	BRA	L454
-L455:
-L454:					; post if
+	BRA	L803
+L804:
+L803:					; post if
 					; debut if
 	Lb 2,	IMG_CH_disp
 	Lb 2,	TOK_CH_disp
 	CNE
-	BF	L458
+	BF	L807
 	LI	0
 	Sb  2,	FOUND_disp
-	BRA	L457
-L458:
-L457:					; post if
-	Ld  2,	JL453_disp				; test de sortie LOOP__44
-	Ld  2,	LMT_JL453_disp
+	BRA	L806
+L807:
+L806:					; post if
+	Ld  2,	JL802_disp				; test de sortie LOOP__95
+	Ld  2,	LMT_JL802_disp
 	CEQ
-	BT	L452
-	Ld  2,	JL453_disp				; mise a jour compteur LOOP__44
+	BT	L801
+	Ld  2,	JL802_disp				; mise a jour compteur LOOP__95
 	INC
-	Sd  2,	JL453_disp
-	BRA	LOOP__44				; iteration suivante LOOP__44
-L452:					; post loop LOOP__44
+	Sd  2,	JL802_disp
+	BRA	LOOP__95				; iteration suivante LOOP__95
+L801:					; post loop LOOP__95
 					; debut if
 	Lb 2,	FOUND_disp
-	BF	L460
+	BF	L809
 	LVA  1,	-ITEM_ofs
 	La
 	Ld 2,	REP_disp
@@ -7099,12 +11909,12 @@ L452:					; post loop LOOP__44
 	CALLI
 	UNLINK 2
 	BRA ret_lbl
-	BRA	L459
-L460:
-L459:					; post if
-	BRA	L450
-L451:
-L450:					; post if
+	BRA	L808
+L809:
+L808:					; post if
+	BRA	L799
+L800:
+L799:					; post if
 	Ld 2,	I_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	2
@@ -7112,8 +11922,8 @@ L450:					; post if
 	Ld 2,	IMG_LEN_disp
 	ADD
 	Sd  2,	I_disp
-	BRA	LOOP__43
-L449:					; post loop LOOP__43
+	BRA	LOOP__94
+L798:					; post loop LOOP__94
 	UNLINK 2
 endPRO
 ret_lbl:

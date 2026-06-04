@@ -15,7 +15,9 @@ is					-------
   STD_INPUT		: FILE_TYPE;
   STD_OUTPUT		: FILE_TYPE;
 
+
 			--   F I L E   M A N A G E M E N T
+
 
 			------
   procedure		CREATE		( FILE :in out FILE_TYPE;
@@ -85,7 +87,7 @@ is					-------
   begin
     ERR_OR_ID := OPEN_SYSTEM_CALL( NAME );
     if  ERR_OR_ID >= 0  then
-      FILE.ID := OPEN_SYSTEM_CALL( NAME );
+      FILE.ID := ERR_OR_ID;
       FILE.NAME( 1 .. NAME'LENGTH ) := NAME;
       FILE.NAME_LEN := NAME'LENGTH;
       FILE.IS_OPENED := TRUE;
@@ -188,6 +190,7 @@ is					-------
   end	RESET;
 	-----
 
+
 			-----
   procedure		RESET		( FILE :in out FILE_TYPE )
   is			-----
@@ -197,6 +200,7 @@ is					-------
 
   end	RESET;
 	-----
+
 
 			----
   function		MODE		( FILE :in FILE_TYPE )		return FILE_MODE
@@ -208,6 +212,7 @@ is					-------
   end	MODE;
 	----
 
+
 			----
   function		NAME		( FILE :in FILE_TYPE )		return STRING
   is			----
@@ -217,6 +222,7 @@ is					-------
 
   end	NAME;
 	----
+
 
 			----
   function		FORM		( FILE :in FILE_TYPE )		return STRING
@@ -228,6 +234,7 @@ is					-------
   end	FORM;
 	----
 
+
 			-------
   function		IS_OPEN		( FILE :in FILE_TYPE )		return BOOLEAN
   is			-------
@@ -238,7 +245,8 @@ is					-------
 	-------
 
 
-           -- Control of default input and output files
+           		-- Control of default input and output files
+
 
 			---------
   procedure		SET_INPUT		( FILE :in FILE_TYPE )
@@ -251,6 +259,7 @@ is					-------
   end	SET_INPUT;
 	---------
 
+
 			----------
   procedure		SET_OUTPUT	( FILE :in FILE_TYPE )
   is			----------
@@ -262,6 +271,7 @@ is					-------
   end	SET_OUTPUT;
 	----------
 
+
 			--------------
   function		STANDARD_INPUT					return FILE_TYPE
   is			--------------
@@ -270,6 +280,7 @@ is					-------
 
   end	STANDARD_INPUT;
 	--------------
+
 
 			---------------
   function		STANDARD_OUTPUT					return FILE_TYPE
@@ -280,6 +291,7 @@ is					-------
   end	STANDARD_OUTPUT;
 	---------------
 
+
 			-------------
   function		CURRENT_INPUT					return FILE_TYPE
   is			-------------
@@ -288,6 +300,7 @@ is					-------
 
   end	CURRENT_INPUT;
 	-------------
+
 
 			--------------
   function		CURRENT_OUTPUT					return FILE_TYPE
@@ -298,7 +311,9 @@ is					-------
   end	CURRENT_OUTPUT;
 	--------------
 
-           -- Specification of line and page lengths
+
+			-- Specification of line and page lengths
+
 
 			---------------
   procedure		SET_LINE_LENGTH	( FILE :in FILE_TYPE; TO :in COUNT )
@@ -311,6 +326,7 @@ is					-------
   end	SET_LINE_LENGTH;
 	---------------
 
+
 			---------------
   procedure		SET_LINE_LENGTH	( TO :in COUNT)
   is			---------------
@@ -319,6 +335,7 @@ is					-------
 
   end	SET_LINE_LENGTH;
 	---------------
+
 
 			---------------
   procedure		SET_PAGE_LENGTH	( FILE :in FILE_TYPE; TO :in COUNT )
@@ -330,6 +347,7 @@ is					-------
   end	SET_PAGE_LENGTH;
 	---------------
 
+
 			---------------
   procedure		SET_PAGE_LENGTH	( TO :in COUNT)
   is			---------------
@@ -338,6 +356,7 @@ is					-------
 
   end	SET_PAGE_LENGTH;
 	---------------
+
 
 			-----------
   function		LINE_LENGTH	( FILE :in FILE_TYPE )		return COUNT
@@ -350,6 +369,7 @@ is					-------
   end	LINE_LENGTH;
 	-----------
 
+
 			-----------
   function		LINE_LENGTH					return COUNT
   is			-----------
@@ -358,6 +378,7 @@ is					-------
 
   end	LINE_LENGTH;
 	-----------
+
 
 			-----------
   function		PAGE_LENGTH	( FILE :in FILE_TYPE )		return COUNT
@@ -370,6 +391,7 @@ is					-------
   end	PAGE_LENGTH;
 	-----------
 
+
 			-----------
   function		PAGE_LENGTH					return COUNT
   is			-----------
@@ -380,7 +402,8 @@ is					-------
 	-----------
 
 
-           -- Column, Line, and Page Control
+			-- Column, Line, and Page Control
+
 
 			--------
   procedure		NEW_LINE		( FILE    :in FILE_TYPE;
@@ -405,6 +428,7 @@ is					-------
   end	NEW_LINE;
 	--------
 
+
 			--------
   procedure		NEW_LINE		( SPACING :in POSITIVE_COUNT := 1 )
   is			--------
@@ -413,6 +437,7 @@ is					-------
 
   end	NEW_LINE;
 	--------
+
 
 			---------
   procedure		SKIP_LINE		( FILE	:in FILE_TYPE;
@@ -441,6 +466,7 @@ is					-------
   end	SKIP_LINE;
 	---------
 
+
 			---------
   procedure		SKIP_LINE		( SPACING :in POSITIVE_COUNT := 1 )
   is			---------
@@ -449,6 +475,7 @@ is					-------
 
   end	SKIP_LINE;
 	---------
+
 
 			-----------
   function		END_OF_LINE	( FILE :in FILE_TYPE)		return BOOLEAN
@@ -476,6 +503,7 @@ is					-------
   end	END_OF_LINE;
 	-----------
 
+
 			-----------
   function		END_OF_LINE					return BOOLEAN
   is			-----------
@@ -484,6 +512,7 @@ is					-------
 
   end	END_OF_LINE;
 	-----------
+
 
 			--------
   procedure		NEW_PAGE		( FILE :in FILE_TYPE )
@@ -500,6 +529,8 @@ is					-------
 
   end	NEW_PAGE;
 	--------
+
+
 			--------
   procedure		NEW_PAGE
   is			--------
@@ -508,6 +539,7 @@ is					-------
 
   end	NEW_PAGE;
 	----
+
 
 			---------
   procedure		SKIP_PAGE		( FILE :in FILE_TYPE )
@@ -535,6 +567,7 @@ is					-------
   end	SKIP_PAGE;
 	---------
 
+
 			---------
   procedure		SKIP_PAGE
   is			---------
@@ -543,6 +576,7 @@ is					-------
 
   end	SKIP_PAGE;
 	---------
+
 
 			-----------
   function		END_OF_PAGE	( FILE :in FILE_TYPE ) 		return BOOLEAN
@@ -570,6 +604,7 @@ is					-------
   end	END_OF_PAGE;
 	-----------
 
+
 			-----------
   function		END_OF_PAGE 					return BOOLEAN
   is			-----------
@@ -578,6 +613,7 @@ is					-------
 
   end	END_OF_PAGE;
 	-----------
+
 
 			-----------
   function		END_OF_FILE	( FILE :in FILE_TYPE )		return BOOLEAN
@@ -603,6 +639,7 @@ is					-------
   end	END_OF_FILE;
 	-----------
 
+
 			-----------
   function		END_OF_FILE					return BOOLEAN
   is			-----------
@@ -611,6 +648,7 @@ is					-------
 
   end	END_OF_FILE;
 	-----------
+
 
 			-------
   procedure		SET_COL		( FILE :in FILE_TYPE; TO :in POSITIVE_COUNT )
@@ -628,6 +666,7 @@ is					-------
   end	SET_COL;
 	-------
 
+
 			-------
   procedure		SET_COL		( TO :in POSITIVE_COUNT )
   is			-------
@@ -636,6 +675,7 @@ is					-------
 
   end	SET_COL;
 	-------
+
 
 			--------
   procedure 		SET_LINE		( FILE :in FILE_TYPE; TO :in POSITIVE_COUNT )
@@ -653,6 +693,7 @@ is					-------
   end	SET_LINE;
 	--------
 
+
 			--------
   procedure		SET_LINE		( TO :in POSITIVE_COUNT )
   is			--------
@@ -661,6 +702,7 @@ is					-------
 
   end	SET_LINE;
 	--------
+
 
 			---
   function		COL		( FILE :in FILE_TYPE )		return POSITIVE_COUNT
@@ -672,6 +714,7 @@ is					-------
   end	COL;
 	---
 
+
 			---
   function		COL						return POSITIVE_COUNT
   is			---
@@ -680,6 +723,7 @@ is					-------
 
   end	COL;
 	---
+
 
 			----
   function		LINE		( FILE :in FILE_TYPE )		return POSITIVE_COUNT
@@ -691,6 +735,7 @@ is					-------
   end	LINE;
 	----
 
+
 			----
   function		LINE						return POSITIVE_COUNT
   is			----
@@ -699,6 +744,7 @@ is					-------
 
   end	LINE;
 	----
+
 
 			----
   function		PAGE		( FILE :in FILE_TYPE )		return POSITIVE_COUNT
@@ -710,6 +756,7 @@ is					-------
   end	PAGE;
 	----
 
+
 			----
   function		PAGE 						return POSITIVE_COUNT
   is			----
@@ -719,7 +766,9 @@ is					-------
   end	PAGE;
 	----
 
-           -- Character Input-Output
+
+			-- Character Input-Output
+
 
 			---
   procedure		GET		( FILE :in FILE_TYPE; ITEM :out CHARACTER )
@@ -758,6 +807,7 @@ is					-------
   end	GET;
 	----
 
+
 			---
   procedure		GET		( ITEM :out CHARACTER )
   is			---
@@ -766,6 +816,7 @@ is					-------
 
   end	GET;
 	----
+
 
 			---
   procedure		PUT		( FILE :in FILE_TYPE; ITEM :in CHARACTER )
@@ -796,6 +847,7 @@ is					-------
   end	PUT;
 	----
 
+
 			---
   procedure		PUT		( ITEM :in CHARACTER )
   is			---
@@ -806,7 +858,8 @@ is					-------
 	----
 
 
-           -- String Input-Output
+			-- String Input-Output
+
 
 			---
   procedure		GET		( FILE :in FILE_TYPE; ITEM :out STRING )
@@ -839,6 +892,7 @@ is					-------
   end	GET;
 	----
 
+
 			---
   procedure		GET		( ITEM :out STRING )
   is			---
@@ -847,6 +901,7 @@ is					-------
 
   end	GET;
 	----
+
 
 			---
   procedure		PUT		( FILE :in FILE_TYPE; ITEM :in STRING )
@@ -877,6 +932,7 @@ is					-------
   end	PUT;
 	---
 
+
 			---
   procedure		PUT		( ITEM :in STRING )
   is			---
@@ -885,6 +941,7 @@ is					-------
 
   end	PUT;
 	----
+
 
 			--------
   procedure		GET_LINE		( FILE :in FILE_TYPE;
@@ -930,6 +987,7 @@ is					-------
   end	GET_LINE;
 	--------
 
+
 			--------
   procedure		PUT_LINE		( FILE :in FILE_TYPE; ITEM :in STRING )
   is			--------
@@ -939,6 +997,7 @@ is					-------
 
   end	PUT_LINE;
 	--------
+
 
 			--------
   procedure		PUT_LINE		( ITEM :in STRING )
@@ -951,7 +1010,8 @@ is					-------
 	--------
 
 
-          	 -- Generic package for Input-Output of Integer Types
+			-- Generic package for Input-Output of Integer Types
+
 
   				----------
   package	body			INTEGER_IO
@@ -962,60 +1022,134 @@ is					-------
 					  ITEM  :out NUM;
 					  WIDTH :in FIELD := 0
 					)
-    is			---
+    is
 
-      CHN	: STRING( 1 .. 40 );
-      LEN	: NATURAL		:= 0;
-      VAL	: NUM		:= 0;
-      NEG	: BOOLEAN		:= FALSE;
-      I	: NATURAL;
+      CH			: CHARACTER;
+      VAL			: LONG_INTEGER	:= 0;     -- accumulation en 64 bits
+      NEG			: BOOLEAN		:= FALSE;
+      CHARS_READ		: NATURAL		:= 0;
+      DONE		: BOOLEAN		:= FALSE;
+      BASE		: LONG_INTEGER	:= 10;    -- base courante
+      IN_BASED		: BOOLEAN		:= FALSE;
 
     begin
-      GET_LINE( FILE, CHN, LEN );
-      -- Sauter les espaces de tete
-      I := 1;
-      while  I <= LEN  and then  CHN( I ) = ' '  loop
-        I := I + 1;
-      end loop;
-      -- Signe optionnel
-      if  I <= LEN  and then  CHN( I ) = '-'  then
-        NEG := TRUE;
-        I := I + 1;
-      elsif  I <= LEN  and then  CHN( I ) = '+'  then
-        I := I + 1;
-      end if;
-      -- Digits
-      while  I <= LEN  loop
-        exit when  CHN( I ) < '0'  or  CHN( I ) > '9';
-        VAL := 10 * VAL + NUM( CHARACTER'POS( CHN( I ) ) - CHARACTER'POS( '0' ) );
-        I := I + 1;
-      end loop;
-      if  NEG  then
-        ITEM := -VAL;
+
+      if  WIDTH = 0  then
+        loop
+          exit when  FILE.AT_END_OF_FILE;
+          GET( FILE, CH );
+          exit when  FILE.AT_END_OF_FILE;
+          exit when  CH /= ' '  and then  CH /= ASCII.HT
+                              and then  CH /= ASCII.LF
+                              and then  CH /= ASCII.CR;
+        end loop;
       else
-        ITEM := VAL;
+        GET( FILE, CH );
+        CHARS_READ := 0;
+      end if;
+
+      -- Signe optionnel
+      if  not FILE.AT_END_OF_FILE  and then  CH = '-'  then
+        NEG := TRUE;
+        if  WIDTH > 0  then
+          CHARS_READ := CHARS_READ + 1;
+          if  CHARS_READ >= WIDTH  then  DONE := TRUE;
+          else  GET( FILE, CH );
+          end if;
+        else
+          GET( FILE, CH );
+        end if;
+      elsif  not FILE.AT_END_OF_FILE  and then  CH = '+'  then
+        if  WIDTH > 0  then
+          CHARS_READ := CHARS_READ + 1;
+          if  CHARS_READ >= WIDTH  then  DONE := TRUE;
+          else  GET( FILE, CH );
+          end if;
+        else
+          GET( FILE, CH );
+        end if;
+      end if;
+
+      loop
+        exit when  DONE  or else  FILE.AT_END_OF_FILE;
+        if  WIDTH > 0  and then  CHARS_READ >= WIDTH  then  exit;  end if;
+
+        if  CH >= '0'  and then  CH <= '9'  then
+          VAL := BASE * VAL                               -- base courante (10 ou base#)
+                     + LONG_INTEGER( CHARACTER'POS( CH ) - CHARACTER'POS( '0' ) );
+          if  WIDTH > 0  then
+            CHARS_READ := CHARS_READ + 1;
+            if  CHARS_READ >= WIDTH  then  DONE := TRUE;
+            else  GET( FILE, CH );
+            end if;
+          else
+            GET( FILE, CH );
+          end if;
+
+        elsif  ( CH = 'A'  or else  CH = 'B'  or else  CH = 'C'
+              or else  CH = 'D'  or else  CH = 'E'  or else  CH = 'F'
+              or else  CH = 'a'  or else  CH = 'b'  or else  CH = 'c'
+              or else  CH = 'd'  or else  CH = 'e'  or else  CH = 'f' )
+              and then  IN_BASED  then
+          if  CH >= 'a'  then
+            VAL := BASE * VAL
+                       + LONG_INTEGER( CHARACTER'POS( CH ) - CHARACTER'POS( 'a' ) + 10 );
+          else
+            VAL := BASE * VAL
+                       + LONG_INTEGER( CHARACTER'POS( CH ) - CHARACTER'POS( 'A' ) + 10 );
+          end if;
+          if  WIDTH > 0  then
+            CHARS_READ := CHARS_READ + 1;
+            if  CHARS_READ >= WIDTH  then  DONE := TRUE;
+            else  GET( FILE, CH );
+            end if;
+          else
+            GET( FILE, CH );
+          end if;
+
+        elsif  CH = '#'  and then  not IN_BASED  then
+          BASE     := VAL;                                -- VAL contient la base
+          VAL      := 0;
+          IN_BASED := TRUE;
+          if  WIDTH > 0  then
+            CHARS_READ := CHARS_READ + 1;
+            if  CHARS_READ >= WIDTH  then  DONE := TRUE;
+            else  GET( FILE, CH );
+            end if;
+          else
+            GET( FILE, CH );
+          end if;
+
+        elsif  CH = '#'  and then  IN_BASED  then
+          if  WIDTH > 0  then  CHARS_READ := CHARS_READ + 1;  end if;
+          DONE := TRUE;
+
+        else
+          if  WIDTH = 0  then
+            FILE.LOOK_AHEAD     := CH;
+            FILE.HAS_LOOK_AHEAD := TRUE;
+          end if;
+          DONE := TRUE;
+        end if;
+      end loop;
+
+      if  NEG  then  ITEM := -NUM( VAL );
+      else           ITEM := NUM(  VAL );
       end if;
 
     end	GET;
-	----
+	---
+
 
 			---
     procedure		GET		( ITEM  :out NUM; WIDTH : in FIELD := 0)
     is			---
-
-      CHN	: STRING( 1 .. 40 );
-      LEN	: NATURAL		:= 40;
-      VAL	: NUM		:= 0;
-
     begin
-      GET_LINE( CHN, LEN );
-      for  I in 1 .. LEN  loop
-        VAL := 10 * VAL + CHARACTER'POS( CHN( I ) ) - CHARACTER'POS( '0' );
-      end loop;
-      ITEM := VAL;
-      PUT( CHN );
+      GET( DEFAULT_INPUT, ITEM, WIDTH );
+
     end	GET;
 	----
+
 
 			---
     procedure		PUT		( FILE  :in FILE_TYPE;
@@ -1025,61 +1159,53 @@ is					-------
 					)
     is			---
 
-      VAL		: NUM			:= ITEM;
-      STR		: STRING( 1 .. 68 );
-      POS		: POSITIVE		:= STR'LAST;
-      IS_NEGATIVE	: BOOLEAN			:= ITEM < 0;
-      DIGIT	: INTEGER;
-      DLEN		: NATURAL;		-- longueur digits
-      TLEN		: NATURAL;		-- longueur totale formatee
+      LBASE		: LONG_INTEGER		:= LONG_INTEGER( BASE );
+      AVAL		: LONG_INTEGER;		-- valeur absolue, toujours >= 0
+      STR			: STRING( 1 .. 68 );
+      POS			: POSITIVE		:= STR'LAST;
+      IS_NEGATIVE		: BOOLEAN			:= ITEM < 0;
+      DIGIT		: INTEGER;
+      DLEN		: NATURAL;
+      TLEN		: NATURAL;
 
     begin
+      -- Conversion en valeur absolue dans LONG_INTEGER :
+      -- meme NUM'FIRST (ex: -2147483648) ne deborde pas en LONG_INTEGER.
       if  IS_NEGATIVE  then
-        VAL := -ITEM;
+        AVAL := -LONG_INTEGER( ITEM );
+      else
+        AVAL :=  LONG_INTEGER( ITEM );
       end if;
 
-      -- Conversion digit par digit dans la base demandee (droite a gauche dans STR)
       loop
-        DIGIT := INTEGER( VAL mod NUM( BASE ) );
+        DIGIT := INTEGER( AVAL mod LBASE );     -- AVAL >= 0, resultat toujours >= 0
         if  DIGIT < 10  then
           STR( POS ) := CHARACTER'VAL( CHARACTER'POS( '0' ) + DIGIT );
         else
           STR( POS ) := CHARACTER'VAL( CHARACTER'POS( 'A' ) + DIGIT - 10 );
         end if;
-        VAL := VAL / NUM( BASE );
-        exit when  VAL = 0;
-        POS := POS - 1;
+        AVAL := AVAL / LBASE;
+        exit when  AVAL = 0;
+        POS  := POS - 1;
       end loop;
 
-      -- STR( POS .. STR'LAST ) contient les digits
-
-      -- Calcul de la longueur totale formatee
       DLEN := STR'LAST - POS + 1;
       TLEN := DLEN;
-      if  IS_NEGATIVE  then
-        TLEN := TLEN + 1;					-- pour le '-'
-      end if;
+      if  IS_NEGATIVE  then  TLEN := TLEN + 1;  end if;
       if  BASE /= 10  then
-        if  BASE >= 10  then
-          TLEN := TLEN + 4;				-- "NN#" + "#" = 2+1+1
-        else
-          TLEN := TLEN + 3;				-- "N#" + "#"  = 1+1+1
+        if  BASE >= 10  then  TLEN := TLEN + 4;
+        else                  TLEN := TLEN + 3;
         end if;
       end if;
 
-      -- Padding a gauche avec des espaces
       if  WIDTH > TLEN  then
         for  I in 1 .. WIDTH - TLEN  loop
           PUT( FILE, ' ' );
         end loop;
       end if;
 
-      -- Signe
-      if  IS_NEGATIVE  then
-        PUT( FILE, '-' );
-      end if;
+      if  IS_NEGATIVE  then  PUT( FILE, '-' );  end if;
 
-      -- Prefixe base
       if  BASE /= 10  then
         if  BASE >= 10  then
           PUT( FILE, '1' );
@@ -1090,16 +1216,13 @@ is					-------
         PUT( FILE, '#' );
       end if;
 
-      -- Digits
       PUT( FILE, STR( POS .. STR'LAST ) );
 
-      -- Suffixe base
-      if  BASE /= 10  then
-        PUT( FILE, '#' );
-      end if;
+      if  BASE /= 10  then  PUT( FILE, '#' );  end if;
 
     end	PUT;
-	----
+	---
+
 
 			---
     procedure		PUT		( ITEM  :in NUM;
@@ -1113,33 +1236,206 @@ is					-------
     end	PUT;
 	----
 
+
 			---
-    procedure		GET		( FROM :in STRING;
+    procedure		GET		( FROM :in STRING;						-- LRM 14.3.7(14)
 					  ITEM :out NUM;
 					  LAST :out POSITIVE
 					)
     is			---
-    begin null;
+
+      POS			: POSITIVE	:= FROM'FIRST;
+      VAL			: INTEGER		:= 0;
+      NEG			: BOOLEAN		:= FALSE;
+      DONE		: BOOLEAN		:= FALSE;
+      BASE		: INTEGER		:= 10;
+      IN_BASED		: BOOLEAN		:= FALSE;
+      CH			: CHARACTER;
+
+    begin
+
+      -- Saut des separateurs initiaux (blancs et horizontaux)
+      -- LRM 14.3.7 : meme regle que GET fichier WIDTH=0,
+      -- mais seuls les blancs sont sautes (pas les LF --
+      -- un STRING ne contient pas de line terminators au sens TEXT_IO).
+      while  POS <= FROM'LAST  and then
+             ( FROM( POS ) = ' '  or else  FROM( POS ) = ASCII.HT )  loop
+        POS := POS + 1;
+      end loop;
+
+      -- Signe optionnel
+      if  POS <= FROM'LAST  then
+        CH := FROM( POS );
+        if  CH = '-'  then
+          NEG := TRUE;
+          POS := POS + 1;
+        elsif  CH = '+'  then
+          POS := POS + 1;
+        end if;
+      end if;
+
+      -- Chiffres, based literals
+      loop
+        exit when  DONE  or else  POS > FROM'LAST;
+        CH := FROM( POS );
+
+        if  CH >= '0'  and then  CH <= '9'  then
+					-- ATTENTION il faudra verifier que le chiffre est compatible avec la base ! Sinon raise DATA_ERROR
+          VAL := BASE * VAL + INTEGER( CHARACTER'POS( CH ) - CHARACTER'POS( '0' ) );
+          LAST := POS;
+          POS  := POS + 1;
+
+        elsif  ( CH = 'A'  or else  CH = 'B'  or else  CH = 'C'
+              or else  CH = 'D'  or else  CH = 'E'  or else  CH = 'F'
+              or else  CH = 'a'  or else  CH = 'b'  or else  CH = 'c'
+              or else  CH = 'd'  or else  CH = 'e'  or else  CH = 'f' )
+              and then  IN_BASED  then
+          if  CH >= 'a'  then
+            VAL := BASE * VAL + INTEGER( CHARACTER'POS( CH ) - CHARACTER'POS( 'a' ) + 10 );
+          else
+            VAL := BASE * VAL + INTEGER( CHARACTER'POS( CH ) - CHARACTER'POS( 'A' ) + 10 );
+          end if;
+          LAST := POS;
+          POS  := POS + 1;
+
+        elsif  CH = '#'  and then  not IN_BASED  then
+          -- Premier '#' : VAL contient la base
+          BASE     := VAL;
+          VAL      := 0;
+          IN_BASED := TRUE;
+          LAST     := POS;
+          POS      := POS + 1;
+
+        elsif  CH = '#'  and then  IN_BASED  then
+          -- Second '#' : fin du based literal
+          LAST := POS;
+          DONE := TRUE;
+
+        else
+          -- Caractere hors-token : on s'arrete, LAST reste sur le precedent
+          DONE := TRUE;
+        end if;
+      end loop;
+
+      if  NEG  then  ITEM := -NUM( VAL );
+      else           ITEM :=  NUM( VAL );
+      end if;
 
     end	GET;
 	----
 
+
 			---
-    procedure		PUT		( TO   :out STRING;
+    procedure		PUT		( TO   :out STRING;						-- LRM 14.3.7(17)
 					  ITEM :in NUM;
 					  BASE :in NUMBER_BASE	:= DEFAULT_BASE
 					)
     is			---
-    begin null;
+
+      LBASE		: LONG_INTEGER		:= LONG_INTEGER( BASE );
+      AVAL		: LONG_INTEGER;
+      STR			: STRING( 1 .. 68 );
+      POS			: POSITIVE		:= STR'LAST;
+      IS_NEGATIVE		: BOOLEAN			:= ITEM < 0;
+      DIGIT		: INTEGER;
+      DLEN		: NATURAL;
+      TLEN		: NATURAL;
+      DST			: POSITIVE;
+
+    begin
+
+      if  IS_NEGATIVE  then
+        AVAL := -LONG_INTEGER( ITEM );
+      else
+        AVAL :=  LONG_INTEGER( ITEM );
+      end if;
+
+      -- Meme extraction droite-a-gauche que PUT(FILE,...)
+      loop
+        DIGIT := INTEGER( AVAL mod LBASE );
+        if  DIGIT < 10  then
+          STR( POS ) := CHARACTER'VAL( CHARACTER'POS( '0' ) + DIGIT );
+        else
+          STR( POS ) := CHARACTER'VAL( CHARACTER'POS( 'A' ) + DIGIT - 10 );
+        end if;
+        AVAL := AVAL / LBASE;
+        exit when  AVAL = 0;
+        POS  := POS - 1;
+      end loop;
+
+      -- Calcul de la longueur totale formate (meme logique que PUT FILE)
+      DLEN := STR'LAST - POS + 1;
+      TLEN := DLEN;
+      if  IS_NEGATIVE  then  TLEN := TLEN + 1;  end if;
+      if  BASE /= 10  then
+        if  BASE >= 10  then  TLEN := TLEN + 4;
+        else                  TLEN := TLEN + 3;
+        end if;
+      end if;
+
+      -- LRM 14.3.7 : si TLEN > TO'LENGTH -> LAYOUT_ERROR (non implemente).
+      -- Ecriture dans TO, justifie a droite avec espaces a gauche,
+      -- comme PUT(FILE, WIDTH => TO'LENGTH).
+       if  TLEN > TO'LENGTH  then
+        -- A remplacer ulterieurement par :
+        --   raise LAYOUT_ERROR;
+        for  I in TO'FIRST .. TO'LAST  loop
+          TO( I ) := '*';
+        end loop;
+        return;
+      end if;
+      DST := TO'FIRST;
+
+      -- Espaces de remplissage
+      if  TO'LENGTH > TLEN  then
+        for  I in 1 .. TO'LENGTH - TLEN  loop
+          TO( DST ) := ' ';
+          DST := DST + 1;
+        end loop;
+      end if;
+
+      -- Signe
+      if  IS_NEGATIVE  then
+        TO( DST ) := '-';
+        DST := DST + 1;
+      end if;
+
+      -- Prefixe base
+      if  BASE /= 10  then
+        if  BASE >= 10  then
+          TO( DST ) := '1';
+          DST := DST + 1;
+          TO( DST ) := CHARACTER'VAL( CHARACTER'POS( '0' ) + BASE - 10 );
+          DST := DST + 1;
+        else
+          TO( DST ) := CHARACTER'VAL( CHARACTER'POS( '0' ) + BASE );
+          DST := DST + 1;
+        end if;
+        TO( DST ) := '#';
+        DST := DST + 1;
+      end if;
+
+      -- Digits
+      for  I in POS .. STR'LAST  loop
+        TO( DST ) := STR( I );
+        DST := DST + 1;
+      end loop;
+
+      -- Suffixe base
+      if  BASE /= 10  then
+        TO( DST ) := '#';
+      end if;
 
     end	PUT;
 	----
+
 
   end	INTEGER_IO;
 	----------
 
 
-		-- Generic package for Input-Output of Real Types
+			-- Generic package for Input-Output of Real Types
+
 
 				--------
   package	body			FLOAT_IO
@@ -1155,12 +1451,12 @@ is					-------
       CH		: CHARACTER;
       VAL		: NUM		:= 0.0;
       FRAC	: NUM		:= 0.1;
-      NEG		: BOOLEAN	:= FALSE;
-      IN_FRAC	: BOOLEAN	:= FALSE;
-      EXP_VAL	: INTEGER	:= 0;
-      EXP_NEG	: BOOLEAN	:= FALSE;
-      CHARS_READ	: NATURAL	:= 0;
-      DONE		: BOOLEAN	:= FALSE;
+      NEG		: BOOLEAN		:= FALSE;
+      IN_FRAC	: BOOLEAN		:= FALSE;
+      EXP_VAL	: INTEGER		:= 0;
+      EXP_NEG	: BOOLEAN		:= FALSE;
+      CHARS_READ	: NATURAL		:= 0;
+      DONE	: BOOLEAN		:= FALSE;
 
     begin
 
@@ -1309,6 +1605,7 @@ is					-------
     end	GET;
 	----
 
+
 			---
     procedure		GET		( ITEM  :out NUM; WIDTH :in FIELD := 0)
     is			---
@@ -1317,6 +1614,7 @@ is					-------
 
     end	GET;
 	----
+
 
     			---
     procedure		PUT		( FILE :in FILE_TYPE;
@@ -1434,6 +1732,7 @@ is					-------
     end	PUT;
     ----
 
+
     			---
     procedure		PUT		( ITEM :in NUM;
 					  FORE :in FIELD		:= DEFAULT_FORE;
@@ -1448,15 +1747,111 @@ is					-------
 	----
 
 
+			---
     procedure		GET		( FROM :in STRING;
 					  ITEM :out NUM;
 					  LAST :out POSITIVE
 					)
-    is
-    begin null;
+    is			---
+
+      POS		: POSITIVE	:= FROM'FIRST;
+      VAL		: NUM		:= 0.0;
+      FRAC	: NUM		:= 0.1;
+      NEG		: BOOLEAN		:= FALSE;
+      IN_FRAC	: BOOLEAN		:= FALSE;
+      EXP_VAL	: INTEGER		:= 0;
+      EXP_NEG	: BOOLEAN		:= FALSE;
+      DONE	: BOOLEAN		:= FALSE;
+      CH		: CHARACTER;
+
+    begin
+      -- Saut des separateurs initiaux (blancs et HT uniquement,
+      -- pas de LF : un STRING n'est pas un flux de lignes)
+      while  POS <= FROM'LAST  and then
+             ( FROM( POS ) = ' '  or else  FROM( POS ) = ASCII.HT )  loop
+        POS := POS + 1;
+      end loop;
+
+      -- Signe optionnel
+      if  POS <= FROM'LAST  then
+        CH := FROM( POS );
+        if  CH = '-'  then
+          NEG := TRUE;
+          POS := POS + 1;
+        elsif  CH = '+'  then
+          POS := POS + 1;
+        end if;
+      end if;
+
+      -- Mantisse et exposant
+      loop
+        exit when  DONE  or else  POS > FROM'LAST;
+        CH := FROM( POS );
+
+        if  CH = '.'  then
+          IN_FRAC := TRUE;
+          LAST    := POS;
+          POS     := POS + 1;
+
+        elsif  CH = 'E'  or else  CH = 'e'  then
+          LAST := POS;
+          POS  := POS + 1;
+          -- Signe de l'exposant
+          if  POS <= FROM'LAST  then
+            CH := FROM( POS );
+            if  CH = '-'  then
+              EXP_NEG := TRUE;
+              LAST    := POS;
+              POS     := POS + 1;
+            elsif  CH = '+'  then
+              LAST := POS;
+              POS  := POS + 1;
+            end if;
+          end if;
+          -- Chiffres de l'exposant
+          loop
+            exit when  POS > FROM'LAST;
+            CH := FROM( POS );
+            exit when  CH < '0'  or else  CH > '9';
+            EXP_VAL := 10 * EXP_VAL
+                           + CHARACTER'POS( CH ) - CHARACTER'POS( '0' );
+            LAST := POS;
+            POS  := POS + 1;
+          end loop;
+          DONE := TRUE;
+
+        elsif  CH >= '0'  and then  CH <= '9'  then
+          if  IN_FRAC  then
+            VAL  := VAL + FRAC
+                        * NUM( CHARACTER'POS( CH ) - CHARACTER'POS( '0' ) );
+            FRAC := FRAC / 10.0;
+          else
+            VAL  := 10.0 * VAL
+                        + NUM( CHARACTER'POS( CH ) - CHARACTER'POS( '0' ) );
+          end if;
+          LAST := POS;
+          POS  := POS + 1;
+
+        else
+          -- Caractere hors-token : LAST reste sur le precedent
+          DONE := TRUE;
+        end if;
+      end loop;
+
+      -- Application de l'exposant
+      if  EXP_NEG  then
+        for  J in 1 .. EXP_VAL  loop  VAL := VAL / 10.0;  end loop;
+      else
+        for  J in 1 .. EXP_VAL  loop  VAL := VAL * 10.0;  end loop;
+      end if;
+
+      if  NEG  then  ITEM := -VAL;
+      else           ITEM :=  VAL;
+      end if;
 
     end	GET;
 	----
+
 
 			---
     procedure		PUT		( TO   :out STRING;
@@ -1465,10 +1860,269 @@ is					-------
 					  EXP  :in INTEGER		:= DEFAULT_EXP
 					)
     is			---
-    begin null;
+
+      IMAGE		: STRING( 1 .. 80 );
+      LEN			: NATURAL		:= 0;
+      POS			: INTEGER;
+      PAD			: INTEGER;
+
+      VAL			: LONG_FLOAT	:= LONG_FLOAT( ITEM );
+      ROUNDING		: LONG_FLOAT	:= 0.5;
+      FRC_PART		: LONG_FLOAT	:= 0.0;
+
+      IS_NEGATIVE		: BOOLEAN		:= FALSE;
+      BAD_LAYOUT		: BOOLEAN		:= FALSE;
+
+      DIGIT		: INTEGER;
+      IPART		: LONG_INTEGER;
+      IPART_WORK		: LONG_INTEGER;
+      IBUF		: STRING( 1 .. 40 );
+      NB			: NATURAL		:= 0;
+
+      E			: INTEGER		:= 0;
+
+			---------
+      function		FLOOR_POS		( X : LONG_FLOAT )		return LONG_INTEGER
+      is			---------
+        R : LONG_INTEGER := LONG_INTEGER( X );
+      begin
+        -- La conversion Ada LONG_INTEGER(X) arrondit.
+        -- Pour le formatage, on veut floor(X), avec X >= 0.0.
+        if  LONG_FLOAT( R ) > X  then
+          R := R - 1;
+        end if;
+
+        return R;
+
+      end	FLOOR_POS;
+	---------
+
+
+			----
+      procedure		EMIT		( CH :in CHARACTER )
+      is			----
+      begin
+        if  LEN < IMAGE'LAST  then
+          LEN := LEN + 1;
+          IMAGE( LEN ) := CH;
+        else
+          BAD_LAYOUT := TRUE;
+        end if;
+
+      end	EMIT;
+	----
+
+
+			-------------
+      procedure		EMIT_FRACTION	( FRACTION :in LONG_FLOAT )
+      is			-------------
+        F : LONG_FLOAT := FRACTION;
+        D : INTEGER;
+      begin
+        for  K in 1 .. AFT  loop
+          F := F * 10.0;
+          D := INTEGER( FLOOR_POS( F ) );
+
+          if  D > 9  then
+            D := 9;
+          elsif  D < 0  then
+            D := 0;
+          end if;
+
+          EMIT( CHARACTER'VAL( CHARACTER'POS( '0' ) + D ) );
+          F := F - LONG_FLOAT( D );
+        end loop;
+
+      end	EMIT_FRACTION;
+	-------------
+
+    begin
+
+      ------------------------------------------------------------
+      -- Conversion initiale du type fixed formel vers LONG_FLOAT.
+      -- Toute la mise en forme est ensuite faite en flottant.
+      ------------------------------------------------------------
+
+      if  VAL < 0.0  then
+        IS_NEGATIVE := TRUE;
+        VAL := -VAL;
+      end if;
+
+      if  IS_NEGATIVE  then
+        EMIT( '-' );
+      end if;
+
+      ------------------------------------------------------------
+      -- EXP <= 0 : notation decimale ordinaire
+      --             [-]ddd.ddd
+      ------------------------------------------------------------
+
+      if  EXP <= 0  then
+
+        -- Arrondi global avant extraction des chiffres.
+        for  K in 1 .. AFT  loop
+          ROUNDING := ROUNDING / 10.0;
+        end loop;
+
+        if  VAL /= 0.0  then
+          VAL := VAL + ROUNDING;
+        end if;
+
+        IPART := FLOOR_POS( VAL );
+        FRC_PART := VAL - LONG_FLOAT( IPART );
+
+        -- Construire la partie entiere en ordre inverse.
+        IPART_WORK := IPART;
+
+        if  IPART_WORK = 0  then
+          NB := 1;
+          IBUF( 1 ) := '0';
+        else
+          while  IPART_WORK > 0  loop
+            NB := NB + 1;
+            IBUF( NB ) :=
+              CHARACTER'VAL
+                ( CHARACTER'POS( '0' )
+                  + INTEGER( IPART_WORK mod 10 ) );
+            IPART_WORK := IPART_WORK / 10;
+          end loop;
+        end if;
+
+        -- Emettre les chiffres de la partie entiere dans le bon ordre.
+        for  K in reverse 1 .. NB  loop
+          EMIT( IBUF( K ) );
+        end loop;
+
+        EMIT( '.' );
+        EMIT_FRACTION( FRC_PART );
+
+      ------------------------------------------------------------
+      -- EXP > 0 : notation scientifique
+      --           [-]d.dddE[+|-]dd...
+      ------------------------------------------------------------
+
+      else
+
+        -- Normaliser 1.0 <= VAL < 10.0.
+        if  VAL /= 0.0  then
+          while  VAL >= 10.0  loop
+            VAL := VAL / 10.0;
+            E := E + 1;
+          end loop;
+
+          while  VAL < 1.0  loop
+            VAL := VAL * 10.0;
+            E := E - 1;
+          end loop;
+        end if;
+
+        -- Arrondir la mantisse a AFT chiffres.
+        ROUNDING := 0.5;
+
+        for  K in 1 .. AFT  loop
+          ROUNDING := ROUNDING / 10.0;
+        end loop;
+
+        if  VAL /= 0.0  then
+          VAL := VAL + ROUNDING;
+        end if;
+
+        -- Propager la retenue eventuelle :
+        -- 9.9999996E+n devient 1.000000E+(n+1).
+        if  VAL >= 10.0  then
+          VAL := VAL / 10.0;
+          E := E + 1;
+        end if;
+
+        -- Chiffre avant le point.
+        DIGIT := INTEGER( FLOOR_POS( VAL ) );
+
+        if  DIGIT > 9  then
+          DIGIT := 9;
+        elsif  DIGIT < 0  then
+          DIGIT := 0;
+        end if;
+
+        EMIT( CHARACTER'VAL( CHARACTER'POS( '0' ) + DIGIT ) );
+
+        FRC_PART := VAL - LONG_FLOAT( DIGIT );
+
+        EMIT( '.' );
+        EMIT_FRACTION( FRC_PART );
+
+        -- Exposant.
+        EMIT( 'E' );
+
+        if  E < 0  then
+          EMIT( '-' );
+          E := -E;
+        else
+          EMIT( '+' );
+        end if;
+
+        declare
+          EXP_STR	: STRING( 1 .. EXP );
+          EVAL		: INTEGER	:= E;
+          CHECK		: INTEGER	:= E;
+        begin
+          -- Verifier que l'exposant tient dans EXP chiffres.
+          for  K in 1 .. EXP  loop
+            CHECK := CHECK / 10;
+          end loop;
+
+          if  CHECK /= 0  then
+            BAD_LAYOUT := TRUE;
+          end if;
+
+          -- Image de l'exposant avec zeros de tete.
+          for  K in reverse 1 .. EXP  loop
+            EXP_STR( K ) :=
+              CHARACTER'VAL
+                ( CHARACTER'POS( '0' ) + EVAL mod 10 );
+            EVAL := EVAL / 10;
+          end loop;
+
+          for  K in 1 .. EXP  loop
+            EMIT( EXP_STR( K ) );
+          end loop;
+        end;
+
+      end if;
+
+      ------------------------------------------------------------
+      -- Justification dans TO.
+      -- La variante STRING n'a pas FORE : TO'LENGTH est le champ.
+      ------------------------------------------------------------
+
+      if  BAD_LAYOUT  or else  LEN > TO'LENGTH  then
+
+        -- A remplacer ulterieurement par :
+        --   raise LAYOUT_ERROR;
+        for  K in TO'FIRST .. TO'LAST  loop
+          TO( K ) := '*';
+        end loop;
+
+      else
+
+        PAD := TO'LENGTH - LEN;
+
+        POS := TO'FIRST;
+
+        for  K in 1 .. PAD  loop
+          TO( POS ) := ' ';
+          POS := POS + 1;
+        end loop;
+
+        for  K in 1 .. LEN  loop
+          TO( POS ) := IMAGE( K );
+          POS := POS + 1;
+        end loop;
+
+      end if;
 
     end	PUT;
-	----
+	---
+
 
 	--------
   end	FLOAT_IO;
@@ -1489,12 +2143,12 @@ is					-------
       CH		: CHARACTER;
       VAL		: LONG_FLOAT	:= 0.0;
       FRAC	: LONG_FLOAT	:= 0.1;
-      NEG		: BOOLEAN	:= FALSE;
-      IN_FRAC	: BOOLEAN	:= FALSE;
-      EXP_VAL	: INTEGER	:= 0;
-      EXP_NEG	: BOOLEAN	:= FALSE;
-      CHARS_READ	: NATURAL	:= 0;
-      DONE		: BOOLEAN	:= FALSE;
+      NEG		: BOOLEAN		:= FALSE;
+      IN_FRAC	: BOOLEAN		:= FALSE;
+      EXP_VAL	: INTEGER		:= 0;
+      EXP_NEG	: BOOLEAN		:= FALSE;
+      CHARS_READ	: NATURAL		:= 0;
+      DONE	: BOOLEAN		:= FALSE;
 
     begin
 
@@ -1669,6 +2323,15 @@ is					-------
       FRC_PART	: LONG_FLOAT;
       DIGIT	: LONG_INTEGER;
 
+      BAD_LAYOUT		: BOOLEAN		:= FALSE;
+
+      IPART		: LONG_INTEGER;
+      IPART_WORK		: LONG_INTEGER;
+      IBUF		: STRING( 1 .. 40 );
+      NB			: NATURAL		:= 0;
+
+      E			: INTEGER		:= 0;
+
 			---------
       function		FLOOR_POS		( X : LONG_FLOAT )		return LONG_INTEGER
       is			---------
@@ -1682,6 +2345,31 @@ is					-------
 
       end	FLOOR_POS;
 	---------
+
+
+			-------------
+      procedure		EMIT_FRACTION	( FRACTION :in LONG_FLOAT )
+      is			-------------
+        F : LONG_FLOAT := FRACTION;
+        D : INTEGER;
+      begin
+        for  K in 1 .. AFT  loop
+          F := F * 10.0;
+          D := INTEGER( FLOOR_POS( F ) );
+
+          if  D > 9  then
+            D := 9;
+          elsif  D < 0  then
+            D := 0;
+          end if;
+
+          PUT( FILE, CHARACTER'VAL( CHARACTER'POS( '0' ) + D ) );
+          F := F - LONG_FLOAT( D );
+        end loop;
+
+      end	EMIT_FRACTION;
+	-------------
+
 
     begin
       if  IS_NEGATIVE  then
@@ -1750,11 +2438,92 @@ is					-------
           FRC_PART := FRC_PART - LONG_FLOAT( DIGIT );
         end loop;
 
-      else
-        -- Branche scientifique a ajouter ensuite,
-        -- sur le meme principe que FLOAT_IO.PUT corrige.
-        null;
-      end if;
+      else											-- EXP > 0
+        -- Normaliser 1.0 <= VAL < 10.0.
+        if  VAL /= 0.0  then
+          while  VAL >= 10.0  loop
+            VAL := VAL / 10.0;
+            E := E + 1;
+          end loop;
+
+          while  VAL < 1.0  loop
+            VAL := VAL * 10.0;
+            E := E - 1;
+          end loop;
+        end if;
+
+        -- Arrondir la mantisse a AFT chiffres.
+        ROUNDING := 0.5;
+
+        for  K in 1 .. AFT  loop
+          ROUNDING := ROUNDING / 10.0;
+        end loop;
+
+        if  VAL /= 0.0  then
+          VAL := VAL + ROUNDING;
+        end if;
+
+        -- Propager la retenue eventuelle :
+        -- 9.9999996E+n devient 1.000000E+(n+1).
+        if  VAL >= 10.0  then
+          VAL := VAL / 10.0;
+          E := E + 1;
+        end if;
+
+        -- Chiffre avant le point.
+        DIGIT := LONG_INTEGER( FLOOR_POS( VAL ) );
+
+        if  DIGIT > 9  then
+          DIGIT := 9;
+        elsif  DIGIT < 0  then
+          DIGIT := 0;
+        end if;
+
+        PUT( FILE, CHARACTER'VAL( CHARACTER'POS( '0' ) + DIGIT ) );
+
+        FRC_PART := VAL - LONG_FLOAT( DIGIT );
+
+        PUT( FILE, '.' );
+        EMIT_FRACTION( FRC_PART );
+
+        -- Exposant.
+        PUT( FILE, 'E' );
+
+        if  E < 0  then
+          PUT( FILE, '-' );
+          E := -E;
+        else
+          PUT( FILE, '+' );
+        end if;
+
+        declare
+          EXP_STR	: STRING( 1 .. EXP );
+          EVAL		: INTEGER	:= E;
+          CHECK		: INTEGER	:= E;
+        begin
+          -- Verifier que l'exposant tient dans EXP chiffres.
+          for  K in 1 .. EXP  loop
+            CHECK := CHECK / 10;
+          end loop;
+
+          if  CHECK /= 0  then
+            BAD_LAYOUT := TRUE;
+          end if;
+
+          -- Image de l'exposant avec zeros de tete.
+          for  K in reverse 1 .. EXP  loop
+            EXP_STR( K ) :=
+              CHARACTER'VAL
+                ( CHARACTER'POS( '0' ) + EVAL mod 10 );
+            EVAL := EVAL / 10;
+          end loop;
+
+          for  K in 1 .. EXP  loop
+            PUT( FILE, EXP_STR( K ) );
+          end loop;
+        end;
+
+       end if;
 
     end	PUT;
 	---
@@ -1773,16 +2542,163 @@ is					-------
     end	PUT;
 	----
 
+
 			---
     procedure		GET		( FROM :in STRING;
 					  ITEM :out NUM;
 					  LAST :out POSITIVE
 					)
     is			---
-    begin null;
+
+      I			: INTEGER		:= FROM'FIRST;
+      VAL			: LONG_FLOAT	:= 0.0;
+      FRAC		: LONG_FLOAT	:= 0.1;
+      NEG			: BOOLEAN		:= FALSE;
+      IN_FRAC		: BOOLEAN		:= FALSE;
+      HAVE_DIGIT		: BOOLEAN		:= FALSE;
+      HAVE_FRAC_DIGIT	: BOOLEAN		:= FALSE;
+      EXP_SEEN		: BOOLEAN		:= FALSE;
+      EXP_VAL		: INTEGER		:= 0;
+      EXP_NEG		: BOOLEAN		:= FALSE;
+      HAVE_EXP_DIGIT	: BOOLEAN		:= FALSE;
+      BAD_IMAGE		: BOOLEAN		:= FALSE;
+
+begin
+
+  -- Ignorer les espaces initiaux.
+  while  I <= FROM'LAST
+    and then
+      ( FROM( I ) = ' '  or else  FROM( I ) = ASCII.HT )
+  loop
+    I := I + 1;
+  end loop;
+
+  -- Signe optionnel.
+  if  I <= FROM'LAST  and then  FROM( I ) = '-'  then
+    NEG := TRUE;
+    I := I + 1;
+
+  elsif  I <= FROM'LAST  and then  FROM( I ) = '+'  then
+    I := I + 1;
+  end if;
+
+  -- Mantisse decimale.
+  while  I <= FROM'LAST  loop
+
+    if  FROM( I ) >= '0'  and then  FROM( I ) <= '9'  then
+
+      HAVE_DIGIT := TRUE;
+
+      if  IN_FRAC  then
+        HAVE_FRAC_DIGIT := TRUE;
+
+        VAL :=
+          VAL
+          + FRAC
+          * LONG_FLOAT
+              ( CHARACTER'POS( FROM( I ) )
+                - CHARACTER'POS( '0' ) );
+
+        FRAC := FRAC / 10.0;
+
+      else
+        VAL :=
+          10.0 * VAL
+          + LONG_FLOAT
+              ( CHARACTER'POS( FROM( I ) )
+                - CHARACTER'POS( '0' ) );
+      end if;
+
+      I := I + 1;
+
+    elsif  FROM( I ) = '.'  and then  not IN_FRAC  then
+
+      IN_FRAC := TRUE;
+      I := I + 1;
+
+    elsif  ( FROM( I ) = 'E'  or else  FROM( I ) = 'e' )
+      and then  HAVE_DIGIT
+    then
+
+      EXP_SEEN := TRUE;
+      I := I + 1;
+
+      -- Signe optionnel de l'exposant.
+      if  I <= FROM'LAST  and then  FROM( I ) = '-'  then
+        EXP_NEG := TRUE;
+        I := I + 1;
+
+      elsif  I <= FROM'LAST  and then  FROM( I ) = '+'  then
+        I := I + 1;
+      end if;
+
+      -- Chiffres de l'exposant.
+      while  I <= FROM'LAST
+        and then  FROM( I ) >= '0'
+        and then  FROM( I ) <= '9'
+      loop
+        HAVE_EXP_DIGIT := TRUE;
+
+        EXP_VAL :=
+          10 * EXP_VAL
+          + CHARACTER'POS( FROM( I ) )
+          - CHARACTER'POS( '0' );
+
+        I := I + 1;
+      end loop;
+
+      exit;
+
+    else
+      exit;
+    end if;
+
+  end loop;
+
+  -- Controle lexical minimal.
+  -- Lorsque les exceptions seront actives, ce chemin devra faire :
+  --   raise DATA_ERROR;
+  BAD_IMAGE :=
+    not HAVE_DIGIT
+    or else  ( IN_FRAC  and then  not HAVE_FRAC_DIGIT )
+    or else  ( EXP_SEEN  and then  not HAVE_EXP_DIGIT );
+
+  if  BAD_IMAGE  then
+    ITEM := NUM( 0.0 );
+
+    if  FROM'FIRST <= FROM'LAST  then
+      LAST := FROM'FIRST;
+    else
+      LAST := 1;
+    end if;
+
+    return;
+  end if;
+
+  -- Appliquer l'exposant decimal.
+  if  EXP_NEG  then
+    for  J in 1 .. EXP_VAL  loop
+      VAL := VAL / 10.0;
+    end loop;
+  else
+    for  J in 1 .. EXP_VAL  loop
+      VAL := VAL * 10.0;
+    end loop;
+  end if;
+
+  -- I designe le premier caractere non consomme.
+  LAST := POSITIVE( I - 1 );
+
+  -- Conversion unique LONG_FLOAT -> type fixed reel de l'instance.
+  if  NEG  then
+    ITEM := NUM( -VAL );
+  else
+    ITEM := NUM( VAL );
+  end if;
 
     end	GET;
-	----
+	---
+
 
 			---
     procedure		PUT		( TO   :out STRING;
@@ -1791,7 +2707,265 @@ is					-------
 					  EXP  :in INTEGER		:= DEFAULT_EXP
 					)
     is			---
-    begin null;
+
+      IMAGE		: STRING( 1 .. 80 );
+      LEN			: NATURAL		:= 0;
+      POS			: INTEGER;
+      PAD			: INTEGER;
+
+      VAL			: LONG_FLOAT	:= LONG_FLOAT( ITEM );
+      ROUNDING		: LONG_FLOAT	:= 0.5;
+      FRC_PART		: LONG_FLOAT	:= 0.0;
+
+      IS_NEGATIVE		: BOOLEAN		:= FALSE;
+      BAD_LAYOUT		: BOOLEAN		:= FALSE;
+
+      DIGIT		: INTEGER;
+      IPART		: LONG_INTEGER;
+      IPART_WORK		: LONG_INTEGER;
+      IBUF		: STRING( 1 .. 40 );
+      NB			: NATURAL		:= 0;
+
+      E			: INTEGER		:= 0;
+
+			---------
+      function		FLOOR_POS		( X : LONG_FLOAT )		return LONG_INTEGER
+      is			---------
+        R : LONG_INTEGER := LONG_INTEGER( X );
+      begin
+        -- La conversion Ada LONG_INTEGER(X) arrondit.
+        -- Pour le formatage, on veut floor(X), avec X >= 0.0.
+        if  LONG_FLOAT( R ) > X  then
+          R := R - 1;
+        end if;
+
+        return R;
+
+      end	FLOOR_POS;
+	---------
+
+
+			----
+      procedure		EMIT		( CH :in CHARACTER )
+      is			----
+      begin
+        if  LEN < IMAGE'LAST  then
+          LEN := LEN + 1;
+          IMAGE( LEN ) := CH;
+        else
+          BAD_LAYOUT := TRUE;
+        end if;
+
+      end	EMIT;
+	----
+
+
+			-------------
+      procedure		EMIT_FRACTION	( FRACTION :in LONG_FLOAT )
+      is			-------------
+        F : LONG_FLOAT := FRACTION;
+        D : INTEGER;
+      begin
+        for  K in 1 .. AFT  loop
+          F := F * 10.0;
+          D := INTEGER( FLOOR_POS( F ) );
+
+          if  D > 9  then
+            D := 9;
+          elsif  D < 0  then
+            D := 0;
+          end if;
+
+          EMIT( CHARACTER'VAL( CHARACTER'POS( '0' ) + D ) );
+          F := F - LONG_FLOAT( D );
+        end loop;
+
+      end	EMIT_FRACTION;
+	-------------
+
+    begin
+
+      ------------------------------------------------------------
+      -- Conversion initiale du type fixed formel vers LONG_FLOAT.
+      -- Toute la mise en forme est ensuite faite en flottant.
+      ------------------------------------------------------------
+
+      if  VAL < 0.0  then
+        IS_NEGATIVE := TRUE;
+        VAL := -VAL;
+      end if;
+
+      if  IS_NEGATIVE  then
+        EMIT( '-' );
+      end if;
+
+      ------------------------------------------------------------
+      -- EXP <= 0 : notation decimale ordinaire
+      --             [-]ddd.ddd
+      ------------------------------------------------------------
+
+      if  EXP <= 0  then
+
+        -- Arrondi global avant extraction des chiffres.
+        for  K in 1 .. AFT  loop
+          ROUNDING := ROUNDING / 10.0;
+        end loop;
+
+        if  VAL /= 0.0  then
+          VAL := VAL + ROUNDING;
+        end if;
+
+        IPART := FLOOR_POS( VAL );
+        FRC_PART := VAL - LONG_FLOAT( IPART );
+
+        -- Construire la partie entiere en ordre inverse.
+        IPART_WORK := IPART;
+
+        if  IPART_WORK = 0  then
+          NB := 1;
+          IBUF( 1 ) := '0';
+        else
+          while  IPART_WORK > 0  loop
+            NB := NB + 1;
+            IBUF( NB ) :=
+              CHARACTER'VAL
+                ( CHARACTER'POS( '0' )
+                  + INTEGER( IPART_WORK mod 10 ) );
+            IPART_WORK := IPART_WORK / 10;
+          end loop;
+        end if;
+
+        -- Emettre les chiffres de la partie entiere dans le bon ordre.
+        for  K in reverse 1 .. NB  loop
+          EMIT( IBUF( K ) );
+        end loop;
+
+        EMIT( '.' );
+        EMIT_FRACTION( FRC_PART );
+
+      ------------------------------------------------------------
+      -- EXP > 0 : notation scientifique
+      --           [-]d.dddE[+|-]dd...
+      ------------------------------------------------------------
+
+      else
+
+        -- Normaliser 1.0 <= VAL < 10.0.
+        if  VAL /= 0.0  then
+          while  VAL >= 10.0  loop
+            VAL := VAL / 10.0;
+            E := E + 1;
+          end loop;
+
+          while  VAL < 1.0  loop
+            VAL := VAL * 10.0;
+            E := E - 1;
+          end loop;
+        end if;
+
+        -- Arrondir la mantisse a AFT chiffres.
+        ROUNDING := 0.5;
+
+        for  K in 1 .. AFT  loop
+          ROUNDING := ROUNDING / 10.0;
+        end loop;
+
+        if  VAL /= 0.0  then
+          VAL := VAL + ROUNDING;
+        end if;
+
+        -- Propager la retenue eventuelle :
+        -- 9.9999996E+n devient 1.000000E+(n+1).
+        if  VAL >= 10.0  then
+          VAL := VAL / 10.0;
+          E := E + 1;
+        end if;
+
+        -- Chiffre avant le point.
+        DIGIT := INTEGER( FLOOR_POS( VAL ) );
+
+        if  DIGIT > 9  then
+          DIGIT := 9;
+        elsif  DIGIT < 0  then
+          DIGIT := 0;
+        end if;
+
+        EMIT( CHARACTER'VAL( CHARACTER'POS( '0' ) + DIGIT ) );
+
+        FRC_PART := VAL - LONG_FLOAT( DIGIT );
+
+        EMIT( '.' );
+        EMIT_FRACTION( FRC_PART );
+
+        -- Exposant.
+        EMIT( 'E' );
+
+        if  E < 0  then
+          EMIT( '-' );
+          E := -E;
+        else
+          EMIT( '+' );
+        end if;
+
+        declare
+          EXP_STR	: STRING( 1 .. EXP );
+          EVAL		: INTEGER	:= E;
+          CHECK		: INTEGER	:= E;
+        begin
+          -- Verifier que l'exposant tient dans EXP chiffres.
+          for  K in 1 .. EXP  loop
+            CHECK := CHECK / 10;
+          end loop;
+
+          if  CHECK /= 0  then
+            BAD_LAYOUT := TRUE;
+          end if;
+
+          -- Image de l'exposant avec zeros de tete.
+          for  K in reverse 1 .. EXP  loop
+            EXP_STR( K ) :=
+              CHARACTER'VAL
+                ( CHARACTER'POS( '0' ) + EVAL mod 10 );
+            EVAL := EVAL / 10;
+          end loop;
+
+          for  K in 1 .. EXP  loop
+            EMIT( EXP_STR( K ) );
+          end loop;
+        end;
+
+      end if;
+
+      ------------------------------------------------------------
+      -- Justification dans TO.
+      -- La variante STRING n'a pas FORE : TO'LENGTH est le champ.
+      ------------------------------------------------------------
+
+      if  BAD_LAYOUT  or else  LEN > TO'LENGTH  then
+
+        -- A remplacer ulterieurement par :
+        --   raise LAYOUT_ERROR;
+        for  K in TO'FIRST .. TO'LAST  loop
+          TO( K ) := '*';
+        end loop;
+
+      else
+
+        PAD := TO'LENGTH - LEN;
+
+        POS := TO'FIRST;
+
+        for  K in 1 .. PAD  loop
+          TO( POS ) := ' ';
+          POS := POS + 1;
+        end loop;
+
+        for  K in 1 .. LEN  loop
+          TO( POS ) := IMAGE( K );
+          POS := POS + 1;
+        end loop;
+
+      end if;
 
     end	PUT;
 	----
@@ -1801,7 +2975,7 @@ is					-------
 	--------
 
 
-           -- Generic package for Input-Output of Enumeration types
+			-- Generic package for Input-Output of Enumeration types
 
 
 			--------------
@@ -1886,6 +3060,7 @@ is					-------
     end	PUT;
 	----
 
+
     			---
     procedure		GET		( FILE :in FILE_TYPE; ITEM :out ENUM)
     is			---
@@ -1967,6 +3142,7 @@ is					-------
     end	GET;
 	---
 
+
 			---
     procedure		GET		( ITEM :out ENUM)
     is			---
@@ -1975,6 +3151,7 @@ is					-------
 
     end	GET;
 	---
+
 
 			---
     procedure		GET		( FROM :in STRING;
@@ -1987,6 +3164,7 @@ is					-------
     end	GET;
 	---
 
+
 			---
     procedure		PUT		( TO   :out STRING;
 					  ITEM :in ENUM;
@@ -1998,8 +3176,10 @@ is					-------
     end	PUT;
 	----
 
+
   end	ENUMERATION_IO;
 	--------------
+
 
 begin
   STD_INPUT.NAME_LEN	:= 0;

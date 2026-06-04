@@ -1050,8 +1050,8 @@ raise PROGRAM_ERROR;
 	    -- ST fait SIb -1,0 : POP_RBX (valeur), INDIRECT_BASE_IN_RAX (deref @param → @dest), STORE
 	begin
 	  if  CODI.IN_GENERIC_BODY
-	  and then  ( DEFN.TY = DN_OUT_ID  or  DEFN.TY = DN_IN_OUT_ID
-			or  EXPRESSIONS.IS_GENERIC_FORMAL_TYPE( D( XD_SOURCE_NAME, NAME_TYPE ) ) )
+	      and then  EXPRESSIONS.IS_GENERIC_FORMAL_TYPE( D( XD_SOURCE_NAME, NAME_TYPE ) )
+	      and then  ( DEFN.TY = DN_OUT_ID  or  DEFN.TY = DN_IN_OUT_ID )
 	  then
 	    declare
 	      FORMAL_TYPE_NAME :constant STRING := PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, NAME_TYPE ) ) );
@@ -1059,7 +1059,6 @@ raise PROGRAM_ERROR;
 	        -- Charger l'adresse de ST via le GFP
 	        -- Utiliser le niveau du parametre (= niveau de la procedure, pas du bloc declare)
 	      PUT_LINE( tab & "La " & INTEGER'IMAGE( CODI.GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );
---	      PUT_LINE( tab & "La " & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' & tab & "-GFP_ofs" );
 	      PUT_LINE( tab & "La ," & tab & '-' & FORMAL_TYPE_NAME & "__st_ofs" );
 	      PUT_LINE( tab & "CALLI" );
 	    end;

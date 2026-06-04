@@ -823,6 +823,7 @@ put_line(	"; EXPRESSIONS.CODE_INDEXED adresse component id" );
     is		---------------
       PREFIX_DEFN		: TREE		:= D( SM_DEFN, PREFIX_NAME );
     begin
+
       if	PREFIX_NAME.TY = DN_USED_OBJECT_ID  then							-- UNE VARIABLE TABLEAU
         if  ( D( SM_EXP_TYPE,	PREFIX_NAME ).TY = DN_CONSTRAINED_ARRAY	)
          or ( D( SM_EXP_TYPE,	PREFIX_NAME ).TY = DN_ARRAY  and  D( SM_DEFN, PREFIX_NAME ).TY = DN_CONSTANT_ID	)
@@ -846,8 +847,9 @@ put_line(	"; EXPRESSIONS.CODE_INDEXED adresse component id" );
 	  PUT_LINE( IMAGE( NUM_DIM ) );
 	end;
 
-        elsif  D( SM_EXP_TYPE, PREFIX_NAME ).TY =	DN_ARRAY
-         and  PREFIX_DEFN.TY in CLASS_PARAM_NAME
+        elsif  ( D( SM_EXP_TYPE, PREFIX_NAME ).TY = DN_ARRAY
+	       or  D( SM_EXP_TYPE, PREFIX_NAME ).TY = DN_CONSTRAINED_ARRAY )
+	and  PREFIX_DEFN.TY in CLASS_PARAM_NAME
         then
 	-- Parametre array : acces useinfo via le doublet
 	declare
@@ -900,7 +902,7 @@ put_line(	"; EXPRESSIONS.CODE_INDEXED adresse component id" );
       ARRAY_LVL		: INTEGER		:= DI( CD_LEVEL, PREFIX_DEFN );
       PREFIX_TYPE_STR	:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, PREFIX_TYPE	) ) );
     begin
-      if	PREFIX_DEFN.TY = DN_IN_ID  then								-- On a juste l'adresse de la	VAR disp
+      if	PREFIX_DEFN.TY in CLASS_PARAM_NAME  then							-- On a juste l'adresse de la	VAR disp
 
         PUT_LINE( tab & "LVA"	& tab & IMAGE( ARRAY_LVL ) & ", -" & CHN_PREFIX &	"_ofs" );
         PUT_LINE( tab & "LIa"	& tab & ", ," & INTEGER'IMAGE( CODI.ADDR_SIZE ) );
