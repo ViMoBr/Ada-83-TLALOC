@@ -1,0 +1,80 @@
+if ~ definite TEXT_IO
+include 'TEXT_IO.FINC'
+end if
+PRO	RETURN_RECORD_TEST_L1			;---------- PRO RETURN_RECORD_TEST
+ELB 1					;    BODY ELAB
+
+					; POINT RECORD TYPE INFO
+POINT = 'POINT'
+namespace POINT
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+USEINFO 1, X, 	La 0, STANDARD.INTEGER.use__info
+USEINFO 1, Y, 	La 0, STANDARD.INTEGER.use__info
+virtual at 0				; calcul des offsets statiques
+STATOFS X, 4
+STATOFS Y, 4
+size = $
+end virtual
+	LI	 size*8
+	Sd	1, SIZ
+end namespace
+VAR P2_disp, q				; variable record : pointeur aux data record
+VAR P2__u, q				; variable record : pointeur aux useinfo
+VAR P2__dat, STANDARD.RETURN_RECORD_TEST_L1.POINT.size
+	LVA	1, P2__dat
+	Sa	1, P2_disp				; record fin
+	LVA	1, STANDARD.RETURN_RECORD_TEST_L1.POINT.SIZ
+	Sa	1, P2__u
+	La 1, P2_disp
+	DUP
+	LVA	, STANDARD.RETURN_RECORD_TEST_L1.POINT.X
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	10
+	Sd
+	DUP
+	LVA	, STANDARD.RETURN_RECORD_TEST_L1.POINT.Y
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	20
+	Sd
+	DROP
+
+
+if defined MAKE_POINT_L2_
+PRO	MAKE_POINT_L2				;---------- PRO MAKE_POINT
+PRMS					;    debut parametrage
+	PRM X_ofs				; in
+	PRM Y_ofs				; in
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 2					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+; CODE_RETURN : EXPR TYPE = DN_RECORD
+	La   2,	-result__ofs
+	La  ,  0
+	DUP
+	LVA	, STANDARD.RETURN_RECORD_TEST_L1.POINT.X
+	Ld  2,	-X_ofs
+	Sd
+	DUP
+	LVA	, STANDARD.RETURN_RECORD_TEST_L1.POINT.Y
+	Ld  2,	-Y_ofs
+	Sd
+	DROP
+	BRA ret_lbl
+ret_lbl:
+	UNLINK 2
+	RTD	prm_siz-8
+excep:
+endPRO					;---------- end PRO MAKE_POINT
+end if
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+ret_lbl:
+	UNLINK 1
+	RTD	prm_siz
+excep:
+endPRO					;---------- end PRO RETURN_RECORD_TEST

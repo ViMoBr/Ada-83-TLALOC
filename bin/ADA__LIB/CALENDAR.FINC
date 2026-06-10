@@ -501,10 +501,14 @@ begin:					;---------- BDY INSTRUCTIONS
 	ADD
 	Sq  1,	T_disp
 ; CODE_RETURN : EXPR TYPE = DN_PRIVATE
+	La   1,	-result__ofs
+	La  ,  0
+	LI	STANDARD.CALENDAR.TIME.size
 	Lq 1,	T_disp
 ; CODE CONVERSION SOURCE DN_FIXED TARGET DN_FIXED
 ; FIXED to FIXED a faire
-	Sa  1,	-result__ofs
+	La  ,  0
+	BLKMOV
 	BRA ret_lbl
 ret_lbl:
 	UNLINK 1
@@ -864,6 +868,9 @@ VAR DAYS_FROM_1900_LOCAL_disp, q		; variable entiere
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 ; CODE_RETURN : EXPR TYPE = DN_PRIVATE
+	La   1,	-result__ofs
+	La  ,  0
+	LI	STANDARD.CALENDAR.TIME.size
 	Lq 1,	DAYS_FROM_1900_LOCAL_disp
 	Lq 0,	STANDARD.CALENDAR.SECONDS_PER_DAY_disp
 	MUL
@@ -873,7 +880,8 @@ begin:					;---------- BDY INSTRUCTIONS
 	CVTIX
 	Lq  1,	-SECONDS_ofs
 	ADD
-	Sa  1,	-result__ofs
+	La  ,  0
+	BLKMOV
 	BRA ret_lbl
 ret_lbl:
 	UNLINK 1
@@ -893,13 +901,17 @@ ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 ; CODE_RETURN : EXPR TYPE = DN_PRIVATE
+	La   1,	-result__ofs
+	La  ,  0
+	LI	STANDARD.CALENDAR.TIME.size
 	La  1,	-LEFT_ofs
 ; CODE CONVERSION SOURCE DN_FIXED TARGET DN_FIXED
 	Lq  1,	-RIGHT_ofs
 	ADD
 ; CODE CONVERSION SOURCE DN_FIXED TARGET DN_FIXED
 ; FIXED to FIXED a faire
-	Sa  1,	-result__ofs
+	La  ,  0
+	BLKMOV
 	BRA ret_lbl
 ret_lbl:
 	UNLINK 1
@@ -919,13 +931,17 @@ ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 ; CODE_RETURN : EXPR TYPE = DN_PRIVATE
+	La   1,	-result__ofs
+	La  ,  0
+	LI	STANDARD.CALENDAR.TIME.size
 	Lq  1,	-LEFT_ofs
 	La  1,	-RIGHT_ofs
 ; CODE CONVERSION SOURCE DN_FIXED TARGET DN_FIXED
 	ADD
 ; CODE CONVERSION SOURCE DN_FIXED TARGET DN_FIXED
 ; FIXED to FIXED a faire
-	Sa  1,	-result__ofs
+	La  ,  0
+	BLKMOV
 	BRA ret_lbl
 ret_lbl:
 	UNLINK 1
@@ -945,13 +961,17 @@ ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 ; CODE_RETURN : EXPR TYPE = DN_PRIVATE
+	La   1,	-result__ofs
+	La  ,  0
+	LI	STANDARD.CALENDAR.TIME.size
 	La  1,	-LEFT_ofs
 ; CODE CONVERSION SOURCE DN_FIXED TARGET DN_FIXED
 	Lq  1,	-RIGHT_ofs
 	SUB
 ; CODE CONVERSION SOURCE DN_FIXED TARGET DN_FIXED
 ; FIXED to FIXED a faire
-	Sa  1,	-result__ofs
+	La  ,  0
+	BLKMOV
 	BRA ret_lbl
 ret_lbl:
 	UNLINK 1

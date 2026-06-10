@@ -1124,8 +1124,12 @@ ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
+	La   1,	-result__ofs
+	La  ,  0
+	LI	STANDARD.TEXT_IO.FILE_TYPE.size
 	LVA 0,	STANDARD.TEXT_IO.STD_INPUT_disp
-	Sa  1,	-result__ofs
+	La  ,  0
+	BLKMOV
 	BRA ret_lbl
 ret_lbl:
 	UNLINK 1
@@ -1143,8 +1147,12 @@ ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
+	La   1,	-result__ofs
+	La  ,  0
+	LI	STANDARD.TEXT_IO.FILE_TYPE.size
 	LVA 0,	STANDARD.TEXT_IO.STD_OUTPUT_disp
-	Sa  1,	-result__ofs
+	La  ,  0
+	BLKMOV
 	BRA ret_lbl
 ret_lbl:
 	UNLINK 1
@@ -1162,8 +1170,12 @@ ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
+	La   1,	-result__ofs
+	La  ,  0
+	LI	STANDARD.TEXT_IO.FILE_TYPE.size
 	LVA 0,	STANDARD.TEXT_IO.DEFAULT_INPUT_disp
-	Sa  1,	-result__ofs
+	La  ,  0
+	BLKMOV
 	BRA ret_lbl
 ret_lbl:
 	UNLINK 1
@@ -1181,8 +1193,12 @@ ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
+	La   1,	-result__ofs
+	La  ,  0
+	LI	STANDARD.TEXT_IO.FILE_TYPE.size
 	LVA 0,	STANDARD.TEXT_IO.DEFAULT_OUTPUT_disp
-	Sa  1,	-result__ofs
+	La  ,  0
+	BLKMOV
 	BRA ret_lbl
 ret_lbl:
 	UNLINK 1
@@ -11489,6 +11505,84 @@ PRMS					;    debut parametrage
 	PRM GFP_ofs
 endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
+STRING = 'STRING'
+namespace STRING				; array var constrained array type info
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+VAR COMP_SIZ, d
+VAR FST_1, d
+VAR LST_1, d
+	LI	8
+	Sd	1, COMP_SIZ
+	Ld	1, COMP_SIZ
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd	1, FST_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	80
+	Sd	1, LST_1
+	Ld	1, LST_1
+	INC
+	Ld	1, FST_1
+	SUB
+	MUL
+	Sd	1, SIZ
+  virtual at 4
+COMP_SIZ = $
+	rd 1 
+FST_1 = $
+	rd 1 
+LST_1 = $
+	rd 1 
+  end virtual
+end namespace
+VAR TOKEN_disp, q				; variable array : pointeur aux data
+VAR TOKEN__u, q				; variable array : useinfo pointeur au rec info
+	La 1, STRING.use__info
+	Sa	1, TOKEN__u				; array info ptr at __u
+	Ld	1, STRING.SIZ
+	LI	8
+	DIV
+	CO_VAR
+	Sa	1, TOKEN_disp				; array data ptr at _disp
+
+VAR TOK_LEN_disp, d				; variable entiere
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	Sd  1,	TOK_LEN_disp
+
+VAR TOK_TOO_LONG_disp, d			; variable bool char enum
+	LI	0
+	Sb  1,	TOK_TOO_LONG_disp
+
+VAR CH_disp, d				; variable bool char enum
+
+VAR DONE_disp, d				; variable bool char enum
+	LI	0
+	Sb  1,	DONE_disp
+
+VAR I_disp, d				; variable entiere
+
+VAR REP_disp, d				; variable entiere
+
+VAR IMG_LEN_disp, d				; variable entiere
+
+VAR IMG_START_disp, d			; variable entiere
+
+VAR FOUND_disp, d				; variable bool char enum
+	LI	0
+	Sb  1,	FOUND_disp
+
+VAR OK_disp, d				; variable bool char enum
+
+VAR HAS_QUOTE_disp, d			; variable bool char enum
+
+VAR IMG_CH_disp, d				; variable bool char enum
+
+VAR TOK_CH_disp, d				; variable bool char enum
+
 
 if defined GET_ENUM_IMAGES_L785_
 PRO	GET_ENUM_IMAGES_L785			;---------- PRO GET_ENUM_IMAGES
@@ -11508,6 +11602,189 @@ ret_lbl:
 excep:
 endPRO					;---------- end PRO GET_ENUM_IMAGES
 end if
+
+if defined UPPER_L786_
+PRO	UPPER_L786				;---------- PRO UPPER
+PRMS					;    debut parametrage
+	PRM CH_ofs				; in
+	PRM GFP_ofs
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 2					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+					; debut if
+	Lb  2,	-CH_ofs
+	LI	97
+	CGE
+	DUP
+	BF	L789
+	DROP
+	Lb  2,	-CH_ofs
+	LI	122
+	CLE
+L789:
+	BF	L788
+; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
+	Lb  2,	-CH_ofs
+; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
+	LI	32
+	SUB
+	Sb  2,	-result__ofs
+	BRA ret_lbl
+	BRA	L787
+L788:
+; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
+	Lb  2,	-CH_ofs
+	Sb  2,	-result__ofs
+	BRA ret_lbl
+L787:					; post if
+ret_lbl:
+	UNLINK 2
+	RTD	prm_siz-8
+excep:
+endPRO					;---------- end PRO UPPER
+end if
+
+if defined IS_SEPARATOR_L790_
+PRO	IS_SEPARATOR_L790			;---------- PRO IS_SEPARATOR
+PRMS					;    debut parametrage
+	PRM CH_ofs				; in
+	PRM GFP_ofs
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 2					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
+	Lb  2,	-CH_ofs
+	LI	32
+	CEQ
+	DUP
+	BT	L794
+	DROP
+	Lb  2,	-CH_ofs
+	LI	 9
+	CEQ
+L794:
+	DUP
+	BT	L793
+	DROP
+	Lb  2,	-CH_ofs
+	LI	 10
+	CEQ
+L793:
+	DUP
+	BT	L792
+	DROP
+	Lb  2,	-CH_ofs
+	LI	 13
+	CEQ
+L792:
+	DUP
+	BT	L791
+	DROP
+	Lb  2,	-CH_ofs
+	LI	 12
+	CEQ
+L791:
+	Sb  2,	-result__ofs
+	BRA ret_lbl
+ret_lbl:
+	UNLINK 2
+	RTD	prm_siz-8
+excep:
+endPRO					;---------- end PRO IS_SEPARATOR
+end if
+
+if defined IS_IDENT_CHAR_L795_
+PRO	IS_IDENT_CHAR_L795			;---------- PRO IS_IDENT_CHAR
+PRMS					;    debut parametrage
+	PRM CH_ofs				; in
+	PRM GFP_ofs
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 2					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
+	Lb  2,	-CH_ofs
+	LI	65
+	CGE
+	DUP
+	BF	L799
+	DROP
+	Lb  2,	-CH_ofs
+	LI	90
+	CLE
+L799:
+	DUP
+	BT	L798
+	DROP
+	Lb  2,	-CH_ofs
+	LI	97
+	CGE
+	DUP
+	BF	L800
+	DROP
+	Lb  2,	-CH_ofs
+	LI	122
+	CLE
+L800:
+L798:
+	DUP
+	BT	L797
+	DROP
+	Lb  2,	-CH_ofs
+	LI	48
+	CGE
+	DUP
+	BF	L801
+	DROP
+	Lb  2,	-CH_ofs
+	LI	57
+	CLE
+L801:
+L797:
+	DUP
+	BT	L796
+	DROP
+	Lb  2,	-CH_ofs
+	LI	95
+	CEQ
+L796:
+	Sb  2,	-result__ofs
+	BRA ret_lbl
+ret_lbl:
+	UNLINK 2
+	RTD	prm_siz-8
+excep:
+endPRO					;---------- end PRO IS_IDENT_CHAR
+end if
+
+if defined UNGET_CHAR_L802_
+PRO	UNGET_CHAR_L802				;---------- PRO UNGET_CHAR
+PRMS					;    debut parametrage
+	PRM CH_ofs				; in
+	PRM GFP_ofs
+endPRMS					;    fin parametrage
+ELB 2					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	La 1, -FILE_ofs
+	LIVA 	, 0, STANDARD.TEXT_IO.FILE_TYPE.LOOK_AHEAD
+	Lb  2,	-CH_ofs
+	Sb
+	La 1, -FILE_ofs
+	LIVA 	, 0, STANDARD.TEXT_IO.FILE_TYPE.HAS_LOOK_AHEAD
+	LI	1
+	Sb
+ret_lbl:
+	UNLINK 2
+	RTD	prm_siz
+excep:
+endPRO					;---------- end PRO UNGET_CHAR
+end if
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 namespace	BLOCK__91
@@ -11525,405 +11802,358 @@ VAR IMAGES_STR__u, q			; variable array : useinfo pointeur au rec info
 	La , 8
 	Sa	2, IMAGES_STR__u			; array info ptr from function result
 
-STRING = 'STRING'
-namespace STRING				; array var constrained array type info
-VAR use__info, q
-VAR SIZ, d
-	LVA	2, SIZ
-	Sa	2, use__info
-VAR COMP_SIZ, d
-VAR FST_1, d
-VAR LST_1, d
-	LI	8
-	Sd	2, COMP_SIZ
-	Ld	2, COMP_SIZ
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	1
-	Sd	2, FST_1
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	80
-	Sd	2, LST_1
-	Ld	2, LST_1
-	INC
-	Ld	2, FST_1
-	SUB
-	MUL
-	Sd	2, SIZ
-  virtual at 4
-COMP_SIZ = $
-	rd 1 
-FST_1 = $
-	rd 1 
-LST_1 = $
-	rd 1 
-  end virtual
-end namespace
-VAR CHN_disp, q				; variable array : pointeur aux data
-VAR CHN__u, q				; variable array : useinfo pointeur au rec info
-	La 2, STRING.use__info
-	Sa	2, CHN__u				; array info ptr at __u
-	Ld	2, STRING.SIZ
-	LI	8
-	DIV
-	CO_VAR
-	Sa	2, CHN_disp				; array data ptr at _disp
-
-VAR LEN_disp, d				; variable entiere
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	0
-	Sd  2,	LEN_disp
-
-VAR I_disp, d				; variable entiere
-
-VAR TOK_START_disp, d			; variable entiere
-
-VAR TOK_LEN_disp, d				; variable entiere
-
-VAR REP_disp, d				; variable entiere
-
-VAR IMG_LEN_disp, d				; variable entiere
-
-VAR IMG_START_disp, d			; variable entiere
-
-VAR FOUND_disp, d				; variable bool char enum
-	LI	0
-	Sb  2,	FOUND_disp
-
-VAR IMG_CH_disp, d				; variable bool char enum
-
-VAR TOK_CH_disp, d				; variable bool char enum
-
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-	LVA  2,	LEN_disp
-	LVA  2,	CHN_disp
+SKIP_BLANKS:
+	LVA  1,	CH_disp
 	La  1,	-FILE_ofs
-	CALL	STANDARD.TEXT_IO. ,GET_LINE_L57
+	CALL	STANDARD.TEXT_IO. ,GET_L49
+	LI	0					; lieu resultat sur pile
+	La  1,	-GFP_ofs				; propagation GFP generique
+	Lb 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L79.CH_disp
+	CALL	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L79. ,IS_SEPARATOR_L790
+	LI	1
+	OUX
+	BT	L803
+	BRA	SKIP_BLANKS
+L803:					; post loop SKIP_BLANKS
+					; debut if
+	Lb 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L79.CH_disp
+	LI	39
+	CEQ
+	BF	L806
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
-	Sd  2,	I_disp
+	Sd  1,	TOK_LEN_disp
+	La	 1, TOKEN_disp				; array data start address on stack
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	LId	1, TOKEN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, TOKEN__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L79.CH_disp
+	Sb
 LOOP__92:
-	Ld 2,	I_disp
-	Ld 2,	LEN_disp
-	CLE
-	DUP
-	BF	L787
-	DROP
-	La	 2, CHN_disp				; array data start address on stack
-	Ld 2,	I_disp
-	LId	2, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
-	SUB
-	LId	2, CHN__u, STANDARD.STRING.COMP_SIZ
-	LI	8
-	DIV
-	MUL
-	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
-	LI	32
-	CEQ
-L787:
-	BF	L786
-	Ld 2,	I_disp
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	1
-	ADD
-	Sd  2,	I_disp
-	BRA	LOOP__92
-L786:					; post loop LOOP__92
-	Ld 2,	I_disp
-	Sd  2,	TOK_START_disp
-LOOP__93:
-	Ld 2,	I_disp
-	Ld 2,	LEN_disp
-	CLE
-	BF	L788
+	LVA  1,	CH_disp
+	La  1,	-FILE_ofs
+	CALL	STANDARD.TEXT_IO. ,GET_L49
 					; debut if
-	La	 2, CHN_disp				; array data start address on stack
-	Ld 2,	I_disp
-	LId	2, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
-	SUB
-	LId	2, CHN__u, STANDARD.STRING.COMP_SIZ
-	LI	8
-	DIV
-	MUL
-	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
-	LI	65
-	CGE
-	DUP
-	BF	L791
-	DROP
-	La	 2, CHN_disp				; array data start address on stack
-	Ld 2,	I_disp
-	LId	2, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
-	SUB
-	LId	2, CHN__u, STANDARD.STRING.COMP_SIZ
-	LI	8
-	DIV
-	MUL
-	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
-	LI	90
-	CLE
-L791:
-	BF	L790
-	Ld 2,	I_disp
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	1
-	ADD
-	Sd  2,	I_disp
-	BRA	L789
-L790:
-	La	 2, CHN_disp				; array data start address on stack
-	Ld 2,	I_disp
-	LId	2, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
-	SUB
-	LId	2, CHN__u, STANDARD.STRING.COMP_SIZ
-	LI	8
-	DIV
-	MUL
-	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
-	LI	97
-	CGE
-	DUP
-	BF	L793
-	DROP
-	La	 2, CHN_disp				; array data start address on stack
-	Ld 2,	I_disp
-	LId	2, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
-	SUB
-	LId	2, CHN__u, STANDARD.STRING.COMP_SIZ
-	LI	8
-	DIV
-	MUL
-	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
-	LI	122
-	CLE
-L793:
-	BF	L792
-	Ld 2,	I_disp
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	1
-	ADD
-	Sd  2,	I_disp
-	BRA	L789
-L792:
-	La	 2, CHN_disp				; array data start address on stack
-	Ld 2,	I_disp
-	LId	2, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
-	SUB
-	LId	2, CHN__u, STANDARD.STRING.COMP_SIZ
-	LI	8
-	DIV
-	MUL
-	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
-	LI	48
-	CGE
-	DUP
-	BF	L795
-	DROP
-	La	 2, CHN_disp				; array data start address on stack
-	Ld 2,	I_disp
-	LId	2, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
-	SUB
-	LId	2, CHN__u, STANDARD.STRING.COMP_SIZ
-	LI	8
-	DIV
-	MUL
-	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
-	LI	57
-	CLE
-L795:
-	BF	L794
-	Ld 2,	I_disp
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	1
-	ADD
-	Sd  2,	I_disp
-	BRA	L789
-L794:
-	La	 2, CHN_disp				; array data start address on stack
-	Ld 2,	I_disp
-	LId	2, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
-	SUB
-	LId	2, CHN__u, STANDARD.STRING.COMP_SIZ
-	LI	8
-	DIV
-	MUL
-	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
-	LI	95
-	CEQ
-	BF	L796
-	Ld 2,	I_disp
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	1
-	ADD
-	Sd  2,	I_disp
-	BRA	L789
-L796:
-	BRA	L788
-L789:					; post if
-	BRA	LOOP__93
-L788:					; post loop LOOP__93
-	Ld 2,	I_disp
-	Ld 2,	TOK_START_disp
-	SUB
-	Sd  2,	TOK_LEN_disp
-	LId	2, IMAGES_STR__u, STRING.FST_1
-	Sd  2,	I_disp
-LOOP__94:
-	Ld 2,	I_disp
-	LId	2, IMAGES_STR__u, STRING.LST_1
-	CLE
-	BF	L798
-	La	 2, IMAGES_STR_disp			; array data start address on stack
-	Ld 2,	I_disp
-	LId	2, IMAGES_STR__u, STANDARD.STRING.FST_1	; (index - FST_1) * SIZ_1
-	SUB
-	LId	2, IMAGES_STR__u, STANDARD.STRING.COMP_SIZ
-	LI	8
-	DIV
-	MUL
-	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
-	Sd  2,	REP_disp
-	La	 2, IMAGES_STR_disp			; array data start address on stack
-	Ld 2,	I_disp
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	1
-	ADD
-	LId	2, IMAGES_STR__u, STANDARD.STRING.FST_1	; (index - FST_1) * SIZ_1
-	SUB
-	LId	2, IMAGES_STR__u, STANDARD.STRING.COMP_SIZ
-	LI	8
-	DIV
-	MUL
-	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
-	Sd  2,	IMG_LEN_disp
-	Ld 2,	I_disp
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	2
-	ADD
-	Sd  2,	IMG_START_disp
-					; debut if
-	Ld 2,	IMG_LEN_disp
-	Ld 2,	TOK_LEN_disp
-	CEQ
-	BF	L800
-	LI	1
-	Sb  2,	FOUND_disp
-VAR	JL802_disp, d				; compteur boucle LOOP__95
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	0
-	Sd  2,	JL802_disp
-VAR	LMT_JL802_disp, d			; limite boucle LOOP__95
-	Ld 2,	IMG_LEN_disp
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	1
-	SUB
-	Sd  2,	LMT_JL802_disp
-	Ld  2,	JL802_disp				; test null range LOOP__95
-	Ld  2,	LMT_JL802_disp
-	CGT
-	BT	L801
-LOOP__95:					; corps boucle LOOP__95
-	La	 2, IMAGES_STR_disp			; array data start address on stack
-	Ld 2,	IMG_START_disp
-	Ld	2, JL802_disp
-	ADD
-	LId	2, IMAGES_STR__u, STANDARD.STRING.FST_1	; (index - FST_1) * SIZ_1
-	SUB
-	LId	2, IMAGES_STR__u, STANDARD.STRING.COMP_SIZ
-	LI	8
-	DIV
-	MUL
-	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
-	Sb  2,	IMG_CH_disp
-	La	 2, CHN_disp				; array data start address on stack
-	Ld 2,	TOK_START_disp
-	Ld	2, JL802_disp
-	ADD
-	LId	2, CHN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
-	SUB
-	LId	2, CHN__u, STANDARD.STRING.COMP_SIZ
-	LI	8
-	DIV
-	MUL
-	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
-	Sb  2,	TOK_CH_disp
-					; debut if
-	Lb 2,	TOK_CH_disp
-	LI	97
-	CGE
-	DUP
-	BF	L805
-	DROP
-	Lb 2,	TOK_CH_disp
-	LI	122
-	CLE
-L805:
-	BF	L804
-	Lb 2,	TOK_CH_disp
-; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
-	LI	32
-	SUB
-	Sb  2,	TOK_CH_disp
-	BRA	L803
-L804:
-L803:					; post if
-					; debut if
-	Lb 2,	IMG_CH_disp
-	Lb 2,	TOK_CH_disp
-	CNE
-	BF	L807
-	LI	0
-	Sb  2,	FOUND_disp
-	BRA	L806
-L807:
-L806:					; post if
-	Ld  2,	JL802_disp				; test de sortie LOOP__95
-	Ld  2,	LMT_JL802_disp
-	CEQ
-	BT	L801
-	Ld  2,	JL802_disp				; mise a jour compteur LOOP__95
-	INC
-	Sd  2,	JL802_disp
-	BRA	LOOP__95				; iteration suivante LOOP__95
-L801:					; post loop LOOP__95
-					; debut if
-	Lb 2,	FOUND_disp
+	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L79.TOK_LEN_disp
+	LId	1, TOKEN__u, STRING.LST_1
+	CLT
 	BF	L809
+	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L79.TOK_LEN_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd  1,	TOK_LEN_disp
+	La	 1, TOKEN_disp				; array data start address on stack
+	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L79.TOK_LEN_disp
+	LId	1, TOKEN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, TOKEN__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L79.CH_disp
+	Sb
+	BRA	L808
+L809:
+	LI	1
+	Sb  1,	TOK_TOO_LONG_disp
+L808:					; post if
+	Lb 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L79.CH_disp
+	LI	39
+	CEQ
+	BT	L807
+	BRA	LOOP__92
+L807:					; post loop LOOP__92
+	BRA	L805
+L806:
+LOOP__93:
+					; debut if
+	LI	0					; lieu resultat sur pile
+	La  1,	-GFP_ofs				; propagation GFP generique
+	Lb 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L79.CH_disp
+	CALL	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L79. ,IS_IDENT_CHAR_L795
+	BF	L813
+					; debut if
+	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L79.TOK_LEN_disp
+	LId	1, TOKEN__u, STRING.LST_1
+	CLT
+	BF	L815
+	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L79.TOK_LEN_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd  1,	TOK_LEN_disp
+	La	 1, TOKEN_disp				; array data start address on stack
+	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L79.TOK_LEN_disp
+	LId	1, TOKEN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, TOKEN__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L79.CH_disp
+	Sb
+	BRA	L814
+L815:
+	LI	1
+	Sb  1,	TOK_TOO_LONG_disp
+L814:					; post if
+	LVA  1,	CH_disp
+	La  1,	-FILE_ofs
+	CALL	STANDARD.TEXT_IO. ,GET_L49
+	BRA	L812
+L813:
+	La  1,	-GFP_ofs				; propagation GFP generique
+	Lb 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L79.CH_disp
+	CALL	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L79. ,UNGET_CHAR_L802
+	LI	1
+	Sb  1,	DONE_disp
+L812:					; post if
+	Lb 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L79.DONE_disp
+	BT	L811
+	BRA	LOOP__93
+L811:					; post loop LOOP__93
+L805:					; post if
+					; debut if
+	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L79.TOK_LEN_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	CEQ
+	DUP
+	BT	L819
+	DROP
+	Lb 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L79.TOK_TOO_LONG_disp
+L819:
+	BF	L818
 	LVA  1,	-ITEM_ofs
 	La
-	Ld 2,	REP_disp
+	La 1,	-GFP_ofs
+	LId , -ENUM__u_ofs, STANDARD.ENUM_USE_INFO.FST
 	La  1,	-GFP_ofs
 	La ,	-ENUM__st_ofs
 	CALLI
 	UNLINK 2
 	BRA ret_lbl
-	BRA	L808
-L809:
-L808:					; post if
-	BRA	L799
-L800:
-L799:					; post if
-	Ld 2,	I_disp
+	BRA	L817
+L818:
+L817:					; post if
+	LId	2, IMAGES_STR__u, STRING.FST_1
+	Sd  1,	I_disp
+LOOP__94:
+	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L79.I_disp
+	LId	2, IMAGES_STR__u, STRING.LST_1
+	CLE
+	BF	L820
+	La	 2, IMAGES_STR_disp			; array data start address on stack
+	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L79.I_disp
+	LId	2, IMAGES_STR__u, STANDARD.STRING.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	2, IMAGES_STR__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	Sd  1,	REP_disp
+	La	 2, IMAGES_STR_disp			; array data start address on stack
+	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L79.I_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	LId	2, IMAGES_STR__u, STANDARD.STRING.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	2, IMAGES_STR__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	Sd  1,	IMG_LEN_disp
+	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L79.I_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	2
 	ADD
-	Ld 2,	IMG_LEN_disp
+	Sd  1,	IMG_START_disp
+					; debut if
+	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L79.IMG_LEN_disp
+	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L79.TOK_LEN_disp
+	CEQ
+	BF	L822
+	LI	0
+	Sb  1,	HAS_QUOTE_disp
+VAR	JL824_disp, d				; compteur boucle LOOP__95
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	Sd  2,	JL824_disp
+VAR	LMT_JL824_disp, d			; limite boucle LOOP__95
+	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L79.IMG_LEN_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	SUB
+	Sd  2,	LMT_JL824_disp
+	Ld  2,	JL824_disp				; test null range LOOP__95
+	Ld  2,	LMT_JL824_disp
+	CGT
+	BT	L823
+LOOP__95:					; corps boucle LOOP__95
+					; debut if
+	La	 2, IMAGES_STR_disp			; array data start address on stack
+	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L79.IMG_START_disp
+	Ld	2, JL824_disp
 	ADD
-	Sd  2,	I_disp
+	LId	2, IMAGES_STR__u, STANDARD.STRING.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	2, IMAGES_STR__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	LI	39
+	CEQ
+	BF	L826
+	LI	1
+	Sb  1,	HAS_QUOTE_disp
+	BRA	L825
+L826:
+L825:					; post if
+	Ld  2,	JL824_disp				; test de sortie LOOP__95
+	Ld  2,	LMT_JL824_disp
+	CEQ
+	BT	L823
+	Ld  2,	JL824_disp				; mise a jour compteur LOOP__95
+	INC
+	Sd  2,	JL824_disp
+	BRA	LOOP__95				; iteration suivante LOOP__95
+L823:					; post loop LOOP__95
+	LI	1
+	Sb  1,	OK_disp
+VAR	JL828_disp, d				; compteur boucle LOOP__96
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	Sd  2,	JL828_disp
+VAR	LMT_JL828_disp, d			; limite boucle LOOP__96
+	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L79.IMG_LEN_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	SUB
+	Sd  2,	LMT_JL828_disp
+	Ld  2,	JL828_disp				; test null range LOOP__96
+	Ld  2,	LMT_JL828_disp
+	CGT
+	BT	L827
+LOOP__96:					; corps boucle LOOP__96
+	La	 2, IMAGES_STR_disp			; array data start address on stack
+	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L79.IMG_START_disp
+	Ld	2, JL828_disp
+	ADD
+	LId	2, IMAGES_STR__u, STANDARD.STRING.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	2, IMAGES_STR__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	Sb  1,	IMG_CH_disp
+	La	 1, TOKEN_disp				; array data start address on stack
+	Ld	2, JL828_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	LId	1, TOKEN__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, TOKEN__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	Sb  1,	TOK_CH_disp
+					; debut if
+	Lb 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L79.HAS_QUOTE_disp
+	BF	L830
+					; debut if
+	Lb 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L79.TOK_CH_disp
+	Lb 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L79.IMG_CH_disp
+	CNE
+	BF	L832
+	LI	0
+	Sb  1,	OK_disp
+	BRA	L831
+L832:
+L831:					; post if
+	BRA	L829
+L830:
+					; debut if
+	LI	0					; lieu resultat sur pile
+	La  1,	-GFP_ofs				; propagation GFP generique
+	Lb 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L79.TOK_CH_disp
+	CALL	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L79. ,UPPER_L786
+	LI	0					; lieu resultat sur pile
+	La  1,	-GFP_ofs				; propagation GFP generique
+	Lb 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L79.IMG_CH_disp
+	CALL	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L79. ,UPPER_L786
+	CNE
+	BF	L834
+	LI	0
+	Sb  1,	OK_disp
+	BRA	L833
+L834:
+L833:					; post if
+L829:					; post if
+	Ld  2,	JL828_disp				; test de sortie LOOP__96
+	Ld  2,	LMT_JL828_disp
+	CEQ
+	BT	L827
+	Ld  2,	JL828_disp				; mise a jour compteur LOOP__96
+	INC
+	Sd  2,	JL828_disp
+	BRA	LOOP__96				; iteration suivante LOOP__96
+L827:					; post loop LOOP__96
+					; debut if
+	Lb 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L79.OK_disp
+	BF	L836
+	LVA  1,	-ITEM_ofs
+	La
+	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L79.REP_disp
+	La  1,	-GFP_ofs
+	La ,	-ENUM__st_ofs
+	CALLI
+	UNLINK 2
+	BRA ret_lbl
+	BRA	L835
+L836:
+L835:					; post if
+	BRA	L821
+L822:
+L821:					; post if
+	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L79.I_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	2
+	ADD
+	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L79.IMG_LEN_disp
+	ADD
+	Sd  1,	I_disp
 	BRA	LOOP__94
-L798:					; post loop LOOP__94
+L820:					; post loop LOOP__94
+	LVA  1,	-ITEM_ofs
+	La
+	La 1,	-GFP_ofs
+	LId , -ENUM__u_ofs, STANDARD.ENUM_USE_INFO.FST
+	La  1,	-GFP_ofs
+	La ,	-ENUM__st_ofs
+	CALLI
 	UNLINK 2
 endPRO
 ret_lbl:
@@ -11962,8 +12192,454 @@ PRMS					;    debut parametrage
 	PRM GFP_ofs
 endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
+VAR I_disp, d				; variable entiere
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STRING.FST_1
+	Sd  1,	I_disp
+
+VAR P_disp, d				; variable entiere
+
+VAR REP_disp, d				; variable entiere
+
+VAR LEN_disp, d				; variable entiere
+
+VAR IMG_START_disp, d			; variable entiere
+
+VAR MATCH_FOUND_disp, d			; variable bool char enum
+	LI	0
+	Sb  1,	MATCH_FOUND_disp
+
+VAR MATCH_REP_disp, d			; variable entiere
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	Sd  1,	MATCH_REP_disp
+
+VAR MATCH_LEN_disp, d			; variable entiere
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	Sd  1,	MATCH_LEN_disp
+
+VAR OK_disp, d				; variable bool char enum
+
+
+if defined GET_ENUM_IMAGES_L837_
+PRO	GET_ENUM_IMAGES_L837			;---------- PRO GET_ENUM_IMAGES
+PRMS					;    debut parametrage
+	PRM GFP_ofs
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 2					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
+	LA 1 ,	-32
+	LIVA ,	-8,	16
+	SA 2 ,	-8
+ret_lbl:
+	UNLINK 2
+	RTD
+excep:
+endPRO					;---------- end PRO GET_ENUM_IMAGES
+end if
+
+if defined UPPER_L838_
+PRO	UPPER_L838				;---------- PRO UPPER
+PRMS					;    debut parametrage
+	PRM CH_ofs				; in
+	PRM GFP_ofs
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 2					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+					; debut if
+	Lb  2,	-CH_ofs
+	LI	97
+	CGE
+	DUP
+	BF	L841
+	DROP
+	Lb  2,	-CH_ofs
+	LI	122
+	CLE
+L841:
+	BF	L840
+; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
+	Lb  2,	-CH_ofs
+; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
+	LI	32
+	SUB
+	Sb  2,	-result__ofs
+	BRA ret_lbl
+	BRA	L839
+L840:
+; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
+	Lb  2,	-CH_ofs
+	Sb  2,	-result__ofs
+	BRA ret_lbl
+L839:					; post if
+ret_lbl:
+	UNLINK 2
+	RTD	prm_siz-8
+excep:
+endPRO					;---------- end PRO UPPER
+end if
+
+if defined SAME_CHAR_L842_
+PRO	SAME_CHAR_L842				;---------- PRO SAME_CHAR
+PRMS					;    debut parametrage
+	PRM LEFT_ofs				; in
+	PRM RIGHT_ofs				; in
+	PRM GFP_ofs
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 2					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
+	LI	0					; lieu resultat sur pile
+	La  1,	-GFP_ofs				; propagation GFP generique
+	Lb  2,	-LEFT_ofs
+	CALL	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L83. ,UPPER_L838
+	LI	0					; lieu resultat sur pile
+	La  1,	-GFP_ofs				; propagation GFP generique
+	Lb  2,	-RIGHT_ofs
+	CALL	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L83. ,UPPER_L838
+	CEQ
+	Sb  2,	-result__ofs
+	BRA ret_lbl
+ret_lbl:
+	UNLINK 2
+	RTD	prm_siz-8
+excep:
+endPRO					;---------- end PRO SAME_CHAR
+end if
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+namespace	BLOCK__97
+ELB 2					;    BODY ELAB
+VAR IMAGES_STR_disp, q			; variable array : pointeur aux data
+VAR IMAGES_STR__u, q			; variable array : useinfo pointeur au rec info
+	La 0, STRING.use__info
+	Sa	2, IMAGES_STR__u			; array info ptr at __u
+	LI	0					; lieu resultat sur pile
+	La  1,	-GFP_ofs				; propagation GFP generique
+	CALL	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L83. ,GET_ENUM_IMAGES_L837
+	DUP
+	La
+	Sa	2, IMAGES_STR_disp			; array data ptr from function result
+	La , 8
+	Sa	2, IMAGES_STR__u			; array info ptr from function result
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+IGNORE_BLANKS:
+	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L83.I_disp
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STRING.LST_1
+	CLE
+	DUP
+	BF	L844
+	DROP
+	LVA	1, -FROM_ofs
+	LIa	, , 0				; array data start address on stack
+	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L83.I_disp
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
+	SUB
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	LI	32
+	CEQ
+	DUP
+	BT	L847
+	DROP
+	LVA	1, -FROM_ofs
+	LIa	, , 0				; array data start address on stack
+	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L83.I_disp
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
+	SUB
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	LI	 9
+	CEQ
+L847:
+	DUP
+	BT	L846
+	DROP
+	LVA	1, -FROM_ofs
+	LIa	, , 0				; array data start address on stack
+	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L83.I_disp
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
+	SUB
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	LI	 10
+	CEQ
+L846:
+	DUP
+	BT	L845
+	DROP
+	LVA	1, -FROM_ofs
+	LIa	, , 0				; array data start address on stack
+	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L83.I_disp
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
+	SUB
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	LI	 12
+	CEQ
+L845:
+L844:
+	BF	L843
+	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L83.I_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd  1,	I_disp
+	BRA	IGNORE_BLANKS
+L843:					; post loop IGNORE_BLANKS
+	LId	2, IMAGES_STR__u, STRING.FST_1
+	Sd  1,	P_disp
+LOOP__98:
+	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L83.P_disp
+	LId	2, IMAGES_STR__u, STRING.LST_1
+	CLE
+	BF	L848
+	La	 2, IMAGES_STR_disp			; array data start address on stack
+	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L83.P_disp
+	LId	2, IMAGES_STR__u, STANDARD.STRING.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	2, IMAGES_STR__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	Sd  1,	REP_disp
+	La	 2, IMAGES_STR_disp			; array data start address on stack
+	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L83.P_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	LId	2, IMAGES_STR__u, STANDARD.STRING.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	2, IMAGES_STR__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	Sd  1,	LEN_disp
+	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L83.P_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	2
+	ADD
+	Sd  1,	IMG_START_disp
+					; debut if
+	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L83.I_disp
+	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L83.LEN_disp
+	ADD
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	SUB
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STRING.LST_1
+	CLE
+	BF	L850
+	LI	1
+	Sb  1,	OK_disp
+VAR	JL852_disp, d				; compteur boucle LOOP__99
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	Sd  2,	JL852_disp
+VAR	LMT_JL852_disp, d			; limite boucle LOOP__99
+	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L83.LEN_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	SUB
+	Sd  2,	LMT_JL852_disp
+	Ld  2,	JL852_disp				; test null range LOOP__99
+	Ld  2,	LMT_JL852_disp
+	CGT
+	BT	L851
+LOOP__99:					; corps boucle LOOP__99
+					; debut if
+	LI	0					; lieu resultat sur pile
+	La  1,	-GFP_ofs				; propagation GFP generique
+	La	 2, IMAGES_STR_disp			; array data start address on stack
+	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L83.IMG_START_disp
+	Ld	2, JL852_disp
+	ADD
+	LId	2, IMAGES_STR__u, STANDARD.STRING.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	2, IMAGES_STR__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	LVA	1, -FROM_ofs
+	LIa	, , 0				; array data start address on stack
+	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L83.I_disp
+	Ld	2, JL852_disp
+	ADD
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
+	SUB
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	CALL	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L83. ,SAME_CHAR_L842
+	LI	1
+	OUX
+	BF	L854
+	LI	0
+	Sb  1,	OK_disp
+	BRA	L853
+L854:
+L853:					; post if
+	Ld  2,	JL852_disp				; test de sortie LOOP__99
+	Ld  2,	LMT_JL852_disp
+	CEQ
+	BT	L851
+	Ld  2,	JL852_disp				; mise a jour compteur LOOP__99
+	INC
+	Sd  2,	JL852_disp
+	BRA	LOOP__99				; iteration suivante LOOP__99
+L851:					; post loop LOOP__99
+					; debut if
+	Lb 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L83.OK_disp
+	BF	L856
+					; debut if
+	Lb 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L83.MATCH_FOUND_disp
+	LI	1
+	OUX
+	DUP
+	BT	L859
+	DROP
+	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L83.LEN_disp
+	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L83.MATCH_LEN_disp
+	CGT
+L859:
+	BF	L858
+	LI	1
+	Sb  1,	MATCH_FOUND_disp
+	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L83.REP_disp
+	Sd  1,	MATCH_REP_disp
+	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L83.LEN_disp
+	Sd  1,	MATCH_LEN_disp
+	BRA	L857
+L858:
+L857:					; post if
+	BRA	L855
+L856:
+L855:					; post if
+	BRA	L849
+L850:
+L849:					; post if
+	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L83.P_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	2
+	ADD
+	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L83.LEN_disp
+	ADD
+	Sd  1,	P_disp
+	BRA	LOOP__98
+L848:					; post loop LOOP__98
+					; debut if
+	Lb 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L83.MATCH_FOUND_disp
+	BF	L861
+	LVA  1,	-ITEM_ofs
+	La
+	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L83.MATCH_REP_disp
+	La  1,	-GFP_ofs
+	La ,	-ENUM__st_ofs
+	CALLI
+	LVA  1,	-LAST_ofs
+	La
+	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L83.I_disp
+	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L83.MATCH_LEN_disp
+	ADD
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	SUB
+; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
+	SId  1,	-LAST_ofs
+	BRA	L860
+L861:
+	LVA  1,	-ITEM_ofs
+	La
+	La 1,	-GFP_ofs
+	LId , -ENUM__u_ofs, STANDARD.ENUM_USE_INFO.FST
+	La  1,	-GFP_ofs
+	La ,	-ENUM__st_ofs
+	CALLI
+					; debut if
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STRING.FST_1
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STRING.LST_1
+	CLE
+	BF	L863
+	LVA  1,	-LAST_ofs
+	La
+	LVA	1, -FROM_ofs
+	LIa	, , 8
+	Ld	, STRING.FST_1
+	SId  1,	-LAST_ofs
+	BRA	L862
+L863:
+	LVA  1,	-LAST_ofs
+	La
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	SId  1,	-LAST_ofs
+L862:					; post if
+L860:					; post if
+	UNLINK 2
+endPRO
 ret_lbl:
 	UNLINK 1
 	RTD	prm_siz
@@ -11980,8 +12656,360 @@ PRMS					;    debut parametrage
 	PRM GFP_ofs
 endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
+
+if defined GET_ENUM_IMAGES_L864_
+PRO	GET_ENUM_IMAGES_L864			;---------- PRO GET_ENUM_IMAGES
+PRMS					;    debut parametrage
+	PRM GFP_ofs
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 2					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
+	LA 1 ,	-32
+	LIVA ,	-8,	16
+	SA 2 ,	-8
+ret_lbl:
+	UNLINK 2
+	RTD
+excep:
+endPRO					;---------- end PRO GET_ENUM_IMAGES
+end if
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+namespace	BLOCK__100
+ELB 2					;    BODY ELAB
+VAR IMAGES_STR_disp, q			; variable array : pointeur aux data
+VAR IMAGES_STR__u, q			; variable array : useinfo pointeur au rec info
+	La 0, STRING.use__info
+	Sa	2, IMAGES_STR__u			; array info ptr at __u
+	LI	0					; lieu resultat sur pile
+	La  1,	-GFP_ofs				; propagation GFP generique
+	CALL	STANDARD.TEXT_IO.ENUMERATION_IO.PUT_L84. ,GET_ENUM_IMAGES_L864
+	DUP
+	La
+	Sa	2, IMAGES_STR_disp			; array data ptr from function result
+	La , 8
+	Sa	2, IMAGES_STR__u			; array info ptr from function result
+
+VAR POS_VAL_disp, d				; variable entiere
+	LVA  1,	-ITEM_ofs
+	La  1,	-GFP_ofs
+	La ,	-ENUM__ld_ofs
+	CALLI
+	Sd  2,	POS_VAL_disp
+
+VAR I_disp, d				; variable entiere
+	LId	2, IMAGES_STR__u, STRING.FST_1
+	Sd  2,	I_disp
+
+VAR REP_disp, d				; variable entiere
+
+VAR LEN_disp, d				; variable entiere
+
+VAR IMG_START_disp, d			; variable entiere
+
+VAR PAD_disp, d				; variable entiere
+
+VAR DST_disp, d				; variable entiere
+
+VAR CH_disp, d				; variable bool char enum
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+VAR	KL866_disp, d				; compteur boucle LOOP__101
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STRING.FST_1
+	Sd  2,	KL866_disp
+VAR	LMT_KL866_disp, d			; limite boucle LOOP__101
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STRING.LST_1
+	Sd  2,	LMT_KL866_disp
+	Ld  2,	KL866_disp				; test null range LOOP__101
+	Ld  2,	LMT_KL866_disp
+	CGT
+	BT	L865
+LOOP__101:				; corps boucle LOOP__101
+	LVA	1, -TO_ofs
+	LIa	, , 0				; array data start address on stack
+	Ld	2, KL866_disp
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
+	SUB
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	LI	32
+	Sb
+	Ld  2,	KL866_disp				; test de sortie LOOP__101
+	Ld  2,	LMT_KL866_disp
+	CEQ
+	BT	L865
+	Ld  2,	KL866_disp				; mise a jour compteur LOOP__101
+	INC
+	Sd  2,	KL866_disp
+	BRA	LOOP__101				; iteration suivante LOOP__101
+L865:					; post loop LOOP__101
+LOOP__102:
+	Ld 2,	I_disp
+	LId	2, IMAGES_STR__u, STRING.LST_1
+	CLE
+	BF	L867
+	La	 2, IMAGES_STR_disp			; array data start address on stack
+	Ld 2,	I_disp
+	LId	2, IMAGES_STR__u, STANDARD.STRING.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	2, IMAGES_STR__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	Sd  2,	REP_disp
+	La	 2, IMAGES_STR_disp			; array data start address on stack
+	Ld 2,	I_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	LId	2, IMAGES_STR__u, STANDARD.STRING.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	2, IMAGES_STR__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	Sd  2,	LEN_disp
+					; debut if
+	Ld 2,	REP_disp
+	Ld 2,	POS_VAL_disp
+	CEQ
+	BF	L869
+	Ld 2,	I_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	2
+	ADD
+	Sd  2,	IMG_START_disp
+					; debut if
+	Ld 2,	LEN_disp
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STRING.LST_1
+	INC
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STRING.FST_1
+	SUB
+	CGT
+	BF	L871
+VAR	KL873_disp, d				; compteur boucle LOOP__103
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STRING.FST_1
+	Sd  2,	KL873_disp
+VAR	LMT_KL873_disp, d			; limite boucle LOOP__103
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STRING.LST_1
+	Sd  2,	LMT_KL873_disp
+	Ld  2,	KL873_disp				; test null range LOOP__103
+	Ld  2,	LMT_KL873_disp
+	CGT
+	BT	L872
+LOOP__103:				; corps boucle LOOP__103
+	LVA	1, -TO_ofs
+	LIa	, , 0				; array data start address on stack
+	Ld	2, KL873_disp
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
+	SUB
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	LI	42
+	Sb
+	Ld  2,	KL873_disp				; test de sortie LOOP__103
+	Ld  2,	LMT_KL873_disp
+	CEQ
+	BT	L872
+	Ld  2,	KL873_disp				; mise a jour compteur LOOP__103
+	INC
+	Sd  2,	KL873_disp
+	BRA	LOOP__103				; iteration suivante LOOP__103
+L872:					; post loop LOOP__103
+	UNLINK 2
+	BRA ret_lbl
+	BRA	L870
+L871:
+L870:					; post if
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STRING.LST_1
+	INC
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STRING.FST_1
+	SUB
+	Ld 2,	LEN_disp
+	SUB
+	Sd  2,	PAD_disp
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STRING.FST_1
+	Ld 2,	PAD_disp
+	ADD
+	Sd  2,	DST_disp
+VAR	JL875_disp, d				; compteur boucle LOOP__104
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	Sd  2,	JL875_disp
+VAR	LMT_JL875_disp, d			; limite boucle LOOP__104
+	Ld 2,	LEN_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	SUB
+	Sd  2,	LMT_JL875_disp
+	Ld  2,	JL875_disp				; test null range LOOP__104
+	Ld  2,	LMT_JL875_disp
+	CGT
+	BT	L874
+LOOP__104:				; corps boucle LOOP__104
+	La	 2, IMAGES_STR_disp			; array data start address on stack
+	Ld 2,	IMG_START_disp
+	Ld	2, JL875_disp
+	ADD
+	LId	2, IMAGES_STR__u, STANDARD.STRING.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	2, IMAGES_STR__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb					; charge depuis adresse empilee 
+	Sb  2,	CH_disp
+					; debut if
+	Lb  1,	-SET_ofs
+	LI	0
+	CEQ
+	BF	L877
+					; debut if
+	Lb 2,	CH_disp
+	LI	65
+	CGE
+	DUP
+	BF	L880
+	DROP
+	Lb 2,	CH_disp
+	LI	90
+	CLE
+L880:
+	BF	L879
+	Lb 2,	CH_disp
+; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
+	LI	32
+	ADD
+	Sb  2,	CH_disp
+	BRA	L878
+L879:
+L878:					; post if
+	BRA	L876
+L877:
+L876:					; post if
+	LVA	1, -TO_ofs
+	LIa	, , 0				; array data start address on stack
+	Ld 2,	DST_disp
+	Ld	2, JL875_disp
+	ADD
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
+	SUB
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb 2,	CH_disp
+	Sb
+	Ld  2,	JL875_disp				; test de sortie LOOP__104
+	Ld  2,	LMT_JL875_disp
+	CEQ
+	BT	L874
+	Ld  2,	JL875_disp				; mise a jour compteur LOOP__104
+	INC
+	Sd  2,	JL875_disp
+	BRA	LOOP__104				; iteration suivante LOOP__104
+L874:					; post loop LOOP__104
+	UNLINK 2
+	BRA ret_lbl
+	BRA	L868
+L869:
+L868:					; post if
+	Ld 2,	I_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	2
+	ADD
+	Ld 2,	LEN_disp
+	ADD
+	Sd  2,	I_disp
+	BRA	LOOP__102
+L867:					; post loop LOOP__102
+VAR	KL882_disp, d				; compteur boucle LOOP__105
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STRING.FST_1
+	Sd  2,	KL882_disp
+VAR	LMT_KL882_disp, d			; limite boucle LOOP__105
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STRING.LST_1
+	Sd  2,	LMT_KL882_disp
+	Ld  2,	KL882_disp				; test null range LOOP__105
+	Ld  2,	LMT_KL882_disp
+	CGT
+	BT	L881
+LOOP__105:				; corps boucle LOOP__105
+	LVA	1, -TO_ofs
+	LIa	, , 0				; array data start address on stack
+	Ld	2, KL882_disp
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
+	SUB
+	LVA	1, -TO_ofs
+	LIa	, , 8
+	Ld	, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	LI	42
+	Sb
+	Ld  2,	KL882_disp				; test de sortie LOOP__105
+	Ld  2,	LMT_KL882_disp
+	CEQ
+	BT	L881
+	Ld  2,	KL882_disp				; mise a jour compteur LOOP__105
+	INC
+	Sd  2,	KL882_disp
+	BRA	LOOP__105				; iteration suivante LOOP__105
+L881:					; post loop LOOP__105
+	UNLINK 2
+endPRO
 ret_lbl:
 	UNLINK 1
 	RTD	prm_siz

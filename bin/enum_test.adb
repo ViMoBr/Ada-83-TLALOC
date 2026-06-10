@@ -182,6 +182,29 @@ begin
    IO_COULEUR.GET( C );
    PUT( "Lu : " ); IO_COULEUR.PUT( C ); NEW_LINE;
 
+  -- === 18. PUT (string) ===
+  PUT_LINE( "=== 18. PUT (string) ===" );
+  declare
+    S1	: STRING( 1 .. 10 );
+    S2	: STRING( 1 .. 10 );
+  begin
+    IO_COULEUR.PUT( S1, BLEU );
+    PUT( '[' ); PUT( S1 ); PUT( ']' ); NEW_LINE;
+    IO_COULEUR.PUT( S2, ROUGE, LOWER_CASE );
+    PUT( '[' ); PUT( S2 ); PUT( ']' ); NEW_LINE;
+  end;
+
+  -- === 19. GET (string) ===
+  PUT_LINE( "=== 19. GET (string) ===" );
+  declare
+    C	: COULEUR;
+    L	: POSITIVE;
+  begin
+    IO_COULEUR.GET( "  rouge suite", C, L );
+    IO_COULEUR.PUT( C );
+    NEW_LINE;
+  end;
+
   PUT_LINE( "=== FIN ===" );
 
 end	ENUM_TEST;

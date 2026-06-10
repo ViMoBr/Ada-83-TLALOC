@@ -24,5 +24,15 @@ begin
   INT_IO.GET( "  -123 xxx", I, L );
   INT_IO.PUT( I ); NEW_LINE;
 
+  INT_IO.GET( "16#FF# reste", I, L );
+  INT_IO.PUT( I ); NEW_LINE;
+
+  declare
+    S : STRING( 1 .. 3 );
+  begin
+    INT_IO.PUT( S, 12345 );
+    PUT_LINE( S );
+  end;
+
 end	TEST_INT_IO;
 	-----------

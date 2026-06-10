@@ -1,0 +1,388 @@
+if ~ definite SEQUENTIAL_IO
+include 'SEQUENTIAL_IO.FINC'
+end if
+PRO	TEST_ARDUINO_L1				;---------- PRO TEST_ARDUINO
+ELB 1					;    BODY ELAB
+CHAR_IO = 'CHAR_IO'
+namespace CHAR_IO				;---------- GENERIC PACKAGE INSTANTIATION
+elab_spec:				;    SPEC ELAB
+
+BRA post_LD_CHARACTER
+LD_CHARACTER.elab:
+	Lb -1, 0
+	RTD 0
+post_LD_CHARACTER:
+BRA post_ST_CHARACTER
+ST_CHARACTER.elab:
+	Sb -1, 0
+	RTD 0
+post_ST_CHARACTER:
+BRA post_INADR_CHARACTER
+INADR_CHARACTER.elab:
+	RTD 0
+post_INADR_CHARACTER:
+BRA post_OUTADR_CHARACTER
+OUTADR_CHARACTER.elab:
+	La
+	RTD 0
+post_OUTADR_CHARACTER:
+VAR CHARACTER__outadr_ofs, q
+	LCA OUTADR_CHARACTER.elab
+	Sa	 1, CHARACTER__outadr_ofs
+VAR CHARACTER__inadr_ofs, q
+	LCA INADR_CHARACTER.elab
+	Sa	 1, CHARACTER__inadr_ofs
+VAR CHARACTER__st_ofs, q
+	LCA ST_CHARACTER.elab
+	Sa	 1, CHARACTER__st_ofs
+VAR CHARACTER__ld_ofs, q
+	LCA LD_CHARACTER.elab
+	Sa	 1, CHARACTER__ld_ofs
+VAR CHARACTER__u_ofs, q
+	La	 0, STANDARD.CHARACTER.use__info
+	Sa	 1, CHARACTER__u_ofs
+VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
+; CODE_TYPE_DECL : skip PRIVATE FILE_TYPE (deferred to full type)
+
+					; FILE_MODE ENUMERATION TYPE INFO
+FILE_MODE = 'FILE_MODE'
+namespace FILE_MODE
+VAR use__info, q
+BEGIN_BLOC_DEF
+db 0, 7, "IN_FILE"
+db 1, 8, "OUT_FILE"
+END_BLOC_DEF
+IMAGES	BYTES_BLOC
+CST LST, d, 1
+CST FST, d, 0
+CST SIZ, d, 8	; SIZ en bits !
+postpone
+  align_q
+end postpone
+	LCA	SIZ
+	Sa	1, use__info
+end namespace
+if defined CREATE_L2_
+PRO	CREATE_L2				;---------- PRO CREATE
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in out
+	PRM MODE_ofs				; in
+	PRM NAME_ofs				; in
+	PRM FORM_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	La 	 2, -FORM_ofs
+	La 	 2, -NAME_ofs
+	Lb	 2, -MODE_ofs
+	La 	 2, -FILE_ofs
+	CALL	STANDARD.SEQUENTIAL_IO. ,CREATE_L1
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO CREATE
+end if
+if defined OPEN_L3_
+PRO	OPEN_L3				;---------- PRO OPEN
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in out
+	PRM MODE_ofs				; in
+	PRM NAME_ofs				; in
+	PRM FORM_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	La 	 2, -FORM_ofs
+	La 	 2, -NAME_ofs
+	Lb	 2, -MODE_ofs
+	La 	 2, -FILE_ofs
+	CALL	STANDARD.SEQUENTIAL_IO. ,OPEN_L2
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO OPEN
+end if
+if defined CLOSE_L4_
+PRO	CLOSE_L4				;---------- PRO CLOSE
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in out
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	La 	 2, -FILE_ofs
+	CALL	STANDARD.SEQUENTIAL_IO. ,CLOSE_L3
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO CLOSE
+end if
+if defined DELETE_L5_
+PRO	DELETE_L5				;---------- PRO DELETE
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in out
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	La 	 2, -FILE_ofs
+	CALL	STANDARD.SEQUENTIAL_IO. ,DELETE_L4
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO DELETE
+end if
+if defined RESET_L6_
+PRO	RESET_L6				;---------- PRO RESET
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in out
+	PRM MODE_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Lb	 2, -MODE_ofs
+	La 	 2, -FILE_ofs
+	CALL	STANDARD.SEQUENTIAL_IO. ,RESET_L5
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO RESET
+end if
+if defined RESET_L7_
+PRO	RESET_L7				;---------- PRO RESET
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in out
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	La 	 2, -FILE_ofs
+	CALL	STANDARD.SEQUENTIAL_IO. ,RESET_L6
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO RESET
+end if
+if defined MODE_L8_
+PRO	MODE_L8				;---------- PRO MODE
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LI	0					; lieu result
+	LVA	 1, GFP_disp
+	La 	 2, -FILE_ofs
+	CALL	STANDARD.SEQUENTIAL_IO. ,MODE_L7
+	Sb	 2, -result__ofs			; retour resultat
+	UNLINK	 2
+	RTD	prm_siz-8
+endPRO					;---------- end PRO MODE
+end if
+if defined NAME_L9_
+PRO	NAME_L9				;---------- PRO NAME
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LI	0					; lieu result
+	LVA	 1, GFP_disp
+	La 	 2, -FILE_ofs
+	CALL	STANDARD.SEQUENTIAL_IO. ,NAME_L8
+; RESULTAT UNCONSTRAINED A FAIRE
+	UNLINK	 2
+	RTD	prm_siz-8
+endPRO					;---------- end PRO NAME
+end if
+if defined FORM_L10_
+PRO	FORM_L10				;---------- PRO FORM
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LI	0					; lieu result
+	LVA	 1, GFP_disp
+	La 	 2, -FILE_ofs
+	CALL	STANDARD.SEQUENTIAL_IO. ,FORM_L9
+; RESULTAT UNCONSTRAINED A FAIRE
+	UNLINK	 2
+	RTD	prm_siz-8
+endPRO					;---------- end PRO FORM
+end if
+if defined IS_OPEN_L11_
+PRO	IS_OPEN_L11				;---------- PRO IS_OPEN
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LI	0					; lieu result
+	LVA	 1, GFP_disp
+	La 	 2, -FILE_ofs
+	CALL	STANDARD.SEQUENTIAL_IO. ,IS_OPEN_L10
+	Sb	 2, -result__ofs			; retour resultat
+	UNLINK	 2
+	RTD	prm_siz-8
+endPRO					;---------- end PRO IS_OPEN
+end if
+if defined READ_L12_
+PRO	READ_L12				;---------- PRO READ
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM ITEM_ofs				; out
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	La 	 2, -ITEM_ofs
+	La 	 2, -FILE_ofs
+	CALL	STANDARD.SEQUENTIAL_IO. ,READ_L11
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO READ
+end if
+if defined WRITE_L13_
+PRO	WRITE_L13				;---------- PRO WRITE
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM ITEM_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Lb	 2, -ITEM_ofs
+	La 	 2, -FILE_ofs
+	CALL	STANDARD.SEQUENTIAL_IO. ,WRITE_L12
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO WRITE
+end if
+if defined END_OF_FILE_L14_
+PRO	END_OF_FILE_L14				;---------- PRO END_OF_FILE
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LI	0					; lieu result
+	LVA	 1, GFP_disp
+	La 	 2, -FILE_ofs
+	CALL	STANDARD.SEQUENTIAL_IO. ,END_OF_FILE_L13
+	Sb	 2, -result__ofs			; retour resultat
+	UNLINK	 2
+	RTD	prm_siz-8
+endPRO					;---------- end PRO END_OF_FILE
+end if
+FILE_NAME_BUFFER = 'FILE_NAME_BUFFER'
+namespace FILE_NAME_BUFFER			; FILE_NAME_BUFFER CONSTRAINED ARRAY SUBTYPE INFO
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+VAR COMP_SIZ, d
+VAR FST_1, d
+VAR LST_1, d
+	LI	8
+	Sd	1, COMP_SIZ
+	Ld	1, COMP_SIZ
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd	1, FST_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	256
+	Sd	1, LST_1
+	Ld	1, LST_1
+	INC
+	Ld	1, FST_1
+	SUB
+	MUL
+	Sd	1, SIZ
+  virtual at 4
+COMP_SIZ = $
+	rd 1 
+FST_1 = $
+	rd 1 
+LST_1 = $
+	rd 1 
+  end virtual
+end namespace
+
+					; FILE_TYPE RECORD TYPE INFO
+FILE_TYPE = 'FILE_TYPE'
+namespace FILE_TYPE
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+USEINFO 1, ID, 	La 0, STANDARD.INTEGER.use__info
+USEINFO 1, NAME, 	La 1, STANDARD.TEST_ARDUINO_L1.CHAR_IO.FILE_NAME_BUFFER.use__info
+USEINFO 1, NAME_LEN, 	La 0, STANDARD.POSITIVE.use__info
+USEINFO 1, IS_OPENED, 	La 0, STANDARD.BOOLEAN.use__info
+USEINFO 1, MODE, 	La 1, STANDARD.TEST_ARDUINO_L1.CHAR_IO.FILE_MODE.use__info
+USEINFO 1, AT_END_OF_FILE, 	La 0, STANDARD.BOOLEAN.use__info
+virtual at 0				; calcul des offsets statiques
+STATOFS ID, 4
+STATOFS NAME, 256
+STATOFS NAME_LEN, 4
+STATOFS IS_OPENED, 1
+STATOFS MODE, 1
+STATOFS AT_END_OF_FILE, 1
+size = $
+end virtual
+	LI	 size*8
+	Sd	1, SIZ
+end namespace
+					;---------- end generic package instantiation CHAR_IO
+end namespace
+
+VAR PORT_disp, q				; variable record : pointeur aux data record
+VAR PORT__u, q				; variable record : pointeur aux useinfo
+VAR PORT__dat, STANDARD.TEST_ARDUINO_L1.CHAR_IO.FILE_TYPE.size
+	LVA	1, PORT__dat
+	Sa	1, PORT_disp				; record fin
+	LVA	1, STANDARD.TEST_ARDUINO_L1.CHAR_IO.FILE_TYPE.SIZ
+	Sa	1, PORT__u
+	LIVa 1, PORT_disp, STANDARD.TEST_ARDUINO_L1.CHAR_IO.FILE_TYPE.ID
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	NEG
+	Sd
+	LIVa 1, PORT_disp, STANDARD.TEST_ARDUINO_L1.CHAR_IO.FILE_TYPE.IS_OPENED
+	LI	0
+	Sb
+	LIVa 1, PORT_disp, STANDARD.TEST_ARDUINO_L1.CHAR_IO.FILE_TYPE.AT_END_OF_FILE
+	LI	0
+	Sb
+
+VAR C_disp, d				; variable bool char enum
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+STR STR_L15, ""				; constante string=""
+	LCA	STR_L15.data_ptr
+STR STR_L16, "/dev/ttyACM0"			; constante string="/dev/ttyACM0"
+	LCA	STR_L16.data_ptr
+	LI  1
+	LVA  1,	PORT_disp
+	CALL	STANDARD.TEST_ARDUINO_L1.CHAR_IO. ,OPEN_L3
+	LI	72
+	Sb  1,	C_disp
+	Lb 1,	C_disp
+	LVA 1,	PORT_disp
+	CALL	STANDARD.TEST_ARDUINO_L1.CHAR_IO. ,WRITE_L13
+	LI	105
+	Sb  1,	C_disp
+	Lb 1,	C_disp
+	LVA 1,	PORT_disp
+	CALL	STANDARD.TEST_ARDUINO_L1.CHAR_IO. ,WRITE_L13
+	LVA  1,	PORT_disp
+	CALL	STANDARD.TEST_ARDUINO_L1.CHAR_IO. ,CLOSE_L4
+ret_lbl:
+	UNLINK 1
+	RTD
+excep:
+endPRO					;---------- end PRO TEST_ARDUINO

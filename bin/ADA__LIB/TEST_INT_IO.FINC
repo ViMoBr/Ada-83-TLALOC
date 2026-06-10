@@ -296,6 +296,74 @@ STR STR_L8, "  -123 xxx"			; constante string="  -123 xxx"
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
+	LVA  1,	L_disp
+	LVA  1,	I_disp
+STR STR_L9, "16#FF# reste"			; constante string="16#FF# reste"
+	LCA	STR_L9.data_ptr
+	CALL	STANDARD.TEST_INT_IO_L1.INT_IO. ,GET_L6
+	Ld 1,	STANDARD.TEST_INT_IO_L1.INT_IO.DEFAULT_BASE_disp
+	Ld 1,	STANDARD.TEST_INT_IO_L1.INT_IO.DEFAULT_WIDTH_disp
+	Ld 1,	I_disp
+	CALL	STANDARD.TEST_INT_IO_L1.INT_IO. ,PUT_L5
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
+namespace	BLOCK__1
+ELB 2					;    BODY ELAB
+STRING = 'STRING'
+namespace STRING				; array var constrained array type info
+VAR use__info, q
+VAR SIZ, d
+	LVA	2, SIZ
+	Sa	2, use__info
+VAR COMP_SIZ, d
+VAR FST_1, d
+VAR LST_1, d
+	LI	8
+	Sd	2, COMP_SIZ
+	Ld	2, COMP_SIZ
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd	2, FST_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	3
+	Sd	2, LST_1
+	Ld	2, LST_1
+	INC
+	Ld	2, FST_1
+	SUB
+	MUL
+	Sd	2, SIZ
+  virtual at 4
+COMP_SIZ = $
+	rd 1 
+FST_1 = $
+	rd 1 
+LST_1 = $
+	rd 1 
+  end virtual
+end namespace
+VAR S_disp, q				; variable array : pointeur aux data
+VAR S__u, q				; variable array : useinfo pointeur au rec info
+	La 2, STRING.use__info
+	Sa	2, S__u				; array info ptr at __u
+	Ld	2, STRING.SIZ
+	LI	8
+	DIV
+	CO_VAR
+	Sa	2, S_disp				; array data ptr at _disp
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	Ld 1,	STANDARD.TEST_INT_IO_L1.INT_IO.DEFAULT_BASE_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	12345
+	LVA  2,	S_disp
+	CALL	STANDARD.TEST_INT_IO_L1.INT_IO. ,PUT_L7
+	LVA 2,	S_disp
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	UNLINK 2
+endPRO
 ret_lbl:
 	UNLINK 1
 	RTD

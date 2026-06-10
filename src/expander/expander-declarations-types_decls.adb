@@ -671,8 +671,11 @@ is
 	      if	D( CD_IMPL_SIZE, COMP_TYPE ) = TREE_VOID  then
 	        IS_STATIC := FALSE;
 	      end	if;
+
 	    elsif	 COMP_TYPE.TY = DN_RECORD  then
-	      if	not IS_EMPTY( LIST(	D( SM_DISCRIMINANT_S, COMP_TYPE ) ) )  then
+	      if	not IS_EMPTY( LIST(	D( SM_DISCRIMINANT_S, COMP_TYPE ) ) )
+		and then D( SM_SIZE, COMP_TYPE ) = TREE_VOID
+	      then
 	        IS_STATIC := FALSE;
 	      end	if;
 	    else
@@ -756,6 +759,7 @@ is
 	      PUT_LINE( "STATOFS " & COMP_ID_STR
 		    & ','	& INTEGER'IMAGE( COMP_SIZE / CODI.STORAGE_UNIT ) );
 	      STATIC_SIZE := STATIC_SIZE + COMP_SIZE;
+
 	    else
 	      PUT_LINE( "; OFFSET NON STATIQUE A FAIRE" );
 	    end if;
@@ -771,6 +775,13 @@ is
         PUT_LINE( tab & "Sd" & tab & LVL_STR & ", SIZ" );
         DI( CD_IMPL_SIZE, TYPE_SPEC, STATIC_SIZE );
       end	if;
+
+      if  D( SM_SIZE, TYPE_SPEC ) /= TREE_VOID  then
+
+put_line( "; TRAITER_LES_CHAMPS SM_SIZE" & TYPE_ID_STR );
+
+        DI( CD_IMPL_SIZE, TYPE_SPEC, DI( SM_SIZE, TYPE_SPEC ) );
+      end if;
 
     end		TRAITER_LES_CHAMPS;
 		------------------

@@ -2323,14 +2323,14 @@ is					-------
       FRC_PART	: LONG_FLOAT;
       DIGIT	: LONG_INTEGER;
 
-      BAD_LAYOUT		: BOOLEAN		:= FALSE;
+      BAD_LAYOUT	: BOOLEAN		:= FALSE;
 
-      IPART		: LONG_INTEGER;
-      IPART_WORK		: LONG_INTEGER;
-      IBUF		: STRING( 1 .. 40 );
-      NB			: NATURAL		:= 0;
+      IPART	: LONG_INTEGER;
+      IPART_WORK	: LONG_INTEGER;
+      IBUF	: STRING( 1 .. 40 );
+      NB		: NATURAL		:= 0;
 
-      E			: INTEGER		:= 0;
+      E		: INTEGER		:= 0;
 
 			---------
       function		FLOOR_POS		( X : LONG_FLOAT )		return LONG_INTEGER
@@ -3065,78 +3065,222 @@ begin
     procedure		GET		( FILE :in FILE_TYPE; ITEM :out ENUM)
     is			---
 
-      function		GET_ENUM_IMAGES			return STRING
+      TOKEN	: STRING( 1 .. 80 );
+      TOK_LEN	: NATURAL		:= 0;
+      TOK_TOO_LONG	: BOOLEAN		:= FALSE;
+
+      CH		: CHARACTER;
+      DONE	: BOOLEAN		:= FALSE;
+
+      I		: POSITIVE;
+      REP		: INTEGER;
+      IMG_LEN	: INTEGER;
+      IMG_START	: POSITIVE;
+      FOUND	: BOOLEAN		:= FALSE;
+      OK		: BOOLEAN;
+      HAS_QUOTE	: BOOLEAN;
+      IMG_CH	: CHARACTER;
+      TOK_CH	: CHARACTER;
+
+		---------------
+      function	GET_ENUM_IMAGES			return STRING
       is		---------------
       begin
-        ASM_OP_2'( OPCODE => La,  LVL => 1, OFS => -24 );							-- empiler @GFP_disp (GET: 3 PRM)
-        ASM_OP_3'( OPCODE => LIVa,  DISP => -8, OFS=> 16 );							-- deref __u_ofs → IMAGES
-        ASM_OP_2'( OPCODE => Sa,  LVL => 2, OFS => -8 );							-- stocker dans result_ofs
+        ASM_OP_2'( OPCODE => La,   LVL => 1, OFS => -24 );							-- empiler @GFP_disp
+        ASM_OP_3'( OPCODE => LIVa, DISP => -8, OFS => 16 );							-- deref __u_ofs -> IMAGES
+        ASM_OP_2'( OPCODE => Sa,   LVL => 2, OFS => -8 );							-- stocker dans result_ofs
+
       end	GET_ENUM_IMAGES;
-      		---------------
+      	---------------
+
+
+		-----
+      function	UPPER		( CH : CHARACTER ) return CHARACTER
+      is		-----
+      begin
+        if  CH >= 'a'  and then  CH <= 'z'  then
+          return CHARACTER'VAL( CHARACTER'POS( CH ) - 32 );
+        else
+          return CH;
+        end if;
+
+      end	UPPER;
+	-----
+
+		------------
+      function	IS_SEPARATOR	( CH : CHARACTER ) return BOOLEAN
+      is		------------
+      begin
+        return
+          CH = ' '
+          or else CH = ASCII.HT
+          or else CH = ASCII.LF
+          or else CH = ASCII.CR
+          or else CH = ASCII.FF;
+
+      end	IS_SEPARATOR;
+	------------
+
+		-------------
+      function	IS_IDENT_CHAR	( CH : CHARACTER ) return BOOLEAN
+      is		-------------
+      begin
+        return
+          ( CH >= 'A'  and then  CH <= 'Z' )
+          or else
+          ( CH >= 'a'  and then  CH <= 'z' )
+          or else
+          ( CH >= '0'  and then  CH <= '9' )
+          or else
+          CH = '_';
+
+      end	IS_IDENT_CHAR;
+	-------------
+
+
+		----------
+      procedure	UNGET_CHAR	( CH :in CHARACTER )
+      is		----------
+      begin
+        FILE.LOOK_AHEAD     := CH;
+        FILE.HAS_LOOK_AHEAD := TRUE;
+
+      end	UNGET_CHAR;
+	----------
     begin
       declare
-        IMAGES_STR		:constant STRING	:= GET_ENUM_IMAGES;
-        CHN			: STRING( 1 .. 80 );
-        LEN			: NATURAL		:= 0;
-        I			: POSITIVE;
-        TOK_START		: POSITIVE;
-        TOK_LEN		: NATURAL;
-        REP			: INTEGER;
-        IMG_LEN		: INTEGER;
-        IMG_START		: POSITIVE;
-        FOUND		: BOOLEAN		:= FALSE;
-        IMG_CH		: CHARACTER;
-        TOK_CH		: CHARACTER;
-      begin
-        -- Lire un token depuis le fichier
-        GET_LINE( FILE, CHN, LEN );
-        -- Sauter les espaces de tete
-        I := 1;
-        while  I <= LEN  and then  CHN( I ) = ' '  loop
-          I := I + 1;
-        end loop;
-        TOK_START := I;
-        -- Lire le token (lettres, chiffres, underscores)
-        while  I <= LEN  loop
-          if  CHN( I ) >= 'A'  and then  CHN( I ) <= 'Z'  then
-            I := I + 1;
-          elsif  CHN( I ) >= 'a'  and then  CHN( I ) <= 'z'  then
-            I := I + 1;
-          elsif  CHN( I ) >= '0'  and then  CHN( I ) <= '9'  then
-            I := I + 1;
-          elsif  CHN( I ) = '_'  then
-            I := I + 1;
-          else
-            exit;
-          end if;
-        end loop;
-        TOK_LEN := I - TOK_START;
+        IMAGES_STR	: constant STRING	:= GET_ENUM_IMAGES;
 
-        -- Parcourir les images pour trouver la correspondance
-        I := IMAGES_STR'FIRST;
-        while  I <= IMAGES_STR'LAST  loop
-          REP := CHARACTER'POS( IMAGES_STR( I ) );
-          IMG_LEN := CHARACTER'POS( IMAGES_STR( I + 1 ) );
-          IMG_START := I + 2;
-          if  IMG_LEN = TOK_LEN  then
-            FOUND := TRUE;
-            for  J in 0 .. IMG_LEN - 1  loop
-              IMG_CH := IMAGES_STR( IMG_START + J );
-              TOK_CH := CHN( TOK_START + J );
-              if  TOK_CH >= 'a'  and then  TOK_CH <= 'z'  then
-                TOK_CH := CHARACTER'VAL( CHARACTER'POS( TOK_CH ) - 32 );
-              end if;
-              if  IMG_CH /= TOK_CH  then
-                FOUND := FALSE;
-              end if;
-            end loop;
-            if  FOUND  then
-              ITEM := ENUM'VAL( REP );
-              return;
-            end if;
+      begin
+SKIP_BLANKS:
+        loop
+	GET( FILE, CH );
+        exit when not IS_SEPARATOR( CH );
+      end loop  SKIP_BLANKS;
+
+      ------------------------------------------------------------
+      -- 2. Lire l'image du literal enumere.
+      --
+      --    Cas courant : identificateur Ada, donc lettres/chiffres/'_'.
+      --    Cas CHARACTER : image de forme 'X', lue jusqu'au second
+      --    apostrophe inclus.
+      --
+      --    Le premier caractere lu qui n'appartient plus au token est
+      --    remis en anticipation.
+      ------------------------------------------------------------
+
+      if  CH = '''  then
+
+        -- Literal caractere : recopier l'apostrophe initiale.
+        TOK_LEN := 1;
+        TOKEN( 1 ) := CH;
+
+        loop
+          GET( FILE, CH );
+
+          if  TOK_LEN < TOKEN'LAST  then
+            TOK_LEN := TOK_LEN + 1;
+            TOKEN( TOK_LEN ) := CH;
+          else
+            TOK_TOO_LONG := TRUE;
           end if;
-          I := I + 2 + IMG_LEN;
+
+          exit when CH = ''';
         end loop;
+
+      else											-- Identificateur enumere.
+        loop
+          if  IS_IDENT_CHAR( CH )  then
+
+            if  TOK_LEN < TOKEN'LAST  then
+              TOK_LEN := TOK_LEN + 1;
+              TOKEN( TOK_LEN ) := CH;
+            else
+              TOK_TOO_LONG := TRUE;
+            end if;
+
+            GET( FILE, CH );
+
+          else
+            UNGET_CHAR( CH );
+            DONE := TRUE;
+          end if;
+
+          exit when DONE;
+        end loop;
+
+      end if;
+
+      ------------------------------------------------------------
+      -- 3. Chercher l'image correspondante dans IMAGES_STR.
+      --    Les identificateurs sont compares sans tenir compte de
+      --    la casse. Les images contenant une apostrophe sont
+      --    comparees exactement, pour ne pas confondre 'a' et 'A'.
+      ------------------------------------------------------------
+
+      if  TOK_LEN = 0  or else  TOK_TOO_LONG  then
+
+        -- A remplacer plus tard par :
+        --   raise DATA_ERROR;
+        ITEM := ENUM'FIRST;
+        return;
+
+      end if;
+
+      I := IMAGES_STR'FIRST;
+
+      while  I <= IMAGES_STR'LAST  loop
+
+        REP       := CHARACTER'POS( IMAGES_STR( I ) );
+        IMG_LEN   := CHARACTER'POS( IMAGES_STR( I + 1 ) );
+        IMG_START := I + 2;
+
+        if  IMG_LEN = TOK_LEN  then
+
+          HAS_QUOTE := FALSE;
+
+          for  J in 0 .. IMG_LEN - 1  loop
+            if  IMAGES_STR( IMG_START + J ) = '''  then
+              HAS_QUOTE := TRUE;
+            end if;
+          end loop;
+
+          OK := TRUE;
+
+          for  J in 0 .. IMG_LEN - 1  loop
+            IMG_CH := IMAGES_STR( IMG_START + J );
+            TOK_CH := TOKEN( J + 1 );
+
+            if  HAS_QUOTE  then
+              -- Images de caracteres : comparaison exacte.
+              if  TOK_CH /= IMG_CH  then
+                OK := FALSE;
+              end if;
+            else
+              -- Identificateurs : insensibles a la casse.
+              if  UPPER( TOK_CH ) /= UPPER( IMG_CH )  then
+                OK := FALSE;
+              end if;
+            end if;
+          end loop;
+
+          if  OK  then
+            ITEM := ENUM'VAL( REP );
+            return;
+          end if;
+
+        end if;
+
+        I := I + 2 + IMG_LEN;
+      end loop;
+
+      ------------------------------------------------------------
+      -- 4. Aucune image trouvee.
+      ------------------------------------------------------------
+
+      -- A remplacer plus tard par :
+      --   raise DATA_ERROR;
+      ITEM := ENUM'FIRST;
       end;
 
     end	GET;
@@ -3159,7 +3303,119 @@ begin
 					  LAST :out POSITIVE
 					)
     is			---
-    begin null;
+
+      I			: INTEGER		:= FROM'FIRST;
+      P			: INTEGER;
+      REP			: INTEGER;
+      LEN			: INTEGER;
+      IMG_START		: INTEGER;
+
+      MATCH_FOUND		: BOOLEAN		:= FALSE;
+      MATCH_REP		: INTEGER		:= 0;
+      MATCH_LEN		: INTEGER		:= 0;
+
+      OK			: BOOLEAN;
+
+		---------------
+      function	GET_ENUM_IMAGES			return STRING
+      is		---------------
+      begin
+        ASM_OP_2'( OPCODE => La,   LVL => 1, OFS => -32 );							-- empiler @GFP_disp
+        ASM_OP_3'( OPCODE => LIVa, DISP => -8, OFS => 16 );							-- deref __u_ofs -> IMAGES
+        ASM_OP_2'( OPCODE => Sa,   LVL => 2, OFS => -8 );							-- stocker dans result_ofs
+
+      end	GET_ENUM_IMAGES;
+      	---------------
+
+		-----
+      function	UPPER		( CH : CHARACTER )		return CHARACTER
+      is		-----
+      begin
+        if  CH >= 'a'  and then  CH <= 'z'  then
+	return  CHARACTER'VAL( CHARACTER'POS( CH ) - 32 );
+        else
+	return  CH;
+        end if;
+
+      end	UPPER;
+	-----
+
+		---------
+      function	SAME_CHAR		( LEFT, RIGHT : CHARACTER )	return BOOLEAN
+      is		---------
+      begin
+        return  UPPER( LEFT ) = UPPER( RIGHT );
+
+      end	SAME_CHAR;
+	---------
+
+    begin
+      declare
+        IMAGES_STR		: constant STRING	:= GET_ENUM_IMAGES;
+
+      begin
+IGNORE_BLANKS:
+        while  I <= FROM'LAST  and then
+          ( FROM( I ) = ' '
+            or else FROM( I ) = ASCII.HT
+            or else FROM( I ) = ASCII.LF
+            or else FROM( I ) = ASCII.FF )
+        loop
+	I := I + 1;
+        end loop  IGNORE_BLANKS;
+
+        P := IMAGES_STR'FIRST;
+
+      -- IMAGES_STR contient des triplets :
+      --   REP, LEN, caracteres_de_l_image
+        while  P <= IMAGES_STR'LAST  loop
+
+	REP := CHARACTER'POS( IMAGES_STR( P ) );
+	LEN := CHARACTER'POS( IMAGES_STR( P + 1 ) );
+
+	IMG_START := P + 2;
+
+	if  I + LEN - 1 <= FROM'LAST  then
+	  OK := TRUE;
+
+	  for  J in 0 .. LEN - 1  loop
+	    if  not SAME_CHAR( FROM( I + J ), IMAGES_STR( IMG_START + J ) )  then
+	      OK := FALSE;
+	    end if;
+	  end loop;
+
+	  if  OK  then
+            -- Retenir la plus longue image correspondante.
+            -- C'est utile si deux images ont un prefixe commun.
+	    if  not MATCH_FOUND  or else  LEN > MATCH_LEN  then
+	      MATCH_FOUND := TRUE;
+	      MATCH_REP   := REP;
+	      MATCH_LEN   := LEN;
+	    end if;
+	  end if;
+
+	end if;
+
+	P := P + 2 + LEN;
+        end loop;
+
+        if  MATCH_FOUND  then
+	ITEM := ENUM'VAL( MATCH_REP );
+	LAST := POSITIVE( I + MATCH_LEN - 1 );
+
+        else
+        -- A remplacer plus tard par :
+        --   raise DATA_ERROR;
+	ITEM := ENUM'FIRST;
+
+	if  FROM'FIRST <= FROM'LAST  then
+	  LAST := FROM'FIRST;
+	else
+	  LAST := 1;
+	end if;
+
+        end if;
+      end;
 
     end	GET;
 	---
@@ -3171,10 +3427,91 @@ begin
 					  SET  :in TYPE_SET		:= DEFAULT_SETTING
 					)
     is			---
-    begin null;
+
+		---------------
+      function	GET_ENUM_IMAGES			return STRING
+      is		---------------
+      begin
+        ASM_OP_2'( OPCODE => La,   LVL => 1, OFS => -32 );		-- empiler @GFP_disp
+        ASM_OP_3'( OPCODE => LIVa, DISP => -8, OFS => 16 );		-- deref __u_ofs -> IMAGES
+        ASM_OP_2'( OPCODE => Sa,   LVL => 2, OFS => -8 );		-- stocker dans result_ofs
+
+      end	GET_ENUM_IMAGES;
+      	---------------
+
+    begin
+      declare
+        IMAGES_STR		: constant STRING		:= GET_ENUM_IMAGES;
+        POS_VAL		: INTEGER			:= ENUM'POS( ITEM );
+        I			: POSITIVE		:= IMAGES_STR'FIRST;
+        REP		: INTEGER;
+        LEN		: INTEGER;
+        IMG_START		: POSITIVE;
+        PAD		: INTEGER;
+        DST		: INTEGER;
+        CH		: CHARACTER;
+      begin
+
+        -- Par defaut, remplir le champ avec des blancs.
+        for  K in TO'FIRST .. TO'LAST  loop
+          TO( K ) := ' ';
+        end loop;
+
+        -- Parcourir les triplets (REP, LEN, caracteres...) dans IMAGES_STR.
+        while  I <= IMAGES_STR'LAST  loop
+
+          REP := CHARACTER'POS( IMAGES_STR( I ) );
+          LEN := CHARACTER'POS( IMAGES_STR( I + 1 ) );
+
+          if  REP = POS_VAL  then
+
+            IMG_START := I + 2;
+
+            if  LEN > TO'LENGTH  then
+
+              -- A remplacer plus tard par :
+              --   raise LAYOUT_ERROR;
+              for  K in TO'FIRST .. TO'LAST  loop
+                TO( K ) := '*';
+              end loop;
+
+              return;
+
+            end if;
+
+            -- Justification a droite dans TO.
+            PAD := TO'LENGTH - LEN;
+            DST := TO'FIRST + PAD;
+
+            for  J in 0 .. LEN - 1  loop
+              CH := IMAGES_STR( IMG_START + J );
+
+              if  SET = LOWER_CASE  then
+                if  CH >= 'A'  and then  CH <= 'Z'  then
+                  CH := CHARACTER'VAL( CHARACTER'POS( CH ) + 32 );
+                end if;
+              end if;
+
+              TO( DST + J ) := CH;
+            end loop;
+
+            return;
+
+          end if;
+
+          I := I + 2 + LEN;
+        end loop;
+
+        -- Cas normalement impossible : ITEM doit toujours avoir une image.
+        -- A remplacer plus tard par une exception interne ou DATA_ERROR.
+        for  K in TO'FIRST .. TO'LAST  loop
+          TO( K ) := '*';
+        end loop;
+
+      end;
 
     end	PUT;
-	----
+	---
 
 
   end	ENUMERATION_IO;

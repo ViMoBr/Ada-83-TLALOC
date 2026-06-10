@@ -808,10 +808,55 @@ raise PROGRAM_ERROR;
 	or     EXPR_TYPE.TY = DN_L_PRIVATE
 	or     EXPR_TYPE.TY = DN_PRIVATE
 	then
-				-- Return address of the doublet
-	  EXPRESSIONS.CODE_EXP( EXP );
-	  PUT_LINE( tab & "Sa " & INTEGER'IMAGE( CODI.CUR_LEVEL ) & ',' & tab & "-result__ofs" );
+				-- Copier les donnees dans le doublet alloue par l appelant (adresse dans result__ofs)
+	declare
+	  TYPE_SPEC	: TREE	:= EXPR_TYPE;
+	begin
+	  while  TYPE_SPEC.TY = DN_L_PRIVATE  or  TYPE_SPEC.TY = DN_PRIVATE  loop
+	    TYPE_SPEC := D( SM_TYPE_SPEC, TYPE_SPEC );
+	  end loop;
+	  declare
+	    TYPE_NAME	: TREE		:= D( XD_SOURCE_NAME, TYPE_SPEC );
+	    TN_STR	: constant STRING	:= PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
+	    LVL_STR	: constant STRING	:= INTEGER'IMAGE( CODI.CUR_LEVEL );
+	  begin
+	    if  EXP.TY = DN_AGGREGATE  then
+	      -- result__ofs contient l'adresse du doublet alloue par l'appelant
+	      -- Extraire data_ptr (offset 0 du doublet) pour CODE_AGGREGATE
+	      PUT_LINE( tab & "La  " & LVL_STR & ',' & tab & "-result__ofs" );
+	      PUT_LINE( tab & "La  ,  0" );                           -- data_ptr = [doublet + 0]
+	      EXPRESSIONS.CODE_AGGREGATE( EXP, TYPE_SPEC );
 
+	    else
+	      -- EXP est une variable ou expression composite : BLKMOV vers la destination
+	      -- Destination : data_ptr du doublet result__ofs
+	      PUT_LINE( tab & "La  " & LVL_STR & ',' & tab & "-result__ofs" );
+	      PUT_LINE( tab & "La  ,  0" );                           -- @DST = data_ptr du doublet appelant
+
+	      PUT( tab & "LI" & tab );
+	      CODI.REGIONS_PATH( TYPE_NAME );
+	      PUT_LINE( TN_STR & ".size" );                           -- LEN
+
+	      EXPRESSIONS.CODE_EXP( EXP );                            -- empiле @doublet source
+	      PUT_LINE( tab & "La  ,  0" );                           -- @SRC = data_ptr du doublet source
+
+	      PUT_LINE( tab & "BLKMOV" );
+	    end if;
+	  end;
+	end;
+
+--	elsif  EXPR_TYPE.TY = DN_RECORD
+--	or     EXPR_TYPE.TY = DN_L_PRIVATE
+--	or     EXPR_TYPE.TY = DN_PRIVATE
+--	then
+				-- Return address of the doublet
+--	if  EXP.TY = DN_AGGREGATE  then								-- Traiter directement ce cas a cause du type
+--	  PUT_LINE( tab & "La " & INTEGER'IMAGE( CODI.CUR_LEVEL ) & ',' & tab & "-result__ofs" );
+--	  EXPRESSIONS.CODE_AGGREGATE( EXP, EXPR_TYPE );
+--	else
+--	  EXPRESSIONS.CODE_EXP( EXP );
+--	  PUT_LINE( tab & "Sa " & INTEGER'IMAGE( CODI.CUR_LEVEL ) & ',' & tab & "-result__ofs" );
+--	end if;
 
           end if;
         end	STORE_FUNCTION_RESULT;
@@ -1080,7 +1125,7 @@ raise PROGRAM_ERROR;
 	  EXPRESSIONS.CODE_EXP( SRC_EXP );
 	  CODI.STORE( DEFN );
 
-	elsif  NAME_TYPE.TY = DN_ARRAY  then								-- OBJET ASSIGNE TABLEAU
+	elsif  NAME_TYPE.TY = DN_ARRAY  or  NAME_TYPE.TY = DN_CONSTRAINED_ARRAY  then								-- OBJET ASSIGNE TABLEAU
 	  CODE_OBJECT( DEFN );
 	  if  SRC_EXP.TY = DN_USED_OBJECT_ID  then
 	    CODE_OBJECT( D( SM_DEFN, SRC_EXP ) );

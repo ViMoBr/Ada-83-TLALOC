@@ -1290,8 +1290,154 @@ STR STR_L110, "Lu : "			; constante string="Lu : "
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
-STR STR_L111, "=== FIN ==="			; constante string="=== FIN ==="
+STR STR_L111, "=== 18. PUT (string) ==="	; constante string="=== 18. PUT (string) ==="
 	LCA	STR_L111.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+namespace	BLOCK__8
+ELB 2					;    BODY ELAB
+STRING = 'STRING'
+namespace STRING				; array var constrained array type info
+VAR use__info, q
+VAR SIZ, d
+	LVA	2, SIZ
+	Sa	2, use__info
+VAR COMP_SIZ, d
+VAR FST_1, d
+VAR LST_1, d
+	LI	8
+	Sd	2, COMP_SIZ
+	Ld	2, COMP_SIZ
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd	2, FST_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	10
+	Sd	2, LST_1
+	Ld	2, LST_1
+	INC
+	Ld	2, FST_1
+	SUB
+	MUL
+	Sd	2, SIZ
+  virtual at 4
+COMP_SIZ = $
+	rd 1 
+FST_1 = $
+	rd 1 
+LST_1 = $
+	rd 1 
+  end virtual
+end namespace
+VAR S1_disp, q				; variable array : pointeur aux data
+VAR S1__u, q				; variable array : useinfo pointeur au rec info
+	La 2, STRING.use__info
+	Sa	2, S1__u				; array info ptr at __u
+	Ld	2, STRING.SIZ
+	LI	8
+	DIV
+	CO_VAR
+	Sa	2, S1_disp				; array data ptr at _disp
+
+STRING = 'STRING'
+namespace STRING				; array var constrained array type info
+VAR use__info, q
+VAR SIZ, d
+	LVA	2, SIZ
+	Sa	2, use__info
+VAR COMP_SIZ, d
+VAR FST_1, d
+VAR LST_1, d
+	LI	8
+	Sd	2, COMP_SIZ
+	Ld	2, COMP_SIZ
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd	2, FST_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	10
+	Sd	2, LST_1
+	Ld	2, LST_1
+	INC
+	Ld	2, FST_1
+	SUB
+	MUL
+	Sd	2, SIZ
+  virtual at 4
+COMP_SIZ = $
+	rd 1 
+FST_1 = $
+	rd 1 
+LST_1 = $
+	rd 1 
+  end virtual
+end namespace
+VAR S2_disp, q				; variable array : pointeur aux data
+VAR S2__u, q				; variable array : useinfo pointeur au rec info
+	La 2, STRING.use__info
+	Sa	2, S2__u				; array info ptr at __u
+	Ld	2, STRING.SIZ
+	LI	8
+	DIV
+	CO_VAR
+	Sa	2, S2_disp				; array data ptr at _disp
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	Lb 1,	STANDARD.ENUM_TEST_L1.IO_COULEUR.DEFAULT_SETTING_disp
+	LI  0
+	LVA  2,	S1_disp
+	CALL	STANDARD.ENUM_TEST_L1.IO_COULEUR. ,PUT_L7
+	LI	91
+	CALL	STANDARD.TEXT_IO. ,PUT_L52
+	LVA 2,	S1_disp
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	LI	93
+	CALL	STANDARD.TEXT_IO. ,PUT_L52
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
+	LI  0
+	LI  2
+	LVA  2,	S2_disp
+	CALL	STANDARD.ENUM_TEST_L1.IO_COULEUR. ,PUT_L7
+	LI	91
+	CALL	STANDARD.TEXT_IO. ,PUT_L52
+	LVA 2,	S2_disp
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	LI	93
+	CALL	STANDARD.TEXT_IO. ,PUT_L52
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
+	UNLINK 2
+endPRO
+STR STR_L112, "=== 19. GET (string) ==="	; constante string="=== 19. GET (string) ==="
+	LCA	STR_L112.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+namespace	BLOCK__9
+ELB 2					;    BODY ELAB
+VAR C_disp, b				; variable entiere
+
+VAR L_disp, d				; variable entiere
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	LVA  2,	L_disp
+	LVA  2,	C_disp
+STR STR_L113, "  rouge suite"			; constante string="  rouge suite"
+	LCA	STR_L113.data_ptr
+	CALL	STANDARD.ENUM_TEST_L1.IO_COULEUR. ,GET_L6
+	Lb 1,	STANDARD.ENUM_TEST_L1.IO_COULEUR.DEFAULT_SETTING_disp
+	Ld 1,	STANDARD.ENUM_TEST_L1.IO_COULEUR.DEFAULT_WIDTH_disp
+	Lb 2,	C_disp
+	CALL	STANDARD.ENUM_TEST_L1.IO_COULEUR. ,PUT_L5
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
+	UNLINK 2
+endPRO
+STR STR_L114, "=== FIN ==="			; constante string="=== FIN ==="
+	LCA	STR_L114.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
 ret_lbl:
 	UNLINK 1

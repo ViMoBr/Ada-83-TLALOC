@@ -621,11 +621,27 @@ put_line(	"; EXPRESSIONS.CODE_INDEXED adresse component id" );
 	    end if;
 
 	  else
-	    PUT( tab & "LVA" & tab &	", " );
-	    REGIONS_PATH( DESIGNATOR_DEFN );
-	    PUT_LINE( DESIGNATOR_STR );
+	    -- NAME est une expression composite resolue en adresse directe sur la pile
+	    if  D( SM_EXP_TYPE, DESIGNATOR ).TY in CLASS_SCALAR  and  IS_SOURCE  then
+	      -- Champ scalaire terminal : load direct depuis l'adresse en sommet de pile
+	      PUT( tab & "L" & OPER_SIZ_CHAR( D( SM_EXP_TYPE, DESIGNATOR ) ) );
+	      PUT( tab & ", " );
+	      REGIONS_PATH( DESIGNATOR_DEFN );
+	      PUT_LINE( DESIGNATOR_STR );
+	    else
+	      -- Champ composite : calculer l'adresse pour sélection ultérieure
+	      PUT( tab & "LVA" & tab & ", " );
+	      REGIONS_PATH( DESIGNATOR_DEFN );
+	      PUT_LINE( DESIGNATOR_STR );
+	    end if;
 
 	  end if;
+
+--	  else
+--	    PUT( tab & "LVA" & tab &	", " );
+--	    REGIONS_PATH( DESIGNATOR_DEFN );
+--	    PUT_LINE( DESIGNATOR_STR );
+--	  end if;
 
 	elsif  DESIGNATOR_DEFN.TY = DN_CONSTANT_ID
 		or  DESIGNATOR_DEFN.TY = DN_NUMBER_ID
@@ -875,20 +891,37 @@ put_line(	"; EXPRESSIONS.CODE_INDEXED adresse component id" );
 
         end if;
 
-      elsif  PREFIX_NAME.TY =	DN_USED_NAME_ID  then			-- UN NOM	DE TYPE
+      elsif  PREFIX_NAME.TY =	DN_USED_NAME_ID  then							-- UN NOM	DE TYPE
         if  PREFIX_DEFN.TY = DN_TYPE_ID	 then
-	declare
-	  TYPE_RANGE	: TREE	:= D( SM_RANGE, D( SM_TYPE_SPEC, PREFIX_DEFN ) );
-	begin
-	  PUT( tab & "LI" &	tab );
-	  if  IS_LAST  then
-	    PUT_LINE( PRINT_NUM( D( SM_VALUE, D( AS_EXP2,	TYPE_RANGE ) ) ) );
-	  else
-	    PUT_LINE( PRINT_NUM( D( SM_VALUE, D( AS_EXP1,	TYPE_RANGE ) ) ) );
-	  end if;
-        end;
-      end	if;
 
+	if  CODI.IN_GENERIC_BODY  and then  IS_GENERIC_FORMAL_TYPE( PREFIX_DEFN )  then
+
+	  declare
+	    CHN_LID	:constant	STRING
+			 := tab & "LId , -" & CHN_PREFIX & "__u_ofs, STANDARD.ENUM_USE_INFO";
+
+	  begin
+	    PUT_LINE( tab & "La " & IMAGE( CODI.GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );
+	    if  IS_LAST  then
+	      PUT_LINE( CHN_LID & ".LST" );
+	    else
+	      PUT_LINE( CHN_LID & ".FST" );
+	    end if;
+	  end;
+
+	else
+	  declare
+	    TYPE_RANGE	: TREE	:= D( SM_RANGE, D( SM_TYPE_SPEC, PREFIX_DEFN ) );
+	  begin
+	    PUT( tab & "LI" & tab );
+	    if  IS_LAST  then
+	      PUT_LINE( PRINT_NUM( D( SM_VALUE, D( AS_EXP2, TYPE_RANGE ) ) ) );
+	    else
+	      PUT_LINE( PRINT_NUM( D( SM_VALUE, D( AS_EXP1, TYPE_RANGE ) ) ) );
+	    end if;
+	  end;
+	end if;
+        end if;
       end	if;
 
     end	CODE_FIRST_LAST;
@@ -960,7 +993,8 @@ put_line(	"; EXPRESSIONS.CODE_INDEXED adresse component id" );
 
       begin
         if  IS_GENERIC_FORMAL_TYPE( PREFIX_DEFN )  then							-- TYPE FORMEL GENERIQUE
-	PUT_LINE( tab & "La " & INTEGER'IMAGE( CODI.CUR_LEVEL ) & ',' & tab & "-GFP_ofs" );
+	PUT_LINE( tab & "La " & INTEGER'IMAGE( CODI.GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );
+--	PUT_LINE( tab & "La " & INTEGER'IMAGE( CODI.CUR_LEVEL ) & ',' & tab & "-GFP_ofs" );
 	PUT_LINE( tab & "LId , -" & TYPE_STR & "__u_ofs" );
 
         else
@@ -1375,10 +1409,59 @@ put_line(	"; EXPRESSIONS.CODE_INDEXED adresse component id" );
       CODE_ATTRIBUTE( NAME );
 
     elsif	 NAME.TY = DN_USED_NAME_ID  then
-      PUT( tab & "LI" & tab &	"0" );
-      if	CODI.DEBUG  then  PUT( tab50 & "; lieu resultat sur pile" ); end if;
-      NEW_LINE;
-      INSTRUCTIONS.CODE_PROCEDURE_CALL(	FUNCTION_CALL, NAME	);
+      declare
+        FUNC_DEF	: TREE	:= D( SM_DEFN, NAME );
+        FUNC_SPEC	: TREE	:= D( SM_SPEC, FUNC_DEF );
+        RET_NAME	: TREE	:= D( AS_NAME, FUNC_SPEC );    -- nom du type de retour (DN_FUNCTION_SPEC)
+        RET_TS	: TREE	:= TREE_VOID;
+      begin
+        -- Resoudre le type de retour jusqu'au TYPE_SPEC effectif
+        if  RET_NAME /= TREE_VOID  then
+          RET_TS := D( SM_TYPE_SPEC, D( SM_DEFN, RET_NAME ) );
+          while  RET_TS.TY = DN_L_PRIVATE  or  RET_TS.TY = DN_PRIVATE  loop
+            RET_TS := D( SM_TYPE_SPEC, RET_TS );
+          end loop;
+        end if;
+
+        if  RET_TS /= TREE_VOID  and then  RET_TS.TY = DN_RECORD  then
+          -- Allouer un doublet anonyme avec son espace donnees, empiler son adresse comme result__ofs
+          declare
+            ANON_STR  : constant STRING := ANONYMOUS_NAME_AT( FUNCTION_CALL );
+            TYPE_NAME : TREE            := D( XD_SOURCE_NAME, RET_TS );
+            TN_STR    : constant STRING := PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
+            LVL_STR   : constant STRING := IMAGE( CODI.CUR_LEVEL );
+          begin
+            PUT_LINE( "VAR" & tab & ANON_STR & "_disp, q" );
+            PUT_LINE( "VAR" & tab & ANON_STR & "__u,    q" );
+            PUT( "VAR" & tab & ANON_STR & "__dat, " );
+            CODI.REGIONS_PATH( TYPE_NAME );
+--            PUT_LINE( TN_STR & ".SIZ" );
+            PUT_LINE( TN_STR & ".size" );
+
+            -- Initialiser data_ptr -> adresse des donnees brutes
+            PUT_LINE( tab & "LVA " & LVL_STR & ", " & ANON_STR & "__dat" );
+            PUT_LINE( tab & "Sa  " & LVL_STR & ", " & ANON_STR & "_disp" );
+
+            -- Initialiser use_info_ptr
+            PUT( tab & "La  " & IMAGE( DI( CD_LEVEL, RET_TS ) ) & ", " );
+            CODI.REGIONS_PATH( TYPE_NAME );
+            PUT_LINE( TN_STR & ".use__info" );
+            PUT_LINE( tab & "Sa  " & LVL_STR & ", " & ANON_STR & "__u" );
+
+            -- Empiler l'adresse du doublet comme result__ofs pour la fonction
+            PUT_LINE( tab & "LVA " & LVL_STR & ", " & ANON_STR & "_disp" );
+            if  CODI.DEBUG  then PUT( tab50 & "; doublet resultat record anonyme" ); end if;
+            NEW_LINE;
+          end;
+
+        else
+          -- Cas scalaire, array, etc. : placeholder qword nul
+          PUT( tab & "LI" & tab & "0" );
+          if  CODI.DEBUG  then PUT( tab50 & "; lieu resultat sur pile" ); end if;
+          NEW_LINE;
+        end if;
+      end;
+      INSTRUCTIONS.CODE_PROCEDURE_CALL( FUNCTION_CALL, NAME );
 
     elsif	 NAME.TY = DN_USED_OP  then
       CODE_DN_BLTN_OPERATOR_ID;
@@ -1420,13 +1503,20 @@ put_line(	"; EXPRESSIONS.CODE_INDEXED adresse component id" );
     LVL_STR		:constant	STRING		:= IMAGE(	CODI.CUR_LEVEL );
     NORM_SEQ		: SEQ_TYPE		:= LIST( D( SM_NORMALIZED_COMP_S, AGGREGATE ) );
 
+    INDEX_S	: SEQ_TYPE;
+
   begin
     if  TYPE_SPEC.TY = DN_CONSTRAINED_ARRAY  or  TYPE_SPEC.TY = DN_ARRAY  then					-- L'adresse de debut data est deja empilee
-
+      if  TYPE_SPEC.TY = DN_CONSTRAINED_ARRAY  then
+        INDEX_S := LIST( D( SM_INDEX_SUBTYPE_S, TYPE_SPEC ) );
+      else
+        INDEX_S := LIST( D( SM_INDEX_S, TYPE_SPEC ) );
+      end if;
 				----------------------
 				ASSIGN_ARRAY_AGGREGATE:
       declare
-        INDEX_S	: SEQ_TYPE	:= LIST( D( SM_INDEX_SUBTYPE_S, TYPE_SPEC ) );
+--        INDEX_S	: SEQ_TYPE	:= LIST( D( SM_INDEX_S, TYPE_SPEC ) );
+--        INDEX_S	: SEQ_TYPE	:= LIST( D( SM_INDEX_SUBTYPE_S, TYPE_SPEC ) );
         NB_DIMS	: NATURAL		:= 0;
 
         -- Tableaux de dimensions et de strides (max 8 dimensions suffit en Ada 83 pratique)
@@ -1507,9 +1597,32 @@ put_line(	"; EXPRESSIONS.CODE_INDEXED adresse component id" );
 	        end if;
 	      end loop;
 
-	      for  I  in  1 .. REPEAT  loop
-	        EMIT_ONE_COMP( COMP_EXP );
-	      end loop;
+	      if  REPEAT < 4  then
+	        for  I  in  1 .. REPEAT  loop
+		EMIT_ONE_COMP( COMP_EXP );
+	        end loop;
+
+	      else
+	        declare
+		LBL_STR	:constant STRING	:= ANONYMOUS_NAME_AT( CH );
+		CNT_STR	:constant STRING	:= "CNT_" & LBL_STR;
+		LVL_STR	:constant STRING	:= IMAGE( CODI.CUR_LEVEL );
+	        begin
+		PUT_LINE( "VAR" & tab & CNT_STR & ", " & 'd' );
+		PUT_LINE( tab & "LI" & tab & IMAGE( REPEAT ) );
+		PUT_LINE( tab & "Sd " & LVL_STR & ',' & tab & CNT_STR );
+		PUT_LINE( LBL_STR & ':' );
+
+		EMIT_ONE_COMP( COMP_EXP );
+
+		PUT_LINE( tab & "LI" & tab & '0' );
+		PUT_LINE( tab & "Ld " & LVL_STR & ',' & tab & CNT_STR );
+		PUT_LINE( tab & "DEC" );
+		PUT_LINE( tab & "CEQ" );
+		PUT_LINE( tab & "BF" & tab & LBL_STR );
+
+	        end;
+	      end if;
 	      EMIS := EMIS + REPEAT;
 	    end;
 
@@ -1589,16 +1702,46 @@ SCAN_IDS:
 	        PUT_LINE( TYPE_NAME_STR & "." & COMP_STR );
 	        CODE_AGGREGATE( COMP_EXP, COMP_TYPE );							-- adresse du sous-composant empilée, appel récursif
 
-              else
-	        PUT_LINE( tab & "DUP" );								-- Duplicata de l'adresse de debut de data record
+	      else
+	        declare
+	          EFFECTIVE_COMP_TYPE : TREE := COMP_TYPE;
+	        begin
+	          while  EFFECTIVE_COMP_TYPE.TY = DN_L_PRIVATE
+	             or  EFFECTIVE_COMP_TYPE.TY = DN_PRIVATE  loop
+	            EFFECTIVE_COMP_TYPE := D( SM_TYPE_SPEC, EFFECTIVE_COMP_TYPE );
+	          end loop;
 
-	        PUT( tab & "LVA" & tab & ", " );
-	        CODI.REGIONS_PATH( TYPE_NAME );
-	        PUT_LINE( TYPE_NAME_STR & "." &	COMP_STR );
+	          if  EFFECTIVE_COMP_TYPE.TY = DN_RECORD  then
+	            -- Composante record : BLKMOV depuis les donnees de la source vers l'offset dans le parent
+	            declare
+	              CN_STR : constant STRING := PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, EFFECTIVE_COMP_TYPE ) ) );
+	            begin
+	              -- @DST = adresse de la composante dans le record parent
+	              PUT_LINE( tab & "DUP" );
+	              PUT( tab & "LVA" & tab & ", " );
+	              CODI.REGIONS_PATH( TYPE_NAME );
+	              PUT_LINE( TYPE_NAME_STR & "." & COMP_STR );
 
-	        EXPRESSIONS.CODE_EXP(	COMP_EXP );
+	              PUT( tab & "LI" & tab );
+	              CODI.REGIONS_PATH( D( XD_SOURCE_NAME, EFFECTIVE_COMP_TYPE ) );
+	              PUT_LINE( CN_STR & ".size" );              -- LEN
 
-	        PUT_LINE( tab & "S" &	CODI.OPER_SIZ_CHAR(	COMP_TYPE	) );
+	              EXPRESSIONS.CODE_EXP( COMP_EXP );         -- empiле @doublet source
+	              PUT_LINE( tab & "La  ,  0" );              -- @SRC = data_ptr
+
+	              PUT_LINE( tab & "BLKMOV" );
+	            end;
+
+	          else
+	            -- Composante scalaire : store direct
+	            PUT_LINE( tab & "DUP" );
+	            PUT( tab & "LVA" & tab & ", " );
+	            CODI.REGIONS_PATH( TYPE_NAME );
+	            PUT_LINE( TYPE_NAME_STR & "." & COMP_STR );
+	            EXPRESSIONS.CODE_EXP( COMP_EXP );
+	            PUT_LINE( tab & "S" & CODI.OPER_SIZ_CHAR( EFFECTIVE_COMP_TYPE ) );
+	          end if;
+	        end;
 	      end if;
 	    end;
 	  end loop		SCAN_IDS;
@@ -2059,7 +2202,11 @@ SCAN_IDS:
 put_line( "; CODE_QUALIFIED : DN_QUALIFIED" & NODE_NAME'IMAGE( SRC_EXP.TY ) );
 
       -- Expression	qualifiee	dynamique	: generer	le code de l'expression
-      CODE_EXP( SRC_EXP );
+      if  SRC_EXP.TY = DN_AGGREGATE  then
+        CODE_AGGREGATE( SRC_EXP, D( SM_EXP_TYPE, QUALIFIED ) );
+      else
+        CODE_EXP( SRC_EXP );
+      end if;
 
     end if;
 

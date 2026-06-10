@@ -4,6 +4,11 @@
 package body			_standrd
 is				--------
 
+  type ENUM_USE_INFO	is record
+			  SIZ		: NATURAL;
+			  FST, LST	: INTEGER;
+			end record;
+
   type FIXED_USE_INFO	is record
 			  SIZ		: NATURAL;
 			  FST, LST	: LONG_INTEGER;

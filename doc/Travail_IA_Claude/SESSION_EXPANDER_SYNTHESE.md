@@ -744,3 +744,15 @@ dans un bloc `declare`.
 11. `machine_code.ads`
 12. `src/expander/fasmg/codi_x86_64.finc`
 13. Programme de test en cours
+
+## 11. CALENDAR, FIXED_IO et reprises TEXT_IO
+
+15 mai à 5 juin 2026. La réalisation du package CALENDAR a requis la mise en place du calcul sur type réel Ada FIXED, particulièrement pour DURATION et TIME. Le package CALENDAR est opérationnel, le sous package générique FIXED_IO de TEXT_IO a été rédigé et testé. Les procédures GET de TEXT_IO qui utilisaient un GET_LINE ont été reprises et sont maintenant conformes aux règles de lecture Ada avec des scanners appropriés. Le calcul sur type FIXED n'est cependant pas tout à fait complet, en particulier pour les multiplications et divisions, et les opérations arithmétiques sur type FIXED sont en place pour que CALENDAR fonctionne avec le type DURATION défini dans STANDARD. On peut considérer que mis à part le traitement des exceptions, TEXT_IO est presque achevé et fonctionne ainsi que CALENDAR dans les cas normaux d'utilisation.
+
+## 12. Expérimentation avec SEQUENTIAL_IO
+
+Session 5 juin 2026 — Validation communication série Arduino
+Communication entre un binaire TLALOC et un Arduino Uno équipé d'un shield afficheur ILI9481 480×320 validée. SEQUENTIAL_IO instancié sur CHARACTER permet un protocole binaire octet par octet via /dev/ttyACM0 (device cdc_acm). Le programme de test serial_test.adb ouvre le port, envoie des commandes de couleur et des chaînes ASCII, ferme proprement — l'afficheur Arduino reçoit et affiche correctement texte et couleurs.
+Contraintes identifiées et résolues : (1) la configuration stty ne persiste pas entre ouvertures sur cdc_acm — contournement par un fd externe maintenu ouvert (tail -f /dev/null > /dev/ttyACM0 &) ; (2) reset automatique de l'Arduino à l'ouverture du port DTR — condensateur 10 µF entre RESET et GND ; (3) buffer UART matériel de l'Uno limité à 64 octets, insuffisant pour un envoi en rafale depuis sys_write — porté à 256 octets dans HardwareSerial.h.
+Côté afficheur, deux corrections au sketch Arduino : inversion de la coordonnée X dans drawPixel (x + (FONT_W - 1 - px) au lieu de x + px) pour le mirroir horizontal, et inversion de la palette RGB565 pour la polarité inversée du bus 8 bits du shield clone.
+Reste à faire : macro SYS_SERIAL_CONFIG (ioctl/tcsetattr) dans codi_x86_64.finc pour rendre la configuration du port autonome sans dépendre du fd externe ; validation de la réception (INOUT_FILE + READ bloquant) ; gestion des timeouts via SYS_SELECT ou SYS_POLL pour éviter un sys_read bloquant indéfiniment.

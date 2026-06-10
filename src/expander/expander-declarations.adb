@@ -693,6 +693,25 @@ null;--	  LOAD_TYPE_SIZE( TYPE_SPEC  );
 	PUT_LINE( tab & "La " & LVL_STR & ", " & VC_STR & "_disp" );					-- Adresse de debut data
 	EXPRESSIONS.CODE_AGGREGATE( INIT_EXP, TYPE_SPEC );
 
+
+        elsif  INIT_EXP /= TREE_VOID  then
+          -- Initialisation par expression quelconque (function_call, variable, ...) retournant un record
+          -- @DST = data_ptr de la variable destination
+          PUT_LINE( tab & "La  " & LVL_STR & ", " & VC_STR & "_disp" );   -- @DST
+
+          declare
+            TYPE_NAME2  : TREE            := D( XD_SOURCE_NAME, TYPE_SPEC );
+            TN_STR2     : constant STRING := PRINT_NAME( D( LX_SYMREP, TYPE_NAME2 ) );
+          begin
+            PUT( tab & "LI" & tab );
+            CODI.REGIONS_PATH( TYPE_NAME2 );
+            PUT_LINE( TN_STR2 & ".size" );                                 -- LEN
+          end;
+
+          EXPRESSIONS.CODE_EXP( INIT_EXP );                                -- empile @doublet source
+          PUT_LINE( tab & "La  ,  0" );                                    -- @SRC = data_ptr source
+
+          PUT_LINE( tab & "BLKMOV" );
         else
 				-- No explicit aggregate : initialize
 				-- fields	that have	default values
@@ -793,10 +812,18 @@ null;--	  LOAD_TYPE_SIZE( TYPE_SPEC  );
   begin
     if  SOURCE_NAME.TY = DN_VARIABLE_ID  then
       declare
-        VAR_LEVEL	: NATURAL	:= DI( CD_LEVEL, D( SM_DEFN, D( AS_NAME, RENAMES_OBJ_DECL ) ) );
+        NAME	: TREE	:= D( AS_NAME, RENAMES_OBJ_DECL );
+        DEFN	: TREE;
       begin
-        DI( CD_LEVEL, SOURCE_NAME, VAR_LEVEL );
-        DB( CD_COMPILED, SOURCE_NAME, TRUE );
+        while  NAME.TY = DN_SELECTED  loop
+	NAME := D( AS_DESIGNATOR, NAME );
+        end loop;
+
+        DEFN := D( SM_DEFN, NAME );
+        if  DEFN.TY /= DN_COMPONENT_ID  then
+	DI( CD_LEVEL, SOURCE_NAME, DI( CD_LEVEL, DEFN ) );
+	DB( CD_COMPILED, SOURCE_NAME, TRUE );
+        end if;
       end;
     end if;
   end;
@@ -1248,27 +1275,32 @@ null;--	  LOAD_TYPE_SIZE( TYPE_SPEC  );
 	end;
 
 	if  SOURCE_NAME.TY = DN_FUNCTION_ID  or	 SOURCE_NAME.TY = DN_OPERATOR_ID  then
-	  declare
-	    USED_OBJECT_ID		: TREE		:= D( AS_NAME, HEADER );
-	    RESULT_TYPE_ID		: TREE		:= D( SM_DEFN, USED_OBJECT_ID	);
-	    RESULT_TYPE_SPEC	: TREE		:= D( SM_TYPE_SPEC,	RESULT_TYPE_ID );
-	    RESULT_SIZE_CHAR	: CHARACTER;
-	  begin
-	    if  RESULT_TYPE_SPEC.TY  in  CLASS_UNCONSTRAINED  then
-	      PUT_LINE( "; RESULTAT UNCONSTRAINED A FAIRE" );
-	    else
-	      RESULT_SIZE_CHAR := OPER_SIZ_CHAR( RESULT_TYPE_SPEC );
-	      if	RESULT_SIZE_CHAR /=	'v'  then
-	        PUT( tab & 'S' & RESULT_SIZE_CHAR
-		& tab & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL	) & ", -result__ofs"  );
-	        if  CODI.DEBUG  then PUT( tab50	& "; retour resultat" ); end if;
-	        NEW_LINE;
+
+	  if  D( SM_UNIT_DESC, SOURCE_NAME ).TY /= DN_INSTANTIATION  then
+	    declare
+	      USED_OBJECT_ID	: TREE		:= D( AS_NAME, HEADER );
+	      RESULT_TYPE_ID	: TREE		:= D( SM_DEFN, USED_OBJECT_ID	);
+	      RESULT_TYPE_SPEC	: TREE		:= D( SM_TYPE_SPEC,	RESULT_TYPE_ID );
+	      RESULT_SIZE_CHAR	: CHARACTER;
+	    begin
+	      if  RESULT_TYPE_SPEC.TY  in  CLASS_UNCONSTRAINED  then
+	        PUT_LINE( "; RESULTAT UNCONSTRAINED A FAIRE" );
 	      else
-	        PUT_LINE( "; RESULTAT PAR REFERENCE A FAIRE" );
-	        raise PROGRAM_ERROR;
-	      end	if;
-	    end if;
-	  end;
+	        RESULT_SIZE_CHAR := OPER_SIZ_CHAR( RESULT_TYPE_SPEC );
+	        if	RESULT_SIZE_CHAR /=	'v'  then
+		PUT( tab & 'S' & RESULT_SIZE_CHAR
+		& tab & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL	) & ", -result__ofs"  );
+		if  CODI.DEBUG  then PUT( tab50	& "; retour resultat" ); end if;
+		NEW_LINE;
+	        else
+		PUT_LINE( "; RESULTAT PAR REFERENCE A FAIRE" );
+		raise PROGRAM_ERROR;
+	        end if;
+	      end if;
+	    end;
+	  else
+	    null;			-- A VOIR
+	  end if;
 	end if;
 
 	PUT_LINE(	tab & "UNLINK" & tab & LEVEL_NUM'IMAGE(	CODI.CUR_LEVEL ) );
@@ -1285,9 +1317,14 @@ null;--	  LOAD_TYPE_SIZE( TYPE_SPEC  );
         end;
 
       else
-        CODI.OUTPUT_CODE := FALSE;						-- ne pas	coder les	parametres (le body	fera ca)
-        CODE_HEADER( HEADER );
-        CODI.OUTPUT_CODE := TRUE;
+        declare
+	SAVE_NO_SUB_PARAM	: BOOLEAN		:= CODI.NO_SUBP_PARAMS;
+        begin
+	CODI.OUTPUT_CODE := FALSE;						-- ne pas	coder les	parametres (le body	fera ca)
+	CODE_HEADER( HEADER );
+	CODI.OUTPUT_CODE := TRUE;
+	CODI.NO_SUBP_PARAMS := SAVE_NO_SUB_PARAM;
+        end;
       end	if;
 
     end;
