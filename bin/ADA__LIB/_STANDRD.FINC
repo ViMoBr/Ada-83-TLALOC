@@ -844,5 +844,258 @@ ret_lbl:
 excep:
 endPRO					;---------- end PRO WIDTH
 end if
+
+if defined INTEGER_IMAGE_L9_
+PRO	INTEGER_IMAGE_L9			;---------- PRO INTEGER_IMAGE
+PRMS					;    debut parametrage
+	PRM ITEM_ofs				; in
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 1					;    BODY ELAB
+VAR LEN_disp, d				; variable entiere
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+namespace	INTEGER_IMAGE_WIDTH
+ELB 2					;    BODY ELAB
+VAR N_disp, d				; variable entiere
+	Ld  1,	-ITEM_ofs
+	Sd  2,	N_disp
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd  1,	LEN_disp
+					; debut if
+	Ld 2,	N_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	CEQ
+	BF	L11
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	2
+	Sd  1,	LEN_disp
+	BRA	L10
+L11:
+					; debut if
+	Ld 2,	N_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	CGT
+	BF	L13
+	Ld 2,	N_disp
+	NEG
+	Sd  2,	N_disp
+	BRA	L12
+L13:
+L12:					; post if
+LOOP__2:
+	Ld 2,	N_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	CNE
+	BF	L14
+	Ld 1,	STANDARD.INTEGER_IMAGE_L9.LEN_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd  1,	LEN_disp
+	Ld 2,	N_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	10
+	DIV
+	Sd  2,	N_disp
+	BRA	LOOP__2
+L14:					; post loop LOOP__2
+L10:					; post if
+	UNLINK 2
+endPRO
+namespace	BLOCK__1
+ELB 2					;    BODY ELAB
+STRING = 'STRING'
+namespace STRING				; array var constrained array type info
+VAR use__info, q
+VAR SIZ, d
+	LVA	2, SIZ
+	Sa	2, use__info
+VAR COMP_SIZ, d
+VAR FST_1, d
+VAR LST_1, d
+	LI	8
+	Sd	2, COMP_SIZ
+	Ld	2, COMP_SIZ
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd	2, FST_1
+	Ld 1,	STANDARD.INTEGER_IMAGE_L9.LEN_disp
+	Sd	2, LST_1
+	Ld	2, LST_1
+	INC
+	Ld	2, FST_1
+	SUB
+	MUL
+	Sd	2, SIZ
+  virtual at 4
+COMP_SIZ = $
+	rd 1 
+FST_1 = $
+	rd 1 
+LST_1 = $
+	rd 1 
+  end virtual
+end namespace
+VAR BUF_disp, q				; variable array : pointeur aux data
+VAR BUF__u, q				; variable array : useinfo pointeur au rec info
+	La 2, STRING.use__info
+	Sa	2, BUF__u				; array info ptr at __u
+	Ld	2, STRING.SIZ
+	LI	8
+	DIV
+	CO_VAR
+	Sa	2, BUF_disp				; array data ptr at _disp
+
+VAR POS_disp, d				; variable entiere
+	Ld 1,	STANDARD.INTEGER_IMAGE_L9.LEN_disp
+	Sd  2,	POS_disp
+
+VAR N_disp, d				; variable entiere
+	Ld  1,	-ITEM_ofs
+	Sd  2,	N_disp
+
+VAR DIG_disp, d				; variable entiere
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+					; debut if
+	Ld 2,	N_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	CEQ
+	BF	L16
+	La	 2, BUF_disp				; array data start address on stack
+	Ld 2,	POS_disp
+	LId	2, BUF__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
+	SUB
+	LId	2, BUF__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	LI	48
+	Sb
+	Ld 2,	POS_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	SUB
+	Sd  2,	POS_disp
+	BRA	L15
+L16:
+					; debut if
+	Ld 2,	N_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	CGT
+	BF	L18
+	Ld 2,	N_disp
+	NEG
+	Sd  2,	N_disp
+	BRA	L17
+L18:
+L17:					; post if
+LOOP__3:
+	Ld 2,	N_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	CNE
+	BF	L19
+	Ld 2,	N_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	10
+	REMI
+	NEG
+	Sd  2,	DIG_disp
+	La	 2, BUF_disp				; array data start address on stack
+	Ld 2,	POS_disp
+	LId	2, BUF__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
+	SUB
+	LId	2, BUF__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	LI	48
+	Ld 2,	DIG_disp
+	ADD
+	Sb
+	Ld 2,	POS_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	SUB
+	Sd  2,	POS_disp
+	Ld 2,	N_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	10
+	DIV
+	Sd  2,	N_disp
+	BRA	LOOP__3
+L19:					; post loop LOOP__3
+L15:					; post if
+					; debut if
+	Ld  1,	-ITEM_ofs
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	CLT
+	BF	L21
+	La	 2, BUF_disp				; array data start address on stack
+	Ld 2,	POS_disp
+	LId	2, BUF__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
+	SUB
+	LId	2, BUF__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	LI	45
+	Sb
+	BRA	L20
+L21:
+	La	 2, BUF_disp				; array data start address on stack
+	Ld 2,	POS_disp
+	LId	2, BUF__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
+	SUB
+	LId	2, BUF__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	LI	32
+	Sb
+L20:					; post if
+; CODE_RETURN : EXPR TYPE = DN_CONSTRAINED_ARRAY
+	LVA 2,	BUF_disp
+VAR	RET_INFO_L22, q
+	DUP
+	La  ,  0
+	SIq   1, -result__ofs,  0
+	DUP
+	La  ,  8
+	Sa   2, RET_INFO_L22
+	DROP
+	La   1, -result__ofs
+	La  ,  8
+	LI	16
+	La   2, RET_INFO_L22
+	BLKMOV
+	UNLINK 2
+	BRA ret_lbl
+	UNLINK 2
+endPRO
+ret_lbl:
+	UNLINK 1
+	RTD	prm_siz-8
+excep:
+endPRO					;---------- end PRO INTEGER_IMAGE
+end if
 begin:					;---------- package BDY INSTRUCTIONS
 

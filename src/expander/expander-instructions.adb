@@ -796,9 +796,43 @@ put_line( "; CODE_RETURN : EXPR TYPE = " & NODE_NAME'IMAGE( EXPR_TYPE.TY ) );
 	  EXPRESSIONS.CODE_EXP( EXP );
 	  PUT_LINE( tab & "S" & CODI.EXP_TYPE_CHAR( EXP ) & ' ' & INTEGER'IMAGE( CODI.CUR_LEVEL ) & ',' & tab & "-result__ofs" );
 
-          elsif  EXPR_TYPE.TY = DN_ARRAY  then
-            EXPRESSIONS.CODE_EXP( EXP );
-            PUT_LINE( tab & "Sa " & INTEGER'IMAGE( CODI.CUR_LEVEL ) & ',' & tab & "-result__ofs" );
+elsif  EXPR_TYPE.TY = DN_ARRAY  or  EXPR_TYPE.TY = DN_CONSTRAINED_ARRAY  then
+  declare
+    SRC_LVL_STR : constant STRING := INTEGER'IMAGE( CODI.CUR_LEVEL );
+    RES_LVL_STR : constant STRING := INTEGER'IMAGE( ENCLOSING_LEVEL );
+--    LVL_STR : constant STRING := INTEGER'IMAGE( CODI.CUR_LEVEL );
+  begin
+    EXPRESSIONS.CODE_EXP( EXP );
+    -- Pile : @doublet_src
+    -- doublet_src = [data_ptr_src : q, info_ptr_src : q]
+    -- result__ofs contient @doublet_dest, initialisé par l'appelant.
+    -- Convention BLKMOV : pile = ... @DST, LEN, @SRC.
+
+    declare
+      INFO_SRC : constant STRING := "RET_INFO_" & NEW_LABEL;
+    begin
+      PUT_LINE( "VAR" & tab & INFO_SRC & ", q" );
+
+      -- Copier data_ptr : data_ptr_dest <- data_ptr_src
+      -- EXP laisse @doublet_src sur pile ; on en garde une copie.
+      PUT_LINE( tab & "DUP" );
+      PUT_LINE( tab & "La  ,  0" );
+      PUT_LINE( tab & "SIq  " & RES_LVL_STR & ", -result__ofs,  0" );
+
+      -- Sauver info_ptr_src = [@doublet_src + 8].
+      PUT_LINE( tab & "DUP" );
+      PUT_LINE( tab & "La  ,  8" );
+      PUT_LINE( tab & "Sa  " & SRC_LVL_STR & ", " & INFO_SRC );
+      PUT_LINE( tab & "DROP" );
+
+      -- Copier 16 octets d'info vers info_ptr_dest = [@doublet_dest + 8].
+      PUT_LINE( tab & "La  " & RES_LVL_STR & ", -result__ofs" );
+      PUT_LINE( tab & "La  ,  8" );
+      PUT_LINE( tab & "LI" & tab & "16" );
+      PUT_LINE( tab & "La  " & SRC_LVL_STR & ", " & INFO_SRC );
+      PUT_LINE( tab & "BLKMOV" );
+    end;
+  end;
 
           elsif  EXPR_TYPE.TY = DN_ENUM_LITERAL_S  then
             EXPRESSIONS.CODE_EXP( EXP );
@@ -809,54 +843,41 @@ raise PROGRAM_ERROR;
 	or     EXPR_TYPE.TY = DN_PRIVATE
 	then
 				-- Copier les donnees dans le doublet alloue par l appelant (adresse dans result__ofs)
-	declare
-	  TYPE_SPEC	: TREE	:= EXPR_TYPE;
-	begin
-	  while  TYPE_SPEC.TY = DN_L_PRIVATE  or  TYPE_SPEC.TY = DN_PRIVATE  loop
-	    TYPE_SPEC := D( SM_TYPE_SPEC, TYPE_SPEC );
-	  end loop;
 	  declare
-	    TYPE_NAME	: TREE		:= D( XD_SOURCE_NAME, TYPE_SPEC );
-	    TN_STR	: constant STRING	:= PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
-	    LVL_STR	: constant STRING	:= INTEGER'IMAGE( CODI.CUR_LEVEL );
+	    TYPE_SPEC	: TREE	:= EXPR_TYPE;
 	  begin
-	    if  EXP.TY = DN_AGGREGATE  then
+	    while  TYPE_SPEC.TY = DN_L_PRIVATE  or  TYPE_SPEC.TY = DN_PRIVATE  loop
+	      TYPE_SPEC := D( SM_TYPE_SPEC, TYPE_SPEC );
+	    end loop;
+	    declare
+	      TYPE_NAME	: TREE		:= D( XD_SOURCE_NAME, TYPE_SPEC );
+	      TN_STR	: constant STRING	:= PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
+	      LVL_STR	: constant STRING	:= INTEGER'IMAGE( CODI.CUR_LEVEL );
+	    begin
+	      if  EXP.TY = DN_AGGREGATE  then
 	      -- result__ofs contient l'adresse du doublet alloue par l'appelant
 	      -- Extraire data_ptr (offset 0 du doublet) pour CODE_AGGREGATE
-	      PUT_LINE( tab & "La  " & LVL_STR & ',' & tab & "-result__ofs" );
-	      PUT_LINE( tab & "La  ,  0" );                           -- data_ptr = [doublet + 0]
-	      EXPRESSIONS.CODE_AGGREGATE( EXP, TYPE_SPEC );
+	        PUT_LINE( tab & "La  " & LVL_STR & ',' & tab & "-result__ofs" );
+	        PUT_LINE( tab & "La  ,  0" );                           -- data_ptr = [doublet + 0]
+	        EXPRESSIONS.CODE_AGGREGATE( EXP, TYPE_SPEC );
 
-	    else
+	      else
 	      -- EXP est une variable ou expression composite : BLKMOV vers la destination
 	      -- Destination : data_ptr du doublet result__ofs
-	      PUT_LINE( tab & "La  " & LVL_STR & ',' & tab & "-result__ofs" );
-	      PUT_LINE( tab & "La  ,  0" );                           -- @DST = data_ptr du doublet appelant
+	        PUT_LINE( tab & "La  " & LVL_STR & ',' & tab & "-result__ofs" );
+	        PUT_LINE( tab & "La  ,  0" );                           -- @DST = data_ptr du doublet appelant
 
-	      PUT( tab & "LI" & tab );
-	      CODI.REGIONS_PATH( TYPE_NAME );
-	      PUT_LINE( TN_STR & ".size" );                           -- LEN
+	        PUT( tab & "LI" & tab );
+	        CODI.REGIONS_PATH( TYPE_NAME );
+	        PUT_LINE( TN_STR & ".size" );                           -- LEN
 
-	      EXPRESSIONS.CODE_EXP( EXP );                            -- empiле @doublet source
-	      PUT_LINE( tab & "La  ,  0" );                           -- @SRC = data_ptr du doublet source
+	        EXPRESSIONS.CODE_EXP( EXP );                            -- empiле @doublet source
+	        PUT_LINE( tab & "La  ,  0" );                           -- @SRC = data_ptr du doublet source
 
-	      PUT_LINE( tab & "BLKMOV" );
-	    end if;
+	        PUT_LINE( tab & "BLKMOV" );
+	      end if;
+	    end;
 	  end;
-	end;
-
---	elsif  EXPR_TYPE.TY = DN_RECORD
---	or     EXPR_TYPE.TY = DN_L_PRIVATE
---	or     EXPR_TYPE.TY = DN_PRIVATE
---	then
-				-- Return address of the doublet
---	if  EXP.TY = DN_AGGREGATE  then								-- Traiter directement ce cas a cause du type
---	  PUT_LINE( tab & "La " & INTEGER'IMAGE( CODI.CUR_LEVEL ) & ',' & tab & "-result__ofs" );
---	  EXPRESSIONS.CODE_AGGREGATE( EXP, EXPR_TYPE );
---	else
---	  EXPRESSIONS.CODE_EXP( EXP );
---	  PUT_LINE( tab & "Sa " & INTEGER'IMAGE( CODI.CUR_LEVEL ) & ',' & tab & "-result__ofs" );
---	end if;
 
           end if;
         end	STORE_FUNCTION_RESULT;

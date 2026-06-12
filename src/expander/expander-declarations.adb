@@ -628,6 +628,9 @@ null;--	  LOAD_TYPE_SIZE( TYPE_SPEC  );
 	    PUT_LINE( tab &	"La" & tab & LVL_STR & ", " &	VC_STR & "_disp" );
 	    EXPRESSIONS.CODE_AGGREGATE( INIT_EXP, TYPE_SPEC );
 
+	  elsif  INIT_EXP.TY = DN_FUNCTION_CALL  then
+	    EXPRESSIONS.CODE_EXP( INIT_EXP );
+
 	  else
 	    PUT_LINE( "; COMPILE_ARRAY_VAR ASSOC.TY non gere " & NODE_NAME'IMAGE( INIT_EXP.TY ) );
 	  end if;

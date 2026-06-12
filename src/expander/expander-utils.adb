@@ -437,7 +437,7 @@ is					-----
     RGN_NAME	:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, REGION ) );
 
   begin
-    if  RGN_NAME = "STANDARD"	 then
+    if  RGN_NAME = "STANDARD"	 or  RGN_NAME = "_STANDRD" then
       PUT( "STANDARD." );
 
     else

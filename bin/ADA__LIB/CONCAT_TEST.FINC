@@ -1,0 +1,1517 @@
+if ~ definite TEXT_IO
+include 'TEXT_IO.FINC'
+end if
+PRO	CONCAT_TEST_L1				;---------- PRO CONCAT_TEST
+ELB 1					;    BODY ELAB
+VAR K_disp, d				; variable bool char enum
+; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
+	LI	0
+	Sb  1,	K_disp
+
+INT_IO = 'INT_IO'
+namespace INT_IO				;---------- GENERIC PACKAGE INSTANTIATION
+elab_spec:				;    SPEC ELAB
+
+BRA post_LD_INTEGER
+LD_INTEGER.elab:
+	Ld -1, 0
+	RTD 0
+post_LD_INTEGER:
+BRA post_ST_INTEGER
+ST_INTEGER.elab:
+	Sd -1, 0
+	RTD 0
+post_ST_INTEGER:
+BRA post_INADR_INTEGER
+INADR_INTEGER.elab:
+	RTD 0
+post_INADR_INTEGER:
+BRA post_OUTADR_INTEGER
+OUTADR_INTEGER.elab:
+	La
+	RTD 0
+post_OUTADR_INTEGER:
+VAR INTEGER__outadr_ofs, q
+	LCA OUTADR_INTEGER.elab
+	Sa	 1, INTEGER__outadr_ofs
+VAR INTEGER__inadr_ofs, q
+	LCA INADR_INTEGER.elab
+	Sa	 1, INTEGER__inadr_ofs
+VAR INTEGER__st_ofs, q
+	LCA ST_INTEGER.elab
+	Sa	 1, INTEGER__st_ofs
+VAR INTEGER__ld_ofs, q
+	LCA LD_INTEGER.elab
+	Sa	 1, INTEGER__ld_ofs
+VAR INTEGER__u_ofs, q
+	La	 0, STANDARD.INTEGER.use__info
+	Sa	 1, INTEGER__u_ofs
+VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
+VAR DEFAULT_WIDTH_disp, d			; variable entiere
+	LI	 11
+	Sd  1,	DEFAULT_WIDTH_disp
+
+VAR DEFAULT_BASE_disp, d			; variable entiere
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	10
+	Sd  1,	DEFAULT_BASE_disp
+
+if defined GET_L2_
+PRO	GET_L2				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM ITEM_ofs				; out
+	PRM WIDTH_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Ld	 2, -WIDTH_ofs
+	La 	 2, -ITEM_ofs
+	La 	 2, -FILE_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,GET_L61
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO GET
+end if
+if defined GET_L3_
+PRO	GET_L3				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM ITEM_ofs				; out
+	PRM WIDTH_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Ld	 2, -WIDTH_ofs
+	La 	 2, -ITEM_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,GET_L62
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO GET
+end if
+if defined PUT_L4_
+PRO	PUT_L4				;---------- PRO PUT
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM ITEM_ofs				; in
+	PRM WIDTH_ofs				; in
+	PRM BASE_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Ld	 2, -BASE_ofs
+	Ld	 2, -WIDTH_ofs
+	Ld	 2, -ITEM_ofs
+	La 	 2, -FILE_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,PUT_L63
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO PUT
+end if
+if defined PUT_L5_
+PRO	PUT_L5				;---------- PRO PUT
+PRMS					;    debut parametrage
+	PRM ITEM_ofs				; in
+	PRM WIDTH_ofs				; in
+	PRM BASE_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Ld	 2, -BASE_ofs
+	Ld	 2, -WIDTH_ofs
+	Ld	 2, -ITEM_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,PUT_L64
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO PUT
+end if
+if defined GET_L6_
+PRO	GET_L6				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM FROM_ofs				; in
+	PRM ITEM_ofs				; out
+	PRM LAST_ofs				; out
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	La 	 2, -LAST_ofs
+	La 	 2, -ITEM_ofs
+	La 	 2, -FROM_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,GET_L65
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO GET
+end if
+if defined PUT_L7_
+PRO	PUT_L7				;---------- PRO PUT
+PRMS					;    debut parametrage
+	PRM TO_ofs				; out
+	PRM ITEM_ofs				; in
+	PRM BASE_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Ld	 2, -BASE_ofs
+	Ld	 2, -ITEM_ofs
+	La 	 2, -TO_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,PUT_L66
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO PUT
+end if
+					;---------- end generic package instantiation INT_IO
+end namespace
+
+
+					; SHORT INTEGER SUBTYPE INFO
+SHORT = 'SHORT'
+namespace SHORT
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+VAR FST, d
+VAR LST, d
+	LI	32
+	Sd	1, SIZ
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	Sd	1, FST
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	9999
+	Sd	1, LST
+VAR PARENT__u, q
+	La	0, STANDARD.INTEGER.use__info
+	Sa	1, PARENT__u
+end namespace
+
+if defined SHOW_L8_
+PRO	SHOW_L8				;---------- PRO SHOW
+PRMS					;    debut parametrage
+	PRM LABEL_ofs				; in
+	PRM S_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	La  2,	-LABEL_ofs
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	LI	91
+	CALL	STANDARD.TEXT_IO. ,PUT_L52
+	La  2,	-S_ofs
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	LI	93
+	CALL	STANDARD.TEXT_IO. ,PUT_L52
+STR STR_L9, "  len="			; constante string="  len="
+	LCA	STR_L9.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	Ld 1,	STANDARD.CONCAT_TEST_L1.INT_IO.DEFAULT_BASE_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	LVA	2, -S_ofs
+	LIa	, , 8
+	Ld	, STRING.LST_1
+	INC
+	LVA	2, -S_ofs
+	LIa	, , 8
+	Ld	, STRING.FST_1
+	SUB
+	CALL	STANDARD.CONCAT_TEST_L1.INT_IO. ,PUT_L5
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
+ret_lbl:
+	UNLINK 2
+	RTD	prm_siz
+excep:
+endPRO					;---------- end PRO SHOW
+end if
+
+if defined ZEROS_L10_
+PRO	ZEROS_L10				;---------- PRO ZEROS
+PRMS					;    debut parametrage
+	PRM N_ofs				; in
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 2					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+; CODE_RETURN : EXPR TYPE = DN_ARRAY
+; CODE_QUALIFIED : DN_QUALIFIEDDN_AGGREGATE
+namespace ANON_33_21_info
+  VAR SIZ,      d
+  VAR COMP_SIZ, d
+  VAR FST_1,    d
+  VAR LST_1,    d
+end namespace
+VAR	ANON_33_21_disp, q
+VAR	ANON_33_21__u,   q
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd  2, ANON_33_21_info.FST_1
+	Ld  2,	-N_ofs
+	DUP
+	Sd  2, ANON_33_21_info.LST_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	SUB
+	INC
+	LI	8
+	Sd  2, ANON_33_21_info.COMP_SIZ
+	DUP
+	LI	8
+	MUL
+	Sd  2, ANON_33_21_info.SIZ
+	CO_VAR
+	Sa  2, ANON_33_21_disp
+	LVA 2, ANON_33_21_info.SIZ
+	Sa  2, ANON_33_21__u
+	La  2, ANON_33_21_disp
+VAR	ANON_33_21_ptr, q
+VAR	ANON_33_21_cnt, q
+	Sa  2, ANON_33_21_ptr
+	Ld  2,	-N_ofs
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	SUB
+	INC
+	Sa  2, ANON_33_21_cnt
+	La  2, ANON_33_21_cnt
+	LI	0
+	CLE
+	BT  L12
+L11:
+	La  2, ANON_33_21_ptr
+	LI	48
+	Sb  -1, 0
+	La  2, ANON_33_21_ptr
+	LI	1
+	ADD
+	Sa  2, ANON_33_21_ptr
+	La  2, ANON_33_21_cnt
+	DEC
+	DUP
+	Sa  2, ANON_33_21_cnt
+	LI	0
+	CGT
+	BT  L11
+L12:
+	LVA 2, ANON_33_21_disp
+VAR	RET_INFO_L13, q
+	DUP
+	La  ,  0
+	SIq   2, -result__ofs,  0
+	DUP
+	La  ,  8
+	Sa   2, RET_INFO_L13
+	DROP
+	La   2, -result__ofs
+	La  ,  8
+	LI	16
+	La   2, RET_INFO_L13
+	BLKMOV
+	BRA ret_lbl
+ret_lbl:
+	UNLINK 2
+	RTD	prm_siz-8
+excep:
+endPRO					;---------- end PRO ZEROS
+end if
+
+if defined REPEAT_CHAR_L14_
+PRO	REPEAT_CHAR_L14				;---------- PRO REPEAT_CHAR
+PRMS					;    debut parametrage
+	PRM C_ofs				; in
+	PRM N_ofs				; in
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 2					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+; CODE_RETURN : EXPR TYPE = DN_ARRAY
+; CODE_QUALIFIED : DN_QUALIFIEDDN_AGGREGATE
+namespace ANON_42_21_info
+  VAR SIZ,      d
+  VAR COMP_SIZ, d
+  VAR FST_1,    d
+  VAR LST_1,    d
+end namespace
+VAR	ANON_42_21_disp, q
+VAR	ANON_42_21__u,   q
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd  2, ANON_42_21_info.FST_1
+	Ld  2,	-N_ofs
+	DUP
+	Sd  2, ANON_42_21_info.LST_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	SUB
+	INC
+	LI	8
+	Sd  2, ANON_42_21_info.COMP_SIZ
+	DUP
+	LI	8
+	MUL
+	Sd  2, ANON_42_21_info.SIZ
+	CO_VAR
+	Sa  2, ANON_42_21_disp
+	LVA 2, ANON_42_21_info.SIZ
+	Sa  2, ANON_42_21__u
+	La  2, ANON_42_21_disp
+VAR	ANON_42_21_ptr, q
+VAR	ANON_42_21_cnt, q
+	Sa  2, ANON_42_21_ptr
+	Ld  2,	-N_ofs
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	SUB
+	INC
+	Sa  2, ANON_42_21_cnt
+	La  2, ANON_42_21_cnt
+	LI	0
+	CLE
+	BT  L16
+L15:
+	La  2, ANON_42_21_ptr
+	Lb  2,	-C_ofs
+	Sb  -1, 0
+	La  2, ANON_42_21_ptr
+	LI	1
+	ADD
+	Sa  2, ANON_42_21_ptr
+	La  2, ANON_42_21_cnt
+	DEC
+	DUP
+	Sa  2, ANON_42_21_cnt
+	LI	0
+	CGT
+	BT  L15
+L16:
+	LVA 2, ANON_42_21_disp
+VAR	RET_INFO_L17, q
+	DUP
+	La  ,  0
+	SIq   2, -result__ofs,  0
+	DUP
+	La  ,  8
+	Sa   2, RET_INFO_L17
+	DROP
+	La   2, -result__ofs
+	La  ,  8
+	LI	16
+	La   2, RET_INFO_L17
+	BLKMOV
+	BRA ret_lbl
+ret_lbl:
+	UNLINK 2
+	RTD	prm_siz-8
+excep:
+endPRO					;---------- end PRO REPEAT_CHAR
+end if
+
+if defined TO_QUAD_DIGITS_L18_
+PRO	TO_QUAD_DIGITS_L18			;---------- PRO TO_QUAD_DIGITS
+PRMS					;    debut parametrage
+	PRM S_ofs				; in
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 2					;    BODY ELAB
+VAR IMAG_disp, q				; variable array : pointeur aux data
+VAR IMAG__u, q				; variable array : useinfo pointeur au rec info
+	La 0, STRING.use__info
+	Sa	2, IMAG__u				; array info ptr at __u
+VAR	ANON_53_35_disp, q
+VAR	ANON_53_35__u,   q
+namespace ANON_53_35_info
+  VAR SIZ,      d
+  VAR COMP_SIZ, d
+  VAR FST_1,    d
+  VAR LST_1,    d
+end namespace
+	LVA 2, ANON_53_35_info.SIZ
+	Sa  2, ANON_53_35__u
+	LVA 2, ANON_53_35_disp
+	Ld  2,	-S_ofs
+	CALL	STANDARD. ,INTEGER_IMAGE_L9
+	DUP
+	La
+	Sa	2, IMAG_disp				; array data ptr from function result
+	La , 8
+	Sa	2, IMAG__u				; array info ptr from function result
+
+VAR COMPL_disp, d				; variable entiere
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	4
+	LId	2, IMAG__u, STRING.LST_1
+	INC
+	LId	2, IMAG__u, STRING.FST_1
+	SUB
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	SUB
+	SUB
+	Sd  2,	COMPL_disp
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+; CODE_RETURN : EXPR TYPE = DN_ARRAY
+; CODE & concat STRING
+VAR	ANON_56_14_data, q
+VAR	ANON_56_14_info, q
+VAR	ANON_56_43_data, q
+VAR	ANON_56_43_info, q
+VAR	ANON_56_14_len,  q
+VAR	ANON_56_43_len,  q
+VAR	ANON_56_14_disp, q
+VAR	ANON_56_14__u,   q
+namespace ANON_56_14_info
+  VAR SIZ,      d
+  VAR COMP_SIZ, d
+  VAR FST_1,    d
+  VAR LST_1,    d
+end namespace
+; CODE_QUALIFIED : DN_QUALIFIEDDN_AGGREGATE
+namespace ANON_56_21_info
+  VAR SIZ,      d
+  VAR COMP_SIZ, d
+  VAR FST_1,    d
+  VAR LST_1,    d
+end namespace
+VAR	ANON_56_21_disp, q
+VAR	ANON_56_21__u,   q
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd  2, ANON_56_21_info.FST_1
+	Ld 2,	COMPL_disp
+	DUP
+	Sd  2, ANON_56_21_info.LST_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	SUB
+	INC
+	LI	8
+	Sd  2, ANON_56_21_info.COMP_SIZ
+	DUP
+	LI	8
+	MUL
+	Sd  2, ANON_56_21_info.SIZ
+	CO_VAR
+	Sa  2, ANON_56_21_disp
+	LVA 2, ANON_56_21_info.SIZ
+	Sa  2, ANON_56_21__u
+	La  2, ANON_56_21_disp
+VAR	ANON_56_21_ptr, q
+VAR	ANON_56_21_cnt, q
+	Sa  2, ANON_56_21_ptr
+	Ld 2,	COMPL_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	SUB
+	INC
+	Sa  2, ANON_56_21_cnt
+	La  2, ANON_56_21_cnt
+	LI	0
+	CLE
+	BT  L20
+L19:
+	La  2, ANON_56_21_ptr
+	LI	48
+	Sb  -1, 0
+	La  2, ANON_56_21_ptr
+	LI	1
+	ADD
+	Sa  2, ANON_56_21_ptr
+	La  2, ANON_56_21_cnt
+	DEC
+	DUP
+	Sa  2, ANON_56_21_cnt
+	LI	0
+	CGT
+	BT  L19
+L20:
+	LVA 2, ANON_56_21_disp
+	DUP
+	La  ,  0
+	Sa  2, ANON_56_14_data
+	La  ,  8
+	Sa  2, ANON_56_14_info
+	LId 2, ANON_56_14_info, STRING.LST_1
+	INC
+	LId 2, ANON_56_14_info, STRING.FST_1
+	SUB
+	Sa  2, ANON_56_14_len
+VAR	ANON_56_43_slice_data, q
+VAR	ANON_56_43_slice_len,  q
+VAR	ANON_56_43_disp, q
+VAR	ANON_56_43__u,   q
+namespace ANON_56_43_info
+  VAR SIZ,      d
+  VAR COMP_SIZ, d
+  VAR FST_1,    d
+  VAR LST_1,    d
+end namespace
+	La 2, IMAG_disp
+	LId	2, IMAG__u, STRING.FST_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	LId 2, IMAG__u, STRING.FST_1
+	SUB
+	LI	1
+	MUL
+	ADD
+	LId	2, IMAG__u, STRING.LST_1
+	INC
+	LId	2, IMAG__u, STRING.FST_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	SUB
+	LI	1
+	MUL
+	Sa  2, ANON_56_43_slice_len
+	Sa  2, ANON_56_43_slice_data
+	La  2, ANON_56_43_slice_data
+	Sa  2, ANON_56_43_disp
+	LVA 2, ANON_56_43_info.SIZ
+	Sa  2, ANON_56_43__u
+	LI	1
+	Sd  2, ANON_56_43_info.FST_1
+	La  2, ANON_56_43_slice_len
+	Sd  2, ANON_56_43_info.LST_1
+	LI	8
+	Sd  2, ANON_56_43_info.COMP_SIZ
+	La  2, ANON_56_43_slice_len
+	LI	8
+	MUL
+	Sd  2, ANON_56_43_info.SIZ
+	LVA 2, ANON_56_43_disp
+	DUP
+	La  ,  0
+	Sa  2, ANON_56_43_data
+	La  ,  8
+	Sa  2, ANON_56_43_info
+	LId 2, ANON_56_43_info, STRING.LST_1
+	INC
+	LId 2, ANON_56_43_info, STRING.FST_1
+	SUB
+	Sa  2, ANON_56_43_len
+	La  2, ANON_56_14_len
+	La  2, ANON_56_43_len
+	ADD
+	CO_VAR
+	Sa  2, ANON_56_14_disp
+	LI	1
+	Sd  2, ANON_56_14_info.FST_1
+	La  2, ANON_56_14_len
+	La  2, ANON_56_43_len
+	ADD
+	Sd  2, ANON_56_14_info.LST_1
+	LI	8
+	Sd  2, ANON_56_14_info.COMP_SIZ
+	La  2, ANON_56_14_len
+	La  2, ANON_56_43_len
+	ADD
+	LI	8
+	MUL
+	Sd  2, ANON_56_14_info.SIZ
+	LVA 2, ANON_56_14_info.SIZ
+	Sa  2, ANON_56_14__u
+	La  2, ANON_56_14_disp
+	La  2, ANON_56_14_len
+	La  2, ANON_56_14_data
+	BLKMOV
+	La  2, ANON_56_14_disp
+	La  2, ANON_56_14_len
+	ADD
+	La  2, ANON_56_43_len
+	La  2, ANON_56_43_data
+	BLKMOV
+	LVA 2, ANON_56_14_disp
+VAR	RET_INFO_L21, q
+	DUP
+	La  ,  0
+	SIq   2, -result__ofs,  0
+	DUP
+	La  ,  8
+	Sa   2, RET_INFO_L21
+	DROP
+	La   2, -result__ofs
+	La  ,  8
+	LI	16
+	La   2, RET_INFO_L21
+	BLKMOV
+	BRA ret_lbl
+ret_lbl:
+	UNLINK 2
+	RTD	prm_siz-8
+excep:
+endPRO					;---------- end PRO TO_QUAD_DIGITS
+end if
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+STR STR_L22, "=== 1. Zeros ==="		; constante string="=== 1. Zeros ==="
+	LCA	STR_L22.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+VAR	ANON_63_23_disp, q
+VAR	ANON_63_23__u,   q
+namespace ANON_63_23_info
+  VAR SIZ,      d
+  VAR COMP_SIZ, d
+  VAR FST_1,    d
+  VAR LST_1,    d
+end namespace
+	LVA 1, ANON_63_23_info.SIZ
+	Sa  1, ANON_63_23__u
+	LVA 1, ANON_63_23_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	CALL	STANDARD.CONCAT_TEST_L1. ,ZEROS_L10
+STR STR_L23, "zeros(0)="			; constante string="zeros(0)="
+	LCA	STR_L23.data_ptr
+	CALL	STANDARD.CONCAT_TEST_L1. ,SHOW_L8
+VAR	ANON_64_23_disp, q
+VAR	ANON_64_23__u,   q
+namespace ANON_64_23_info
+  VAR SIZ,      d
+  VAR COMP_SIZ, d
+  VAR FST_1,    d
+  VAR LST_1,    d
+end namespace
+	LVA 1, ANON_64_23_info.SIZ
+	Sa  1, ANON_64_23__u
+	LVA 1, ANON_64_23_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	CALL	STANDARD.CONCAT_TEST_L1. ,ZEROS_L10
+STR STR_L24, "zeros(1)="			; constante string="zeros(1)="
+	LCA	STR_L24.data_ptr
+	CALL	STANDARD.CONCAT_TEST_L1. ,SHOW_L8
+VAR	ANON_65_23_disp, q
+VAR	ANON_65_23__u,   q
+namespace ANON_65_23_info
+  VAR SIZ,      d
+  VAR COMP_SIZ, d
+  VAR FST_1,    d
+  VAR LST_1,    d
+end namespace
+	LVA 1, ANON_65_23_info.SIZ
+	Sa  1, ANON_65_23__u
+	LVA 1, ANON_65_23_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	4
+	CALL	STANDARD.CONCAT_TEST_L1. ,ZEROS_L10
+STR STR_L25, "zeros(4)="			; constante string="zeros(4)="
+	LCA	STR_L25.data_ptr
+	CALL	STANDARD.CONCAT_TEST_L1. ,SHOW_L8
+STR STR_L26, "=== 2. Concat ==="		; constante string="=== 2. Concat ==="
+	LCA	STR_L26.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+; CODE & concat STRING
+VAR	ANON_69_22_data, q
+VAR	ANON_69_22_info, q
+VAR	ANON_69_29_data, q
+VAR	ANON_69_29_info, q
+VAR	ANON_69_22_len,  q
+VAR	ANON_69_29_len,  q
+VAR	ANON_69_22_disp, q
+VAR	ANON_69_22__u,   q
+namespace ANON_69_22_info
+  VAR SIZ,      d
+  VAR COMP_SIZ, d
+  VAR FST_1,    d
+  VAR LST_1,    d
+end namespace
+STR ANON_69_22, "ab"			; constante string="ab"
+	LCA	ANON_69_22.data_ptr
+	DUP
+	La  ,  0
+	Sa  1, ANON_69_22_data
+	La  ,  8
+	Sa  1, ANON_69_22_info
+	LId 1, ANON_69_22_info, STRING.LST_1
+	INC
+	LId 1, ANON_69_22_info, STRING.FST_1
+	SUB
+	Sa  1, ANON_69_22_len
+STR ANON_69_29, "cd"			; constante string="cd"
+	LCA	ANON_69_29.data_ptr
+	DUP
+	La  ,  0
+	Sa  1, ANON_69_29_data
+	La  ,  8
+	Sa  1, ANON_69_29_info
+	LId 1, ANON_69_29_info, STRING.LST_1
+	INC
+	LId 1, ANON_69_29_info, STRING.FST_1
+	SUB
+	Sa  1, ANON_69_29_len
+	La  1, ANON_69_22_len
+	La  1, ANON_69_29_len
+	ADD
+	CO_VAR
+	Sa  1, ANON_69_22_disp
+	LI	1
+	Sd  1, ANON_69_22_info.FST_1
+	La  1, ANON_69_22_len
+	La  1, ANON_69_29_len
+	ADD
+	Sd  1, ANON_69_22_info.LST_1
+	LI	8
+	Sd  1, ANON_69_22_info.COMP_SIZ
+	La  1, ANON_69_22_len
+	La  1, ANON_69_29_len
+	ADD
+	LI	8
+	MUL
+	Sd  1, ANON_69_22_info.SIZ
+	LVA 1, ANON_69_22_info.SIZ
+	Sa  1, ANON_69_22__u
+	La  1, ANON_69_22_disp
+	La  1, ANON_69_22_len
+	La  1, ANON_69_22_data
+	BLKMOV
+	La  1, ANON_69_22_disp
+	La  1, ANON_69_22_len
+	ADD
+	La  1, ANON_69_29_len
+	La  1, ANON_69_29_data
+	BLKMOV
+	LVA 1, ANON_69_22_disp
+STR STR_L27, "ab&cd="			; constante string="ab&cd="
+	LCA	STR_L27.data_ptr
+	CALL	STANDARD.CONCAT_TEST_L1. ,SHOW_L8
+; CODE & concat STRING
+VAR	ANON_70_22_data, q
+VAR	ANON_70_22_info, q
+VAR	ANON_70_29_data, q
+VAR	ANON_70_29_info, q
+VAR	ANON_70_22_len,  q
+VAR	ANON_70_29_len,  q
+VAR	ANON_70_22_disp, q
+VAR	ANON_70_22__u,   q
+namespace ANON_70_22_info
+  VAR SIZ,      d
+  VAR COMP_SIZ, d
+  VAR FST_1,    d
+  VAR LST_1,    d
+end namespace
+STR ANON_70_22, "ab"			; constante string="ab"
+	LCA	ANON_70_22.data_ptr
+	DUP
+	La  ,  0
+	Sa  1, ANON_70_22_data
+	La  ,  8
+	Sa  1, ANON_70_22_info
+	LId 1, ANON_70_22_info, STRING.LST_1
+	INC
+	LId 1, ANON_70_22_info, STRING.FST_1
+	SUB
+	Sa  1, ANON_70_22_len
+STR ANON_70_29, ""				; constante string=""
+	LCA	ANON_70_29.data_ptr
+	DUP
+	La  ,  0
+	Sa  1, ANON_70_29_data
+	La  ,  8
+	Sa  1, ANON_70_29_info
+	LId 1, ANON_70_29_info, STRING.LST_1
+	INC
+	LId 1, ANON_70_29_info, STRING.FST_1
+	SUB
+	Sa  1, ANON_70_29_len
+	La  1, ANON_70_22_len
+	La  1, ANON_70_29_len
+	ADD
+	CO_VAR
+	Sa  1, ANON_70_22_disp
+	LI	1
+	Sd  1, ANON_70_22_info.FST_1
+	La  1, ANON_70_22_len
+	La  1, ANON_70_29_len
+	ADD
+	Sd  1, ANON_70_22_info.LST_1
+	LI	8
+	Sd  1, ANON_70_22_info.COMP_SIZ
+	La  1, ANON_70_22_len
+	La  1, ANON_70_29_len
+	ADD
+	LI	8
+	MUL
+	Sd  1, ANON_70_22_info.SIZ
+	LVA 1, ANON_70_22_info.SIZ
+	Sa  1, ANON_70_22__u
+	La  1, ANON_70_22_disp
+	La  1, ANON_70_22_len
+	La  1, ANON_70_22_data
+	BLKMOV
+	La  1, ANON_70_22_disp
+	La  1, ANON_70_22_len
+	ADD
+	La  1, ANON_70_29_len
+	La  1, ANON_70_29_data
+	BLKMOV
+	LVA 1, ANON_70_22_disp
+STR STR_L28, "ab&[]="			; constante string="ab&[]="
+	LCA	STR_L28.data_ptr
+	CALL	STANDARD.CONCAT_TEST_L1. ,SHOW_L8
+; CODE & concat STRING
+VAR	ANON_71_22_data, q
+VAR	ANON_71_22_info, q
+VAR	ANON_71_29_data, q
+VAR	ANON_71_29_info, q
+VAR	ANON_71_22_len,  q
+VAR	ANON_71_29_len,  q
+VAR	ANON_71_22_disp, q
+VAR	ANON_71_22__u,   q
+namespace ANON_71_22_info
+  VAR SIZ,      d
+  VAR COMP_SIZ, d
+  VAR FST_1,    d
+  VAR LST_1,    d
+end namespace
+STR ANON_71_22, ""				; constante string=""
+	LCA	ANON_71_22.data_ptr
+	DUP
+	La  ,  0
+	Sa  1, ANON_71_22_data
+	La  ,  8
+	Sa  1, ANON_71_22_info
+	LId 1, ANON_71_22_info, STRING.LST_1
+	INC
+	LId 1, ANON_71_22_info, STRING.FST_1
+	SUB
+	Sa  1, ANON_71_22_len
+STR ANON_71_29, "cd"			; constante string="cd"
+	LCA	ANON_71_29.data_ptr
+	DUP
+	La  ,  0
+	Sa  1, ANON_71_29_data
+	La  ,  8
+	Sa  1, ANON_71_29_info
+	LId 1, ANON_71_29_info, STRING.LST_1
+	INC
+	LId 1, ANON_71_29_info, STRING.FST_1
+	SUB
+	Sa  1, ANON_71_29_len
+	La  1, ANON_71_22_len
+	La  1, ANON_71_29_len
+	ADD
+	CO_VAR
+	Sa  1, ANON_71_22_disp
+	LI	1
+	Sd  1, ANON_71_22_info.FST_1
+	La  1, ANON_71_22_len
+	La  1, ANON_71_29_len
+	ADD
+	Sd  1, ANON_71_22_info.LST_1
+	LI	8
+	Sd  1, ANON_71_22_info.COMP_SIZ
+	La  1, ANON_71_22_len
+	La  1, ANON_71_29_len
+	ADD
+	LI	8
+	MUL
+	Sd  1, ANON_71_22_info.SIZ
+	LVA 1, ANON_71_22_info.SIZ
+	Sa  1, ANON_71_22__u
+	La  1, ANON_71_22_disp
+	La  1, ANON_71_22_len
+	La  1, ANON_71_22_data
+	BLKMOV
+	La  1, ANON_71_22_disp
+	La  1, ANON_71_22_len
+	ADD
+	La  1, ANON_71_29_len
+	La  1, ANON_71_29_data
+	BLKMOV
+	LVA 1, ANON_71_22_disp
+STR STR_L29, "[]&cd="			; constante string="[]&cd="
+	LCA	STR_L29.data_ptr
+	CALL	STANDARD.CONCAT_TEST_L1. ,SHOW_L8
+; CODE & concat STRING
+VAR	ANON_72_22_data, q
+VAR	ANON_72_22_info, q
+VAR	ANON_72_35_data, q
+VAR	ANON_72_35_info, q
+VAR	ANON_72_22_len,  q
+VAR	ANON_72_35_len,  q
+VAR	ANON_72_22_disp, q
+VAR	ANON_72_22__u,   q
+namespace ANON_72_22_info
+  VAR SIZ,      d
+  VAR COMP_SIZ, d
+  VAR FST_1,    d
+  VAR LST_1,    d
+end namespace
+; CODE & concat STRING
+VAR	ANON_72_22_data, q
+VAR	ANON_72_22_info, q
+VAR	ANON_72_29_data, q
+VAR	ANON_72_29_info, q
+VAR	ANON_72_22_len,  q
+VAR	ANON_72_29_len,  q
+VAR	ANON_72_22_disp, q
+VAR	ANON_72_22__u,   q
+namespace ANON_72_22_info
+  VAR SIZ,      d
+  VAR COMP_SIZ, d
+  VAR FST_1,    d
+  VAR LST_1,    d
+end namespace
+STR ANON_72_22, "a"				; constante string="a"
+	LCA	ANON_72_22.data_ptr
+	DUP
+	La  ,  0
+	Sa  1, ANON_72_22_data
+	La  ,  8
+	Sa  1, ANON_72_22_info
+	LId 1, ANON_72_22_info, STRING.LST_1
+	INC
+	LId 1, ANON_72_22_info, STRING.FST_1
+	SUB
+	Sa  1, ANON_72_22_len
+STR ANON_72_29, "b"				; constante string="b"
+	LCA	ANON_72_29.data_ptr
+	DUP
+	La  ,  0
+	Sa  1, ANON_72_29_data
+	La  ,  8
+	Sa  1, ANON_72_29_info
+	LId 1, ANON_72_29_info, STRING.LST_1
+	INC
+	LId 1, ANON_72_29_info, STRING.FST_1
+	SUB
+	Sa  1, ANON_72_29_len
+	La  1, ANON_72_22_len
+	La  1, ANON_72_29_len
+	ADD
+	CO_VAR
+	Sa  1, ANON_72_22_disp
+	LI	1
+	Sd  1, ANON_72_22_info.FST_1
+	La  1, ANON_72_22_len
+	La  1, ANON_72_29_len
+	ADD
+	Sd  1, ANON_72_22_info.LST_1
+	LI	8
+	Sd  1, ANON_72_22_info.COMP_SIZ
+	La  1, ANON_72_22_len
+	La  1, ANON_72_29_len
+	ADD
+	LI	8
+	MUL
+	Sd  1, ANON_72_22_info.SIZ
+	LVA 1, ANON_72_22_info.SIZ
+	Sa  1, ANON_72_22__u
+	La  1, ANON_72_22_disp
+	La  1, ANON_72_22_len
+	La  1, ANON_72_22_data
+	BLKMOV
+	La  1, ANON_72_22_disp
+	La  1, ANON_72_22_len
+	ADD
+	La  1, ANON_72_29_len
+	La  1, ANON_72_29_data
+	BLKMOV
+	LVA 1, ANON_72_22_disp
+	DUP
+	La  ,  0
+	Sa  1, ANON_72_22_data
+	La  ,  8
+	Sa  1, ANON_72_22_info
+	LId 1, ANON_72_22_info, STRING.LST_1
+	INC
+	LId 1, ANON_72_22_info, STRING.FST_1
+	SUB
+	Sa  1, ANON_72_22_len
+STR ANON_72_35, "c"				; constante string="c"
+	LCA	ANON_72_35.data_ptr
+	DUP
+	La  ,  0
+	Sa  1, ANON_72_35_data
+	La  ,  8
+	Sa  1, ANON_72_35_info
+	LId 1, ANON_72_35_info, STRING.LST_1
+	INC
+	LId 1, ANON_72_35_info, STRING.FST_1
+	SUB
+	Sa  1, ANON_72_35_len
+	La  1, ANON_72_22_len
+	La  1, ANON_72_35_len
+	ADD
+	CO_VAR
+	Sa  1, ANON_72_22_disp
+	LI	1
+	Sd  1, ANON_72_22_info.FST_1
+	La  1, ANON_72_22_len
+	La  1, ANON_72_35_len
+	ADD
+	Sd  1, ANON_72_22_info.LST_1
+	LI	8
+	Sd  1, ANON_72_22_info.COMP_SIZ
+	La  1, ANON_72_22_len
+	La  1, ANON_72_35_len
+	ADD
+	LI	8
+	MUL
+	Sd  1, ANON_72_22_info.SIZ
+	LVA 1, ANON_72_22_info.SIZ
+	Sa  1, ANON_72_22__u
+	La  1, ANON_72_22_disp
+	La  1, ANON_72_22_len
+	La  1, ANON_72_22_data
+	BLKMOV
+	La  1, ANON_72_22_disp
+	La  1, ANON_72_22_len
+	ADD
+	La  1, ANON_72_35_len
+	La  1, ANON_72_35_data
+	BLKMOV
+	LVA 1, ANON_72_22_disp
+STR STR_L30, "a&b&c="			; constante string="a&b&c="
+	LCA	STR_L30.data_ptr
+	CALL	STANDARD.CONCAT_TEST_L1. ,SHOW_L8
+STR STR_L31, "=== 3. Zeros & slice ==="		; constante string="=== 3. Zeros & slice ==="
+	LCA	STR_L31.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+; CODE & concat STRING
+VAR	ANON_76_26_data, q
+VAR	ANON_76_26_info, q
+VAR	ANON_76_37_data, q
+VAR	ANON_76_37_info, q
+VAR	ANON_76_26_len,  q
+VAR	ANON_76_37_len,  q
+VAR	ANON_76_26_disp, q
+VAR	ANON_76_26__u,   q
+namespace ANON_76_26_info
+  VAR SIZ,      d
+  VAR COMP_SIZ, d
+  VAR FST_1,    d
+  VAR LST_1,    d
+end namespace
+VAR	ANON_76_26_disp, q
+VAR	ANON_76_26__u,   q
+namespace ANON_76_26_info
+  VAR SIZ,      d
+  VAR COMP_SIZ, d
+  VAR FST_1,    d
+  VAR LST_1,    d
+end namespace
+	LVA 1, ANON_76_26_info.SIZ
+	Sa  1, ANON_76_26__u
+	LVA 1, ANON_76_26_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	3
+	CALL	STANDARD.CONCAT_TEST_L1. ,ZEROS_L10
+	DUP
+	La  ,  0
+	Sa  1, ANON_76_26_data
+	La  ,  8
+	Sa  1, ANON_76_26_info
+	LId 1, ANON_76_26_info, STRING.LST_1
+	INC
+	LId 1, ANON_76_26_info, STRING.FST_1
+	SUB
+	Sa  1, ANON_76_26_len
+STR ANON_76_37, "XY"			; constante string="XY"
+	LCA	ANON_76_37.data_ptr
+	DUP
+	La  ,  0
+	Sa  1, ANON_76_37_data
+	La  ,  8
+	Sa  1, ANON_76_37_info
+	LId 1, ANON_76_37_info, STRING.LST_1
+	INC
+	LId 1, ANON_76_37_info, STRING.FST_1
+	SUB
+	Sa  1, ANON_76_37_len
+	La  1, ANON_76_26_len
+	La  1, ANON_76_37_len
+	ADD
+	CO_VAR
+	Sa  1, ANON_76_26_disp
+	LI	1
+	Sd  1, ANON_76_26_info.FST_1
+	La  1, ANON_76_26_len
+	La  1, ANON_76_37_len
+	ADD
+	Sd  1, ANON_76_26_info.LST_1
+	LI	8
+	Sd  1, ANON_76_26_info.COMP_SIZ
+	La  1, ANON_76_26_len
+	La  1, ANON_76_37_len
+	ADD
+	LI	8
+	MUL
+	Sd  1, ANON_76_26_info.SIZ
+	LVA 1, ANON_76_26_info.SIZ
+	Sa  1, ANON_76_26__u
+	La  1, ANON_76_26_disp
+	La  1, ANON_76_26_len
+	La  1, ANON_76_26_data
+	BLKMOV
+	La  1, ANON_76_26_disp
+	La  1, ANON_76_26_len
+	ADD
+	La  1, ANON_76_37_len
+	La  1, ANON_76_37_data
+	BLKMOV
+	LVA 1, ANON_76_26_disp
+STR STR_L32, "zeros(3)&XY="			; constante string="zeros(3)&XY="
+	LCA	STR_L32.data_ptr
+	CALL	STANDARD.CONCAT_TEST_L1. ,SHOW_L8
+STR STR_L33, "=== 4. TO_QUAD_DIGITS ==="	; constante string="=== 4. TO_QUAD_DIGITS ==="
+	LCA	STR_L33.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+VAR	ANON_80_23_disp, q
+VAR	ANON_80_23__u,   q
+namespace ANON_80_23_info
+  VAR SIZ,      d
+  VAR COMP_SIZ, d
+  VAR FST_1,    d
+  VAR LST_1,    d
+end namespace
+	LVA 1, ANON_80_23_info.SIZ
+	Sa  1, ANON_80_23__u
+	LVA 1, ANON_80_23_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	CALL	STANDARD.CONCAT_TEST_L1. ,TO_QUAD_DIGITS_L18
+STR STR_L34, "    0 -> "			; constante string="    0 -> "
+	LCA	STR_L34.data_ptr
+	CALL	STANDARD.CONCAT_TEST_L1. ,SHOW_L8
+VAR	ANON_81_23_disp, q
+VAR	ANON_81_23__u,   q
+namespace ANON_81_23_info
+  VAR SIZ,      d
+  VAR COMP_SIZ, d
+  VAR FST_1,    d
+  VAR LST_1,    d
+end namespace
+	LVA 1, ANON_81_23_info.SIZ
+	Sa  1, ANON_81_23__u
+	LVA 1, ANON_81_23_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	7
+	CALL	STANDARD.CONCAT_TEST_L1. ,TO_QUAD_DIGITS_L18
+STR STR_L35, "    7 -> "			; constante string="    7 -> "
+	LCA	STR_L35.data_ptr
+	CALL	STANDARD.CONCAT_TEST_L1. ,SHOW_L8
+VAR	ANON_82_23_disp, q
+VAR	ANON_82_23__u,   q
+namespace ANON_82_23_info
+  VAR SIZ,      d
+  VAR COMP_SIZ, d
+  VAR FST_1,    d
+  VAR LST_1,    d
+end namespace
+	LVA 1, ANON_82_23_info.SIZ
+	Sa  1, ANON_82_23__u
+	LVA 1, ANON_82_23_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	42
+	CALL	STANDARD.CONCAT_TEST_L1. ,TO_QUAD_DIGITS_L18
+STR STR_L36, "   42 -> "			; constante string="   42 -> "
+	LCA	STR_L36.data_ptr
+	CALL	STANDARD.CONCAT_TEST_L1. ,SHOW_L8
+VAR	ANON_83_23_disp, q
+VAR	ANON_83_23__u,   q
+namespace ANON_83_23_info
+  VAR SIZ,      d
+  VAR COMP_SIZ, d
+  VAR FST_1,    d
+  VAR LST_1,    d
+end namespace
+	LVA 1, ANON_83_23_info.SIZ
+	Sa  1, ANON_83_23__u
+	LVA 1, ANON_83_23_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	999
+	CALL	STANDARD.CONCAT_TEST_L1. ,TO_QUAD_DIGITS_L18
+STR STR_L37, "  999 -> "			; constante string="  999 -> "
+	LCA	STR_L37.data_ptr
+	CALL	STANDARD.CONCAT_TEST_L1. ,SHOW_L8
+VAR	ANON_84_23_disp, q
+VAR	ANON_84_23__u,   q
+namespace ANON_84_23_info
+  VAR SIZ,      d
+  VAR COMP_SIZ, d
+  VAR FST_1,    d
+  VAR LST_1,    d
+end namespace
+	LVA 1, ANON_84_23_info.SIZ
+	Sa  1, ANON_84_23__u
+	LVA 1, ANON_84_23_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1000
+	CALL	STANDARD.CONCAT_TEST_L1. ,TO_QUAD_DIGITS_L18
+STR STR_L38, " 1000 -> "			; constante string=" 1000 -> "
+	LCA	STR_L38.data_ptr
+	CALL	STANDARD.CONCAT_TEST_L1. ,SHOW_L8
+VAR	ANON_85_23_disp, q
+VAR	ANON_85_23__u,   q
+namespace ANON_85_23_info
+  VAR SIZ,      d
+  VAR COMP_SIZ, d
+  VAR FST_1,    d
+  VAR LST_1,    d
+end namespace
+	LVA 1, ANON_85_23_info.SIZ
+	Sa  1, ANON_85_23__u
+	LVA 1, ANON_85_23_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	9999
+	CALL	STANDARD.CONCAT_TEST_L1. ,TO_QUAD_DIGITS_L18
+STR STR_L39, " 9999 -> "			; constante string=" 9999 -> "
+	LCA	STR_L39.data_ptr
+	CALL	STANDARD.CONCAT_TEST_L1. ,SHOW_L8
+STR STR_L40, "=== 5. Repeat_char ==="		; constante string="=== 5. Repeat_char ==="
+	LCA	STR_L40.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+VAR	ANON_89_20_disp, q
+VAR	ANON_89_20__u,   q
+namespace ANON_89_20_info
+  VAR SIZ,      d
+  VAR COMP_SIZ, d
+  VAR FST_1,    d
+  VAR LST_1,    d
+end namespace
+	LVA 1, ANON_89_20_info.SIZ
+	Sa  1, ANON_89_20__u
+	LVA 1, ANON_89_20_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	5
+	LI	88
+	CALL	STANDARD.CONCAT_TEST_L1. ,REPEAT_CHAR_L14
+STR STR_L41, "5*'X'="			; constante string="5*'X'="
+	LCA	STR_L41.data_ptr
+	CALL	STANDARD.CONCAT_TEST_L1. ,SHOW_L8
+VAR	ANON_90_20_disp, q
+VAR	ANON_90_20__u,   q
+namespace ANON_90_20_info
+  VAR SIZ,      d
+  VAR COMP_SIZ, d
+  VAR FST_1,    d
+  VAR LST_1,    d
+end namespace
+	LVA 1, ANON_90_20_info.SIZ
+	Sa  1, ANON_90_20__u
+	LVA 1, ANON_90_20_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	LI	89
+	CALL	STANDARD.CONCAT_TEST_L1. ,REPEAT_CHAR_L14
+STR STR_L42, "0*'Y'="			; constante string="0*'Y'="
+	LCA	STR_L42.data_ptr
+	CALL	STANDARD.CONCAT_TEST_L1. ,SHOW_L8
+STR STR_L43, "=== 6. Fonctions & ==="		; constante string="=== 6. Fonctions & ==="
+	LCA	STR_L43.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+; CODE & concat STRING
+VAR	ANON_94_24_data, q
+VAR	ANON_94_24_info, q
+VAR	ANON_94_35_data, q
+VAR	ANON_94_35_info, q
+VAR	ANON_94_24_len,  q
+VAR	ANON_94_35_len,  q
+VAR	ANON_94_24_disp, q
+VAR	ANON_94_24__u,   q
+namespace ANON_94_24_info
+  VAR SIZ,      d
+  VAR COMP_SIZ, d
+  VAR FST_1,    d
+  VAR LST_1,    d
+end namespace
+VAR	ANON_94_24_disp, q
+VAR	ANON_94_24__u,   q
+namespace ANON_94_24_info
+  VAR SIZ,      d
+  VAR COMP_SIZ, d
+  VAR FST_1,    d
+  VAR LST_1,    d
+end namespace
+	LVA 1, ANON_94_24_info.SIZ
+	Sa  1, ANON_94_24__u
+	LVA 1, ANON_94_24_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	2
+	CALL	STANDARD.CONCAT_TEST_L1. ,ZEROS_L10
+	DUP
+	La  ,  0
+	Sa  1, ANON_94_24_data
+	La  ,  8
+	Sa  1, ANON_94_24_info
+	LId 1, ANON_94_24_info, STRING.LST_1
+	INC
+	LId 1, ANON_94_24_info, STRING.FST_1
+	SUB
+	Sa  1, ANON_94_24_len
+VAR	ANON_94_35_disp, q
+VAR	ANON_94_35__u,   q
+namespace ANON_94_35_info
+  VAR SIZ,      d
+  VAR COMP_SIZ, d
+  VAR FST_1,    d
+  VAR LST_1,    d
+end namespace
+	LVA 1, ANON_94_35_info.SIZ
+	Sa  1, ANON_94_35__u
+	LVA 1, ANON_94_35_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	3
+	CALL	STANDARD.CONCAT_TEST_L1. ,ZEROS_L10
+	DUP
+	La  ,  0
+	Sa  1, ANON_94_35_data
+	La  ,  8
+	Sa  1, ANON_94_35_info
+	LId 1, ANON_94_35_info, STRING.LST_1
+	INC
+	LId 1, ANON_94_35_info, STRING.FST_1
+	SUB
+	Sa  1, ANON_94_35_len
+	La  1, ANON_94_24_len
+	La  1, ANON_94_35_len
+	ADD
+	CO_VAR
+	Sa  1, ANON_94_24_disp
+	LI	1
+	Sd  1, ANON_94_24_info.FST_1
+	La  1, ANON_94_24_len
+	La  1, ANON_94_35_len
+	ADD
+	Sd  1, ANON_94_24_info.LST_1
+	LI	8
+	Sd  1, ANON_94_24_info.COMP_SIZ
+	La  1, ANON_94_24_len
+	La  1, ANON_94_35_len
+	ADD
+	LI	8
+	MUL
+	Sd  1, ANON_94_24_info.SIZ
+	LVA 1, ANON_94_24_info.SIZ
+	Sa  1, ANON_94_24__u
+	La  1, ANON_94_24_disp
+	La  1, ANON_94_24_len
+	La  1, ANON_94_24_data
+	BLKMOV
+	La  1, ANON_94_24_disp
+	La  1, ANON_94_24_len
+	ADD
+	La  1, ANON_94_35_len
+	La  1, ANON_94_35_data
+	BLKMOV
+	LVA 1, ANON_94_24_disp
+STR STR_L44, "z(2)&z(3)="			; constante string="z(2)&z(3)="
+	LCA	STR_L44.data_ptr
+	CALL	STANDARD.CONCAT_TEST_L1. ,SHOW_L8
+; CODE & concat STRING
+VAR	ANON_95_25_data, q
+VAR	ANON_95_25_info, q
+VAR	ANON_95_45_data, q
+VAR	ANON_95_45_info, q
+VAR	ANON_95_25_len,  q
+VAR	ANON_95_45_len,  q
+VAR	ANON_95_25_disp, q
+VAR	ANON_95_25__u,   q
+namespace ANON_95_25_info
+  VAR SIZ,      d
+  VAR COMP_SIZ, d
+  VAR FST_1,    d
+  VAR LST_1,    d
+end namespace
+VAR	ANON_95_25_disp, q
+VAR	ANON_95_25__u,   q
+namespace ANON_95_25_info
+  VAR SIZ,      d
+  VAR COMP_SIZ, d
+  VAR FST_1,    d
+  VAR LST_1,    d
+end namespace
+	LVA 1, ANON_95_25_info.SIZ
+	Sa  1, ANON_95_25__u
+	LVA 1, ANON_95_25_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	5
+	CALL	STANDARD.CONCAT_TEST_L1. ,TO_QUAD_DIGITS_L18
+	DUP
+	La  ,  0
+	Sa  1, ANON_95_25_data
+	La  ,  8
+	Sa  1, ANON_95_25_info
+	LId 1, ANON_95_25_info, STRING.LST_1
+	INC
+	LId 1, ANON_95_25_info, STRING.FST_1
+	SUB
+	Sa  1, ANON_95_25_len
+VAR	ANON_95_45_disp, q
+VAR	ANON_95_45__u,   q
+namespace ANON_95_45_info
+  VAR SIZ,      d
+  VAR COMP_SIZ, d
+  VAR FST_1,    d
+  VAR LST_1,    d
+end namespace
+	LVA 1, ANON_95_45_info.SIZ
+	Sa  1, ANON_95_45__u
+	LVA 1, ANON_95_45_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	12
+	CALL	STANDARD.CONCAT_TEST_L1. ,TO_QUAD_DIGITS_L18
+	DUP
+	La  ,  0
+	Sa  1, ANON_95_45_data
+	La  ,  8
+	Sa  1, ANON_95_45_info
+	LId 1, ANON_95_45_info, STRING.LST_1
+	INC
+	LId 1, ANON_95_45_info, STRING.FST_1
+	SUB
+	Sa  1, ANON_95_45_len
+	La  1, ANON_95_25_len
+	La  1, ANON_95_45_len
+	ADD
+	CO_VAR
+	Sa  1, ANON_95_25_disp
+	LI	1
+	Sd  1, ANON_95_25_info.FST_1
+	La  1, ANON_95_25_len
+	La  1, ANON_95_45_len
+	ADD
+	Sd  1, ANON_95_25_info.LST_1
+	LI	8
+	Sd  1, ANON_95_25_info.COMP_SIZ
+	La  1, ANON_95_25_len
+	La  1, ANON_95_45_len
+	ADD
+	LI	8
+	MUL
+	Sd  1, ANON_95_25_info.SIZ
+	LVA 1, ANON_95_25_info.SIZ
+	Sa  1, ANON_95_25__u
+	La  1, ANON_95_25_disp
+	La  1, ANON_95_25_len
+	La  1, ANON_95_25_data
+	BLKMOV
+	La  1, ANON_95_25_disp
+	La  1, ANON_95_25_len
+	ADD
+	La  1, ANON_95_45_len
+	La  1, ANON_95_45_data
+	BLKMOV
+	LVA 1, ANON_95_25_disp
+STR STR_L45, "q(5)&q(12)="			; constante string="q(5)&q(12)="
+	LCA	STR_L45.data_ptr
+	CALL	STANDARD.CONCAT_TEST_L1. ,SHOW_L8
+ret_lbl:
+	UNLINK 1
+	RTD
+excep:
+endPRO					;---------- end PRO CONCAT_TEST
