@@ -760,3 +760,64 @@ Reste à faire : macro SYS_SERIAL_CONFIG (ioctl/tcsetattr) dans codi_x86_64.finc
 ## Session 10 juin 2026 — Retour de record par fonction
 
 Implémentation du retour de valeur composite de type record par les fonctions Ada 83. La convention retenue est symétrique à celle des paramètres out composites : l'appelant alloue un doublet anonyme (_disp, __u, __dat) dans sa VARzone et empile son adresse comme result__ofs supplémentaire (dernier PRM). La fonction remplit les données brutes via La , 0 (extraction du data_ptr depuis le doublet) suivi de CODE_AGGREGATE ou BLKMOV selon que l'expression retournée est un agrégat ou une variable. Côté appelant, après le CALL, le sommet de pile est l'adresse du doublet résultat, utilisable directement comme opérande dans une expression ou affecté par BLKMOV dans COMPILE_RECORD_VAR. Cinq corrections ont été nécessaires : (1) CODE_FUNCTION_CALL pour l'allocation du doublet anonyme au lieu du LI 0 scalaire ; (2) CODE_RETURN pour le La , 0 + agrégat ou BLKMOV ; (3) COMPILE_RECORD_VAR pour l'initialisation par function_call ; (4) CODE_AGGREGATE branche record pour le BLKMOV des composantes de type record (le DUP global supprimé, chaque branche gérant le sien) ; (5) CODE_SELECTED branche else pour la lecture d'un champ scalaire terminal sur adresse directe en pile : L & OPER_SIZ_CHAR avec lvl=-1 (et non LId qui déréférence deux fois, ni LVA qui n'accède pas à la valeur). Validé sur records plats, records imbriqués, fonctions retournant un record utilisé directement comme paramètre sans variable intermédiaire, et lecture de champs de champs (S.A.X).
+
+## Session 14 juin 2026 CODE_ASSIGN — rationalisation des affectations `selected` / `indexed` de records
+
+Une étape importante de consolidation de `EXPANDER.INSTRUCTIONS.CODE_ASSIGN` a été réalisée lors du début de bootstrap du compilateur TLALOC par lui-même. Le problème initial venait d’une simplification dangereuse : lorsqu’une destination d’affectation était un `DN_SELECTED`, `CODE_ASSIGN` remplaçait cette destination par son dernier designator via `LAST_OF_SELECTED`. Cette ruse fonctionnait dans quelques cas simples, mais elle détruisait l’information essentielle de base pour les affectations à des composantes de records. Par exemple, `R.C := X;` ne doit pas être traité comme une affectation au seul `component_id C`, mais comme une affectation à l’adresse effective `adresse de R + offset(C)`. Un `DN_COMPONENT_ID` n’est pas une cellule mémoire autonome ; il n’a de sens qu’en tant qu’offset relatif à un objet record.
+
+La règle désormais retenue est de respecter plus explicitement le modèle LLIR : les scalaires, les access, les fixed et les float transitent directement sur la pile sous forme de valeur, puis sont stockés ; les composites, c’est-à-dire records, arrays, strings et slices, transitent par adresse de données et sont copiés par `BLKMOV` lorsque nécessaire. Pour une destination calculée (`selected`, `indexed`, `slice`, et plus tard `all`), le schéma général devient : calculer `@destination`, évaluer la source, puis stocker indirectement ou copier par `BLKMOV`.
+
+Le traitement dangereux suivant a donc été supprimé :
+
+```
+if DST_NAME.TY = DN_SELECTED then
+   DST_NAME := CODI.LAST_OF_SELECTED( DST_NAME );
+end if;
+```
+Une vraie branche DN_SELECTED a été ajoutée dans CODE_ASSIGN. Elle appelle maintenant :
+
+EXPRESSIONS.CODE_SELECTED( DST_NAME, IS_SOURCE => FALSE );
+
+afin de calculer l’adresse effective de la destination. Cela permet de traiter correctement les affectations à des composantes scalaires et composites, par exemple R.I := 12, R.E := ROUGE, R.C := R2.C ou R.C := (4, 8).
+
+Une correction a aussi été faite sur les copies composites sélectionnées. Pour une affectation du type R1.C := R2.C;, le code généré ne doit pas faire de La après la source R2.C, car CODE_SELECTED fournit déjà l’adresse des données de la composante. Le La ne reste nécessaire que pour les objets composites représentés par un doublet, par exemple une variable record autonome dont CODE_EXP fournit l’adresse du doublet avant extraction de l’adresse des données.
+
+CODE_INDEXED a ensuite été corrigé pour les tableaux composants de records. Le cas R.A(N) := (12,12);, où A est une composante tableau d’un record, ne doit pas utiliser A__u, car A__u n’existe que pour un objet tableau autonome. La règle introduite est donc la suivante : pour A(N), où A est un tableau objet autonome, on utilise le couple A_disp / A__u; pour R.A(N), où A est une composante inline d’un record, l’adresse de base est déjà calculée par CODE_SELECTED, et les informations de bornes et de taille de composant sont chargées directement depuis le type TABLE.
+
+CODE_SELECTED a également été complété pour les sélections dont le préfixe est indexé. Les formes R.A(N).X et A(N).X ont la structure DIANA d’un DN_SELECTED dont le préfixe est un DN_INDEXED. Le schéma ajouté est :
+
+elsif PREFIX.TY = DN_INDEXED then
+   CODE_INDEXED( PREFIX );
+   PROCESS_DESIGNATOR;
+
+Ainsi, CODE_INDEXED produit d’abord l’adresse de l’élément de tableau, puis PROCESS_DESIGNATOR ajoute l’offset du champ sélectionné, ou charge directement la valeur du champ selon que CODE_SELECTED est appelé en contexte source ou destination.
+
+Une protection défensive a enfin été ajoutée dans CODE_ASSIGN contre les destinations dont SM_EXP_TYPE vaut DN_VOID. Ce cas ne devrait normalement jamais parvenir à l’expander ; il révèle plutôt un défaut antérieur de résolution sémantique.
+
+Le programme de test TEST_ASSIGN_1 valide maintenant les cas suivants :
+
+R.I := 12;                  -- composante entière
+R.F := 1.25;                -- composante flottante
+R.E := ROUGE;               -- composante énumération
+
+R1.C := R2.C;               -- affectation composante record par BLKMOV
+R1.C := (4, 8);             -- affectation composante record par agrégat
+
+A(N).X := 12;
+A(N).Y := 13;               -- indexed puis selected
+
+R.A(N) := (12,12);          -- selected puis indexed, élément record
+
+La sortie obtenue est :
+
+cas 1 R.I  12
+cas 2 R.F  1.25000E+000
+cas 3 R.E ROUGE
+cas 4 R1.C [         12,         24]
+cas 5 R1.C [          4,          8]
+cas 6 A(N).X A(N).Y   [         12,         13]
+cas 7 R.A(N) [         12,         12]
+
+Un défaut du frontend a été identifié au passage. Le test erroné A(N).C := 12;, où A(N) est de type SUBREC ne contenant que les champs X et Y, n’est pas rejeté par la phase sémantique. Le champ C n’existe pas dans SUBREC, mais le frontend laisse passer une expression dont SM_EXP_TYPE vaut DN_VOID. Ce cas est maintenant intercepté défensivement par l’expander, mais la vraie correction devra être faite côté SEM_PHASE : la résolution d’un selected dont le préfixe est un DN_INDEXED doit vérifier que le designator appartient bien au type record de l’élément indexé.
+
+Cette étape clarifie proprement la frontière entre objet autonome, composante inline, adresse calculée et copie composite. Elle stabilise CODE_ASSIGN sans remettre en cause les chemins déjà sophistiqués de l’expander, notamment les paramètres, les génériques et les stores indirects par CALLI.

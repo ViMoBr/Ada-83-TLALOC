@@ -372,12 +372,12 @@ null;--	     declare
   procedure			CODE_INDEXED	( INDEXED	:TREE )
   is				------------
 
-    NAME			: TREE			:= D( AS_NAME, INDEXED );
+    NAME			: TREE	:= D( AS_NAME, INDEXED );
 
   begin
 
     if  NAME.TY = DN_SELECTED	 then
-      CODE_SELECTED( NAME );
+      CODE_SELECTED( NAME, IS_SOURCE=> FALSE );
       NAME := D( AS_DESIGNATOR, NAME );
     end if;
 
@@ -388,8 +388,11 @@ null;--	     declare
     EXP_TYPE_NAME		: TREE			:= D( XD_SOURCE_NAME, EXP_TYPE );
     TYPE_NAME_STR		:constant	STRING		:= PRINT_NAME( D( LX_SYMREP, EXP_TYPE_NAME ) );
     ARRAY_LVL		: INTEGER			:= 0;
+    TYPE_LVL		: INTEGER			:= DI( CD_LEVEL, EXP_TYPE );
     INDEX_NUM		: INTEGER			:= 1;
     IS_PARAM		: BOOLEAN			:= FALSE;
+    USE_TYPE_INFO_DIRECT	: BOOLEAN			:= FALSE;
+
 		-----
       procedure	INDEX	( EXP :TREE )
       is		-----
@@ -405,9 +408,14 @@ null;--	     declare
 	PUT_LINE(	tab & "LVA" & tab &	LVL_IMG &	", -" & ARRAY_NAME & "_ofs" );
 	PUT_LINE(	tab & "LIa" & tab &	", ," & INTEGER'IMAGE( CODI.ADDR_SIZE )	);
 	PUT( tab & "Ld" & tab & ", " );
+
+        elsif  USE_TYPE_INFO_DIRECT  then
+          PUT( tab & "Ld" & tab & INTEGER'IMAGE( TYPE_LVL ) & ", " );
+
         else
 	PUT( tab & "LId" & tab & LVL_IMG & ", "	& ARRAY_NAME & "__u" & ", " );
         end if;
+
         REGIONS_PATH( EXP_TYPE_NAME );
         PUT( TYPE_NAME_STR & ".FST_" & INDEX_NUM_IMG );
         if  CODI.DEBUG  then PUT( tab50	& "; (index - FST_"	& INDEX_NUM_IMG & ") * SIZ_" & INDEX_NUM_IMG ); end if;
@@ -419,6 +427,10 @@ null;--	     declare
 	PUT_LINE(	tab & "LVA" & tab &	LVL_IMG &	", -" & ARRAY_NAME & "_ofs" );
 	PUT_LINE(	tab & "LIa" & tab &	", ," & INTEGER'IMAGE( CODI.ADDR_SIZE )	);
 	PUT( tab & "Ld" & tab & ", " );
+
+        elsif  USE_TYPE_INFO_DIRECT  then
+          PUT( tab & "Ld" & tab & INTEGER'IMAGE( TYPE_LVL ) & ", " );
+
         else
 	PUT( tab & "LId" & tab & LVL_IMG & ", "	& ARRAY_NAME & "__u" & ", " );
         end if;
@@ -444,6 +456,7 @@ null;--	     declare
 	IS_PARAM := TRUE;
 	PUT_LINE(	tab & "LVA" & tab &	IMAGE( ARRAY_LVL ) & ", -" & ARRAY_NAME	& "_ofs" );
 	PUT(  tab	& "LIa" &	tab & ", , 0" );
+
         else
 	-- Variable locale : acces direct a _disp dans le	frame
 	PUT(  tab	& "La" & tab & INTEGER'IMAGE(	ARRAY_LVL	) & ", " & ARRAY_NAME & "_disp" );
@@ -453,9 +466,15 @@ null;--	     declare
 
       else
 
-put_line(	"; EXPRESSIONS.CODE_INDEXED adresse component id" );
+        if CODI.DEBUG then
+	PUT_LINE(	"; EXPRESSIONS.CODE_INDEXED adresse component id" );
+        end if;
+        -- Cas R.A(N) : l'adresse de R.A a deja ete empilee par CODE_SELECTED.
+        -- Il n'y a pas de A__u objet ; les infos viennent du type TABLE.
+        USE_TYPE_INFO_DIRECT := TRUE;
 
       end	if;
+
       declare
         EXP_SEQ	: SEQ_TYPE	:= LIST( D( AS_EXP_S, INDEXED	) );
         EXP	: TREE;
@@ -558,7 +577,8 @@ put_line(	"; EXPRESSIONS.CODE_INDEXED adresse component id" );
 
 
 				-------------
-  procedure			CODE_SELECTED		( SELECTED :TREE; IS_SOURCE :BOOLEAN :=	TRUE; CONTEXT :TREE := TREE_VOID )
+  procedure			CODE_SELECTED	( SELECTED :TREE; IS_SOURCE :BOOLEAN :=	TRUE;
+						  CONTEXT :TREE := TREE_VOID )
   is				-------------
 
     EXP_TYPE	: TREE	:= D( SM_EXP_TYPE, SELECTED );
@@ -583,7 +603,8 @@ put_line(	"; EXPRESSIONS.CODE_INDEXED adresse component id" );
 	if  DESIGNATOR_DEFN.TY = DN_VARIABLE_ID	 then
 	  if  D( SM_EXP_TYPE, DESIGNATOR ).TY in CLASS_SCALAR  then
 	    DESIGNATOR_LEVEL := DI( CD_LEVEL, DESIGNATOR_DEFN );
-	    PUT_LINE( tab &	"L" & OPER_SIZ_CHAR( DESIGNATOR_DEFN ) & tab & IMAGE( DESIGNATOR_LEVEL ) & ", "	& DESIGNATOR_STR  );
+	    PUT_LINE( tab &	"L" & OPER_SIZ_CHAR( D( SM_EXP_TYPE, DESIGNATOR ) )
+			& tab & IMAGE( DESIGNATOR_LEVEL ) & ", " & DESIGNATOR_STR  );
 	  end if;
 
 	elsif  DESIGNATOR_DEFN.TY = DN_COMPONENT_ID  then
@@ -637,12 +658,6 @@ put_line(	"; EXPRESSIONS.CODE_INDEXED adresse component id" );
 
 	  end if;
 
---	  else
---	    PUT( tab & "LVA" & tab &	", " );
---	    REGIONS_PATH( DESIGNATOR_DEFN );
---	    PUT_LINE( DESIGNATOR_STR );
---	  end if;
-
 	elsif  DESIGNATOR_DEFN.TY = DN_CONSTANT_ID
 		or  DESIGNATOR_DEFN.TY = DN_NUMBER_ID
 		or  DESIGNATOR_DEFN.TY = DN_ENUMERATION_ID
@@ -665,6 +680,10 @@ put_line(	"; EXPRESSIONS.CODE_INDEXED adresse component id" );
     begin
       if	NAME.TY =	DN_SELECTED  then
         RECURSE_SELECTED( NAME ) ;
+        PROCESS_DESIGNATOR;
+
+      elsif  NAME.TY = DN_INDEXED  then
+        CODE_INDEXED( NAME ) ;
         PROCESS_DESIGNATOR;
 
       elsif  NAME.TY = DN_USED_OBJECT_ID  then
@@ -732,7 +751,8 @@ put_line(	"; EXPRESSIONS.CODE_INDEXED adresse component id" );
 				--------------
   procedure			CODE_ATTRIBUTE		( ATTRIBUTE :TREE )
   is				--------------
-    PREFIX_NAME		: TREE		:= D( AS_NAME, ATTRIBUTE );
+
+    PREFIX_NAME		: TREE		:= LAST_OF_SELECTED( D( AS_NAME, ATTRIBUTE ) );
     CHN_PREFIX		:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, PREFIX_NAME ) );
     CHN_ATTR_NAME		:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, D( AS_USED_NAME_ID, ATTRIBUTE ) ) );
     subtype CHN_STD		is STRING( 1 .. CHN_ATTR_NAME'LENGTH );

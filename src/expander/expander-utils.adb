@@ -288,18 +288,20 @@ is					-----
   is			--=============--
 
     EXP_TYPE	: TREE		:= D( SM_EXP_TYPE, EXP );
-    SIZ		: NATURAL		:= DI( CD_IMPL_SIZE, EXP_TYPE	);
 
   begin
     -- Les flottants sont toujours en double IEEE	754 = 64 bits = qword
-    if  EXP_TYPE.TY	= DN_FLOAT  then return 'q'; end if;
-
+    if  EXP_TYPE.TY	= DN_FLOAT  or  EXP_TYPE.TY = DN_ACCESS then return 'q'; end if;
+    declare
+      SIZ		: NATURAL		:= DI( CD_IMPL_SIZE, EXP_TYPE	);
+    begin
     if	 SIZ <= 8		then return 'b';
     elsif	 SIZ <= 16	then return 'w';
     elsif	 SIZ <= 32	then return 'd';
     elsif	 SIZ <= 64	then return 'q';
     else return 'v';
     end if;
+    end;
 
   end	  EXP_TYPE_CHAR;
 	--=============--
@@ -376,8 +378,10 @@ is					-----
 			--^^^^^--
   procedure		  STORE			( DEST_DEFN	:TREE )
   is			---------
-    TYPE_SPEC	: TREE	:= D( SM_OBJ_TYPE, DEST_DEFN );
+    TYPE_SPEC	: TREE		:= D( SM_OBJ_TYPE, DEST_DEFN );
     SIZ_CHAR	: CHARACTER;
+    STORE_LEVEL	: INTEGER;
+    DEST_DEFN_STR	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, DEST_DEFN ) );
 
   begin
 
@@ -387,10 +391,23 @@ is					-----
 
     SIZ_CHAR := OPER_SIZ_CHAR( TYPE_SPEC );
 
-    if  DEST_DEFN.TY = DN_OUT_ID  or  DEST_DEFN.TY = DN_IN_OUT_ID  then
-      PUT_LINE( tab	& "SI" & SIZ_CHAR &	' ' & INTEGER'IMAGE( DI( CD_LEVEL, DEST_DEFN ) ) & ',' & tab & '-' & PRINT_NAME( D( LX_SYMREP, DEST_DEFN ) ) & "_ofs" );
+    if  DEST_DEFN.TY = DN_COMPONENT_ID  then
+      declare
+        PARENT_TYPE	: TREE	:= D( SM_TYPE_SPEC, D( XD_REGION, DEST_DEFN ) );
+      begin
+        STORE_LEVEL := DI( CD_LEVEL, PARENT_TYPE );
+      end;
     else
-      PUT_LINE( tab	& "S" & SIZ_CHAR & ' ' & INTEGER'IMAGE(	DI( CD_LEVEL, DEST_DEFN ) ) &	',' & tab	& PRINT_NAME( D( LX_SYMREP, DEST_DEFN )	) & "_disp" );
+      STORE_LEVEL := DI( CD_LEVEL, DEST_DEFN );
+    end if;
+
+    if  DEST_DEFN.TY = DN_OUT_ID  or  DEST_DEFN.TY = DN_IN_OUT_ID  then
+      PUT_LINE( tab	& "SI" & SIZ_CHAR &	' ' & INTEGER'IMAGE( STORE_LEVEL )
+	& ',' & tab & '-' & DEST_DEFN_STR & "_ofs" );
+
+    else
+      PUT_LINE( tab & "S" & SIZ_CHAR & ' ' & INTEGER'IMAGE( STORE_LEVEL )
+	& ',' & tab & DEST_DEFN_STR & "_disp" );
     end if;
 
   end	  STORE;
@@ -473,6 +490,21 @@ is					-----
 
   end	  LETTERED_SUBNAME;
 	--================--
+
+
+		--^^^^^^^^^^^^--
+  function	LAST_OF_SELECTED	( NAME_ID :TREE )	return TREE
+  is		----------------
+    TEMP_NAME	: TREE	:= NAME_ID;
+
+  begin
+    while  TEMP_NAME.TY = DN_SELECTED  loop
+      TEMP_NAME := D( AS_DESIGNATOR, TEMP_NAME );
+    end loop;
+    return  TEMP_NAME;
+
+  end	LAST_OF_SELECTED;
+	----------------
 
 
 	-----

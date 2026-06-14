@@ -1,0 +1,105 @@
+if ~ definite SEQUENTIAL_IO
+include 'SEQUENTIAL_IO.FINC'
+end if
+GRMR_TBL = 'GRMR_TBL'
+namespace GRMR_TBL				;---------- PACKAGE DECLARATION
+
+					; AC_BYTE TYPE RANGE INFO
+AC_BYTE = 'AC_BYTE'
+namespace AC_BYTE
+VAR use__info, q
+VAR SIZ, d
+	LVA	0, SIZ
+	Sa	0, use__info
+VAR FST, w
+VAR LST, w
+	LI	16
+	Sd	0, SIZ
+; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
+	LI	0
+	Sw	0, FST
+; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
+	LI	255
+	Sw	0, LST
+end namespace
+
+					; AC_SHORT TYPE RANGE INFO
+AC_SHORT = 'AC_SHORT'
+namespace AC_SHORT
+VAR use__info, q
+VAR SIZ, d
+	LVA	0, SIZ
+	Sa	0, use__info
+VAR FST, w
+VAR LST, w
+	LI	16
+	Sd	0, SIZ
+; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
+	LI	00032768
+	NEG
+	Sw	0, FST
+; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
+	LI	32767
+	Sw	0, LST
+end namespace
+
+					; array decl constrained array type info
+ST_TBL_TYPE = 'ST_TBL_TYPE'
+namespace ST_TBL_TYPE
+VAR use__info, q
+VAR SIZ, d
+	LVA	0, SIZ
+	Sa	0, use__info
+VAR COMP_SIZ, d
+VAR FST_1, d
+VAR LST_1, d
+	LI	32
+	Sd	0, COMP_SIZ
+	Ld	0, COMP_SIZ
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd	0, FST_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1000
+	Sd	0, LST_1
+	Ld	0, LST_1
+	INC
+	Ld	0, FST_1
+	SUB
+	MUL
+	Sd	0, SIZ
+  virtual at 4
+COMP_SIZ = $
+	rd 1 
+FST_1 = $
+	rd 1 
+LST_1 = $
+	rd 1 
+  end virtual
+end namespace
+
+					; array decl constrained array type info
+AC_SYM_TYPE = 'AC_SYM_TYPE'
+namespace AC_SYM_TYPE
+VAR use__info, q
+VAR SIZ, d
+	LVA	0, SIZ
+	Sa	0, use__info
+VAR COMP_SIZ, d
+VAR FST_1, d
+VAR LST_1, d
+	LI	16
+	Sd	0, COMP_SIZ
+	Ld	0, COMP_SIZ
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd	0, FST_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	4800
+	Sd	0, LST_1
+	Ld	0, LST_1
+	INC
+	Ld	0, FST_1
+	SUB
+	MUL
+	Sd	0, SIZ

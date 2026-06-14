@@ -1,0 +1,108 @@
+if ~ definite SEQUENTIAL_IO
+include 'SEQUENTIAL_IO.FINC'
+end if
+PRO	WRITE_LIB_L9				;---------- PRO WRITE_LIB
+ELB 1					;    BODY ELAB
+DONT_MOVE = 'DONT_MOVE'
+namespace DONT_MOVE				; array var constrained array type info
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+VAR COMP_SIZ, d
+VAR FST_1, d
+VAR LST_1, d
+	LI	1
+	Sd	1, COMP_SIZ
+	Ld	1, COMP_SIZ
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	Sd	1, FST_1
+	Lw 0,	STANDARD.IDL.PAGE_MAN.MAX_VPG_disp
+	Sd	1, LST_1
+	Ld	1, LST_1
+	INC
+	Ld	1, FST_1
+	SUB
+	MUL
+	Sd	1, SIZ
+  virtual at 4
+COMP_SIZ = $
+	rd 1 
+FST_1 = $
+	rd 1 
+LST_1 = $
+	rd 1 
+  end virtual
+end namespace
+VAR DONT_MOVE_disp, q			; variable array : pointeur aux data
+VAR DONT_MOVE__u, q				; variable array : useinfo pointeur au rec info
+	La 1, DONT_MOVE.use__info
+	Sa	1, DONT_MOVE__u				; array info ptr at __u
+	Ld	1, DONT_MOVE.SIZ
+	LI	8
+	DIV
+	CO_VAR
+	Sa	1, DONT_MOVE_disp			; array data ptr at _disp
+
+VAR NEW_UNIT_SEQ_disp, q			; variable record : pointeur aux data record
+VAR NEW_UNIT_SEQ__u, q			; variable record : pointeur aux useinfo
+VAR NEW_UNIT_SEQ__dat, STANDARD.IDL.SEQ_TYPE.size
+	LVA	1, NEW_UNIT_SEQ__dat
+	Sa	1, NEW_UNIT_SEQ_disp			; record fin
+	LVA	1, STANDARD.IDL.SEQ_TYPE.SIZ
+	Sa	1, NEW_UNIT_SEQ__u
+
+
+if defined MARK_DONT_MOVE_PAGES_L1_
+PRO	MARK_DONT_MOVE_PAGES_L1			;---------- PRO MARK_DONT_MOVE_PAGES
+PRMS					;    debut parametrage
+	PRM COMP_UNIT_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2					;    BODY ELAB
+VAR TRANS_WITH_SEQ_disp, q			; variable record : pointeur aux data record
+VAR TRANS_WITH_SEQ__u, q			; variable record : pointeur aux useinfo
+VAR TRANS_WITH_SEQ__dat, STANDARD.IDL.SEQ_TYPE.size
+	LVA	2, TRANS_WITH_SEQ__dat
+	Sa	2, TRANS_WITH_SEQ_disp			; record fin
+	LVA	2, STANDARD.IDL.SEQ_TYPE.SIZ
+	Sa	2, TRANS_WITH_SEQ__u
+	La  2, TRANS_WITH_SEQ_disp
+	LI	STANDARD.IDL.SEQ_TYPE.size
+VAR	ANON_47_35_disp, q
+VAR	ANON_47_35__u,    q
+VAR	ANON_47_35__dat, STANDARD.IDL.SEQ_TYPE.size
+	LVA 2, ANON_47_35__dat
+	Sa  2, ANON_47_35_disp
+	La  0, STANDARD.IDL.SEQ_TYPE.use__info
+	Sa  2, ANON_47_35__u
+	LVA 2, ANON_47_35_disp
+					; doublet resultat record anonyme
+	La  2,	-COMP_UNIT_ofs
+	CALL	STANDARD.IDL. ,LIST_L18
+	La  ,  0
+	BLKMOV
+
+VAR HIGH_BLOCK_disp, w			; variable entiere
+	LI	0					; lieu resultat sur pile
+	CALL	STANDARD.IDL.IDL_MAN. ,LAST_BLOCK_L41
+	Sw  2,	HIGH_BLOCK_disp
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	La 1, DONT_MOVE_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	LId 1, DONT_MOVE__u, DONT_MOVE.FST_1
+	SUB
+	LI	0
+	MUL
+	ADD
+	Lw 2,	HIGH_BLOCK_disp
+	INC
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	SUB
+	LI	0
+	MUL
+!! FUNCTION D : PAS D ATTRIBUT XD_SOURCE_NAME DANS [DN_VOID<0.0]>

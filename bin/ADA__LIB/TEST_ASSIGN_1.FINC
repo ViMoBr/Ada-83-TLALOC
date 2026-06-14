@@ -1,0 +1,1015 @@
+if ~ definite TEXT_IO
+include 'TEXT_IO.FINC'
+end if
+PRO	TEST_ASSIGN_1_L1			;---------- PRO TEST_ASSIGN_1
+ELB 1					;    BODY ELAB
+
+					; COULEUR ENUMERATION TYPE INFO
+COULEUR = 'COULEUR'
+namespace COULEUR
+VAR use__info, q
+BEGIN_BLOC_DEF
+db 0, 5, "ROUGE"
+db 1, 4, "BLEU"
+db 2, 5, "BLANC"
+END_BLOC_DEF
+IMAGES	BYTES_BLOC
+CST LST, d, 2
+CST FST, d, 0
+CST SIZ, d, 8	; SIZ en bits !
+postpone
+  align_q
+end postpone
+	LCA	SIZ
+	Sa	1, use__info
+end namespace
+
+					; SUBREC RECORD TYPE INFO
+SUBREC = 'SUBREC'
+namespace SUBREC
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+USEINFO 1, X, 	La 0, STANDARD.INTEGER.use__info
+USEINFO 1, Y, 	La 0, STANDARD.INTEGER.use__info
+virtual at 0				; calcul des offsets statiques
+STATOFS X, 4
+STATOFS Y, 4
+size = $
+end virtual
+	LI	 size*8
+	Sd	1, SIZ
+end namespace
+
+					; array decl constrained array type info
+TABLE = 'TABLE'
+namespace TABLE
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+VAR COMP_SIZ, d
+VAR FST_1, d
+VAR LST_1, d
+	LI	64
+	Sd	1, COMP_SIZ
+	Ld	1, COMP_SIZ
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd	1, FST_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	8
+	Sd	1, LST_1
+	Ld	1, LST_1
+	INC
+	Ld	1, FST_1
+	SUB
+	MUL
+	Sd	1, SIZ
+  virtual at 4
+COMP_SIZ = $
+	rd 1 
+FST_1 = $
+	rd 1 
+LST_1 = $
+	rd 1 
+  end virtual
+end namespace
+VAR A_disp, q				; variable array : pointeur aux data
+VAR A__u, q				; variable array : useinfo pointeur au rec info
+	La 1, TABLE.use__info
+	Sa	1, A__u				; array info ptr at __u
+	Ld	1, TABLE.SIZ
+	LI	8
+	DIV
+	CO_VAR
+	Sa	1, A_disp				; array data ptr at _disp
+
+
+					; RECTEST RECORD TYPE INFO
+RECTEST = 'RECTEST'
+namespace RECTEST
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+USEINFO 1, I, 	La 0, STANDARD.INTEGER.use__info
+USEINFO 1, F, 	La 0, STANDARD.FLOAT.use__info
+USEINFO 1, E, 	La 1, STANDARD.TEST_ASSIGN_1_L1.COULEUR.use__info
+USEINFO 1, C, 	La 1, STANDARD.TEST_ASSIGN_1_L1.SUBREC.use__info
+USEINFO 1, A, 	La 1, STANDARD.TEST_ASSIGN_1_L1.TABLE.use__info
+virtual at 0				; calcul des offsets statiques
+STATOFS I, 4
+STATOFS F, 4
+STATOFS E, 1
+STATOFS C, 8
+STATOFS A, 64
+size = $
+end virtual
+	LI	 size*8
+	Sd	1, SIZ
+end namespace
+INT_IO = 'INT_IO'
+namespace INT_IO				;---------- GENERIC PACKAGE INSTANTIATION
+elab_spec:				;    SPEC ELAB
+
+BRA post_LD_INTEGER
+LD_INTEGER.elab:
+	Ld -1, 0
+	RTD 0
+post_LD_INTEGER:
+BRA post_ST_INTEGER
+ST_INTEGER.elab:
+	Sd -1, 0
+	RTD 0
+post_ST_INTEGER:
+BRA post_INADR_INTEGER
+INADR_INTEGER.elab:
+	RTD 0
+post_INADR_INTEGER:
+BRA post_OUTADR_INTEGER
+OUTADR_INTEGER.elab:
+	La
+	RTD 0
+post_OUTADR_INTEGER:
+VAR INTEGER__outadr_ofs, q
+	LCA OUTADR_INTEGER.elab
+	Sa	 1, INTEGER__outadr_ofs
+VAR INTEGER__inadr_ofs, q
+	LCA INADR_INTEGER.elab
+	Sa	 1, INTEGER__inadr_ofs
+VAR INTEGER__st_ofs, q
+	LCA ST_INTEGER.elab
+	Sa	 1, INTEGER__st_ofs
+VAR INTEGER__ld_ofs, q
+	LCA LD_INTEGER.elab
+	Sa	 1, INTEGER__ld_ofs
+VAR INTEGER__u_ofs, q
+	La	 0, STANDARD.INTEGER.use__info
+	Sa	 1, INTEGER__u_ofs
+VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
+VAR DEFAULT_WIDTH_disp, d			; variable entiere
+	LI	 11
+	Sd  1,	DEFAULT_WIDTH_disp
+
+VAR DEFAULT_BASE_disp, d			; variable entiere
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	10
+	Sd  1,	DEFAULT_BASE_disp
+
+if defined GET_L2_
+PRO	GET_L2				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM ITEM_ofs				; out
+	PRM WIDTH_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Ld	 2, -WIDTH_ofs
+	La 	 2, -ITEM_ofs
+	La 	 2, -FILE_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,GET_L61
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO GET
+end if
+if defined GET_L3_
+PRO	GET_L3				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM ITEM_ofs				; out
+	PRM WIDTH_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Ld	 2, -WIDTH_ofs
+	La 	 2, -ITEM_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,GET_L62
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO GET
+end if
+if defined PUT_L4_
+PRO	PUT_L4				;---------- PRO PUT
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM ITEM_ofs				; in
+	PRM WIDTH_ofs				; in
+	PRM BASE_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Ld	 2, -BASE_ofs
+	Ld	 2, -WIDTH_ofs
+	Ld	 2, -ITEM_ofs
+	La 	 2, -FILE_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,PUT_L63
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO PUT
+end if
+if defined PUT_L5_
+PRO	PUT_L5				;---------- PRO PUT
+PRMS					;    debut parametrage
+	PRM ITEM_ofs				; in
+	PRM WIDTH_ofs				; in
+	PRM BASE_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Ld	 2, -BASE_ofs
+	Ld	 2, -WIDTH_ofs
+	Ld	 2, -ITEM_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,PUT_L64
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO PUT
+end if
+if defined GET_L6_
+PRO	GET_L6				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM FROM_ofs				; in
+	PRM ITEM_ofs				; out
+	PRM LAST_ofs				; out
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	La 	 2, -LAST_ofs
+	La 	 2, -ITEM_ofs
+	La 	 2, -FROM_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,GET_L65
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO GET
+end if
+if defined PUT_L7_
+PRO	PUT_L7				;---------- PRO PUT
+PRMS					;    debut parametrage
+	PRM TO_ofs				; out
+	PRM ITEM_ofs				; in
+	PRM BASE_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Ld	 2, -BASE_ofs
+	Ld	 2, -ITEM_ofs
+	La 	 2, -TO_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,PUT_L66
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO PUT
+end if
+					;---------- end generic package instantiation INT_IO
+end namespace
+
+FLT_IO = 'FLT_IO'
+namespace FLT_IO				;---------- GENERIC PACKAGE INSTANTIATION
+elab_spec:				;    SPEC ELAB
+
+BRA post_LD_FLOAT
+LD_FLOAT.elab:
+	Lq -1, 0
+	RTD 0
+post_LD_FLOAT:
+BRA post_ST_FLOAT
+ST_FLOAT.elab:
+	Sq -1, 0
+	RTD 0
+post_ST_FLOAT:
+BRA post_INADR_FLOAT
+INADR_FLOAT.elab:
+	RTD 0
+post_INADR_FLOAT:
+BRA post_OUTADR_FLOAT
+OUTADR_FLOAT.elab:
+	La
+	RTD 0
+post_OUTADR_FLOAT:
+VAR FLOAT__outadr_ofs, q
+	LCA OUTADR_FLOAT.elab
+	Sa	 1, FLOAT__outadr_ofs
+VAR FLOAT__inadr_ofs, q
+	LCA INADR_FLOAT.elab
+	Sa	 1, FLOAT__inadr_ofs
+VAR FLOAT__st_ofs, q
+	LCA ST_FLOAT.elab
+	Sa	 1, FLOAT__st_ofs
+VAR FLOAT__ld_ofs, q
+	LCA LD_FLOAT.elab
+	Sa	 1, FLOAT__ld_ofs
+VAR FLOAT__u_ofs, q
+	La	 0, STANDARD.FLOAT.use__info
+	Sa	 1, FLOAT__u_ofs
+VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
+VAR DEFAULT_FORE_disp, d			; variable entiere
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	2
+	Sd  1,	DEFAULT_FORE_disp
+
+VAR DEFAULT_AFT_disp, d			; variable entiere
+	LI	6
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	SUB
+	Sd  1,	DEFAULT_AFT_disp
+
+VAR DEFAULT_EXP_disp, d			; variable entiere
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	3
+	Sd  1,	DEFAULT_EXP_disp
+
+if defined GET_L8_
+PRO	GET_L8				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM ITEM_ofs				; out
+	PRM WIDTH_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Ld	 2, -WIDTH_ofs
+	La 	 2, -ITEM_ofs
+	La 	 2, -FILE_ofs
+	CALL	STANDARD.TEXT_IO.FLOAT_IO. ,GET_L67
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO GET
+end if
+if defined GET_L9_
+PRO	GET_L9				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM ITEM_ofs				; out
+	PRM WIDTH_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Ld	 2, -WIDTH_ofs
+	La 	 2, -ITEM_ofs
+	CALL	STANDARD.TEXT_IO.FLOAT_IO. ,GET_L68
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO GET
+end if
+if defined PUT_L10_
+PRO	PUT_L10				;---------- PRO PUT
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM ITEM_ofs				; in
+	PRM FORE_ofs				; in
+	PRM AFT_ofs				; in
+	PRM EXP_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Ld	 2, -EXP_ofs
+	Ld	 2, -AFT_ofs
+	Ld	 2, -FORE_ofs
+	Lq	 2, -ITEM_ofs
+	La 	 2, -FILE_ofs
+	CALL	STANDARD.TEXT_IO.FLOAT_IO. ,PUT_L69
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO PUT
+end if
+if defined PUT_L11_
+PRO	PUT_L11				;---------- PRO PUT
+PRMS					;    debut parametrage
+	PRM ITEM_ofs				; in
+	PRM FORE_ofs				; in
+	PRM AFT_ofs				; in
+	PRM EXP_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Ld	 2, -EXP_ofs
+	Ld	 2, -AFT_ofs
+	Ld	 2, -FORE_ofs
+	Lq	 2, -ITEM_ofs
+	CALL	STANDARD.TEXT_IO.FLOAT_IO. ,PUT_L70
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO PUT
+end if
+if defined GET_L12_
+PRO	GET_L12				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM FROM_ofs				; in
+	PRM ITEM_ofs				; out
+	PRM LAST_ofs				; out
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	La 	 2, -LAST_ofs
+	La 	 2, -ITEM_ofs
+	La 	 2, -FROM_ofs
+	CALL	STANDARD.TEXT_IO.FLOAT_IO. ,GET_L71
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO GET
+end if
+if defined PUT_L13_
+PRO	PUT_L13				;---------- PRO PUT
+PRMS					;    debut parametrage
+	PRM TO_ofs				; out
+	PRM ITEM_ofs				; in
+	PRM AFT_ofs				; in
+	PRM EXP_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Ld	 2, -EXP_ofs
+	Ld	 2, -AFT_ofs
+	Lq	 2, -ITEM_ofs
+	La 	 2, -TO_ofs
+	CALL	STANDARD.TEXT_IO.FLOAT_IO. ,PUT_L72
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO PUT
+end if
+					;---------- end generic package instantiation FLT_IO
+end namespace
+
+COLOR_IO = 'COLOR_IO'
+namespace COLOR_IO				;---------- GENERIC PACKAGE INSTANTIATION
+elab_spec:				;    SPEC ELAB
+
+BRA post_LD_COULEUR
+LD_COULEUR.elab:
+	Lb -1, 0
+	RTD 0
+post_LD_COULEUR:
+BRA post_ST_COULEUR
+ST_COULEUR.elab:
+	Sb -1, 0
+	RTD 0
+post_ST_COULEUR:
+BRA post_INADR_COULEUR
+INADR_COULEUR.elab:
+	RTD 0
+post_INADR_COULEUR:
+BRA post_OUTADR_COULEUR
+OUTADR_COULEUR.elab:
+	La
+	RTD 0
+post_OUTADR_COULEUR:
+VAR COULEUR__outadr_ofs, q
+	LCA OUTADR_COULEUR.elab
+	Sa	 1, COULEUR__outadr_ofs
+VAR COULEUR__inadr_ofs, q
+	LCA INADR_COULEUR.elab
+	Sa	 1, COULEUR__inadr_ofs
+VAR COULEUR__st_ofs, q
+	LCA ST_COULEUR.elab
+	Sa	 1, COULEUR__st_ofs
+VAR COULEUR__ld_ofs, q
+	LCA LD_COULEUR.elab
+	Sa	 1, COULEUR__ld_ofs
+VAR COULEUR__u_ofs, q
+	La	 1, STANDARD.TEST_ASSIGN_1_L1.COULEUR.use__info
+	Sa	 1, COULEUR__u_ofs
+VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
+VAR DEFAULT_WIDTH_disp, d			; variable entiere
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	Sd  1,	DEFAULT_WIDTH_disp
+
+VAR DEFAULT_SETTING_disp, b			; variable entiere
+	LI	1
+	Sb  1,	DEFAULT_SETTING_disp
+
+if defined GET_L14_
+PRO	GET_L14				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM ITEM_ofs				; out
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	La 	 2, -ITEM_ofs
+	La 	 2, -FILE_ofs
+	CALL	STANDARD.TEXT_IO.ENUMERATION_IO. ,GET_L79
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO GET
+end if
+if defined GET_L15_
+PRO	GET_L15				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM ITEM_ofs				; out
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	La 	 2, -ITEM_ofs
+	CALL	STANDARD.TEXT_IO.ENUMERATION_IO. ,GET_L80
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO GET
+end if
+if defined PUT_L16_
+PRO	PUT_L16				;---------- PRO PUT
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM ITEM_ofs				; in
+	PRM WIDTH_ofs				; in
+	PRM SET_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Lb	 2, -SET_ofs
+	Ld	 2, -WIDTH_ofs
+	Lb	 2, -ITEM_ofs
+	La 	 2, -FILE_ofs
+	CALL	STANDARD.TEXT_IO.ENUMERATION_IO. ,PUT_L81
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO PUT
+end if
+if defined PUT_L17_
+PRO	PUT_L17				;---------- PRO PUT
+PRMS					;    debut parametrage
+	PRM ITEM_ofs				; in
+	PRM WIDTH_ofs				; in
+	PRM SET_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Lb	 2, -SET_ofs
+	Ld	 2, -WIDTH_ofs
+	Lb	 2, -ITEM_ofs
+	CALL	STANDARD.TEXT_IO.ENUMERATION_IO. ,PUT_L82
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO PUT
+end if
+if defined GET_L18_
+PRO	GET_L18				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM FROM_ofs				; in
+	PRM ITEM_ofs				; out
+	PRM LAST_ofs				; out
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	La 	 2, -LAST_ofs
+	La 	 2, -ITEM_ofs
+	La 	 2, -FROM_ofs
+	CALL	STANDARD.TEXT_IO.ENUMERATION_IO. ,GET_L83
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO GET
+end if
+if defined PUT_L19_
+PRO	PUT_L19				;---------- PRO PUT
+PRMS					;    debut parametrage
+	PRM TO_ofs				; out
+	PRM ITEM_ofs				; in
+	PRM SET_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Lb	 2, -SET_ofs
+	Lb	 2, -ITEM_ofs
+	La 	 2, -TO_ofs
+	CALL	STANDARD.TEXT_IO.ENUMERATION_IO. ,PUT_L84
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO PUT
+end if
+					;---------- end generic package instantiation COLOR_IO
+end namespace
+
+VAR R_disp, q				; variable record : pointeur aux data record
+VAR R__u, q				; variable record : pointeur aux useinfo
+VAR R__dat, STANDARD.TEST_ASSIGN_1_L1.RECTEST.size
+	LVA	1, R__dat
+	Sa	1, R_disp				; record fin
+	LVA	1, STANDARD.TEST_ASSIGN_1_L1.RECTEST.SIZ
+	Sa	1, R__u
+
+VAR R1_disp, q				; variable record : pointeur aux data record
+VAR R1__u, q				; variable record : pointeur aux useinfo
+VAR R1__dat, STANDARD.TEST_ASSIGN_1_L1.RECTEST.size
+	LVA	1, R1__dat
+	Sa	1, R1_disp				; record fin
+	LVA	1, STANDARD.TEST_ASSIGN_1_L1.RECTEST.SIZ
+	Sa	1, R1__u
+
+VAR R2_disp, q				; variable record : pointeur aux data record
+VAR R2__u, q				; variable record : pointeur aux useinfo
+VAR R2__dat, STANDARD.TEST_ASSIGN_1_L1.RECTEST.size
+	LVA	1, R2__dat
+	Sa	1, R2_disp				; record fin
+	LVA	1, STANDARD.TEST_ASSIGN_1_L1.RECTEST.SIZ
+	Sa	1, R2__u
+	La 1, R2_disp
+	DUP
+	LVA	, STANDARD.TEST_ASSIGN_1_L1.RECTEST.I
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	5
+	Sd
+	DUP
+	LVA	, STANDARD.TEST_ASSIGN_1_L1.RECTEST.F
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	1.8
+	Sq
+	DUP
+	LVA	, STANDARD.TEST_ASSIGN_1_L1.RECTEST.E
+	LI	0
+	Sb
+	DUP
+	LVA	, STANDARD.TEST_ASSIGN_1_L1.RECTEST.C
+	DUP
+	LVA	, STANDARD.TEST_ASSIGN_1_L1.SUBREC.X
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	12
+	Sd
+	DUP
+	LVA	, STANDARD.TEST_ASSIGN_1_L1.SUBREC.Y
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	24
+	Sd
+	DROP
+	DUP
+	LVA	, STANDARD.TEST_ASSIGN_1_L1.RECTEST.A
+	DUP
+	DUP
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd
+	LI	8
+	ADD
+	DUP
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd
+	LI	8
+	ADD
+	DROP
+	LI	8
+	ADD
+	DUP
+	DUP
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	2
+	Sd
+	LI	8
+	ADD
+	DUP
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	2
+	Sd
+	LI	8
+	ADD
+	DROP
+	LI	8
+	ADD
+	DUP
+	DUP
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	3
+	Sd
+	LI	8
+	ADD
+	DUP
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	3
+	Sd
+	LI	8
+	ADD
+	DROP
+	LI	8
+	ADD
+	DUP
+	DUP
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	4
+	Sd
+	LI	8
+	ADD
+	DUP
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	4
+	Sd
+	LI	8
+	ADD
+	DROP
+	LI	8
+	ADD
+	DUP
+	DUP
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	5
+	Sd
+	LI	8
+	ADD
+	DUP
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	5
+	Sd
+	LI	8
+	ADD
+	DROP
+	LI	8
+	ADD
+	DUP
+	DUP
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	6
+	Sd
+	LI	8
+	ADD
+	DUP
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	6
+	Sd
+	LI	8
+	ADD
+	DROP
+	LI	8
+	ADD
+	DUP
+	DUP
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	7
+	Sd
+	LI	8
+	ADD
+	DUP
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	7
+	Sd
+	LI	8
+	ADD
+	DROP
+	LI	8
+	ADD
+	DUP
+	DUP
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	8
+	Sd
+	LI	8
+	ADD
+	DUP
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	8
+	Sd
+	LI	8
+	ADD
+	DROP
+	LI	8
+	ADD
+	DROP
+	DROP
+
+VAR N_disp, d				; variable entiere
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	3
+	Sd  1,	N_disp
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	LIVA 	1, R_disp, STANDARD.TEST_ASSIGN_1_L1.RECTEST.I
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	12
+	Sd
+STR STR_L20, "cas 1 R.I "			; constante string="cas 1 R.I "
+	LCA	STR_L20.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	Ld 1,	STANDARD.TEST_ASSIGN_1_L1.INT_IO.DEFAULT_BASE_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	3
+	LId	1, R_disp, STANDARD.TEST_ASSIGN_1_L1.RECTEST.I
+	CALL	STANDARD.TEST_ASSIGN_1_L1.INT_IO. ,PUT_L5
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
+	LIVA 	1, R_disp, STANDARD.TEST_ASSIGN_1_L1.RECTEST.F
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	1.25
+	Sq
+STR STR_L21, "cas 2 R.F "			; constante string="cas 2 R.F "
+	LCA	STR_L21.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	Ld 1,	STANDARD.TEST_ASSIGN_1_L1.FLT_IO.DEFAULT_EXP_disp
+	Ld 1,	STANDARD.TEST_ASSIGN_1_L1.FLT_IO.DEFAULT_AFT_disp
+	Ld 1,	STANDARD.TEST_ASSIGN_1_L1.FLT_IO.DEFAULT_FORE_disp
+	LIq	1, R_disp, STANDARD.TEST_ASSIGN_1_L1.RECTEST.F
+	CALL	STANDARD.TEST_ASSIGN_1_L1.FLT_IO. ,PUT_L11
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
+	LIVA 	1, R_disp, STANDARD.TEST_ASSIGN_1_L1.RECTEST.E
+	LI	0
+	Sb
+STR STR_L22, "cas 3 R.E "			; constante string="cas 3 R.E "
+	LCA	STR_L22.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	Lb 1,	STANDARD.TEST_ASSIGN_1_L1.COLOR_IO.DEFAULT_SETTING_disp
+	Ld 1,	STANDARD.TEST_ASSIGN_1_L1.COLOR_IO.DEFAULT_WIDTH_disp
+	LIb	1, R_disp, STANDARD.TEST_ASSIGN_1_L1.RECTEST.E
+	CALL	STANDARD.TEST_ASSIGN_1_L1.COLOR_IO. ,PUT_L17
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
+	LIVA 	1, R1_disp, STANDARD.TEST_ASSIGN_1_L1.RECTEST.C
+	LI	STANDARD.TEST_ASSIGN_1_L1.SUBREC.size
+	LIVA 	1, R2_disp, STANDARD.TEST_ASSIGN_1_L1.RECTEST.C
+	BLKMOV
+STR STR_L23, "cas 4 R1.C ["			; constante string="cas 4 R1.C ["
+	LCA	STR_L23.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	Ld 1,	STANDARD.TEST_ASSIGN_1_L1.INT_IO.DEFAULT_BASE_disp
+	Ld 1,	STANDARD.TEST_ASSIGN_1_L1.INT_IO.DEFAULT_WIDTH_disp
+	LIVA 	1, R1_disp, STANDARD.TEST_ASSIGN_1_L1.RECTEST.C
+	Ld	, STANDARD.TEST_ASSIGN_1_L1.SUBREC.X
+	CALL	STANDARD.TEST_ASSIGN_1_L1.INT_IO. ,PUT_L5
+	LI	44
+	CALL	STANDARD.TEXT_IO. ,PUT_L52
+	Ld 1,	STANDARD.TEST_ASSIGN_1_L1.INT_IO.DEFAULT_BASE_disp
+	Ld 1,	STANDARD.TEST_ASSIGN_1_L1.INT_IO.DEFAULT_WIDTH_disp
+	LIVA 	1, R1_disp, STANDARD.TEST_ASSIGN_1_L1.RECTEST.C
+	Ld	, STANDARD.TEST_ASSIGN_1_L1.SUBREC.Y
+	CALL	STANDARD.TEST_ASSIGN_1_L1.INT_IO. ,PUT_L5
+	LI	93
+	CALL	STANDARD.TEXT_IO. ,PUT_L52
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
+	LIVA 	1, R1_disp, STANDARD.TEST_ASSIGN_1_L1.RECTEST.C
+	DUP
+	LVA	, STANDARD.TEST_ASSIGN_1_L1.SUBREC.X
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	4
+	Sd
+	DUP
+	LVA	, STANDARD.TEST_ASSIGN_1_L1.SUBREC.Y
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	8
+	Sd
+	DROP
+STR STR_L24, "cas 5 R1.C ["			; constante string="cas 5 R1.C ["
+	LCA	STR_L24.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	Ld 1,	STANDARD.TEST_ASSIGN_1_L1.INT_IO.DEFAULT_BASE_disp
+	Ld 1,	STANDARD.TEST_ASSIGN_1_L1.INT_IO.DEFAULT_WIDTH_disp
+	LIVA 	1, R1_disp, STANDARD.TEST_ASSIGN_1_L1.RECTEST.C
+	Ld	, STANDARD.TEST_ASSIGN_1_L1.SUBREC.X
+	CALL	STANDARD.TEST_ASSIGN_1_L1.INT_IO. ,PUT_L5
+	LI	44
+	CALL	STANDARD.TEXT_IO. ,PUT_L52
+	Ld 1,	STANDARD.TEST_ASSIGN_1_L1.INT_IO.DEFAULT_BASE_disp
+	Ld 1,	STANDARD.TEST_ASSIGN_1_L1.INT_IO.DEFAULT_WIDTH_disp
+	LIVA 	1, R1_disp, STANDARD.TEST_ASSIGN_1_L1.RECTEST.C
+	Ld	, STANDARD.TEST_ASSIGN_1_L1.SUBREC.Y
+	CALL	STANDARD.TEST_ASSIGN_1_L1.INT_IO. ,PUT_L5
+	LI	93
+	CALL	STANDARD.TEXT_IO. ,PUT_L52
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
+	La	 1, A_disp				; array data start address on stack
+	Ld 1,	N_disp
+	LId	1, A__u, STANDARD.TEST_ASSIGN_1_L1.TABLE.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, A__u, STANDARD.TEST_ASSIGN_1_L1.TABLE.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	LVA	, STANDARD.TEST_ASSIGN_1_L1.SUBREC.X
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	12
+	Sd
+	La	 1, A_disp				; array data start address on stack
+	Ld 1,	N_disp
+	LId	1, A__u, STANDARD.TEST_ASSIGN_1_L1.TABLE.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, A__u, STANDARD.TEST_ASSIGN_1_L1.TABLE.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	LVA	, STANDARD.TEST_ASSIGN_1_L1.SUBREC.Y
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	13
+	Sd
+STR STR_L25, "cas 6 A(N).X A(N).Y   ["		; constante string="cas 6 A(N).X A(N).Y   ["
+	LCA	STR_L25.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	Ld 1,	STANDARD.TEST_ASSIGN_1_L1.INT_IO.DEFAULT_BASE_disp
+	Ld 1,	STANDARD.TEST_ASSIGN_1_L1.INT_IO.DEFAULT_WIDTH_disp
+	La	 1, A_disp				; array data start address on stack
+	Ld 1,	N_disp
+	LId	1, A__u, STANDARD.TEST_ASSIGN_1_L1.TABLE.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, A__u, STANDARD.TEST_ASSIGN_1_L1.TABLE.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Ld	, STANDARD.TEST_ASSIGN_1_L1.SUBREC.X
+	CALL	STANDARD.TEST_ASSIGN_1_L1.INT_IO. ,PUT_L5
+	LI	44
+	CALL	STANDARD.TEXT_IO. ,PUT_L52
+	Ld 1,	STANDARD.TEST_ASSIGN_1_L1.INT_IO.DEFAULT_BASE_disp
+	Ld 1,	STANDARD.TEST_ASSIGN_1_L1.INT_IO.DEFAULT_WIDTH_disp
+	La	 1, A_disp				; array data start address on stack
+	Ld 1,	N_disp
+	LId	1, A__u, STANDARD.TEST_ASSIGN_1_L1.TABLE.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, A__u, STANDARD.TEST_ASSIGN_1_L1.TABLE.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Ld	, STANDARD.TEST_ASSIGN_1_L1.SUBREC.Y
+	CALL	STANDARD.TEST_ASSIGN_1_L1.INT_IO. ,PUT_L5
+	LI	93
+	CALL	STANDARD.TEXT_IO. ,PUT_L52
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
+	LIVA 	1, R_disp, STANDARD.TEST_ASSIGN_1_L1.RECTEST.A
+; EXPRESSIONS.CODE_INDEXED adresse component id
+	Ld 1,	N_disp
+	Ld	 1, STANDARD.TEST_ASSIGN_1_L1.TABLE.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	Ld	 1, STANDARD.TEST_ASSIGN_1_L1.TABLE.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	DUP
+	LVA	, STANDARD.TEST_ASSIGN_1_L1.SUBREC.X
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	12
+	Sd
+	DUP
+	LVA	, STANDARD.TEST_ASSIGN_1_L1.SUBREC.Y
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	12
+	Sd
+	DROP
+STR STR_L26, "cas 7 R.A(N) ["			; constante string="cas 7 R.A(N) ["
+	LCA	STR_L26.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	Ld 1,	STANDARD.TEST_ASSIGN_1_L1.INT_IO.DEFAULT_BASE_disp
+	Ld 1,	STANDARD.TEST_ASSIGN_1_L1.INT_IO.DEFAULT_WIDTH_disp
+	LIVA 	1, R_disp, STANDARD.TEST_ASSIGN_1_L1.RECTEST.A
+; EXPRESSIONS.CODE_INDEXED adresse component id
+	Ld 1,	N_disp
+	Ld	 1, STANDARD.TEST_ASSIGN_1_L1.TABLE.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	Ld	 1, STANDARD.TEST_ASSIGN_1_L1.TABLE.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Ld	, STANDARD.TEST_ASSIGN_1_L1.SUBREC.X
+	CALL	STANDARD.TEST_ASSIGN_1_L1.INT_IO. ,PUT_L5
+	LI	44
+	CALL	STANDARD.TEXT_IO. ,PUT_L52
+	Ld 1,	STANDARD.TEST_ASSIGN_1_L1.INT_IO.DEFAULT_BASE_disp
+	Ld 1,	STANDARD.TEST_ASSIGN_1_L1.INT_IO.DEFAULT_WIDTH_disp
+	LIVA 	1, R_disp, STANDARD.TEST_ASSIGN_1_L1.RECTEST.A
+; EXPRESSIONS.CODE_INDEXED adresse component id
+	Ld 1,	N_disp
+	Ld	 1, STANDARD.TEST_ASSIGN_1_L1.TABLE.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	Ld	 1, STANDARD.TEST_ASSIGN_1_L1.TABLE.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Ld	, STANDARD.TEST_ASSIGN_1_L1.SUBREC.Y
+	CALL	STANDARD.TEST_ASSIGN_1_L1.INT_IO. ,PUT_L5
+	LI	93
+	CALL	STANDARD.TEXT_IO. ,PUT_L52
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
+ret_lbl:
+	UNLINK 1
+	RTD
+excep:
+endPRO					;---------- end PRO TEST_ASSIGN_1

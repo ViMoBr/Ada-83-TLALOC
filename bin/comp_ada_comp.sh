@@ -1,15 +1,19 @@
 #!/bin/bash
-./a83.sh ./ ./_standrd.ads W
-./a83.sh ./ ./system.ads W
-./a83.sh ./ ./calendar.ads w
-./a83.sh ./ ./unchecked_deallocation.ads w
-./a83.sh ./ ./unchecked_conversion.ads w
-./a83.sh ./ ./io_exceptions.ads W
-./a83.sh ./ ./machine_code.ads W
-./a83.sh ./ ./text_io.ads W
-./a83.sh ./ ./text_io.adb W
-./a83.sh ./ ./sequential_io.ads W
-./a83.sh ./ ./direct_io.ads W
+./comp_predef_units.sh
+#./a83.sh ./ ./_standrd.ads W
+#./a83.sh ./ ./_standrd.adb W
+#./a83.sh ./ ./system.ads W
+#./a83.sh ./ ./calendar.ads w
+#./a83.sh ./ ./unchecked_deallocation.ads w
+#./a83.sh ./ ./unchecked_conversion.ads w
+#./a83.sh ./ ./io_exceptions.ads W
+#./a83.sh ./ ./machine_code.ads W
+#./a83.sh ./ ./text_io.ads W
+#./a83.sh ./ ./text_io.adb W
+#./a83.sh ./ ./sequential_io.ads W
+#./a83.sh ./ ./sequential_io.adb W
+#./a83.sh ./ ./direct_io.ads W
+#./a83.sh ./ ./direct_io.adb W
 #--------------------------------------------------
 #	IDL
 #--------------------------------------------------
@@ -23,13 +27,13 @@
 #--------------------------------------------------
 #	PAR_PHASE
 #--------------------------------------------------
-./a83.sh ./ ../src/par_phase/grmr_tbl.ads w
-./a83.sh ./ ../src/par_phase/grmr_ops.ads w
-./a83.sh ./ ../src/par_phase/grmr_ops.adb w
-./a83.sh ./ ../src/par_phase/lex.ads w
-./a83.sh ./ ../src/par_phase/lex.adb w
-./a83.sh ./ ../src/par_phase/idl-par_phase.adb w
-./a83.sh ./ ../src/par_phase/idl-par_phase-set_dflt.adb w
+./a83.sh ./ ../src/par_phase/grmr_tbl.ads W
+./a83.sh ./ ../src/par_phase/grmr_ops.ads W
+./a83.sh ./ ../src/par_phase/grmr_ops.adb W
+./a83.sh ./ ../src/par_phase/lex.ads W
+./a83.sh ./ ../src/par_phase/lex.adb W
+./a83.sh ./ ../src/par_phase/idl-par_phase.adb W
+./a83.sh ./ ../src/par_phase/idl-par_phase-set_dflt.adb W
 #--------------------------------------------------
 #	LIB_PHASE
 #--------------------------------------------------
@@ -77,7 +81,7 @@
 #--------------------------------------------------
 #	EXPANDER
 #--------------------------------------------------
-./a83.sh ./ ../src/expander/expander.ads w
+./a83.sh ./ ../src/expander/expander.ads W
 ./a83.sh ./ ../src/expander/expander.adb w
 ./a83.sh ./ ../src/expander/expander-utils.adb w
 ./a83.sh ./ ../src/expander/expander-expressions.adb w
@@ -88,6 +92,6 @@
 #--------------------------------------------------
 #	ADA_COMP
 #--------------------------------------------------
-./a83.sh ./ ../src/ada_comp/ada_comp.ads w
-./a83.sh ./ ../src/ada_comp/ada_comp.adb w
+./a83.sh ./ ../src/ada_comp/ada_comp.ads W
+./a83.sh ./ ../src/ada_comp/ada_comp.adb W
 

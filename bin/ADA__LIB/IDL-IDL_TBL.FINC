@@ -1,0 +1,491 @@
+if ~ definite SEQUENTIAL_IO
+include 'SEQUENTIAL_IO.FINC'
+end if
+if ~ definite TEXT_IO
+include 'TEXT_IO.FINC'
+end if
+IDL_TBL = 'IDL_TBL'
+namespace IDL_TBL				;---------- PACKAGE
+elab_spec:				;    SPEC ELAB
+
+
+					; NODE_SPECIF RECORD TYPE INFO
+NODE_SPECIF = 'NODE_SPECIF'
+namespace NODE_SPECIF
+VAR use__info, q
+VAR SIZ, d
+	LVA	0, SIZ
+	Sa	0, use__info
+USEINFO 0, NS_SIZE, 	La 0, STANDARD.IDL.ATTR_NBR.use__info
+USEINFO 0, NS_FIRST_A, 	La 0, STANDARD.INTEGER.use__info
+USEINFO 0, NS_ARITY, 	La 0, STANDARD.IDL.IDL_MAN.ARITIES.use__info
+virtual at 0				; calcul des offsets statiques
+STATOFS NS_SIZE, 2
+STATOFS NS_FIRST_A, 4
+STATOFS NS_ARITY, 1
+size = $
+end virtual
+	LI	 size*8
+	Sd	0, SIZ
+end namespace
+
+					; array decl constrained array type info
+NODE_SPECIF_TABLE = 'NODE_SPECIF_TABLE'
+namespace NODE_SPECIF_TABLE
+VAR use__info, q
+VAR SIZ, d
+	LVA	0, SIZ
+	Sa	0, use__info
+VAR COMP_SIZ, d
+VAR FST_1, d
+VAR LST_1, d
+	LI	56
+	Sd	0, COMP_SIZ
+	Ld	0, COMP_SIZ
+	MUL
+	Sd	0, SIZ
+  virtual at 4
+COMP_SIZ = $
+	rd 1 
+FST_1 = $
+	rd 1 
+LST_1 = $
+	rd 1 
+  end virtual
+end namespace
+
+					; ATTR_SPECIF RECORD TYPE INFO
+ATTR_SPECIF = 'ATTR_SPECIF'
+namespace ATTR_SPECIF
+VAR use__info, q
+VAR SIZ, d
+	LVA	0, SIZ
+	Sa	0, use__info
+USEINFO 0, ATTR, 	La 0, STANDARD.DIANA_NODE_ATTR_CLASS_NAMES.ATTRIBUTE_NAME.use__info
+USEINFO 0, IS_LIST, 	La 0, STANDARD.BOOLEAN.use__info
+virtual at 0				; calcul des offsets statiques
+STATOFS ATTR, 1
+STATOFS IS_LIST, 1
+size = $
+end virtual
+	LI	 size*8
+	Sd	0, SIZ
+end namespace
+
+					; array decl constrained array type info
+ATTR_ID_TABLE = 'ATTR_ID_TABLE'
+namespace ATTR_ID_TABLE
+VAR use__info, q
+VAR SIZ, d
+	LVA	0, SIZ
+	Sa	0, use__info
+VAR COMP_SIZ, d
+VAR FST_1, d
+VAR LST_1, d
+	LI	16
+	Sd	0, COMP_SIZ
+	Ld	0, COMP_SIZ
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd	0, FST_1
+; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
+	LI	1024
+	Sd	0, LST_1
+	Ld	0, LST_1
+	INC
+	Ld	0, FST_1
+	SUB
+	MUL
+	Sd	0, SIZ
+  virtual at 4
+COMP_SIZ = $
+	rd 1 
+FST_1 = $
+	rd 1 
+LST_1 = $
+	rd 1 
+  end virtual
+end namespace
+
+					; DIANA_TABLE_TYPE RECORD TYPE INFO
+DIANA_TABLE_TYPE = 'DIANA_TABLE_TYPE'
+namespace DIANA_TABLE_TYPE
+VAR use__info, q
+VAR SIZ, d
+	LVA	0, SIZ
+	Sa	0, use__info
+USEINFO 0, TB_LAST_NODE, 	La 0, STANDARD.INTEGER.use__info
+USEINFO 0, TB_LAST_ATTR, 	La 0, STANDARD.INTEGER.use__info
+USEINFO 0, TB_LAST_NODE_ATTR, 	La 0, STANDARD.INTEGER.use__info
+USEINFO 0, TB_N_SPEC, 	La 0, STANDARD.IDL.IDL_TBL.NODE_SPECIF_TABLE.use__info
+USEINFO 0, TB_A_SPEC, 	La 0, STANDARD.IDL.IDL_TBL.ATTR_ID_TABLE.use__info
+virtual at 0				; calcul des offsets statiques
+STATOFS TB_LAST_NODE, 4
+STATOFS TB_LAST_ATTR, 4
+STATOFS TB_LAST_NODE_ATTR, 4
+STATOFS TB_N_SPEC, 7
+STATOFS TB_A_SPEC, 1
+size = $
+end virtual
+	LI	 size*8
+	Sd	0, SIZ
+end namespace
+VAR DIANA_TABLE_AREA_disp, q			; variable record : pointeur aux data record
+VAR DIANA_TABLE_AREA__u, q			; variable record : pointeur aux useinfo
+VAR DIANA_TABLE_AREA__dat, STANDARD.IDL.IDL_TBL.DIANA_TABLE_TYPE.size
+	LVA	0, DIANA_TABLE_AREA__dat
+	Sa	0, DIANA_TABLE_AREA_disp			; record fin
+	LVA	0, STANDARD.IDL.IDL_TBL.DIANA_TABLE_TYPE.SIZ
+	Sa	0, DIANA_TABLE_AREA__u
+
+					;    BODY ELAB
+
+if defined INIT_SPEC_L1_
+PRO	INIT_SPEC_L1				;---------- PRO INIT_SPEC
+PRMS					;    debut parametrage
+	PRM SPEC_FILE_ofs				; in
+endPRMS					;    fin parametrage
+ELB 1					;    BODY ELAB
+INT_IO = 'INT_IO'
+namespace INT_IO				;---------- GENERIC PACKAGE INSTANTIATION
+elab_spec:				;    SPEC ELAB
+
+BRA post_LD_INTEGER
+LD_INTEGER.elab:
+	Ld -1, 0
+	RTD 0
+post_LD_INTEGER:
+BRA post_ST_INTEGER
+ST_INTEGER.elab:
+	Sd -1, 0
+	RTD 0
+post_ST_INTEGER:
+BRA post_INADR_INTEGER
+INADR_INTEGER.elab:
+	RTD 0
+post_INADR_INTEGER:
+BRA post_OUTADR_INTEGER
+OUTADR_INTEGER.elab:
+	La
+	RTD 0
+post_OUTADR_INTEGER:
+VAR INTEGER__outadr_ofs, q
+	LCA OUTADR_INTEGER.elab
+	Sa	 1, INTEGER__outadr_ofs
+VAR INTEGER__inadr_ofs, q
+	LCA INADR_INTEGER.elab
+	Sa	 1, INTEGER__inadr_ofs
+VAR INTEGER__st_ofs, q
+	LCA ST_INTEGER.elab
+	Sa	 1, INTEGER__st_ofs
+VAR INTEGER__ld_ofs, q
+	LCA LD_INTEGER.elab
+	Sa	 1, INTEGER__ld_ofs
+VAR INTEGER__u_ofs, q
+	La	 0, STANDARD.INTEGER.use__info
+	Sa	 1, INTEGER__u_ofs
+VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
+VAR DEFAULT_WIDTH_disp, d			; variable entiere
+	LI	 11
+	Sd  1,	DEFAULT_WIDTH_disp
+
+VAR DEFAULT_BASE_disp, d			; variable entiere
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	10
+	Sd  1,	DEFAULT_BASE_disp
+
+if defined GET_L4_
+PRO	GET_L4				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM ITEM_ofs				; out
+	PRM WIDTH_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Ld	 2, -WIDTH_ofs
+	La 	 2, -ITEM_ofs
+	La 	 2, -FILE_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,GET_L61
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO GET
+end if
+if defined GET_L5_
+PRO	GET_L5				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM ITEM_ofs				; out
+	PRM WIDTH_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Ld	 2, -WIDTH_ofs
+	La 	 2, -ITEM_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,GET_L62
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO GET
+end if
+if defined PUT_L6_
+PRO	PUT_L6				;---------- PRO PUT
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM ITEM_ofs				; in
+	PRM WIDTH_ofs				; in
+	PRM BASE_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Ld	 2, -BASE_ofs
+	Ld	 2, -WIDTH_ofs
+	Ld	 2, -ITEM_ofs
+	La 	 2, -FILE_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,PUT_L63
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO PUT
+end if
+if defined PUT_L7_
+PRO	PUT_L7				;---------- PRO PUT
+PRMS					;    debut parametrage
+	PRM ITEM_ofs				; in
+	PRM WIDTH_ofs				; in
+	PRM BASE_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Ld	 2, -BASE_ofs
+	Ld	 2, -WIDTH_ofs
+	Ld	 2, -ITEM_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,PUT_L64
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO PUT
+end if
+if defined GET_L8_
+PRO	GET_L8				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM FROM_ofs				; in
+	PRM ITEM_ofs				; out
+	PRM LAST_ofs				; out
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	La 	 2, -LAST_ofs
+	La 	 2, -ITEM_ofs
+	La 	 2, -FROM_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,GET_L65
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO GET
+end if
+if defined PUT_L9_
+PRO	PUT_L9				;---------- PRO PUT
+PRMS					;    debut parametrage
+	PRM TO_ofs				; out
+	PRM ITEM_ofs				; in
+	PRM BASE_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Ld	 2, -BASE_ofs
+	Ld	 2, -ITEM_ofs
+	La 	 2, -TO_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,PUT_L66
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO PUT
+end if
+					;---------- end generic package instantiation INT_IO
+end namespace
+
+VAR SFILE_disp, q				; variable record : pointeur aux data record
+VAR SFILE__u, q				; variable record : pointeur aux useinfo
+VAR SFILE__dat, STANDARD.TEXT_IO.FILE_TYPE.size
+	LVA	1, SFILE__dat
+	Sa	1, SFILE_disp				; record fin
+	LVA	1, STANDARD.TEXT_IO.FILE_TYPE.SIZ
+	Sa	1, SFILE__u
+	LIVa 1, SFILE_disp, STANDARD.TEXT_IO.FILE_TYPE.ID
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	NEG
+	Sd
+	LIVa 1, SFILE_disp, STANDARD.TEXT_IO.FILE_TYPE.IS_OPENED
+	LI	0
+	Sb
+	LIVa 1, SFILE_disp, STANDARD.TEXT_IO.FILE_TYPE.PAGE_LENGTH
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	72
+	Sd
+	LIVa 1, SFILE_disp, STANDARD.TEXT_IO.FILE_TYPE.LINE_LENGTH
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	256
+	Sd
+	LIVa 1, SFILE_disp, STANDARD.TEXT_IO.FILE_TYPE.PAGE
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd
+	LIVa 1, SFILE_disp, STANDARD.TEXT_IO.FILE_TYPE.LINE
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd
+	LIVa 1, SFILE_disp, STANDARD.TEXT_IO.FILE_TYPE.COL
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd
+	LIVa 1, SFILE_disp, STANDARD.TEXT_IO.FILE_TYPE.IS_DEFAULT_IO
+	LI	0
+	Sb
+	LIVa 1, SFILE_disp, STANDARD.TEXT_IO.FILE_TYPE.LOOK_AHEAD
+	LI	 0
+	Sb
+	LIVa 1, SFILE_disp, STANDARD.TEXT_IO.FILE_TYPE.HAS_LOOK_AHEAD
+	LI	0
+	Sb
+	LIVa 1, SFILE_disp, STANDARD.TEXT_IO.FILE_TYPE.AT_END_OF_FILE
+	LI	0
+	Sb
+
+VAR T_CHR_disp, d				; variable bool char enum
+
+VAR T_INT_disp, d				; variable entiere
+
+STRING = 'STRING'
+namespace STRING				; array var constrained array type info
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+VAR COMP_SIZ, d
+VAR FST_1, d
+VAR LST_1, d
+	LI	8
+	Sd	1, COMP_SIZ
+	Ld	1, COMP_SIZ
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd	1, FST_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	50
+	Sd	1, LST_1
+	Ld	1, LST_1
+	INC
+	Ld	1, FST_1
+	SUB
+	MUL
+	Sd	1, SIZ
+  virtual at 4
+COMP_SIZ = $
+	rd 1 
+FST_1 = $
+	rd 1 
+LST_1 = $
+	rd 1 
+  end virtual
+end namespace
+VAR T_TXT_disp, q				; variable array : pointeur aux data
+VAR T_TXT__u, q				; variable array : useinfo pointeur au rec info
+	La 1, STRING.use__info
+	Sa	1, T_TXT__u				; array info ptr at __u
+	Ld	1, STRING.SIZ
+	LI	8
+	DIV
+	CO_VAR
+	Sa	1, T_TXT_disp				; array data ptr at _disp
+
+VAR T_LAST_disp, d				; variable entiere
+
+VAR AS_SEEN_disp, d				; variable bool char enum
+
+VAR AS_LIST_SEEN_disp, d			; variable bool char enum
+
+VAR NON_AS_SEEN_disp, d			; variable bool char enum
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+STR STR_L10, ""				; constante string=""
+	LCA	STR_L10.data_ptr
+; CODE & concat STRING
+VAR	ANON_33_25_data, q
+VAR	ANON_33_25_info, q
+VAR	ANON_33_37_data, q
+VAR	ANON_33_37_info, q
+VAR	ANON_33_25_len,  q
+VAR	ANON_33_37_len,  q
+VAR	ANON_33_25_disp, q
+VAR	ANON_33_25__u,   q
+namespace ANON_33_25_info
+  VAR SIZ,      d
+  VAR COMP_SIZ, d
+  VAR FST_1,    d
+  VAR LST_1,    d
+end namespace
+	La  1,	-SPEC_FILE_ofs
+	DUP
+	La  ,  0
+	Sa  1, ANON_33_25_data
+	La  ,  8
+	Sa  1, ANON_33_25_info
+	LId 1, ANON_33_25_info, STRING.LST_1
+	INC
+	LId 1, ANON_33_25_info, STRING.FST_1
+	SUB
+	Sa  1, ANON_33_25_len
+STR ANON_33_37, ".tbl"			; constante string=".tbl"
+	LCA	ANON_33_37.data_ptr
+	DUP
+	La  ,  0
+	Sa  1, ANON_33_37_data
+	La  ,  8
+	Sa  1, ANON_33_37_info
+	LId 1, ANON_33_37_info, STRING.LST_1
+	INC
+	LId 1, ANON_33_37_info, STRING.FST_1
+	SUB
+	Sa  1, ANON_33_37_len
+	La  1, ANON_33_25_len
+	La  1, ANON_33_37_len
+	ADD
+	CO_VAR
+	Sa  1, ANON_33_25_disp
+	LI	1
+	Sd  1, ANON_33_25_info.FST_1
+	La  1, ANON_33_25_len
+	La  1, ANON_33_37_len
+	ADD
+	Sd  1, ANON_33_25_info.LST_1
+	LI	8
+	Sd  1, ANON_33_25_info.COMP_SIZ
+	La  1, ANON_33_25_len
+	La  1, ANON_33_37_len
+	ADD
+	LI	8
+	MUL
+	Sd  1, ANON_33_25_info.SIZ
+	LVA 1, ANON_33_25_info.SIZ
+	Sa  1, ANON_33_25__u
+	La  1, ANON_33_25_disp
+	La  1, ANON_33_25_len
+	La  1, ANON_33_25_data
+	BLKMOV
+	La  1, ANON_33_25_disp
+	La  1, ANON_33_25_len
+	ADD
+	La  1, ANON_33_37_len
+	La  1, ANON_33_37_data
+	BLKMOV
+	LVA 1, ANON_33_25_disp
+	LI  0
+	LVA  1,	SFILE_disp
+	CALL	STANDARD.TEXT_IO. ,OPEN_L2
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	NEG
+!! L ATTRIBUT CD_LEVEL DU NOEUD [DN_VARIABLE_ID<303.80]> N EST PAS UN ENTIER

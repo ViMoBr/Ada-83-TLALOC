@@ -762,22 +762,21 @@ is					--------
     D( DA.LX_SRCPOS, NODE, LX_SRCPOS );
          return NODE;
   end	MAKE_package_DECL;
-   
-  function	MAKE_RENAMES_OBJ_DECL
-		    ( AS_SOURCE_NAME :TREE := TREE_VOID;
-		    AS_NAME :TREE := TREE_VOID;
-		    AS_TYPE_MARK_NAME :TREE := TREE_VOID;
-		    LX_SRCPOS :TREE := TREE_VOID )
-		    return TREE is
-         NODE :TREE := MAKE( DN_RENAMES_OBJ_DECL );
+		---------------------
+  function	MAKE_RENAMES_OBJ_DECL	( AS_SOURCE_NAME, AS_NAME, AS_TYPE_MARK_NAME,
+					  LX_SRCPOS :TREE := TREE_VOID )
+					return TREE
+  is		---------------------
+    NODE	: TREE	:= MAKE( DN_RENAMES_OBJ_DECL );
   begin
     D( DA.AS_SOURCE_NAME, NODE, AS_SOURCE_NAME );
     D( DA.AS_NAME, NODE, AS_NAME );
     D( DA.AS_TYPE_MARK_NAME, NODE, AS_TYPE_MARK_NAME );
     D( DA.LX_SRCPOS, NODE, LX_SRCPOS );
-         return NODE;
+    return  NODE;
+
   end	MAKE_RENAMES_OBJ_DECL;
-   
+	---------------------
   function	MAKE_RENAMES_EXC_DECL
 		    ( AS_SOURCE_NAME :TREE := TREE_VOID;
 		    AS_NAME :TREE := TREE_VOID;

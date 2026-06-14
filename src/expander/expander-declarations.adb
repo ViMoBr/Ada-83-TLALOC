@@ -816,17 +816,17 @@ null;--	  LOAD_TYPE_SIZE( TYPE_SPEC  );
     if  SOURCE_NAME.TY = DN_VARIABLE_ID  then
       declare
         NAME	: TREE	:= D( AS_NAME, RENAMES_OBJ_DECL );
-        DEFN	: TREE;
+--        DEFN	: TREE;
       begin
         while  NAME.TY = DN_SELECTED  loop
 	NAME := D( AS_DESIGNATOR, NAME );
         end loop;
 
-        DEFN := D( SM_DEFN, NAME );
-        if  DEFN.TY /= DN_COMPONENT_ID  then
-	DI( CD_LEVEL, SOURCE_NAME, DI( CD_LEVEL, DEFN ) );
+--        DEFN := D( SM_DEFN, NAME );
+--        if  DEFN.TY /= DN_COMPONENT_ID  then
+--	DI( CD_LEVEL, SOURCE_NAME, DI( CD_LEVEL, DEFN ) );	-- C'est le SM_INIT_EXP qui doit etre utilise
 	DB( CD_COMPILED, SOURCE_NAME, TRUE );
-        end if;
+--        end if;
       end;
     end if;
   end;

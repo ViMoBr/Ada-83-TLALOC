@@ -92,6 +92,7 @@ is
   procedure REGIONS_PATH		( ID : TREE; WITH_DOT :BOOLEAN := TRUE );
   function  LETTERED_SUBNAME		( SUB_NAME : STRING )		return STRING;
 
+  function  LAST_OF_SELECTED		( NAME_ID :TREE )			return TREE;
 
   OPERAND_OVERFLOW			: exception;
 
