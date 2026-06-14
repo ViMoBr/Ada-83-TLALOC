@@ -1,0 +1,124 @@
+NEWSNAM = 'NEWSNAM'
+namespace NEWSNAM				;---------- PACKAGE
+elab_spec:				;    SPEC ELAB
+
+					;    BODY ELAB
+
+if defined REPLACE_SOURCE_NAME_L1_
+PRO	REPLACE_SOURCE_NAME_L1			;---------- PRO REPLACE_SOURCE_NAME
+PRMS					;    debut parametrage
+	PRM SOURCE_NAME_ofs			; in out
+	PRM NODE_HASH_ofs				; in out
+	PRM H_IN_ofs				; in
+	PRM DECL_ofs				; in
+endPRMS					;    fin parametrage
+ELB 1					;    BODY ELAB
+VAR OLD_NAME_disp, q			; variable record : pointeur aux data record
+VAR OLD_NAME__u, q				; variable record : pointeur aux useinfo
+VAR OLD_NAME__dat, STANDARD.IDL.TREE.size
+	LVA	1, OLD_NAME__dat
+	Sa	1, OLD_NAME_disp			; record fin
+	LVA	1, STANDARD.IDL.TREE.SIZ
+	Sa	1, OLD_NAME__u
+	La  1, OLD_NAME_disp
+	LI	STANDARD.IDL.TREE.size
+	La  1,	-SOURCE_NAME_ofs
+	La  ,  0
+	BLKMOV
+
+VAR DEF_disp, q				; variable record : pointeur aux data record
+VAR DEF__u, q				; variable record : pointeur aux useinfo
+VAR DEF__dat, STANDARD.IDL.TREE.size
+	LVA	1, DEF__dat
+	Sa	1, DEF_disp				; record fin
+	LVA	1, STANDARD.IDL.TREE.SIZ
+	Sa	1, DEF__u
+	La  1, DEF_disp
+	LI	STANDARD.IDL.TREE.size
+	LVA 0,	STANDARD.IDL.TREE_VOID_disp
+	La  ,  0
+	BLKMOV
+
+VAR H_disp, q				; variable record : pointeur aux data record
+VAR H__u, q				; variable record : pointeur aux useinfo
+VAR H__dat, STANDARD.IDL.SEM_PHASE_L7.SEM_GLOB.H_TYPE.size
+	LVA	1, H__dat
+	Sa	1, H_disp				; record fin
+	LVA	1, STANDARD.IDL.SEM_PHASE_L7.SEM_GLOB.H_TYPE.SIZ
+	Sa	1, H__u
+	La  1, H_disp
+	LI	STANDARD.IDL.SEM_PHASE_L7.SEM_GLOB.H_TYPE.size
+	La  1,	-H_IN_ofs
+	La  ,  0
+	BLKMOV
+
+VAR S_disp, q				; variable record : pointeur aux data record
+VAR S__u, q				; variable record : pointeur aux useinfo
+VAR S__dat, STANDARD.IDL.SEM_PHASE_L7.NOD_WALK.S_TYPE.size
+	LVA	1, S__dat
+	Sa	1, S_disp				; record fin
+	LVA	1, STANDARD.IDL.SEM_PHASE_L7.NOD_WALK.S_TYPE.SIZ
+	Sa	1, S__u
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+					; debut if
+	LI	1
+	CEQ
+	BF	L3
+VAR	ANON_37_34_disp, q
+VAR	ANON_37_34__u,    q
+VAR	ANON_37_34__dat, STANDARD.IDL.TREE.size
+	LVA 1, ANON_37_34__dat
+	Sa  1, ANON_37_34_disp
+	La  0, STANDARD.IDL.TREE.use__info
+	Sa  1, ANON_37_34__u
+	LVA 1, ANON_37_34_disp
+					; doublet resultat record anonyme
+VAR	ANON_37_45_disp, q
+VAR	ANON_37_45__u,   q
+namespace ANON_37_45_info
+  VAR SIZ,      d
+  VAR COMP_SIZ, d
+  VAR FST_1,    d
+  VAR LST_1,    d
+end namespace
+	LVA 1, ANON_37_45_info.SIZ
+	Sa  1, ANON_37_45__u
+	LVA 1, ANON_37_45_disp
+VAR	ANON_37_57_disp, q
+VAR	ANON_37_57__u,    q
+VAR	ANON_37_57__dat, STANDARD.IDL.TREE.size
+	LVA 1, ANON_37_57__dat
+	Sa  1, ANON_37_57_disp
+	La  0, STANDARD.IDL.TREE.use__info
+	Sa  1, ANON_37_57__u
+	LVA 1, ANON_37_57_disp
+					; doublet resultat record anonyme
+	LId  1,	-SOURCE_NAME_ofs
+	LI  13
+	CALL	STANDARD.IDL. ,D_L13
+	CALL	STANDARD.IDL. ,PRINT_NAME_L21
+	CALL	STANDARD.IDL.IDL_MAN. ,STORE_SYM_L32
+	LId  1,	-SOURCE_NAME_ofs
+	LI  13
+	CALL	STANDARD.IDL. ,D_L12
+	BRA	L2
+L3:
+L2:					; post if
+	La  1,	-NODE_HASH_ofs
+	La  1,	-SOURCE_NAME_ofs
+	CALL	STANDARD.IDL.SEM_PHASE_L7.GEN_SUBS. ,REPLACE_NODE_L435
+	LVA 1,	H_disp
+	La  1,	-NODE_HASH_ofs
+	La  1,	-SOURCE_NAME_ofs
+	CALL	STANDARD.IDL.SEM_PHASE_L7.GEN_SUBS. ,SUBSTITUTE_ATTRIBUTES_L436
+ret_lbl:
+	UNLINK 1
+	RTD	prm_siz
+excep:
+endPRO					;---------- end PRO REPLACE_SOURCE_NAME
+end if
+begin:					;---------- package BDY INSTRUCTIONS
+end namespace 				;---------- end package BDY NEWSNAM
+

@@ -1,0 +1,89 @@
+GEN_SUBS = 'GEN_SUBS'
+namespace GEN_SUBS				;---------- PACKAGE
+elab_spec:				;    SPEC ELAB
+
+
+					; array decl constrained array type info
+NODE_ARRAY_TYPE = 'NODE_ARRAY_TYPE'
+namespace NODE_ARRAY_TYPE
+VAR use__info, q
+VAR SIZ, d
+	LVA	0, SIZ
+	Sa	0, use__info
+VAR COMP_SIZ, d
+VAR FST_1, d
+VAR LST_1, d
+	LI	32
+	Sd	0, COMP_SIZ
+	Ld	0, COMP_SIZ
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	Sd	0, FST_1
+; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
+	LI	131
+; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
+	LI	1
+	SUB
+; CODE CONVERSION SOURCE DN_UNIVERSAL_INTEGER TARGET DN_INTEGER
+	Sd	0, LST_1
+	Ld	0, LST_1
+	INC
+	Ld	0, FST_1
+	SUB
+	MUL
+	Sd	0, SIZ
+  virtual at 4
+COMP_SIZ = $
+	rd 1 
+FST_1 = $
+	rd 1 
+LST_1 = $
+	rd 1 
+  end virtual
+end namespace
+
+					; NODE_HASH_TYPE RECORD TYPE INFO
+NODE_HASH_TYPE = 'NODE_HASH_TYPE'
+namespace NODE_HASH_TYPE
+VAR use__info, q
+VAR SIZ, d
+	LVA	0, SIZ
+	Sa	0, use__info
+USEINFO 0, LIMIT, 	La 0, STANDARD.NATURAL.use__info
+USEINFO 0, A, 	La 0, STANDARD.IDL.SEM_PHASE_L7.GEN_SUBS.NODE_ARRAY_TYPE.use__info
+virtual at 0				; calcul des offsets statiques
+STATOFS LIMIT, 4
+STATOFS A, 1
+size = $
+end virtual
+	LI	 size*8
+	Sd	0, SIZ
+end namespace
+					;    BODY ELAB
+
+if defined HASH_NODE_HASH_L5_
+PRO	HASH_NODE_HASH_L5			;---------- PRO HASH_NODE_HASH
+PRMS					;    debut parametrage
+	PRM NODE_HASH_ofs				; in
+	PRM NODE_ofs				; in
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 1					;    BODY ELAB
+VAR HASH_CODE_disp, d			; variable entiere
+	La 1, -NODE_ofs
+	LIw	, 0, STANDARD.IDL.TREE.PG
+; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	79
+	La 1, -NODE_ofs
+	LIw	, 0, STANDARD.IDL.TREE.LN
+; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
+	MUL
+	SUB
+	ABS
+	Sd  1,	HASH_CODE_disp
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	Ld 1,	HASH_CODE_disp
+!! FUNCTION D : PAS D ATTRIBUT CD_LEVEL DANS [DN_COMPONENT_ID<1007.89]>

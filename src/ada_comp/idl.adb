@@ -366,15 +366,47 @@ is					---
 			--
   procedure		DI		( AN :ATTRIBUTE_NAME; T :TREE; V :INTEGER )
   is			--
+
     VAL_POS		: POSITIVE_SHORT;
     COMPLEMENT_DEUX		: ATTR_NBR;
+
   begin
-    if V < 0 then
-      VAL_POS := POSITIVE_SHORT( abs( V+1 ) ); COMPLEMENT_DEUX := 1;
+    if  INTEGER( abs( V ) ) <=  INTEGER( POSITIVE_SHORT'LAST )  then
+      if  V < 0  then
+        VAL_POS := POSITIVE_SHORT( abs( V+1 ) ); COMPLEMENT_DEUX := 1;
+      else
+        VAL_POS := POSITIVE_SHORT( V ); COMPLEMENT_DEUX := 0;
+      end if;
+      D( AN, T, (HI, NOTY=> DN_NUM_VAL, ABSS=> VAL_POS, NSIZ=> COMPLEMENT_DEUX) );
+
     else
-      VAL_POS := POSITIVE_SHORT( V ); COMPLEMENT_DEUX := 0;
+			------------------
+			INTEGER_OVER_SHORT:
+      declare
+        type DOUBLET	is array(	1..2 ) of	SHORT;							-- 1 doublet par TREE
+        function TO_TREE	is new UNCHECKED_CONVERSION( DOUBLET, TREE );
+        NB_UDIGITS		:constant 	:= 3;							-- 3 UDIGITS base 10_000 suffisent pour INTEGER 32 bits (5 pour 64 bits)
+        NB_DOUBLETS		: ATTR_NBR	:= (NB_UDIGITS+1)/2;					-- 2 doublets de 16 bits
+        NUM_VAL		: TREE		:= MAKE( DN_NUM_VAL, NB_DOUBLETS );
+        ENTETE		: TREE		:= DABS( 0, NUM_VAL );
+        Q			: INTEGER		:= V;
+        R			: INTEGER;
+        DD		: DOUBLET;
+      begin
+        if  V < 0  then Q := - Q; ENTETE.ABSS := 1; DABS( 0, NUM_VAL, ENTETE ); end if;
+        for  N in 1 .. NB_DOUBLETS  loop
+	DD( 1 ) := SHORT( Q mod 10_000 );
+	Q := Q / 10_000;
+	DD( 2 ) := SHORT( Q mod 10_000 );
+	Q := Q / 10_000;
+	DABS( N, NUM_VAL, TO_TREE( DD ) );
+        end loop;
+        D( AN, T, NUM_VAL );
+
+      end	INTEGER_OVER_SHORT;
+	------------------
     end if;
-    D( AN, T, (HI, NOTY=> DN_NUM_VAL, ABSS=> VAL_POS, NSIZ=> COMPLEMENT_DEUX) );
+
   end	DI;
 	--
 
@@ -382,6 +414,7 @@ is					---
 			--
   function		DI		( AN :ATTRIBUTE_NAME; T :TREE) return INTEGER
   is			--
+
     ATTR		: TREE		:= D( AN,	T );
 
   begin
@@ -391,11 +424,14 @@ is					---
       elsif  ATTR.NSIZ = 1  then
         return  INTEGER( -ATTR.ABSS - 1 );
       end	if;
-    elsif  ATTR.TY = DN_NUM_VAL  then
+
+    elsif  ATTR.PT = P  and then  ATTR.TY = DN_NUM_VAL  then
       return  INTEGER'VALUE( PRINT_NUM( ATTR ) );
     end if;
+
     PUT_LINE( "!! L ATTRIBUT " & ATTR_IMAGE( AN )	& " DU NOEUD " & NODE_REP( T ) & " N EST PAS UN ENTIER");
     raise	PROGRAM_ERROR;
+
   end	DI;
 	--
 

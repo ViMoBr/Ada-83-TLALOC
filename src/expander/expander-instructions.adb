@@ -1073,10 +1073,14 @@ raise PROGRAM_ERROR;
     declare
 
 		---------
-      procedure	STORE_VAL		( TYPE_SPEC :TREE )
+      procedure	STORE_VAL		( VAL_TYPE_SPEC :TREE )
       is		---------
-
+        TYPE_SPEC	: TREE	:= VAL_TYPE_SPEC;
       begin
+        if  TYPE_SPEC.TY = DN_L_PRIVATE  or  TYPE_SPEC.TY = DN_PRIVATE  then
+	TYPE_SPEC := D( SM_TYPE_SPEC, TYPE_SPEC );
+        end if;
+
         case TYPE_SPEC.TY is
         when DN_ACCESS =>
           PUT_LINE( tab & "Sa" );
@@ -1216,11 +1220,26 @@ raise PROGRAM_ERROR;
 
         begin
 				-- Resolve private to full type
-	  if  NAME_TYPE.TY = DN_L_PRIVATE
-	  or  NAME_TYPE.TY = DN_PRIVATE
-	  then
-	    NAME_TYPE := D( SM_TYPE_SPEC, NAME_TYPE );
-	  end if;
+	if  NAME_TYPE.TY = DN_L_PRIVATE  or  NAME_TYPE.TY = DN_PRIVATE  then
+	  NAME_TYPE := D( SM_TYPE_SPEC, NAME_TYPE );
+	end if;
+
+	if  DEFN.TY in CLASS_VC_NAME  and then  DB( SM_RENAMES_OBJ, DEFN )  then
+				--------------
+				MANAGE_RENAMES:
+	  declare
+	    DEFN_STR	: constant STRING	:= PRINT_NAME( D( LX_SYMREP, DEFN ) );
+	    DEFN_LVL	: INTEGER		:= DI( CD_LEVEL, DEFN );
+	  begin
+	    if  NAME_TYPE.TY in CLASS_SCALAR  then
+	      EXPRESSIONS.CODE_EXP( SRC_EXP );
+	      PUT_LINE( tab & "SI" & CODI.OPER_SIZ_CHAR( NAME_TYPE ) & tab & IMAGE( DEFN_LVL ) & ", "
+			& DEFN_STR & "_disp, 0" );
+	      return;
+	    end if;
+	  end	MANAGE_RENAMES;
+		--------------
+          end if;
 
           if  NAME_TYPE.TY = DN_ACCESS  then								-- OBJET ASSIGNE DE TYPE ACCES
 	  EXPRESSIONS.CODE_EXP( SRC_EXP );

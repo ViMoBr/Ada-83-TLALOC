@@ -502,10 +502,30 @@ L2:					; post if
 	Sd  0,	HCODE_disp
 LOOP__1:
 	LVA 1,	A_17_disp
+	La	 0, HTABLE_disp				; array data start address on stack
+	Ld 0,	STANDARD.GRMR_OPS.HCODE_disp
+	LId	0, HTABLE__u, STANDARD.GRMR_OPS.HTABLE.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	0, HTABLE__u, STANDARD.GRMR_OPS.HTABLE.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	LVA	, STANDARD.GRMR_OPS.HTABLE_TYPE.HN
 	CNE
 	DUP
 	BF	L5
 	DROP
+	La	 0, HTABLE_disp				; array data start address on stack
+	Ld 0,	STANDARD.GRMR_OPS.HCODE_disp
+	LId	0, HTABLE__u, STANDARD.GRMR_OPS.HTABLE.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	0, HTABLE__u, STANDARD.GRMR_OPS.HTABLE.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb	, STANDARD.GRMR_OPS.HTABLE_TYPE.HP
 	LI	0
 	CNE
 L5:
@@ -539,6 +559,16 @@ begin:					;---------- BDY INSTRUCTIONS
 	La  1,	-S_ofs
 	CALL	STANDARD.GRMR_OPS. ,HASH_SEARCH_L1
 ; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
+	La	 0, HTABLE_disp				; array data start address on stack
+	Ld 0,	STANDARD.GRMR_OPS.HCODE_disp
+	LId	0, HTABLE__u, STANDARD.GRMR_OPS.HTABLE.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	0, HTABLE__u, STANDARD.GRMR_OPS.HTABLE.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb	, STANDARD.GRMR_OPS.HTABLE_TYPE.HP
 	Sb  1,	-result__ofs
 	BRA ret_lbl
 ret_lbl:

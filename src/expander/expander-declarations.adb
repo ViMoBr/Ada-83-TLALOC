@@ -362,7 +362,6 @@ null;
       procedure	COMPILE_VC_NAME_INTEGER	( VC_NAME	:TREE )
       is		-----------------------
 
---        OPER_TYPE		: CHARACTER	:= OPER_SIZ_CHAR( D( SM_OBJ_TYPE, VC_NAME ) );
         OPER_TYPE		: CHARACTER	:= OPER_SIZ_CHAR( TYPE_SPEC );
         INIT_EXP		: TREE		:= D( SM_INIT_EXP, VC_NAME );
 
@@ -372,12 +371,10 @@ null;
         NEW_LINE;
         DI( CD_LEVEL,     VC_NAME, INTEGER( CODI.CUR_LEVEL ) );
 
---	if  not IN_GENERIC_BODY  then
 	if  INIT_EXP /= TREE_VOID  then
 	  EXPRESSIONS.CODE_EXP( INIT_EXP );
 	  CODI.STORE( VC_NAME );
 	end if;
---	end if;
 
       end	COMPILE_VC_NAME_INTEGER;
 	-----------------------
@@ -808,28 +805,60 @@ null;--	  LOAD_TYPE_SIZE( TYPE_SPEC  );
   end;
 
 
-  --|-------------------------------------------------------------------------------------------
-  procedure	CODE_RENAMES_OBJ_DECL ( RENAMES_OBJ_DECL :TREE )
-  is
+			---------------------
+  procedure		CODE_RENAMES_OBJ_DECL	( RENAMES_OBJ_DECL :TREE )
+  is			---------------------
+
     SOURCE_NAME	: TREE	:= D( AS_SOURCE_NAME, RENAMES_OBJ_DECL );
+
   begin
-    if  SOURCE_NAME.TY = DN_VARIABLE_ID  then
+    if  SOURCE_NAME.TY in CLASS_VC_NAME  then
       declare
-        NAME	: TREE	:= D( AS_NAME, RENAMES_OBJ_DECL );
---        DEFN	: TREE;
+        NAME	: TREE		:= D( SM_INIT_EXP, SOURCE_NAME );
+        SRC_STR	: constant STRING	:= PRINT_NAME( D( LX_SYMREP, SOURCE_NAME ) );
+        SRC_TYPE	: TREE		:= D( SM_OBJ_TYPE, SOURCE_NAME );
+        LVL	: LEVEL_NUM	renames CODI.CUR_LEVEL;
+        LVL_STR	: constant STRING	:= IMAGE( LVL );
       begin
-        while  NAME.TY = DN_SELECTED  loop
-	NAME := D( AS_DESIGNATOR, NAME );
+        if NAME = TREE_VOID then
+	NAME := D( AS_NAME, RENAMES_OBJ_DECL );
+        end if;
+
+        while  SRC_TYPE.TY = DN_PRIVATE  or else  SRC_TYPE.TY = DN_L_PRIVATE  loop
+	SRC_TYPE := D( SM_TYPE_SPEC, SRC_TYPE );
         end loop;
 
---        DEFN := D( SM_DEFN, NAME );
---        if  DEFN.TY /= DN_COMPONENT_ID  then
---	DI( CD_LEVEL, SOURCE_NAME, DI( CD_LEVEL, DEFN ) );	-- C'est le SM_INIT_EXP qui doit etre utilise
-	DB( CD_COMPILED, SOURCE_NAME, TRUE );
---        end if;
+      -- Le renommage est représenté par un pointeur vers les données réelles.
+        PUT_LINE( "VAR " & SRC_STR & "_disp, q" );
+
+        EXPRESSIONS.CODE_OBJECT_ADDRESS( NAME );
+        PUT_LINE( tab & "Sa" & tab & LVL_STR & ", " & SRC_STR & "_disp" );
+
+      -- Pour les composites, on garde le doublet TLALOC habituel.
+        if  SRC_TYPE.TY = DN_RECORD  or else  SRC_TYPE.TY = DN_ARRAY  or else  SRC_TYPE.TY = DN_CONSTRAINED_ARRAY
+        then
+	declare
+	  TYPE_NAME	: TREE		:= D( XD_SOURCE_NAME, SRC_TYPE );
+	  TYPE_NAME_STR	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
+	begin
+	  PUT_LINE( "VAR " & SRC_STR & "__u, q" );
+
+	  PUT( tab & "LVA" & tab & LVL_STR & ", " );
+	  CODI.REGIONS_PATH( TYPE_NAME );
+	  PUT_LINE( TYPE_NAME_STR & ".SIZ" );
+
+	  PUT_LINE( tab & "Sa" & tab & LVL_STR & ", " & SRC_STR & "__u" );
+	end;
+        end if;
+
+        DI( CD_LEVEL, SOURCE_NAME, INTEGER( LVL ) );
+        DB( CD_COMPILED, SOURCE_NAME, TRUE );
       end;
     end if;
-  end;
+
+  end	CODE_RENAMES_OBJ_DECL;
+	---------------------
+
 
   --|-------------------------------------------------------------------------------------------
   procedure	CODE_RENAMES_EXC_DECL ( RENAMES_EXC_DECL :TREE )

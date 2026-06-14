@@ -5,10 +5,10 @@
 --	1	2	3	4	5	6	7	8	9	0	1	2
 
 separate (IDL.SEM_PHASE)
-    --|----------------------------------------------------------------------------------------------
-    --| NOD_WALK
-    --|----------------------------------------------------------------------------------------------
-package body NOD_WALK is
+
+					--------
+package body				NOD_WALK
+is					--------
 
   use DEF_UTIL;
   use VIS_UTIL;
@@ -1290,7 +1290,7 @@ package body NOD_WALK is
       --|	      PROCEDURE ENTER_REGION
   procedure ENTER_REGION (DEF	: TREE; H	: in out H_TYPE; S : out S_TYPE) is
   begin
-    S.SB	       :=	SB;
+--    S.SB	       :=	SB;
     S.SU	       :=	SU;
     H.REGION_DEF :=	DEF;
     H.LEX_LEVEL  :=	H.LEX_LEVEL + 1;
@@ -1310,7 +1310,7 @@ package body NOD_WALK is
       POP	(SU.USED_PACKAGE_LIST, PACKAGE_DEF);
       DB (XD_IS_USED, PACKAGE_DEF, False);
     end loop;
-    SB :=	S.SB;
+--    SB :=	S.SB;
     SU :=	S.SU;
   end LEAVE_REGION;
       --||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||

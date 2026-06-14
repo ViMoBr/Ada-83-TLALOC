@@ -389,6 +389,12 @@ is
 
     BASE_TYPE		: TREE			:= D( SM_BASE_TYPE,	TYPE_SPEC	);
     COMP_TYPE		: TREE			:= D( SM_COMP_TYPE,	BASE_TYPE	);
+begin
+  if  COMP_TYPE.TY = DN_PRIVATE  or  COMP_TYPE.TY = DN_L_PRIVATE  then
+    COMP_TYPE := D( SM_TYPE_SPEC, COMP_TYPE );
+  end if;
+
+declare
     COMP_SIZE_TREE		: TREE			:= D( CD_IMPL_SIZE,	COMP_TYPE	);
     IS_STATIC		: BOOLEAN			:= COMP_SIZE_TREE /= TREE_VOID;
     ARRAY_STATIC_SIZE	: NATURAL			:= 0;
@@ -530,6 +536,7 @@ is
 	-------------------
 
     DB( CD_COMPILED,	TYPE_SPEC, TRUE );
+    end;
 
   end	  PROCESS_CONSTRAINED_ARRAY_TYPE_SPEC;
 	--===================================--
@@ -635,14 +642,17 @@ is
         declare
 	COMP_ID_S		: SEQ_TYPE	:= LIST( D( AS_SOURCE_NAME_S,	V_DECL ) );
 	COMP_ID		: TREE;
+	COMP_TYPE		: TREE;
 
         begin
 	while  not IS_EMPTY( COMP_ID_S )  loop
 	  POP( COMP_ID_S, COMP_ID );
+	  COMP_TYPE := D( SM_OBJ_TYPE, COMP_ID );
+	  if  COMP_TYPE.TY = DN_PRIVATE  or  COMP_TYPE.TY = DN_L_PRIVATE  then
+	    COMP_TYPE := D( SM_TYPE_SPEC, COMP_TYPE );
+	  end if;
 
 	  declare
-	    COMP_TYPE	: TREE		:= D( SM_OBJ_TYPE, COMP_ID );
-	    COMP_BASE_TYPE	: TREE		:= D( SM_BASE_TYPE, COMP_TYPE );
 	    COMP_TYPE_NAME	: TREE		:= D( XD_SOURCE_NAME, COMP_TYPE );
 	    COMP_TYPE_STR	:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, COMP_TYPE_NAME ) );
 	    COMP_ID_STR	:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, COMP_ID ) );
@@ -738,13 +748,17 @@ is
         declare
 	COMP_ID_S		: SEQ_TYPE	:= LIST( D( AS_SOURCE_NAME_S,	V_DECL ) );
 	COMP_ID		: TREE;
+	COMP_TYPE		: TREE;
 
         begin
 	while  not IS_EMPTY( COMP_ID_S )  loop
 	  POP( COMP_ID_S, COMP_ID );
+	  COMP_TYPE := D( SM_OBJ_TYPE, COMP_ID );
+	  if  COMP_TYPE.TY = DN_PRIVATE  or  COMP_TYPE.TY = DN_L_PRIVATE  then
+	    COMP_TYPE := D( SM_TYPE_SPEC, COMP_TYPE );
+	  end if;
 
 	  declare
-	    COMP_TYPE	: TREE		:= D( SM_OBJ_TYPE, COMP_ID );
 	    COMP_TYPE_NAME	: TREE		:= D( XD_SOURCE_NAME, COMP_TYPE );
 	    COMP_TYPE_STR	:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, COMP_TYPE_NAME ) );
 	    COMP_ID_STR	:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, COMP_ID ) );

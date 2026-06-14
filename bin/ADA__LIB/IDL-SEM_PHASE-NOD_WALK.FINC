@@ -1,0 +1,84 @@
+NOD_WALK = 'NOD_WALK'
+namespace NOD_WALK				;---------- PACKAGE
+elab_spec:				;    SPEC ELAB
+
+
+					; S_TYPE RECORD TYPE INFO
+S_TYPE = 'S_TYPE'
+namespace S_TYPE
+VAR use__info, q
+VAR SIZ, d
+	LVA	0, SIZ
+	Sa	0, use__info
+USEINFO 0, SU, 	La 1, STANDARD.IDL.SEM_PHASE_L7.SEM_GLOB.SU_TYPE.use__info
+virtual at 0				; calcul des offsets statiques
+STATOFS SU, 24
+size = $
+end virtual
+	LI	 size*8
+	Sd	0, SIZ
+end namespace
+					;    BODY ELAB
+VAR EQUAL_SYM_disp, q			; variable record : pointeur aux data record
+VAR EQUAL_SYM__u, q				; variable record : pointeur aux useinfo
+VAR EQUAL_SYM__dat, STANDARD.IDL.TREE.size
+	LVA	0, EQUAL_SYM__dat
+	Sa	0, EQUAL_SYM_disp			; record fin
+	LVA	0, STANDARD.IDL.TREE.SIZ
+	Sa	0, EQUAL_SYM__u
+	La  0, EQUAL_SYM_disp
+	LI	STANDARD.IDL.TREE.size
+	LVA 0,	STANDARD.IDL.TREE_VOID_disp
+	La  ,  0
+	BLKMOV
+
+VAR NOT_EQUAL_SYM_disp, q			; variable record : pointeur aux data record
+VAR NOT_EQUAL_SYM__u, q			; variable record : pointeur aux useinfo
+VAR NOT_EQUAL_SYM__dat, STANDARD.IDL.TREE.size
+	LVA	0, NOT_EQUAL_SYM__dat
+	Sa	0, NOT_EQUAL_SYM_disp			; record fin
+	LVA	0, STANDARD.IDL.TREE.SIZ
+	Sa	0, NOT_EQUAL_SYM__u
+	La  0, NOT_EQUAL_SYM_disp
+	LI	STANDARD.IDL.TREE.size
+	LVA 0,	STANDARD.IDL.TREE_VOID_disp
+	La  ,  0
+	BLKMOV
+
+
+if defined FORCE_UPPER_CASE_L12_
+PRO	FORCE_UPPER_CASE_L12			;---------- PRO FORCE_UPPER_CASE
+PRMS					;    debut parametrage
+	PRM OPERATOR_ID_ofs			; in
+endPRMS					;    fin parametrage
+ELB 1					;    BODY ELAB
+
+if defined MAKE_UPPER_CASE_L13_
+PRO	MAKE_UPPER_CASE_L13			;---------- PRO MAKE_UPPER_CASE
+PRMS					;    debut parametrage
+	PRM A_IN_ofs				; in
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 2					;    BODY ELAB
+STRING = 'STRING'
+namespace STRING				; array var constrained array type info
+VAR use__info, q
+VAR SIZ, d
+	LVA	2, SIZ
+	Sa	2, use__info
+VAR COMP_SIZ, d
+VAR FST_1, d
+VAR LST_1, d
+	LI	8
+	Sd	2, COMP_SIZ
+	Ld	2, COMP_SIZ
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd	2, FST_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	002147483647
+	Sd	2, LST_1
+	Ld	2, LST_1
+	INC
+	Ld	2, FST_1
+	SUB

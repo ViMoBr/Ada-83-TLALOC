@@ -16,9 +16,9 @@ is					---------
 				--------
   is
 
-    type SB_TYPE	is record								--| SAUVE	ET RESTAURE AUTOUR DES CORPS
-		  null;
-		end record;
+--    type SB_TYPE	is record								--| SAUVE	ET RESTAURE AUTOUR DES CORPS
+--		  null;
+--		end record;
 
     type SU_TYPE	is record								--| SAUVE	ET RESTAURE AUTOUR DES REGIONS
 		  USED_PACKAGE_LIST		: SEQ_TYPE;
@@ -36,7 +36,7 @@ is					---------
 		  ENCLOSING_LOOP_ID	: TREE;
 		end record;
 
-    SB			: SB_TYPE;
+--    SB			: SB_TYPE;
     SU			: SU_TYPE;
     INITIAL_H		: H_TYPE;
 
@@ -557,7 +557,7 @@ is					---------
   package	NOD_WALK is
 
     type S_TYPE	is record
-		  SB		: SB_TYPE;
+--		  SB		: SB_TYPE;
 		  SU		: SU_TYPE;
 		end record;
 

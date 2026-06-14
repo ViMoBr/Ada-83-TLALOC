@@ -1,0 +1,180 @@
+REQ_UTIL = 'REQ_UTIL'
+namespace REQ_UTIL				;---------- PACKAGE
+elab_spec:				;    SPEC ELAB
+
+REQ_GENE = 'REQ_GENE'
+namespace REQ_GENE				;---------- PACKAGE DECLARATION
+; GENERIC_SUBPROGRAM_SPEC
+; GENERIC_SUBPROGRAM_SPEC
+; EXC_LBL	L1
+end namespace
+
+					;    BODY ELAB
+REQ_GENE = 'REQ_GENE'
+namespace REQ_GENE				;---------- PACKAGE
+elab_spec:				;    SPEC ELAB
+
+; GENERIC_SUBPROGRAM_SPEC
+; GENERIC_SUBPROGRAM_SPEC
+					;    BODY ELAB
+
+if defined REQ_DEF_XXX_L22412_
+PRO	REQ_DEF_XXX_L22412			;---------- PRO REQ_DEF_XXX
+PRMS					;    debut parametrage
+	PRM EXP_ofs				; in
+	PRM DEFSET_ofs				; in out
+	PRM GFP_ofs
+endPRMS					;    fin parametrage
+ELB 1					;    BODY ELAB
+
+if defined REQUIRE_XXX_L41_
+PRO	REQUIRE_XXX_L41				;---------- PRO REQUIRE_XXX
+PRMS					;    debut parametrage
+	PRM DEFSET_ofs				; in
+	PRM GFP_ofs
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 2					;    BODY ELAB
+VAR SET_TAIL_disp, q			; variable record : pointeur aux data record
+VAR SET_TAIL__u, q				; variable record : pointeur aux useinfo
+VAR SET_TAIL__dat, STANDARD.IDL.SEM_PHASE_L7.SET_UTIL.DEFSET_TYPE.size
+	LVA	2, SET_TAIL__dat
+	Sa	2, SET_TAIL_disp			; record fin
+	LVA	2, STANDARD.IDL.SEM_PHASE_L7.SET_UTIL.DEFSET_TYPE.SIZ
+	Sa	2, SET_TAIL__u
+
+VAR SET_HEAD_disp, q			; variable record : pointeur aux data record
+VAR SET_HEAD__u, q				; variable record : pointeur aux useinfo
+VAR SET_HEAD__dat, STANDARD.IDL.SEM_PHASE_L7.SET_UTIL.DEFINTERP_TYPE.size
+	LVA	2, SET_HEAD__dat
+	Sa	2, SET_HEAD_disp			; record fin
+	LVA	2, STANDARD.IDL.SEM_PHASE_L7.SET_UTIL.DEFINTERP_TYPE.SIZ
+	Sa	2, SET_HEAD__u
+
+VAR NEW_TAIL_disp, q			; variable record : pointeur aux data record
+VAR NEW_TAIL__u, q				; variable record : pointeur aux useinfo
+VAR NEW_TAIL__dat, STANDARD.IDL.SEM_PHASE_L7.SET_UTIL.DEFSET_TYPE.size
+	LVA	2, NEW_TAIL__dat
+	Sa	2, NEW_TAIL_disp			; record fin
+	LVA	2, STANDARD.IDL.SEM_PHASE_L7.SET_UTIL.DEFSET_TYPE.SIZ
+	Sa	2, NEW_TAIL__u
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	LVA 2,	SET_TAIL_disp
+	La
+	LI	STANDARD.IDL.SEM_PHASE_L7.SET_UTIL.DEFSET_TYPE.size
+	La  2,	-DEFSET_ofs
+	La
+	BLKMOV
+	LVA  2,	SET_HEAD_disp
+	LVA  2,	SET_TAIL_disp
+	CALL	STANDARD.IDL.SEM_PHASE_L7.SET_UTIL. ,POP_L75
+					; debut if
+	LI	0					; lieu resultat sur pile
+	LVA 2,	SET_TAIL_disp
+	CALL	STANDARD.IDL.SEM_PHASE_L7.SET_UTIL. ,IS_EMPTY_L74
+	BF	L43
+	LVA 2,	NEW_TAIL_disp
+	La
+	LI	STANDARD.IDL.SEM_PHASE_L7.SET_UTIL.DEFSET_TYPE.size
+	LVA 2,	SET_TAIL_disp
+	La
+	BLKMOV
+	BRA	L42
+L43:
+	LVA 2,	NEW_TAIL_disp
+	La
+	LI	STANDARD.IDL.SEM_PHASE_L7.SET_UTIL.DEFSET_TYPE.size
+VAR	ANON_35_14_disp, q
+VAR	ANON_35_14__u,    q
+VAR	ANON_35_14__dat, STANDARD.IDL.SEM_PHASE_L7.SET_UTIL.DEFSET_TYPE.size
+	LVA 2, ANON_35_14__dat
+	Sa  2, ANON_35_14_disp
+	La  1, STANDARD.IDL.SEM_PHASE_L7.SET_UTIL.DEFSET_TYPE.use__info
+	Sa  2, ANON_35_14__u
+	LVA 2, ANON_35_14_disp
+					; doublet resultat record anonyme
+	LVA 2,	SET_TAIL_disp
+	CALL	STANDARD.IDL.SEM_PHASE_L7.REQ_UTIL.REQ_GENE.REQ_DEF_XXX. ,REQUIRE_XXX_L41
+	La
+	BLKMOV
+L42:					; post if
+					; debut if
+	LI	0					; lieu resultat sur pile
+VAR	ANON_37_20_disp, q
+VAR	ANON_37_20__u,    q
+VAR	ANON_37_20__dat, STANDARD.IDL.TREE.size
+	LVA 2, ANON_37_20__dat
+	Sa  2, ANON_37_20_disp
+	La  0, STANDARD.IDL.TREE.use__info
+	Sa  2, ANON_37_20__u
+	LVA 2, ANON_37_20_disp
+					; doublet resultat record anonyme
+	LVA 2,	SET_HEAD_disp
+	CALL	STANDARD.IDL.SEM_PHASE_L7.SET_UTIL. ,GET_DEF_L82
+	CALL	STANDARD.IDL.SEM_PHASE_L7.REQ_UTIL.REQ_GENE.REQ_DEF_XXX. ,IS_XXX_L0
+	BF	L45
+					; debut if
+	LVA 2,	NEW_TAIL_disp
+	LVA 2,	SET_TAIL_disp
+	CEQ
+	BF	L47
+; CODE_RETURN : EXPR TYPE = DN_PRIVATE
+	La   2,	-result__ofs
+	La  ,  0
+	LI	STANDARD.IDL.SEM_PHASE_L7.SET_UTIL.DEFSET_TYPE.size
+	La  2,	-DEFSET_ofs
+	La  ,  0
+	BLKMOV
+	BRA ret_lbl
+	BRA	L46
+L47:
+	LVA 2,	NEW_TAIL_disp
+	La
+	LI	STANDARD.IDL.SEM_PHASE_L7.SET_UTIL.DEFSET_TYPE.size
+VAR	ANON_41_16_disp, q
+VAR	ANON_41_16__u,    q
+VAR	ANON_41_16__dat, STANDARD.IDL.SEM_PHASE_L7.SET_UTIL.DEFSET_TYPE.size
+	LVA 2, ANON_41_16__dat
+	Sa  2, ANON_41_16_disp
+	La  1, STANDARD.IDL.SEM_PHASE_L7.SET_UTIL.DEFSET_TYPE.use__info
+	Sa  2, ANON_41_16__u
+	LVA 2, ANON_41_16_disp
+					; doublet resultat record anonyme
+	LVA 2,	SET_HEAD_disp
+	LVA 2,	NEW_TAIL_disp
+	CALL	STANDARD.IDL.SEM_PHASE_L7.SET_UTIL. ,INSERT_L81
+	La
+	BLKMOV
+; CODE_RETURN : EXPR TYPE = DN_PRIVATE
+	La   2,	-result__ofs
+	La  ,  0
+	LI	STANDARD.IDL.SEM_PHASE_L7.SET_UTIL.DEFSET_TYPE.size
+	LVA 2,	NEW_TAIL_disp
+	La  ,  0
+	BLKMOV
+	BRA ret_lbl
+L46:					; post if
+	BRA	L44
+L45:
+; CODE_RETURN : EXPR TYPE = DN_PRIVATE
+	La   2,	-result__ofs
+	La  ,  0
+	LI	STANDARD.IDL.SEM_PHASE_L7.SET_UTIL.DEFSET_TYPE.size
+	LVA 2,	NEW_TAIL_disp
+	La  ,  0
+	BLKMOV
+	BRA ret_lbl
+L44:					; post if
+ret_lbl:
+	UNLINK 2
+	RTD	prm_siz-8
+excep:
+endPRO					;---------- end PRO REQUIRE_XXX
+end if
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+					; debut if
+	LI	0					; lieu resultat sur pile
+!! FUNCTION D : PAS D ATTRIBUT CD_IMPL_SIZE DANS [DN_PRIVATE<719.81]>

@@ -111,16 +111,16 @@ is
 
       elsif  NAME_EXP.TY = DN_INDEXED  then
         CODE_INDEXED( NAME_EXP );									-- LAISSE	UNE ADRESSE
-        declare
-	NAME		: TREE		:= D( AS_NAME, NAME_EXP );
-	ARRAY_BASE_TYPE	: TREE		:= D( SM_BASE_TYPE,	D( SM_EXP_TYPE, NAME) );
-	ARRAY_COMP_TYPE	: TREE		:= D( SM_COMP_TYPE,	ARRAY_BASE_TYPE );
-	COMP_SIZE		: CHARACTER	:= OPER_SIZ_CHAR( ARRAY_COMP_TYPE );
-        begin
-	PUT( tab & 'L' & COMP_SIZE );
-	if  CODI.DEBUG  then PUT( tab50 & "; charge depuis adresse empilee " ); end if;
-	NEW_LINE;
-        end;
+--        declare
+--	NAME		: TREE		:= D( AS_NAME, NAME_EXP );
+--	ARRAY_BASE_TYPE	: TREE		:= D( SM_BASE_TYPE,	D( SM_EXP_TYPE, NAME) );
+--	ARRAY_COMP_TYPE	: TREE		:= D( SM_COMP_TYPE,	ARRAY_BASE_TYPE );
+--	COMP_SIZE		: CHARACTER	:= OPER_SIZ_CHAR( ARRAY_COMP_TYPE );
+--        begin
+--	PUT( tab & 'L' & COMP_SIZE );
+--	if  CODI.DEBUG  then PUT( tab50 & "; charge depuis adresse empilee " ); end if;
+--	NEW_LINE;
+--        end;
 
       elsif  NAME_EXP.TY = DN_SLICE  then
         CODE_SLICE(	NAME_EXP );
@@ -712,6 +712,77 @@ null;--	     declare
 
   end	CODE_SELECTED;
 	-------------
+
+
+			--^^^^^^^^^^^^^^^--
+  procedure		CODE_OBJECT_ADDRESS		( NAME : TREE )
+  is			-------------------
+  begin
+    case  NAME.TY  is
+    when DN_USED_OBJECT_ID =>
+				----------------------
+				USED_OBJECT_ID_ADDRESS:
+      declare
+        DEFN	: TREE		:= D( SM_DEFN, NAME );
+        OBJ_TYPE	: TREE		:= D( SM_EXP_TYPE, NAME );
+        DEFN_STR	: constant STRING	:= PRINT_NAME( D( LX_SYMREP, DEFN ) );
+        DEFN_LVL	: INTEGER		:= DI( CD_LEVEL, DEFN );
+
+      begin
+      -- Cas d’un alias déjà construit : son _disp contient l’adresse réelle.
+        if  DEFN.TY in CLASS_VC_NAME  and then  DB( SM_RENAMES_OBJ, DEFN )
+        then
+	PUT_LINE( tab & "La" & tab & IMAGE( DEFN_LVL ) & ", " & DEFN_STR & "_disp" );
+
+        elsif  DEFN.TY in CLASS_PARAM_NAME  then
+        -- Paramètre scalaire in : adresse de la copie locale.
+	if  DEFN.TY = DN_IN_ID  and then  OBJ_TYPE.TY in CLASS_SCALAR  then
+	  PUT_LINE( tab & "LVa" & tab & IMAGE( DEFN_LVL ) & ", -" & DEFN_STR & "_ofs" );
+
+        -- Paramètre out/in_out scalaire : le slot contient déjà @destination.
+	elsif  OBJ_TYPE.TY in CLASS_SCALAR  then
+	  PUT_LINE( tab & "La" & tab & IMAGE( DEFN_LVL ) & ", -" & DEFN_STR & "_ofs" );
+
+        -- Paramètre composite : le slot contient @doublet ; on extrait data_ptr.
+	else
+	  PUT_LINE( tab & "La" & tab & IMAGE( DEFN_LVL ) & ", -" & DEFN_STR & "_ofs" );
+	  PUT_LINE( tab & "La" & tab & ", 0" );
+	end if;
+
+        else
+        -- Variable autonome.
+	if  OBJ_TYPE.TY in CLASS_SCALAR  then
+	  PUT_LINE( tab & "LVa" & tab & IMAGE( DEFN_LVL ) & ", " & DEFN_STR & "_disp" );
+	else
+	  PUT_LINE( tab & "La" & tab & IMAGE( DEFN_LVL ) & ", " & DEFN_STR & "_disp" );
+          end if;
+        end if;
+      end		USED_OBJECT_ID_ADDRESS;
+		----------------------
+
+    when DN_SELECTED =>
+      CODE_SELECTED( NAME, IS_SOURCE => FALSE );
+
+    when DN_INDEXED =>
+      CODE_INDEXED( NAME );
+
+    when DN_SLICE =>
+      PUT_LINE( "; CODE_OBJECT_ADDRESS: renames slice a traiter plus tard" );
+      raise PROGRAM_ERROR;
+
+    when DN_ALL =>
+    -- À reprendre quand DN_ALL sera complet.
+      PUT_LINE( "; CODE_OBJECT_ADDRESS: DN_ALL a faire" );
+      raise PROGRAM_ERROR;
+
+    when others =>
+      PUT_LINE( "; CODE_OBJECT_ADDRESS: NAME.TY non gere " & NODE_NAME'IMAGE( NAME.TY ) );
+    raise PROGRAM_ERROR;
+
+    end case;
+
+  end	CODE_OBJECT_ADDRESS;
+	-------------------
 
 
 			----------------------
@@ -2816,8 +2887,24 @@ put_line( "; CODE_QUALIFIED : DN_QUALIFIED" & NODE_NAME'IMAGE( SRC_EXP.TY ) );
   is
     VC_TYPE	: TREE		:= D( SM_OBJ_TYPE, VC_ID );
     VC_LEVEL	: LEVEL_NUM	:= DI( CD_LEVEL, VC_ID );
-
+    VC_STR   : constant STRING := PRINT_NAME( D( LX_SYMREP, VC_ID ) );
   begin
+    while  VC_TYPE.TY = DN_PRIVATE  or else  VC_TYPE.TY = DN_L_PRIVATE  loop
+      VC_TYPE := D( SM_TYPE_SPEC, VC_TYPE );
+    end loop;
+
+    if  DB( SM_RENAMES_OBJ, VC_ID )  then
+      if  VC_TYPE.TY in CLASS_SCALAR  then
+        PUT_LINE( tab & "LI" & OPER_SIZ_CHAR( VC_TYPE ) & tab & IMAGE( VC_LEVEL ) & ", " & VC_STR & "_disp, 0" );
+      else
+      -- Composite : renvoyer l’adresse du doublet alias (_disp, __u),
+      -- exactement comme LOAD_MEM le fait pour une variable composite.
+        PUT_LINE( tab & "LVA" & tab & IMAGE( VC_LEVEL ) & ", " & VC_STR & "_disp" );
+      end if;
+
+      return;
+    end if;
+
     case VC_TYPE.TY is
 
     when DN_INTEGER	| DN_ACCESS | DN_ENUMERATION | DN_FLOAT | DN_FIXED

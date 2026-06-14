@@ -1,0 +1,74 @@
+REP_CLAU = 'REP_CLAU'
+namespace REP_CLAU				;---------- PACKAGE
+elab_spec:				;    SPEC ELAB
+
+					;    BODY ELAB
+
+if defined REQUIRE_CURRENT_REGION_L5_
+PRO	REQUIRE_CURRENT_REGION_L5			;---------- PRO REQUIRE_CURRENT_REGION
+PRMS					;    debut parametrage
+	PRM NAME_ofs				; in
+	PRM DEFSET_ofs				; in out
+	PRM H_ofs				; in
+endPRMS					;    fin parametrage
+ELB 1					;    BODY ELAB
+VAR TEMP_DEFSET_disp, q			; variable record : pointeur aux data record
+VAR TEMP_DEFSET__u, q			; variable record : pointeur aux useinfo
+VAR TEMP_DEFSET__dat, STANDARD.IDL.SEM_PHASE_L7.SET_UTIL.DEFSET_TYPE.size
+	LVA	1, TEMP_DEFSET__dat
+	Sa	1, TEMP_DEFSET_disp			; record fin
+	LVA	1, STANDARD.IDL.SEM_PHASE_L7.SET_UTIL.DEFSET_TYPE.SIZ
+	Sa	1, TEMP_DEFSET__u
+	La  1, TEMP_DEFSET_disp
+	LI	STANDARD.IDL.SEM_PHASE_L7.SET_UTIL.DEFSET_TYPE.size
+	La  1,	-DEFSET_ofs
+	La  ,  0
+	BLKMOV
+
+VAR TEMP_DEFINTERP_disp, q			; variable record : pointeur aux data record
+VAR TEMP_DEFINTERP__u, q			; variable record : pointeur aux useinfo
+VAR TEMP_DEFINTERP__dat, STANDARD.IDL.SEM_PHASE_L7.SET_UTIL.DEFINTERP_TYPE.size
+	LVA	1, TEMP_DEFINTERP__dat
+	Sa	1, TEMP_DEFINTERP_disp			; record fin
+	LVA	1, STANDARD.IDL.SEM_PHASE_L7.SET_UTIL.DEFINTERP_TYPE.SIZ
+	Sa	1, TEMP_DEFINTERP__u
+
+VAR TEMP_DEF_disp, q			; variable record : pointeur aux data record
+VAR TEMP_DEF__u, q				; variable record : pointeur aux useinfo
+VAR TEMP_DEF__dat, STANDARD.IDL.TREE.size
+	LVA	1, TEMP_DEF__dat
+	Sa	1, TEMP_DEF_disp			; record fin
+	LVA	1, STANDARD.IDL.TREE.SIZ
+	Sa	1, TEMP_DEF__u
+
+VAR SOURCE_NAME_disp, q			; variable record : pointeur aux data record
+VAR SOURCE_NAME__u, q			; variable record : pointeur aux useinfo
+VAR SOURCE_NAME__dat, STANDARD.IDL.TREE.size
+	LVA	1, SOURCE_NAME__dat
+	Sa	1, SOURCE_NAME_disp			; record fin
+	LVA	1, STANDARD.IDL.TREE.SIZ
+	Sa	1, SOURCE_NAME__u
+
+VAR UNIT_DESC_disp, q			; variable record : pointeur aux data record
+VAR UNIT_DESC__u, q				; variable record : pointeur aux useinfo
+VAR UNIT_DESC__dat, STANDARD.IDL.TREE.size
+	LVA	1, UNIT_DESC__dat
+	Sa	1, UNIT_DESC_disp			; record fin
+	LVA	1, STANDARD.IDL.TREE.SIZ
+	Sa	1, UNIT_DESC__u
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+					; debut if
+	LI	0					; lieu resultat sur pile
+	LVA 1,	TEMP_DEFSET_disp
+	CALL	STANDARD.IDL.SEM_PHASE_L7.SET_UTIL. ,IS_EMPTY_L74
+	BF	L7
+	BRA ret_lbl
+	BRA	L6
+L7:
+L6:					; post if
+	La  1,	-DEFSET_ofs
+	La
+	LI	STANDARD.IDL.SEM_PHASE_L7.SET_UTIL.DEFSET_TYPE.size
+!! L ATTRIBUT CD_LEVEL DU NOEUD [DN_CONSTANT_ID<673.22]> N EST PAS UN ENTIER

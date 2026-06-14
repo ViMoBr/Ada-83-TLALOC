@@ -314,7 +314,8 @@ is					-----
   begin
     if  DEFN.TY in CLASS_PARAM_NAME  then								-- in_id in_out_id out_id
       if	(DEFN.TY = DN_IN_ID) and (D( SM_OBJ_TYPE, DEFN ).TY in CLASS_SCALAR)	then
-
+				-------------------
+				SCALAR_IN_PARAMETER:
         declare
 	SIZ_CHAR	: CHARACTER	:= OPER_SIZ_CHAR( D( SM_OBJ_TYPE, DEFN ) );
 
@@ -322,7 +323,8 @@ is					-----
 	PUT( tab & "L" & SIZ_CHAR & ' ' & INTEGER'IMAGE( DI( CD_LEVEL, DEFN )	) & ',' &	tab );
 	PUT( '-' & PRINT_NAME( D( LX_SYMREP, DEFN ) ) );							-- ATTENTION signe offset de params opposé aux vars
 	PUT_LINE(	"_ofs" );										-- offset	de parametre scalaire
-        end;
+        end	SCALAR_IN_PARAMETER;
+		-------------------
 
       else											-- pas scalaire ou out in/out
         PUT( tab & "La " & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' & tab );
@@ -338,6 +340,26 @@ is					-----
         while  OBJ_TYPE.TY = DN_PRIVATE  or  OBJ_TYPE.TY = DN_L_PRIVATE  loop
 	OBJ_TYPE := D( SM_TYPE_SPEC, OBJ_TYPE );
         end loop;
+
+        if DEFN.TY in CLASS_VC_NAME  and then  DB( SM_RENAMES_OBJ, DEFN )  then
+			---------------
+			MANAGE_RENAMING:
+	declare
+	  OBJ_LEVEL	: LEVEL_NUM	:= DI( CD_LEVEL, DEFN );
+	  OBJ_STR		: constant STRING	:= PRINT_NAME( D( LX_SYMREP, DEFN ) );
+	begin
+
+	  if  OBJ_TYPE.TY in CLASS_SCALAR  then
+	    PUT_LINE( tab & "LI" & OPER_SIZ_CHAR( OBJ_TYPE ) & tab & IMAGE( OBJ_LEVEL ) & ", "
+			& OBJ_STR & "_disp, 0" );
+	  else
+	    PUT_LINE( tab & "LVA" & tab & IMAGE( OBJ_LEVEL ) & ", " & OBJ_STR & "_disp" );
+	  end if;
+
+	  return;
+	end	MANAGE_RENAMING;
+		---------------
+        end if;
 
         if  OBJ_TYPE.TY in CLASS_SCALAR  then
         declare
@@ -375,6 +397,7 @@ is					-----
 	--========--
 
 
+
 			--^^^^^--
   procedure		  STORE			( DEST_DEFN	:TREE )
   is			---------
@@ -410,13 +433,13 @@ is					-----
 	& ',' & tab & DEST_DEFN_STR & "_disp" );
     end if;
 
-  end	  STORE;
-	--=====--
+  end	STORE;
+	-----
 
 
-			--=====--
+			--^^^^^--
   function		  TAB50			return STRING
-  is			--=====--
+  is			---------
 
     NTABS		: INTEGER		:= (50 - NATURAL(TEXT_IO.COL)	) / 10;
 
@@ -429,8 +452,8 @@ is					-----
       return ESPACEMENT;
     end;
 
-  end	  TAB50;
-	--=====--
+  end	TAB50;
+	-----
 
 
 			--^--
