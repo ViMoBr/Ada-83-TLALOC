@@ -18,8 +18,8 @@ elab_spec:				;    SPEC ELAB
 ; GENERIC_SUBPROGRAM_SPEC
 					;    BODY ELAB
 
-if defined REQ_DEF_XXX_L22412_
-PRO	REQ_DEF_XXX_L22412			;---------- PRO REQ_DEF_XXX
+if defined REQ_DEF_XXX_L23682_
+PRO	REQ_DEF_XXX_L23682			;---------- PRO REQ_DEF_XXX
 PRMS					;    debut parametrage
 	PRM EXP_ofs				; in
 	PRM DEFSET_ofs				; in out
@@ -42,6 +42,7 @@ VAR SET_TAIL__dat, STANDARD.IDL.SEM_PHASE_L7.SET_UTIL.DEFSET_TYPE.size
 	Sa	2, SET_TAIL_disp			; record fin
 	LVA	2, STANDARD.IDL.SEM_PHASE_L7.SET_UTIL.DEFSET_TYPE.SIZ
 	Sa	2, SET_TAIL__u
+; CODE_VC_NAME DN_VARIABLE_ID
 
 VAR SET_HEAD_disp, q			; variable record : pointeur aux data record
 VAR SET_HEAD__u, q				; variable record : pointeur aux useinfo
@@ -50,6 +51,7 @@ VAR SET_HEAD__dat, STANDARD.IDL.SEM_PHASE_L7.SET_UTIL.DEFINTERP_TYPE.size
 	Sa	2, SET_HEAD_disp			; record fin
 	LVA	2, STANDARD.IDL.SEM_PHASE_L7.SET_UTIL.DEFINTERP_TYPE.SIZ
 	Sa	2, SET_HEAD__u
+; CODE_VC_NAME DN_VARIABLE_ID
 
 VAR NEW_TAIL_disp, q			; variable record : pointeur aux data record
 VAR NEW_TAIL__u, q				; variable record : pointeur aux useinfo
@@ -58,6 +60,7 @@ VAR NEW_TAIL__dat, STANDARD.IDL.SEM_PHASE_L7.SET_UTIL.DEFSET_TYPE.size
 	Sa	2, NEW_TAIL_disp			; record fin
 	LVA	2, STANDARD.IDL.SEM_PHASE_L7.SET_UTIL.DEFSET_TYPE.SIZ
 	Sa	2, NEW_TAIL__u
+; CODE_VC_NAME DN_VARIABLE_ID
 
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
@@ -177,4 +180,32 @@ end if
 begin:					;---------- BDY INSTRUCTIONS
 					; debut if
 	LI	0					; lieu resultat sur pile
-!! FUNCTION D : PAS D ATTRIBUT CD_IMPL_SIZE DANS [DN_PRIVATE<719.81]>
+	LIq  1,	-DEFSET_ofs
+	CALL	STANDARD.IDL.SEM_PHASE_L7.SET_UTIL. ,IS_EMPTY_L74
+	BF	L49
+	BRA ret_lbl
+	BRA	L48
+L49:
+L48:					; post if
+	La  1,	-DEFSET_ofs
+	La
+	LI	STANDARD.IDL.SEM_PHASE_L7.SET_UTIL.DEFSET_TYPE.size
+VAR	ANON_54_17_disp, q
+VAR	ANON_54_17__u,    q
+VAR	ANON_54_17__dat, STANDARD.IDL.SEM_PHASE_L7.SET_UTIL.DEFSET_TYPE.size
+	LVA 1, ANON_54_17__dat
+	Sa  1, ANON_54_17_disp
+	La  1, STANDARD.IDL.SEM_PHASE_L7.SET_UTIL.DEFSET_TYPE.use__info
+	Sa  1, ANON_54_17__u
+	LVA 1, ANON_54_17_disp
+					; doublet resultat record anonyme
+	LIq  1,	-DEFSET_ofs
+	CALL	STANDARD.IDL.SEM_PHASE_L7.REQ_UTIL.REQ_GENE.REQ_DEF_XXX. ,REQUIRE_XXX_L41
+	La
+	BLKMOV
+					; debut if
+	LI	0					; lieu resultat sur pile
+	LIq  1,	-DEFSET_ofs
+	CALL	STANDARD.IDL.SEM_PHASE_L7.SET_UTIL. ,IS_EMPTY_L74
+	BF	L51
+!! L ATTRIBUT CD_LEVEL DU NOEUD [DN_IN_ID<771.15]> N EST PAS UN ENTIER

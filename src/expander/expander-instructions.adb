@@ -637,12 +637,19 @@ null;
 
 	  elsif  DEFN.TY = DN_OUT_ID  or  DEFN.TY = DN_IN_OUT_ID  then					-- Param out/in_out de la procedure englobante
 	    if  FRM_PRM_ID.TY = DN_IN_ID  then
-	      -- out/inout -> in : dereferencement, charger la valeur pointee par le parametre
 	      declare
-	        SIZ_CHAR	: CHARACTER	:= CODI.OPER_SIZ_CHAR( D( SM_OBJ_TYPE, DEFN ) );
+	        OBJ_TYPE	: TREE	:= D( SM_OBJ_TYPE, DEFN );
 	      begin
-	        PUT_LINE( tab & "LI" & SIZ_CHAR & ' ' & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' & tab
+	        if  OBJ_TYPE.TY = DN_PRIVATE  or  OBJ_TYPE.TY = DN_L_PRIVATE  then
+		OBJ_TYPE := D( SM_TYPE_SPEC, OBJ_TYPE );
+	        end if;
+	      -- out/inout -> in : dereferencement, charger la valeur pointee par le parametre
+	        declare
+		SIZ_CHAR	: CHARACTER	:= CODI.OPER_SIZ_CHAR( OBJ_TYPE );
+	        begin
+		PUT_LINE( tab & "LI" & SIZ_CHAR & ' ' & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' & tab
 			& '-' & DEFN_STR & "_ofs" );							-- load indirect : lire la valeur via l'adresse du param
+	        end;
 	      end;
 	    else
 	      -- out/inout -> out/inout : propager l'adresse
@@ -1322,7 +1329,12 @@ raise PROGRAM_ERROR;
 
       elsif  DST_NAME.TY = DN_SLICE  then								-- AFFECTATION A UNE TRANCHE
         EXPRESSIONS.CODE_SLICE( DST_NAME );
-        EXPRESSIONS.CODE_EXP( SRC_EXP );
+        if  SRC_EXP.TY = DN_AGGREGATE  then
+	EXPRESSIONS.CODE_AGGREGATE( SRC_EXP, D( SM_EXP_TYPE, DST_NAME ) );
+        else
+	EXPRESSIONS.CODE_EXP( SRC_EXP );
+        end if;
+
         PUT_LINE( tab & "La" );
         PUT_LINE( tab & "BLKMOV" );									-- COPY_BLOCK;	- @DST @SRC LEN
       end if;

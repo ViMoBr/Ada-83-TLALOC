@@ -1057,33 +1057,42 @@ null;--	     declare
 		-----------
     procedure	CODE_LENGTH
     is		-----------
+
       PREFIX_TYPE		: TREE		:= D( SM_EXP_TYPE, PREFIX_NAME );				-- Un tableau
       PREFIX_DEFN		: TREE		:= D( SM_DEFN, PREFIX_NAME );
-      ARRAY_LVL		: INTEGER		:= DI( CD_LEVEL, PREFIX_DEFN );
-      PREFIX_TYPE_STR	:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, PREFIX_TYPE	) ) );
+
     begin
-      if	PREFIX_DEFN.TY in CLASS_PARAM_NAME  then							-- On a juste l'adresse de la	VAR disp
+      if  PREFIX_DEFN.TY = DN_COMPONENT_ID  then
+        PREFIX_DEFN := D( SM_OBJ_TYPE, PREFIX_DEFN );
+      end if;
 
-        PUT_LINE( tab & "LVA"	& tab & IMAGE( ARRAY_LVL ) & ", -" & CHN_PREFIX &	"_ofs" );
-        PUT_LINE( tab & "LIa"	& tab & ", ," & INTEGER'IMAGE( CODI.ADDR_SIZE ) );
-        PUT_LINE( tab & "Ld" & tab & ", " & PREFIX_TYPE_STR	& ".LST_1");
-        PUT_LINE( tab & "INC"	);
-        PUT_LINE( tab & "LVA"	& tab & IMAGE( ARRAY_LVL ) & ", -" & CHN_PREFIX &	"_ofs" );
-        PUT_LINE( tab & "LIa"	& tab & ", ," & INTEGER'IMAGE( CODI.ADDR_SIZE ) );
-        PUT_LINE( tab & "Ld" & tab & ", " & PREFIX_TYPE_STR	& ".FST_1");
-        PUT_LINE( tab & "SUB"	);
+      declare
+        ARRAY_LVL		: INTEGER		:= DI( CD_LEVEL, PREFIX_DEFN );
+        PREFIX_TYPE_STR	:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, PREFIX_TYPE	) ) );
+      begin
+        if  PREFIX_DEFN.TY in CLASS_PARAM_NAME  then							-- On a juste l'adresse de la	VAR disp
 
-      else
-        declare
-	CHN_LID		:constant	STRING	:= tab & "LId" & tab & IMAGE(	ARRAY_LVL	) & ", "
+	PUT_LINE( tab & "LVA" & tab & IMAGE( ARRAY_LVL ) & ", -" & CHN_PREFIX & "_ofs" );
+	PUT_LINE( tab & "LIa" & tab & ", ," & INTEGER'IMAGE( CODI.ADDR_SIZE ) );
+	PUT_LINE( tab & "Ld" & tab & ", " & PREFIX_TYPE_STR & ".LST_1");
+	PUT_LINE( tab & "INC" );
+	PUT_LINE( tab & "LVA" & tab & IMAGE( ARRAY_LVL ) & ", -" & CHN_PREFIX & "_ofs" );
+	PUT_LINE( tab & "LIa" & tab & ", ," & INTEGER'IMAGE( CODI.ADDR_SIZE ) );
+	PUT_LINE( tab & "Ld" & tab & ", " & PREFIX_TYPE_STR & ".FST_1");
+	PUT_LINE( tab & "SUB" );
+
+        else
+	declare
+	  CHN_LID		:constant	STRING	:= tab & "LId" & tab & IMAGE(	ARRAY_LVL	) & ", "
 					   & CHN_PREFIX & "__u" & ", " & PREFIX_TYPE_STR;
-        begin
-	PUT_LINE(	CHN_LID &	".LST_1" );
-	PUT_LINE(	tab & "INC" );
-	PUT_LINE(	CHN_LID &	".FST_1" );
-	PUT_LINE(	tab & "SUB" );
-        end;
-      end	if;
+	begin
+	  PUT_LINE( CHN_LID & ".LST_1" );
+	  PUT_LINE( tab & "INC" );
+	  PUT_LINE( CHN_LID & ".FST_1" );
+	  PUT_LINE( tab & "SUB" );
+          end;
+        end if;
+      end;
 
     end	CODE_LENGTH;
 	-----------
@@ -1646,8 +1655,11 @@ null;--	     declare
         end if;
 
         CODE_EXP( PRM_1 );
-        CODE_EXP( PRM_2 );
-
+        if  PRM_2.TY = DN_AGGREGATE  then
+	CODE_AGGREGATE( PRM_2, D( SM_EXP_TYPE, PRM_1 ) );
+        else
+	CODE_EXP( PRM_2 );
+        end if;
         -- Pour les	comparaisons le type resultat	est BOOLEAN,
         -- il faut tester le type du premier operande
         if  not IS_FLOAT  then

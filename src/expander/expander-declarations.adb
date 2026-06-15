@@ -312,15 +312,8 @@ null;
 
     SRC_NAME_SEQ	: SEQ_TYPE	:= LIST( D( AS_SOURCE_NAME_S,	OBJECT_DECL ) );
     SRC_NAME	: TREE;
---    TYPE_DEF	: TREE		:= D( AS_TYPE_DEF, OBJECT_DECL );
---    TYPE_NAME	: TREE		:= D( AS_NAME, TYPE_DEF );
 
   begin
---    if	TYPE_NAME.TY = DN_SELECTED  then
---      TYPE_NAME := D( AS_DESIGNATOR, TYPE_NAME );
---    end	if;
-
---    CODI.TYPE_SYMREP := D( LX_SYMREP,	TYPE_NAME	);
     while	 not IS_EMPTY( SRC_NAME_SEQ )	 loop
       POP( SRC_NAME_SEQ, SRC_NAME );
       if  not CODI.IN_GENERIC_BODY  or else  ( CODI.CUR_LEVEL /= CODI.GENERIC_BASE_LEVEL )  then
@@ -344,7 +337,8 @@ null;
   procedure		CODE_DEFERRED_CONSTANT_DECL	( DEFERRED_CONSTANT_DECL :TREE )
   is			---------------------------
   begin
-    null;
+    null; --PUT_LINE( "; DEFERRED CONSTANT A FAIRE " );
+
   end	CODE_DEFERRED_CONSTANT_DECL;
 	---------------------------
 
@@ -686,7 +680,14 @@ null;--	  LOAD_TYPE_SIZE( TYPE_SPEC  );
         PUT_LINE( TYPE_NAME_STR & ".SIZ" );
         PUT_LINE( tab & "Sa" & tab & LVL_STR & ", " & VC_STR & "__u" );
 
-        DI( CD_LEVEL,     VC_NAME, INTEGER( LVL )	);
+        DI( CD_LEVEL, VC_NAME, INTEGER( LVL ) );
+
+put_line( "; CODE_VC_NAME " & NODE_NAME'IMAGE( VC_NAME.TY ) );
+
+        if  VC_NAME.TY = DN_CONSTANT_ID  and then  D( SM_FIRST, VC_NAME ) /= VC_NAME  then					-- Cas de differe
+put_line( "; CODE_VC_NAME sm first levelled" );
+	DI( CD_LEVEL, D( SM_FIRST, VC_NAME ), INTEGER( LVL ) );
+        end if;
         DB( CD_COMPILED,  VC_NAME, TRUE	);
 
         if  INIT_EXP.TY = DN_AGGREGATE	then

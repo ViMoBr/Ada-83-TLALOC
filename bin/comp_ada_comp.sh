@@ -1,19 +1,5 @@
 #!/bin/bash
 ./comp_predef_units.sh
-#./a83.sh ./ ./_standrd.ads W
-#./a83.sh ./ ./_standrd.adb W
-#./a83.sh ./ ./system.ads W
-#./a83.sh ./ ./calendar.ads w
-#./a83.sh ./ ./unchecked_deallocation.ads w
-#./a83.sh ./ ./unchecked_conversion.ads w
-#./a83.sh ./ ./io_exceptions.ads W
-#./a83.sh ./ ./machine_code.ads W
-#./a83.sh ./ ./text_io.ads W
-#./a83.sh ./ ./text_io.adb W
-#./a83.sh ./ ./sequential_io.ads W
-#./a83.sh ./ ./sequential_io.adb W
-#./a83.sh ./ ./direct_io.ads W
-#./a83.sh ./ ./direct_io.adb W
 #--------------------------------------------------
 #	IDL
 #--------------------------------------------------
@@ -43,33 +29,33 @@
 #--------------------------------------------------
 ./a83.sh ./ ../src/sem_phase/idl-sem_phase.adb W
 ./a83.sh ./ ../src/sem_phase/idl-sem_phase-aggreso.adb w
-./a83.sh ./ ../src/sem_phase/idl-sem_phase-att_walk.adb w
+./a83.sh ./ ../src/sem_phase/idl-sem_phase-att_walk.adb W
 ./a83.sh ./ ../src/sem_phase/idl-sem_phase-chk_stat.adb W
 ./a83.sh ./ ../src/sem_phase/idl-sem_phase-def_util.adb W
 ./a83.sh ./ ../src/sem_phase/idl-sem_phase-def_walk.adb W
 ./a83.sh ./ ../src/sem_phase/idl-sem_phase-derived.adb W
 ./a83.sh ./ ../src/sem_phase/idl-sem_phase-eval_num.adb W
-./a83.sh ./ ../src/sem_phase/idl-sem_phase-exp_type.adb w
-./a83.sh ./ ../src/sem_phase/idl-sem_phase-expreso.adb w
+./a83.sh ./ ../src/sem_phase/idl-sem_phase-exp_type.adb W
+./a83.sh ./ ../src/sem_phase/idl-sem_phase-expreso.adb W
 ./a83.sh ./ ../src/sem_phase/idl-sem_phase-fix_pre.adb W
 ./a83.sh ./ ../src/sem_phase/idl-sem_phase-fix_with.adb W
-./a83.sh ./ ../src/sem_phase/idl-sem_phase-gen_subs.adb w
-./a83.sh ./ ../src/sem_phase/idl-sem_phase-hom_unit.adb w
+./a83.sh ./ ../src/sem_phase/idl-sem_phase-gen_subs.adb W
+./a83.sh ./ ../src/sem_phase/idl-sem_phase-hom_unit.adb W
 ./a83.sh ./ ../src/sem_phase/idl-sem_phase-instant.adb w
 ./a83.sh ./ ../src/sem_phase/idl-sem_phase-make_nod.adb W
 ./a83.sh ./ ../src/sem_phase/idl-sem_phase-newsnam.adb W
 ./a83.sh ./ ../src/sem_phase/idl-sem_phase-nod_walk.adb w
 ./a83.sh ./ ../src/sem_phase/idl-sem_phase-pra_walk.adb W
 ./a83.sh ./ ../src/sem_phase/idl-sem_phase-pre_fcns.adb W
-./a83.sh ./ ../src/sem_phase/idl-sem_phase-red_subp.adb w
-./a83.sh ./ ../src/sem_phase/idl-sem_phase-rep_clau.adb w
+./a83.sh ./ ../src/sem_phase/idl-sem_phase-red_subp.adb W
+./a83.sh ./ ../src/sem_phase/idl-sem_phase-rep_clau.adb W
 ./a83.sh ./ ../src/sem_phase/idl-sem_phase-req_util.adb w
 ./a83.sh ./ ../src/sem_phase/idl-sem_phase-sem_glob.adb W
-./a83.sh ./ ../src/sem_phase/idl-sem_phase-set_util.adb w
+./a83.sh ./ ../src/sem_phase/idl-sem_phase-set_util.adb W
 ./a83.sh ./ ../src/sem_phase/idl-sem_phase-stm_walk.adb W
-./a83.sh ./ ../src/sem_phase/idl-sem_phase-uarith.adb w
+./a83.sh ./ ../src/sem_phase/idl-sem_phase-uarith.adb W
 ./a83.sh ./ ../src/sem_phase/idl-sem_phase-univ_ops.adb w
-./a83.sh ./ ../src/sem_phase/idl-sem_phase-vis_util.adb w
+./a83.sh ./ ../src/sem_phase/idl-sem_phase-vis_util.adb W
 #--------------------------------------------------
 #	ERR_PHASE
 #--------------------------------------------------
@@ -77,7 +63,7 @@
 #--------------------------------------------------
 #	WRITE_LIB
 #--------------------------------------------------
-./a83.sh ./ ../src/ada_comp/idl-write_lib.adb w
+./a83.sh ./ ../src/ada_comp/idl-write_lib.adb W
 #--------------------------------------------------
 #	EXPANDER
 #--------------------------------------------------
