@@ -239,6 +239,7 @@ VAR DEFAULT_INPUT__dat, STANDARD.TEXT_IO.FILE_TYPE.size
 	Sa	0, DEFAULT_INPUT_disp			; record fin
 	LVA	0, STANDARD.TEXT_IO.FILE_TYPE.SIZ
 	Sa	0, DEFAULT_INPUT__u
+; CODE_VC_NAME DN_VARIABLE_ID
 	LIVa 0, DEFAULT_INPUT_disp, STANDARD.TEXT_IO.FILE_TYPE.ID
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
@@ -287,6 +288,7 @@ VAR DEFAULT_OUTPUT__dat, STANDARD.TEXT_IO.FILE_TYPE.size
 	Sa	0, DEFAULT_OUTPUT_disp			; record fin
 	LVA	0, STANDARD.TEXT_IO.FILE_TYPE.SIZ
 	Sa	0, DEFAULT_OUTPUT__u
+; CODE_VC_NAME DN_VARIABLE_ID
 	LIVa 0, DEFAULT_OUTPUT_disp, STANDARD.TEXT_IO.FILE_TYPE.ID
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
@@ -335,6 +337,7 @@ VAR STD_INPUT__dat, STANDARD.TEXT_IO.FILE_TYPE.size
 	Sa	0, STD_INPUT_disp			; record fin
 	LVA	0, STANDARD.TEXT_IO.FILE_TYPE.SIZ
 	Sa	0, STD_INPUT__u
+; CODE_VC_NAME DN_VARIABLE_ID
 	LIVa 0, STD_INPUT_disp, STANDARD.TEXT_IO.FILE_TYPE.ID
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
@@ -383,6 +386,7 @@ VAR STD_OUTPUT__dat, STANDARD.TEXT_IO.FILE_TYPE.size
 	Sa	0, STD_OUTPUT_disp			; record fin
 	LVA	0, STANDARD.TEXT_IO.FILE_TYPE.SIZ
 	Sa	0, STD_OUTPUT__u
+; CODE_VC_NAME DN_VARIABLE_ID
 	LIVa 0, STD_OUTPUT_disp, STANDARD.TEXT_IO.FILE_TYPE.ID
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
@@ -2685,7 +2689,7 @@ LOOP__4:					; corps boucle LOOP__4
 	LIa	, , 0				; array data start address on stack
 	Ld	1, IL136_disp
 	LVA	1, -ITEM_ofs
-	LIa	, , 8
+	LIa	, 0,  8
 	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
 	SUB
 	LVA	1, -ITEM_ofs
@@ -2695,7 +2699,7 @@ LOOP__4:					; corps boucle LOOP__4
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
+	Lb
 	La  1,	-FILE_ofs
 	CALL	STANDARD.TEXT_IO. ,GET_L49
 	Ld  1,	IL136_disp				; test de sortie LOOP__4
@@ -2899,7 +2903,7 @@ LOOP__5:
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	POS_disp
 	LVA	1, -ITEM_ofs
-	LIa	, , 8
+	LIa	, 0,  8
 	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
 	SUB
 	LVA	1, -ITEM_ofs
@@ -3993,7 +3997,7 @@ LOOP__10:
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	POS_disp
 	LVA	1, -FROM_ofs
-	LIa	, , 8
+	LIa	, 0,  8
 	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
 	SUB
 	LVA	1, -FROM_ofs
@@ -4003,7 +4007,7 @@ LOOP__10:
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
+	Lb
 	LI	32
 	CEQ
 	DUP
@@ -4013,7 +4017,7 @@ LOOP__10:
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	POS_disp
 	LVA	1, -FROM_ofs
-	LIa	, , 8
+	LIa	, 0,  8
 	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
 	SUB
 	LVA	1, -FROM_ofs
@@ -4023,7 +4027,7 @@ LOOP__10:
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
+	Lb
 	LI	 9
 	CEQ
 L244:
@@ -4047,7 +4051,7 @@ L242:					; post loop LOOP__10
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	POS_disp
 	LVA	1, -FROM_ofs
-	LIa	, , 8
+	LIa	, 0,  8
 	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
 	SUB
 	LVA	1, -FROM_ofs
@@ -4057,7 +4061,7 @@ L242:					; post loop LOOP__10
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
+	Lb
 	Sb  1,	CH_disp
 					; debut if
 	Lb 1,	CH_disp
@@ -4104,7 +4108,7 @@ L252:
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	POS_disp
 	LVA	1, -FROM_ofs
-	LIa	, , 8
+	LIa	, 0,  8
 	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
 	SUB
 	LVA	1, -FROM_ofs
@@ -4114,7 +4118,7 @@ L252:
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
+	Lb
 	Sb  1,	CH_disp
 					; debut if
 	Lb 1,	CH_disp
@@ -4597,7 +4601,7 @@ LOOP__13:					; corps boucle LOOP__13
 	LIa	, , 0				; array data start address on stack
 	Ld	1, IL292_disp
 	LVA	1, -TO_ofs
-	LIa	, , 8
+	LIa	, 0,  8
 	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
 	SUB
 	LVA	1, -TO_ofs
@@ -4663,7 +4667,7 @@ LOOP__14:					; corps boucle LOOP__14
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	DST_disp
 	LVA	1, -TO_ofs
-	LIa	, , 8
+	LIa	, 0,  8
 	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
 	SUB
 	LVA	1, -TO_ofs
@@ -4699,7 +4703,7 @@ L293:					; post if
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	DST_disp
 	LVA	1, -TO_ofs
-	LIa	, , 8
+	LIa	, 0,  8
 	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
 	SUB
 	LVA	1, -TO_ofs
@@ -4735,7 +4739,7 @@ L297:					; post if
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	DST_disp
 	LVA	1, -TO_ofs
-	LIa	, , 8
+	LIa	, 0,  8
 	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
 	SUB
 	LVA	1, -TO_ofs
@@ -4756,7 +4760,7 @@ L297:					; post if
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	DST_disp
 	LVA	1, -TO_ofs
-	LIa	, , 8
+	LIa	, 0,  8
 	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
 	SUB
 	LVA	1, -TO_ofs
@@ -4784,7 +4788,7 @@ L302:
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	DST_disp
 	LVA	1, -TO_ofs
-	LIa	, , 8
+	LIa	, 0,  8
 	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
 	SUB
 	LVA	1, -TO_ofs
@@ -4808,7 +4812,7 @@ L301:					; post if
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	DST_disp
 	LVA	1, -TO_ofs
-	LIa	, , 8
+	LIa	, 0,  8
 	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
 	SUB
 	LVA	1, -TO_ofs
@@ -4843,7 +4847,7 @@ LOOP__15:					; corps boucle LOOP__15
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	DST_disp
 	LVA	1, -TO_ofs
-	LIa	, , 8
+	LIa	, 0,  8
 	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
 	SUB
 	LVA	1, -TO_ofs
@@ -4862,7 +4866,7 @@ LOOP__15:					; corps boucle LOOP__15
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
+	Lb
 	Sb
 	Ld 1,	DST_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
@@ -4888,7 +4892,7 @@ L303:					; post loop LOOP__15
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	DST_disp
 	LVA	1, -TO_ofs
-	LIa	, , 8
+	LIa	, 0,  8
 	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
 	SUB
 	LVA	1, -TO_ofs
@@ -6254,7 +6258,7 @@ LOOP__29:
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	POS_disp
 	LVA	1, -FROM_ofs
-	LIa	, , 8
+	LIa	, 0,  8
 	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
 	SUB
 	LVA	1, -FROM_ofs
@@ -6264,7 +6268,7 @@ LOOP__29:
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
+	Lb
 	LI	32
 	CEQ
 	DUP
@@ -6274,7 +6278,7 @@ LOOP__29:
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	POS_disp
 	LVA	1, -FROM_ofs
-	LIa	, , 8
+	LIa	, 0,  8
 	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
 	SUB
 	LVA	1, -FROM_ofs
@@ -6284,7 +6288,7 @@ LOOP__29:
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
+	Lb
 	LI	 9
 	CEQ
 L430:
@@ -6308,7 +6312,7 @@ L428:					; post loop LOOP__29
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	POS_disp
 	LVA	1, -FROM_ofs
-	LIa	, , 8
+	LIa	, 0,  8
 	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
 	SUB
 	LVA	1, -FROM_ofs
@@ -6318,7 +6322,7 @@ L428:					; post loop LOOP__29
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
+	Lb
 	Sb  1,	CH_disp
 					; debut if
 	Lb 1,	CH_disp
@@ -6365,7 +6369,7 @@ L438:
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	POS_disp
 	LVA	1, -FROM_ofs
-	LIa	, , 8
+	LIa	, 0,  8
 	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
 	SUB
 	LVA	1, -FROM_ofs
@@ -6375,7 +6379,7 @@ L438:
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
+	Lb
 	Sb  1,	CH_disp
 					; debut if
 	Lb 1,	CH_disp
@@ -6426,7 +6430,7 @@ L442:
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	POS_disp
 	LVA	1, -FROM_ofs
-	LIa	, , 8
+	LIa	, 0,  8
 	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
 	SUB
 	LVA	1, -FROM_ofs
@@ -6436,7 +6440,7 @@ L442:
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
+	Lb
 	Sb  1,	CH_disp
 					; debut if
 	Lb 1,	CH_disp
@@ -6486,7 +6490,7 @@ LOOP__31:
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	POS_disp
 	LVA	1, -FROM_ofs
-	LIa	, , 8
+	LIa	, 0,  8
 	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
 	SUB
 	LVA	1, -FROM_ofs
@@ -6496,7 +6500,7 @@ LOOP__31:
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
+	Lb
 	Sb  1,	CH_disp
 	Lb 1,	CH_disp
 	LI	48
@@ -7191,7 +7195,7 @@ LOOP__37:					; corps boucle LOOP__37
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
+	Lb
 	CALL	STANDARD.TEXT_IO.FLOAT_IO.PUT_L72. ,EMIT_L467
 	Ld  1,	KL490_disp				; test de sortie LOOP__37
 	Ld  1,	LMT_KL490_disp
@@ -7541,7 +7545,7 @@ LOOP__47:					; corps boucle LOOP__47
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
+	Lb
 	CALL	STANDARD.TEXT_IO.FLOAT_IO.PUT_L72. ,EMIT_L467
 	Ld  2,	KL513_disp				; test de sortie LOOP__47
 	Ld  2,	LMT_KL513_disp
@@ -7591,7 +7595,7 @@ LOOP__42:					; corps boucle LOOP__42
 	LIa	, , 0				; array data start address on stack
 	Ld	1, KL518_disp
 	LVA	1, -TO_ofs
-	LIa	, , 8
+	LIa	, 0,  8
 	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
 	SUB
 	LVA	1, -TO_ofs
@@ -7645,7 +7649,7 @@ LOOP__43:					; corps boucle LOOP__43
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	POS_disp
 	LVA	1, -TO_ofs
-	LIa	, , 8
+	LIa	, 0,  8
 	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
 	SUB
 	LVA	1, -TO_ofs
@@ -7687,7 +7691,7 @@ LOOP__44:					; corps boucle LOOP__44
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	POS_disp
 	LVA	1, -TO_ofs
-	LIa	, , 8
+	LIa	, 0,  8
 	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
 	SUB
 	LVA	1, -TO_ofs
@@ -7706,7 +7710,7 @@ LOOP__44:					; corps boucle LOOP__44
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
+	Lb
 	Sb
 	Ld 1,	POS_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
@@ -8968,7 +8972,7 @@ LOOP__63:					; corps boucle LOOP__63
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
+	Lb
 	La  1,	-FILE_ofs
 	CALL	STANDARD.TEXT_IO. ,PUT_L51
 	Ld  2,	KL637_disp				; test de sortie LOOP__63
@@ -9384,7 +9388,7 @@ LOOP__66:					; corps boucle LOOP__66
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
+	Lb
 	La  1,	-FILE_ofs
 	CALL	STANDARD.TEXT_IO. ,PUT_L51
 	Ld  2,	KL666_disp				; test de sortie LOOP__66
@@ -9512,7 +9516,7 @@ LOOP__67:
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	I_disp
 	LVA	1, -FROM_ofs
-	LIa	, , 8
+	LIa	, 0,  8
 	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
 	SUB
 	LVA	1, -FROM_ofs
@@ -9522,7 +9526,7 @@ LOOP__67:
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
+	Lb
 	LI	32
 	CEQ
 	DUP
@@ -9532,7 +9536,7 @@ LOOP__67:
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	I_disp
 	LVA	1, -FROM_ofs
-	LIa	, , 8
+	LIa	, 0,  8
 	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
 	SUB
 	LVA	1, -FROM_ofs
@@ -9542,7 +9546,7 @@ LOOP__67:
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
+	Lb
 	LI	 9
 	CEQ
 L669:
@@ -9568,7 +9572,7 @@ L667:					; post loop LOOP__67
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	I_disp
 	LVA	1, -FROM_ofs
-	LIa	, , 8
+	LIa	, 0,  8
 	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
 	SUB
 	LVA	1, -FROM_ofs
@@ -9578,7 +9582,7 @@ L667:					; post loop LOOP__67
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
+	Lb
 	LI	45
 	CEQ
 L672:
@@ -9604,7 +9608,7 @@ L671:
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	I_disp
 	LVA	1, -FROM_ofs
-	LIa	, , 8
+	LIa	, 0,  8
 	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
 	SUB
 	LVA	1, -FROM_ofs
@@ -9614,7 +9618,7 @@ L671:
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
+	Lb
 	LI	43
 	CEQ
 L674:
@@ -9639,7 +9643,7 @@ LOOP__68:
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	I_disp
 	LVA	1, -FROM_ofs
-	LIa	, , 8
+	LIa	, 0,  8
 	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
 	SUB
 	LVA	1, -FROM_ofs
@@ -9649,7 +9653,7 @@ LOOP__68:
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
+	Lb
 	LI	48
 	CGE
 	DUP
@@ -9659,7 +9663,7 @@ LOOP__68:
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	I_disp
 	LVA	1, -FROM_ofs
-	LIa	, , 8
+	LIa	, 0,  8
 	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
 	SUB
 	LVA	1, -FROM_ofs
@@ -9669,7 +9673,7 @@ LOOP__68:
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
+	Lb
 	LI	57
 	CLE
 L678:
@@ -9687,7 +9691,7 @@ L678:
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	I_disp
 	LVA	1, -FROM_ofs
-	LIa	, , 8
+	LIa	, 0,  8
 	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
 	SUB
 	LVA	1, -FROM_ofs
@@ -9697,7 +9701,7 @@ L678:
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
+	Lb
 	LI	48
 	SUB
 ; CODE CONVERSION SOURCE DN_UNIVERSAL_INTEGER TARGET DN_FLOAT
@@ -9720,7 +9724,7 @@ L680:
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	I_disp
 	LVA	1, -FROM_ofs
-	LIa	, , 8
+	LIa	, 0,  8
 	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
 	SUB
 	LVA	1, -FROM_ofs
@@ -9730,7 +9734,7 @@ L680:
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
+	Lb
 	LI	48
 	SUB
 ; CODE CONVERSION SOURCE DN_UNIVERSAL_INTEGER TARGET DN_FLOAT
@@ -9749,7 +9753,7 @@ L677:
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	I_disp
 	LVA	1, -FROM_ofs
-	LIa	, , 8
+	LIa	, 0,  8
 	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
 	SUB
 	LVA	1, -FROM_ofs
@@ -9759,7 +9763,7 @@ L677:
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
+	Lb
 	LI	46
 	CEQ
 	DUP
@@ -9783,7 +9787,7 @@ L681:
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	I_disp
 	LVA	1, -FROM_ofs
-	LIa	, , 8
+	LIa	, 0,  8
 	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
 	SUB
 	LVA	1, -FROM_ofs
@@ -9793,7 +9797,7 @@ L681:
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
+	Lb
 	LI	69
 	CEQ
 	DUP
@@ -9803,7 +9807,7 @@ L681:
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	I_disp
 	LVA	1, -FROM_ofs
-	LIa	, , 8
+	LIa	, 0,  8
 	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
 	SUB
 	LVA	1, -FROM_ofs
@@ -9813,7 +9817,7 @@ L681:
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
+	Lb
 	LI	101
 	CEQ
 L685:
@@ -9843,7 +9847,7 @@ L684:
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	I_disp
 	LVA	1, -FROM_ofs
-	LIa	, , 8
+	LIa	, 0,  8
 	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
 	SUB
 	LVA	1, -FROM_ofs
@@ -9853,7 +9857,7 @@ L684:
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
+	Lb
 	LI	45
 	CEQ
 L688:
@@ -9879,7 +9883,7 @@ L687:
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	I_disp
 	LVA	1, -FROM_ofs
-	LIa	, , 8
+	LIa	, 0,  8
 	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
 	SUB
 	LVA	1, -FROM_ofs
@@ -9889,7 +9893,7 @@ L687:
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
+	Lb
 	LI	43
 	CEQ
 L690:
@@ -9915,7 +9919,7 @@ LOOP__69:
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	I_disp
 	LVA	1, -FROM_ofs
-	LIa	, , 8
+	LIa	, 0,  8
 	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
 	SUB
 	LVA	1, -FROM_ofs
@@ -9925,7 +9929,7 @@ LOOP__69:
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
+	Lb
 	LI	48
 	CGE
 L693:
@@ -9936,7 +9940,7 @@ L693:
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	I_disp
 	LVA	1, -FROM_ofs
-	LIa	, , 8
+	LIa	, 0,  8
 	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
 	SUB
 	LVA	1, -FROM_ofs
@@ -9946,7 +9950,7 @@ L693:
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
+	Lb
 	LI	57
 	CLE
 L692:
@@ -9961,7 +9965,7 @@ L692:
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	I_disp
 	LVA	1, -FROM_ofs
-	LIa	, , 8
+	LIa	, 0,  8
 	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
 	SUB
 	LVA	1, -FROM_ofs
@@ -9971,7 +9975,7 @@ L692:
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
+	Lb
 	ADD
 	LI	48
 	SUB
@@ -10672,7 +10676,7 @@ LOOP__75:					; corps boucle LOOP__75
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
+	Lb
 	CALL	STANDARD.TEXT_IO.FIXED_IO.PUT_L78. ,EMIT_L715
 	Ld  1,	KL738_disp				; test de sortie LOOP__75
 	Ld  1,	LMT_KL738_disp
@@ -11022,7 +11026,7 @@ LOOP__85:					; corps boucle LOOP__85
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
+	Lb
 	CALL	STANDARD.TEXT_IO.FIXED_IO.PUT_L78. ,EMIT_L715
 	Ld  2,	KL761_disp				; test de sortie LOOP__85
 	Ld  2,	LMT_KL761_disp
@@ -11072,7 +11076,7 @@ LOOP__80:					; corps boucle LOOP__80
 	LIa	, , 0				; array data start address on stack
 	Ld	1, KL766_disp
 	LVA	1, -TO_ofs
-	LIa	, , 8
+	LIa	, 0,  8
 	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
 	SUB
 	LVA	1, -TO_ofs
@@ -11126,7 +11130,7 @@ LOOP__81:					; corps boucle LOOP__81
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	POS_disp
 	LVA	1, -TO_ofs
-	LIa	, , 8
+	LIa	, 0,  8
 	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
 	SUB
 	LVA	1, -TO_ofs
@@ -11168,7 +11172,7 @@ LOOP__82:					; corps boucle LOOP__82
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	POS_disp
 	LVA	1, -TO_ofs
-	LIa	, , 8
+	LIa	, 0,  8
 	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
 	SUB
 	LVA	1, -TO_ofs
@@ -11187,7 +11191,7 @@ LOOP__82:					; corps boucle LOOP__82
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
+	Lb
 	Sb
 	Ld 1,	POS_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
@@ -11316,7 +11320,7 @@ LOOP__87:
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
+	Lb
 	Sd  2,	REP_disp
 	La	 2, IMAGES_STR_disp			; array data start address on stack
 	Ld 2,	I_disp
@@ -11330,7 +11334,7 @@ LOOP__87:
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
+	Lb
 	Sd  2,	LEN_disp
 					; debut if
 	Ld 2,	REP_disp
@@ -11413,7 +11417,7 @@ VAR CH_disp, d				; variable bool char enum
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
+	Lb
 	Sb  3,	CH_disp
 
 					;    end elab
@@ -11456,7 +11460,7 @@ L782:
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
+	Lb
 	La  1,	-FILE_ofs
 	CALL	STANDARD.TEXT_IO. ,PUT_L51
 L781:					; post if
@@ -11995,7 +11999,7 @@ LOOP__94:
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
+	Lb
 	Sd  1,	REP_disp
 	La	 2, IMAGES_STR_disp			; array data start address on stack
 	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L79.I_disp
@@ -12009,7 +12013,7 @@ LOOP__94:
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
+	Lb
 	Sd  1,	IMG_LEN_disp
 	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L79.I_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
@@ -12050,7 +12054,7 @@ LOOP__95:					; corps boucle LOOP__95
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
+	Lb
 	LI	39
 	CEQ
 	BF	L827
@@ -12096,7 +12100,7 @@ LOOP__96:					; corps boucle LOOP__96
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
+	Lb
 	Sb  1,	IMG_CH_disp
 	La	 1, TOKEN_disp				; array data start address on stack
 	Ld	2, JL829_disp
@@ -12110,7 +12114,7 @@ LOOP__96:					; corps boucle LOOP__96
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
+	Lb
 	Sb  1,	TOK_CH_disp
 					; debut if
 	Lb 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L79.HAS_QUOTE_disp
@@ -12388,7 +12392,7 @@ IGNORE_BLANKS:
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L83.I_disp
 	LVA	1, -FROM_ofs
-	LIa	, , 8
+	LIa	, 0,  8
 	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
 	SUB
 	LVA	1, -FROM_ofs
@@ -12398,7 +12402,7 @@ IGNORE_BLANKS:
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
+	Lb
 	LI	32
 	CEQ
 	DUP
@@ -12408,7 +12412,7 @@ IGNORE_BLANKS:
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L83.I_disp
 	LVA	1, -FROM_ofs
-	LIa	, , 8
+	LIa	, 0,  8
 	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
 	SUB
 	LVA	1, -FROM_ofs
@@ -12418,7 +12422,7 @@ IGNORE_BLANKS:
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
+	Lb
 	LI	 9
 	CEQ
 L848:
@@ -12429,7 +12433,7 @@ L848:
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L83.I_disp
 	LVA	1, -FROM_ofs
-	LIa	, , 8
+	LIa	, 0,  8
 	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
 	SUB
 	LVA	1, -FROM_ofs
@@ -12439,7 +12443,7 @@ L848:
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
+	Lb
 	LI	 10
 	CEQ
 L847:
@@ -12450,7 +12454,7 @@ L847:
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L83.I_disp
 	LVA	1, -FROM_ofs
-	LIa	, , 8
+	LIa	, 0,  8
 	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
 	SUB
 	LVA	1, -FROM_ofs
@@ -12460,7 +12464,7 @@ L847:
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
+	Lb
 	LI	 12
 	CEQ
 L846:
@@ -12489,7 +12493,7 @@ LOOP__98:
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
+	Lb
 	Sd  1,	REP_disp
 	La	 2, IMAGES_STR_disp			; array data start address on stack
 	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L83.P_disp
@@ -12503,7 +12507,7 @@ LOOP__98:
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
+	Lb
 	Sd  1,	LEN_disp
 	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L83.P_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
@@ -12553,14 +12557,14 @@ LOOP__99:					; corps boucle LOOP__99
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
+	Lb
 	LVA	1, -FROM_ofs
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L83.I_disp
 	Ld	2, JL853_disp
 	ADD
 	LVA	1, -FROM_ofs
-	LIa	, , 8
+	LIa	, 0,  8
 	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
 	SUB
 	LVA	1, -FROM_ofs
@@ -12570,7 +12574,7 @@ LOOP__99:					; corps boucle LOOP__99
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
+	Lb
 	CALL	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L83. ,SAME_CHAR_L843
 	LI	1
 	OUX
@@ -12788,7 +12792,7 @@ LOOP__101:				; corps boucle LOOP__101
 	LIa	, , 0				; array data start address on stack
 	Ld	2, KL867_disp
 	LVA	1, -TO_ofs
-	LIa	, , 8
+	LIa	, 0,  8
 	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
 	SUB
 	LVA	1, -TO_ofs
@@ -12823,7 +12827,7 @@ LOOP__102:
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
+	Lb
 	Sd  2,	REP_disp
 	La	 2, IMAGES_STR_disp			; array data start address on stack
 	Ld 2,	I_disp
@@ -12837,7 +12841,7 @@ LOOP__102:
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
+	Lb
 	Sd  2,	LEN_disp
 					; debut if
 	Ld 2,	REP_disp
@@ -12880,7 +12884,7 @@ LOOP__103:				; corps boucle LOOP__103
 	LIa	, , 0				; array data start address on stack
 	Ld	2, KL874_disp
 	LVA	1, -TO_ofs
-	LIa	, , 8
+	LIa	, 0,  8
 	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
 	SUB
 	LVA	1, -TO_ofs
@@ -12949,7 +12953,7 @@ LOOP__104:				; corps boucle LOOP__104
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
+	Lb
 	Sb  2,	CH_disp
 					; debut if
 	Lb  1,	-SET_ofs
@@ -12985,7 +12989,7 @@ L877:					; post if
 	Ld	2, JL876_disp
 	ADD
 	LVA	1, -TO_ofs
-	LIa	, , 8
+	LIa	, 0,  8
 	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
 	SUB
 	LVA	1, -TO_ofs
@@ -13039,7 +13043,7 @@ LOOP__105:				; corps boucle LOOP__105
 	LIa	, , 0				; array data start address on stack
 	Ld	2, KL883_disp
 	LVA	1, -TO_ofs
-	LIa	, , 8
+	LIa	, 0,  8
 	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
 	SUB
 	LVA	1, -TO_ofs

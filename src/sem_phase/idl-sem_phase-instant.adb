@@ -119,9 +119,12 @@ package body INSTANT is
       LEAVE_REGION (UNIT_DEF,	S);
     end;
   end WALK_INSTANTIATION;
-      --|-------------------------------------------------------------------------------------------
-      --|
-  procedure RESOLVE_GENERIC_FORMALS (NODE_HASH : in out NODE_HASH_TYPE; GENERIC_PARAM_S :	TREE; GENERAL_ASSOC_S : TREE;	NEW_DECL_S : out TREE; H : H_TYPE) is
+
+			-----------------------
+  procedure		RESOLVE_GENERIC_FORMALS	( NODE_HASH :in out NODE_HASH_TYPE;
+						  GENERIC_PARAM_S :TREE; GENERAL_ASSOC_S :TREE;
+						  NEW_DECL_S :out TREE; H : H_TYPE)
+  is			-----------------------
 
     FORMAL_COUNT : constant Natural := COUNT_GENERIC_FORMALS (GENERIC_PARAM_S);
 
@@ -138,7 +141,7 @@ package body INSTANT is
     UNIT_DESC	: TREE;
 
     FORMAL	 : FORMAL_ARRAY_TYPE (1 .. FORMAL_COUNT);
-    ACTUAL_TO_FORMAL : array (1 .. LENGTH (ACTUAL_LIST)) of	Natural := (others => 0);
+    ACTUAL_TO_FORMAL : array (1 .. LENGTH( ACTUAL_LIST ) ) of Natural := (others => 0);
   begin
 
 	      -- SPREAD THE	FORMAL PARAMETERS

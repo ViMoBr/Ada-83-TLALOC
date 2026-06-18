@@ -684,8 +684,7 @@ null;--	  LOAD_TYPE_SIZE( TYPE_SPEC  );
 
 put_line( "; CODE_VC_NAME " & NODE_NAME'IMAGE( VC_NAME.TY ) );
 
-        if  VC_NAME.TY = DN_CONSTANT_ID  and then  D( SM_FIRST, VC_NAME ) /= VC_NAME  then					-- Cas de differe
-put_line( "; CODE_VC_NAME sm first levelled" );
+        if  VC_NAME.TY = DN_CONSTANT_ID  and then  D( SM_FIRST, VC_NAME ) /= VC_NAME  then			-- Cas de differe
 	DI( CD_LEVEL, D( SM_FIRST, VC_NAME ), INTEGER( LVL ) );
         end if;
         DB( CD_COMPILED,  VC_NAME, TRUE	);

@@ -411,21 +411,58 @@ VAR A_17__u, q				; variable array : useinfo pointeur au rec info
 	Sa	1, A_17_disp				; array data ptr at _disp
 					; array data aggregate
 	La	1, A_17_disp
-VAR	CNT_ANON_32_42, d
-	LI	17
-	Sd 1,	CNT_ANON_32_42
-ANON_32_42:
-	DUP
-	LI	32
-	Sb
+					; Assign_array_aggregate dynamic type DN_CONSTRAINED_ARRAY
+namespace ANON_32_34_aga
+  VAR FST_1,  d
+  VAR LST_1,  d
+  VAR LEN_1,  d
+  VAR STR_1,  d
+  VAR PTR_1,  q
+  VAR CNT_1,  d
+  VAR EMIS_1, d
+end namespace
+; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
-	ADD
+	Sd  1, ANON_32_34_aga.FST_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	17
+	Sd  1, ANON_32_34_aga.LST_1
+	Ld  1, ANON_32_34_aga.LST_1
+	Ld  1, ANON_32_34_aga.FST_1
+	SUB
+	INC
+	Sd  1, ANON_32_34_aga.LEN_1
+	LI	1
+	Sd  1, ANON_32_34_aga.STR_1
+	Sa  1, ANON_32_34_aga.PTR_1
 	LI	0
-	Ld 1,	CNT_ANON_32_42
+	Sd  1, ANON_32_34_aga.EMIS_1
+	Ld  1, ANON_32_34_aga.LEN_1
+	Ld  1, ANON_32_34_aga.EMIS_1
+	SUB
+	Sd  1, ANON_32_34_aga.CNT_1
+	Ld  1, ANON_32_34_aga.CNT_1
+	LI	0
+	CLE
+	BT  L3
+L2:
+	LI	32
+	SIb  1, ANON_32_34_aga.PTR_1, 0
+	La  1, ANON_32_34_aga.PTR_1
+	Ld  1, ANON_32_34_aga.STR_1
+	ADD
+	Sa  1, ANON_32_34_aga.PTR_1
+	Ld  1, ANON_32_34_aga.EMIS_1
+	INC
+	Sd  1, ANON_32_34_aga.EMIS_1
+	Ld  1, ANON_32_34_aga.CNT_1
 	DEC
-	CEQ
-	BF	ANON_32_42
-	DROP
+	DUP
+	Sd  1, ANON_32_34_aga.CNT_1
+	LI	0
+	CGT
+	BT  L2
+L3:
 
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
@@ -441,7 +478,7 @@ begin:					;---------- BDY INSTRUCTIONS
 ; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
 	LI	17
 	CLE
-	BF	L3
+	BF	L5
 	La 1, A_17_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
@@ -467,9 +504,9 @@ begin:					;---------- BDY INSTRUCTIONS
 	La  1,	-S_ofs
 	La
 	BLKMOV
-	BRA	L2
-L3:
-L2:					; post if
+	BRA	L4
+L5:
+L4:					; post if
 	LVA	1, -S_ofs
 	LIa	, , 8
 	Ld	, STRING.LST_1
@@ -484,7 +521,7 @@ L2:					; post if
 	LIa	, , 8
 	Ld	, STRING.LST_1
 	LVA	1, -S_ofs
-	LIa	, , 8
+	LIa	, 0,  8
 	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
 	SUB
 	LVA	1, -S_ofs
@@ -494,7 +531,7 @@ L2:					; post if
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
+	Lb
 	ADD
 ; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
 	LI	37
@@ -514,7 +551,7 @@ LOOP__1:
 	LVA	, STANDARD.GRMR_OPS.HTABLE_TYPE.HN
 	CNE
 	DUP
-	BF	L5
+	BF	L7
 	DROP
 	La	 0, HTABLE_disp				; array data start address on stack
 	Ld 0,	STANDARD.GRMR_OPS.HCODE_disp
@@ -528,8 +565,8 @@ LOOP__1:
 	Lb	, STANDARD.GRMR_OPS.HTABLE_TYPE.HP
 	LI	0
 	CNE
-L5:
-	BF	L4
+L7:
+	BF	L6
 	Ld 0,	STANDARD.GRMR_OPS.HCODE_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
@@ -539,7 +576,7 @@ L5:
 	MODI
 	Sd  0,	HCODE_disp
 	BRA	LOOP__1
-L4:					; post loop LOOP__1
+L6:					; post loop LOOP__1
 ret_lbl:
 	UNLINK 1
 	RTD	prm_siz
@@ -641,17 +678,17 @@ LOOP__2:
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb					; charge depuis adresse empilee 
+	Lb
 	LI	32
 	CNE
-	BT	L6
+	BT	L8
 	Ld 1,	LL_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SUB
 	Sd  1,	LL_disp
 	BRA	LOOP__2
-L6:					; post loop LOOP__2
+L8:					; post loop LOOP__2
 ; CODE_RETURN : EXPR TYPE = DN_ARRAY
 	La 1, TXT_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
@@ -668,18 +705,18 @@ L6:					; post loop LOOP__2
 	SUB
 	LI	1
 	MUL
-VAR	RET_INFO_L8, q
+VAR	RET_INFO_L10, q
 	DUP
 	La  ,  0
 	SIq   1, -result__ofs,  0
 	DUP
 	La  ,  8
-	Sa   1, RET_INFO_L8
+	Sa   1, RET_INFO_L10
 	DROP
 	La   1, -result__ofs
 	La  ,  8
 	LI	16
-	La   1, RET_INFO_L8
+	La   1, RET_INFO_L10
 	BLKMOV
 	BRA ret_lbl
 ret_lbl:
@@ -692,8 +729,8 @@ begin:					;---------- package BDY INSTRUCTIONS
 namespace	BLOCK__3
 ELB 1					;    BODY ELAB
 
-if defined STASH_L9_
-PRO	STASH_L9				;---------- PRO STASH
+if defined STASH_L11_
+PRO	STASH_L11				;---------- PRO STASH
 PRMS					;    debut parametrage
 	PRM P_ofs				; in
 	PRM S_ofs				; in
@@ -743,21 +780,58 @@ VAR A_17__u, q				; variable array : useinfo pointeur au rec info
 	Sa	2, A_17_disp				; array data ptr at _disp
 					; array data aggregate
 	La	2, A_17_disp
-VAR	CNT_ANON_81_44, d
-	LI	17
-	Sd 2,	CNT_ANON_81_44
-ANON_81_44:
-	DUP
-	LI	32
-	Sb
+					; Assign_array_aggregate dynamic type DN_CONSTRAINED_ARRAY
+namespace ANON_81_36_aga
+  VAR FST_1,  d
+  VAR LST_1,  d
+  VAR LEN_1,  d
+  VAR STR_1,  d
+  VAR PTR_1,  q
+  VAR CNT_1,  d
+  VAR EMIS_1, d
+end namespace
+; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
-	ADD
+	Sd  2, ANON_81_36_aga.FST_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	17
+	Sd  2, ANON_81_36_aga.LST_1
+	Ld  2, ANON_81_36_aga.LST_1
+	Ld  2, ANON_81_36_aga.FST_1
+	SUB
+	INC
+	Sd  2, ANON_81_36_aga.LEN_1
+	LI	1
+	Sd  2, ANON_81_36_aga.STR_1
+	Sa  2, ANON_81_36_aga.PTR_1
 	LI	0
-	Ld 2,	CNT_ANON_81_44
+	Sd  2, ANON_81_36_aga.EMIS_1
+	Ld  2, ANON_81_36_aga.LEN_1
+	Ld  2, ANON_81_36_aga.EMIS_1
+	SUB
+	Sd  2, ANON_81_36_aga.CNT_1
+	Ld  2, ANON_81_36_aga.CNT_1
+	LI	0
+	CLE
+	BT  L13
+L12:
+	LI	32
+	SIb  2, ANON_81_36_aga.PTR_1, 0
+	La  2, ANON_81_36_aga.PTR_1
+	Ld  2, ANON_81_36_aga.STR_1
+	ADD
+	Sa  2, ANON_81_36_aga.PTR_1
+	Ld  2, ANON_81_36_aga.EMIS_1
+	INC
+	Sd  2, ANON_81_36_aga.EMIS_1
+	Ld  2, ANON_81_36_aga.CNT_1
 	DEC
-	CEQ
-	BF	ANON_81_44
-	DROP
+	DUP
+	Sd  2, ANON_81_36_aga.CNT_1
+	LI	0
+	CGT
+	BT  L12
+L13:
 
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
@@ -797,6 +871,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	DIV
 	MUL
 	ADD					; add offset to start address
+					; Assign_record_aggregate type DN_RECORD
 	DUP
 	LVA	, STANDARD.GRMR_OPS.HTABLE_TYPE.HN
 	LVA 2,	A_17_disp
@@ -825,114 +900,114 @@ excep:
 endPRO					;---------- end PRO STASH
 end if
 begin:					;---------- package BDY INSTRUCTIONS
-STR STR_L10, "$0"				; constante string="$0"
-	LCA	STR_L10.data_ptr
-	LI  1
-	CALL	STANDARD.GRMR_OPS.BLOCK__3. ,STASH_L9
-STR STR_L11, "$DEF"				; constante string="$DEF"
-	LCA	STR_L11.data_ptr
-	LI  2
-	CALL	STANDARD.GRMR_OPS.BLOCK__3. ,STASH_L9
-STR STR_L12, "$1"				; constante string="$1"
-	LCA	STR_L12.data_ptr
-	LI  3
-	CALL	STANDARD.GRMR_OPS.BLOCK__3. ,STASH_L9
-STR STR_L13, "$2"				; constante string="$2"
-	LCA	STR_L13.data_ptr
-	LI  4
-	CALL	STANDARD.GRMR_OPS.BLOCK__3. ,STASH_L9
-STR STR_L14, "$3"				; constante string="$3"
+STR STR_L14, "$0"				; constante string="$0"
 	LCA	STR_L14.data_ptr
-	LI  7
-	CALL	STANDARD.GRMR_OPS.BLOCK__3. ,STASH_L9
-STR STR_L15, "$N2"				; constante string="$N2"
+	LI  1
+	CALL	STANDARD.GRMR_OPS.BLOCK__3. ,STASH_L11
+STR STR_L15, "$DEF"				; constante string="$DEF"
 	LCA	STR_L15.data_ptr
-	LI  5
-	CALL	STANDARD.GRMR_OPS.BLOCK__3. ,STASH_L9
-STR STR_L16, "$N3"				; constante string="$N3"
+	LI  2
+	CALL	STANDARD.GRMR_OPS.BLOCK__3. ,STASH_L11
+STR STR_L16, "$1"				; constante string="$1"
 	LCA	STR_L16.data_ptr
-	LI  8
-	CALL	STANDARD.GRMR_OPS.BLOCK__3. ,STASH_L9
-STR STR_L17, "$V2"				; constante string="$V2"
+	LI  3
+	CALL	STANDARD.GRMR_OPS.BLOCK__3. ,STASH_L11
+STR STR_L17, "$2"				; constante string="$2"
 	LCA	STR_L17.data_ptr
-	LI  6
-	CALL	STANDARD.GRMR_OPS.BLOCK__3. ,STASH_L9
-STR STR_L18, "$V3"				; constante string="$V3"
+	LI  4
+	CALL	STANDARD.GRMR_OPS.BLOCK__3. ,STASH_L11
+STR STR_L18, "$3"				; constante string="$3"
 	LCA	STR_L18.data_ptr
-	LI  9
-	CALL	STANDARD.GRMR_OPS.BLOCK__3. ,STASH_L9
-STR STR_L19, "$L"				; constante string="$L"
+	LI  7
+	CALL	STANDARD.GRMR_OPS.BLOCK__3. ,STASH_L11
+STR STR_L19, "$N2"				; constante string="$N2"
 	LCA	STR_L19.data_ptr
-	LI  10
-	CALL	STANDARD.GRMR_OPS.BLOCK__3. ,STASH_L9
-STR STR_L20, "infix"			; constante string="infix"
+	LI  5
+	CALL	STANDARD.GRMR_OPS.BLOCK__3. ,STASH_L11
+STR STR_L20, "$N3"				; constante string="$N3"
 	LCA	STR_L20.data_ptr
-	LI  11
-	CALL	STANDARD.GRMR_OPS.BLOCK__3. ,STASH_L9
-STR STR_L21, "unary"			; constante string="unary"
+	LI  8
+	CALL	STANDARD.GRMR_OPS.BLOCK__3. ,STASH_L11
+STR STR_L21, "$V2"				; constante string="$V2"
 	LCA	STR_L21.data_ptr
-	LI  12
-	CALL	STANDARD.GRMR_OPS.BLOCK__3. ,STASH_L9
-STR STR_L22, "lx_symrep"			; constante string="lx_symrep"
+	LI  6
+	CALL	STANDARD.GRMR_OPS.BLOCK__3. ,STASH_L11
+STR STR_L22, "$V3"				; constante string="$V3"
 	LCA	STR_L22.data_ptr
-	LI  13
-	CALL	STANDARD.GRMR_OPS.BLOCK__3. ,STASH_L9
-STR STR_L23, "lx_numrep"			; constante string="lx_numrep"
+	LI  9
+	CALL	STANDARD.GRMR_OPS.BLOCK__3. ,STASH_L11
+STR STR_L23, "$L"				; constante string="$L"
 	LCA	STR_L23.data_ptr
-	LI  14
-	CALL	STANDARD.GRMR_OPS.BLOCK__3. ,STASH_L9
-STR STR_L24, "lx_default"			; constante string="lx_default"
+	LI  10
+	CALL	STANDARD.GRMR_OPS.BLOCK__3. ,STASH_L11
+STR STR_L24, "infix"			; constante string="infix"
 	LCA	STR_L24.data_ptr
-	LI  15
-	CALL	STANDARD.GRMR_OPS.BLOCK__3. ,STASH_L9
-STR STR_L25, "not_lx_default"			; constante string="not_lx_default"
+	LI  11
+	CALL	STANDARD.GRMR_OPS.BLOCK__3. ,STASH_L11
+STR STR_L25, "unary"			; constante string="unary"
 	LCA	STR_L25.data_ptr
-	LI  16
-	CALL	STANDARD.GRMR_OPS.BLOCK__3. ,STASH_L9
-STR STR_L26, "nil"				; constante string="nil"
+	LI  12
+	CALL	STANDARD.GRMR_OPS.BLOCK__3. ,STASH_L11
+STR STR_L26, "lx_symrep"			; constante string="lx_symrep"
 	LCA	STR_L26.data_ptr
-	LI  17
-	CALL	STANDARD.GRMR_OPS.BLOCK__3. ,STASH_L9
-STR STR_L27, "insert"			; constante string="insert"
+	LI  13
+	CALL	STANDARD.GRMR_OPS.BLOCK__3. ,STASH_L11
+STR STR_L27, "lx_numrep"			; constante string="lx_numrep"
 	LCA	STR_L27.data_ptr
-	LI  18
-	CALL	STANDARD.GRMR_OPS.BLOCK__3. ,STASH_L9
-STR STR_L28, "append"			; constante string="append"
+	LI  14
+	CALL	STANDARD.GRMR_OPS.BLOCK__3. ,STASH_L11
+STR STR_L28, "lx_default"			; constante string="lx_default"
 	LCA	STR_L28.data_ptr
-	LI  19
-	CALL	STANDARD.GRMR_OPS.BLOCK__3. ,STASH_L9
-STR STR_L29, "cat"				; constante string="cat"
+	LI  15
+	CALL	STANDARD.GRMR_OPS.BLOCK__3. ,STASH_L11
+STR STR_L29, "not_lx_default"			; constante string="not_lx_default"
 	LCA	STR_L29.data_ptr
-	LI  20
-	CALL	STANDARD.GRMR_OPS.BLOCK__3. ,STASH_L9
-STR STR_L30, "void"				; constante string="void"
+	LI  16
+	CALL	STANDARD.GRMR_OPS.BLOCK__3. ,STASH_L11
+STR STR_L30, "nil"				; constante string="nil"
 	LCA	STR_L30.data_ptr
-	LI  21
-	CALL	STANDARD.GRMR_OPS.BLOCK__3. ,STASH_L9
-STR STR_L31, "list"				; constante string="list"
+	LI  17
+	CALL	STANDARD.GRMR_OPS.BLOCK__3. ,STASH_L11
+STR STR_L31, "insert"			; constante string="insert"
 	LCA	STR_L31.data_ptr
-	LI  22
-	CALL	STANDARD.GRMR_OPS.BLOCK__3. ,STASH_L9
-STR STR_L32, "exch_1"			; constante string="exch_1"
+	LI  18
+	CALL	STANDARD.GRMR_OPS.BLOCK__3. ,STASH_L11
+STR STR_L32, "append"			; constante string="append"
 	LCA	STR_L32.data_ptr
-	LI  23
-	CALL	STANDARD.GRMR_OPS.BLOCK__3. ,STASH_L9
-STR STR_L33, "exch_2"			; constante string="exch_2"
+	LI  19
+	CALL	STANDARD.GRMR_OPS.BLOCK__3. ,STASH_L11
+STR STR_L33, "cat"				; constante string="cat"
 	LCA	STR_L33.data_ptr
-	LI  24
-	CALL	STANDARD.GRMR_OPS.BLOCK__3. ,STASH_L9
-STR STR_L34, "check_name"			; constante string="check_name"
+	LI  20
+	CALL	STANDARD.GRMR_OPS.BLOCK__3. ,STASH_L11
+STR STR_L34, "void"				; constante string="void"
 	LCA	STR_L34.data_ptr
-	LI  25
-	CALL	STANDARD.GRMR_OPS.BLOCK__3. ,STASH_L9
-STR STR_L35, "check_subp_name"		; constante string="check_subp_name"
+	LI  21
+	CALL	STANDARD.GRMR_OPS.BLOCK__3. ,STASH_L11
+STR STR_L35, "list"				; constante string="list"
 	LCA	STR_L35.data_ptr
-	LI  26
-	CALL	STANDARD.GRMR_OPS.BLOCK__3. ,STASH_L9
-STR STR_L36, "check_accept_name"		; constante string="check_accept_name"
+	LI  22
+	CALL	STANDARD.GRMR_OPS.BLOCK__3. ,STASH_L11
+STR STR_L36, "exch_1"			; constante string="exch_1"
 	LCA	STR_L36.data_ptr
+	LI  23
+	CALL	STANDARD.GRMR_OPS.BLOCK__3. ,STASH_L11
+STR STR_L37, "exch_2"			; constante string="exch_2"
+	LCA	STR_L37.data_ptr
+	LI  24
+	CALL	STANDARD.GRMR_OPS.BLOCK__3. ,STASH_L11
+STR STR_L38, "check_name"			; constante string="check_name"
+	LCA	STR_L38.data_ptr
+	LI  25
+	CALL	STANDARD.GRMR_OPS.BLOCK__3. ,STASH_L11
+STR STR_L39, "check_subp_name"		; constante string="check_subp_name"
+	LCA	STR_L39.data_ptr
+	LI  26
+	CALL	STANDARD.GRMR_OPS.BLOCK__3. ,STASH_L11
+STR STR_L40, "check_accept_name"		; constante string="check_accept_name"
+	LCA	STR_L40.data_ptr
 	LI  27
-	CALL	STANDARD.GRMR_OPS.BLOCK__3. ,STASH_L9
+	CALL	STANDARD.GRMR_OPS.BLOCK__3. ,STASH_L11
 	UNLINK 1
 endPRO
 end namespace 				;---------- end package BDY GRMR_OPS

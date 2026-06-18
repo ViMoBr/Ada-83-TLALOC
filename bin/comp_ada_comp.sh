@@ -41,7 +41,7 @@
 ./a83.sh ./ ../src/sem_phase/idl-sem_phase-fix_with.adb W
 ./a83.sh ./ ../src/sem_phase/idl-sem_phase-gen_subs.adb W
 ./a83.sh ./ ../src/sem_phase/idl-sem_phase-hom_unit.adb W
-./a83.sh ./ ../src/sem_phase/idl-sem_phase-instant.adb w
+./a83.sh ./ ../src/sem_phase/idl-sem_phase-instant.adb W
 ./a83.sh ./ ../src/sem_phase/idl-sem_phase-make_nod.adb W
 ./a83.sh ./ ../src/sem_phase/idl-sem_phase-newsnam.adb W
 ./a83.sh ./ ../src/sem_phase/idl-sem_phase-nod_walk.adb w
@@ -54,7 +54,7 @@
 ./a83.sh ./ ../src/sem_phase/idl-sem_phase-set_util.adb W
 ./a83.sh ./ ../src/sem_phase/idl-sem_phase-stm_walk.adb W
 ./a83.sh ./ ../src/sem_phase/idl-sem_phase-uarith.adb W
-./a83.sh ./ ../src/sem_phase/idl-sem_phase-univ_ops.adb w
+./a83.sh ./ ../src/sem_phase/idl-sem_phase-univ_ops.adb W
 ./a83.sh ./ ../src/sem_phase/idl-sem_phase-vis_util.adb W
 #--------------------------------------------------
 #	ERR_PHASE

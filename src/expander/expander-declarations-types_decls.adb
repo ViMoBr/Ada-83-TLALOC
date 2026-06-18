@@ -414,25 +414,25 @@ declare
 	ELEMENT_SIZ_STR		:constant	STRING	:= IMAGE(	ELEMENT_SIZ );				-- IMAGE DE TAILLE EN BITS
         begin
 	ARRAY_STATIC_SIZE := ELEMENT_SIZ;
-	PUT_LINE(	"VAR COMP_SIZ, d" );
-	PUT_LINE(	"VAR FST_" & DIM_NBR_STR & ", d" );
-	PUT_LINE(	"VAR LST_" & DIM_NBR_STR & ", d" );
+	PUT_LINE(	"VAR _COMP_SIZ, d" );
+	PUT_LINE(	"VAR _FST_" & DIM_NBR_STR & ", d" );
+	PUT_LINE(	"VAR _LST_" & DIM_NBR_STR & ", d" );
 
 	PUT_LINE(	tab & "LI" & tab & ELEMENT_SIZ_STR );							-- TAILLE	D'UN ELEMENT DU TABLEAU
-	PUT_LINE(	tab & "Sd" & tab & LVL_STR & ", COMP_SIZ" );						-- DWORD COMP_SIZ
-	PUT_LINE(	tab & "Ld" & tab & LVL_STR & ", COMP_SIZ" );						-- recharge pour MUL suivant
+	PUT_LINE(	tab & "Sd" & tab & LVL_STR & ", _COMP_SIZ" );						-- DWORD COMP_SIZ
+	PUT_LINE(	tab & "Ld" & tab & LVL_STR & ", _COMP_SIZ" );						-- recharge pour MUL suivant
         end;
 
       else
         COMPILE_ARRAY_TYPE_DIMENSION( IDX_TYPE_LIST );
 
-        PUT_LINE( "VAR SIZ_" & DIM_NBR_STR & ", d" );
-        PUT_LINE( "VAR FST_" & DIM_NBR_STR & ", d" );
-        PUT_LINE( "VAR LST_" & DIM_NBR_STR & ", d" );
+        PUT_LINE( "VAR _SIZ_" & DIM_NBR_STR & ", d" );
+        PUT_LINE( "VAR _FST_" & DIM_NBR_STR & ", d" );
+        PUT_LINE( "VAR _LST_" & DIM_NBR_STR & ", d" );
 
         PUT_LINE( tab & "MUL"	);
-        PUT_LINE( tab & "Sd" & tab & LVL_STR & ", SIZ_" & DIM_NBR_STR	);					-- METTRE	LA TAILLE	TRANCHE A	CELLE LAISSEE PAR LE CALCUL SUR LA DIM PRECEDENTE
-        PUT_LINE( tab & "Ld" & tab & LVL_STR & ", SIZ_" & DIM_NBR_STR	);					-- recharge pour MUL suivant
+        PUT_LINE( tab & "Sd" & tab & LVL_STR & ", _SIZ_" & DIM_NBR_STR );					-- METTRE	LA TAILLE	TRANCHE A	CELLE LAISSEE PAR LE CALCUL SUR LA DIM PRECEDENTE
+        PUT_LINE( tab & "Ld" & tab & LVL_STR & ", _SIZ_" & DIM_NBR_STR );					-- recharge pour MUL suivant
       end	if;
 
       if	IDX_TYPE.TY = DN_INTEGER  then
@@ -448,13 +448,13 @@ declare
 	end if;
 
 	EXPRESSIONS.CODE_EXP( RANGE_FIRST );
-	PUT_LINE(	tab & "Sd" & tab & LVL_STR & ", FST_" &	DIM_NBR_STR );
+	PUT_LINE(	tab & "Sd" & tab & LVL_STR & ", _FST_" & DIM_NBR_STR );
 	EXPRESSIONS.CODE_EXP( RANGE_LAST );
-	PUT_LINE(	tab & "Sd" & tab & LVL_STR & ", LST_" &	DIM_NBR_STR );
+	PUT_LINE(	tab & "Sd" & tab & LVL_STR & ", _LST_" & DIM_NBR_STR );
 
-	PUT_LINE(	tab & "Ld" & tab & LVL_STR & ", LST_" &	DIM_NBR_STR );
+	PUT_LINE(	tab & "Ld" & tab & LVL_STR & ", _LST_" & DIM_NBR_STR );
 	PUT_LINE(	tab & "INC" );
-	PUT_LINE(	tab & "Ld" & tab & LVL_STR & ", FST_" &	DIM_NBR_STR );
+	PUT_LINE(	tab & "Ld" & tab & LVL_STR & ", _FST_" & DIM_NBR_STR );
 	PUT_LINE(	tab & "SUB" );
 
 	if  IS_STATIC  then
