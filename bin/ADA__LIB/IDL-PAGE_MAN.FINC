@@ -144,22 +144,58 @@ VAR ASSOC_PAGE__u, q			; variable array : useinfo pointeur au rec info
 	Sa	0, ASSOC_PAGE_disp			; array data ptr at _disp
 					; array data aggregate
 	La	0, ASSOC_PAGE_disp
-VAR	CNT_ANON_38_59, d
-	LI	32767
-	Sd 0,	CNT_ANON_38_59
-ANON_38_59:
-	DUP
+					; Assign_array_aggregate dynamic type DN_CONSTRAINED_ARRAY
+namespace ANON_38_52_aga
+  VAR _FST_1, d
+  VAR _LST_1, d
+  VAR _LEN_1, d
+  VAR _STR_1, d
+  VAR _PTR_1, q
+  VAR _CNT_1, d
+  VAR _EMIS_1, d
+end namespace
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd  0, ANON_38_52_aga._FST_1
+	Lw 0,	STANDARD.IDL.PAGE_MAN.MAX_VPG_disp
+	Sd  0, ANON_38_52_aga._LST_1
+	Ld  0, ANON_38_52_aga._LST_1
+	Ld  0, ANON_38_52_aga._FST_1
+	SUB
+	INC
+	Sd  0, ANON_38_52_aga._LEN_1
+	LI	4
+	Sd  0, ANON_38_52_aga._STR_1
+	Sa  0, ANON_38_52_aga._PTR_1
+	LI	0
+	Sd  0, ANON_38_52_aga._EMIS_1
+	Ld  0, ANON_38_52_aga._LEN_1
+	Ld  0, ANON_38_52_aga._EMIS_1
+	SUB
+	Sd  0, ANON_38_52_aga._CNT_1
+	Ld  0, ANON_38_52_aga._CNT_1
+	LI	0
+	CLE
+	BT  L2
+L1:
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
-	Sd
-	LI	4
+	SId  0, ANON_38_52_aga._PTR_1, 0
+	La  0, ANON_38_52_aga._PTR_1
+	Ld  0, ANON_38_52_aga._STR_1
 	ADD
-	LI	0
-	Ld 0,	CNT_ANON_38_59
+	Sa  0, ANON_38_52_aga._PTR_1
+	Ld  0, ANON_38_52_aga._EMIS_1
+	INC
+	Sd  0, ANON_38_52_aga._EMIS_1
+	Ld  0, ANON_38_52_aga._CNT_1
 	DEC
-	CEQ
-	BF	ANON_38_59
-	DROP
+	DUP
+	Sd  0, ANON_38_52_aga._CNT_1
+	LI	0
+	CGT
+	BT  L1
+L2:
 
 VAR CUR_VP_disp, w				; variable entiere
 
@@ -175,21 +211,21 @@ VAR use__info, q
 VAR SIZ, d
 	LVA	0, SIZ
 	Sa	0, use__info
-VAR COMP_SIZ, d
-VAR FST_1, d
-VAR LST_1, d
+VAR _COMP_SIZ, d
+VAR _FST_1, d
+VAR _LST_1, d
 	LI	32
-	Sd	0, COMP_SIZ
-	Ld	0, COMP_SIZ
+	Sd	0, _COMP_SIZ
+	Ld	0, _COMP_SIZ
 ; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
 	LI	0
-	Sd	0, FST_1
+	Sd	0, _FST_1
 ; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
 	LI	127
-	Sd	0, LST_1
-	Ld	0, LST_1
+	Sd	0, _LST_1
+	Ld	0, _LST_1
 	INC
-	Ld	0, FST_1
+	Ld	0, _FST_1
 	SUB
 	MUL
 	Sd	0, SIZ
@@ -260,31 +296,68 @@ VAR AREA__u, q				; variable array : useinfo pointeur au rec info
 	Sa	0, AREA_disp				; array data ptr at _disp
 					; array data aggregate
 	La	0, AREA_disp
-VAR	CNT_ANON_70_14, d
+					; Assign_array_aggregate dynamic type DN_CONSTRAINED_ARRAY
+namespace ANON_70_7_aga
+  VAR _FST_1, d
+  VAR _LST_1, d
+  VAR _LEN_1, d
+  VAR _STR_1, d
+  VAR _PTR_1, q
+  VAR _CNT_1, d
+  VAR _EMIS_1, d
+end namespace
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd  0, ANON_70_7_aga._FST_1
+; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
 	LI	10
-	Sd 0,	CNT_ANON_70_14
-ANON_70_14:
+	Sd  0, ANON_70_7_aga._LST_1
+	Ld  0, ANON_70_7_aga._LST_1
+	Ld  0, ANON_70_7_aga._FST_1
+	SUB
+	INC
+	Sd  0, ANON_70_7_aga._LEN_1
+	LI	3
+	Sd  0, ANON_70_7_aga._STR_1
+	Sa  0, ANON_70_7_aga._PTR_1
+	LI	0
+	Sd  0, ANON_70_7_aga._EMIS_1
+	Ld  0, ANON_70_7_aga._LEN_1
+	Ld  0, ANON_70_7_aga._EMIS_1
+	SUB
+	Sd  0, ANON_70_7_aga._CNT_1
+	Ld  0, ANON_70_7_aga._CNT_1
+	LI	0
+	CLE
+	BT  L11
+L10:
+	La  0, ANON_70_7_aga._PTR_1
+					; Assign_record_aggregate type DN_RECORD
 	DUP
-	DUP
+	LVA	, STANDARD.IDL.PAGE_MAN.AREA_DATA.VP
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	Sw
-	LI	3
-	ADD
 	DUP
+	LVA	, STANDARD.IDL.PAGE_MAN.AREA_DATA.FREE_LINE
 	LI	 128
 	Sw
-	LI	3
-	ADD
 	DROP
-	LI	3
+	La  0, ANON_70_7_aga._PTR_1
+	Ld  0, ANON_70_7_aga._STR_1
 	ADD
-	LI	0
-	Ld 0,	CNT_ANON_70_14
+	Sa  0, ANON_70_7_aga._PTR_1
+	Ld  0, ANON_70_7_aga._EMIS_1
+	INC
+	Sd  0, ANON_70_7_aga._EMIS_1
+	Ld  0, ANON_70_7_aga._CNT_1
 	DEC
-	CEQ
-	BF	ANON_70_14
-	DROP
+	DUP
+	Sd  0, ANON_70_7_aga._CNT_1
+	LI	0
+	CGT
+	BT  L10
+L11:
 
 					;    BODY ELAB
 PAGE_IO = 'PAGE_IO'
@@ -387,8 +460,8 @@ VAR PARENT__u, q
 	La	0, STANDARD.IDL.PAGE_MAN.PAGE_IO.COUNT.use__info
 	Sa	0, PARENT__u
 end namespace
-if defined CREATE_L8_
-PRO	CREATE_L8				;---------- PRO CREATE
+if defined CREATE_L12_
+PRO	CREATE_L12				;---------- PRO CREATE
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in out
 	PRM MODE_ofs				; in
@@ -407,8 +480,8 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO CREATE
 end if
-if defined OPEN_L9_
-PRO	OPEN_L9				;---------- PRO OPEN
+if defined OPEN_L13_
+PRO	OPEN_L13				;---------- PRO OPEN
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in out
 	PRM MODE_ofs				; in
@@ -427,8 +500,8 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO OPEN
 end if
-if defined CLOSE_L10_
-PRO	CLOSE_L10				;---------- PRO CLOSE
+if defined CLOSE_L14_
+PRO	CLOSE_L14				;---------- PRO CLOSE
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in out
 endPRMS					;    fin parametrage
@@ -441,8 +514,8 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO CLOSE
 end if
-if defined DELETE_L11_
-PRO	DELETE_L11				;---------- PRO DELETE
+if defined DELETE_L15_
+PRO	DELETE_L15				;---------- PRO DELETE
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in out
 endPRMS					;    fin parametrage
@@ -455,8 +528,8 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO DELETE
 end if
-if defined RESET_L12_
-PRO	RESET_L12				;---------- PRO RESET
+if defined RESET_L16_
+PRO	RESET_L16				;---------- PRO RESET
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in out
 	PRM MODE_ofs				; in
@@ -471,8 +544,8 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO RESET
 end if
-if defined RESET_L13_
-PRO	RESET_L13				;---------- PRO RESET
+if defined RESET_L17_
+PRO	RESET_L17				;---------- PRO RESET
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in out
 endPRMS					;    fin parametrage
@@ -485,8 +558,8 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO RESET
 end if
-if defined MODE_L14_
-PRO	MODE_L14				;---------- PRO MODE
+if defined MODE_L18_
+PRO	MODE_L18				;---------- PRO MODE
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM result__ofs				; resultat de fonction
@@ -502,8 +575,8 @@ begin:
 	RTD	prm_siz-8
 endPRO					;---------- end PRO MODE
 end if
-if defined NAME_L15_
-PRO	NAME_L15				;---------- PRO NAME
+if defined NAME_L19_
+PRO	NAME_L19				;---------- PRO NAME
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM result__ofs				; resultat de fonction
@@ -519,8 +592,8 @@ begin:
 	RTD	prm_siz-8
 endPRO					;---------- end PRO NAME
 end if
-if defined FORM_L16_
-PRO	FORM_L16				;---------- PRO FORM
+if defined FORM_L20_
+PRO	FORM_L20				;---------- PRO FORM
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM result__ofs				; resultat de fonction
@@ -536,8 +609,8 @@ begin:
 	RTD	prm_siz-8
 endPRO					;---------- end PRO FORM
 end if
-if defined IS_OPEN_L17_
-PRO	IS_OPEN_L17				;---------- PRO IS_OPEN
+if defined IS_OPEN_L21_
+PRO	IS_OPEN_L21				;---------- PRO IS_OPEN
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM result__ofs				; resultat de fonction
@@ -553,8 +626,8 @@ begin:
 	RTD	prm_siz-8
 endPRO					;---------- end PRO IS_OPEN
 end if
-if defined READ_L18_
-PRO	READ_L18				;---------- PRO READ
+if defined READ_L22_
+PRO	READ_L22				;---------- PRO READ
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM ITEM_ofs				; out
@@ -571,8 +644,8 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO READ
 end if
-if defined READ_L19_
-PRO	READ_L19				;---------- PRO READ
+if defined READ_L23_
+PRO	READ_L23				;---------- PRO READ
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM ITEM_ofs				; out
@@ -587,8 +660,8 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO READ
 end if
-if defined WRITE_L20_
-PRO	WRITE_L20				;---------- PRO WRITE
+if defined WRITE_L24_
+PRO	WRITE_L24				;---------- PRO WRITE
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM ITEM_ofs				; in
@@ -605,8 +678,8 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO WRITE
 end if
-if defined WRITE_L21_
-PRO	WRITE_L21				;---------- PRO WRITE
+if defined WRITE_L25_
+PRO	WRITE_L25				;---------- PRO WRITE
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM ITEM_ofs				; in
@@ -621,8 +694,8 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO WRITE
 end if
-if defined SET_INDEX_L22_
-PRO	SET_INDEX_L22				;---------- PRO SET_INDEX
+if defined SET_INDEX_L26_
+PRO	SET_INDEX_L26				;---------- PRO SET_INDEX
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM TO_ofs				; in
@@ -637,8 +710,8 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO SET_INDEX
 end if
-if defined INDEX_L23_
-PRO	INDEX_L23				;---------- PRO INDEX
+if defined INDEX_L27_
+PRO	INDEX_L27				;---------- PRO INDEX
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM result__ofs				; resultat de fonction
@@ -654,8 +727,8 @@ begin:
 	RTD	prm_siz-8
 endPRO					;---------- end PRO INDEX
 end if
-if defined SIZE_L24_
-PRO	SIZE_L24				;---------- PRO SIZE
+if defined SIZE_L28_
+PRO	SIZE_L28				;---------- PRO SIZE
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM result__ofs				; resultat de fonction
@@ -671,8 +744,8 @@ begin:
 	RTD	prm_siz-8
 endPRO					;---------- end PRO SIZE
 end if
-if defined END_OF_FILE_L25_
-PRO	END_OF_FILE_L25				;---------- PRO END_OF_FILE
+if defined END_OF_FILE_L29_
+PRO	END_OF_FILE_L29				;---------- PRO END_OF_FILE
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM result__ofs				; resultat de fonction
@@ -694,21 +767,21 @@ VAR use__info, q
 VAR SIZ, d
 	LVA	0, SIZ
 	Sa	0, use__info
-VAR COMP_SIZ, d
-VAR FST_1, d
-VAR LST_1, d
+VAR _COMP_SIZ, d
+VAR _FST_1, d
+VAR _LST_1, d
 	LI	8
-	Sd	0, COMP_SIZ
-	Ld	0, COMP_SIZ
+	Sd	0, _COMP_SIZ
+	Ld	0, _COMP_SIZ
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
-	Sd	0, FST_1
+	Sd	0, _FST_1
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	256
-	Sd	0, LST_1
-	Ld	0, LST_1
+	Sd	0, _LST_1
+	Ld	0, _LST_1
 	INC
-	Ld	0, FST_1
+	Ld	0, _FST_1
 	SUB
 	MUL
 	Sd	0, SIZ
@@ -780,6 +853,7 @@ VAR WORK_FILE__dat, STANDARD.IDL.PAGE_MAN.PAGE_IO.FILE_TYPE.size
 	Sa	0, WORK_FILE_disp			; record fin
 	LVA	0, STANDARD.IDL.PAGE_MAN.PAGE_IO.FILE_TYPE.SIZ
 	Sa	0, WORK_FILE__u
+; CODE_VC_NAME DN_VARIABLE_ID
 	LIVa 0, WORK_FILE_disp, STANDARD.IDL.PAGE_MAN.PAGE_IO.FILE_TYPE.ID
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
@@ -800,95 +874,202 @@ VAR PAGE_MAN_DEBUG_disp, d			; variable bool char enum
 	Sb  0,	PAGE_MAN_DEBUG_disp
 
 
-if defined INIT_PAGE_MAN_L26_
-PRO	INIT_PAGE_MAN_L26			;---------- PRO INIT_PAGE_MAN
+if defined INIT_PAGE_MAN_L30_
+PRO	INIT_PAGE_MAN_L30			;---------- PRO INIT_PAGE_MAN
 ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 	La  0,	ASSOC_PAGE_disp
-VAR	CNT_ANON_31_24, d
-	LI	32767
-	Sd 1,	CNT_ANON_31_24
-ANON_31_24:
-	DUP
+					; Assign_array_aggregate dynamic type DN_CONSTRAINED_ARRAY
+namespace ANON_31_17_aga
+  VAR _FST_1, d
+  VAR _LST_1, d
+  VAR _LEN_1, d
+  VAR _STR_1, d
+  VAR _PTR_1, q
+  VAR _CNT_1, d
+  VAR _EMIS_1, d
+end namespace
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd  1, ANON_31_17_aga._FST_1
+	Lw 0,	STANDARD.IDL.PAGE_MAN.MAX_VPG_disp
+	Sd  1, ANON_31_17_aga._LST_1
+	Ld  1, ANON_31_17_aga._LST_1
+	Ld  1, ANON_31_17_aga._FST_1
+	SUB
+	INC
+	Sd  1, ANON_31_17_aga._LEN_1
+	LI	4
+	Sd  1, ANON_31_17_aga._STR_1
+	Sa  1, ANON_31_17_aga._PTR_1
+	LI	0
+	Sd  1, ANON_31_17_aga._EMIS_1
+	Ld  1, ANON_31_17_aga._LEN_1
+	Ld  1, ANON_31_17_aga._EMIS_1
+	SUB
+	Sd  1, ANON_31_17_aga._CNT_1
+	Ld  1, ANON_31_17_aga._CNT_1
+	LI	0
+	CLE
+	BT  L32
+L31:
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
-	Sd
-	LI	4
+	SId  1, ANON_31_17_aga._PTR_1, 0
+	La  1, ANON_31_17_aga._PTR_1
+	Ld  1, ANON_31_17_aga._STR_1
 	ADD
-	LI	0
-	Ld 1,	CNT_ANON_31_24
+	Sa  1, ANON_31_17_aga._PTR_1
+	Ld  1, ANON_31_17_aga._EMIS_1
+	INC
+	Sd  1, ANON_31_17_aga._EMIS_1
+	Ld  1, ANON_31_17_aga._CNT_1
 	DEC
-	CEQ
-	BF	ANON_31_24
-	DROP
+	DUP
+	Sd  1, ANON_31_17_aga._CNT_1
+	LI	0
+	CGT
+	BT  L31
+L32:
 	La  0,	PAG_disp
-VAR	CNT_ANON_32_20, d
+					; Assign_array_aggregate dynamic type DN_CONSTRAINED_ARRAY
+namespace ANON_32_13_aga
+  VAR _FST_1, d
+  VAR _LST_1, d
+  VAR _LEN_1, d
+  VAR _STR_1, d
+  VAR _PTR_1, q
+  VAR _CNT_1, d
+  VAR _EMIS_1, d
+end namespace
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd  1, ANON_32_13_aga._FST_1
+; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
 	LI	50
-	Sd 1,	CNT_ANON_32_20
-ANON_32_20:
+	Sd  1, ANON_32_13_aga._LST_1
+	Ld  1, ANON_32_13_aga._LST_1
+	Ld  1, ANON_32_13_aga._FST_1
+	SUB
+	INC
+	Sd  1, ANON_32_13_aga._LEN_1
+	LI	1
+	Sd  1, ANON_32_13_aga._STR_1
+	Sa  1, ANON_32_13_aga._PTR_1
+	LI	0
+	Sd  1, ANON_32_13_aga._EMIS_1
+	Ld  1, ANON_32_13_aga._LEN_1
+	Ld  1, ANON_32_13_aga._EMIS_1
+	SUB
+	Sd  1, ANON_32_13_aga._CNT_1
+	Ld  1, ANON_32_13_aga._CNT_1
+	LI	0
+	CLE
+	BT  L34
+L33:
+	La  1, ANON_32_13_aga._PTR_1
+					; Assign_record_aggregate type DN_RECORD
 	DUP
-	DUP
+	LVA	, STANDARD.IDL.PAGE_MAN.RPG_DATA.VP
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	Sw
-	LI	0
-	ADD
 	DUP
+	LVA	, STANDARD.IDL.PAGE_MAN.RPG_DATA.AREA
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	Sd
-	LI	0
-	ADD
 	DUP
+	LVA	, STANDARD.IDL.PAGE_MAN.RPG_DATA.CHANGED
 	LI	0
 	Sb
-	LI	0
-	ADD
 	DUP
+	LVA	, STANDARD.IDL.PAGE_MAN.RPG_DATA.RECUPERABLE
 	LI	1
 	Sb
-	LI	0
-	ADD
 	DUP
+	LVA	, STANDARD.IDL.PAGE_MAN.RPG_DATA.DATA
 	Sq
-	LI	0
-	ADD
 	DROP
-	LI	0
+	La  1, ANON_32_13_aga._PTR_1
+	Ld  1, ANON_32_13_aga._STR_1
 	ADD
-	LI	0
-	Ld 1,	CNT_ANON_32_20
+	Sa  1, ANON_32_13_aga._PTR_1
+	Ld  1, ANON_32_13_aga._EMIS_1
+	INC
+	Sd  1, ANON_32_13_aga._EMIS_1
+	Ld  1, ANON_32_13_aga._CNT_1
 	DEC
-	CEQ
-	BF	ANON_32_20
-	DROP
+	DUP
+	Sd  1, ANON_32_13_aga._CNT_1
+	LI	0
+	CGT
+	BT  L33
+L34:
 	La  0,	AREA_disp
-VAR	CNT_ANON_38_21, d
+					; Assign_array_aggregate dynamic type DN_CONSTRAINED_ARRAY
+namespace ANON_38_14_aga
+  VAR _FST_1, d
+  VAR _LST_1, d
+  VAR _LEN_1, d
+  VAR _STR_1, d
+  VAR _PTR_1, q
+  VAR _CNT_1, d
+  VAR _EMIS_1, d
+end namespace
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd  1, ANON_38_14_aga._FST_1
+; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
 	LI	10
-	Sd 1,	CNT_ANON_38_21
-ANON_38_21:
+	Sd  1, ANON_38_14_aga._LST_1
+	Ld  1, ANON_38_14_aga._LST_1
+	Ld  1, ANON_38_14_aga._FST_1
+	SUB
+	INC
+	Sd  1, ANON_38_14_aga._LEN_1
+	LI	3
+	Sd  1, ANON_38_14_aga._STR_1
+	Sa  1, ANON_38_14_aga._PTR_1
+	LI	0
+	Sd  1, ANON_38_14_aga._EMIS_1
+	Ld  1, ANON_38_14_aga._LEN_1
+	Ld  1, ANON_38_14_aga._EMIS_1
+	SUB
+	Sd  1, ANON_38_14_aga._CNT_1
+	Ld  1, ANON_38_14_aga._CNT_1
+	LI	0
+	CLE
+	BT  L36
+L35:
+	La  1, ANON_38_14_aga._PTR_1
+					; Assign_record_aggregate type DN_RECORD
 	DUP
-	DUP
+	LVA	, STANDARD.IDL.PAGE_MAN.AREA_DATA.VP
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	Sw
-	LI	3
-	ADD
 	DUP
+	LVA	, STANDARD.IDL.PAGE_MAN.AREA_DATA.FREE_LINE
 	LI	 128
 	Sw
-	LI	3
-	ADD
 	DROP
-	LI	3
+	La  1, ANON_38_14_aga._PTR_1
+	Ld  1, ANON_38_14_aga._STR_1
 	ADD
-	LI	0
-	Ld 1,	CNT_ANON_38_21
+	Sa  1, ANON_38_14_aga._PTR_1
+	Ld  1, ANON_38_14_aga._EMIS_1
+	INC
+	Sd  1, ANON_38_14_aga._EMIS_1
+	Ld  1, ANON_38_14_aga._CNT_1
 	DEC
-	CEQ
-	BF	ANON_38_21
-	DROP
+	DUP
+	Sd  1, ANON_38_14_aga._CNT_1
+	LI	0
+	CGT
+	BT  L35
+L36:
 	Sd  0,	RPG_ALLOC_disp
 ret_lbl:
 	UNLINK 1
@@ -897,21 +1078,21 @@ excep:
 endPRO					;---------- end PRO INIT_PAGE_MAN
 end if
 
-if defined CREATE_PAGE_MANAGER_L1_
-PRO	CREATE_PAGE_MANAGER_L1			;---------- PRO CREATE_PAGE_MANAGER
+if defined CREATE_PAGE_MANAGER_L3_
+PRO	CREATE_PAGE_MANAGER_L3			;---------- PRO CREATE_PAGE_MANAGER
 PRMS					;    debut parametrage
 	PRM PAGE_FILE_NAME_ofs			; in
 endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-	CALL	STANDARD.IDL.PAGE_MAN. ,INIT_PAGE_MAN_L26
-STR STR_L27, ""				; constante string=""
-	LCA	STR_L27.data_ptr
+	CALL	STANDARD.IDL.PAGE_MAN. ,INIT_PAGE_MAN_L30
+STR STR_L37, ""				; constante string=""
+	LCA	STR_L37.data_ptr
 	La  1,	-PAGE_FILE_NAME_ofs
 	LI  1
 	LVA  0,	WORK_FILE_disp
-	CALL	STANDARD.IDL.PAGE_MAN.PAGE_IO. ,CREATE_L8
+	CALL	STANDARD.IDL.PAGE_MAN.PAGE_IO. ,CREATE_L12
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	Sw  0,	HIGH_VPG_disp
@@ -919,16 +1100,16 @@ STR STR_L27, ""				; constante string=""
 	Sw  0,	CUR_VP_disp
 					; debut if
 	Lb 0,	STANDARD.IDL.PAGE_MAN.PAGE_MAN_DEBUG_disp
-	BF	L29
-STR STR_L30, "page_man : create_page_manager"	; constante string="page_man : create_page_manager"
-	LCA	STR_L30.data_ptr
+	BF	L39
+STR STR_L40, "page_man : create_page_manager"	; constante string="page_man : create_page_manager"
+	LCA	STR_L40.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-	BRA	L28
-L29:
-L28:					; post if
+	BRA	L38
+L39:
+L38:					; post if
 ; CHOICE_OTHERS in EXCEPTIONS todo
-	BRA	L31
-L32:
+	BRA	L41
+L42:
 ; CODE & concat STRING
 VAR	ANON_56_28_data, q
 VAR	ANON_56_28_info, q
@@ -940,9 +1121,9 @@ VAR	ANON_56_28_disp, q
 VAR	ANON_56_28__u,   q
 namespace ANON_56_28_info
   VAR SIZ,      d
-  VAR COMP_SIZ, d
-  VAR FST_1,    d
-  VAR LST_1,    d
+  VAR _COMP_SIZ, d
+  VAR _FST_1,    d
+  VAR _LST_1,    d
 end namespace
 ; CODE & concat STRING
 VAR	ANON_56_28_data, q
@@ -955,9 +1136,9 @@ VAR	ANON_56_28_disp, q
 VAR	ANON_56_28__u,   q
 namespace ANON_56_28_info
   VAR SIZ,      d
-  VAR COMP_SIZ, d
-  VAR FST_1,    d
-  VAR LST_1,    d
+  VAR _COMP_SIZ, d
+  VAR _FST_1,    d
+  VAR _LST_1,    d
 end namespace
 STR ANON_56_28, "ERREUR CREATE_PAGE_MANAGER (PAGE_FILE_NAME = "	; constante string="ERREUR CREATE_PAGE_MANAGER (PAGE_FILE_NAME = "
 	LCA	ANON_56_28.data_ptr
@@ -988,13 +1169,13 @@ STR ANON_56_28, "ERREUR CREATE_PAGE_MANAGER (PAGE_FILE_NAME = "	; constante stri
 	CO_VAR
 	Sa  1, ANON_56_28_disp
 	LI	1
-	Sd  1, ANON_56_28_info.FST_1
+	Sd  1, ANON_56_28_info._FST_1
 	La  1, ANON_56_28_len
 	La  1, ANON_56_78_len
 	ADD
-	Sd  1, ANON_56_28_info.LST_1
+	Sd  1, ANON_56_28_info._LST_1
 	LI	8
-	Sd  1, ANON_56_28_info.COMP_SIZ
+	Sd  1, ANON_56_28_info._COMP_SIZ
 	La  1, ANON_56_28_len
 	La  1, ANON_56_78_len
 	ADD
@@ -1042,13 +1223,13 @@ STR ANON_56_95, ")"				; constante string=")"
 	CO_VAR
 	Sa  1, ANON_56_28_disp
 	LI	1
-	Sd  1, ANON_56_28_info.FST_1
+	Sd  1, ANON_56_28_info._FST_1
 	La  1, ANON_56_28_len
 	La  1, ANON_56_95_len
 	ADD
-	Sd  1, ANON_56_28_info.LST_1
+	Sd  1, ANON_56_28_info._LST_1
 	LI	8
-	Sd  1, ANON_56_28_info.COMP_SIZ
+	Sd  1, ANON_56_28_info._COMP_SIZ
 	La  1, ANON_56_28_len
 	La  1, ANON_56_95_len
 	ADD
@@ -1069,7 +1250,7 @@ STR ANON_56_95, ")"				; constante string=")"
 	BLKMOV
 	LVA 1, ANON_56_28_disp
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-L31:
+L41:
 ret_lbl:
 	UNLINK 1
 	RTD	prm_siz
@@ -1077,34 +1258,34 @@ excep:
 endPRO					;---------- end PRO CREATE_PAGE_MANAGER
 end if
 
-if defined OPEN_PAGE_MANAGER_L2_
-PRO	OPEN_PAGE_MANAGER_L2			;---------- PRO OPEN_PAGE_MANAGER
+if defined OPEN_PAGE_MANAGER_L4_
+PRO	OPEN_PAGE_MANAGER_L4			;---------- PRO OPEN_PAGE_MANAGER
 PRMS					;    debut parametrage
 	PRM PAGE_FILE_NAME_ofs			; in
 endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-	CALL	STANDARD.IDL.PAGE_MAN. ,INIT_PAGE_MAN_L26
-STR STR_L33, ""				; constante string=""
-	LCA	STR_L33.data_ptr
+	CALL	STANDARD.IDL.PAGE_MAN. ,INIT_PAGE_MAN_L30
+STR STR_L43, ""				; constante string=""
+	LCA	STR_L43.data_ptr
 	La  1,	-PAGE_FILE_NAME_ofs
 	LI  1
 	LVA  0,	WORK_FILE_disp
-	CALL	STANDARD.IDL.PAGE_MAN.PAGE_IO. ,OPEN_L9
+	CALL	STANDARD.IDL.PAGE_MAN.PAGE_IO. ,OPEN_L13
 					; debut if
 	Lb 0,	STANDARD.IDL.PAGE_MAN.PAGE_MAN_DEBUG_disp
-	BF	L35
-STR STR_L36, "page_man : open_page_manager"	; constante string="page_man : open_page_manager"
-	LCA	STR_L36.data_ptr
+	BF	L45
+STR STR_L46, "page_man : open_page_manager"	; constante string="page_man : open_page_manager"
+	LCA	STR_L46.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-	BRA	L34
-L35:
-L34:					; post if
+	BRA	L44
+L45:
+L44:					; post if
 	LI	0					; lieu resultat sur pile
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
-	CALL	STANDARD.IDL.PAGE_MAN. ,READ_PAGE_L3
+	CALL	STANDARD.IDL.PAGE_MAN. ,READ_PAGE_L5
 	Sd  0,	CUR_RP_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1

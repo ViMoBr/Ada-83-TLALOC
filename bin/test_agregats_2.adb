@@ -163,28 +163,28 @@ begin
   CHECK_POINTS_PARAM( TP );
   CHECK( "H.A",    H.A,    77 );
 
-CHECK( "H.V(1)", H.V(1), 11 );
-CHECK( "H.V(2)", H.V(2), 22 );
-CHECK( "H.V(3)", H.V(3), 33 );
-CHECK( "H.V(4)", H.V(4), 44 );
+  CHECK( "H.V(1)", H.V(1), 11 );
+  CHECK( "H.V(2)", H.V(2), 22 );
+  CHECK( "H.V(3)", H.V(3), 33 );
+  CHECK( "H.V(4)", H.V(4), 44 );
 
   CHECK( "H.V(3)", H.V(3), 33 );
 
-CHECK( "RV.V(1)", RV.V(1), 11 );
-CHECK( "RV.V(2)", RV.V(2), 22 );
-CHECK( "RV.V(3)", RV.V(3), 33 );
-CHECK( "RV.V(4)", RV.V(4), 44 );
+  CHECK( "RV.V(1)", RV.V(1), 11 );
+  CHECK( "RV.V(2)", RV.V(2), 22 );
+  CHECK( "RV.V(3)", RV.V(3), 33 );
+  CHECK( "RV.V(4)", RV.V(4), 44 );
 
-H.V(2) := 222;
-H.V(3) := 333;
-H.V(4) := 444;
+  H.V(2) := 222;
+  H.V(3) := 333;
+  H.V(4) := 444;
 
-CHECK( "H.V(2) apres assign", H.V(2), 222 );
-CHECK( "H.V(3) apres assign", H.V(3), 333 );
-CHECK( "H.V(4) apres assign", H.V(4), 444 );
+  CHECK( "H.V(2) apres assign", H.V(2), 222 );
+  CHECK( "H.V(3) apres assign", H.V(3), 333 );
+  CHECK( "H.V(4) apres assign", H.V(4), 444 );
 
-CHECK_VECTEUR_PARAM( H.V, 11, 22, 33, 44 );
-CHECK_VECTEUR_PARAM( RV.V, 11, 22, 33, 44 );
+  CHECK_VECTEUR_PARAM( H.V, 11, 222, 333, 444 );
+  CHECK_VECTEUR_PARAM( RV.V, 11, 222, 333, 444 );
 
   CHECK( "H.P.Z",  H.P.Z,  7 );
 

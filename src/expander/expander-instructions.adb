@@ -587,7 +587,40 @@ null;
         INVERSE_RECURSE_ON_PARAMETERS;
 
         if  ACT_PRM.TY = DN_SELECTED  then
-	EXPRESSIONS.CODE_SELECTED( ACT_PRM );
+
+	declare
+	  ACT_TYPE	: TREE	:= D( SM_EXP_TYPE, ACT_PRM );
+	begin
+	  while  ACT_TYPE.TY = DN_PRIVATE  or else  ACT_TYPE.TY = DN_L_PRIVATE  loop
+	    ACT_TYPE := D( SM_TYPE_SPEC, ACT_TYPE );
+	  end loop;
+
+	  if  ACT_TYPE.TY = DN_ARRAY  or else  ACT_TYPE.TY = DN_CONSTRAINED_ARRAY  or  else ACT_TYPE.TY = DN_RECORD
+	  then
+	    declare
+	      ANON	:constant STRING	:= "SELARG_" & NEW_LABEL;
+	      LVL_STR	:constant STRING	:= IMAGE( CODI.CUR_LEVEL );
+	      TYPE_NAME	: TREE		:= D( XD_SOURCE_NAME, ACT_TYPE );
+	      TYPE_NAME_STR	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
+	    begin
+	      PUT_LINE( tab & "VAR " & ANON & "_disp, q" );
+	      PUT_LINE( tab & "VAR " & ANON & "__u, q" );
+
+	      EXPRESSIONS.CODE_SELECTED( ACT_PRM, IS_SOURCE => FALSE );
+	      PUT_LINE( tab & "Sa" & tab & LVL_STR & ", " & ANON & "_disp" );
+
+	      PUT( tab & "La " & IMAGE( DI( CD_LEVEL, ACT_TYPE ) ) & ", " );
+	      CODI.REGIONS_PATH( TYPE_NAME );
+	      PUT_LINE( TYPE_NAME_STR & ".use__info" );
+	      PUT_LINE( tab & "Sa" & tab & LVL_STR & ", " & ANON & "__u" );
+
+	      PUT_LINE( tab & "LVA " & LVL_STR & ", " & ANON & "_disp" );
+	    end;
+
+	  else
+	    EXPRESSIONS.CODE_SELECTED( ACT_PRM );
+	  end if;
+	end;
 
         elsif  ACT_PRM.TY = DN_USED_OBJECT_ID  then
 	declare
