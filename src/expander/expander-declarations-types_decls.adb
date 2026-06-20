@@ -586,6 +586,11 @@ declare
       TYPE_SPEC := D( XD_FULL_TYPE_SPEC, TYPE_SPEC );
     end if;
 
+    if  REPRESENTED_ITEMS.HAS_RECORD_REP( TYPE_SPEC )  then
+      REPRESENTED_ITEMS.CODE_REPRESENTED_RECORD_DECL( TYPE_ID, TYPE_SPEC );
+      return;
+    end if;
+
     DI( CD_LEVEL,	  TYPE_SPEC, INTEGER( CODI.CUR_LEVEL ) );
     DB( CD_COMPILED,  TYPE_SPEC, TRUE );
 
@@ -792,7 +797,7 @@ declare
 
       if  D( SM_SIZE, TYPE_SPEC ) /= TREE_VOID  then
 
-put_line( "; TRAITER_LES_CHAMPS SM_SIZE" & TYPE_ID_STR );
+put_line( "; TRAITER_LES_CHAMPS SM_SIZE DU TYPE " & TYPE_ID_STR );
 
         DI( CD_IMPL_SIZE, TYPE_SPEC, DI( SM_SIZE, TYPE_SPEC ) );
       end if;

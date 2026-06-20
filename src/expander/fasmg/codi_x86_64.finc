@@ -657,6 +657,48 @@ macro			SHL?					; decalage gauche
   POP_RCX								; nombre de positions de decalage
   db 0x48, 0xD3, 0x65, 0x00						; shl qword ptr [rbp], cl
 end macro
+;			----
+macro			SHR?					; decalage droit
+;			----
+  POP_RCX								; nombre de positions de decalage
+  db 0x48, 0xD3, 0x6D, 0x00						; shr qword ptr [rbp], cl
+end macro
+
+
+;-----------------------------------------------------------------------------------------------------------------------
+;		O P E R A	T I O N S	  B I T   F I E L D S
+;-----------------------------------------------------------------------------------------------------------------------
+
+;			-----
+macro			SBFX?					; signed bit field extract
+;			-----
+  POP_RDX								; rdx = Width
+  POP_RCX								; rcx = LSB
+  db 0x48, 0x8B, 0x45, 0x00						; mov rax, qword ptr [rbp]	valeur source
+  db 0x48, 0xD3, 0xE8						; shr rax, cl		rax := valeur >> LSB
+  db 0x48, 0x89, 0xD1						; mov rcx, rdx		rcx = Width
+  db 0x6A, 0x01							; push 1
+  db 0x5A								; pop rdx			rdx = 1
+  db 0x48, 0xD3, 0xE2						; shl rdx, cl		rdx = 1 << Width
+  db 0x48, 0xFF, 0xCA						; dec rdx			rdx = mask
+  db 0x48, 0x21, 0xD0						; and rax, rdx		rax = field non signe
+  db 0x48, 0x89, 0x45, 0x00						; mov qword ptr [rbp], rax
+end macro
+;			-----
+macro			UBFX?					; unsigned bit field extract
+;			-----
+
+  POP_RDX								; rdx = Width
+  POP_RCX								; rcx = LSB
+  db 0x48, 0x8B, 0x45, 0x00						; mov rax, qword ptr [rbp]	valeur source
+  db 0x48, 0xD3, 0xE8						; shr rax, cl		rax := valeur >> LSB
+  db 0x6A, 0x40							; push 64
+  db 0x59								; rcx = 64
+  db 0x48, 0x29, 0xD1						; sub rcx, rdx               ; rcx = 64 - Width
+  db 0x48, 0xD3, 0xE0						; shl rax, cl                ; signe du champ en bit 63
+  db 0x48, 0xD3, 0xF8						; sar rax, cl                ; extension de signe
+  db 0x48, 0x89, 0x45, 0x00						; mov qword ptr [rbp], rax
+end macro
 
 
 ;-----------------------------------------------------------------------------------------------------------------------

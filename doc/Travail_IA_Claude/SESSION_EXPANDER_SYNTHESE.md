@@ -846,3 +846,28 @@ Y.A =         333
 Y.B =         444
 
 Enfin, la compilation de IDL.adb passe désormais dans l’expander. Cela valide le motif réaliste qui avait déclenché l’erreur initiale : un renommage ou usage apparenté sur une chaîne d’adressage selected → indexed → selected, comme IDL_TBL.N_SPEC( NN ).NS_SIZE. La correction stabilise donc le traitement des renames d’objets scalaires et composites sur noms adressables, sans remettre en cause les chemins existants de variables ordinaires, de records, de tableaux, de paramètres, de génériques et de copies composites par BLKMOV.
+
+
+# Session 19 juin 2026 — Réécriture de CODE_ARRAY_AGGREGATE et stabilisation des tableaux composants de records
+
+Une étape importante a été réalisée sur le traitement des agrégats de tableaux dans EXPANDER.EXPRESSIONS.CODE_ARRAY_AGGREGATE. L’ancienne procédure distinguait trop fortement les cas DN_ARRAY et DN_CONSTRAINED_ARRAY : le premier était traité comme dynamique mais de façon limitée, tandis que le second supposait des bornes statiques récupérables par SM_VALUE. Cette hypothèse était fausse pour certains DN_CONSTRAINED_ARRAY dont les bornes peuvent dépendre d’expressions dynamiques. La procédure a donc été reprise avec une règle plus robuste : considérer les bornes comme dynamiques, y compris lorsqu’elles sont statiquement connues, et calculer dynamiquement longueurs, strides et positions d’écriture. Le traitement est ainsi uniformisé pour DN_ARRAY et DN_CONSTRAINED_ARRAY, avec prise en charge de plusieurs dimensions.
+
+La notation des champs de gestion de tableaux a également été clarifiée pour éviter une collision dangereuse entre variables de gestion et offsets de use_info. Les variables réelles du type tableau sont maintenant préfixées par un underscore, par exemple _COMP_SIZ, _FST_1, _LST_1, tandis que les noms sans underscore COMP_SIZ, FST_1, LST_1, etc. restent les offsets statiques dans le bloc use_info. Cette distinction est essentielle : un accès direct à un type statique utilise les variables _FST_n, _COMP_SIZ, alors qu’un accès via un paramètre tableau utilise le pointeur __u et les offsets FST_n, COMP_SIZ.
+
+Plusieurs erreurs successives ont été isolées et corrigées. La première venait de l’écriture des valeurs d’agrégat : l’adresse courante du tableau devait être utilisée comme pointeur indirect, et non comme simple emplacement mémoire. L’usage de SId avec un pointeur de parcours a permis d’écrire correctement les éléments dans les données du tableau. La deuxième difficulté concernait les tableaux multidimensionnels : le calcul des strides devait respecter l’ordre des dimensions et l’indexation Ada en mémoire linéaire. Les tests ont validé les tableaux 2D et 3D, notamment les accès M(2,3) et C1(2,2,3). La troisième difficulté concernait les tableaux composants de records, par exemple H.V, où V est un tableau inline dans un record. L’indexation directe H.V(I) ne doit pas chercher un couple V_disp/V__u, inexistant pour une composante inline, mais partir de l’adresse du composant calculée par CODE_SELECTED, puis ajouter l’offset d’index.
+
+Un dernier défaut plus subtil est apparu lors du passage d’un composant tableau comme paramètre, par exemple CHECK_VECTEUR_PARAM(H.V, ...) ou CHECK_VECTEUR_PARAM(RV.V, ...). La convention TLALOC pour les composites passés en paramètre est de transmettre l’adresse d’un doublet {data_ptr, use_info_ptr}. Une variable tableau autonome possède naturellement ce doublet sous la forme V_disp suivi de V__u. En revanche, un composant tableau inline dans un record ne possède que ses données dans le record ; l’emplacement H.V + 8 est au milieu des données du tableau, pas un pointeur use_info. Le code généré empilait donc seulement l’adresse des données du composant, ce qui provoquait un faux use_info et un segfault dans la procédure appelée.
+
+La correction a été faite dans EXPANDER.INSTRUCTIONS.CODE_PROCEDURE_CALL, dans la gestion des paramètres effectifs de type DN_SELECTED. Lorsqu’un paramètre effectif sélectionné est composite, en particulier tableau ou record, l’expander fabrique désormais un petit doublet temporaire local :
+
+VAR SELARG_x_disp, q
+VAR SELARG_x__u,   q
+
+Il y stocke l’adresse des données calculée par CODE_SELECTED(..., IS_SOURCE => FALSE), puis l’adresse du use_info du type, et transmet enfin LVA SELARG_x_disp à la procédure appelée. Cela rend un composant composite inline équivalent, du point de vue de l’appel, à une variable composite autonome.
+
+Le programme TEST_AGREGATS_2 valide maintenant l’ensemble des cas suivants : agrégats de tableaux 1D positionnels, nommés et avec others, tableaux à borne zéro, passage de tableaux en paramètres, indexation scalaire, tableaux multidimensionnels, tableaux de records, records contenant tableaux, affectation d’éléments de tableaux composants de records, passage de ces composants tableaux en paramètres, et tableaux locaux à bornes dynamiques. La sortie finale obtenue est :
+
+=== bilan ===
+TOUS LES TESTS SONT OK
+
+Cette étape stabilise fortement la frontière entre variable tableau autonome, composant tableau inline, doublet composite {data,use_info}, offsets statiques de use_info, et calcul dynamique des dimensions. Elle prépare aussi les prochains chantiers liés au bootstrap, où les structures DIANA combinent records, tableaux, accès, contraintes dynamiques et représentations compactes.

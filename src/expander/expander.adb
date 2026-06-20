@@ -17,87 +17,86 @@ is
 			-----
 	package		UTILS
 			-----
-is
+  is
 
-  DEBUG				: BOOLEAN	:= TRUE;
+    DEBUG				: BOOLEAN	:= TRUE;
 
-  tab				: CHARACTER	renames ASCII.HT;
+    tab				: CHARACTER	renames ASCII.HT;
 
-  MAX_INSTR			: constant		:= 10_000;				--| NB MAX D'INSTRUCTIONS
-  MAX_LABEL			: constant		:= 10_000;				--| NB MAX D'ETIQUETTES DE SAUT
-  MAX_UNIT			: constant		:= 2**11-1;				--| NB MAX D'UNITES	PROGRAMME
-  MAX_LEVEL			: constant		:= 2**5-1;				--| NB MAX DE NIVEAUX D'IMBRICATION
-  MAX_OFFSET			: constant		:= 2**15-1;				--| 32K
+    MAX_INSTR			: constant		:= 10_000;				--| NB MAX D'INSTRUCTIONS
+    MAX_LABEL			: constant		:= 10_000;				--| NB MAX D'ETIQUETTES DE SAUT
+    MAX_UNIT			: constant		:= 2**11-1;				--| NB MAX D'UNITES	PROGRAMME
+    MAX_LEVEL			: constant		:= 2**5-1;				--| NB MAX DE NIVEAUX D'IMBRICATION
+    MAX_OFFSET			: constant		:= 2**15-1;				--| 32K
 
-  type LABEL_TYPE			is new NATURAL		range 0 .. MAX_LABEL;			--| TYPE ETIQUETTE
-  subtype	UNIT_NUM			is INTEGER		range 0 .. MAX_UNIT;
-  subtype	LEVEL_NUM			is NATURAL		range 0 .. MAX_LEVEL;
-  subtype	OFFSET_VAL		is INTEGER		range -MAX_OFFSET .. MAX_OFFSET;
+    type LABEL_TYPE			is new NATURAL		range 0 .. MAX_LABEL;			--| TYPE ETIQUETTE
+    subtype UNIT_NUM		is INTEGER		range 0 .. MAX_UNIT;
+    subtype LEVEL_NUM		is NATURAL		range 0 .. MAX_LEVEL;
+    subtype OFFSET_VAL		is INTEGER		range -MAX_OFFSET .. MAX_OFFSET;
 
-  STORAGE_UNIT			: constant		:= 8;					--| OCTET	DE 8 bits
-  STACK_ELEMENT_SIZE		: constant		:= 8;					--| LA PILE EST GEREE PAR QUAD WORDS SUR X86-64
-  ADDR_SIZE			: constant		:= 8;					--| ADRESSES SUR 64	BITS
-  BOOL_SIZE			: constant		:= 1;					--| BOOLEEN SUR 1 OCTET
-  CHAR_SIZE			: constant		:= 1;					--| CARACTERE SUR 8	BITS
-  INTG_SIZE			: constant		:= 8;					--| ENTIER SUR 64 BITS
+    STORAGE_UNIT			: constant		:= 8;					--| OCTET	DE 8 bits
+    STACK_ELEMENT_SIZE		: constant		:= 8;					--| LA PILE EST GEREE PAR QUAD WORDS SUR X86-64
+    ADDR_SIZE			: constant		:= 8;					--| ADRESSES SUR 64	BITS
+    BOOL_SIZE			: constant		:= 1;					--| BOOLEEN SUR 1 OCTET
+    CHAR_SIZE			: constant		:= 1;					--| CARACTERE SUR 8	BITS
+    INTG_SIZE			: constant		:= 8;					--| ENTIER SUR 64 BITS
 
-  type LOOP_CODE			is (
-		DEC,   GT,    INC,	 LT		);
+    type LOOP_CODE			is (DEC, GT, INC, LT);
 
-  OUTPUT_CODE			: BOOLEAN			:= TRUE;					-- Dans le traitement de spécif on désactive le	codage
-  IN_GENERIC_INSTANTIATION		: BOOLEAN			:= FALSE;					-- Traitement special pour les spec d instantiation
-  INSTANTIATION_MODEL_NAME		: TREE;
-  GENERIC_MODEL_DECL_SEQ		: SEQ_TYPE;
-  IN_GENERIC_BODY			: BOOLEAN			:= FALSE;					-- Traitement special pour les corps de	generique
-  ENCLOSING_GENERIC			: TREE;
-  GENERIC_BASE_LEVEL		: LEVEL_NUM		:= 0;
+    OUTPUT_CODE			: BOOLEAN			:= TRUE;					-- Dans le traitement de spécif on désactive le	codage
+    IN_GENERIC_INSTANTIATION		: BOOLEAN			:= FALSE;					-- Traitement special pour les spec d instantiation
+    INSTANTIATION_MODEL_NAME		: TREE;
+    GENERIC_MODEL_DECL_SEQ		: SEQ_TYPE;
+    IN_GENERIC_BODY			: BOOLEAN			:= FALSE;					-- Traitement special pour les corps de	generique
+    ENCLOSING_GENERIC		: TREE;
+    GENERIC_BASE_LEVEL		: LEVEL_NUM		:= 0;
 
-  IN_SPEC_UNIT			: BOOLEAN;
+    IN_SPEC_UNIT			: BOOLEAN;
 
-  CUR_LEVEL			: LEVEL_NUM;							--| NIVEAU D'IMBRICATION COURANT
-  CUR_OFFSET			: OFFSET_VAL		:= 0;
+    CUR_LEVEL			: LEVEL_NUM;							--| NIVEAU D'IMBRICATION COURANT
+    CUR_OFFSET			: OFFSET_VAL		:= 0;
 
-  NO_SUBP_PARAMS			: BOOLEAN			:= TRUE;					--| pour prms et prm_siz
-  ENCLOSING_BODY			: TREE;
-  CHOICE_OTHERS_FLAG		: BOOLEAN			:= FALSE;
+    NO_SUBP_PARAMS			: BOOLEAN			:= TRUE;					--| pour prms et prm_siz
+    ENCLOSING_BODY			: TREE;
+    CHOICE_OTHERS_FLAG		: BOOLEAN			:= FALSE;
 
-  LOOP_STM_S			: TREE;
-  LOOP_OP_INC_DEC			: LOOP_CODE;							--| POUR LE TRAITEMENT DES BOUCLES FOR REVERSE
-  LOOP_OP_GT_LT			: LOOP_CODE;							--| DE MEME
+    LOOP_STM_S			: TREE;
+    LOOP_OP_INC_DEC			: LOOP_CODE;							--| POUR LE TRAITEMENT DES BOUCLES FOR REVERSE
+    LOOP_OP_GT_LT			: LOOP_CODE;							--| DE MEME
 
-  TYPE_SYMREP			: TREE;								--| UTILISE POUR LES OBJECT_DECL VAR CONST
-
+    TYPE_SYMREP			: TREE;								--| UTILISE POUR LES OBJECT_DECL VAR CONST
 
 
-  procedure OPEN_OUTPUT_FILE		( FILE_NAME :STRING	);
-  procedure CLOSE_OUTPUT_FILE;
+
+    procedure OPEN_OUTPUT_FILE	( FILE_NAME :STRING	);
+    procedure CLOSE_OUTPUT_FILE;
 
 
-  function  OPER_SIZ_CHAR		( DEFN :TREE )			return CHARACTER;
-  function  EXP_TYPE_CHAR		( EXP :TREE )			return CHARACTER;
+    function  OPER_SIZ_CHAR		( DEFN :TREE )			return CHARACTER;
+    function  EXP_TYPE_CHAR		( EXP :TREE )			return CHARACTER;
 
-  function  NEW_LABEL						return LABEL_TYPE;
-  function  NEW_LABEL						return STRING;
-  function  LABEL_STR		( LBL : LABEL_TYPE )		return STRING;
+    function  NEW_LABEL						return LABEL_TYPE;
+    function  NEW_LABEL						return STRING;
+    function  LABEL_STR		( LBL : LABEL_TYPE )		return STRING;
 
-  procedure INC_LEVEL;
-  procedure DEC_LEVEL;
-  function  CODE_DATA_TYPE_OF		( EXP_OR_TYPE_SPEC :TREE )		return CHARACTER;
-  procedure LOAD_MEM		( DEFN :TREE );
-  procedure STORE			( DEST_DEFN :TREE );
-  function  TAB50							return STRING;
+    procedure INC_LEVEL;
+    procedure DEC_LEVEL;
+    function  CODE_DATA_TYPE_OF	( EXP_OR_TYPE_SPEC :TREE )		return CHARACTER;
+    procedure LOAD_MEM		( DEFN :TREE );
+    procedure STORE			( DEST_DEFN :TREE );
+    function  TAB50							return STRING;
 
-  function  IMAGE			( I : NATURAL )			return STRING;
+    function  IMAGE			( I : NATURAL )			return STRING;
 
-  procedure REGIONS_PATH		( ID : TREE; WITH_DOT :BOOLEAN := TRUE );
-  function  LETTERED_SUBNAME		( SUB_NAME : STRING )		return STRING;
+    procedure REGIONS_PATH		( ID : TREE; WITH_DOT :BOOLEAN := TRUE );
+    function  LETTERED_SUBNAME	( SUB_NAME : STRING )		return STRING;
 
-  function  LAST_OF_SELECTED		( NAME_ID :TREE )			return TREE;
+    function  LAST_OF_SELECTED	( NAME_ID :TREE )			return TREE;
 
-  OPERAND_OVERFLOW			: exception;
+    OPERAND_OVERFLOW		: exception;
 
 
-end	UTILS;
+  end	UTILS;
 	-----
 
   package	CODI	renames UTILS;
@@ -105,13 +104,34 @@ end	UTILS;
 
   package	body UTILS is separate;
 
---  procedure CODE_ITERATION_ID		( ITERATION_ID :TREE );
-
   procedure CODE_ROOT ( ROOT :TREE );
   procedure CODE_OBJECT ( OBJECT :TREE );
   procedure CODE_SELECT_ALT_PRAGMA ( SELECT_ALT_PRAGMA :TREE );
   procedure CODE_EXCEPTION_ID	( EXCEPTION_ID :TREE );
-  --|-------------------------------------------------------------------------------------------
+
+
+
+			-----------------
+  package			REPRESENTED_ITEMS
+			-----------------
+  is
+
+    function  HAS_RECORD_REP			( TYPE_SPEC :TREE )		return BOOLEAN;
+
+    procedure CODE_REPRESENTED_RECORD_DECL	( TYPE_ID :TREE; TYPE_SPEC :TREE );
+
+    function  HAS_COMPONENT_REP		( COMP_ID :TREE )		return BOOLEAN;
+
+    procedure GET_COMPONENT_REP		( COMP_ID :TREE; BYTE_OFFSET :out INTEGER;
+					  FIRST_BIT, LAST_BIT, WIDTH : out INTEGER );
+
+    function IS_SMALL_REP_RECORD		( TYPE_SPEC :TREE )		return BOOLEAN;
+
+
+  end	REPRESENTED_ITEMS;
+	-----------------
+
+  package	body REPRESENTED_ITEMS is separate;
 
 
 

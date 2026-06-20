@@ -1,0 +1,263 @@
+PRO	TEST_TREE_L1				;---------- PRO TEST_TREE
+ELB 1					;    BODY ELAB
+
+					; NODE_NAME ENUMERATION TYPE INFO
+NODE_NAME = 'NODE_NAME'
+namespace NODE_NAME
+VAR use__info, q
+BEGIN_BLOC_DEF
+db 0, 6, "DN_NIL"
+db 1, 7, "DN_VOID"
+db 2, 7, "DN_ROOT"
+END_BLOC_DEF
+IMAGES	BYTES_BLOC
+CST LST, d, 2
+CST FST, d, 0
+CST SIZ, d, 8	; SIZ en bits !
+postpone
+  align_q
+end postpone
+	LCA	SIZ
+	Sa	1, use__info
+end namespace
+
+					; SHORT TYPE RANGE INFO
+SHORT = 'SHORT'
+namespace SHORT
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+VAR FST, w
+VAR LST, w
+	LI	16
+	Sd	1, SIZ
+; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
+	LI	00032768
+	NEG
+	Sw	1, FST
+; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
+	LI	32767
+	Sw	1, LST
+end namespace
+
+					; POSITIVE_SHORT TYPE RANGE INFO
+POSITIVE_SHORT = 'POSITIVE_SHORT'
+namespace POSITIVE_SHORT
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+VAR FST, w
+VAR LST, w
+	LI	16
+	Sd	1, SIZ
+; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
+	LI	0
+	Sw	1, FST
+; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
+	LI	32767
+	Sw	1, LST
+end namespace
+
+					; PAGE_IDX TYPE RANGE INFO
+PAGE_IDX = 'PAGE_IDX'
+namespace PAGE_IDX
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+VAR FST, w
+VAR LST, w
+	LI	16
+	Sd	1, SIZ
+; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
+	LI	0
+	Sw	1, FST
+; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
+	LI	32767
+	Sw	1, LST
+end namespace
+
+					; LINE_IDX TYPE RANGE INFO
+LINE_IDX = 'LINE_IDX'
+namespace LINE_IDX
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+VAR FST, w
+VAR LST, w
+	LI	16
+	Sd	1, SIZ
+; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
+	LI	0
+	Sw	1, FST
+; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
+	LI	127
+	Sw	1, LST
+end namespace
+
+					; ATTR_NBR INTEGER SUBTYPE INFO
+ATTR_NBR = 'ATTR_NBR'
+namespace ATTR_NBR
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+VAR FST, w
+VAR LST, w
+	LI	16
+	Sd	1, SIZ
+; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
+	LI	0
+	Sw	1, FST
+; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
+	LI	127
+	Sw	1, LST
+VAR PARENT__u, q
+	La	1, STANDARD.TEST_TREE_L1.LINE_IDX.use__info
+	Sa	1, PARENT__u
+end namespace
+
+					; LINE_NBR TYPE RANGE INFO
+LINE_NBR = 'LINE_NBR'
+namespace LINE_NBR
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+VAR FST, w
+VAR LST, w
+	LI	16
+	Sd	1, SIZ
+; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
+	LI	0
+	Sw	1, FST
+; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
+	LI	128
+	Sw	1, LST
+end namespace
+
+					; SRCCOL_IDX TYPE RANGE INFO
+SRCCOL_IDX = 'SRCCOL_IDX'
+namespace SRCCOL_IDX
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+VAR FST, w
+VAR LST, w
+	LI	16
+	Sd	1, SIZ
+; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
+	LI	0
+	Sw	1, FST
+; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
+	LI	255
+	Sw	1, LST
+end namespace
+
+					; VPTR_TYPE ENUMERATION TYPE INFO
+VPTR_TYPE = 'VPTR_TYPE'
+namespace VPTR_TYPE
+VAR use__info, q
+BEGIN_BLOC_DEF
+db 0, 1, "P"
+db 1, 1, "S"
+db 2, 1, "L"
+db 3, 2, "HI"
+END_BLOC_DEF
+IMAGES	BYTES_BLOC
+CST LST, d, 3
+CST FST, d, 0
+CST SIZ, d, 8	; SIZ en bits !
+postpone
+  align_q
+end postpone
+	LCA	SIZ
+	Sa	1, use__info
+end namespace
+
+					; TREE REPRESENTED RECORD TYPE INFO
+TREE = 'TREE'
+namespace TREE
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+	LI	32
+	Sd	1, SIZ
+size = 4
+;   PT at 0 range 0 .. 1 width 2
+;   LN at 0 range 2 .. 8 width 7
+;   SLN at 0 range 2 .. 8 width 7
+;   NSIZ at 0 range 2 .. 8 width 7
+;   PG at 0 range 9 .. 23 width 15
+;   SPG at 0 range 9 .. 23 width 15
+;   ABSS at 0 range 9 .. 23 width 15
+;   COL at 0 range 24 .. 31 width 8
+;   TY at 0 range 24 .. 31 width 8
+;   NOTY at 0 range 24 .. 31 width 8
+end namespace
+VAR TREE_NIL_disp, q			; variable record : pointeur aux data record
+VAR TREE_NIL__u, q				; variable record : pointeur aux useinfo
+VAR TREE_NIL__dat, STANDARD.TEST_TREE_L1.TREE.size
+	LVA	1, TREE_NIL__dat
+	Sa	1, TREE_NIL_disp			; record fin
+	LVA	1, STANDARD.TEST_TREE_L1.TREE.SIZ
+	Sa	1, TREE_NIL__u
+; CODE_VC_NAME DN_CONSTANT_ID
+	La 1, TREE_NIL_disp
+					; Assign_record_aggregate type DN_RECORD
+	DROP
+
+VAR TREE_VOID_disp, q			; variable record : pointeur aux data record
+VAR TREE_VOID__u, q				; variable record : pointeur aux useinfo
+VAR TREE_VOID__dat, STANDARD.TEST_TREE_L1.TREE.size
+	LVA	1, TREE_VOID__dat
+	Sa	1, TREE_VOID_disp			; record fin
+	LVA	1, STANDARD.TEST_TREE_L1.TREE.SIZ
+	Sa	1, TREE_VOID__u
+; CODE_VC_NAME DN_CONSTANT_ID
+	La 1, TREE_VOID_disp
+					; Assign_record_aggregate type DN_RECORD
+	DROP
+
+VAR TREE_ROOT_disp, q			; variable record : pointeur aux data record
+VAR TREE_ROOT__u, q				; variable record : pointeur aux useinfo
+VAR TREE_ROOT__dat, STANDARD.TEST_TREE_L1.TREE.size
+	LVA	1, TREE_ROOT__dat
+	Sa	1, TREE_ROOT_disp			; record fin
+	LVA	1, STANDARD.TEST_TREE_L1.TREE.SIZ
+	Sa	1, TREE_ROOT__u
+; CODE_VC_NAME DN_CONSTANT_ID
+	La 1, TREE_ROOT_disp
+					; Assign_record_aggregate type DN_RECORD
+	DROP
+
+
+					; SEQ_TYPE RECORD TYPE INFO
+SEQ_TYPE = 'SEQ_TYPE'
+namespace SEQ_TYPE
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+USEINFO 1, FIRST, 	La 1, STANDARD.TEST_TREE_L1.TREE.use__info
+USEINFO 1, NEXT, 	La 1, STANDARD.TEST_TREE_L1.TREE.use__info
+virtual at 0				; calcul des offsets statiques
+STATOFS FIRST, 4
+STATOFS NEXT, 4
+size = $
+end virtual
+	LI	 size*8
+	Sd	1, SIZ
+end namespace
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+ret_lbl:
+	UNLINK 1
+	RTD
+excep:
+endPRO					;---------- end PRO TEST_TREE
