@@ -650,31 +650,335 @@ end if
 					;---------- end generic package instantiation PAGE_IDX_IO
 end namespace
 
+LINE_IDX_IO = 'LINE_IDX_IO'
+namespace LINE_IDX_IO			;---------- GENERIC PACKAGE INSTANTIATION
+elab_spec:				;    SPEC ELAB
+
+BRA post_LD_LINE_IDX
+LD_LINE_IDX.elab:
+	Lw -1, 0
+	RTD 0
+post_LD_LINE_IDX:
+BRA post_ST_LINE_IDX
+ST_LINE_IDX.elab:
+	Sw -1, 0
+	RTD 0
+post_ST_LINE_IDX:
+BRA post_INADR_LINE_IDX
+INADR_LINE_IDX.elab:
+	RTD 0
+post_INADR_LINE_IDX:
+BRA post_OUTADR_LINE_IDX
+OUTADR_LINE_IDX.elab:
+	La
+	RTD 0
+post_OUTADR_LINE_IDX:
+VAR LINE_IDX__outadr_ofs, q
+	LCA OUTADR_LINE_IDX.elab
+	Sa	 2, LINE_IDX__outadr_ofs
+VAR LINE_IDX__inadr_ofs, q
+	LCA INADR_LINE_IDX.elab
+	Sa	 2, LINE_IDX__inadr_ofs
+VAR LINE_IDX__st_ofs, q
+	LCA ST_LINE_IDX.elab
+	Sa	 2, LINE_IDX__st_ofs
+VAR LINE_IDX__ld_ofs, q
+	LCA LD_LINE_IDX.elab
+	Sa	 2, LINE_IDX__ld_ofs
+VAR LINE_IDX__u_ofs, q
+	La	 1, STANDARD.TEST_TREE_L1.LINE_IDX.use__info
+	Sa	 2, LINE_IDX__u_ofs
+VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
+VAR DEFAULT_WIDTH_disp, d			; variable entiere
+	LI	 6
+	Sd  2,	DEFAULT_WIDTH_disp
+
+VAR DEFAULT_BASE_disp, d			; variable entiere
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	10
+	Sd  2,	DEFAULT_BASE_disp
+
+if defined GET_L14_
+PRO	GET_L14				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM ITEM_ofs				; out
+	PRM WIDTH_ofs				; in
+endPRMS					;    fin parametrage
+ELB 3
+begin:
+	LVA	 2, GFP_disp
+	Ld	 3, -WIDTH_ofs
+	La 	 3, -ITEM_ofs
+	La 	 3, -FILE_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,GET_L61
+	UNLINK	 3
+	RTD	prm_siz
+endPRO					;---------- end PRO GET
+end if
+if defined GET_L15_
+PRO	GET_L15				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM ITEM_ofs				; out
+	PRM WIDTH_ofs				; in
+endPRMS					;    fin parametrage
+ELB 3
+begin:
+	LVA	 2, GFP_disp
+	Ld	 3, -WIDTH_ofs
+	La 	 3, -ITEM_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,GET_L62
+	UNLINK	 3
+	RTD	prm_siz
+endPRO					;---------- end PRO GET
+end if
+if defined PUT_L16_
+PRO	PUT_L16				;---------- PRO PUT
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM ITEM_ofs				; in
+	PRM WIDTH_ofs				; in
+	PRM BASE_ofs				; in
+endPRMS					;    fin parametrage
+ELB 3
+begin:
+	LVA	 2, GFP_disp
+	Ld	 3, -BASE_ofs
+	Ld	 3, -WIDTH_ofs
+	Lb	 3, -ITEM_ofs
+	La 	 3, -FILE_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,PUT_L63
+	UNLINK	 3
+	RTD	prm_siz
+endPRO					;---------- end PRO PUT
+end if
+if defined PUT_L17_
+PRO	PUT_L17				;---------- PRO PUT
+PRMS					;    debut parametrage
+	PRM ITEM_ofs				; in
+	PRM WIDTH_ofs				; in
+	PRM BASE_ofs				; in
+endPRMS					;    fin parametrage
+ELB 3
+begin:
+	LVA	 2, GFP_disp
+	Ld	 3, -BASE_ofs
+	Ld	 3, -WIDTH_ofs
+	Lb	 3, -ITEM_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,PUT_L64
+	UNLINK	 3
+	RTD	prm_siz
+endPRO					;---------- end PRO PUT
+end if
+if defined GET_L18_
+PRO	GET_L18				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM FROM_ofs				; in
+	PRM ITEM_ofs				; out
+	PRM LAST_ofs				; out
+endPRMS					;    fin parametrage
+ELB 3
+begin:
+	LVA	 2, GFP_disp
+	La 	 3, -LAST_ofs
+	La 	 3, -ITEM_ofs
+	La 	 3, -FROM_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,GET_L65
+	UNLINK	 3
+	RTD	prm_siz
+endPRO					;---------- end PRO GET
+end if
+if defined PUT_L19_
+PRO	PUT_L19				;---------- PRO PUT
+PRMS					;    debut parametrage
+	PRM TO_ofs				; out
+	PRM ITEM_ofs				; in
+	PRM BASE_ofs				; in
+endPRMS					;    fin parametrage
+ELB 3
+begin:
+	LVA	 2, GFP_disp
+	Ld	 3, -BASE_ofs
+	Lb	 3, -ITEM_ofs
+	La 	 3, -TO_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,PUT_L66
+	UNLINK	 3
+	RTD	prm_siz
+endPRO					;---------- end PRO PUT
+end if
+					;---------- end generic package instantiation LINE_IDX_IO
+end namespace
+
+VAR T_disp, q				; variable record : pointeur aux data record
+VAR T__u, q				; variable record : pointeur aux useinfo
+VAR T__dat, STANDARD.TEST_TREE_L1.TREE.size
+	LVA	2, T__dat
+	Sa	2, T_disp				; record fin
+	LVA	2, STANDARD.TEST_TREE_L1.TREE.SIZ
+	Sa	2, T__u
+; CODE_VC_NAME DN_VARIABLE_ID
+	La  2, T_disp
+	LI	STANDARD.TEST_TREE_L1.TREE.size
+	LVA 1,	STANDARD.TEST_TREE_L1.TREE_NIL_disp
+	La  ,  0
+	BLKMOV
+
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-STR STR_L14, "TY=> "			; constante string="TY=> "
-	LCA	STR_L14.data_ptr
+STR STR_L20, "TREE_NIL.TY=> "			; constante string="TREE_NIL.TY=> "
+	LCA	STR_L20.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	Lb 2,	STANDARD.TEST_TREE_L1.BLOCK__1.NODE_NAME_IO.DEFAULT_SETTING_disp
 	Ld 2,	STANDARD.TEST_TREE_L1.BLOCK__1.NODE_NAME_IO.DEFAULT_WIDTH_disp
-	La	1, TREE_ROOT_disp
+	La	1, TREE_NIL_disp
 	Ld
 	LI	24
 	LI	8
 	UBFX
 	CALL	STANDARD.TEST_TREE_L1.BLOCK__1.NODE_NAME_IO. ,PUT_L5
-STR STR_L15, ", PG=> "			; constante string=", PG=> "
-	LCA	STR_L15.data_ptr
+STR STR_L21, ", TREE_NIL.PG=> "		; constante string=", TREE_NIL.PG=> "
+	LCA	STR_L21.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	Ld 2,	STANDARD.TEST_TREE_L1.BLOCK__1.PAGE_IDX_IO.DEFAULT_BASE_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	2
-	La	1, TREE_ROOT_disp
+	La	1, TREE_NIL_disp
 	Ld
 	LI	9
 	LI	15
 	UBFX
 	CALL	STANDARD.TEST_TREE_L1.BLOCK__1.PAGE_IDX_IO. ,PUT_L11
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
+STR STR_L22, "T.TY=> "			; constante string="T.TY=> "
+	LCA	STR_L22.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	Lb 2,	STANDARD.TEST_TREE_L1.BLOCK__1.NODE_NAME_IO.DEFAULT_SETTING_disp
+	Ld 2,	STANDARD.TEST_TREE_L1.BLOCK__1.NODE_NAME_IO.DEFAULT_WIDTH_disp
+	La	2, T_disp
+	Ld
+	LI	24
+	LI	8
+	UBFX
+	CALL	STANDARD.TEST_TREE_L1.BLOCK__1.NODE_NAME_IO. ,PUT_L5
+STR STR_L23, ", T.PG=> "			; constante string=", T.PG=> "
+	LCA	STR_L23.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	Ld 2,	STANDARD.TEST_TREE_L1.BLOCK__1.PAGE_IDX_IO.DEFAULT_BASE_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	2
+	La	2, T_disp
+	Ld
+	LI	9
+	LI	15
+	UBFX
+	CALL	STANDARD.TEST_TREE_L1.BLOCK__1.PAGE_IDX_IO. ,PUT_L11
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
+	La	2, T_disp
+					; store represented component PG range 9 .. 23 width 15
+	DUP
+	Ld
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	12
+	LI	9
+	LI	15
+	BFI
+	Sd
+	La	2, T_disp
+					; store represented component PG range 9 .. 23 width 15
+	DUP
+	Ld
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	3
+	LI	9
+	LI	15
+	BFI
+	Sd
+STR STR_L24, "apres assign 12 et 3 T.PG=> "	; constante string="apres assign 12 et 3 T.PG=> "
+	LCA	STR_L24.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	Ld 2,	STANDARD.TEST_TREE_L1.BLOCK__1.PAGE_IDX_IO.DEFAULT_BASE_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	2
+	La	2, T_disp
+	Ld
+	LI	9
+	LI	15
+	UBFX
+	CALL	STANDARD.TEST_TREE_L1.BLOCK__1.PAGE_IDX_IO. ,PUT_L11
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
+	La	2, T_disp
+					; store represented component TY range 24 .. 31 width 8
+	DUP
+	Ld
+	LI	2
+	LI	24
+	LI	8
+	BFI
+	Sd
+	La	2, T_disp
+					; store represented component PG range 9 .. 23 width 15
+	DUP
+	Ld
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	24
+	LI	9
+	LI	15
+	BFI
+	Sd
+	La	2, T_disp
+					; store represented component LN range 2 .. 8 width 7
+	DUP
+	Ld
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	5
+	LI	2
+	LI	7
+	BFI
+	Sd
+STR STR_L25, "apres assign DN_ROOT, 24, 5 "	; constante string="apres assign DN_ROOT, 24, 5 "
+	LCA	STR_L25.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+STR STR_L26, "T.TY=> "			; constante string="T.TY=> "
+	LCA	STR_L26.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	Lb 2,	STANDARD.TEST_TREE_L1.BLOCK__1.NODE_NAME_IO.DEFAULT_SETTING_disp
+	Ld 2,	STANDARD.TEST_TREE_L1.BLOCK__1.NODE_NAME_IO.DEFAULT_WIDTH_disp
+	La	2, T_disp
+	Ld
+	LI	24
+	LI	8
+	UBFX
+	CALL	STANDARD.TEST_TREE_L1.BLOCK__1.NODE_NAME_IO. ,PUT_L5
+STR STR_L27, ", T.PG=> "			; constante string=", T.PG=> "
+	LCA	STR_L27.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	Ld 2,	STANDARD.TEST_TREE_L1.BLOCK__1.PAGE_IDX_IO.DEFAULT_BASE_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	2
+	La	2, T_disp
+	Ld
+	LI	9
+	LI	15
+	UBFX
+	CALL	STANDARD.TEST_TREE_L1.BLOCK__1.PAGE_IDX_IO. ,PUT_L11
+STR STR_L28, ", T.LN=> "			; constante string=", T.LN=> "
+	LCA	STR_L28.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	Ld 2,	STANDARD.TEST_TREE_L1.BLOCK__1.LINE_IDX_IO.DEFAULT_BASE_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	2
+	La	2, T_disp
+	Ld
+	LI	2
+	LI	7
+	UBFX
+	CALL	STANDARD.TEST_TREE_L1.BLOCK__1.LINE_IDX_IO. ,PUT_L17
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26

@@ -871,3 +871,165 @@ Le programme TEST_AGREGATS_2 valide maintenant l’ensemble des cas suivants : a
 TOUS LES TESTS SONT OK
 
 Cette étape stabilise fortement la frontière entre variable tableau autonome, composant tableau inline, doublet composite {data,use_info}, offsets statiques de use_info, et calcul dynamique des dimensions. Elle prépare aussi les prochains chantiers liés au bootstrap, où les structures DIANA combinent records, tableaux, accès, contraintes dynamiques et représentations compactes.
+
+## Session 21 juin 2026 — Clauses de représentation pour records compacts et type DIANA TREE
+
+Une étape importante a été franchie dans le traitement des clauses de représentation Ada 83, avec pour objectif direct le support du type DIANA `TREE`, record à variantes compacté sur 32 bits. Ce type est central pour le bootstrap de TLALOC, car il sert de représentation compacte des pointeurs DIANA et combine discriminant, variantes superposées et champs numériques dans un seul mot machine.
+
+Un nouveau sous-ensemble de services a été ajouté dans l’EXPANDER sous la forme du package interne `REPRESENTED_ITEMS`, placé dans le corps de `EXPANDER` de façon à être accessible aux déclarations, expressions et instructions. Ce package regroupe désormais les opérations liées aux types possédant une clause de représentation de record : détection d’un record représenté, lecture des `comp_rep`, calcul de taille effective, génération du patron de type, génération d’agrégat compacté, lecture de composant représenté et écriture de composant représenté.
+
+La première difficulté a été de comprendre correctement les informations fournies par DIANA. Pour `TREE`, le champ backend `CD_IMPL_SIZE` du `DN_RECORD` vaut encore zéro au moment où l’expander intervient, alors que la taille sémantique provenant de la clause `for TREE'SIZE use 32` est déjà disponible dans `SM_SIZE`. Le calcul de taille des records représentés a donc été corrigé pour utiliser prioritairement `SM_SIZE`, puis l’occupation maximale calculée à partir des `DN_COMP_REP`, et seulement en dernier recours `CD_IMPL_SIZE`. Cela permet de générer correctement le patron :
+
+```
+TREE = 'TREE'
+namespace TREE
+VAR use__info, q
+VAR SIZ, d
+        LVA     1, SIZ
+        Sa      1, use__info
+        LI      32
+        Sd      1, SIZ
+size = 4
+...
+end namespace
+```
+
+La deuxième difficulté venait du lien retour `SM_COMP_REP`. Dans le dump DIANA de `TREE`, les nœuds `DN_COMP_REP` contiennent bien le nom résolu du composant ou discriminant par `AS_NAME.SM_DEFN`, mais le `DN_DISCRIMINANT_ID` `PT` ne possède pas nécessairement un `SM_COMP_REP` exploitable. Le parcours des clauses de représentation a donc été inversé : au lieu de partir du composant et d’exiger son lien retour `SM_COMP_REP`, l’expander parcourt directement la séquence `AS_COMP_REP_S` du `DN_RECORD_REP` et utilise chaque `DN_COMP_REP` comme source de vérité. Cette correction est essentielle pour les discriminants représentés.
+
+La génération des records représentés a été limitée volontairement à un premier périmètre robuste : records tenant sur au plus 64 bits, avec les champs représentés à `byte_offset = 0`. Ce périmètre couvre le cas visé de `TREE`, où les champs sont superposés selon les variantes :
+
+```
+PT   at 0 range 0  .. 1
+LN   at 0 range 2  .. 8
+SLN  at 0 range 2  .. 8
+NSIZ at 0 range 2  .. 8
+PG   at 0 range 9  .. 23
+SPG  at 0 range 9  .. 23
+ABSS at 0 range 9  .. 23
+COL  at 0 range 24 .. 31
+TY   at 0 range 24 .. 31
+NOTY at 0 range 24 .. 31
+```
+
+La génération des agrégats de record représenté a ensuite été ajoutée par `CODE_REPRESENTED_RECORD_AGGREGATE`. La convention retenue est que l’adresse des données du record est déjà au sommet de pile, comme dans le chemin record ordinaire. L’expander duplique cette adresse, initialise un accumulateur entier à zéro, puis insère chaque composant d’agrégat dans sa plage de bits. Les agrégats utilisés pour les constantes `TREE_NIL`, `TREE_VOID` et `TREE_ROOT` sont ainsi compactés directement dans un mot 32 bits au lieu de passer par les offsets de record ordinaire. Le FINC généré pour `TREE_ROOT` est maintenant de la forme :
+
+```
+La 1, TREE_ROOT_disp
+                        ; Assign_represented_record_aggregate size 32 bits
+DUP
+LI      0
+                        ; pack PT range 0 .. 1 width 2
+LI      0
+LI      0
+LI      2
+BFI
+                        ; pack TY range 24 .. 31 width 8
+LI      2
+LI      24
+LI      8
+BFI
+                        ; pack PG range 9 .. 23 width 15
+LI      1
+LI      9
+LI      15
+BFI
+                        ; pack LN range 2 .. 8 width 7
+LI      0
+LI      2
+LI      7
+BFI
+Sd
+DROP
+```
+
+Pour rendre cette génération lisible et réutilisable, la LLIR x86-64 a été enrichie de primitives de manipulation de champs de bits. `UBFX` et `SBFX` étaient déjà ajoutées pour l’extraction unsigned/signed. Une nouvelle macro `BFI` a été définie comme insertion de champ dans une valeur empilée, avec la convention :
+
+```
+old_quad, inserted_value, lsb, width  -->  new_quad
+```
+
+Son effet est :
+
+```
+new_quad =
+  (old_quad and not (((1 << width) - 1) << lsb))
+  or ((inserted_value and ((1 << width) - 1)) << lsb)
+```
+
+Cette primitive joue le rôle symétrique de `UBFX/SBFX`. Elle sert à la fois au packing des agrégats représentés et à l’affectation ultérieure de champs représentés. Une correction d’encodage a été notée lors de l’optimisation de la macro : après dépilement de `width`, `lsb` et `inserted_value`, la valeur initiale à modifier se trouve en `[rbp]`; l’instruction d’effacement du champ doit donc viser `[rbp]` et non `[rbp+8]`.
+
+La lecture de composant représenté a été intégrée dans `CODE_SELECTED`. Lorsque le designator d’une sélection est un `DN_COMPONENT_ID` ou un `DN_DISCRIMINANT_ID` possédant une représentation, l’expander ne calcule plus un offset `STATOFS` ordinaire. Il charge l’adresse des données du record préfixe, lit le mot compacté, puis extrait la plage de bits par `UBFX` ou `SBFX`. Pour `TREE_ROOT.TY`, le schéma généré est conceptuellement :
+
+```
+La 1, TREE_ROOT_disp
+Ld
+LI 24
+LI 8
+UBFX
+```
+
+et pour `TREE_ROOT.PG` :
+
+```
+La 1, TREE_ROOT_disp
+Ld
+LI 9
+LI 15
+UBFX
+```
+
+L’écriture de composant représenté a ensuite été ajoutée par `CODE_STORE_REP_COMPONENT`. L’intégration se fait dans `CODE_ASSIGN` avant le chemin `DN_SELECTED` ordinaire, car pour un champ représenté l’adresse utile est celle du record entier, non celle d’un composant à offset statique. La procédure reçoit l’adresse des données du record sur la pile, duplique cette adresse pour conserver la destination, charge l’ancien mot compacté, évalue l’expression source, applique `BFI`, puis stocke le mot modifié. Pour une affectation comme :
+
+```
+T.PG := 12;
+```
+
+le schéma LLIR est :
+
+```
+La 1, T_disp
+DUP
+Ld
+LI 12
+LI 9
+LI 15
+BFI
+Sd
+```
+
+Les tests réalisés valident la chaîne complète. Les constantes représentées sont correctement initialisées et relues :
+
+```
+TREE_NIL.TY=> DN_NIL, TREE_NIL.PG=>  0
+T.TY=> DN_NIL, T.PG=>  0
+```
+
+L’affectation répétée d’un même champ montre que `BFI` efface bien l’ancien contenu du champ avant insertion, et ne se contente pas d’un `or` :
+
+```
+T.PG := 12;
+T.PG := 3;
+```
+
+donne :
+
+```
+apres assign 12 et 3 T.PG=>  3
+```
+
+Enfin, l’affectation de plusieurs champs disjoints du même mot compacté vérifie l’indépendance des plages de bits :
+
+```
+T.TY := DN_ROOT;
+T.PG := 24;
+T.LN := 5;
+```
+
+donne :
+
+```
+apres assign DN_ROOT, 24, 5
+T.TY=> DN_ROOT, T.PG=> 24, T.LN=>  5
+```
+
+Cette session valide donc un premier support opérationnel des clauses de représentation de records compacts tenant dans un mot machine : lecture de la clause `T'SIZE`, génération du patron de type, compactage des agrégats, lecture de composants par extraction de bits et écriture de composants par insertion de bits. Le type `TREE` de DIANA est maintenant utilisable en lecture et en écriture dans ce périmètre. Les limites connues restent volontairement simples : champs à `byte_offset = 0`, taille totale inférieure ou égale à 64 bits, et pas encore de généralisation aux clauses plus larges ou aux représentations multi-octets avec offsets non nuls. Pour le bootstrap de TLALOC, ce jalon est néanmoins majeur, car il couvre précisément le modèle compact du nœud DIANA `TREE`.

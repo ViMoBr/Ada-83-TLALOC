@@ -24,19 +24,11 @@ is
     -- <exp>, <lo>, <hi> arrivent normalement comme numeric_literal
     -- ou comme expression déjà évaluée avec SM_VALUE entier.
 
-    if  EXP = TREE_VOID  or else  EXP = TREE_NIL  then
-      PUT_LINE( "; REPRESENTED_ITEMS.STATIC_INTEGER_VALUE : expression absente" );
-      raise PROGRAM_ERROR;
-
-    elsif  EXP.TY = DN_NUMERIC_LITERAL  then
-      return DI( SM_VALUE, EXP );
-
-    elsif  EXP.TY in CLASS_EXP  then
+    if  EXP.TY = DN_NUMERIC_LITERAL  or else  EXP.TY in CLASS_EXP  then
       return DI( SM_VALUE, EXP );
 
     else
-      PUT_LINE( "; REPRESENTED_ITEMS.STATIC_INTEGER_VALUE : EXP.TY inattendu "
-	      & NODE_NAME'IMAGE( EXP.TY ) );
+      PUT_LINE( "; REPRESENTED_ITEMS.STATIC_INTEGER_VALUE : EXP.TY inattendu " & NODE_NAME'IMAGE( EXP.TY ) );
       raise PROGRAM_ERROR;
     end if;
 
@@ -58,14 +50,14 @@ is
   procedure		GET_COMP_REP_ELEM	( REP_ELEM :TREE; COMP_ID :out TREE;
 					  BYTE_OFFSET, FIRST_BIT, LAST_BIT, WIDTH :out INTEGER )
   is			-----------------
-    RNG		: TREE	:= D( AS_RANGE, REP_ELEM );
-    EXP_FIRST	: TREE	:= D( AS_EXP1, RNG );
-    EXP_LAST	: TREE	:= D( AS_EXP2, RNG );
-    BIT_DEPART	: INTEGER	:= STATIC_INTEGER_VALUE( EXP_FIRST );
-    BIT_FIN	: INTEGER	:= STATIC_INTEGER_VALUE( EXP_LAST );
+    RNG		: TREE		:= D( AS_RANGE, REP_ELEM );
+    EXP_FIRST	: TREE		:= D( AS_EXP1, RNG );
+    EXP_LAST	: TREE		:= D( AS_EXP2, RNG );
+    BIT_DEPART	: INTEGER		:= STATIC_INTEGER_VALUE( EXP_FIRST );
+    BIT_FIN	: INTEGER		:= STATIC_INTEGER_VALUE( EXP_LAST );
 
   begin
-    COMP_ID   := D( SM_DEFN, D( AS_NAME, REP_ELEM ) );
+    COMP_ID := D( SM_DEFN, D( AS_NAME, REP_ELEM ) );
     BYTE_OFFSET := STATIC_INTEGER_VALUE( D( AS_EXP, REP_ELEM ) );
     FIRST_BIT := BIT_DEPART;
     LAST_BIT := BIT_FIN;
@@ -76,37 +68,26 @@ is
 
 
 			--------------------
-  function		REP_RECORD_USED_BITS	( TYPE_SPEC :TREE )	return INTEGER
+  function		REP_RECORD_USED_BITS	( TYPE_SPEC :TREE )		return INTEGER
   is			--------------------
-    REP			: TREE;
-    REP_S			: SEQ_TYPE;
+    REP			: TREE		:= D( SM_REPRESENTATION, TYPE_SPEC );
+    REP_S			: SEQ_TYPE	:= LIST( D( AS_COMP_REP_S, REP ) );
     REP_ELEM		: TREE;
-    COMP_ID		: TREE;
-    BYTE_OFFSET		: INTEGER;
-    FIRST_BIT		: INTEGER;
-    LAST_BIT		: INTEGER;
-    WIDTH			: INTEGER;
-    END_BIT		: INTEGER;
-    MAX_BIT		: INTEGER := 0;
+    MAX_BIT		: INTEGER		:= 0;
+
   begin
-    REP := D( SM_REPRESENTATION, TYPE_SPEC );
-
-    if  REP = TREE_VOID  or else REP = TREE_NIL  then
-      return 0;
-    end if;
-
-    REP_S := LIST( D( AS_COMP_REP_S, REP ) );
-
     while  not IS_EMPTY( REP_S )  loop
       POP( REP_S, REP_ELEM );
 
       if  REP_ELEM.TY = DN_COMP_REP  then
-        GET_COMP_REP_ELEM( REP_ELEM, COMP_ID, BYTE_OFFSET, FIRST_BIT, LAST_BIT, WIDTH );
-        END_BIT := BYTE_OFFSET * CODI.STORAGE_UNIT + LAST_BIT + 1;
-
-        if  END_BIT > MAX_BIT  then
-          MAX_BIT := END_BIT;
-        end if;
+        declare
+	BYTE_OFFSET	: INTEGER		:= STATIC_INTEGER_VALUE( D( AS_EXP, REP_ELEM ) );
+	RNG		: TREE		:= D( AS_RANGE, REP_ELEM );
+	LAST_BIT		: INTEGER		:= STATIC_INTEGER_VALUE( D( AS_EXP2, RNG ) );
+	END_BIT		: INTEGER		:= BYTE_OFFSET * CODI.STORAGE_UNIT + LAST_BIT + 1;
+        begin
+	if  END_BIT > MAX_BIT  then  MAX_BIT := END_BIT;  end if;
+        end;
       end if;
     end loop;
 
@@ -117,51 +98,47 @@ is
 
 
 			----------------------------
-  function		REPRESENTED_RECORD_SIZE_BITS	( TYPE_SPEC :TREE )	return INTEGER
+  function		REPRESENTED_RECORD_SIZE_BITS		( TYPE_SPEC :TREE )		return INTEGER
   is			----------------------------
-    TS		: TREE := TYPE_SPEC;
-    SIZE_BITS	: INTEGER := 0;
-    USED_BITS	: INTEGER := 0;
+
+    TS		: TREE		:= TYPE_SPEC;
+    SIZE_BITS	: INTEGER		:= 0;
+    USED_BITS	: INTEGER		:= 0;
+
   begin
-    if  TS.TY = DN_PRIVATE  or else TS.TY = DN_L_PRIVATE  then
+    if  TS.TY = DN_PRIVATE  or else  TS.TY = DN_L_PRIVATE  then
       TS := D( SM_TYPE_SPEC, TS );
     elsif  TS.TY = DN_INCOMPLETE  then
       TS := D( XD_FULL_TYPE_SPEC, TS );
     end if;
 
-    -- 1. Source prioritaire : clause "for T'SIZE use N".
-    -- SM_SIZE est un attribut numérique / Value, donc lire par DI,
-    -- pas par D.
     begin
-      SIZE_BITS := DI( SM_SIZE, TS );
+      SIZE_BITS := DI( SM_SIZE, TS );	    								-- 1. Source prioritaire : clause "for T'SIZE use N".
     exception
       when others =>
         SIZE_BITS := 0;
     end;
 
     if  SIZE_BITS > 0  then
-      return SIZE_BITS;
+      return  SIZE_BITS;
     end if;
 
-    -- 2. Calcul minimal à partir des comp_rep.
-    USED_BITS := REP_RECORD_USED_BITS( TS );
-
+    USED_BITS := REP_RECORD_USED_BITS( TS );								-- 2. Calcul minimal à partir des comp_rep.
     if  USED_BITS > 0  then
-      return USED_BITS;
+      return  USED_BITS;
     end if;
 
     -- 3. Dernier recours : CD_IMPL_SIZE si déjà posé.
     begin
       SIZE_BITS := DI( CD_IMPL_SIZE, TS );
     exception
-      when others =>
-        SIZE_BITS := 0;
+      when others =>  SIZE_BITS := 0;
     end;
 
     return SIZE_BITS;
 
   end	REPRESENTED_RECORD_SIZE_BITS;
-
+	----------------------------
 
 
 
@@ -172,10 +149,6 @@ is
     TS	: TREE	:= TYPE_SPEC;
 
   begin
-    if  TS = TREE_VOID  or else  TS = TREE_NIL  then
-      return  FALSE;
-    end if;
-
     if  TS.TY = DN_PRIVATE  or else  TS.TY = DN_L_PRIVATE  then
       TS := D( SM_TYPE_SPEC, TS );
     elsif  TS.TY = DN_INCOMPLETE  then
@@ -186,7 +159,7 @@ is
       return  FALSE;
     end if;
 
-    return  D( SM_REPRESENTATION, TS ) /= TREE_VOID  and then  D( SM_REPRESENTATION, TS ) /= TREE_NIL;
+    return  D( SM_REPRESENTATION, TS ) /= TREE_VOID;
 
   end	HAS_RECORD_REP;
 	--------------
@@ -198,22 +171,13 @@ is
     REP	: TREE;
 
   begin
-    if COMP_ID = TREE_VOID or else COMP_ID = TREE_NIL then
-      return FALSE;
-    end if;
-
-    if not ( COMP_ID.TY = DN_COMPONENT_ID
-          or else COMP_ID.TY = DN_DISCRIMINANT_ID )
-    then
+    if not ( COMP_ID.TY = DN_COMPONENT_ID  or else  COMP_ID.TY = DN_DISCRIMINANT_ID )  then
       return FALSE;
     end if;
 
     REP := D( SM_COMP_REP, COMP_ID );
 
-    if REP /= TREE_VOID
-      and then REP /= TREE_NIL
-      and then REP.TY = DN_COMP_REP
-    then
+    if REP /= TREE_VOID  and then  REP.TY = DN_COMP_REP then
       return TRUE;
     end if;
 
@@ -237,7 +201,6 @@ is
     end if;
 
     REP := D( SM_COMP_REP, COMP_ID );
-
     GET_COMP_REP_ELEM( REP, DUMMY_ID, BYTE_OFFSET, FIRST_BIT, LAST_BIT, WIDTH );
 
   end	GET_COMPONENT_REP;
@@ -248,11 +211,11 @@ is
   function		IS_SMALL_REP_RECORD		( TYPE_SPEC :TREE )		return BOOLEAN
   is			-------------------
 
-    TS		: TREE	:= TYPE_SPEC;
+    TS		: TREE		:= TYPE_SPEC;
     REP		: TREE;
     REP_S		: SEQ_TYPE;
     REP_ELEM	: TREE;
-    SIZE_BITS	: INTEGER;
+    SIZE_BITS	: NATURAL;
 
   begin
     if  not HAS_RECORD_REP( TS )  then
@@ -283,18 +246,15 @@ is
       if  REP_ELEM.TY = DN_COMP_REP  then
         declare
 	COMP_ID		: TREE;
-	BYTE_OFFSET	: INTEGER;
-	FIRST_BIT		: INTEGER;
-	LAST_BIT		: INTEGER;
-	WIDTH		: INTEGER;
-	END_BIT		: INTEGER;
+	BYTE_OFFSET	: NATURAL;
+	FIRST_BIT, LAST_BIT	: NATURAL;
+	WIDTH		: NATURAL;
+	END_BIT		: NATURAL;
         begin
 	GET_COMP_REP_ELEM( REP_ELEM, COMP_ID, BYTE_OFFSET, FIRST_BIT, LAST_BIT, WIDTH );
           END_BIT := BYTE_OFFSET * CODI.STORAGE_UNIT + LAST_BIT + 1;
 
-	if  BYTE_OFFSET < 0  or else  FIRST_BIT < 0  or else  LAST_BIT < FIRST_BIT
-	or else  WIDTH <= 0  or else  WIDTH > 64  or else  END_BIT > SIZE_BITS
-	then
+	if  LAST_BIT < FIRST_BIT  or else  WIDTH <= 0  or else  WIDTH > 64  or else  END_BIT > SIZE_BITS  then
 	  return  FALSE;
 	end if;
         end;
@@ -401,12 +361,11 @@ is
 		------------------
     function	FIND_COMP_REP_ELEM		( COMP_ID :TREE )	return TREE
     is		------------------
-      REP_S		: SEQ_TYPE;
+      REP_S		: SEQ_TYPE	:= LIST( D( AS_COMP_REP_S, REP ) );
       REP_ELEM		: TREE;
       DEFN		: TREE;
-    begin
-      REP_S := LIST( D( AS_COMP_REP_S, REP ) );
 
+    begin
       while  not IS_EMPTY( REP_S )  loop
         POP( REP_S, REP_ELEM );
 
@@ -430,11 +389,11 @@ is
 
       REP_ELEM		: TREE;
       DUMMY_ID		: TREE;
-      BYTE_OFFSET		: INTEGER;
-      FIRST_BIT		: INTEGER;
-      LAST_BIT		: INTEGER;
-      WIDTH		: INTEGER;
-      MASK		: INTEGER;
+      BYTE_OFFSET		: NATURAL;
+      FIRST_BIT, LAST_BIT	: NATURAL;
+      WIDTH		: NATURAL;
+      MASK		: NATURAL;
+
     begin
       REP_ELEM := FIND_COMP_REP_ELEM( COMP_ID );
 
@@ -469,32 +428,11 @@ is
 		& " width" & INTEGER'IMAGE( WIDTH ) );
       end if;
 
-      -- Pile attendue avant l'appel :
-      --   @data, @data, accumulator
-      --
-      -- Après CODE_EXP :
-      --   @data, @data, accumulator, value
-      --
-      -- Puis :
-      --   value := (value and mask) << first_bit
-      --   accumulator := accumulator or value
-
       EXPRESSIONS.CODE_EXP( COMP_EXP );
 
       PUT_LINE( tab & "LI"  & tab & IMAGE( FIRST_BIT ) );
       PUT_LINE( tab & "LI"  & tab & IMAGE( WIDTH ) );
-      PUT_LINE( tab & "BFI" );
-
-
---      PUT_LINE( tab & "LI"  & tab & IMAGE( MASK ) );
---      PUT_LINE( tab & "ET" );
-
---      if  FIRST_BIT /= 0  then
---        PUT_LINE( tab & "LI"  & tab & IMAGE( FIRST_BIT ) );
---        PUT_LINE( tab & "SHL" );
---      end if;
-
---      PUT_LINE( tab & "OU" );
+      PUT_LINE( tab & "BFI" );									-- @data_to_modify, @data_inserted, accumulator, value
 
     end	EMIT_PACKED_FIELD;
 	-----------------
@@ -502,38 +440,29 @@ is
 		-------------------------
     procedure	EMIT_POSITIONAL_COMPONENT	( POS :in out INTEGER; COMP_EXP :TREE )
     is		-------------------------
-      DSCRMT_S		: SEQ_TYPE;
+
+      DSCRMT_S		: SEQ_TYPE	:= LIST( D( SM_DISCRIMINANT_S, TYPE_SPEC ) );
       DSCRMT_DECL		: TREE;
-      DSCRMT_ID_S		: SEQ_TYPE;
-      DSCRMT_ID		: TREE;
-      COUNT		: INTEGER		:= 0;
+
     begin
-      -- Pour TREE, le seul composant positionnel de l'agrégat est le
-      -- discriminant PT :
-      --
-      --   (P, TY => DN_NIL, PG => 0, LN => 0)
-      --
-      -- On code donc d'abord les discriminants positionnels.
-      -- Le traitement général des composants positionnels de variantes
-      -- pourra être ajouté ensuite si nécessaire.
-
-      DSCRMT_S := LIST( D( SM_DISCRIMINANT_S, TYPE_SPEC ) );
-
       while  not IS_EMPTY( DSCRMT_S )  loop
         POP( DSCRMT_S, DSCRMT_DECL );
+        declare
+	DSCRMT_ID_S	: SEQ_TYPE	:= LIST( D( AS_SOURCE_NAME_S, DSCRMT_DECL ) );
+	DSCRMT_ID		: TREE;
+	COUNT		: INTEGER		:= 0;
+        begin
+	while  not IS_EMPTY( DSCRMT_ID_S )  loop
+	  POP( DSCRMT_ID_S, DSCRMT_ID );
+            COUNT := COUNT + 1;
 
-        DSCRMT_ID_S := LIST( D( AS_SOURCE_NAME_S, DSCRMT_DECL ) );
-
-        while  not IS_EMPTY( DSCRMT_ID_S )  loop
-          POP( DSCRMT_ID_S, DSCRMT_ID );
-          COUNT := COUNT + 1;
-
-          if  COUNT = POS  then
-            EMIT_PACKED_FIELD( DSCRMT_ID, COMP_EXP );
-            POS := POS + 1;
-            return;
-          end if;
-        end loop;
+            if  COUNT = POS  then
+              EMIT_PACKED_FIELD( DSCRMT_ID, COMP_EXP );
+              POS := POS + 1;
+              return;
+            end if;
+	end loop;
+        end;
       end loop;
 
       PUT_LINE( "; CODE_REPRESENTED_RECORD_AGGREGATE : composant positionnel non gere " & INTEGER'IMAGE( POS ) );
@@ -550,28 +479,26 @@ is
       CH		: TREE;
       COMP_ID	: TREE;
     begin
-      while not IS_EMPTY( CHOICES ) loop
+      while  not IS_EMPTY( CHOICES )  loop
         POP( CHOICES, CH );
 
-        if CH.TY = DN_CHOICE_EXP then
+        if  CH.TY = DN_CHOICE_EXP  then
           COMP_ID := D( SM_DEFN, D( AS_EXP, CH ) );
 
-          if COMP_ID = TREE_VOID or else COMP_ID = TREE_NIL then
+          if  COMP_ID = TREE_VOID  or else  COMP_ID = TREE_NIL  then
             PUT_LINE( "; CODE_REPRESENTED_RECORD_AGGREGATE : choix sans SM_DEFN" );
             raise PROGRAM_ERROR;
           end if;
 
           EMIT_PACKED_FIELD( COMP_ID, COMP_EXP );
 
-        elsif CH.TY = DN_CHOICE_OTHERS then
+        elsif  CH.TY = DN_CHOICE_OTHERS  then
           PUT_LINE( "; CODE_REPRESENTED_RECORD_AGGREGATE : others non gere" );
           raise PROGRAM_ERROR;
 
         else
-          PUT_LINE
-            ( "; CODE_REPRESENTED_RECORD_AGGREGATE : choix non gere "
-            & NODE_NAME'IMAGE( CH.TY ) );
-          raise PROGRAM_ERROR;
+          PUT_LINE( "; CODE_REPRESENTED_RECORD_AGGREGATE : choix non gere " & NODE_NAME'IMAGE( CH.TY ) );
+          raise  PROGRAM_ERROR;
         end if;
       end loop;
 
@@ -584,7 +511,7 @@ is
       PUT_LINE( tab50 & "; Assign_represented_record_aggregate size" & INTEGER'IMAGE( SIZE_BITS ) & " bits" );
     end if;
 
-    if  SIZE_BITS <= 0 or else SIZE_BITS > 32  then
+    if  SIZE_BITS <= 0  or else  SIZE_BITS > 32  then
       PUT_LINE( "; CODE_REPRESENTED_RECORD_AGGREGATE : taille non geree " & INTEGER'IMAGE( SIZE_BITS ) );
       raise  PROGRAM_ERROR;
     end if;
@@ -602,14 +529,12 @@ is
     PUT_LINE( tab & "DUP" );
     PUT_LINE( tab & "LI" & tab & "0" );
 
-
     declare
       SEQ		: SEQ_TYPE	:= LIST( D( AS_GENERAL_ASSOC_S, AGGREGATE ) );
       ASSOC	: TREE;
       POS		: INTEGER		:= 1;
 
     begin
-
       while  not IS_EMPTY( SEQ )  loop
         POP( SEQ, ASSOC );
 
@@ -642,17 +567,14 @@ is
   procedure		CODE_LOAD_REP_COMPONENT	( COMP_ID :TREE )
   is			-----------------------
 
-    REP_ELEM		: TREE;
     COMP_TYPE		: TREE		:= D( SM_OBJ_TYPE, COMP_ID );
-    BYTE_OFFSET		: INTEGER;
-    FIRST_BIT		: INTEGER;
-    LAST_BIT		: INTEGER;
-    WIDTH			: INTEGER;
+    REP_ELEM		: TREE		:= FIND_COMP_REP_ELEM_FROM_COMPONENT( COMP_ID );
+    BYTE_OFFSET		: NATURAL;
+    FIRST_BIT,LAST_BIT	: NATURAL;
+    WIDTH			: NATURAL;
     DUMMY_ID		: TREE;
 
   begin
-    REP_ELEM := FIND_COMP_REP_ELEM_FROM_COMPONENT( COMP_ID );
-
     if  REP_ELEM = TREE_VOID  or else  REP_ELEM = TREE_NIL  then
       PUT_LINE( "; CODE_LOAD_REP_COMPONENT : composant sans representation " & PRINT_NAME( D( LX_SYMREP, COMP_ID ) ) );
       raise  PROGRAM_ERROR;
@@ -672,7 +594,7 @@ is
     PUT_LINE( tab & "LI" & TAB & IMAGE( FIRST_BIT ) );
     PUT_LINE( tab & "LI" & TAB & IMAGE( WIDTH ) );
 
-    if COMP_TYPE.TY = DN_INTEGER then
+    if  COMP_TYPE.TY = DN_INTEGER  then
       -- À affiner ensuite : tous les entiers Ada ne sont pas forcément signés
       -- au sens d'un champ représenté. Pour TREE, PAGE_IDX, LINE_IDX,
       -- ATTR_NBR, etc. sont positifs, donc UBFX suffit.
@@ -690,7 +612,7 @@ is
   function		FIND_COMP_REP_ELEM_FROM_COMPONENT	( COMP_ID :TREE )	return TREE
   is			---------------------------------
 
-    OWNER			: TREE;
+    OWNER			: TREE	:= D( XD_REGION, COMP_ID );
     TYPE_SPEC		: TREE;
     REP			: TREE;
     REP_S			: SEQ_TYPE;
@@ -698,41 +620,142 @@ is
     DEFN			: TREE;
 
   begin
-    OWNER := D( XD_REGION, COMP_ID );
+    if  OWNER = TREE_VOID  then  return  TREE_VOID;  end if;
 
-    if OWNER = TREE_VOID or else OWNER = TREE_NIL then
-      return TREE_VOID;
-    end if;
-
-    if OWNER.TY = DN_TYPE_ID then
+    if  OWNER.TY = DN_TYPE_ID  then
       TYPE_SPEC := D( SM_TYPE_SPEC, OWNER );
     else
-      return TREE_VOID;
+      return  TREE_VOID;
     end if;
 
-    if not HAS_RECORD_REP( TYPE_SPEC ) then
-      return TREE_VOID;
-    end if;
+    if  not HAS_RECORD_REP( TYPE_SPEC )  then  return  TREE_VOID;  end if;
 
-    REP   := D( SM_REPRESENTATION, TYPE_SPEC );
+    REP := D( SM_REPRESENTATION, TYPE_SPEC );
     REP_S := LIST( D( AS_COMP_REP_S, REP ) );
 
-    while not IS_EMPTY( REP_S ) loop
+    while  not IS_EMPTY( REP_S )  loop
       POP( REP_S, REP_ELEM );
 
-      if REP_ELEM.TY = DN_COMP_REP then
+      if  REP_ELEM.TY = DN_COMP_REP  then
         DEFN := D( SM_DEFN, D( AS_NAME, REP_ELEM ) );
-
-        if DEFN = COMP_ID then
-          return REP_ELEM;
-        end if;
+        if  DEFN = COMP_ID  then  return  REP_ELEM;  end if;
       end if;
     end loop;
 
-    return TREE_VOID;
+    return  TREE_VOID;
 
   end	FIND_COMP_REP_ELEM_FROM_COMPONENT;
 	---------------------------------
+
+
+			------------------------
+  procedure		CODE_STORE_REP_COMPONENT	( COMP_ID :TREE; VALUE_EXP  :TREE )
+  is			------------------------
+
+    REP_ELEM		: TREE;
+    DUMMY_ID		: TREE;
+
+    BYTE_OFFSET		: INTEGER;
+    FIRST_BIT,LAST_BIT	: NATURAL;
+    WIDTH			: INTEGER;
+
+    OWNER			: TREE;
+    TYPE_SPEC		: TREE		:= TREE_VOID;
+    SIZE_BITS		: INTEGER		:= 0;
+    SIZE_BYTES		: INTEGER		:= 0;
+
+		------------------
+    procedure	EMIT_LOAD_OLD_WORD
+    is		------------------
+    begin
+      if SIZE_BYTES <= 1 then  PUT_LINE( tab & "Lb" );
+      elsif SIZE_BYTES <= 2 then  PUT_LINE( tab & "Lw" );
+      elsif SIZE_BYTES <= 4 then  PUT_LINE( tab & "Ld" );
+      else  PUT_LINE( TAB & "Lq" );
+      end if;
+
+    end	EMIT_LOAD_OLD_WORD;
+	------------------
+
+		-------------------
+    procedure	EMIT_STORE_NEW_WORD
+    is		-------------------
+    begin
+      if SIZE_BYTES <= 1 then  PUT_LINE( tab & "Sb" );
+      elsif SIZE_BYTES <= 2 then  PUT_LINE( tab & "Sw" );
+      elsif SIZE_BYTES <= 4 then  PUT_LINE( tab & "Sd" );
+      else  PUT_LINE( tab & "Sq" );
+      end if;
+
+    end	EMIT_STORE_NEW_WORD;
+	-------------------
+
+  begin
+    if  COMP_ID = TREE_VOID  or else  COMP_ID = TREE_NIL  then
+      PUT_LINE( "; CODE_STORE_REP_COMPONENT : COMP_ID absent" );
+      raise  PROGRAM_ERROR;
+    end if;
+
+    if  not ( COMP_ID.TY = DN_COMPONENT_ID  or else  COMP_ID.TY = DN_DISCRIMINANT_ID )  then
+      PUT_LINE( "; CODE_STORE_REP_COMPONENT : COMP_ID inattendu " & NODE_NAME'IMAGE( COMP_ID.TY ) );
+      raise  PROGRAM_ERROR;
+    end if;
+
+    REP_ELEM := FIND_COMP_REP_ELEM_FROM_COMPONENT( COMP_ID );
+
+    if  REP_ELEM = TREE_VOID  or else  REP_ELEM = TREE_NIL  then
+      PUT_LINE( "; CODE_STORE_REP_COMPONENT : composant sans representation "
+        & PRINT_NAME( D( LX_SYMREP, COMP_ID ) ) );
+      raise  PROGRAM_ERROR;
+    end if;
+
+    GET_COMP_REP_ELEM( REP_ELEM, DUMMY_ID, BYTE_OFFSET, FIRST_BIT, LAST_BIT, WIDTH );
+
+    if  BYTE_OFFSET /= 0  then
+      PUT_LINE( "; CODE_STORE_REP_COMPONENT : byte_offset non nul non gere pour "
+        & PRINT_NAME( D( LX_SYMREP, COMP_ID ) ) );
+      raise  PROGRAM_ERROR;
+    end if;
+
+    OWNER := D( XD_REGION, COMP_ID );
+
+    if  OWNER /= TREE_VOID  and then  OWNER /= TREE_NIL  and then  OWNER.TY = DN_TYPE_ID  then
+      TYPE_SPEC := D( SM_TYPE_SPEC, OWNER );
+    else
+      PUT_LINE( "; CODE_STORE_REP_COMPONENT : region du composant non DN_TYPE_ID "
+        & PRINT_NAME( D( LX_SYMREP, COMP_ID ) ) );
+      raise  PROGRAM_ERROR;
+    end if;
+
+    SIZE_BITS := REPRESENTED_RECORD_SIZE_BITS( TYPE_SPEC );
+
+    if  SIZE_BITS <= 0  or else SIZE_BITS > 64  then
+      PUT_LINE( "; CODE_STORE_REP_COMPONENT : taille record represente non geree "
+        & INTEGER'IMAGE( SIZE_BITS ) );
+      raise  PROGRAM_ERROR;
+    end if;
+
+    SIZE_BYTES := ( SIZE_BITS + CODI.STORAGE_UNIT - 1 )
+                / CODI.STORAGE_UNIT;
+
+    if  CODI.DEBUG  then
+      PUT_LINE( TAB50 & "; store represented component "
+        & PRINT_NAME( D( LX_SYMREP, COMP_ID ) )
+        & " range" & INTEGER'IMAGE( FIRST_BIT )
+        & " .."   & INTEGER'IMAGE( LAST_BIT )
+        & " width" & INTEGER'IMAGE( WIDTH ) );
+    end if;
+
+    PUT_LINE( tab & "DUP" );										-- @data a modifier en entree
+    EMIT_LOAD_OLD_WORD;										-- charge valeur a modifier
+    EXPRESSIONS.CODE_EXP( VALUE_EXP );									-- Valeur a inserer
+    PUT_LINE( tab & "LI" & TAB & IMAGE( FIRST_BIT ) );
+    PUT_LINE( tab & "LI" & TAB & IMAGE( WIDTH ) );
+    PUT_LINE( tab & "BFI" );										-- Bit Field Insert
+    EMIT_STORE_NEW_WORD;
+
+  end	CODE_STORE_REP_COMPONENT;
+	------------------------
 
 
 	-----------------

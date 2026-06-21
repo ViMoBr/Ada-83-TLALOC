@@ -702,27 +702,25 @@ end macro
 ;			----
 macro			BFI?					; bit field insert in stacked value
 ;			----
-  POP_RDX								; rdx = Width
-  POP_RCX								; rcx = LSB
+  POP_RCX								; rcx = Width
+  POP_RDX								; rdx = LSB
   POP_RAX								; rax = valeur a inserer
+								;  MAKE MASK
+  db 0x6A, 0x01							; push 1
+  db 0x5B								; pop rbx			rbx = 1
+  db 0x48, 0xD3, 0xE3						; shl rbx, cl		1 << Width
+  db 0x48, 0xFF, 0xCB						; dec rbx			mask = (1<<Width)-1
+								;  CUT SHIFT INSERTION
+  db 0x48, 0x21, 0xD8						; and rax, rbx		inserted &= mask
+  db 0x48, 0x89, 0xD1						; mov rcx, rdx		CL = LSB
+  db 0x48, 0xD3, 0xE0						; shl rax, cl		inserted <<= LSB
+								;  SHIFT INVERT MASK
+  db 0x48, 0xD3, 0xE3						; shl rbx, cl		mask <<= LSB
+  db 0x48, 0xF7, 0xD3						; not rbx			~shifted_mask
+								;  CLEAR INSERT FIELD
+  db 0x48, 0x21, 0x5D, 0x00						; and qword [rbp], rbx	clear field in old_quad
+  db 0x48, 0x09, 0x45, 0x00						; or  qword [rbp], rax	insert field
 
-  db 0x49,0x89,0xC8							; mov r8, rcx		r8 = LSB
-  db 0x49,0x89,0xD1							; mov r9, rdx		r9 = Width, reserve si besoin
-
-  db 0x49,0xC7,0xC2,0x01,0x00,0x00,0x00					; mov r10, 1
-  db 0x48,0x89,0xD1							; mov rcx, rdx		CL = Width
-  db 0x49,0xD3,0xE2							; shl r10, cl		1 << Width
-  db 0x49,0xFF,0xCA							; dec r10			mask = (1<<Width)-1
-
-  db 0x4C,0x21,0xD0							; and rax, r10		inserted &= mask
-
-  db 0x4C,0x89,0xC1							; mov rcx, r8		CL = LSB
-  db 0x48,0xD3,0xE0							; shl rax, cl		inserted <<= LSB
-  db 0x49,0xD3,0xE2							; shl r10, cl		mask <<= LSB
-
-  db 0x49,0xF7,0xD2							; not r10			~shifted_mask
-  db 0x4C,0x21,0x55,0x00						; and qword [rbp], r10	clear field in old_quad
-  db 0x48,0x09,0x45,0x00						; or  qword [rbp], rax	insert field
 end macro
 
 

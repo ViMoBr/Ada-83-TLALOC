@@ -58,9 +58,30 @@ begin
   declare
     package NODE_NAME_IO	is new ENUMERATION_IO( NODE_NAME );
     package PAGE_IDX_IO	is new INTEGER_IO( PAGE_IDX );
+    package LINE_IDX_IO	is new INTEGER_IO( LINE_IDX );
+
+    T	: TREE	:= TREE_NIL;
+
   begin
-    PUT( "TY=> " ); NODE_NAME_IO.PUT( TREE_ROOT.TY );
-    PUT( ", PG=> " ); PAGE_IDX_IO.PUT( TREE_ROOT.PG, WIDTH=> 2 );
+    PUT( "TREE_NIL.TY=> " ); NODE_NAME_IO.PUT( TREE_NIL.TY );
+    PUT( ", TREE_NIL.PG=> " ); PAGE_IDX_IO.PUT( TREE_NIL.PG, WIDTH=> 2 );
+    NEW_LINE;
+
+    PUT( "T.TY=> " ); NODE_NAME_IO.PUT( T.TY );
+    PUT( ", T.PG=> " ); PAGE_IDX_IO.PUT( T.PG, WIDTH=> 2 );
+    NEW_LINE;
+    T.PG := 12;
+    T.PG := 3;
+    PUT( "apres assign 12 et 3 T.PG=> " ); PAGE_IDX_IO.PUT( T.PG, WIDTH=> 2 );
+    NEW_LINE;
+
+    T.TY := DN_ROOT;
+    T.PG := 24;
+    T.LN := 5;
+    PUT_LINE( "apres assign DN_ROOT, 24, 5 " );
+    PUT( "T.TY=> " ); NODE_NAME_IO.PUT( T.TY );
+    PUT( ", T.PG=> " ); PAGE_IDX_IO.PUT( T.PG, WIDTH=> 2 );
+    PUT( ", T.LN=> " ); LINE_IDX_IO.PUT( T.LN, WIDTH=> 2 );
     NEW_LINE;
   end;
 

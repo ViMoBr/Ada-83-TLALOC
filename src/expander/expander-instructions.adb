@@ -1121,16 +1121,16 @@ raise PROGRAM_ERROR;
 	TYPE_SPEC := D( SM_TYPE_SPEC, TYPE_SPEC );
         end if;
 
-        case TYPE_SPEC.TY is
-        when DN_ACCESS =>
+        case  TYPE_SPEC.TY  is
+        when  DN_ACCESS =>
           PUT_LINE( tab & "Sa" );
 
-        when DN_ENUMERATION | DN_INTEGER | DN_FIXED | DN_FLOAT =>
+        when  DN_ENUMERATION | DN_INTEGER | DN_FIXED | DN_FLOAT =>
           PUT_LINE( tab & "S" & CODI.OPER_SIZ_CHAR( TYPE_SPEC ) );						-- Juste stocker la valeur sur pile
 
         when others =>
           PUT_LINE ( "!!! STORE_VAL TYPE_SPEC.TY ILLICITE " & NODE_NAME'IMAGE ( TYPE_SPEC.TY ) );
-          raise PROGRAM_ERROR;
+          raise  PROGRAM_ERROR;
         end case;
 
       end	STORE_VAL;
@@ -1138,7 +1138,7 @@ raise PROGRAM_ERROR;
 
     begin
 
-      if D( SM_EXP_TYPE, DST_NAME ).TY = DN_VOID then
+      if  D( SM_EXP_TYPE, DST_NAME ).TY = DN_VOID  then
         PUT_LINE( "!!! CODE_ASSIGN: destination selected non typee ou composante inexistante probleme frontend probable" );
         raise PROGRAM_ERROR;
       end if;
@@ -1151,6 +1151,20 @@ raise PROGRAM_ERROR;
 --        STORE_VAL( D( SM_EXP_TYPE, DST_NAME ) );
 
       elsif  DST_NAME.TY = DN_SELECTED  then								-- AFFECTATION A UN SELECTED (COMPOSANTE DE RECORD PAR EX.)
+			------------------------------
+			SEE_IF_REPRESENTED_DESTINATION:
+        declare
+	DESIGNATOR      : TREE := D( AS_DESIGNATOR, DST_NAME );
+	DESIGNATOR_DEFN : TREE := D( SM_DEFN, DESIGNATOR );
+        begin
+	if  REPRESENTED_ITEMS.HAS_COMPONENT_REP( DESIGNATOR_DEFN )  then
+	  EXPRESSIONS.CODE_OBJECT_ADDRESS( D( AS_NAME, DST_NAME ) );
+	  REPRESENTED_ITEMS.CODE_STORE_REP_COMPONENT( DESIGNATOR_DEFN, SRC_EXP );
+	  return;
+	end if;
+        end	SEE_IF_REPRESENTED_DESTINATION;
+		------------------------------
+
 			--------------------
 			DESTINATION_SELECTED:
         declare
@@ -1168,7 +1182,6 @@ raise PROGRAM_ERROR;
 	    CODI.REGIONS_PATH( D( XD_SOURCE_NAME, DST_TYPE ) );
 	    PUT_LINE( PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, DST_TYPE ) ) ) & ".size" );
 	    EXPRESSIONS.CODE_EXP( SRC_EXP );
---	    PUT_LINE( tab & "La" );
 	    PUT_LINE( tab & "BLKMOV" );
 	  end if;
 
