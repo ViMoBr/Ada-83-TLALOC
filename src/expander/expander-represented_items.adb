@@ -10,6 +10,8 @@ package body			REPRESENTED_ITEMS
 				-----------------
 is
 
+  function  FIND_COMP_REP_ELEM_FROM_COMPONENT ( COMP_ID :TREE ) return TREE;
+
 			--------------------
   function		STATIC_INTEGER_VALUE	( EXP :TREE )	return INTEGER
   is			--------------------
@@ -193,21 +195,29 @@ is
 			-----------------
   function		HAS_COMPONENT_REP		( COMP_ID :TREE )		return BOOLEAN
   is			-----------------
-
     REP	: TREE;
 
   begin
-    if  COMP_ID = TREE_VOID  or else  COMP_ID = TREE_NIL  then
-      return  FALSE;
+    if COMP_ID = TREE_VOID or else COMP_ID = TREE_NIL then
+      return FALSE;
     end if;
 
-    if  not ( COMP_ID.TY = DN_COMPONENT_ID  or else  COMP_ID.TY = DN_DISCRIMINANT_ID ) then
-      return  FALSE;
+    if not ( COMP_ID.TY = DN_COMPONENT_ID
+          or else COMP_ID.TY = DN_DISCRIMINANT_ID )
+    then
+      return FALSE;
     end if;
 
     REP := D( SM_COMP_REP, COMP_ID );
 
-    return  REP /= TREE_VOID  and then  REP /= TREE_NIL  and then  REP.TY = DN_COMP_REP;
+    if REP /= TREE_VOID
+      and then REP /= TREE_NIL
+      and then REP.TY = DN_COMP_REP
+    then
+      return TRUE;
+    end if;
+
+    return  FIND_COMP_REP_ELEM_FROM_COMPONENT( COMP_ID ) /= TREE_VOID;
 
   end	HAS_COMPONENT_REP;
 	-----------------
@@ -379,6 +389,350 @@ is
 
   end	CODE_REPRESENTED_RECORD_DECL;
 	----------------------------
+
+
+			---------------------------------
+  procedure		CODE_REPRESENTED_RECORD_AGGREGATE	( AGGREGATE :TREE; TYPE_SPEC :TREE )
+  is			---------------------------------
+
+    REP		: TREE		:= D( SM_REPRESENTATION, TYPE_SPEC );
+    SIZE_BITS	: INTEGER		:= REPRESENTED_RECORD_SIZE_BITS( TYPE_SPEC );
+
+		------------------
+    function	FIND_COMP_REP_ELEM		( COMP_ID :TREE )	return TREE
+    is		------------------
+      REP_S		: SEQ_TYPE;
+      REP_ELEM		: TREE;
+      DEFN		: TREE;
+    begin
+      REP_S := LIST( D( AS_COMP_REP_S, REP ) );
+
+      while  not IS_EMPTY( REP_S )  loop
+        POP( REP_S, REP_ELEM );
+
+        if  REP_ELEM.TY = DN_COMP_REP  then
+          DEFN := D( SM_DEFN, D( AS_NAME, REP_ELEM ) );
+
+          if  DEFN = COMP_ID  then
+            return  REP_ELEM;
+          end if;
+        end if;
+      end loop;
+
+      return  TREE_VOID;
+
+    end	FIND_COMP_REP_ELEM;
+	------------------
+
+		-----------------
+    procedure	EMIT_PACKED_FIELD	( COMP_ID :TREE; COMP_EXP :TREE )
+    is		-----------------
+
+      REP_ELEM		: TREE;
+      DUMMY_ID		: TREE;
+      BYTE_OFFSET		: INTEGER;
+      FIRST_BIT		: INTEGER;
+      LAST_BIT		: INTEGER;
+      WIDTH		: INTEGER;
+      MASK		: INTEGER;
+    begin
+      REP_ELEM := FIND_COMP_REP_ELEM( COMP_ID );
+
+      if  REP_ELEM = TREE_VOID  or else  REP_ELEM = TREE_NIL  then
+        PUT_LINE( "; CODE_REPRESENTED_RECORD_AGGREGATE : composant sans comp_rep "
+          & PRINT_NAME( D( LX_SYMREP, COMP_ID ) ) );
+        raise  PROGRAM_ERROR;
+      end if;
+
+      GET_COMP_REP_ELEM( REP_ELEM, DUMMY_ID, BYTE_OFFSET, FIRST_BIT, LAST_BIT, WIDTH );
+
+      if BYTE_OFFSET /= 0 then
+        PUT_LINE( "; CODE_REPRESENTED_RECORD_AGGREGATE : byte_offset non nul non gere pour "
+          & PRINT_NAME( D( LX_SYMREP, COMP_ID ) ) );
+        raise  PROGRAM_ERROR;
+      end if;
+
+      -- Premier périmètre : champs <= 30 bits pour éviter les débordements
+      -- Ada INTEGER dans le calcul du masque. Pour TREE, les champs font
+      -- 2, 7, 15 ou 8 bits.
+      if  WIDTH <= 0  or else  WIDTH > 30  then
+        PUT_LINE( "; CODE_REPRESENTED_RECORD_AGGREGATE : largeur non geree " & INTEGER'IMAGE( WIDTH ) );
+        raise  PROGRAM_ERROR;
+      end if;
+
+      MASK := 2 ** WIDTH - 1;
+
+      if  CODI.DEBUG  then
+        PUT_LINE( tab50 & "; pack " & PRINT_NAME( D( LX_SYMREP, COMP_ID ) )
+		& " range" & INTEGER'IMAGE( FIRST_BIT )
+		& " .."   & INTEGER'IMAGE( LAST_BIT )
+		& " width" & INTEGER'IMAGE( WIDTH ) );
+      end if;
+
+      -- Pile attendue avant l'appel :
+      --   @data, @data, accumulator
+      --
+      -- Après CODE_EXP :
+      --   @data, @data, accumulator, value
+      --
+      -- Puis :
+      --   value := (value and mask) << first_bit
+      --   accumulator := accumulator or value
+
+      EXPRESSIONS.CODE_EXP( COMP_EXP );
+
+      PUT_LINE( tab & "LI"  & tab & IMAGE( FIRST_BIT ) );
+      PUT_LINE( tab & "LI"  & tab & IMAGE( WIDTH ) );
+      PUT_LINE( tab & "BFI" );
+
+
+--      PUT_LINE( tab & "LI"  & tab & IMAGE( MASK ) );
+--      PUT_LINE( tab & "ET" );
+
+--      if  FIRST_BIT /= 0  then
+--        PUT_LINE( tab & "LI"  & tab & IMAGE( FIRST_BIT ) );
+--        PUT_LINE( tab & "SHL" );
+--      end if;
+
+--      PUT_LINE( tab & "OU" );
+
+    end	EMIT_PACKED_FIELD;
+	-----------------
+
+		-------------------------
+    procedure	EMIT_POSITIONAL_COMPONENT	( POS :in out INTEGER; COMP_EXP :TREE )
+    is		-------------------------
+      DSCRMT_S		: SEQ_TYPE;
+      DSCRMT_DECL		: TREE;
+      DSCRMT_ID_S		: SEQ_TYPE;
+      DSCRMT_ID		: TREE;
+      COUNT		: INTEGER		:= 0;
+    begin
+      -- Pour TREE, le seul composant positionnel de l'agrégat est le
+      -- discriminant PT :
+      --
+      --   (P, TY => DN_NIL, PG => 0, LN => 0)
+      --
+      -- On code donc d'abord les discriminants positionnels.
+      -- Le traitement général des composants positionnels de variantes
+      -- pourra être ajouté ensuite si nécessaire.
+
+      DSCRMT_S := LIST( D( SM_DISCRIMINANT_S, TYPE_SPEC ) );
+
+      while  not IS_EMPTY( DSCRMT_S )  loop
+        POP( DSCRMT_S, DSCRMT_DECL );
+
+        DSCRMT_ID_S := LIST( D( AS_SOURCE_NAME_S, DSCRMT_DECL ) );
+
+        while  not IS_EMPTY( DSCRMT_ID_S )  loop
+          POP( DSCRMT_ID_S, DSCRMT_ID );
+          COUNT := COUNT + 1;
+
+          if  COUNT = POS  then
+            EMIT_PACKED_FIELD( DSCRMT_ID, COMP_EXP );
+            POS := POS + 1;
+            return;
+          end if;
+        end loop;
+      end loop;
+
+      PUT_LINE( "; CODE_REPRESENTED_RECORD_AGGREGATE : composant positionnel non gere " & INTEGER'IMAGE( POS ) );
+      raise  PROGRAM_ERROR;
+
+    end	EMIT_POSITIONAL_COMPONENT;
+	-------------------------
+
+		----------------
+    procedure	EMIT_NAMED_ASSOC	( ASSOC : TREE )
+    is		----------------
+      COMP_EXP	: TREE		:= D( AS_EXP, ASSOC );
+      CHOICES	: SEQ_TYPE	:= LIST( D( AS_CHOICE_S, ASSOC ) );
+      CH		: TREE;
+      COMP_ID	: TREE;
+    begin
+      while not IS_EMPTY( CHOICES ) loop
+        POP( CHOICES, CH );
+
+        if CH.TY = DN_CHOICE_EXP then
+          COMP_ID := D( SM_DEFN, D( AS_EXP, CH ) );
+
+          if COMP_ID = TREE_VOID or else COMP_ID = TREE_NIL then
+            PUT_LINE( "; CODE_REPRESENTED_RECORD_AGGREGATE : choix sans SM_DEFN" );
+            raise PROGRAM_ERROR;
+          end if;
+
+          EMIT_PACKED_FIELD( COMP_ID, COMP_EXP );
+
+        elsif CH.TY = DN_CHOICE_OTHERS then
+          PUT_LINE( "; CODE_REPRESENTED_RECORD_AGGREGATE : others non gere" );
+          raise PROGRAM_ERROR;
+
+        else
+          PUT_LINE
+            ( "; CODE_REPRESENTED_RECORD_AGGREGATE : choix non gere "
+            & NODE_NAME'IMAGE( CH.TY ) );
+          raise PROGRAM_ERROR;
+        end if;
+      end loop;
+
+    end	EMIT_NAMED_ASSOC;
+	----------------
+
+
+  begin
+    if  CODI.DEBUG  then
+      PUT_LINE( tab50 & "; Assign_represented_record_aggregate size" & INTEGER'IMAGE( SIZE_BITS ) & " bits" );
+    end if;
+
+    if  SIZE_BITS <= 0 or else SIZE_BITS > 32  then
+      PUT_LINE( "; CODE_REPRESENTED_RECORD_AGGREGATE : taille non geree " & INTEGER'IMAGE( SIZE_BITS ) );
+      raise  PROGRAM_ERROR;
+    end if;
+
+    -- Entrée :
+    --   @data
+    --
+    -- On garde deux exemplaires de @data :
+    --   @data original sera supprimé à la fin,
+    --   @data copie servira au store final.
+    --
+    -- Pile :
+    --   @data, @data, accumulator
+
+    PUT_LINE( tab & "DUP" );
+    PUT_LINE( tab & "LI" & tab & "0" );
+
+
+    declare
+      SEQ		: SEQ_TYPE	:= LIST( D( AS_GENERAL_ASSOC_S, AGGREGATE ) );
+      ASSOC	: TREE;
+      POS		: INTEGER		:= 1;
+
+    begin
+
+      while  not IS_EMPTY( SEQ )  loop
+        POP( SEQ, ASSOC );
+
+        if  ASSOC.TY = DN_NAMED  then
+	EMIT_NAMED_ASSOC( ASSOC );
+
+        elsif  ASSOC.TY in CLASS_EXP  then
+	EMIT_POSITIONAL_COMPONENT( POS, ASSOC );
+
+        else
+	PUT_LINE( "; CODE_REPRESENTED_RECORD_AGGREGATE : association non geree " & NODE_NAME'IMAGE( ASSOC.TY ) );
+	raise  PROGRAM_ERROR;
+        end if;
+      end loop;
+    end;
+    -- Pile avant store :
+    --   @data, @data, packed_word
+    --
+    -- Sd -1,0 dépile packed_word puis dépile @data comme adresse cible.
+    -- Il reste l'exemplaire initial de @data, supprimé ensuite.
+
+    PUT_LINE( tab & "Sd" );
+    PUT_LINE( tab & "DROP" );
+
+  end	CODE_REPRESENTED_RECORD_AGGREGATE;
+	---------------------------------
+
+
+			-----------------------
+  procedure		CODE_LOAD_REP_COMPONENT	( COMP_ID :TREE )
+  is			-----------------------
+
+    REP_ELEM		: TREE;
+    COMP_TYPE		: TREE		:= D( SM_OBJ_TYPE, COMP_ID );
+    BYTE_OFFSET		: INTEGER;
+    FIRST_BIT		: INTEGER;
+    LAST_BIT		: INTEGER;
+    WIDTH			: INTEGER;
+    DUMMY_ID		: TREE;
+
+  begin
+    REP_ELEM := FIND_COMP_REP_ELEM_FROM_COMPONENT( COMP_ID );
+
+    if  REP_ELEM = TREE_VOID  or else  REP_ELEM = TREE_NIL  then
+      PUT_LINE( "; CODE_LOAD_REP_COMPONENT : composant sans representation " & PRINT_NAME( D( LX_SYMREP, COMP_ID ) ) );
+      raise  PROGRAM_ERROR;
+    end if;
+
+    GET_COMP_REP_ELEM( REP_ELEM, DUMMY_ID, BYTE_OFFSET, FIRST_BIT, LAST_BIT, WIDTH );
+
+    if  BYTE_OFFSET /= 0  then
+      PUT_LINE( "; CODE_LOAD_REP_COMPONENT : byte_offset non nul non gere" );
+      raise  PROGRAM_ERROR;
+    end if;
+
+    -- L'adresse du record est au sommet de pile.
+    -- Ld sans argument = Ld -1, 0 : charge le dword pointé.
+    PUT_LINE( tab & "Ld" );
+
+    PUT_LINE( tab & "LI" & TAB & IMAGE( FIRST_BIT ) );
+    PUT_LINE( tab & "LI" & TAB & IMAGE( WIDTH ) );
+
+    if COMP_TYPE.TY = DN_INTEGER then
+      -- À affiner ensuite : tous les entiers Ada ne sont pas forcément signés
+      -- au sens d'un champ représenté. Pour TREE, PAGE_IDX, LINE_IDX,
+      -- ATTR_NBR, etc. sont positifs, donc UBFX suffit.
+      PUT_LINE( tab & "UBFX" );
+    else
+      -- Enumérations et booléens : extraction non signée.
+      PUT_LINE( tab & "UBFX" );
+    end if;
+
+  end	CODE_LOAD_REP_COMPONENT;
+	-----------------------
+
+
+			---------------------------------
+  function		FIND_COMP_REP_ELEM_FROM_COMPONENT	( COMP_ID :TREE )	return TREE
+  is			---------------------------------
+
+    OWNER			: TREE;
+    TYPE_SPEC		: TREE;
+    REP			: TREE;
+    REP_S			: SEQ_TYPE;
+    REP_ELEM		: TREE;
+    DEFN			: TREE;
+
+  begin
+    OWNER := D( XD_REGION, COMP_ID );
+
+    if OWNER = TREE_VOID or else OWNER = TREE_NIL then
+      return TREE_VOID;
+    end if;
+
+    if OWNER.TY = DN_TYPE_ID then
+      TYPE_SPEC := D( SM_TYPE_SPEC, OWNER );
+    else
+      return TREE_VOID;
+    end if;
+
+    if not HAS_RECORD_REP( TYPE_SPEC ) then
+      return TREE_VOID;
+    end if;
+
+    REP   := D( SM_REPRESENTATION, TYPE_SPEC );
+    REP_S := LIST( D( AS_COMP_REP_S, REP ) );
+
+    while not IS_EMPTY( REP_S ) loop
+      POP( REP_S, REP_ELEM );
+
+      if REP_ELEM.TY = DN_COMP_REP then
+        DEFN := D( SM_DEFN, D( AS_NAME, REP_ELEM ) );
+
+        if DEFN = COMP_ID then
+          return REP_ELEM;
+        end if;
+      end if;
+    end loop;
+
+    return TREE_VOID;
+
+  end	FIND_COMP_REP_ELEM_FROM_COMPONENT;
+	---------------------------------
 
 
 	-----------------

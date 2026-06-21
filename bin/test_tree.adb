@@ -1,3 +1,5 @@
+with TEXT_IO;
+use  TEXT_IO;
 			---------
 procedure			TEST_TREE
 is			---------
@@ -53,7 +55,14 @@ is			---------
 			  FIRST, NEXT	: TREE;
 			end record;
 begin
-  null;
+  declare
+    package NODE_NAME_IO	is new ENUMERATION_IO( NODE_NAME );
+    package PAGE_IDX_IO	is new INTEGER_IO( PAGE_IDX );
+  begin
+    PUT( "TY=> " ); NODE_NAME_IO.PUT( TREE_ROOT.TY );
+    PUT( ", PG=> " ); PAGE_IDX_IO.PUT( TREE_ROOT.PG, WIDTH=> 2 );
+    NEW_LINE;
+  end;
 
 end	TEST_TREE;
 	---------

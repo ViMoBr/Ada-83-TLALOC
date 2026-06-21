@@ -110,31 +110,6 @@ is
   procedure CODE_EXCEPTION_ID	( EXCEPTION_ID :TREE );
 
 
-
-			-----------------
-  package			REPRESENTED_ITEMS
-			-----------------
-  is
-
-    function  HAS_RECORD_REP			( TYPE_SPEC :TREE )		return BOOLEAN;
-
-    procedure CODE_REPRESENTED_RECORD_DECL	( TYPE_ID :TREE; TYPE_SPEC :TREE );
-
-    function  HAS_COMPONENT_REP		( COMP_ID :TREE )		return BOOLEAN;
-
-    procedure GET_COMPONENT_REP		( COMP_ID :TREE; BYTE_OFFSET :out INTEGER;
-					  FIRST_BIT, LAST_BIT, WIDTH : out INTEGER );
-
-    function IS_SMALL_REP_RECORD		( TYPE_SPEC :TREE )		return BOOLEAN;
-
-
-  end	REPRESENTED_ITEMS;
-	-----------------
-
-  package	body REPRESENTED_ITEMS is separate;
-
-
-
 				-----------
 	package			EXPRESSIONS
 				-----------
@@ -180,6 +155,27 @@ is
 	-----------
   end	EXPRESSIONS;
 	-----------
+
+
+
+			-----------------
+  package			REPRESENTED_ITEMS
+			-----------------
+  is
+
+    function  HAS_RECORD_REP			( TYPE_SPEC :TREE )		return BOOLEAN;
+    procedure CODE_REPRESENTED_RECORD_DECL	( TYPE_ID :TREE; TYPE_SPEC :TREE );
+    function  HAS_COMPONENT_REP		( COMP_ID :TREE )		return BOOLEAN;
+    procedure GET_COMPONENT_REP		( COMP_ID :TREE; BYTE_OFFSET :out INTEGER;
+					  FIRST_BIT, LAST_BIT, WIDTH : out INTEGER );
+    function  IS_SMALL_REP_RECORD		( TYPE_SPEC :TREE )		return BOOLEAN;
+    procedure CODE_REPRESENTED_RECORD_AGGREGATE	( AGGREGATE :TREE; TYPE_SPEC :TREE );
+    procedure CODE_LOAD_REP_COMPONENT		( COMP_ID :TREE );
+
+  end	REPRESENTED_ITEMS;
+	-----------------
+
+  package	body REPRESENTED_ITEMS is separate;
 
 
 

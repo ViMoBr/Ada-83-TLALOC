@@ -639,7 +639,41 @@ null;--	     declare
 			& tab & IMAGE( DESIGNATOR_LEVEL ) & ", " & DESIGNATOR_STR  );
 	  end if;
 
-	elsif  DESIGNATOR_DEFN.TY = DN_COMPONENT_ID  then
+	elsif  DESIGNATOR_DEFN.TY = DN_COMPONENT_ID  or else  DESIGNATOR_DEFN.TY = DN_DISCRIMINANT_ID  then
+
+	  if  IS_SOURCE  and then  REPRESENTED_ITEMS.HAS_COMPONENT_REP( DESIGNATOR_DEFN )  then
+
+	    if  NAME.TY = DN_USED_OBJECT_ID  then
+
+	      if  D( SM_DEFN, NAME ).TY in CLASS_PARAM_NAME  then
+	        -- Paramètre composite : le paramètre contient l'adresse
+	        -- du doublet {data_ptr,use_info_ptr}.
+	        PUT_LINE( tab & "La " & IMAGE( DI( CD_LEVEL, D( SM_DEFN, NAME ) ) ) & ", "
+			& '-' & PRINT_NAME( D( LX_SYMREP, NAME ) ) & "_ofs" );
+
+	        -- Extraction de data_ptr depuis le doublet.
+	        PUT_LINE( tab & "La" & tab & "-1, 0" );
+
+	      else
+	        -- Objet record autonome : NAME_disp contient directement
+	        -- le pointeur vers les données.
+	        PUT_LINE( tab & "La" & tab & IMAGE( DI( CD_LEVEL, D( SM_DEFN, NAME ) ) ) & ", "
+			& PRINT_NAME( D( LX_SYMREP, NAME ) ) & "_disp" );
+	      end if;
+
+	    else
+	      -- NAME est déjà un préfixe composite calculé par :
+	      --   RECURSE_SELECTED(NAME)
+	      -- ou
+	      --   CODE_INDEXED(NAME)
+	      --
+	      -- Dans ce cas l'adresse des données est déjà au sommet de pile.
+	      null;
+	    end if;
+
+	    REPRESENTED_ITEMS.CODE_LOAD_REP_COMPONENT( DESIGNATOR_DEFN );
+	    return;
+	  end if;
 
 	  if  NAME.TY = DN_USED_OBJECT_ID  then
 
@@ -2700,6 +2734,12 @@ null;--	     declare
 
 
     elsif  TYPE_SPEC.TY = DN_RECORD  then								-- L'adresse du doublet est deja empilee
+
+      if REPRESENTED_ITEMS.HAS_RECORD_REP( TYPE_SPEC ) then							-- Intercepter les records representes
+        REPRESENTED_ITEMS.CODE_REPRESENTED_RECORD_AGGREGATE( AGGREGATE, TYPE_SPEC );
+        return;
+      end if;
+
       if  CODI.DEBUG  then PUT_LINE( tab50 & "; Assign_record_aggregate type " & NODE_NAME'IMAGE( TYPE_SPEC.TY ) );
       end if;
 				-----------------------
