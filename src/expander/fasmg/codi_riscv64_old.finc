@@ -175,14 +175,6 @@ macro			DUP
   dd 0x00840413							; addi s0, s0, 8
 end macro
 
-;			....
-macro			OVER
-;			....
-  dd 0xFF843503							; ld  a0, -8(s0)		amener le NOS dans a0
-  dd 0x00A43423							; sd  a0, 8(s0)		empiler la copie
-  dd 0x00840413							; addi s0, s0, 8
-end macro
-
 ;			.......
 macro			align_b
 ;			.......
@@ -821,79 +813,6 @@ macro			SHL?					; decalage gauche
   dd 0x00A43023							; sd a0, 0(s0)
 end macro
 
-;			----
-macro			SHR?					; decalage logique droit
-;			----
-  POP_RCX								; nombre de positions de decalage dans a2
-  dd 0x00043503							; ld  a0, 0(s0)
-  dd 0x00C55533							; srl a0, a0, a2
-  dd 0x00A43023							; sd  a0, 0(s0)
-end macro
-
-
-;-----------------------------------------------------------------------------------------------------------------------
-;		O P E R A	T I O N S	  B I T   F I E L D S
-;-----------------------------------------------------------------------------------------------------------------------
-
-;			-----
-macro			UBFX?					; unsigned bit field extract
-;			-----
-;	Pile : source, LSB, Width  ->  champ non signe. Width doit etre non nul.
-;	Forme RV64 sans masque (robuste pour Width = 64 si LSB = 0) :
-;	(source << (64 - LSB - Width)) >> (64 - Width).
-  POP_RDX								; a3 = Width
-  POP_RCX								; a2 = LSB
-  dd 0x00043503							; ld   a0, 0(s0)		valeur source
-  dd 0x04000293							; addi t0, x0, 64
-  dd 0x40C28333							; sub  t1, t0, a2		t1 = 64 - LSB
-  dd 0x40D30333							; sub  t1, t1, a3		t1 = 64 - LSB - Width
-  dd 0x00651533							; sll  a0, a0, t1
-  dd 0x40D282B3							; sub  t0, t0, a3		t0 = 64 - Width
-  dd 0x00555533							; srl  a0, a0, t0
-  dd 0x00A43023							; sd   a0, 0(s0)
-end macro
-;			-----
-macro			SBFX?					; signed bit field extract
-;			-----
-;	Pile : source, LSB, Width  ->  champ signe etendu sur 64 bits. Width doit etre non nul.
-;	(source << (64 - LSB - Width)) >>s (64 - Width).
-  POP_RDX								; a3 = Width
-  POP_RCX								; a2 = LSB
-  dd 0x00043503							; ld   a0, 0(s0)		valeur source
-  dd 0x04000293							; addi t0, x0, 64
-  dd 0x40C28333							; sub  t1, t0, a2		t1 = 64 - LSB
-  dd 0x40D30333							; sub  t1, t1, a3		t1 = 64 - LSB - Width
-  dd 0x00651533							; sll  a0, a0, t1
-  dd 0x40D282B3							; sub  t0, t0, a3		t0 = 64 - Width
-  dd 0x40555533							; sra  a0, a0, t0		extension de signe
-  dd 0x00A43023							; sd   a0, 0(s0)
-end macro
-;			----
-macro			BFI?					; bit field insert in stacked value
-;			----
-;	Pile : old_quad, inserted, LSB, Width  ->  old_quad avec champ remplace.
-;	Le masque est construit comme (-1) >> (64-Width), ce qui accepte Width = 64.
-  POP_RCX								; a2 = Width
-  POP_RDX								; a3 = LSB
-  POP_RAX								; a0 = valeur a inserer
-								; MAKE MASK
-  dd 0xFFF00293							; addi t0, x0, -1		t0 = -1
-  dd 0x04000313							; addi t1, x0, 64
-  dd 0x40C30333							; sub  t1, t1, a2		t1 = 64 - Width
-  dd 0x0062D2B3							; srl  t0, t0, t1		mask = low Width bits
-								; CUT SHIFT INSERTION
-  dd 0x00557533							; and  a0, a0, t0		inserted &= mask
-  dd 0x00D51533							; sll  a0, a0, a3		inserted <<= LSB
-								; SHIFT INVERT MASK
-  dd 0x00D292B3							; sll  t0, t0, a3		mask <<= LSB
-  dd 0xFFF2C293							; xori t0, t0, -1		~shifted_mask
-								; CLEAR INSERT FIELD
-  dd 0x00043583							; ld   a1, 0(s0)		old_quad
-  dd 0x0055F5B3							; and  a1, a1, t0		clear field in old_quad
-  dd 0x00A5E5B3							; or   a1, a1, a0		insert field
-  dd 0x00B43023							; sd   a1, 0(s0)
-end macro
-
 
 ;-----------------------------------------------------------------------------------------------------------------------
 ;		O P E R A	T I O N S	  A R I T	H M E T I	Q U E   E	N T I E R	E
@@ -992,7 +911,7 @@ macro			MODI?					; A mod B (modulo mathematique, signe du diviseur)
   POP_RBX								; a1 = B
   POP_RAX								; a0 = A
   dd 0x02B56533							; rem a0, a0, a1
-  dd 0x00050863							; beq a0, x0, .end (saut +16 octets = 4 instr)
+  dd 0x00050663							; beq a0, x0, .end (saut +12 octets = 3 instr)
   dd 0x00B542B3							; xor t0, a0, a1
   dd 0x0002D463							; bge t0, x0, .end (saut +8 octets = 2 instr)
   dd 0x00B50533							; add a0, a0, a1
@@ -1111,52 +1030,6 @@ macro			CVTFI?					; Conversion double IEEE 754 -> entier signe 64 bits (troncat
   dd 0x00043507							; fld fa0, 0(s0)	(double depuis la pile dans fa0)
   dd 0xC2251553							; fcvt.l.d a0, fa0, rtz	(funct7=0x61, rs2=2, funct3=1=rtz, rs1=10, rd=10)
   dd 0x00A43023							; sd a0, 0(s0)		(ecraser le double par l'entier)
-end macro
-
-;			-------
-macro			CVTFIR?					; Float -> Integer, arrondi Ada
-;			-------
-  dd 0x00043507							; fld fa0, 0(s0)	(double depuis la pile dans fa0)
-  dd 0xC2250553							; fcvt.l.d a0, fa0, rne	(arrondi au plus proche, mode RNE)
-  dd 0x00A43023							; sd a0, 0(s0)		(ecraser le double par l'entier)
-end macro
-
-;-----------------------------------------------------------------------------------------------------------------------
-;	C O N V E	R S I O N	S   E N T	I E R  <->  F I X E D
-;-----------------------------------------------------------------------------------------------------------------------
-
-;			------
-macro			CVTIX?					; Conversion de l'entier I en FIXED X de SMALL = NUMER/DENOM
-;			------					; Sont empiles I puis DENOM puis NUMER (I.D.N)
-  POP_RBX								; a1 = NUMER : diviseur
-  POP_RCX								; a2 = DENOM : multiplicateur
-  POP_RAX								; a0 = I : multiplicande
-  dd 0x02C50533							; mul a0, a0, a2		produit 64 bits bas
-  dd 0x02B54533							; div a0, a0, a1		quotient signe
-  PUSH_RAX							; Resultat FIXED X sur 64 bits
-end macro
-;			------
-macro			CVTXI?					; Conversion du FIXED X de SMALL = NUMER/DENOM en INTEGER I
-;			------					; Sont empiles X puis NUMER puis DENOM (X.N.D)
-  POP_RBX								; a1 = DENOM : diviseur
-  POP_RCX								; a2 = NUMER : multiplicateur
-  POP_RAX								; a0 = X : multiplicande
-  dd 0x02C502B3							; mul  t0, a0, a2		produit 64 bits bas
-  dd 0x02B2C533							; div  a0, t0, a1		quotient tronque
-  dd 0x02B2E6B3							; rem  a3, t0, a1		reste signe
-
-  dd 0x43F6D613							; srai a2, a3, 63		masque signe du reste
-  dd 0x00C6C6B3							; xor  a3, a3, a2
-  dd 0x40C686B3							; sub  a3, a3, a2		abs(reste)
-
-  dd 0x0015F313							; andi t1, a1, 1		bit impair du denominateur
-  dd 0x0015D593							; srli a1, a1, 1
-  dd 0x006585B3							; add  a1, a1, t1		ceil(DENOM/2)
-
-  dd 0x00B6E663							; bltu a3, a1, +12		si abs(reste) < demi, pas d'arrondi
-  dd 0x00166613							; ori  a2, a2, 1		+1 si reste positif, -1 si negatif
-  dd 0x00C50533							; add  a0, a0, a2		arrondi loin de zero au demi
-  PUSH_RAX							; Resultat INTEGER I sur 64 bits
 end macro
 
 
@@ -1663,19 +1536,6 @@ macro			CO_VAR					; Allocation d'un bloc sur la co-pile, taille en octets sur l
   dd 0x00A90933							; add  s2, s2, a0                        : avance sommet co-pile
 end macro
 
-;			----------
-macro			HEAP_ALLOC				; Allocation bump-pointer pour Ada new : taille en octets sur pile, laisse @bloc
-;			----------
-;	Le tas descend depuis s4, initialise avec le sp Linux initial avant reservation de la zone TLALOC.
-  POP_RAX								; a0 = taille demandee
-  dd 0x00750513							; addi a0, a0, 7
-  dd 0x00355513							; srli a0, a0, 3		nombre de qwords
-  dd 0x00351513							; slli a0, a0, 3		taille alignee en octets
-  dd 0x40AA0A33							; sub  s4, s4, a0		tas descendant depuis le haut reserve
-  dd 0x000A0513							; addi a0, s4, 0		adresse du nouveau bloc
-  PUSH_RAX
-end macro
-
 ;			------
 macro			endPRO					; Fin de procedure
 ;			------
@@ -1731,24 +1591,12 @@ end macro
 ;	  unlinkat = 35  (remplace unlink ; AT_FDCWD en arg 1, flag = 0)
 ;	  lseek    = 62
 ;	  ioctl    = 29
-;	  clock_gettime = 113
 ;	  exit     = 93
 ;
 ;	Constantes ioctl identiques x86/ARM/RISC-V (constantes du noyau Linux) :
 ;	  TCGETS = 0x5401
 ;	  TCSETS = 0x5402
 
-
-;			-----------------
-macro			SYS_CLOCK_GETTIME?
-;			-----------------
-;	Depile @timespec_buffer. Syscall : clock_gettime(CLOCK_REALTIME=0, @buffer).
-  POP_RSI								; a4 = @timespec_buffer
-  dd 0x00070593							; addi a1, a4, 0		arg1 = @timespec
-  dd 0x00000513							; addi a0, x0, 0		arg0 = CLOCK_REALTIME
-  dd 0x07100893							; addi a7, x0, 113		sys_clock_gettime
-  dd 0x00000073							; ecall
-end macro
 
 ;			-------------
 macro			SYS_PUT_CHAR?				; affiche un seul caractere sur stdout

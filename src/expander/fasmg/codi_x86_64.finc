@@ -670,7 +670,7 @@ end macro
 ;-----------------------------------------------------------------------------------------------------------------------
 
 ;			-----
-macro			SBFX?					; signed bit field extract
+macro			UBFX?					; unsigned bit field extract
 ;			-----
   POP_RDX								; rdx = Width
   POP_RCX								; rcx = LSB
@@ -685,7 +685,7 @@ macro			SBFX?					; signed bit field extract
   db 0x48, 0x89, 0x45, 0x00						; mov qword ptr [rbp], rax
 end macro
 ;			-----
-macro			UBFX?					; unsigned bit field extract
+macro			SBFX?					; signed bit field extract
 ;			-----
 
   POP_RDX								; rdx = Width
@@ -1400,6 +1400,18 @@ macro			CO_VAR					; Allocation d'un bloc sur la	co-pile taille en octets sur la
   db 0x48, 0x83, 0xC0, 0x07						; add rax, 7
   db 0x48, 0xC1, 0xF8, 0x03						; sar rax, 3			(diviser par 8, rax	est positif normalement)
   db 0x4D, 0x8D, 0x34, 0xC6						; lea r14, [r14 + 8*rax]		(mettre le sommet de co-pile aligne sur	qword)
+end macro
+
+;			----------
+macro			HEAP_ALLOC				; Allocation bump-pointer pour Ada new : taille en octets sur pile, laisse @bloc
+;			----------
+  POP_RAX								; rax = taille demandee
+  db 0x48, 0x83, 0xC0, 0x07						; add rax, 7
+  db 0x48, 0xC1, 0xF8, 0x03						; sar rax, 3	nombre de qwords
+  db 0x48, 0xC1, 0xE0, 0x03						; shl rax, 3	taille alignee en octets
+  db 0x49, 0x29, 0xC4						; sub r12, rax	tas descendant depuis le haut reserve
+  db 0x4C, 0x89, 0xE0						; mov rax, r12	adresse du nouveau bloc
+  PUSH_RAX
 end macro
 
 ;			------

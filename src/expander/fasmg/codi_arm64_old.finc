@@ -180,15 +180,6 @@ macro			DUP
   dd 0x910023BD							; add  x29, x29, #8
 end macro
 
-
-;				....
-macro			OVER
-;				....
-  dd 0xF85F83A0							; ldur x0, [x29, #-8]	amener le NOS dans x0
-  dd 0xF80083A0							; stur x0, [x29, #8]	empiler
-  dd 0x910023BD							; add  x29, x29, #8
-end macro
-
 ;			.......
 macro			align_b
 ;			.......
@@ -780,69 +771,6 @@ macro			SHL?					; decalage gauche
   dd 0xF90003A0							; str x0, [x29]
 end macro
 
-;			----
-macro			SHR?					; decalage droit logique
-;			----
-  POP_RCX								; nombre de positions de decalage dans x2
-  dd 0xF94003A0							; ldr x0, [x29]
-  dd 0x9AC22400							; lsrv x0, x0, x2
-  dd 0xF90003A0							; str x0, [x29]
-end macro
-
-
-;-----------------------------------------------------------------------------------------------------------------------
-;		O P E R A	T I O N S	  B I T   F I E L D S
-;-----------------------------------------------------------------------------------------------------------------------
-
-;			-----
-macro			UBFX?					; unsigned bit field extract
-;			-----
-  POP_RDX								; x3 = Width
-  POP_RCX								; x2 = LSB
-  dd 0xF94003A0							; ldr x0, [x29]	valeur source
-  dd 0x9AC22400							; lsrv x0, x0, x2	x0 := valeur >> LSB
-  dd 0xD2800021							; movz x1, #1
-  dd 0x9AC32021							; lslv x1, x1, x3	x1 = 1 << Width
-  dd 0xD1000421							; sub x1, x1, #1	x1 = mask
-  dd 0x8A010000							; and x0, x0, x1	x0 = field non signe
-  dd 0xF90003A0							; str x0, [x29]
-end macro
-;			-----
-macro			SBFX?					; signed bit field extract
-;			-----
-  POP_RDX								; x3 = Width
-  POP_RCX								; x2 = LSB
-  dd 0xF94003A0							; ldr x0, [x29]	valeur source
-  dd 0x9AC22400							; lsrv x0, x0, x2	x0 := valeur >> LSB
-  dd 0xD2800802							; movz x2, #64
-  dd 0xCB030042							; sub x2, x2, x3	x2 = 64 - Width
-  dd 0x9AC22000							; lslv x0, x0, x2	signe du champ en bit 63
-  dd 0x9AC22800							; asrv x0, x0, x2	extension de signe
-  dd 0xF90003A0							; str x0, [x29]
-end macro
-;			----
-macro			BFI?					; bit field insert in stacked value
-;			----
-  POP_RCX								; x2 = Width
-  POP_RDX								; x3 = LSB
-  POP_RAX								; x0 = valeur a inserer
-								; MAKE MASK
-  dd 0xD2800021							; movz x1, #1
-  dd 0x9AC22021							; lslv x1, x1, x2	1 << Width
-  dd 0xD1000421							; sub x1, x1, #1	mask = (1 << Width) - 1
-								; CUT SHIFT INSERTION
-  dd 0x8A010000							; and x0, x0, x1	inserted &= mask
-  dd 0x9AC32000							; lslv x0, x0, x3	inserted <<= LSB
-								; SHIFT INVERT MASK
-  dd 0x9AC32021							; lslv x1, x1, x3	mask <<= LSB
-  dd 0xAA2103E1							; mvn x1, x1		~shifted_mask
-								; CLEAR INSERT FIELD
-  dd 0xF94003B0							; ldr x16, [x29]	old_quad
-  dd 0x8A010210							; and x16, x16, x1	clear field in old_quad
-  dd 0xAA000210							; orr x16, x16, x0	insert field
-  dd 0xF90003B0							; str x16, [x29]
-end macro
-
 
 ;-----------------------------------------------------------------------------------------------------------------------
 ;		O P E R A	T I O N S	  A R I T	H M E T I	Q U E   E	N T I E R	E
@@ -1056,56 +984,6 @@ macro			CVTFI?					; Conversion double IEEE 754 -> entier signe 64 bits (troncat
 end macro
 
 
-;			-------
-macro			CVTFIR?					; Float -> Integer, arrondi Ada
-;			-------
-  dd 0xFD4003A0							; ldr d0, [x29]		(double depuis la pile dans d0)
-  dd 0x9E640000							; fcvtas x0, d0		(arrondi au plus proche, demi loin de zero)
-  dd 0xF90003A0							; str x0, [x29]		(ecraser le double par l'entier)
-end macro
-
-;-----------------------------------------------------------------------------------------------------------------------
-;	C O N V E	R S I O N	S   E N T	I E R  <->  F I X E D
-;-----------------------------------------------------------------------------------------------------------------------
-
-;			------
-macro			CVTIX?					; Conversion de l'entier I en FIXED X de SMALL = NUMER/DENOM
-;			------					; Sont empiles I puis DENOM puis NUMER (I.D.N)
-  POP_RBX								; x1 = NUMER : diviseur
-  POP_RCX								; x2 = DENOM : multiplicateur
-  POP_RAX								; x0 = I : multiplicande
-  dd 0x9B027C00							; mul x0, x0, x2	x0 = I * DENOM
-  dd 0x9AC10C00							; sdiv x0, x0, x1	x0 = (I * DENOM) / NUMER
-  PUSH_RAX							; Resultat FIXED X sur 64 bits
-end macro
-;			------
-macro			CVTXI?					; Conversion du FIXED X de SMALL = NUMER/DENOM en INTEGER I
-;			------					; Sont empiles X puis NUMER puis DENOM (X.N.D)
-  POP_RBX								; x1 = DENOM : diviseur
-  POP_RCX								; x2 = NUMER : multiplicateur
-  POP_RAX								; x0 = X : multiplicande
-  dd 0x9B027C00							; mul x0, x0, x2	x0 = X * NUMER
-  dd 0x9AC10C02							; sdiv x2, x0, x1	x2 = quotient
-  dd 0x9B018043							; msub x3, x2, x1, x0	x3 = reste signe
-
-  dd 0x937FFC64							; asr x4, x3, #63	x4 = masque signe du reste
-  dd 0xCA040063							; eor x3, x3, x4
-  dd 0xCB040063							; sub x3, x3, x4	x3 = abs(reste)
-
-  dd 0x91000421							; add x1, x1, #1
-  dd 0xD341FC21							; lsr x1, x1, #1	x1 = ceil(DENOM / 2)
-
-  dd 0xEB01007F							; cmp x3, x1
-  dd 0x54000063							; b.lo no_round	(skip 2 instr)
-
-  dd 0xB2400084							; orr x4, x4, #1	(+1 ou -1 selon signe du reste)
-  dd 0x8B040042							; add x2, x2, x4
-; no_round:
-  dd 0xAA0203E0							; mov x0, x2
-  PUSH_RAX							; Resultat INTEGER I sur 64 bits
-end macro
-
-
 ;-----------------------------------------------------------------------------------------------------------------------
 ;				C O M P A	R A I S O	N S
 ;-----------------------------------------------------------------------------------------------------------------------
@@ -1314,9 +1192,9 @@ macro			CALL?	prefix, subname			; CALL par offset
   dd 0x910043FF							; add sp, sp, #16
 end macro
 
-;			------
+;			-------------------------
 macro			CALLI?					; CALL indirect par valeur empilee
-;			------
+;			-------------------------
 ;	Depile l'adresse cible dans x0, sauvegarde LR sur SP, BLR x0, restaure LR.
   POP_RAX								; x0 = adresse cible
   dd 0xD10043FF							; sub sp, sp, #16
@@ -1629,23 +1507,11 @@ end macro
 ;	  unlinkat = 35  (remplace unlink ; AT_FDCWD en arg 1, flag = 0)
 ;	  lseek    = 62
 ;	  ioctl    = 29
-;	  clock_gettime = 113
 ;	  exit     = 93
 ;
 ;	Constantes ioctl identiques x86/ARM (ce sont des constantes du noyau Linux) :
 ;	  TCGETS = 0x5401
 ;	  TCSETS = 0x5402
-
-
-;			-----------------
-macro			SYS_CLOCK_GETTIME
-;			-----------------
-  POP_RSI								; x4 = @timespec_buffer
-  dd 0xAA0403E1							; mov x1, x4		(arg2 = buffer)
-  dd 0xD2800000							; movz x0, #0		(arg1 = CLOCK_REALTIME)
-  dd 0xD2800E28							; movz x8, #113		(sys_clock_gettime)
-  dd 0xD4000001							; svc #0
-end macro
 
 
 ;			-------------

@@ -313,7 +313,8 @@ is					-----
 
   begin
     if  DEFN.TY in CLASS_PARAM_NAME  then								-- in_id in_out_id out_id
-      if	(DEFN.TY = DN_IN_ID) and (D( SM_OBJ_TYPE, DEFN ).TY in CLASS_SCALAR)	then
+      if	(DEFN.TY = DN_IN_ID) and (D( SM_OBJ_TYPE, DEFN ).TY in CLASS_SCALAR
+			or else D( SM_OBJ_TYPE, DEFN ).TY = DN_ACCESS)	then
 				-------------------
 				SCALAR_IN_PARAMETER:
         declare
@@ -349,7 +350,7 @@ is					-----
 	  OBJ_STR		: constant STRING	:= PRINT_NAME( D( LX_SYMREP, DEFN ) );
 	begin
 
-	  if  OBJ_TYPE.TY in CLASS_SCALAR  then
+	  if  OBJ_TYPE.TY in CLASS_SCALAR  or else OBJ_TYPE.TY = DN_ACCESS  then
 	    PUT_LINE( tab & "LI" & OPER_SIZ_CHAR( OBJ_TYPE ) & tab & IMAGE( OBJ_LEVEL ) & ", "
 			& OBJ_STR & "_disp, 0" );
 	  else
@@ -361,7 +362,7 @@ is					-----
 		---------------
         end if;
 
-        if  OBJ_TYPE.TY in CLASS_SCALAR  then
+        if  OBJ_TYPE.TY in CLASS_SCALAR  or else OBJ_TYPE.TY = DN_ACCESS  then
         declare
 	SIZ_CHAR	: CHARACTER	:= OPER_SIZ_CHAR( OBJ_TYPE );
 	DEFN_LVL	: INTEGER		:= DI( CD_LEVEL, DEFN );

@@ -586,7 +586,7 @@ null;
 
         INVERSE_RECURSE_ON_PARAMETERS;
 
-        if  ACT_PRM.TY = DN_SELECTED  then
+        if  ACT_PRM.TY = DN_SELECTED  or else ACT_PRM.TY = DN_ALL  then
 
 	declare
 	  ACT_TYPE	: TREE	:= D( SM_EXP_TYPE, ACT_PRM );
@@ -606,7 +606,11 @@ null;
 	      PUT_LINE( tab & "VAR " & ANON & "_disp, q" );
 	      PUT_LINE( tab & "VAR " & ANON & "__u, q" );
 
-	      EXPRESSIONS.CODE_SELECTED( ACT_PRM, IS_SOURCE => FALSE );
+		      if  ACT_PRM.TY = DN_SELECTED  then
+		        EXPRESSIONS.CODE_SELECTED( ACT_PRM, IS_SOURCE => FALSE );
+		      else
+		        EXPRESSIONS.CODE_OBJECT_ADDRESS( ACT_PRM );
+		      end if;
 	      PUT_LINE( tab & "Sa" & tab & LVL_STR & ", " & ANON & "_disp" );
 
 	      PUT( tab & "La " & IMAGE( DI( CD_LEVEL, ACT_TYPE ) ) & ", " );
@@ -1144,11 +1148,40 @@ raise PROGRAM_ERROR;
       end if;
 
       if  DST_NAME.TY = DN_ALL  then									-- AFFECTATION A UN ELEMENT POINTE
-        PUT_LINE( "; CODE_ASSIGN DN_ALL A FAIRE : calcul adresse pointee" );
-        raise PROGRAM_ERROR;
---        EXPRESSIONS.CODE_EXP( D( AS_NAME, DST_NAME ) );							-- valeur de P = adresse désignée
---        EXPRESSIONS.CODE_EXP( SRC_EXP );								-- EXPRESSION A AFFECTER
---        STORE_VAL( D( SM_EXP_TYPE, DST_NAME ) );
+        declare
+	DST_TYPE : TREE := D( SM_EXP_TYPE, DST_NAME );
+        begin
+	while  DST_TYPE.TY = DN_PRIVATE  or else DST_TYPE.TY = DN_L_PRIVATE  loop
+	  DST_TYPE := D( SM_TYPE_SPEC, DST_TYPE );
+	end loop;
+
+	EXPRESSIONS.CODE_OBJECT_ADDRESS( DST_NAME );							-- @objet designe
+
+	if  DST_TYPE.TY = DN_RECORD  then
+	  PUT( tab & "LI" & tab );
+	  CODI.REGIONS_PATH( D( XD_SOURCE_NAME, DST_TYPE ) );
+	  PUT_LINE( PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, DST_TYPE ) ) ) & ".size" );
+	  if  SRC_EXP.TY = DN_AGGREGATE  then
+	    EXPRESSIONS.CODE_AGGREGATE( SRC_EXP, DST_TYPE );
+	  else
+	    EXPRESSIONS.CODE_EXP( SRC_EXP );
+	    PUT_LINE( tab & "La" );
+	    PUT_LINE( tab & "BLKMOV" );
+	  end if;
+
+	elsif  DST_TYPE.TY = DN_ARRAY or else DST_TYPE.TY = DN_CONSTRAINED_ARRAY  then
+	  if  SRC_EXP.TY = DN_AGGREGATE  then
+	    EXPRESSIONS.CODE_AGGREGATE( SRC_EXP, DST_TYPE );
+	  else
+	    PUT_LINE( "; CODE_ASSIGN DN_ALL array source non aggregate a completer" );
+	    raise PROGRAM_ERROR;
+	  end if;
+
+	else
+	  EXPRESSIONS.CODE_EXP( SRC_EXP );
+	  STORE_VAL( DST_TYPE );
+	end if;
+        end;
 
       elsif  DST_NAME.TY = DN_SELECTED  then								-- AFFECTATION A UN SELECTED (COMPOSANTE DE RECORD PAR EX.)
 			------------------------------
@@ -1212,29 +1245,37 @@ raise PROGRAM_ERROR;
 				DESTINATION_INDEXED:
         declare
 	INDEXED_TYPE	: TREE	:= D( SM_EXP_TYPE, DST_NAME );
+
         begin
-	EXPRESSIONS.CODE_INDEXED( DST_NAME );								-- CALCULER L ADRESSE DESTINATION
+	while  INDEXED_TYPE.TY = DN_PRIVATE  or else  INDEXED_TYPE.TY = DN_L_PRIVATE  loop
+	  INDEXED_TYPE := D( SM_TYPE_SPEC, INDEXED_TYPE );
+	end loop;
+
+	EXPRESSIONS.CODE_INDEXED( DST_NAME );								-- @DST
 
 	if  SRC_EXP.TY = DN_AGGREGATE  then
-	  EXPRESSIONS.CODE_AGGREGATE( SRC_EXP, D( SM_EXP_TYPE, DST_NAME ) );
+	  EXPRESSIONS.CODE_AGGREGATE( SRC_EXP, INDEXED_TYPE );
 
-	elsif  SRC_EXP.TY in CLASS_UNCONSTRAINED_COMPOSITE						-- DN_ARRAY .. DN_RECORD
-	        or  ( SRC_EXP.TY = DN_USED_OBJECT_ID
-		    and then  D( SM_EXP_TYPE, DST_NAME ).TY in CLASS_UNCONSTRAINED_COMPOSITE )
-	        or  ( SRC_EXP.TY = DN_FUNCTION_CALL
-		    and then  D( SM_EXP_TYPE, DST_NAME ).TY in CLASS_UNCONSTRAINED_COMPOSITE )
-	then
+	elsif  INDEXED_TYPE.TY in CLASS_UNCONSTRAINED_COMPOSITE						-- DN_RECORD .. DN_ARRAY
+		or else  INDEXED_TYPE.TY = DN_CONSTRAINED_RECORD
+		or else  INDEXED_TYPE.TY = DN_CONSTRAINED_ARRAY
+  	then
 	  PUT( tab & "LI" & tab );
 	  CODI.REGIONS_PATH( D( XD_SOURCE_NAME, INDEXED_TYPE ) );
-	  PUT_LINE( PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, INDEXED_TYPE ) ) ) & ".size" );			-- LEN (taille en octets, calculee par FASM)
-	  EXPRESSIONS.CODE_EXP( SRC_EXP );								-- EVALUER L EXPRESSION A AFFECTER
-	  PUT_LINE( tab & "La" );
-	  PUT_LINE( "BLKMOV" );
+	  PUT_LINE( PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, INDEXED_TYPE ) ) ) & ".size" );
 
-        else
-	EXPRESSIONS.CODE_EXP( SRC_EXP );								-- EVALUER L EXPRESSION A AFFECTER
-	STORE_VAL( D( SM_EXP_TYPE, DST_NAME ) );
-        end if;
+	  EXPRESSIONS.CODE_EXP( SRC_EXP );								-- Pour DN_INDEXED : laisse @SRC
+
+	  if  SRC_EXP.TY = DN_USED_OBJECT_ID  or else  SRC_EXP.TY = DN_FUNCTION_CALL  then
+	    PUT_LINE( tab & "La" );									-- @doublet -> data_ptr
+	  end if;
+
+	  PUT_LINE( tab & "BLKMOV" );
+
+          else
+	  EXPRESSIONS.CODE_EXP( SRC_EXP );
+	  STORE_VAL( INDEXED_TYPE );
+          end if;
 
         end	DESTINATION_INDEXED;
 		-------------------

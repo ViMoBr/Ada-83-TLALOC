@@ -355,8 +355,17 @@ null;--	     declare
 				--------
   procedure			CODE_ALL			( ADA_ALL	:TREE )
   is				--------
+    DESIG_TYPE	: TREE	:= D( SM_EXP_TYPE, ADA_ALL );
   begin
-    null;
+    CODE_OBJECT_ADDRESS( ADA_ALL );
+
+    while  DESIG_TYPE.TY = DN_PRIVATE  or else  DESIG_TYPE.TY = DN_L_PRIVATE  loop
+      DESIG_TYPE := D( SM_TYPE_SPEC, DESIG_TYPE );
+    end loop;
+
+    if  DESIG_TYPE.TY in CLASS_SCALAR  or else DESIG_TYPE.TY = DN_ACCESS  then
+      PUT_LINE( tab & "L" & OPER_SIZ_CHAR( DESIG_TYPE ) );
+    end if;
   end	CODE_ALL;
 	--------
 
@@ -368,6 +377,71 @@ null;--	     declare
     NAME			: TREE	:= D( AS_NAME, INDEXED );
 
   begin
+
+    if  NAME.TY = DN_ALL  then
+      declare
+        EXP_TYPE		: TREE		:= D( SM_EXP_TYPE, NAME );
+        EXP_TYPE_NAME		: TREE		:= D( XD_SOURCE_NAME, EXP_TYPE );
+        TYPE_NAME_STR		:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, EXP_TYPE_NAME ) );
+        TYPE_LVL		: INTEGER		:= DI( CD_LEVEL, EXP_TYPE );
+        INDEX_NUM		: INTEGER		:= 1;
+        NB_DIMS		: INTEGER		:= 0;
+
+		-----
+        procedure	INDEX	( EXP :TREE )
+        is		-----
+          INDEX_NUM_IMG	:constant STRING	:= IMAGE( INDEX_NUM );
+        begin
+          CODE_EXP( EXP );
+
+          PUT( tab & "Ld" & tab & INTEGER'IMAGE( TYPE_LVL ) & ", " );
+          REGIONS_PATH( EXP_TYPE_NAME );
+          PUT_LINE( TYPE_NAME_STR & "._FST_" & INDEX_NUM_IMG );
+
+          PUT_LINE( tab & "SUB" );
+
+          PUT( tab & "Ld" & tab & INTEGER'IMAGE( TYPE_LVL ) & ", " );
+          REGIONS_PATH( EXP_TYPE_NAME );
+          if  INDEX_NUM < NB_DIMS  then
+            PUT_LINE( TYPE_NAME_STR & ".SIZ_" & INDEX_NUM_IMG );
+          else
+            PUT_LINE( TYPE_NAME_STR & "._COMP_SIZ" );
+          end if;
+
+          PUT_LINE( tab & "LI" & tab & IMAGE( CODI.STORAGE_UNIT ) );
+          PUT_LINE( tab & "DIV" );
+          PUT_LINE( tab & "MUL" );
+          PUT_LINE( tab & "ADD" );
+        end INDEX;
+		-----
+
+      begin
+        CODE_OBJECT_ADDRESS( NAME );							-- @data pointee par l'access
+
+        declare
+          CNT_SEQ	: SEQ_TYPE	:= LIST( D( AS_EXP_S, INDEXED ) );
+          DUMMY		: TREE;
+        begin
+          while  not IS_EMPTY( CNT_SEQ )  loop
+            POP( CNT_SEQ, DUMMY );
+            NB_DIMS := NB_DIMS + 1;
+          end loop;
+        end;
+
+        declare
+          EXP_SEQ	: SEQ_TYPE	:= LIST( D( AS_EXP_S, INDEXED ) );
+          EXP		: TREE;
+        begin
+          while  not IS_EMPTY( EXP_SEQ )  loop
+            POP( EXP_SEQ, EXP );
+            INDEX( EXP );
+            INDEX_NUM := INDEX_NUM + 1;
+          end loop;
+        end;
+
+        return;
+      end;
+    end if;
 
     if  NAME.TY = DN_SELECTED	 then
       CODE_SELECTED( NAME, IS_SOURCE=> FALSE );
@@ -682,7 +756,9 @@ null;--	     declare
 		& IMAGE( DI( CD_LEVEL, D( SM_DEFN, NAME	) ) ) & ", "
 		& '-' & PRINT_NAME(	D(LX_SYMREP, NAME )	) & "_ofs" );
 
-	      if	D( SM_EXP_TYPE, DESIGNATOR ).TY in CLASS_SCALAR  and  IS_SOURCE  then
+	      if	( D( SM_EXP_TYPE, DESIGNATOR ).TY in CLASS_SCALAR
+			  or else D( SM_EXP_TYPE, DESIGNATOR ).TY = DN_ACCESS )
+			  and  IS_SOURCE  then
 	        PUT( tab & "LI" & OPER_SIZ_CHAR( D( SM_EXP_TYPE, DESIGNATOR )	) );
 
 	      else
@@ -694,7 +770,9 @@ null;--	     declare
 	      PUT_LINE( DESIGNATOR_STR );
 
 	    else
-	      if	D( SM_EXP_TYPE, DESIGNATOR ).TY in CLASS_SCALAR  and  IS_SOURCE  then
+	      if	( D( SM_EXP_TYPE, DESIGNATOR ).TY in CLASS_SCALAR
+			  or else D( SM_EXP_TYPE, DESIGNATOR ).TY = DN_ACCESS )
+			  and  IS_SOURCE  then
 	        PUT( tab & "LI" & OPER_SIZ_CHAR( D( SM_EXP_TYPE, DESIGNATOR )	) );
 	      else
 	        PUT( tab & "LIVA " );
@@ -709,7 +787,9 @@ null;--	     declare
 
 	  else
 	    -- NAME est une expression composite resolue en adresse directe sur la pile
-	    if  D( SM_EXP_TYPE, DESIGNATOR ).TY in CLASS_SCALAR  and  IS_SOURCE  then
+	    if  ( D( SM_EXP_TYPE, DESIGNATOR ).TY in CLASS_SCALAR
+		   or else D( SM_EXP_TYPE, DESIGNATOR ).TY = DN_ACCESS )
+		   and  IS_SOURCE  then
 	      -- Champ scalaire terminal : load direct depuis l'adresse en sommet de pile
 	      PUT( tab & "L" & OPER_SIZ_CHAR( D( SM_EXP_TYPE, DESIGNATOR ) ) );
 	      PUT( tab & ", " );
@@ -752,6 +832,10 @@ null;--	     declare
         CODE_INDEXED( NAME ) ;
         PROCESS_DESIGNATOR;
 
+      elsif  NAME.TY = DN_ALL  then
+        CODE_OBJECT_ADDRESS( NAME );
+        PROCESS_DESIGNATOR;
+
       elsif  NAME.TY = DN_USED_OBJECT_ID  then
         declare
 	DEFN		: TREE		:= D( SM_DEFN, NAME	);
@@ -759,7 +843,8 @@ null;--	     declare
 	OBJ_LEVEL		: INTEGER		:= DI( CD_LEVEL, DEFN );
 	OBJ_NAME_STR	:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, DEFN ) );
         begin
-	if  D( SM_EXP_TYPE,	NAME ).TY	in CLASS_SCALAR  then
+	if  D( SM_EXP_TYPE,	NAME ).TY	in CLASS_SCALAR
+		  or else D( SM_EXP_TYPE, NAME ).TY = DN_ACCESS  then
 	  PUT_LINE( tab & "L" & OPER_SIZ_CHAR( DEFN ) & tab & IMAGE( OBJ_LEVEL ) & ", "	& OBJ_NAME_STR  );
 	end if;
         end;
@@ -837,9 +922,7 @@ null;--	     declare
       raise PROGRAM_ERROR;
 
     when DN_ALL =>
-    -- À reprendre quand DN_ALL sera complet.
-      PUT_LINE( "; CODE_OBJECT_ADDRESS: DN_ALL a faire" );
-      raise PROGRAM_ERROR;
+      CODE_EXP( D( AS_NAME, NAME ) );							-- valeur access = @objet designe
 
     when others =>
       PUT_LINE( "; CODE_OBJECT_ADDRESS: NAME.TY non gere " & NODE_NAME'IMAGE( NAME.TY ) );
@@ -1915,8 +1998,34 @@ null;--	     declare
 				------------------------
   procedure			CODE_QUALIFIED_ALLOCATOR	( QUALIFIED_ALLOCATOR :TREE )
   is				------------------------
+
+    QUALIFIED	: TREE		:= D( AS_QUALIFIED, QUALIFIED_ALLOCATOR );
+    DESIG_TYPE	: TREE		:= D( SM_EXP_TYPE, QUALIFIED );
+    DESIG_NAME	: TREE		:= D( XD_SOURCE_NAME, DESIG_TYPE );
+    DESIG_STR	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, DESIG_NAME ) );
+    ANON		:constant STRING	:= "NEW_" & NEW_LABEL;
+
   begin
-    null;
+    if  DESIG_TYPE.TY = DN_RECORD  then
+      PUT( tab & "LI" & tab );
+      REGIONS_PATH( DESIG_NAME );
+      PUT_LINE( DESIG_STR & ".size" );
+    else
+      PUT( tab & "Ld" & tab );
+      REGIONS_PATH( DESIG_NAME );
+      PUT_LINE( DESIG_STR & ".SIZ" );
+      PUT_LINE( tab & "LI" & tab & IMAGE( CODI.STORAGE_UNIT ) );
+      PUT_LINE( tab & "DIV" );
+    end if;
+    PUT_LINE( tab & "HEAP_ALLOC" );
+
+    if  D( AS_EXP, QUALIFIED ).TY = DN_AGGREGATE  then
+      PUT_LINE( "VAR " & ANON & "_ptr, q" );
+      PUT_LINE( tab & "DUP" );
+      PUT_LINE( tab & "Sa" & tab & IMAGE( CODI.CUR_LEVEL ) & ", " & ANON & "_ptr" );
+      CODE_AGGREGATE( D( AS_EXP, QUALIFIED ), DESIG_TYPE );
+      PUT_LINE( tab & "La" & tab & IMAGE( CODI.CUR_LEVEL ) & ", " & ANON & "_ptr" );
+    end if;
   end	CODE_QUALIFIED_ALLOCATOR;
 	------------------------
 
@@ -1924,8 +2033,25 @@ null;--	     declare
 				----------------------
   procedure			CODE_SUBTYPE_ALLOCATOR	( SUBTYPE_ALLOCATOR	:TREE )
   is				----------------------
+    DESIG_TYPE	: TREE	:= D( SM_DESIG_TYPE, SUBTYPE_ALLOCATOR );
+    DESIG_NAME	: TREE	:= D( XD_SOURCE_NAME, DESIG_TYPE );
+    DESIG_STR	: constant STRING := PRINT_NAME( D( LX_SYMREP, DESIG_NAME ) );
+
   begin
-    null;
+    if  DESIG_TYPE.TY = DN_RECORD  then
+      PUT( tab & "LI" & tab );
+      REGIONS_PATH( DESIG_NAME );
+      PUT_LINE( DESIG_STR & ".size" );
+
+    else
+      PUT( tab & "Ld" & tab );
+      REGIONS_PATH( DESIG_NAME );
+      PUT_LINE( DESIG_STR & ".SIZ" );
+      PUT_LINE( tab & "LI" & tab & IMAGE( CODI.STORAGE_UNIT ) );
+      PUT_LINE( tab & "DIV" );
+    end if;
+    PUT_LINE( tab & "HEAP_ALLOC" );
+
   end	CODE_SUBTYPE_ALLOCATOR;
 	----------------------
 
@@ -2923,7 +3049,7 @@ SCAN_IDS:
   procedure			CODE_NULL_ACCESS		( NULL_ACCESS :TREE	)
   is				----------------
   begin
-    null;
+    PUT_LINE( tab & "LI" & tab & "0" );
   end	CODE_NULL_ACCESS;
 	----------------
 

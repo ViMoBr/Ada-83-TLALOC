@@ -682,10 +682,15 @@ declare
 	      PUT_LINE( PRINT_NAME( D( LX_SYMREP, COMP_TYPE_NAME ) )  & ".use__info" );
 	    end if;
 
-	    if  COMP_TYPE.TY in CLASS_SCALAR  or  COMP_TYPE.TY in CLASS_CONSTRAINED  then
-	      if	D( CD_IMPL_SIZE, COMP_TYPE ) = TREE_VOID  then
-	        IS_STATIC := FALSE;
-	      end	if;
+	    if  COMP_TYPE.TY = DN_ACCESS  then
+	      null;			-- un access est statique, mais DN_ACCESS n'a pas CD_IMPL_SIZE dans DIANA
+
+	    elsif  COMP_TYPE.TY in CLASS_SCALAR  or  COMP_TYPE.TY in CLASS_CONSTRAINED  then
+ 	      if	D( CD_IMPL_SIZE, COMP_TYPE ) = TREE_VOID  then
+ 	        IS_STATIC := FALSE;
+ 	      end	if;
+
+
 
 	    elsif	 COMP_TYPE.TY = DN_RECORD  then
 	      if	not IS_EMPTY( LIST(	D( SM_DISCRIMINANT_S, COMP_TYPE ) ) )
@@ -771,13 +776,17 @@ declare
 
 	  begin
 	    if  IS_STATIC  then
-	      COMP_SIZE := DI( CD_IMPL_SIZE, COMP_TYPE );
+	      if  COMP_TYPE.TY = DN_ACCESS  then
+	        COMP_SIZE := CODI.ADDR_SIZE * CODI.STORAGE_UNIT;  -- bits : 8 octets sur x86_64
+	      else
+	        COMP_SIZE := DI( CD_IMPL_SIZE, COMP_TYPE );
+	      end if;
 	      if	COMP_SIZE	< CODI.STORAGE_UNIT	 then
 	        COMP_SIZE := CODI.STORAGE_UNIT;
 	      end	if;
 	      PUT_LINE( "STATOFS " & COMP_ID_STR
-		    & ','	& INTEGER'IMAGE( COMP_SIZE / CODI.STORAGE_UNIT ) );
-	      STATIC_SIZE := STATIC_SIZE + COMP_SIZE;
+			    & ','	& INTEGER'IMAGE( ( COMP_SIZE + CODI.STORAGE_UNIT - 1 ) / CODI.STORAGE_UNIT ) );
+		      STATIC_SIZE := STATIC_SIZE + CODI.STORAGE_UNIT * ( ( COMP_SIZE + CODI.STORAGE_UNIT - 1 ) / CODI.STORAGE_UNIT );
 
 	    else
 	      PUT_LINE( "; OFFSET NON STATIQUE A FAIRE" );
@@ -815,8 +824,34 @@ put_line( "; TRAITER_LES_CHAMPS SM_SIZE DU TYPE " & TYPE_ID_STR );
 				----------------
   procedure			CODE_ACCESS_DECL		( TYPE_DECL :TREE )
   is				----------------
+    TYPE_ID		: TREE		:= D( AS_SOURCE_NAME, TYPE_DECL );
+    TYPE_SPEC		: TREE		:= D( SM_TYPE_SPEC, TYPE_ID );
+    TYPE_STR		: constant STRING	:= PRINT_NAME( D( LX_SYMREP, TYPE_ID ) );
+    DESIG_TYPE		: TREE		:= D( SM_DESIG_TYPE, TYPE_SPEC );
+    DESIG_NAME		: TREE		:= D( XD_SOURCE_NAME, DESIG_TYPE );
+    DESIG_STR		: constant STRING	:= PRINT_NAME( D( LX_SYMREP, DESIG_NAME ) );
+    LVL_STR		: constant STRING	:= IMAGE( CODI.CUR_LEVEL );
   begin
-    null;
+    DI( CD_LEVEL,      TYPE_SPEC, INTEGER( CODI.CUR_LEVEL ) );
+--    DI( CD_IMPL_SIZE,  TYPE_SPEC, CODI.ADDR_SIZE * CODI.STORAGE_UNIT );
+    DB( CD_COMPILED,   TYPE_SPEC, TRUE );
+
+    if  CODI.DEBUG then NEW_LINE; PUT_LINE( tab50 & "; " & TYPE_STR & " ACCESS TYPE INFO" ); end if;
+
+    PUT_LINE( TYPE_STR & " = '" & TYPE_STR & "'" );
+    PUT_LINE( "namespace " & TYPE_STR );
+    PUT_LINE( "VAR use__info, q" );
+    PUT_LINE( "VAR SIZ, d" );
+    PUT_LINE( tab & "LVA" & tab & LVL_STR & ", SIZ" );
+    PUT_LINE( tab & "Sa"  & tab & LVL_STR & ", use__info" );
+    PUT_LINE( tab & "LI"  & tab & IMAGE( CODI.ADDR_SIZE * CODI.STORAGE_UNIT ) );
+    PUT_LINE( tab & "Sd"  & tab & LVL_STR & ", SIZ" );
+    PUT_LINE( "VAR DESIG__u, q" );
+    PUT( tab & "La " & IMAGE( DI( CD_LEVEL, DESIG_TYPE ) ) & ", " );
+    REGIONS_PATH( DESIG_NAME );
+    PUT_LINE( DESIG_STR & ".use__info" );
+    PUT_LINE( tab & "Sa" & tab & LVL_STR & ", DESIG__u" );
+    PUT_LINE( "end namespace" );
   end	CODE_ACCESS_DECL;
 	----------------
 

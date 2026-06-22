@@ -7,9 +7,9 @@
 ./a83.sh ./ ../src/ada_comp/idl.ads W
 ./a83.sh ./ ../src/ada_comp/idl.adb W
 
-./a83.sh ./ ../src/communs/idl-page_man.adb w
+./a83.sh ./ ../src/communs/idl-page_man.adb W
 ./a83.sh ./ ../src/communs/idl-idl_tbl.adb W
-./a83.sh ./ ../src/communs/idl-idl_man.adb w
+./a83.sh ./ ../src/communs/idl-idl_man.adb W
 #--------------------------------------------------
 #	PAR_PHASE
 #--------------------------------------------------
@@ -28,7 +28,7 @@
 #	SEM_PHASE
 #--------------------------------------------------
 ./a83.sh ./ ../src/sem_phase/idl-sem_phase.adb W
-./a83.sh ./ ../src/sem_phase/idl-sem_phase-aggreso.adb w
+./a83.sh ./ ../src/sem_phase/idl-sem_phase-aggreso.adb W
 ./a83.sh ./ ../src/sem_phase/idl-sem_phase-att_walk.adb W
 ./a83.sh ./ ../src/sem_phase/idl-sem_phase-chk_stat.adb W
 ./a83.sh ./ ../src/sem_phase/idl-sem_phase-def_util.adb W

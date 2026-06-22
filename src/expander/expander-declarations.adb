@@ -495,20 +495,26 @@ null;
       procedure	COMPILE_ACCESS_VAR	( VAR_ID,	TYPE_SPEC	:TREE )
       is		------------------
 
-        LVL	: LEVEL_NUM	renames CODI.CUR_LEVEL;
+        LVL		: LEVEL_NUM	renames CODI.CUR_LEVEL;
+        LVL_STR		: constant STRING := IMAGE( CODI.CUR_LEVEL );
+        VAR_STR		: constant STRING := PRINT_NAME( D( LX_SYMREP, VAR_ID ) );
 
       begin
         DI( CD_LEVEL,     VAR_ID, INTEGER( LVL ) );
         DB( CD_COMPILED,  VAR_ID, TRUE );
-        declare
-	INIT_EXP		: TREE	:= D( SM_INIT_EXP, VAR_ID );
-        begin
-	if  INIT_EXP = TREE_VOID  then
-	  PUT_LINE( tab & "LI -1" );
 
-	else
-null;--	  LOAD_TYPE_SIZE( TYPE_SPEC  );
-	end if;
+        PUT_LINE( "VAR " & VAR_STR & "_disp, q" );
+
+        declare
+		INIT_EXP		: TREE	:= D( SM_INIT_EXP, VAR_ID );
+        begin
+		if  INIT_EXP = TREE_VOID  then
+		  PUT_LINE( tab & "LI" & tab & "0" );							-- null access
+		else
+		  EXPRESSIONS.CODE_EXP( INIT_EXP );
+		end if;
+
+		PUT_LINE( tab & "Sa" & tab & LVL_STR & ", " & VAR_STR & "_disp" );
         end;
 
       end	COMPILE_ACCESS_VAR;
