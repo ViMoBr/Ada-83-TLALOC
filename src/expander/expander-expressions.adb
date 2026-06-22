@@ -665,9 +665,9 @@ null;--	     declare
         PUT_LINE( tab & "Sd" & tab & IMAGE( CODI.CUR_LEVEL )  & ", _LST_1" );
 
         PUT_LINE( tab & "Ld" & tab & IMAGE( CODI.CUR_LEVEL )  & ", _LST_1" );
-        PUT_LINE( tab & "INC"	);
         PUT_LINE( tab & "Ld" & tab & IMAGE( CODI.CUR_LEVEL )  & ", _FST_1" );
         PUT_LINE( tab & "SUB"	);
+        PUT_LINE( tab & "INC"	);
         PUT_LINE( tab & "LI" & tab & IMAGE( COMP_SIZE ) );							-- En bits
         PUT_LINE( tab & "MUL"	);
         PUT_LINE( tab & "Sd" & tab & IMAGE( CODI.CUR_LEVEL )  & ", SIZ" );
@@ -967,6 +967,52 @@ null;--	     declare
 	----------------------
 
 
+			------------------------
+  function		IS_GENERIC_FORMAL_OBJECT	( DEFN : TREE )	return BOOLEAN
+  is			------------------------
+
+    REGION_ID	: TREE;
+
+  begin
+    if  not (DEFN.TY in CLASS_PARAM_NAME)  then
+      return FALSE;
+    end if;
+
+    REGION_ID := D( XD_REGION, DEFN );
+
+    if  REGION_ID.TY /= DN_GENERIC_ID  then
+      return  FALSE;
+    end if;
+
+    declare
+      G_PARAMS	: SEQ_TYPE	:= LIST( D( SM_GENERIC_PARAM_S, REGION_ID ) );
+      G_PARAM	: TREE;
+    begin
+      while not IS_EMPTY( G_PARAMS ) loop
+        POP( G_PARAMS, G_PARAM );
+
+        if G_PARAM.TY = DN_IN  or else  G_PARAM.TY = DN_IN_OUT  or else  G_PARAM.TY = DN_OUT  then
+	declare
+	  ID_SEQ	: SEQ_TYPE	:= LIST( D( AS_SOURCE_NAME_S, G_PARAM ) );
+	  ID	: TREE;
+	begin
+	  while  not IS_EMPTY( ID_SEQ )  loop
+	    POP( ID_SEQ, ID );
+
+	    if  ID = DEFN  then
+	      return  TRUE;
+	    end if;
+	  end loop;
+	end;
+        end if;
+      end loop;
+    end;
+
+    return  FALSE;
+
+  end	IS_GENERIC_FORMAL_OBJECT;
+	------------------------
+
 
 				--------------
   procedure			CODE_ATTRIBUTE		( ATTRIBUTE :TREE )
@@ -1223,12 +1269,12 @@ null;--	     declare
 
 	PUT_LINE( tab & "LVA" & tab & IMAGE( ARRAY_LVL ) & ", -" & CHN_PREFIX & "_ofs" );
 	PUT_LINE( tab & "LIa" & tab & ", ," & INTEGER'IMAGE( CODI.ADDR_SIZE ) );
-	PUT_LINE( tab & "Ld" & tab & ", " & PREFIX_TYPE_STR & "._LST_1");
-	PUT_LINE( tab & "INC" );
+	PUT_LINE( tab & "Ld" & tab & ", " & PREFIX_TYPE_STR & ".LST_1");					-- Offset LST_1
 	PUT_LINE( tab & "LVA" & tab & IMAGE( ARRAY_LVL ) & ", -" & CHN_PREFIX & "_ofs" );
 	PUT_LINE( tab & "LIa" & tab & ", ," & INTEGER'IMAGE( CODI.ADDR_SIZE ) );
-	PUT_LINE( tab & "Ld" & tab & ", " & PREFIX_TYPE_STR & "._FST_1");
+	PUT_LINE( tab & "Ld" & tab & ", " & PREFIX_TYPE_STR & ".FST_1");					-- Offset FST_1
 	PUT_LINE( tab & "SUB" );
+	PUT_LINE( tab & "INC" );
 
         else
 	declare
@@ -1236,9 +1282,9 @@ null;--	     declare
 					   & CHN_PREFIX & "__u" & ", " & PREFIX_TYPE_STR;
 	begin
 	  PUT_LINE( CHN_LID & ".LST_1" );
-	  PUT_LINE( tab & "INC" );
 	  PUT_LINE( CHN_LID & ".FST_1" );
 	  PUT_LINE( tab & "SUB" );
+	  PUT_LINE( tab & "INC" );
           end;
         end if;
       end;
@@ -1716,9 +1762,9 @@ null;--	     declare
 
             -- LEN_G = (LST_1 - FST_1 + 1) * COMP_BYTES
             PUT_LINE( tab & "LId " & LVL & ", " & ANON_G & "_info, " & TYPE_STR & ".LST_1" );
-            PUT_LINE( tab & "INC" );
             PUT_LINE( tab & "LId " & LVL & ", " & ANON_G & "_info, " & TYPE_STR & ".FST_1" );
             PUT_LINE( tab & "SUB" );
+            PUT_LINE( tab & "INC" );
             if COMP_BYTES /= 1 then
               PUT_LINE( tab & "LI"  & tab & IMAGE( COMP_BYTES ) );
               PUT_LINE( tab & "MUL" );
@@ -1734,9 +1780,9 @@ null;--	     declare
             PUT_LINE( tab & "Sa  " & LVL & ", " & ANON_D & "_info" );
 
             PUT_LINE( tab & "LId " & LVL & ", " & ANON_D & "_info, " & TYPE_STR & ".LST_1" );
-            PUT_LINE( tab & "INC" );
             PUT_LINE( tab & "LId " & LVL & ", " & ANON_D & "_info, " & TYPE_STR & ".FST_1" );
             PUT_LINE( tab & "SUB" );
+            PUT_LINE( tab & "INC" );
             if COMP_BYTES /= 1 then
               PUT_LINE( tab & "LI"  & tab & IMAGE( COMP_BYTES ) );
               PUT_LINE( tab & "MUL" );
@@ -3694,6 +3740,132 @@ put_line( "; CODE_QUALIFIED : DN_QUALIFIED" & NODE_NAME'IMAGE( SRC_EXP.TY ) );
 
   end	CODE_VC_ID;
 	----------
+
+			--^^^^^^^^^^^^^^^^^^^^^--
+  procedure		CODE_DISCRETE_RANGE_BOUND	( DISCRETE_RANGE :TREE; IS_LAST :BOOLEAN )
+  is			-------------------------
+
+		--------------------------
+    procedure	CODE_RANGE_ATTRIBUTE_BOUND ( RANGE_ATTRIBUTE :TREE )
+    is		--------------------------
+
+      PREFIX_NAME	: TREE	:= LAST_OF_SELECTED( D( AS_NAME, RANGE_ATTRIBUTE ) );
+      PREFIX_DEFN	: TREE	:= D( SM_DEFN, PREFIX_NAME );
+      DIM_EXP	: TREE	:= D( AS_EXP, RANGE_ATTRIBUTE );
+      NUM_DIM	: INTEGER	:= 1;
+
+    begin
+      if  DIM_EXP /= TREE_VOID  then
+        NUM_DIM := DI( SM_VALUE, DIM_EXP );
+      end if;
+
+      if  PREFIX_NAME.TY = DN_USED_OBJECT_ID  then
+        declare
+	ARRAY_LVL		: INTEGER		:= DI( CD_LEVEL, PREFIX_DEFN );
+	PREFIX_TYPE	: TREE		:= D( SM_EXP_TYPE, PREFIX_NAME );
+	PREFIX_STR	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, PREFIX_DEFN ) );
+        begin
+	while  PREFIX_TYPE.TY = DN_PRIVATE  or else  PREFIX_TYPE.TY = DN_L_PRIVATE  loop
+	  PREFIX_TYPE := D( SM_TYPE_SPEC, PREFIX_TYPE );
+	end loop;
+
+	declare
+	  TYPE_NAME	: TREE		:= D( XD_SOURCE_NAME, PREFIX_TYPE );
+	  TYPE_STR	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
+	begin
+	  if  PREFIX_DEFN.TY in CLASS_PARAM_NAME  then
+	    PUT_LINE( tab & "LVA" & tab & IMAGE( ARRAY_LVL ) & ", -" & PREFIX_STR & "_ofs" );
+	    PUT_LINE( tab & "LIa" & tab & ", ," & INTEGER'IMAGE( CODI.ADDR_SIZE ) );
+	    PUT( tab & "Ld"  & tab & ", " & TYPE_STR & "." );
+
+	  elsif  PREFIX_DEFN.TY in CLASS_VC_NAME  then
+	    PUT( tab & "LId" & tab & IMAGE( ARRAY_LVL ) & ", " & PREFIX_STR & "__u, " & TYPE_STR & "." );
+
+	  else
+	    PUT_LINE( "; RANGE_ATTRIBUTE: prefix object non traite " & NODE_NAME'IMAGE( PREFIX_DEFN.TY ) );
+	    PUT_LINE( tab & "LI" & tab & "0" );
+	    return;
+	  end if;
+
+	  if  IS_LAST  then
+	    PUT( "LST_" );
+	  else
+	    PUT( "FST_" );
+	  end if;
+	  PUT_LINE( IMAGE( NUM_DIM ) );
+	end;
+        end;
+
+    elsif  PREFIX_NAME.TY = DN_USED_NAME_ID  then
+      declare
+        TYPE_SPEC	: TREE	:= TREE_VOID;
+      begin
+        if  PREFIX_DEFN.TY in CLASS_TYPE_NAME  then
+          TYPE_SPEC := D( SM_TYPE_SPEC, PREFIX_DEFN );
+          while  TYPE_SPEC.TY = DN_PRIVATE  or else  TYPE_SPEC.TY = DN_L_PRIVATE  loop
+            TYPE_SPEC := D( SM_TYPE_SPEC, TYPE_SPEC );
+          end loop;
+
+          if  TYPE_SPEC.TY in CLASS_SCALAR  then
+            CODE_DISCRETE_RANGE_BOUND( D( SM_RANGE, TYPE_SPEC ), IS_LAST );
+          else
+            PUT_LINE( "; RANGE_ATTRIBUTE: prefix type non scalaire non traite " & NODE_NAME'IMAGE( TYPE_SPEC.TY ) );
+            PUT_LINE( tab & "LI" & tab & "0" );
+          end if;
+        end if;
+      end;
+
+    else
+      PUT_LINE( "; RANGE_ATTRIBUTE: prefix non traite " & NODE_NAME'IMAGE( PREFIX_NAME.TY ) );
+      PUT_LINE( tab & "LI" & tab & "0" );
+    end if;
+
+  end	CODE_RANGE_ATTRIBUTE_BOUND;
+	--------------------------
+
+  begin
+    if  DISCRETE_RANGE.TY = DN_RANGE  then
+      if IS_LAST then
+        CODE_EXP( D( AS_EXP2, DISCRETE_RANGE ) );
+      else
+        CODE_EXP( D( AS_EXP1, DISCRETE_RANGE ) );
+      end if;
+
+    elsif  DISCRETE_RANGE.TY = DN_RANGE_ATTRIBUTE  then
+      CODE_RANGE_ATTRIBUTE_BOUND( DISCRETE_RANGE );
+
+    elsif  DISCRETE_RANGE.TY = DN_DISCRETE_SUBTYPE  then
+      declare
+        SUB_IND        : TREE := D( AS_SUBTYPE_INDICATION, DISCRETE_RANGE );
+        SUB_CONSTRAINT : TREE := D( AS_CONSTRAINT, SUB_IND );
+      begin
+        if  SUB_CONSTRAINT /= TREE_VOID  then
+          CODE_DISCRETE_RANGE_BOUND( SUB_CONSTRAINT, IS_LAST );
+
+        else
+          declare
+            TYPE_NAME : TREE := LAST_OF_SELECTED( D( AS_NAME, SUB_IND ) );
+            TYPE_DEFN : TREE := D( SM_DEFN, TYPE_NAME );
+            TYPE_SPEC : TREE := D( SM_TYPE_SPEC, TYPE_DEFN );
+          begin
+            while  TYPE_SPEC.TY = DN_PRIVATE
+              or else TYPE_SPEC.TY = DN_L_PRIVATE
+            loop
+              TYPE_SPEC := D( SM_TYPE_SPEC, TYPE_SPEC );
+            end loop;
+
+            CODE_DISCRETE_RANGE_BOUND( D( SM_RANGE, TYPE_SPEC ), IS_LAST );
+          end;
+        end if;
+      end;
+
+    else
+      PUT_LINE( "; CODE_DISCRETE_RANGE_BOUND: range non traite " & NODE_NAME'IMAGE( DISCRETE_RANGE.TY ) );
+      PUT_LINE( tab & "LI" & tab & "0" );
+    end if;
+
+  end	CODE_DISCRETE_RANGE_BOUND;
+	-------------------------
 
 
 	-----------

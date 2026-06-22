@@ -62,7 +62,11 @@ LOOP__1:
 	LVA  1,	STM_LIST_disp
 	CALL	STANDARD.IDL. ,POP_L24
 					; debut if
-	LIb	1, STM_disp, STANDARD.IDL.TREE.TY
+	La	1, STM_disp
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	108
 	CEQ
 	BF	L10
@@ -285,9 +289,9 @@ VAR	ANON_197_36_disp, q
 VAR	ANON_197_36__u,   q
 namespace ANON_197_36_info
   VAR SIZ,      d
-  VAR COMP_SIZ, d
-  VAR FST_1,    d
-  VAR LST_1,    d
+  VAR _COMP_SIZ, d
+  VAR _FST_1,    d
+  VAR _LST_1,    d
 end namespace
 	La  1,	-PREFIX_TEXT_ofs
 	DUP
@@ -296,17 +300,17 @@ end namespace
 	La  ,  8
 	Sa  1, ANON_197_36_info
 	LId 1, ANON_197_36_info, STRING.LST_1
-	INC
 	LId 1, ANON_197_36_info, STRING.FST_1
 	SUB
+	INC
 	Sa  1, ANON_197_36_len
 VAR	ANON_197_50_disp, q
 VAR	ANON_197_50__u,   q
 namespace ANON_197_50_info
-  VAR SIZ,      d
-  VAR COMP_SIZ, d
-  VAR FST_1,    d
-  VAR LST_1,    d
+  VAR SIZ, d
+  VAR _COMP_SIZ, d
+  VAR _FST_1, d
+  VAR _LST_1, d
 end namespace
 	LVA 1, ANON_197_50_info.SIZ
 	Sa  1, ANON_197_50__u
@@ -314,10 +318,10 @@ end namespace
 VAR	ANON_197_56_disp, q
 VAR	ANON_197_56__u,   q
 namespace ANON_197_56_info
-  VAR SIZ,      d
-  VAR COMP_SIZ, d
-  VAR FST_1,    d
-  VAR LST_1,    d
+  VAR SIZ, d
+  VAR _COMP_SIZ, d
+  VAR _FST_1, d
+  VAR _LST_1, d
 end namespace
 	LVA 1, ANON_197_56_info.SIZ
 	Sa  1, ANON_197_56__u
@@ -331,9 +335,9 @@ end namespace
 	La  ,  8
 	Sa  1, ANON_197_50_info
 	LId 1, ANON_197_50_info, STRING.LST_1
-	INC
 	LId 1, ANON_197_50_info, STRING.FST_1
 	SUB
+	INC
 	Sa  1, ANON_197_50_len
 	La  1, ANON_197_36_len
 	La  1, ANON_197_50_len
@@ -341,13 +345,13 @@ end namespace
 	CO_VAR
 	Sa  1, ANON_197_36_disp
 	LI	1
-	Sd  1, ANON_197_36_info.FST_1
+	Sd  1, ANON_197_36_info._FST_1
 	La  1, ANON_197_36_len
 	La  1, ANON_197_50_len
 	ADD
-	Sd  1, ANON_197_36_info.LST_1
+	Sd  1, ANON_197_36_info._LST_1
 	LI	8
-	Sd  1, ANON_197_36_info.COMP_SIZ
+	Sd  1, ANON_197_36_info._COMP_SIZ
 	La  1, ANON_197_36_len
 	La  1, ANON_197_50_len
 	ADD
@@ -512,26 +516,26 @@ VAR use__info, q
 VAR SIZ, d
 	LVA	2, SIZ
 	Sa	2, use__info
-VAR COMP_SIZ, d
-VAR FST_1, d
-VAR LST_1, d
+VAR _COMP_SIZ, d
+VAR _FST_1, d
+VAR _LST_1, d
 	LI	8
-	Sd	2, COMP_SIZ
-	Ld	2, COMP_SIZ
+	Sd	2, _COMP_SIZ
+	Ld	2, _COMP_SIZ
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
-	Sd	2, FST_1
+	Sd	2, _FST_1
 	Ld 1,	STANDARD.IDL.SEM_PHASE_L11.STM_WALK.TRIM_L7.LAST_disp
 	Ld 1,	STANDARD.IDL.SEM_PHASE_L11.STM_WALK.TRIM_L7.FIRST_disp
 	SUB
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
-	Sd	2, LST_1
-	Ld	2, LST_1
-	INC
-	Ld	2, FST_1
+	Sd	2, _LST_1
+	Ld	2, _LST_1
+	Ld	2, _FST_1
 	SUB
+	INC
 	MUL
 	Sd	2, SIZ
   virtual at 4
@@ -801,7 +805,11 @@ LOOP__16:
 	LVA  1,	ALTERNATIVE_LIST_disp
 	CALL	STANDARD.IDL. ,POP_L24
 					; debut if
-	LIb	1, ALTERNATIVE_ELEM_disp, STANDARD.IDL.TREE.TY
+	La	1, ALTERNATIVE_ELEM_disp
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	187
 	CEQ
 	BF	L25
@@ -849,13 +857,21 @@ LOOP__17:
 	LVA  1,	CHOICE_LIST_disp
 	CALL	STANDARD.IDL. ,POP_L24
 					; debut if
-	LIb	1, CHOICE_disp, STANDARD.IDL.TREE.TY
+	La	1, CHOICE_disp
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	163
 	CEQ
 	BF	L28
 	BRA	L27
 L28:
-	LIb	1, CHOICE_disp, STANDARD.IDL.TREE.TY
+	La	1, CHOICE_disp
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	161
 	CEQ
 	BF	L29
@@ -986,7 +1002,11 @@ VAR STM__dat, STANDARD.IDL.TREE.size
 	BLKMOV
 
 VAR STM_KIND_disp, b			; variable entiere
-	LIb	1, STM_disp, STANDARD.IDL.TREE.TY
+	La	1, STM_disp
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	Sb  1,	STM_KIND_disp
 
 					;    end elab

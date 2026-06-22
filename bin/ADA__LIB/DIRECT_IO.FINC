@@ -81,22 +81,22 @@ VAR use__info, q
 VAR SIZ, d
 	LVA	0, SIZ
 	Sa	0, use__info
-VAR COMP_SIZ, d
-VAR FST_1, d
-VAR LST_1, d
+VAR _COMP_SIZ, d
+VAR _FST_1, d
+VAR _LST_1, d
 	LI	8
-	Sd	0, COMP_SIZ
-	Ld	0, COMP_SIZ
+	Sd	0, _COMP_SIZ
+	Ld	0, _COMP_SIZ
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
-	Sd	0, FST_1
+	Sd	0, _FST_1
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	256
-	Sd	0, LST_1
-	Ld	0, LST_1
-	INC
-	Ld	0, FST_1
+	Sd	0, _LST_1
+	Ld	0, _LST_1
+	Ld	0, _FST_1
 	SUB
+	INC
 	MUL
 	Sd	0, SIZ
   virtual at 4
@@ -125,7 +125,7 @@ USEINFO 0, INDEX, 	La 0, STANDARD.DIRECT_IO.POSITIVE_COUNT.use__info
 USEINFO 0, AT_END_OF_FILE, 	La 0, STANDARD.BOOLEAN.use__info
 virtual at 0				; calcul des offsets statiques
 STATOFS ID, 4
-STATOFS NAME, 256
+STATOFS NAME, 1
 STATOFS NAME_LEN, 4
 STATOFS IS_OPENED, 1
 STATOFS MODE, 1
@@ -192,11 +192,11 @@ begin:					;---------- BDY INSTRUCTIONS
 	LVA	1, -NAME_ofs
 	LIa	, , 8
 	Ld	, STRING.LST_1
-	INC
 	LVA	1, -NAME_ofs
 	LIa	, , 8
 	Ld	, STRING.FST_1
 	SUB
+	INC
 	INC
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
@@ -211,11 +211,11 @@ begin:					;---------- BDY INSTRUCTIONS
 	LVA	1, -NAME_ofs
 	LIa	, , 8
 	Ld	, STRING.LST_1
-	INC
 	LVA	1, -NAME_ofs
 	LIa	, , 8
 	Ld	, STRING.FST_1
 	SUB
+	INC
 	Sd
 	La 1, -FILE_ofs
 	LIVA 	, 0, STANDARD.DIRECT_IO.FILE_TYPE.IS_OPENED
@@ -298,11 +298,11 @@ begin:					;---------- BDY INSTRUCTIONS
 	LVA	1, -NAME_ofs
 	LIa	, , 8
 	Ld	, STRING.LST_1
-	INC
 	LVA	1, -NAME_ofs
 	LIa	, , 8
 	Ld	, STRING.FST_1
 	SUB
+	INC
 	INC
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
@@ -317,11 +317,11 @@ begin:					;---------- BDY INSTRUCTIONS
 	LVA	1, -NAME_ofs
 	LIa	, , 8
 	Ld	, STRING.LST_1
-	INC
 	LVA	1, -NAME_ofs
 	LIa	, , 8
 	Ld	, STRING.FST_1
 	SUB
+	INC
 	Sd
 	La 1, -FILE_ofs
 	LIVA 	, 0, STANDARD.DIRECT_IO.FILE_TYPE.IS_OPENED
@@ -444,8 +444,8 @@ VAR ANON_128_37_disp, q
 VAR ANON_128_37__u, q
 VAR SIZ, d
 VAR COMP_SIZ, d
-VAR FST_1, d
-VAR LST_1, d
+VAR _FST_1, d
+VAR _LST_1, d
 	Sa	1, ANON_128_37_disp
 	LVA	1, SIZ
 	Sa	1, ANON_128_37__u
@@ -453,14 +453,14 @@ VAR LST_1, d
 	Sd	1, COMP_SIZ
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
-	Sd	1, FST_1
+	Sd	1, _FST_1
 	La 1, -FILE_ofs
 	LId	, 0, STANDARD.DIRECT_IO.FILE_TYPE.NAME_LEN
-	Sd	1, LST_1
-	Ld	1, LST_1
-	INC
-	Ld	1, FST_1
+	Sd	1, _LST_1
+	Ld	1, _LST_1
+	Ld	1, _FST_1
 	SUB
+	INC
 	LI	8
 	MUL
 	Sd	1, SIZ

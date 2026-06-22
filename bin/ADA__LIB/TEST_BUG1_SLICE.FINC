@@ -1,0 +1,191 @@
+if ~ definite TEXT_IO
+include 'TEXT_IO.FINC'
+end if
+PRO	TEST_BUG1_SLICE_L1			;---------- PRO TEST_BUG1_SLICE
+ELB 1					;    BODY ELAB
+STRING = 'STRING'
+namespace STRING				; array var constrained array type info
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+VAR _COMP_SIZ, d
+VAR _FST_1, d
+VAR _LST_1, d
+	LI	8
+	Sd	1, _COMP_SIZ
+	Ld	1, _COMP_SIZ
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd	1, _FST_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	11
+	Sd	1, _LST_1
+	Ld	1, _LST_1
+	Ld	1, _FST_1
+	SUB
+	INC
+	MUL
+	Sd	1, SIZ
+  virtual at 4
+COMP_SIZ = $
+	rd 1 
+FST_1 = $
+	rd 1 
+LST_1 = $
+	rd 1 
+  end virtual
+end namespace
+VAR NOM_TEXTE_disp, q			; variable array : pointeur aux data
+VAR NOM_TEXTE__u, q				; variable array : useinfo pointeur au rec info
+	La 1, STRING.use__info
+	Sa	1, NOM_TEXTE__u				; array info ptr at __u
+STR NOM_TEXTE, "Compile.Txt"			; constante string="Compile.Txt"
+	LCA	NOM_TEXTE.data_ptr
+	La
+	Sa	1, NOM_TEXTE_disp			; array data ptr at _disp
+	LCA	NOM_TEXTE.info_ptr
+	La
+	Sa	1, NOM_TEXTE__u				; array info ptr at __u
+
+STRING = 'STRING'
+namespace STRING				; array var constrained array type info
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+VAR _COMP_SIZ, d
+VAR _FST_1, d
+VAR _LST_1, d
+	LI	8
+	Sd	1, _COMP_SIZ
+	Ld	1, _COMP_SIZ
+	LId	1, NOM_TEXTE__u, STRING.FST_1
+	Sd	1, _FST_1
+	LId	1, NOM_TEXTE__u, STRING.LST_1
+	Sd	1, _LST_1
+	Ld	1, _LST_1
+	Ld	1, _FST_1
+	SUB
+	INC
+	MUL
+	Sd	1, SIZ
+  virtual at 4
+COMP_SIZ = $
+	rd 1 
+FST_1 = $
+	rd 1 
+LST_1 = $
+	rd 1 
+  end virtual
+end namespace
+VAR UPPER_NAME_disp, q			; variable array : pointeur aux data
+VAR UPPER_NAME__u, q			; variable array : useinfo pointeur au rec info
+	La 1, STRING.use__info
+	Sa	1, UPPER_NAME__u			; array info ptr at __u
+	Ld	1, STRING.SIZ
+	LI	8
+	DIV
+	CO_VAR
+	Sa	1, UPPER_NAME_disp			; array data ptr at _disp
+
+VAR NAME_END_disp, d			; variable entiere
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	Sd  1,	NAME_END_disp
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+VAR	IL3_disp, d				; compteur boucle LOOP__1
+	LId	1, NOM_TEXTE__u, STRING.FST_1
+	Sd  1,	IL3_disp
+VAR	LMT_IL3_disp, d				; limite boucle LOOP__1
+	LId	1, NOM_TEXTE__u, STRING.LST_1
+	Sd  1,	LMT_IL3_disp
+	Ld  1,	IL3_disp				; test null range LOOP__1
+	Ld  1,	LMT_IL3_disp
+	CGT
+	BT	L2
+LOOP__1:					; corps boucle LOOP__1
+					; debut if
+	BF	L5
+	La	 1, UPPER_NAME_disp			; array data start address on stack
+	Ld	1, IL3_disp
+	LId	1, UPPER_NAME__u, STANDARD.STRING.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, UPPER_NAME__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	LI	65
+	La	 1, NOM_TEXTE_disp			; array data start address on stack
+	Ld	1, IL3_disp
+	LId	1, NOM_TEXTE__u, STANDARD.STRING.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, NOM_TEXTE__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb
+	ADD
+	LI	97
+	SUB
+	Sb
+	BRA	L4
+L5:
+	La	 1, UPPER_NAME_disp			; array data start address on stack
+	Ld	1, IL3_disp
+	LId	1, UPPER_NAME__u, STANDARD.STRING.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, UPPER_NAME__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	La	 1, NOM_TEXTE_disp			; array data start address on stack
+	Ld	1, IL3_disp
+	LId	1, NOM_TEXTE__u, STANDARD.STRING.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, NOM_TEXTE__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb
+	Sb
+L4:					; post if
+					; debut if
+	La	 1, NOM_TEXTE_disp			; array data start address on stack
+	Ld	1, IL3_disp
+	LId	1, NOM_TEXTE__u, STANDARD.STRING.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, NOM_TEXTE__u, STANDARD.STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb
+	LI	46
+	CEQ
+	BF	L7
+	BRA ret_lbl
+	BRA	L6
+L7:
+L6:					; post if
+	Ld	1, IL3_disp
+	Sd  1,	NAME_END_disp
+	Ld  1,	IL3_disp				; test de sortie LOOP__1
+	Ld  1,	LMT_IL3_disp
+	CEQ
+	BT	L2
+	Ld  1,	IL3_disp				; mise a jour compteur LOOP__1
+	INC
+	Sd  1,	IL3_disp
+	BRA	LOOP__1				; iteration suivante LOOP__1
+L2:					; post loop LOOP__1
+namespace	BLOCK__2
+ELB 2					;    BODY ELAB
+VAR NOM_FAS_disp, q
+; CODE_OBJECT_ADDRESS: renames slice a traiter plus tard

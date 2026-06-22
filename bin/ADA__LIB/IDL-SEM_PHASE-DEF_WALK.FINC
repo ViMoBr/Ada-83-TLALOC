@@ -14,7 +14,11 @@ ELB 1					;    BODY ELAB
 begin:					;---------- BDY INSTRUCTIONS
 					; debut if
 	La 1, -R_ofs
-	LIb	, 0, STANDARD.IDL.TREE.TY
+	La	-1, 0
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	219
 	CEQ
 	BF	L8
@@ -115,7 +119,11 @@ L13:					; post if
 	BRA	L11
 L12:
 	La 1, -TYPE_SPEC_ofs
-	LIb	, 0, STANDARD.IDL.TREE.TY
+	La	-1, 0
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	214
 	CEQ
 	BF	L15
@@ -237,7 +245,11 @@ L19:
 L18:					; post if
 					; debut if
 	La 1, -ID_ofs
-	LIb	, 0, STANDARD.IDL.TREE.TY
+	La	-1, 0
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	23
 	CEQ
 	DUP
@@ -596,7 +608,11 @@ LOOP__19:
 	LVA  1,	VARIANT_LIST_disp
 	CALL	STANDARD.IDL. ,POP_L24
 					; debut if
-	LIb	1, VARIANT_disp, STANDARD.IDL.TREE.TY
+	La	1, VARIANT_disp
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	193
 	CEQ
 	BF	L33
@@ -1017,8 +1033,14 @@ VAR	ANON_1022_14__dat, STANDARD.IDL.TREE.size
 	CALL	STANDARD.IDL.SEM_PHASE_L11.DEF_UTIL. ,MAKE_DEF_VISIBLE_L67
 	BRA	L40
 L41:
+	VAR SELARG_L42_disp, q
+	VAR SELARG_L42__u, q
 	La 1, -H_ofs
 	LIVA 	, 0, STANDARD.IDL.SEM_PHASE_L11.SEM_GLOB.H_TYPE.REGION_DEF
+	Sa	1, SELARG_L42_disp
+	La 0, STANDARD.IDL.TREE.use__info
+	Sa	1, SELARG_L42__u
+	LVA 1, SELARG_L42_disp
 	LVA 1,	ID_disp
 	LI  14
 	CALL	STANDARD.IDL. ,D_L16
@@ -1047,10 +1069,14 @@ L39:					; post loop LOOP__21
 	CALL	STANDARD.IDL.IDL_MAN. ,LIST_L36
 	BRA	L37
 L38:
-	LIb	1, ITEM_disp, STANDARD.IDL.TREE.TY
+	La	1, ITEM_disp
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	59
 	CEQ
-	BF	L42
+	BF	L43
 	LVA 1,	NEW_ITEM_LIST_disp
 	La
 	LI	STANDARD.IDL.SEQ_TYPE.size
@@ -1069,7 +1095,7 @@ VAR	ANON_1032_26__dat, STANDARD.IDL.SEQ_TYPE.size
 	La
 	BLKMOV
 	BRA	L37
-L42:
+L43:
 L37:					; post if
 	BRA	LOOP__20
 L36:					; post loop LOOP__20
@@ -1206,7 +1232,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	LVA 1,	VARIANT_PART_disp
 	LVA 0,	STANDARD.IDL.TREE_VOID_disp
 	CNE
-	BF	L44
+	BF	L45
 namespace	BLOCK__25
 ELB 2					;    BODY ELAB
 VAR NAME_disp, q				; variable record : pointeur aux data record
@@ -1339,15 +1365,19 @@ LOOP__26:
 	CALL	STANDARD.IDL. ,IS_EMPTY_L23
 	LI	1
 	OUX
-	BF	L45
+	BF	L46
 	LVA  2,	VARIANT_disp
 	LVA  2,	VARIANT_LIST_disp
 	CALL	STANDARD.IDL. ,POP_L24
 					; debut if
-	LIb	2, VARIANT_disp, STANDARD.IDL.TREE.TY
+	La	2, VARIANT_disp
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	193
 	CEQ
-	BF	L47
+	BF	L48
 	LVA 2,	NAME_TYPE_disp
 VAR	ANON_1167_28_disp, q
 VAR	ANON_1167_28__u,    q
@@ -1376,8 +1406,8 @@ VAR	ANON_1170_20__dat, STANDARD.IDL.TREE.size
 	LI  65
 	CALL	STANDARD.IDL. ,D_L17
 	CALL	STANDARD.IDL.SEM_PHASE_L11.DEF_WALK. ,WALK_COMP_LIST_L5
-	BRA	L46
-L47:
+	BRA	L47
+L48:
 	La  1,	-H_ofs
 VAR	ANON_1176_10_disp, q
 VAR	ANON_1176_10__u,    q
@@ -1392,14 +1422,14 @@ VAR	ANON_1176_10__dat, STANDARD.IDL.TREE.size
 	LI  77
 	CALL	STANDARD.IDL. ,D_L17
 	CALL	STANDARD.IDL.SEM_PHASE_L11.NOD_WALK. ,WALK_L184
-L46:					; post if
+L47:					; post if
 	BRA	LOOP__26
-L45:					; post loop LOOP__26
+L46:					; post loop LOOP__26
 	UNLINK 2
 endPRO
-	BRA	L43
-L44:
-L43:					; post if
+	BRA	L44
+L45:
+L44:					; post if
 	La  1,	-H_ofs
 	CALL	STANDARD.IDL.SEM_PHASE_L11.NOD_WALK. ,WALK_ITEM_S_L193
 ret_lbl:

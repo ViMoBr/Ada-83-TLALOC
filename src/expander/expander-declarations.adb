@@ -21,7 +21,7 @@ is
 
     procedure CODE_TYPE_DECL			( TYPE_DECL :TREE );
     procedure CODE_SUBTYPE_DECL		( SUBTYPE_DECL :TREE );
-    procedure PROCESS_CONSTRAINED_ARRAY_TYPE_SPEC	( TYPE_SPEC :TREE );
+    procedure PROCESS_CONSTRAINED_ARRAY_TYPE_SPEC	( TYPE_SPEC :TREE; CONSTRAINT :TREE := TREE_VOID );
 
   ---	-----------
   end	TYPES_DECLS;
@@ -317,7 +317,7 @@ null;
     while	 not IS_EMPTY( SRC_NAME_SEQ )	 loop
       POP( SRC_NAME_SEQ, SRC_NAME );
       if  not CODI.IN_GENERIC_BODY  or else  ( CODI.CUR_LEVEL /= CODI.GENERIC_BASE_LEVEL )  then
-        CODE_VC_NAME( SRC_NAME );
+        CODE_VC_NAME( SRC_NAME, OBJECT_DECL );
       end if;
     end loop;
 
@@ -345,7 +345,7 @@ null;
 
 
 			------------
-  procedure		CODE_VC_NAME		( VC_NAME	:TREE )
+  procedure		CODE_VC_NAME		( VC_NAME	:TREE; OBJECT_DECL :TREE := TREE_VOID )
   is			------------
   begin
     declare
@@ -552,14 +552,40 @@ null;
 
       begin
 
-        if  DB( CD_COMPILED, TYPE_SPEC ) = FALSE	then
-	ANONYMOUS_SUBTYPE := TRUE;
-	PUT_LINE(	TYPE_NAME_STR & " = '" & TYPE_NAME_STR & "'" );
-	PUT( "namespace " &	TYPE_NAME_STR );
-	if  CODI.DEBUG  then PUT( tab50 & "; array var constrained array type info" ); end if;
-	NEW_LINE;
-	TYPES_DECLS.PROCESS_CONSTRAINED_ARRAY_TYPE_SPEC( TYPE_SPEC );
-        end if;
+--        if  DB( CD_COMPILED, TYPE_SPEC ) = FALSE	then
+--	ANONYMOUS_SUBTYPE := TRUE;
+--	PUT_LINE(	TYPE_NAME_STR & " = '" & TYPE_NAME_STR & "'" );
+--	PUT( "namespace " &	TYPE_NAME_STR );
+--	if  CODI.DEBUG  then PUT( tab50 & "; array var constrained array type info" ); end if;
+--	NEW_LINE;
+
+declare
+  SOURCE_CONSTRAINT : TREE := TREE_VOID;
+begin
+  if  OBJECT_DECL /= TREE_VOID  and then  D( AS_TYPE_DEF, OBJECT_DECL ) /= TREE_VOID  then
+    declare
+      TYPE_DEF : TREE := D( AS_TYPE_DEF, OBJECT_DECL );
+    begin
+      if  TYPE_DEF.TY = DN_SUBTYPE_INDICATION  then
+        SOURCE_CONSTRAINT := D( AS_CONSTRAINT, TYPE_DEF );
+      elsif  TYPE_DEF.TY = DN_CONSTRAINED_ARRAY_DEF  then
+        SOURCE_CONSTRAINT := D( AS_CONSTRAINT, TYPE_DEF );
+      end if;
+    end;
+  end if;
+
+  if  DB( CD_COMPILED, TYPE_SPEC ) = FALSE  then
+    ANONYMOUS_SUBTYPE := TRUE;
+    PUT_LINE( TYPE_NAME_STR & " = '" & TYPE_NAME_STR & "'" );
+    PUT( "namespace " & TYPE_NAME_STR );
+    if  CODI.DEBUG  then PUT( tab50 & "; array var constrained array type info" ); end if;
+    NEW_LINE;
+    TYPES_DECLS.PROCESS_CONSTRAINED_ARRAY_TYPE_SPEC( TYPE_SPEC, SOURCE_CONSTRAINT );
+  end if;
+end;
+
+--	TYPES_DECLS.PROCESS_CONSTRAINED_ARRAY_TYPE_SPEC( TYPE_SPEC );
+--        end if;
 
         TYPE_LEVEL := DI( CD_LEVEL, TYPE_SPEC );
 
@@ -1050,13 +1076,15 @@ put_line( "; CODE_VC_NAME " & NODE_NAME'IMAGE( VC_NAME.TY ) );
       declare
         DEFN		: TREE		:= D( SM_DEFN, GNAME );
         GNAME_STR		:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, GNAME ) );
+        LVL_STR		:constant	STRING	:= LEVEL_NUM'IMAGE(	CODI.CUR_LEVEL );
 
       begin
         if  DEFN.TY = DN_TYPE_ID  or  DEFN.TY = DN_SUBTYPE_ID  then
+				-------------------
+				ACTUAL_GENERIC_TYPE:
 	declare
-	      DEFN_TYPE_SPEC	: TREE		:= D( SM_TYPE_SPEC,	DEFN );
-	      DEFN_STR		:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, DEFN ) );
-	      LVL_STR		:constant	STRING	:= LEVEL_NUM'IMAGE(	CODI.CUR_LEVEL );
+	  DEFN_TYPE_SPEC	: TREE		:= D( SM_TYPE_SPEC,	DEFN );
+	  DEFN_STR	:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, DEFN ) );
 	begin
 
 	  if  DEFN_TYPE_SPEC.TY  in  CLASS_SCALAR  then
@@ -1170,7 +1198,48 @@ put_line( "; CODE_VC_NAME " & NODE_NAME'IMAGE( VC_NAME.TY ) );
 	  PUT_LINE( DEFN_STR & ".use__info"	);
 	  PUT_LINE( tab	& "Sa" & tab & LVL_STR & ", "	& GNAME_STR & "__u_ofs" );
 
-	end;
+	end	ACTUAL_GENERIC_TYPE;
+		-------------------
+
+        elsif  DEFN.TY = DN_IN  or else  DEFN.TY = DN_IN_OUT  or else  DEFN.TY = DN_OUT  then
+					---------------------
+					ACTUAL_GENERIC_OBJECT:
+	declare
+	  NAME_SEQ	:SEQ_TYPE		:= LIST( D( AS_SOURCE_NAME_S, DEFN ) );
+	  FORMAL_TYPE	: TREE		:= D( SM_OBJ_TYPE, DEFN );
+	  FORMAL_NAME	: TREE;
+
+	begin
+	  while  FORMAL_TYPE.TY = DN_PRIVATE  or else  FORMAL_TYPE.TY = DN_L_PRIVATE  loop
+	    FORMAL_TYPE := D( SM_TYPE_SPEC, FORMAL_TYPE );
+	  end loop;
+
+	  while  not IS_EMPTY( NAME_SEQ )  loop
+	    POP( NAME_SEQ, FORMAL_NAME );
+
+	    declare
+	      FORMAL_STR	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, FORMAL_NAME ) );
+	    begin
+	      if  FORMAL_TYPE.TY in CLASS_SCALAR  or else  FORMAL_TYPE.TY = DN_ACCESS  then
+	        PUT_LINE( "VAR " & FORMAL_STR & "_disp, q" );
+--	        EXPRESSIONS.CODE_EXP( ACTUAL_EXP );							-- A VOIR
+	        PUT_LINE( tab & "S" & OPER_SIZ_CHAR( FORMAL_TYPE ) & " " & LVL_STR & ", " & FORMAL_STR & "_disp" );
+
+	      else
+	        PUT_LINE( "VAR " & FORMAL_STR & "_disp, q" );
+	        PUT_LINE( "VAR " & FORMAL_STR & "__u, q" );
+
+--	        EXPRESSIONS.CODE_EXP( ACTUAL_EXP );     							-- @doublet actuel
+	        PUT_LINE( tab & "DUP" );
+	        PUT_LINE( tab & "La  ,  0" );
+	        PUT_LINE( tab & "Sa " & LVL_STR & ", " & FORMAL_STR & "_disp" );
+	        PUT_LINE( tab & "La  ,  8" );
+	        PUT_LINE( tab & "Sa " & LVL_STR & ", " & FORMAL_STR & "__u" );
+	      end if;
+	    end;
+	  end loop;
+	end		ACTUAL_GENERIC_OBJECT;
+			---------------------
         end if;
       end;
     end loop;

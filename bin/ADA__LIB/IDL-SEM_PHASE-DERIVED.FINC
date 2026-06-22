@@ -268,7 +268,11 @@ VAR TEMP_FIRST_KIND__dat, STANDARD.IDL.TREE.size
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 					; debut if
-	LIb	1, PARENT_REGION_disp, STANDARD.IDL.TREE.TY
+	La	1, PARENT_REGION_disp
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	30
 	CEQ
 	DUP
@@ -297,8 +301,14 @@ VAR	ANON_63_28__dat, STANDARD.IDL.TREE.size
 	Sa  1, ANON_63_28__u
 	LVA 1, ANON_63_28_disp
 					; doublet resultat record anonyme
+	VAR SELARG_L10_disp, q
+	VAR SELARG_L10__u, q
 	La 1, -H_ofs
 	LIVA 	, 0, STANDARD.IDL.SEM_PHASE_L11.SEM_GLOB.H_TYPE.REGION_DEF
+	Sa	1, SELARG_L10_disp
+	La 0, STANDARD.IDL.TREE.use__info
+	Sa	1, SELARG_L10__u
+	LVA 1, SELARG_L10_disp
 	LI  35
 	CALL	STANDARD.IDL. ,D_L17
 	CEQ
@@ -350,17 +360,25 @@ LOOP__1:
 	LVA  1,	DECL_LIST_disp
 	CALL	STANDARD.IDL. ,POP_L24
 					; debut if
-	LIb	1, DECL_disp, STANDARD.IDL.TREE.TY
+	La	1, DECL_disp
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	51
 	CEQ
 	DUP
-	BT	L13
+	BT	L14
 	DROP
-	LIb	1, DECL_disp, STANDARD.IDL.TREE.TY
+	La	1, DECL_disp
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	53
 	CEQ
-L13:
-	BF	L12
+L14:
+	BF	L13
 					; debut if
 VAR	ANON_73_5_disp, q
 VAR	ANON_73_5__u,    q
@@ -376,31 +394,35 @@ VAR	ANON_73_5__dat, STANDARD.IDL.TREE.size
 	CALL	STANDARD.IDL. ,D_L17
 	LVA 1,	PARENT_ID_disp
 	CEQ
-	BF	L15
-	BRA	L10
-	BRA	L14
-L15:
-L14:					; post if
+	BF	L16
 	BRA	L11
-L12:
-L11:					; post if
+	BRA	L15
+L16:
+L15:					; post if
+	BRA	L12
+L13:
+L12:					; post if
 	BRA	LOOP__1
-L10:					; post loop LOOP__1
+L11:					; post loop LOOP__1
 LOOP__2:
 	LI	0					; lieu resultat sur pile
 	LVA 1,	DECL_LIST_disp
 	CALL	STANDARD.IDL. ,IS_EMPTY_L23
 	LI	1
 	OUX
-	BF	L17
+	BF	L18
 	LVA  1,	DECL_disp
 	LVA  1,	DECL_LIST_disp
 	CALL	STANDARD.IDL. ,POP_L24
 					; debut if
-	LIb	1, DECL_disp, STANDARD.IDL.TREE.TY
+	La	1, DECL_disp
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	55
 	CEQ
-	BF	L19
+	BF	L20
 	LVA 1,	DECL_ID_disp
 	La
 	LI	STANDARD.IDL.TREE.size
@@ -423,11 +445,11 @@ VAR	ANON_87_13__dat, STANDARD.IDL.TREE.size
 	La  1,	-PARENT_SUBTYPE_ofs
 	LVA 1,	DECL_ID_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.DERIVED. ,IS_OPERATION_OF_TYPE_L3
-	BF	L21
+	BF	L22
 					; debut if
 	LI	1
 	CEQ
-	BF	L23
+	BF	L24
 VAR	ANON_92_29_disp, q
 VAR	ANON_92_29__u,    q
 VAR	ANON_92_29__dat, STANDARD.IDL.TREE.size
@@ -440,10 +462,10 @@ VAR	ANON_92_29__dat, STANDARD.IDL.TREE.size
 VAR	ANON_92_40_disp, q
 VAR	ANON_92_40__u,   q
 namespace ANON_92_40_info
-  VAR SIZ,      d
-  VAR COMP_SIZ, d
-  VAR FST_1,    d
-  VAR LST_1,    d
+  VAR SIZ, d
+  VAR _COMP_SIZ, d
+  VAR _FST_1, d
+  VAR _LST_1, d
 end namespace
 	LVA 1, ANON_92_40_info.SIZ
 	Sa  1, ANON_92_40__u
@@ -465,9 +487,9 @@ VAR	ANON_92_52__dat, STANDARD.IDL.TREE.size
 	LVA 1,	DECL_ID_disp
 	LI  13
 	CALL	STANDARD.IDL. ,D_L16
-	BRA	L22
-L23:
-L22:					; post if
+	BRA	L23
+L24:
+L23:					; post if
 	LVA 1,	DERIVED_SUBPROGRAM_LIST_disp
 	La
 	LI	STANDARD.IDL.SEQ_TYPE.size
@@ -498,14 +520,14 @@ VAR	ANON_96_64__dat, STANDARD.IDL.TREE.size
 	CALL	STANDARD.IDL.IDL_MAN. ,APPEND_L34
 	La
 	BLKMOV
-	BRA	L20
-L21:
-L20:					; post if
-	BRA	L18
-L19:
-L18:					; post if
+	BRA	L21
+L22:
+L21:					; post if
+	BRA	L19
+L20:
+L19:					; post if
 	BRA	LOOP__2
-L17:					; post loop LOOP__2
+L18:					; post loop LOOP__2
 	BRA	L5
 L6:
 L5:					; post if
@@ -517,7 +539,7 @@ L5:					; post if
 	BLKMOV
 					; debut if
 	DUP
-	BF	L27
+	BF	L28
 	DROP
 VAR	ANON_108_14_disp, q
 VAR	ANON_108_14__u,    q
@@ -533,9 +555,9 @@ VAR	ANON_108_14__dat, STANDARD.IDL.TREE.size
 	CALL	STANDARD.IDL. ,D_L17
 	LVA 0,	STANDARD.IDL.TREE_VOID_disp
 	CNE
-L27:
+L28:
 	DUP
-	BF	L26
+	BF	L27
 	DROP
 	LVA 1,	PARENT_TYPE_disp
 VAR	ANON_109_28_disp, q
@@ -550,8 +572,8 @@ VAR	ANON_109_28__dat, STANDARD.IDL.TREE.size
 	LVA 1,	PARENT_TYPE_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.REQ_UTIL. ,GET_BASE_STRUCT_L108
 	CEQ
-L26:
-	BF	L25
+L27:
+	BF	L26
 namespace	BLOCK__3
 ELB 2					;    BODY ELAB
 VAR TEMP_DECL_LIST_disp, q			; variable record : pointeur aux data record
@@ -585,7 +607,7 @@ LOOP__6:
 	CALL	STANDARD.IDL. ,IS_EMPTY_L23
 	LI	1
 	OUX
-	BF	L28
+	BF	L29
 	LVA  2,	TEMP_DECL_disp
 	LVA  2,	TEMP_DECL_LIST_disp
 	CALL	STANDARD.IDL. ,POP_L24
@@ -615,7 +637,7 @@ VAR	ANON_118_18__dat, STANDARD.IDL.TREE.size
 	CALL	STANDARD.IDL. ,D_L17
 	LVA 1,	STANDARD.IDL.SEM_PHASE_L11.DERIVED.MAKE_DERIVED_SUBPROGRAM_LIST_L1.PARENT_ID_disp
 	CEQ
-	BF	L30
+	BF	L31
 	LVA 1,	STANDARD.IDL.SEM_PHASE_L11.DERIVED.MAKE_DERIVED_SUBPROGRAM_LIST_L1.DERIVED_OF_PARENT_LIST_disp
 	La
 	LI	STANDARD.IDL.SEQ_TYPE.size
@@ -643,24 +665,24 @@ VAR	ANON_119_36__dat, STANDARD.IDL.TREE.size
 	CALL	STANDARD.IDL. ,LIST_L22
 	La
 	BLKMOV
-	BRA	L28
 	BRA	L29
-L30:
-L29:					; post if
+	BRA	L30
+L31:
+L30:					; post if
 	BRA	LOOP__6
-L28:					; post loop LOOP__6
+L29:					; post loop LOOP__6
 	UNLINK 2
 endPRO
-	BRA	L24
-L25:
-L24:					; post if
+	BRA	L25
+L26:
+L25:					; post if
 LOOP__4:
 	LI	0					; lieu resultat sur pile
 	LVA 1,	DERIVED_OF_PARENT_LIST_disp
 	CALL	STANDARD.IDL. ,IS_EMPTY_L23
 	LI	1
 	OUX
-	BF	L32
+	BF	L33
 	LVA  1,	DERIVED_OF_PARENT_disp
 	LVA  1,	DERIVED_OF_PARENT_LIST_disp
 	CALL	STANDARD.IDL. ,POP_L24
@@ -682,10 +704,14 @@ VAR	ANON_131_32__dat, STANDARD.IDL.TREE.size
 	La
 	BLKMOV
 					; debut if
-	LIb	1, DERIVED_OF_PARENT_SYM_disp, STANDARD.IDL.TREE.TY
+	La	1, DERIVED_OF_PARENT_SYM_disp
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	1
 	CEQ
-	BF	L34
+	BF	L35
 	LVA 1,	DERIVED_OF_PARENT_SYM_disp
 	La
 	LI	STANDARD.IDL.TREE.size
@@ -701,10 +727,10 @@ VAR	ANON_133_34__dat, STANDARD.IDL.TREE.size
 VAR	ANON_133_45_disp, q
 VAR	ANON_133_45__u,   q
 namespace ANON_133_45_info
-  VAR SIZ,      d
-  VAR COMP_SIZ, d
-  VAR FST_1,    d
-  VAR LST_1,    d
+  VAR SIZ, d
+  VAR _COMP_SIZ, d
+  VAR _FST_1, d
+  VAR _LST_1, d
 end namespace
 	LVA 1, ANON_133_45_info.SIZ
 	Sa  1, ANON_133_45__u
@@ -729,9 +755,9 @@ VAR	ANON_133_57__dat, STANDARD.IDL.TREE.size
 	LVA 1,	DERIVED_OF_PARENT_disp
 	LI  13
 	CALL	STANDARD.IDL. ,D_L16
-	BRA	L33
-L34:
-L33:					; post if
+	BRA	L34
+L35:
+L34:					; post if
 	LVA 1,	TEMP_FIRST_KIND_LIST_disp
 	La
 	LI	STANDARD.IDL.SEQ_TYPE.size
@@ -744,7 +770,7 @@ LOOP__5:
 	CALL	STANDARD.IDL. ,IS_EMPTY_L23
 	LI	1
 	OUX
-	BF	L35
+	BF	L36
 	LVA 1,	TEMP_FIRST_KIND_disp
 	La
 	LI	STANDARD.IDL.TREE.size
@@ -777,7 +803,7 @@ VAR	ANON_143_12__dat, STANDARD.IDL.TREE.size
 	LVA 1,	DERIVED_OF_PARENT_SYM_disp
 	CEQ
 	DUP
-	BF	L38
+	BF	L39
 	DROP
 	LI	0					; lieu resultat sur pile
 VAR	ANON_144_74_disp, q
@@ -827,12 +853,12 @@ VAR	ANON_144_41__dat, STANDARD.IDL.TREE.size
 	LI  109
 	CALL	STANDARD.IDL. ,D_L17
 	CALL	STANDARD.IDL.SEM_PHASE_L11.DEF_UTIL. ,ARE_HOMOGRAPH_HEADERS_L63
-L38:
-	BF	L37
-	BRA	L35
+L39:
+	BF	L38
 	BRA	L36
-L37:
-L36:					; post if
+	BRA	L37
+L38:
+L37:					; post if
 	LVA 1,	TEMP_FIRST_KIND_LIST_disp
 	La
 	LI	STANDARD.IDL.SEQ_TYPE.size
@@ -850,12 +876,12 @@ VAR	ANON_151_33__dat, STANDARD.IDL.SEQ_TYPE.size
 	La
 	BLKMOV
 	BRA	LOOP__5
-L35:					; post loop LOOP__5
+L36:					; post loop LOOP__5
 					; debut if
 	LI	0					; lieu resultat sur pile
 	LVA 1,	TEMP_FIRST_KIND_LIST_disp
 	CALL	STANDARD.IDL. ,IS_EMPTY_L23
-	BF	L41
+	BF	L42
 	LVA 1,	DERIVED_SUBPROGRAM_LIST_disp
 	La
 	LI	STANDARD.IDL.SEQ_TYPE.size
@@ -886,11 +912,11 @@ VAR	ANON_158_69__dat, STANDARD.IDL.TREE.size
 	CALL	STANDARD.IDL.IDL_MAN. ,INSERT_L33
 	La
 	BLKMOV
-	BRA	L40
-L41:
-L40:					; post if
+	BRA	L41
+L42:
+L41:					; post if
 	BRA	LOOP__4
-L32:					; post loop LOOP__4
+L33:					; post loop LOOP__4
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   1,	-result__ofs
 	La  ,  0
@@ -927,7 +953,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	La  1,	-DECL_ofs
 	LVA 0,	STANDARD.IDL.TREE_VOID_disp
 	CEQ
-	BF	L43
+	BF	L44
 	LVA 0,	STANDARD.IDL.SEM_PHASE_L11.DERIVED.DERIVED_DECL_LIST_disp
 	La
 	LI	STANDARD.IDL.SEQ_TYPE.size
@@ -946,9 +972,9 @@ begin:					;---------- BDY INSTRUCTIONS
 	BLKMOV
 	DROP
 	BRA ret_lbl
-	BRA	L42
-L43:
-L42:					; post if
+	BRA	L43
+L44:
+L43:					; post if
 	LVA 1,	TYPE_DEF_disp
 	La
 	LI	STANDARD.IDL.TREE.size
@@ -967,11 +993,15 @@ VAR	ANON_182_17__dat, STANDARD.IDL.TREE.size
 	La
 	BLKMOV
 					; debut if
-	LIb	1, TYPE_DEF_disp, STANDARD.IDL.TREE.TY
+	La	1, TYPE_DEF_disp
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	77
 	CEQ
 	DUP
-	BF	L46
+	BF	L47
 	DROP
 	LI	0					; lieu resultat sur pile
 VAR	ANON_183_60_disp, q
@@ -988,8 +1018,8 @@ VAR	ANON_183_60__dat, STANDARD.IDL.SEQ_TYPE.size
 	CALL	STANDARD.IDL. ,IS_EMPTY_L23
 	LI	1
 	OUX
-L46:
-	BF	L45
+L47:
+	BF	L46
 	LVA 0,	STANDARD.IDL.SEM_PHASE_L11.DERIVED.DERIVED_DECL_LIST_disp
 	La
 	LI	STANDARD.IDL.SEQ_TYPE.size
@@ -1007,9 +1037,9 @@ VAR	ANON_184_28__dat, STANDARD.IDL.SEQ_TYPE.size
 	CALL	STANDARD.IDL.IDL_MAN. ,INSERT_L33
 	La
 	BLKMOV
-	BRA	L44
-L45:
-L44:					; post if
+	BRA	L45
+L46:
+L45:					; post if
 ret_lbl:
 	UNLINK 1
 	RTD	prm_siz
@@ -1086,21 +1116,25 @@ VAR PARAM_CURSOR__dat, STANDARD.IDL.SEM_PHASE_L11.VIS_UTIL.PARAM_CURSOR_TYPE.siz
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 					; debut if
-	BF	L48
+	BF	L49
 ; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
 	LI	0
 	Sb  1,	-result__ofs
 	BRA ret_lbl
-	BRA	L47
-L48:
-L47:					; post if
+	BRA	L48
+L49:
+L48:					; post if
 					; debut if
 	La 1, -DECL_ID_ofs
-	LIb	, 0, STANDARD.IDL.TREE.TY
+	La	-1, 0
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	27
 	CNE
 	DUP
-	BF	L51
+	BF	L52
 	DROP
 VAR	ANON_212_16_disp, q
 VAR	ANON_212_16__u,    q
@@ -1126,15 +1160,15 @@ VAR	ANON_212_31__dat, STANDARD.IDL.TREE.size
 	CALL	STANDARD.IDL.SEM_PHASE_L11.DEF_UTIL. ,GET_BASE_TYPE_L71
 	LVA 1,	BASE_TYPE_disp
 	CEQ
-L51:
-	BF	L50
+L52:
+	BF	L51
 ; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
 	LI	1
 	Sb  1,	-result__ofs
 	BRA ret_lbl
-	BRA	L49
-L50:
-L49:					; post if
+	BRA	L50
+L51:
+L50:					; post if
 VAR	ANON_217_38_disp, q
 VAR	ANON_217_38__u,    q
 VAR	ANON_217_38__dat, STANDARD.IDL.SEQ_TYPE.size
@@ -1165,7 +1199,7 @@ LOOP__7:
 	LIVA 	1, PARAM_CURSOR_disp, STANDARD.IDL.SEM_PHASE_L11.VIS_UTIL.PARAM_CURSOR_TYPE.ID
 	LVA 0,	STANDARD.IDL.TREE_VOID_disp
 	CEQ
-	BT	L52
+	BT	L53
 					; debut if
 VAR	ANON_223_10_disp, q
 VAR	ANON_223_10__u,    q
@@ -1176,20 +1210,26 @@ VAR	ANON_223_10__dat, STANDARD.IDL.TREE.size
 	Sa  1, ANON_223_10__u
 	LVA 1, ANON_223_10_disp
 					; doublet resultat record anonyme
+	VAR SELARG_L57_disp, q
+	VAR SELARG_L57__u, q
 	LIVA 	1, PARAM_CURSOR_disp, STANDARD.IDL.SEM_PHASE_L11.VIS_UTIL.PARAM_CURSOR_TYPE.ID
+	Sa	1, SELARG_L57_disp
+	La 0, STANDARD.IDL.TREE.use__info
+	Sa	1, SELARG_L57__u
+	LVA 1, SELARG_L57_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.DEF_UTIL. ,GET_BASE_TYPE_L71
 	LVA 1,	BASE_TYPE_disp
 	CEQ
-	BF	L55
+	BF	L56
 ; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
 	LI	1
 	Sb  1,	-result__ofs
 	BRA ret_lbl
-	BRA	L54
-L55:
-L54:					; post if
+	BRA	L55
+L56:
+L55:					; post if
 	BRA	LOOP__7
-L52:					; post loop LOOP__7
+L53:					; post loop LOOP__7
 ; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
 	LI	0
 	Sb  1,	-result__ofs
@@ -1428,11 +1468,15 @@ VAR	ANON_259_30__dat, STANDARD.IDL.TREE.size
 	LVA 1,	NEW_DEF_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.DEF_UTIL. ,MAKE_DEF_VISIBLE_L67
 					; debut if
-	LIb	1, HEADER_disp, STANDARD.IDL.TREE.TY
+	La	1, HEADER_disp
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	165
 	CEQ
 	DUP
-	BF	L58
+	BF	L60
 	DROP
 VAR	ANON_266_46_disp, q
 VAR	ANON_266_46__u,    q
@@ -1458,15 +1502,15 @@ VAR	ANON_266_61__dat, STANDARD.IDL.TREE.size
 	CALL	STANDARD.IDL.SEM_PHASE_L11.DEF_UTIL. ,GET_BASE_TYPE_L71
 	La  1,	-PARENT_TYPE_ofs
 	CEQ
-L58:
-	BF	L57
+L60:
+	BF	L59
 	LVA 1,	NEW_TYPE_MARK_disp
 	LVA 1,	NEW_HEADER_disp
 	LI  48
 	CALL	STANDARD.IDL. ,D_L16
-	BRA	L56
-L57:
-L56:					; post if
+	BRA	L58
+L59:
+L58:					; post if
 namespace	BLOCK__8
 ELB 2					;    BODY ELAB
 VAR PARAM_CURSOR_disp, q			; variable record : pointeur aux data record
@@ -1510,7 +1554,7 @@ LOOP__10:
 	LIVA 	2, PARAM_CURSOR_disp, STANDARD.IDL.SEM_PHASE_L11.VIS_UTIL.PARAM_CURSOR_TYPE.ID
 	LVA 0,	STANDARD.IDL.TREE_VOID_disp
 	CEQ
-	BT	L59
+	BT	L61
 namespace	BLOCK__11
 ELB 3					;    BODY ELAB
 VAR NEW_PARAM_ID_disp, q			; variable record : pointeur aux data record
@@ -1532,7 +1576,13 @@ VAR	ANON_278_25__dat, STANDARD.IDL.TREE.size
 	Sa  3, ANON_278_25__u
 	LVA 3, ANON_278_25_disp
 					; doublet resultat record anonyme
+	VAR SELARG_L63_disp, q
+	VAR SELARG_L63__u, q
 	LIVA 	2, PARAM_CURSOR_disp, STANDARD.IDL.SEM_PHASE_L11.VIS_UTIL.PARAM_CURSOR_TYPE.ID
+	Sa	3, SELARG_L63_disp
+	La 0, STANDARD.IDL.TREE.use__info
+	Sa	3, SELARG_L63__u
+	LVA 3, SELARG_L63_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.VIS_UTIL. ,COPY_NODE_L179
 	La  ,  0
 	BLKMOV
@@ -1556,7 +1606,13 @@ VAR	ANON_279_27__dat, STANDARD.IDL.TREE.size
 	Sa  3, ANON_279_27__u
 	LVA 3, ANON_279_27_disp
 					; doublet resultat record anonyme
+	VAR SELARG_L64_disp, q
+	VAR SELARG_L64__u, q
 	LIVA 	2, PARAM_CURSOR_disp, STANDARD.IDL.SEM_PHASE_L11.VIS_UTIL.PARAM_CURSOR_TYPE.PARAM
+	Sa	3, SELARG_L64_disp
+	La 0, STANDARD.IDL.TREE.use__info
+	Sa	3, SELARG_L64__u
+	LVA 3, SELARG_L64_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.VIS_UTIL. ,COPY_NODE_L179
 	La  ,  0
 	BLKMOV
@@ -1605,11 +1661,17 @@ VAR	ANON_284_12__dat, STANDARD.IDL.TREE.size
 	Sa  3, ANON_284_12__u
 	LVA 3, ANON_284_12_disp
 					; doublet resultat record anonyme
+	VAR SELARG_L67_disp, q
+	VAR SELARG_L67__u, q
 	LIVA 	2, PARAM_CURSOR_disp, STANDARD.IDL.SEM_PHASE_L11.VIS_UTIL.PARAM_CURSOR_TYPE.ID
+	Sa	3, SELARG_L67_disp
+	La 0, STANDARD.IDL.TREE.use__info
+	Sa	3, SELARG_L67__u
+	LVA 3, SELARG_L67_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.DEF_UTIL. ,GET_BASE_TYPE_L71
 	La  1,	-PARENT_TYPE_ofs
 	CEQ
-	BF	L62
+	BF	L66
 	La  1,	-DERIVED_TYPE_ofs
 	LVA 3,	NEW_PARAM_ID_disp
 	LI  15
@@ -1624,12 +1686,18 @@ VAR	ANON_286_5__dat, STANDARD.IDL.TREE.size
 	Sa  3, ANON_286_5__u
 	LVA 3, ANON_286_5_disp
 					; doublet resultat record anonyme
+	VAR SELARG_L70_disp, q
+	VAR SELARG_L70__u, q
 	LIVA 	2, PARAM_CURSOR_disp, STANDARD.IDL.SEM_PHASE_L11.VIS_UTIL.PARAM_CURSOR_TYPE.ID
+	Sa	3, SELARG_L70_disp
+	La 0, STANDARD.IDL.TREE.use__info
+	Sa	3, SELARG_L70__u
+	LVA 3, SELARG_L70_disp
 	LI  24
 	CALL	STANDARD.IDL. ,D_L17
 	LVA 0,	STANDARD.IDL.TREE_VOID_disp
 	CNE
-	BF	L64
+	BF	L69
 VAR	ANON_287_34_disp, q
 VAR	ANON_287_34__u,    q
 VAR	ANON_287_34__dat, STANDARD.IDL.TREE.size
@@ -1650,19 +1718,25 @@ VAR	ANON_288_14__dat, STANDARD.IDL.TREE.size
 	Sa  3, ANON_288_14__u
 	LVA 3, ANON_288_14_disp
 					; doublet resultat record anonyme
+	VAR SELARG_L71_disp, q
+	VAR SELARG_L71__u, q
 	LIVA 	2, PARAM_CURSOR_disp, STANDARD.IDL.SEM_PHASE_L11.VIS_UTIL.PARAM_CURSOR_TYPE.ID
+	Sa	3, SELARG_L71_disp
+	La 0, STANDARD.IDL.TREE.use__info
+	Sa	3, SELARG_L71__u
+	LVA 3, SELARG_L71_disp
 	LI  24
 	CALL	STANDARD.IDL. ,D_L17
 	CALL	STANDARD.IDL.SEM_PHASE_L11.MAKE_NOD. ,MAKE_CONVERSION_L362
 	LVA 3,	NEW_PARAM_ID_disp
 	LI  24
 	CALL	STANDARD.IDL. ,D_L16
-	BRA	L63
-L64:
-L63:					; post if
-	BRA	L61
-L62:
-L61:					; post if
+	BRA	L68
+L69:
+L68:					; post if
+	BRA	L65
+L66:
+L65:					; post if
 	LVA 1,	STANDARD.IDL.SEM_PHASE_L11.DERIVED.MAKE_DERIVED_SUBPROGRAM_L4.NEW_PARAM_LIST_disp
 	La
 	LI	STANDARD.IDL.SEQ_TYPE.size
@@ -1683,7 +1757,7 @@ VAR	ANON_291_27__dat, STANDARD.IDL.SEQ_TYPE.size
 	UNLINK 3
 endPRO
 	BRA	LOOP__10
-L59:					; post loop LOOP__10
+L61:					; post loop LOOP__10
 VAR	ANON_294_34_disp, q
 VAR	ANON_294_34__u,    q
 VAR	ANON_294_34__dat, STANDARD.IDL.TREE.size
@@ -1701,10 +1775,14 @@ VAR	ANON_294_34__dat, STANDARD.IDL.TREE.size
 	UNLINK 2
 endPRO
 					; debut if
-	LIb	1, NEW_ID_disp, STANDARD.IDL.TREE.TY
+	La	1, NEW_ID_disp
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	29
 	CEQ
-	BF	L66
+	BF	L73
 namespace	BLOCK__9
 ELB 2					;    BODY ELAB
 VAR UNEQUAL_ID_disp, q			; variable record : pointeur aux data record
@@ -1738,7 +1816,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	LVA 2,	UNEQUAL_ID_disp
 	LVA 0,	STANDARD.IDL.TREE_VOID_disp
 	CNE
-	BF	L68
+	BF	L75
 	LVA 2,	UNEQUAL_ID_disp
 	La
 	LI	STANDARD.IDL.TREE.size
@@ -1766,7 +1844,7 @@ VAR	ANON_303_16__dat, STANDARD.IDL.TREE.size
 					; debut if
 	LI	9
 	CEQ
-	BF	L70
+	BF	L77
 	LVA 1,	STANDARD.IDL.SEM_PHASE_L11.DERIVED.MAKE_DERIVED_SUBPROGRAM_L4.NEW_HEADER_disp
 VAR	ANON_307_22_disp, q
 VAR	ANON_307_22__u,    q
@@ -1781,9 +1859,9 @@ VAR	ANON_307_22__dat, STANDARD.IDL.TREE.size
 	LVA 2,	UNEQUAL_ID_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.DEF_UTIL. ,MAKE_DEF_FOR_ID_L52
 	CALL	STANDARD.IDL.SEM_PHASE_L11.DEF_UTIL. ,MAKE_DEF_VISIBLE_L67
-	BRA	L69
-L70:
-L69:					; post if
+	BRA	L76
+L77:
+L76:					; post if
 VAR	ANON_309_31_disp, q
 VAR	ANON_309_31__u,    q
 VAR	ANON_309_31__dat, STANDARD.IDL.TREE.size
@@ -1813,14 +1891,14 @@ VAR	ANON_309_69__dat, STANDARD.IDL.TREE.size
 	LVA 1,	STANDARD.IDL.SEM_PHASE_L11.DERIVED.MAKE_DERIVED_SUBPROGRAM_L4.NEW_ID_disp
 	LI  119
 	CALL	STANDARD.IDL. ,D_L16
-	BRA	L67
-L68:
-L67:					; post if
+	BRA	L74
+L75:
+L74:					; post if
 	UNLINK 2
 endPRO
-	BRA	L65
-L66:
-L65:					; post if
+	BRA	L72
+L73:
+L72:					; post if
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   1,	-result__ofs
 	La  ,  0

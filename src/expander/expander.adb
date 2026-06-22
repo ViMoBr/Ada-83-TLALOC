@@ -102,7 +102,6 @@ is
   package	CODI	renames UTILS;
   use CODI;
 
-  package	body UTILS is separate;
 
   procedure CODE_ROOT ( ROOT :TREE );
   procedure CODE_OBJECT ( OBJECT :TREE );
@@ -124,7 +123,8 @@ is
     procedure CODE_AGGREGATE		( AGGREGATE, TYPE_SPEC	:TREE );
     procedure CODE_OBJECT_ADDRESS	( NAME : TREE );
     function  IS_GENERIC_FORMAL_TYPE	( TYPE_DEFN	:TREE )		return BOOLEAN;
-
+    function  IS_GENERIC_FORMAL_OBJECT	( DEFN		:TREE )		return BOOLEAN;
+    procedure CODE_DISCRETE_RANGE_BOUND	( DISCRETE_RANGE :TREE; IS_LAST :BOOLEAN );
 
   private
 
@@ -156,6 +156,7 @@ is
   end	EXPRESSIONS;
 	-----------
 
+  package	body UTILS is separate;
 
 
 			-----------------
@@ -215,7 +216,7 @@ is
 
 			-- VAR/CONST DECLARATION
 
-    procedure CODE_VC_NAME		( VC_NAME	:TREE );
+    procedure CODE_VC_NAME		( VC_NAME	:TREE; OBJECT_DECL :TREE := TREE_VOID );
     procedure CODE_ID_S_DECL		( ID_S_DECL :TREE );
     procedure CODE_EXCEPTION_DECL	( EXCEPTION_DECL :TREE );
     procedure CODE_DEFERRED_CONSTANT_DECL ( DEFERRED_CONSTANT_DECL :TREE );

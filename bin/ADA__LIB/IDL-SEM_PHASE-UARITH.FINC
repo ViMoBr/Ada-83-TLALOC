@@ -26,56 +26,56 @@ begin:					;---------- BDY INSTRUCTIONS
 	MUL
 					; Assign_array_aggregate dynamic type DN_ARRAY
 namespace ANON_20_31_aga
-  VAR FST_1,  d
-  VAR LST_1,  d
-  VAR LEN_1,  d
-  VAR STR_1,  d
-  VAR PTR_1,  q
-  VAR CNT_1,  d
-  VAR EMIS_1, d
+  VAR _FST_1, d
+  VAR _LST_1, d
+  VAR _LEN_1, d
+  VAR _STR_1, d
+  VAR _PTR_1, q
+  VAR _CNT_1, d
+  VAR _EMIS_1, d
 end namespace
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
-	Sd  1, ANON_20_31_aga.FST_1
+	Sd  1, ANON_20_31_aga._FST_1
 	La 1, -V_ofs
 	LId	, 0, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS.VECTOR.L
-	Sd  1, ANON_20_31_aga.LST_1
-	Ld  1, ANON_20_31_aga.LST_1
-	Ld  1, ANON_20_31_aga.FST_1
+	Sd  1, ANON_20_31_aga._LST_1
+	Ld  1, ANON_20_31_aga._LST_1
+	Ld  1, ANON_20_31_aga._FST_1
 	SUB
 	INC
-	Sd  1, ANON_20_31_aga.LEN_1
+	Sd  1, ANON_20_31_aga._LEN_1
 	LI	2
-	Sd  1, ANON_20_31_aga.STR_1
-	Sa  1, ANON_20_31_aga.PTR_1
+	Sd  1, ANON_20_31_aga._STR_1
+	Sa  1, ANON_20_31_aga._PTR_1
 	LI	0
-	Sd  1, ANON_20_31_aga.EMIS_1
+	Sd  1, ANON_20_31_aga._EMIS_1
 	La 1, -V_ofs
 	LId	, 0, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS.VECTOR.L
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SUB
 	INC
-	Sd  1, ANON_20_31_aga.CNT_1
-	Ld  1, ANON_20_31_aga.CNT_1
+	Sd  1, ANON_20_31_aga._CNT_1
+	Ld  1, ANON_20_31_aga._CNT_1
 	LI	0
 	CLE
 	BT  L30
 L29:
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
-	SIw  1, ANON_20_31_aga.PTR_1, 0
-	La  1, ANON_20_31_aga.PTR_1
-	Ld  1, ANON_20_31_aga.STR_1
+	SIw  1, ANON_20_31_aga._PTR_1, 0
+	La  1, ANON_20_31_aga._PTR_1
+	Ld  1, ANON_20_31_aga._STR_1
 	ADD
-	Sa  1, ANON_20_31_aga.PTR_1
-	Ld  1, ANON_20_31_aga.EMIS_1
+	Sa  1, ANON_20_31_aga._PTR_1
+	Ld  1, ANON_20_31_aga._EMIS_1
 	INC
-	Sd  1, ANON_20_31_aga.EMIS_1
-	Ld  1, ANON_20_31_aga.CNT_1
+	Sd  1, ANON_20_31_aga._EMIS_1
+	Ld  1, ANON_20_31_aga._CNT_1
 	DEC
 	DUP
-	Sd  1, ANON_20_31_aga.CNT_1
+	Sd  1, ANON_20_31_aga._CNT_1
 	LI	0
 	CGT
 	BT  L29
@@ -180,38 +180,63 @@ ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 					; debut if
-; CODE_SELECTED.RECURSE_SELECTED DESIGNATOR.TY PAS FAIT: DN_DISCRIMINANT_ID
+	La 1, -A_ofs
+	La	-1, 0
+	Ld
+	LI	0
+	LI	2
+	UBFX
 	LI	3
 	CEQ
 	La 1, -A_ofs
-	LIb	, 0, STANDARD.IDL.TREE.NOTY
+	La	-1, 0
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	2
 	CEQ
 	BF	L32
 					; debut if
 	La 1, -A_ofs
-	LIw	, 0, STANDARD.IDL.TREE.NSIZ
+	La	-1, 0
+	Ld
+	LI	2
+	LI	7
+	UBFX
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	CEQ
 	BF	L34
 ; CODE_RETURN : EXPR TYPE = DN_INTEGER
 	La 1, -A_ofs
-	LIw	, 0, STANDARD.IDL.TREE.ABSS
+	La	-1, 0
+	Ld
+	LI	9
+	LI	15
+	UBFX
 ; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
 	Sd  1,	-result__ofs
 	BRA ret_lbl
 	BRA	L33
 L34:
 	La 1, -A_ofs
-	LIw	, 0, STANDARD.IDL.TREE.NSIZ
+	La	-1, 0
+	Ld
+	LI	2
+	LI	7
+	UBFX
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	CEQ
 	BF	L35
 ; CODE_RETURN : EXPR TYPE = DN_INTEGER
 	La 1, -A_ofs
-	LIw	, 0, STANDARD.IDL.TREE.ABSS
+	La	-1, 0
+	Ld
+	LI	9
+	LI	15
+	UBFX
 	NEG
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
@@ -263,14 +288,23 @@ begin:					;---------- BDY INSTRUCTIONS
 	BRA ret_lbl
 	BRA	L37
 L38:
-; CODE_SELECTED.RECURSE_SELECTED DESIGNATOR.TY PAS FAIT: DN_DISCRIMINANT_ID
+	La 1, -LEFT_ofs
+	La	-1, 0
+	Ld
+	LI	0
+	LI	2
+	UBFX
 	LI	3
 	CEQ
 	DUP
 	BF	L41
 	DROP
 	La 1, -LEFT_ofs
-	LIb	, 0, STANDARD.IDL.TREE.NOTY
+	La	-1, 0
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	2
 	CEQ
 L41:
@@ -278,7 +312,11 @@ L41:
 	BT	L40
 	DROP
 	La 1, -LEFT_ofs
-	LIb	, 0, STANDARD.IDL.TREE.TY
+	La	-1, 0
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	2
 	CEQ
 L40:
@@ -512,14 +550,23 @@ begin:					;---------- BDY INSTRUCTIONS
 	BRA ret_lbl
 	BRA	L45
 L46:
-; CODE_SELECTED.RECURSE_SELECTED DESIGNATOR.TY PAS FAIT: DN_DISCRIMINANT_ID
+	La 1, -LEFT_ofs
+	La	-1, 0
+	Ld
+	LI	0
+	LI	2
+	UBFX
 	LI	3
 	CEQ
 	DUP
 	BF	L50
 	DROP
 	La 1, -LEFT_ofs
-	LIb	, 0, STANDARD.IDL.TREE.NOTY
+	La	-1, 0
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	2
 	CEQ
 L50:
@@ -527,21 +574,34 @@ L50:
 	BT	L49
 	DROP
 	La 1, -LEFT_ofs
-	LIb	, 0, STANDARD.IDL.TREE.TY
+	La	-1, 0
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	2
 	CEQ
 L49:
 	DUP
 	BF	L48
 	DROP
-; CODE_SELECTED.RECURSE_SELECTED DESIGNATOR.TY PAS FAIT: DN_DISCRIMINANT_ID
+	La 1, -RIGHT_ofs
+	La	-1, 0
+	Ld
+	LI	0
+	LI	2
+	UBFX
 	LI	3
 	CEQ
 	DUP
 	BF	L52
 	DROP
 	La 1, -RIGHT_ofs
-	LIb	, 0, STANDARD.IDL.TREE.NOTY
+	La	-1, 0
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	2
 	CEQ
 L52:
@@ -549,7 +609,11 @@ L52:
 	BT	L51
 	DROP
 	La 1, -RIGHT_ofs
-	LIb	, 0, STANDARD.IDL.TREE.TY
+	La	-1, 0
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	2
 	CEQ
 L51:
@@ -869,7 +933,11 @@ L62:
 L61:					; post if
 					; debut if
 	La 1, -DISCRETE_RANGE_ofs
-	LIb	, 0, STANDARD.IDL.TREE.TY
+	La	-1, 0
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	154
 	CEQ
 	BF	L64
@@ -923,7 +991,11 @@ VAR	ANON_179_34__dat, STANDARD.IDL.TREE.size
 	BRA	L63
 L64:
 	La 1, -DISCRETE_RANGE_ofs
-	LIb	, 0, STANDARD.IDL.TREE.TY
+	La	-1, 0
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	155
 	CEQ
 	BF	L65
@@ -941,7 +1013,11 @@ STR STR_L66, "!! $$$$ RANGE ATTR DISCR SUBT"	; constante string="!! $$$$ RANGE A
 	BRA	L63
 L65:
 	La 1, -DISCRETE_RANGE_ofs
-	LIb	, 0, STANDARD.IDL.TREE.TY
+	La	-1, 0
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	156
 	CEQ
 	BF	L67
@@ -1395,12 +1471,20 @@ begin:					;---------- BDY INSTRUCTIONS
 	BRA	L76
 L77:
 	La 1, -LEFT_ofs
-	LIw	, 0, STANDARD.IDL.TREE.ABSS
+	La	-1, 0
+	Ld
+	LI	9
+	LI	15
+	UBFX
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	CGT
 	La 1, -RIGHT_ofs
-	LIw	, 0, STANDARD.IDL.TREE.ABSS
+	La	-1, 0
+	Ld
+	LI	9
+	LI	15
+	UBFX
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	CGT
@@ -1482,12 +1566,20 @@ begin:					;---------- BDY INSTRUCTIONS
 	BRA	L79
 L80:
 	La 1, -LEFT_ofs
-	LIw	, 0, STANDARD.IDL.TREE.ABSS
+	La	-1, 0
+	Ld
+	LI	9
+	LI	15
+	UBFX
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	CGT
 	La 1, -RIGHT_ofs
-	LIw	, 0, STANDARD.IDL.TREE.ABSS
+	La	-1, 0
+	Ld
+	LI	9
+	LI	15
+	UBFX
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	CGT
@@ -1569,9 +1661,17 @@ begin:					;---------- BDY INSTRUCTIONS
 	BRA	L82
 L83:
 	La 1, -LEFT_ofs
-	LIw	, 0, STANDARD.IDL.TREE.ABSS
+	La	-1, 0
+	Ld
+	LI	9
+	LI	15
+	UBFX
 	La 1, -RIGHT_ofs
-	LIw	, 0, STANDARD.IDL.TREE.ABSS
+	La	-1, 0
+	Ld
+	LI	9
+	LI	15
+	UBFX
 	CNE
 	BF	L84
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
@@ -1662,7 +1762,11 @@ VAR	ANON_308_12__dat, STANDARD.IDL.TREE.size
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	La 1, -RIGHT_ofs
-	LIw	, 0, STANDARD.IDL.TREE.ABSS
+	La	-1, 0
+	Ld
+	LI	9
+	LI	15
+	UBFX
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	2
 	MODI
@@ -1704,14 +1808,23 @@ begin:					;---------- BDY INSTRUCTIONS
 	BRA ret_lbl
 	BRA	L87
 L88:
-; CODE_SELECTED.RECURSE_SELECTED DESIGNATOR.TY PAS FAIT: DN_DISCRIMINANT_ID
+	La 1, -RIGHT_ofs
+	La	-1, 0
+	Ld
+	LI	0
+	LI	2
+	UBFX
 	LI	3
 	CEQ
 	DUP
 	BF	L91
 	DROP
 	La 1, -RIGHT_ofs
-	LIb	, 0, STANDARD.IDL.TREE.NOTY
+	La	-1, 0
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	2
 	CEQ
 L91:
@@ -1719,7 +1832,11 @@ L91:
 	BT	L90
 	DROP
 	La 1, -RIGHT_ofs
-	LIb	, 0, STANDARD.IDL.TREE.TY
+	La	-1, 0
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	2
 	CEQ
 L90:
@@ -1841,14 +1958,23 @@ begin:					;---------- BDY INSTRUCTIONS
 	BRA ret_lbl
 	BRA	L92
 L93:
-; CODE_SELECTED.RECURSE_SELECTED DESIGNATOR.TY PAS FAIT: DN_DISCRIMINANT_ID
+	La 1, -RIGHT_ofs
+	La	-1, 0
+	Ld
+	LI	0
+	LI	2
+	UBFX
 	LI	3
 	CEQ
 	DUP
 	BF	L96
 	DROP
 	La 1, -RIGHT_ofs
-	LIb	, 0, STANDARD.IDL.TREE.NOTY
+	La	-1, 0
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	2
 	CEQ
 L96:
@@ -1856,7 +1982,11 @@ L96:
 	BT	L95
 	DROP
 	La 1, -RIGHT_ofs
-	LIb	, 0, STANDARD.IDL.TREE.TY
+	La	-1, 0
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	2
 	CEQ
 L95:
@@ -2000,14 +2130,23 @@ begin:					;---------- BDY INSTRUCTIONS
 	BRA ret_lbl
 	BRA	L99
 L100:
-; CODE_SELECTED.RECURSE_SELECTED DESIGNATOR.TY PAS FAIT: DN_DISCRIMINANT_ID
+	La 1, -LEFT_ofs
+	La	-1, 0
+	Ld
+	LI	0
+	LI	2
+	UBFX
 	LI	3
 	CEQ
 	DUP
 	BF	L103
 	DROP
 	La 1, -LEFT_ofs
-	LIb	, 0, STANDARD.IDL.TREE.NOTY
+	La	-1, 0
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	2
 	CEQ
 L103:
@@ -2015,7 +2154,11 @@ L103:
 	BT	L102
 	DROP
 	La 1, -LEFT_ofs
-	LIb	, 0, STANDARD.IDL.TREE.TY
+	La	-1, 0
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	2
 	CEQ
 L102:
@@ -2289,14 +2432,23 @@ begin:					;---------- BDY INSTRUCTIONS
 	BRA ret_lbl
 	BRA	L108
 L109:
-; CODE_SELECTED.RECURSE_SELECTED DESIGNATOR.TY PAS FAIT: DN_DISCRIMINANT_ID
+	La 1, -LEFT_ofs
+	La	-1, 0
+	Ld
+	LI	0
+	LI	2
+	UBFX
 	LI	3
 	CEQ
 	DUP
 	BF	L112
 	DROP
 	La 1, -LEFT_ofs
-	LIb	, 0, STANDARD.IDL.TREE.NOTY
+	La	-1, 0
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	2
 	CEQ
 L112:
@@ -2304,7 +2456,11 @@ L112:
 	BT	L111
 	DROP
 	La 1, -LEFT_ofs
-	LIb	, 0, STANDARD.IDL.TREE.TY
+	La	-1, 0
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	2
 	CEQ
 L111:
@@ -2563,14 +2719,23 @@ PRMS					;    debut parametrage
 endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
 VAR LEFT_IS_INT_disp, d			; variable bool char enum
-; CODE_SELECTED.RECURSE_SELECTED DESIGNATOR.TY PAS FAIT: DN_DISCRIMINANT_ID
+	La 1, -LEFT_ofs
+	La	-1, 0
+	Ld
+	LI	0
+	LI	2
+	UBFX
 	LI	3
 	CEQ
 	DUP
 	BF	L118
 	DROP
 	La 1, -LEFT_ofs
-	LIb	, 0, STANDARD.IDL.TREE.NOTY
+	La	-1, 0
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	2
 	CEQ
 L118:
@@ -2578,21 +2743,34 @@ L118:
 	BT	L117
 	DROP
 	La 1, -LEFT_ofs
-	LIb	, 0, STANDARD.IDL.TREE.TY
+	La	-1, 0
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	2
 	CEQ
 L117:
 	Sb  1,	LEFT_IS_INT_disp
 
 VAR RIGHT_IS_INT_disp, d			; variable bool char enum
-; CODE_SELECTED.RECURSE_SELECTED DESIGNATOR.TY PAS FAIT: DN_DISCRIMINANT_ID
+	La 1, -RIGHT_ofs
+	La	-1, 0
+	Ld
+	LI	0
+	LI	2
+	UBFX
 	LI	3
 	CEQ
 	DUP
 	BF	L120
 	DROP
 	La 1, -RIGHT_ofs
-	LIb	, 0, STANDARD.IDL.TREE.NOTY
+	La	-1, 0
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	2
 	CEQ
 L120:
@@ -2600,7 +2778,11 @@ L120:
 	BT	L119
 	DROP
 	La 1, -RIGHT_ofs
-	LIb	, 0, STANDARD.IDL.TREE.TY
+	La	-1, 0
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	2
 	CEQ
 L119:
@@ -2843,14 +3025,23 @@ PRMS					;    debut parametrage
 endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
 VAR LEFT_IS_INT_disp, d			; variable bool char enum
-; CODE_SELECTED.RECURSE_SELECTED DESIGNATOR.TY PAS FAIT: DN_DISCRIMINANT_ID
+	La 1, -LEFT_ofs
+	La	-1, 0
+	Ld
+	LI	0
+	LI	2
+	UBFX
 	LI	3
 	CEQ
 	DUP
 	BF	L127
 	DROP
 	La 1, -LEFT_ofs
-	LIb	, 0, STANDARD.IDL.TREE.NOTY
+	La	-1, 0
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	2
 	CEQ
 L127:
@@ -2858,21 +3049,34 @@ L127:
 	BT	L126
 	DROP
 	La 1, -LEFT_ofs
-	LIb	, 0, STANDARD.IDL.TREE.TY
+	La	-1, 0
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	2
 	CEQ
 L126:
 	Sb  1,	LEFT_IS_INT_disp
 
 VAR RIGHT_IS_INT_disp, d			; variable bool char enum
-; CODE_SELECTED.RECURSE_SELECTED DESIGNATOR.TY PAS FAIT: DN_DISCRIMINANT_ID
+	La 1, -RIGHT_ofs
+	La	-1, 0
+	Ld
+	LI	0
+	LI	2
+	UBFX
 	LI	3
 	CEQ
 	DUP
 	BF	L129
 	DROP
 	La 1, -RIGHT_ofs
-	LIb	, 0, STANDARD.IDL.TREE.NOTY
+	La	-1, 0
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	2
 	CEQ
 L129:
@@ -2880,7 +3084,11 @@ L129:
 	BT	L128
 	DROP
 	La 1, -RIGHT_ofs
-	LIb	, 0, STANDARD.IDL.TREE.TY
+	La	-1, 0
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	2
 	CEQ
 L128:
@@ -3481,14 +3689,23 @@ begin:					;---------- BDY INSTRUCTIONS
 	BRA ret_lbl
 	BRA	L151
 L152:
-; CODE_SELECTED.RECURSE_SELECTED DESIGNATOR.TY PAS FAIT: DN_DISCRIMINANT_ID
+	La 1, -LEFT_ofs
+	La	-1, 0
+	Ld
+	LI	0
+	LI	2
+	UBFX
 	LI	3
 	CEQ
 	DUP
 	BF	L155
 	DROP
 	La 1, -LEFT_ofs
-	LIb	, 0, STANDARD.IDL.TREE.NOTY
+	La	-1, 0
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	2
 	CEQ
 L155:
@@ -3496,7 +3713,11 @@ L155:
 	BT	L154
 	DROP
 	La 1, -LEFT_ofs
-	LIb	, 0, STANDARD.IDL.TREE.TY
+	La	-1, 0
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	2
 	CEQ
 L154:

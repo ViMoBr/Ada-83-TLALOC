@@ -36,12 +36,17 @@ VAR use__info, q
 VAR SIZ, d
 	LVA	0, SIZ
 	Sa	0, use__info
-VAR COMP_SIZ, d
-VAR FST_1, d
-VAR LST_1, d
+VAR _COMP_SIZ, d
+VAR _FST_1, d
+VAR _LST_1, d
 	LI	56
-	Sd	0, COMP_SIZ
-	Ld	0, COMP_SIZ
+	Sd	0, _COMP_SIZ
+	Ld	0, _COMP_SIZ
+; PROCESS_CONSTRAINED_ARRAY_TYPE_SPEC : index type non integer non traite DN_ENUMERATION
+	Ld	0, _LST_1
+	Ld	0, _FST_1
+	SUB
+	INC
 	MUL
 	Sd	0, SIZ
   virtual at 4
@@ -79,22 +84,22 @@ VAR use__info, q
 VAR SIZ, d
 	LVA	0, SIZ
 	Sa	0, use__info
-VAR COMP_SIZ, d
-VAR FST_1, d
-VAR LST_1, d
+VAR _COMP_SIZ, d
+VAR _FST_1, d
+VAR _LST_1, d
 	LI	16
-	Sd	0, COMP_SIZ
-	Ld	0, COMP_SIZ
+	Sd	0, _COMP_SIZ
+	Ld	0, _COMP_SIZ
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
-	Sd	0, FST_1
+	Sd	0, _FST_1
 ; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
 	LI	1024
-	Sd	0, LST_1
-	Ld	0, LST_1
-	INC
-	Ld	0, FST_1
+	Sd	0, _LST_1
+	Ld	0, _LST_1
+	Ld	0, _FST_1
 	SUB
+	INC
 	MUL
 	Sd	0, SIZ
   virtual at 4
@@ -123,7 +128,7 @@ virtual at 0				; calcul des offsets statiques
 STATOFS TB_LAST_NODE, 4
 STATOFS TB_LAST_ATTR, 4
 STATOFS TB_LAST_NODE_ATTR, 4
-STATOFS TB_N_SPEC, 7
+STATOFS TB_N_SPEC, 1
 STATOFS TB_A_SPEC, 1
 size = $
 end virtual
@@ -386,22 +391,22 @@ VAR use__info, q
 VAR SIZ, d
 	LVA	1, SIZ
 	Sa	1, use__info
-VAR COMP_SIZ, d
-VAR FST_1, d
-VAR LST_1, d
+VAR _COMP_SIZ, d
+VAR _FST_1, d
+VAR _LST_1, d
 	LI	8
-	Sd	1, COMP_SIZ
-	Ld	1, COMP_SIZ
+	Sd	1, _COMP_SIZ
+	Ld	1, _COMP_SIZ
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
-	Sd	1, FST_1
+	Sd	1, _FST_1
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	50
-	Sd	1, LST_1
-	Ld	1, LST_1
-	INC
-	Ld	1, FST_1
+	Sd	1, _LST_1
+	Ld	1, _LST_1
+	Ld	1, _FST_1
 	SUB
+	INC
 	MUL
 	Sd	1, SIZ
   virtual at 4
@@ -446,9 +451,9 @@ VAR	ANON_33_25_disp, q
 VAR	ANON_33_25__u,   q
 namespace ANON_33_25_info
   VAR SIZ,      d
-  VAR COMP_SIZ, d
-  VAR FST_1,    d
-  VAR LST_1,    d
+  VAR _COMP_SIZ, d
+  VAR _FST_1,    d
+  VAR _LST_1,    d
 end namespace
 	La  1,	-SPEC_FILE_ofs
 	DUP
@@ -457,9 +462,9 @@ end namespace
 	La  ,  8
 	Sa  1, ANON_33_25_info
 	LId 1, ANON_33_25_info, STRING.LST_1
-	INC
 	LId 1, ANON_33_25_info, STRING.FST_1
 	SUB
+	INC
 	Sa  1, ANON_33_25_len
 STR ANON_33_37, ".tbl"			; constante string=".tbl"
 	LCA	ANON_33_37.data_ptr
@@ -469,9 +474,9 @@ STR ANON_33_37, ".tbl"			; constante string=".tbl"
 	La  ,  8
 	Sa  1, ANON_33_37_info
 	LId 1, ANON_33_37_info, STRING.LST_1
-	INC
 	LId 1, ANON_33_37_info, STRING.FST_1
 	SUB
+	INC
 	Sa  1, ANON_33_37_len
 	La  1, ANON_33_25_len
 	La  1, ANON_33_37_len
@@ -479,13 +484,13 @@ STR ANON_33_37, ".tbl"			; constante string=".tbl"
 	CO_VAR
 	Sa  1, ANON_33_25_disp
 	LI	1
-	Sd  1, ANON_33_25_info.FST_1
+	Sd  1, ANON_33_25_info._FST_1
 	La  1, ANON_33_25_len
 	La  1, ANON_33_37_len
 	ADD
-	Sd  1, ANON_33_25_info.LST_1
+	Sd  1, ANON_33_25_info._LST_1
 	LI	8
-	Sd  1, ANON_33_25_info.COMP_SIZ
+	Sd  1, ANON_33_25_info._COMP_SIZ
 	La  1, ANON_33_25_len
 	La  1, ANON_33_37_len
 	ADD
@@ -817,9 +822,9 @@ VAR	ANON_88_17_disp, q
 VAR	ANON_88_17__u,   q
 namespace ANON_88_17_info
   VAR SIZ,      d
-  VAR COMP_SIZ, d
-  VAR FST_1,    d
-  VAR LST_1,    d
+  VAR _COMP_SIZ, d
+  VAR _FST_1,    d
+  VAR _LST_1,    d
 end namespace
 STR ANON_88_17, "BAD AS_LIST: "		; constante string="BAD AS_LIST: "
 	LCA	ANON_88_17.data_ptr
@@ -829,9 +834,9 @@ STR ANON_88_17, "BAD AS_LIST: "		; constante string="BAD AS_LIST: "
 	La  ,  8
 	Sa  2, ANON_88_17_info
 	LId 2, ANON_88_17_info, STRING.LST_1
-	INC
 	LId 2, ANON_88_17_info, STRING.FST_1
 	SUB
+	INC
 	Sa  2, ANON_88_17_len
 VAR	ANON_88_36_slice_data, q
 VAR	ANON_88_36_slice_len,  q
@@ -839,9 +844,9 @@ VAR	ANON_88_36_disp, q
 VAR	ANON_88_36__u,   q
 namespace ANON_88_36_info
   VAR SIZ,      d
-  VAR COMP_SIZ, d
-  VAR FST_1,    d
-  VAR LST_1,    d
+  VAR _COMP_SIZ, d
+  VAR _FST_1,    d
+  VAR _LST_1,    d
 end namespace
 	La 1, T_TXT_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
@@ -865,11 +870,11 @@ end namespace
 	LVA 2, ANON_88_36_info.SIZ
 	Sa  2, ANON_88_36__u
 	LI	1
-	Sd  2, ANON_88_36_info.FST_1
+	Sd  2, ANON_88_36_info._FST_1
 	La  2, ANON_88_36_slice_len
-	Sd  2, ANON_88_36_info.LST_1
+	Sd  2, ANON_88_36_info._LST_1
 	LI	8
-	Sd  2, ANON_88_36_info.COMP_SIZ
+	Sd  2, ANON_88_36_info._COMP_SIZ
 	La  2, ANON_88_36_slice_len
 	LI	8
 	MUL
@@ -881,9 +886,9 @@ end namespace
 	La  ,  8
 	Sa  2, ANON_88_36_info
 	LId 2, ANON_88_36_info, STRING.LST_1
-	INC
 	LId 2, ANON_88_36_info, STRING.FST_1
 	SUB
+	INC
 	Sa  2, ANON_88_36_len
 	La  2, ANON_88_17_len
 	La  2, ANON_88_36_len
@@ -891,13 +896,13 @@ end namespace
 	CO_VAR
 	Sa  2, ANON_88_17_disp
 	LI	1
-	Sd  2, ANON_88_17_info.FST_1
+	Sd  2, ANON_88_17_info._FST_1
 	La  2, ANON_88_17_len
 	La  2, ANON_88_36_len
 	ADD
-	Sd  2, ANON_88_17_info.LST_1
+	Sd  2, ANON_88_17_info._LST_1
 	LI	8
-	Sd  2, ANON_88_17_info.COMP_SIZ
+	Sd  2, ANON_88_17_info._COMP_SIZ
 	La  2, ANON_88_17_len
 	La  2, ANON_88_36_len
 	ADD
@@ -966,9 +971,9 @@ VAR	ANON_96_17_disp, q
 VAR	ANON_96_17__u,   q
 namespace ANON_96_17_info
   VAR SIZ,      d
-  VAR COMP_SIZ, d
-  VAR FST_1,    d
-  VAR LST_1,    d
+  VAR _COMP_SIZ, d
+  VAR _FST_1,    d
+  VAR _LST_1,    d
 end namespace
 STR ANON_96_17, "BAD AS_...: "		; constante string="BAD AS_...: "
 	LCA	ANON_96_17.data_ptr
@@ -978,9 +983,9 @@ STR ANON_96_17, "BAD AS_...: "		; constante string="BAD AS_...: "
 	La  ,  8
 	Sa  2, ANON_96_17_info
 	LId 2, ANON_96_17_info, STRING.LST_1
-	INC
 	LId 2, ANON_96_17_info, STRING.FST_1
 	SUB
+	INC
 	Sa  2, ANON_96_17_len
 VAR	ANON_96_34_slice_data, q
 VAR	ANON_96_34_slice_len,  q
@@ -988,9 +993,9 @@ VAR	ANON_96_34_disp, q
 VAR	ANON_96_34__u,   q
 namespace ANON_96_34_info
   VAR SIZ,      d
-  VAR COMP_SIZ, d
-  VAR FST_1,    d
-  VAR LST_1,    d
+  VAR _COMP_SIZ, d
+  VAR _FST_1,    d
+  VAR _LST_1,    d
 end namespace
 	La 1, T_TXT_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
@@ -1014,11 +1019,11 @@ end namespace
 	LVA 2, ANON_96_34_info.SIZ
 	Sa  2, ANON_96_34__u
 	LI	1
-	Sd  2, ANON_96_34_info.FST_1
+	Sd  2, ANON_96_34_info._FST_1
 	La  2, ANON_96_34_slice_len
-	Sd  2, ANON_96_34_info.LST_1
+	Sd  2, ANON_96_34_info._LST_1
 	LI	8
-	Sd  2, ANON_96_34_info.COMP_SIZ
+	Sd  2, ANON_96_34_info._COMP_SIZ
 	La  2, ANON_96_34_slice_len
 	LI	8
 	MUL
@@ -1030,9 +1035,9 @@ end namespace
 	La  ,  8
 	Sa  2, ANON_96_34_info
 	LId 2, ANON_96_34_info, STRING.LST_1
-	INC
 	LId 2, ANON_96_34_info, STRING.FST_1
 	SUB
+	INC
 	Sa  2, ANON_96_34_len
 	La  2, ANON_96_17_len
 	La  2, ANON_96_34_len
@@ -1040,13 +1045,13 @@ end namespace
 	CO_VAR
 	Sa  2, ANON_96_17_disp
 	LI	1
-	Sd  2, ANON_96_17_info.FST_1
+	Sd  2, ANON_96_17_info._FST_1
 	La  2, ANON_96_17_len
 	La  2, ANON_96_34_len
 	ADD
-	Sd  2, ANON_96_17_info.LST_1
+	Sd  2, ANON_96_17_info._LST_1
 	LI	8
-	Sd  2, ANON_96_17_info.COMP_SIZ
+	Sd  2, ANON_96_17_info._COMP_SIZ
 	La  2, ANON_96_17_len
 	La  2, ANON_96_34_len
 	ADD
@@ -1438,22 +1443,22 @@ VAR use__info, q
 VAR SIZ, d
 	LVA	0, SIZ
 	Sa	0, use__info
-VAR COMP_SIZ, d
-VAR FST_1, d
-VAR LST_1, d
+VAR _COMP_SIZ, d
+VAR _FST_1, d
+VAR _LST_1, d
 	LI	8
-	Sd	0, COMP_SIZ
-	Ld	0, COMP_SIZ
+	Sd	0, _COMP_SIZ
+	Ld	0, _COMP_SIZ
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
-	Sd	0, FST_1
+	Sd	0, _FST_1
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	256
-	Sd	0, LST_1
-	Ld	0, LST_1
-	INC
-	Ld	0, FST_1
+	Sd	0, _LST_1
+	Ld	0, _LST_1
+	Ld	0, _FST_1
 	SUB
+	INC
 	MUL
 	Sd	0, SIZ
   virtual at 4
@@ -1481,7 +1486,7 @@ USEINFO 0, MODE, 	La 0, STANDARD.IDL.IDL_TBL.DTT_IO.FILE_MODE.use__info
 USEINFO 0, AT_END_OF_FILE, 	La 0, STANDARD.BOOLEAN.use__info
 virtual at 0				; calcul des offsets statiques
 STATOFS ID, 4
-STATOFS NAME, 256
+STATOFS NAME, 1
 STATOFS NAME_LEN, 4
 STATOFS IS_OPENED, 1
 STATOFS MODE, 1
@@ -1536,9 +1541,9 @@ VAR	ANON_133_35_disp, q
 VAR	ANON_133_35__u,   q
 namespace ANON_133_35_info
   VAR SIZ,      d
-  VAR COMP_SIZ, d
-  VAR FST_1,    d
-  VAR LST_1,    d
+  VAR _COMP_SIZ, d
+  VAR _FST_1,    d
+  VAR _LST_1,    d
 end namespace
 	La  1,	-SPEC_FILE_ofs
 	DUP
@@ -1547,9 +1552,9 @@ end namespace
 	La  ,  8
 	Sa  1, ANON_133_35_info
 	LId 1, ANON_133_35_info, STRING.LST_1
-	INC
 	LId 1, ANON_133_35_info, STRING.FST_1
 	SUB
+	INC
 	Sa  1, ANON_133_35_len
 STR ANON_133_47, ".bin"			; constante string=".bin"
 	LCA	ANON_133_47.data_ptr
@@ -1559,9 +1564,9 @@ STR ANON_133_47, ".bin"			; constante string=".bin"
 	La  ,  8
 	Sa  1, ANON_133_47_info
 	LId 1, ANON_133_47_info, STRING.LST_1
-	INC
 	LId 1, ANON_133_47_info, STRING.FST_1
 	SUB
+	INC
 	Sa  1, ANON_133_47_len
 	La  1, ANON_133_35_len
 	La  1, ANON_133_47_len
@@ -1569,13 +1574,13 @@ STR ANON_133_47, ".bin"			; constante string=".bin"
 	CO_VAR
 	Sa  1, ANON_133_35_disp
 	LI	1
-	Sd  1, ANON_133_35_info.FST_1
+	Sd  1, ANON_133_35_info._FST_1
 	La  1, ANON_133_35_len
 	La  1, ANON_133_47_len
 	ADD
-	Sd  1, ANON_133_35_info.LST_1
+	Sd  1, ANON_133_35_info._LST_1
 	LI	8
-	Sd  1, ANON_133_35_info.COMP_SIZ
+	Sd  1, ANON_133_35_info._COMP_SIZ
 	La  1, ANON_133_35_len
 	La  1, ANON_133_47_len
 	ADD
@@ -1651,9 +1656,9 @@ VAR	ANON_147_33_disp, q
 VAR	ANON_147_33__u,   q
 namespace ANON_147_33_info
   VAR SIZ,      d
-  VAR COMP_SIZ, d
-  VAR FST_1,    d
-  VAR LST_1,    d
+  VAR _COMP_SIZ, d
+  VAR _FST_1,    d
+  VAR _LST_1,    d
 end namespace
 	La  1,	-SPEC_FILE_ofs
 	DUP
@@ -1662,9 +1667,9 @@ end namespace
 	La  ,  8
 	Sa  1, ANON_147_33_info
 	LId 1, ANON_147_33_info, STRING.LST_1
-	INC
 	LId 1, ANON_147_33_info, STRING.FST_1
 	SUB
+	INC
 	Sa  1, ANON_147_33_len
 STR ANON_147_45, ".bin"			; constante string=".bin"
 	LCA	ANON_147_45.data_ptr
@@ -1674,9 +1679,9 @@ STR ANON_147_45, ".bin"			; constante string=".bin"
 	La  ,  8
 	Sa  1, ANON_147_45_info
 	LId 1, ANON_147_45_info, STRING.LST_1
-	INC
 	LId 1, ANON_147_45_info, STRING.FST_1
 	SUB
+	INC
 	Sa  1, ANON_147_45_len
 	La  1, ANON_147_33_len
 	La  1, ANON_147_45_len
@@ -1684,13 +1689,13 @@ STR ANON_147_45, ".bin"			; constante string=".bin"
 	CO_VAR
 	Sa  1, ANON_147_33_disp
 	LI	1
-	Sd  1, ANON_147_33_info.FST_1
+	Sd  1, ANON_147_33_info._FST_1
 	La  1, ANON_147_33_len
 	La  1, ANON_147_45_len
 	ADD
-	Sd  1, ANON_147_33_info.LST_1
+	Sd  1, ANON_147_33_info._LST_1
 	LI	8
-	Sd  1, ANON_147_33_info.COMP_SIZ
+	Sd  1, ANON_147_33_info._COMP_SIZ
 	La  1, ANON_147_33_len
 	La  1, ANON_147_45_len
 	ADD

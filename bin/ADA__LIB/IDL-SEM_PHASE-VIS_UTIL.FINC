@@ -73,45 +73,72 @@ ELB 1					;    BODY ELAB
 begin:					;---------- BDY INSTRUCTIONS
 					; debut if
 	LI	0					; lieu resultat sur pile
+	VAR SELARG_L17_disp, q
+	VAR SELARG_L17__u, q
 	La 1, -CURSOR_ofs
 	LIVA 	, 0, STANDARD.IDL.SEM_PHASE_L11.VIS_UTIL.PARAM_CURSOR_TYPE.ID_LIST
+	Sa	1, SELARG_L17_disp
+	La 0, STANDARD.IDL.SEQ_TYPE.use__info
+	Sa	1, SELARG_L17__u
+	LVA 1, SELARG_L17_disp
 	CALL	STANDARD.IDL. ,IS_EMPTY_L23
 	BF	L16
 					; debut if
 	LI	0					; lieu resultat sur pile
+	VAR SELARG_L20_disp, q
+	VAR SELARG_L20__u, q
 	La 1, -CURSOR_ofs
 	LIVA 	, 0, STANDARD.IDL.SEM_PHASE_L11.VIS_UTIL.PARAM_CURSOR_TYPE.PARAM_LIST
+	Sa	1, SELARG_L20_disp
+	La 0, STANDARD.IDL.SEQ_TYPE.use__info
+	Sa	1, SELARG_L20__u
+	LVA 1, SELARG_L20_disp
 	CALL	STANDARD.IDL. ,IS_EMPTY_L23
-	BF	L18
+	BF	L19
 	La 1, -CURSOR_ofs
 	LIVA 	, 0, STANDARD.IDL.SEM_PHASE_L11.VIS_UTIL.PARAM_CURSOR_TYPE.ID
 	LI	STANDARD.IDL.TREE.size
 	LVA 0,	STANDARD.IDL.TREE_VOID_disp
 	BLKMOV
 	BRA ret_lbl
-	BRA	L17
-L18:
+	BRA	L18
+L19:
+	VAR SELARG_L21_disp, q
+	VAR SELARG_L21__u, q
 	La 1, -CURSOR_ofs
 	LIVA 	, 0, STANDARD.IDL.SEM_PHASE_L11.VIS_UTIL.PARAM_CURSOR_TYPE.PARAM
+	Sa	1, SELARG_L21_disp
+	La 0, STANDARD.IDL.TREE.use__info
+	Sa	1, SELARG_L21__u
+	LVA 1, SELARG_L21_disp
+	VAR SELARG_L22_disp, q
+	VAR SELARG_L22__u, q
 	La 1, -CURSOR_ofs
 	LIVA 	, 0, STANDARD.IDL.SEM_PHASE_L11.VIS_UTIL.PARAM_CURSOR_TYPE.PARAM_LIST
+	Sa	1, SELARG_L22_disp
+	La 0, STANDARD.IDL.SEQ_TYPE.use__info
+	Sa	1, SELARG_L22__u
+	LVA 1, SELARG_L22_disp
 	CALL	STANDARD.IDL. ,POP_L24
 					; debut if
 	La 1, -CURSOR_ofs
 	LIVA 	, 0, STANDARD.IDL.SEM_PHASE_L11.VIS_UTIL.PARAM_CURSOR_TYPE.PARAM
-	Lb	, STANDARD.IDL.TREE.TY
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	59
 	CEQ
-	BF	L20
+	BF	L24
 	La 1, -CURSOR_ofs
 	LIVA 	, 0, STANDARD.IDL.SEM_PHASE_L11.VIS_UTIL.PARAM_CURSOR_TYPE.ID
 	LI	STANDARD.IDL.TREE.size
 	LVA 0,	STANDARD.IDL.TREE_VOID_disp
 	BLKMOV
 	BRA ret_lbl
-	BRA	L19
-L20:
-L19:					; post if
+	BRA	L23
+L24:
+L23:					; post if
 	La 1, -CURSOR_ofs
 	LIVA 	, 0, STANDARD.IDL.SEM_PHASE_L11.VIS_UTIL.PARAM_CURSOR_TYPE.ID_LIST
 	LI	STANDARD.IDL.SEQ_TYPE.size
@@ -133,20 +160,38 @@ VAR	ANON_51_33__dat, STANDARD.IDL.TREE.size
 	Sa  1, ANON_51_33__u
 	LVA 1, ANON_51_33_disp
 					; doublet resultat record anonyme
+	VAR SELARG_L25_disp, q
+	VAR SELARG_L25__u, q
 	La 1, -CURSOR_ofs
 	LIVA 	, 0, STANDARD.IDL.SEM_PHASE_L11.VIS_UTIL.PARAM_CURSOR_TYPE.PARAM
+	Sa	1, SELARG_L25_disp
+	La 0, STANDARD.IDL.TREE.use__info
+	Sa	1, SELARG_L25__u
+	LVA 1, SELARG_L25_disp
 	LI  21
 	CALL	STANDARD.IDL. ,D_L17
 	CALL	STANDARD.IDL. ,LIST_L22
 	BLKMOV
-L17:					; post if
+L18:					; post if
 	BRA	L15
 L16:
 L15:					; post if
+	VAR SELARG_L26_disp, q
+	VAR SELARG_L26__u, q
 	La 1, -CURSOR_ofs
 	LIVA 	, 0, STANDARD.IDL.SEM_PHASE_L11.VIS_UTIL.PARAM_CURSOR_TYPE.ID
+	Sa	1, SELARG_L26_disp
+	La 0, STANDARD.IDL.TREE.use__info
+	Sa	1, SELARG_L26__u
+	LVA 1, SELARG_L26_disp
+	VAR SELARG_L27_disp, q
+	VAR SELARG_L27__u, q
 	La 1, -CURSOR_ofs
 	LIVA 	, 0, STANDARD.IDL.SEM_PHASE_L11.VIS_UTIL.PARAM_CURSOR_TYPE.ID_LIST
+	Sa	1, SELARG_L27_disp
+	La 0, STANDARD.IDL.SEQ_TYPE.use__info
+	Sa	1, SELARG_L27__u
+	LVA 1, SELARG_L27_disp
 	CALL	STANDARD.IDL. ,POP_L24
 ret_lbl:
 	UNLINK 1
@@ -155,8 +200,8 @@ excep:
 endPRO					;---------- end PRO ADVANCE_PARAM_CURSOR
 end if
 
-if defined DEBUG_PRINT_DEF_L23_
-PRO	DEBUG_PRINT_DEF_L23			;---------- PRO DEBUG_PRINT_DEF
+if defined DEBUG_PRINT_DEF_L30_
+PRO	DEBUG_PRINT_DEF_L30			;---------- PRO DEBUG_PRINT_DEF
 PRMS					;    debut parametrage
 	PRM DEF_ofs				; in
 endPRMS					;    fin parametrage
@@ -226,22 +271,22 @@ VAR use__info, q
 VAR SIZ, d
 	LVA	1, SIZ
 	Sa	1, use__info
-VAR COMP_SIZ, d
-VAR FST_1, d
-VAR LST_1, d
+VAR _COMP_SIZ, d
+VAR _FST_1, d
+VAR _LST_1, d
 	LI	8
-	Sd	1, COMP_SIZ
-	Ld	1, COMP_SIZ
+	Sd	1, _COMP_SIZ
+	Ld	1, _COMP_SIZ
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
-	Sd	1, FST_1
+	Sd	1, _FST_1
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
-	Sd	1, LST_1
-	Ld	1, LST_1
-	INC
-	Ld	1, FST_1
+	Sd	1, _LST_1
+	Ld	1, _LST_1
+	Ld	1, _FST_1
 	SUB
+	INC
 	MUL
 	Sd	1, SIZ
   virtual at 4
@@ -267,16 +312,16 @@ STR PAREN_OR_COMMA, "("			; constante string="("
 
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-STR STR_L24, "    "				; constante string="    "
-	LCA	STR_L24.data_ptr
+STR STR_L31, "    "				; constante string="    "
+	LCA	STR_L31.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 VAR	ANON_74_10_disp, q
 VAR	ANON_74_10__u,   q
 namespace ANON_74_10_info
-  VAR SIZ,      d
-  VAR COMP_SIZ, d
-  VAR FST_1,    d
-  VAR LST_1,    d
+  VAR SIZ, d
+  VAR _COMP_SIZ, d
+  VAR _FST_1, d
+  VAR _LST_1, d
 end namespace
 	LVA 1, ANON_74_10_info.SIZ
 	Sa  1, ANON_74_10__u
@@ -284,16 +329,16 @@ end namespace
 	La  1,	-DEF_ofs
 	CALL	STANDARD.IDL.IDL_MAN. ,NODE_REP_L51
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
-STR STR_L25, " "				; constante string=" "
-	LCA	STR_L25.data_ptr
+STR STR_L32, " "				; constante string=" "
+	LCA	STR_L32.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 VAR	ANON_76_10_disp, q
 VAR	ANON_76_10__u,   q
 namespace ANON_76_10_info
-  VAR SIZ,      d
-  VAR COMP_SIZ, d
-  VAR FST_1,    d
-  VAR LST_1,    d
+  VAR SIZ, d
+  VAR _COMP_SIZ, d
+  VAR _FST_1, d
+  VAR _LST_1, d
 end namespace
 	LVA 1, ANON_76_10_info.SIZ
 	Sa  1, ANON_76_10__u
@@ -312,16 +357,16 @@ VAR	ANON_76_20__dat, STANDARD.IDL.TREE.size
 	CALL	STANDARD.IDL. ,D_L17
 	CALL	STANDARD.IDL.IDL_MAN. ,NODE_REP_L51
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
-STR STR_L26, " IN "				; constante string=" IN "
-	LCA	STR_L26.data_ptr
+STR STR_L33, " IN "				; constante string=" IN "
+	LCA	STR_L33.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 VAR	ANON_78_10_disp, q
 VAR	ANON_78_10__u,   q
 namespace ANON_78_10_info
-  VAR SIZ,      d
-  VAR COMP_SIZ, d
-  VAR FST_1,    d
-  VAR LST_1,    d
+  VAR SIZ, d
+  VAR _COMP_SIZ, d
+  VAR _FST_1, d
+  VAR _LST_1, d
 end namespace
 	LVA 1, ANON_78_10_info.SIZ
 	Sa  1, ANON_78_10__u
@@ -332,10 +377,10 @@ end namespace
 VAR	ANON_79_10_disp, q
 VAR	ANON_79_10__u,   q
 namespace ANON_79_10_info
-  VAR SIZ,      d
-  VAR COMP_SIZ, d
-  VAR FST_1,    d
-  VAR LST_1,    d
+  VAR SIZ, d
+  VAR _COMP_SIZ, d
+  VAR _FST_1, d
+  VAR _LST_1, d
 end namespace
 	LVA 1, ANON_79_10_info.SIZ
 	Sa  1, ANON_79_10__u
@@ -346,16 +391,16 @@ end namespace
 	CALL	STANDARD.IDL. ,DI_L21
 	CALL	STANDARD. ,INTEGER_IMAGE_L9
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
-STR STR_L27, " "				; constante string=" "
-	LCA	STR_L27.data_ptr
+STR STR_L34, " "				; constante string=" "
+	LCA	STR_L34.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 VAR	ANON_81_15_disp, q
 VAR	ANON_81_15__u,   q
 namespace ANON_81_15_info
-  VAR SIZ,      d
-  VAR COMP_SIZ, d
-  VAR FST_1,    d
-  VAR LST_1,    d
+  VAR SIZ, d
+  VAR _COMP_SIZ, d
+  VAR _FST_1, d
+  VAR _LST_1, d
 end namespace
 	LVA 1, ANON_81_15_info.SIZ
 	Sa  1, ANON_81_15__u
@@ -367,7 +412,7 @@ end namespace
 	CALL	STANDARD. ,INTEGER_IMAGE_L9
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
 					; debut if
-	BF	L29
+	BF	L36
 ; CODE & concat STRING
 VAR	ANON_83_12_data, q
 VAR	ANON_83_12_info, q
@@ -379,9 +424,9 @@ VAR	ANON_83_12_disp, q
 VAR	ANON_83_12__u,   q
 namespace ANON_83_12_info
   VAR SIZ,      d
-  VAR COMP_SIZ, d
-  VAR FST_1,    d
-  VAR LST_1,    d
+  VAR _COMP_SIZ, d
+  VAR _FST_1,    d
+  VAR _LST_1,    d
 end namespace
 	LI	 9
 	DUP
@@ -390,9 +435,9 @@ end namespace
 	La  ,  8
 	Sa  1, ANON_83_12_info
 	LId 1, ANON_83_12_info, STRING.LST_1
-	INC
 	LId 1, ANON_83_12_info, STRING.FST_1
 	SUB
+	INC
 	Sa  1, ANON_83_12_len
 STR ANON_83_23, "("				; constante string="("
 	LCA	ANON_83_23.data_ptr
@@ -402,9 +447,9 @@ STR ANON_83_23, "("				; constante string="("
 	La  ,  8
 	Sa  1, ANON_83_23_info
 	LId 1, ANON_83_23_info, STRING.LST_1
-	INC
 	LId 1, ANON_83_23_info, STRING.FST_1
 	SUB
+	INC
 	Sa  1, ANON_83_23_len
 	La  1, ANON_83_12_len
 	La  1, ANON_83_23_len
@@ -412,13 +457,13 @@ STR ANON_83_23, "("				; constante string="("
 	CO_VAR
 	Sa  1, ANON_83_12_disp
 	LI	1
-	Sd  1, ANON_83_12_info.FST_1
+	Sd  1, ANON_83_12_info._FST_1
 	La  1, ANON_83_12_len
 	La  1, ANON_83_23_len
 	ADD
-	Sd  1, ANON_83_12_info.LST_1
+	Sd  1, ANON_83_12_info._LST_1
 	LI	8
-	Sd  1, ANON_83_12_info.COMP_SIZ
+	Sd  1, ANON_83_12_info._COMP_SIZ
 	La  1, ANON_83_12_len
 	La  1, ANON_83_23_len
 	ADD
@@ -473,14 +518,14 @@ STR ANON_87_27, ","				; constante string=","
 	LIVA 	1, PARAM_CURSOR_disp, STANDARD.IDL.SEM_PHASE_L11.VIS_UTIL.PARAM_CURSOR_TYPE.ID
 	LVA 0,	STANDARD.IDL.TREE_VOID_disp
 	CEQ
-	BT	L30
+	BT	L37
 VAR	ANON_90_14_disp, q
 VAR	ANON_90_14__u,   q
 namespace ANON_90_14_info
-  VAR SIZ,      d
-  VAR COMP_SIZ, d
-  VAR FST_1,    d
-  VAR LST_1,    d
+  VAR SIZ, d
+  VAR _COMP_SIZ, d
+  VAR _FST_1, d
+  VAR _LST_1, d
 end namespace
 	LVA 1, ANON_90_14_info.SIZ
 	Sa  1, ANON_90_14__u
@@ -503,32 +548,42 @@ VAR	ANON_90_39__dat, STANDARD.IDL.TREE.size
 	Sa  1, ANON_90_39__u
 	LVA 1, ANON_90_39_disp
 					; doublet resultat record anonyme
+	VAR SELARG_L39_disp, q
+	VAR SELARG_L39__u, q
 	LIVA 	1, PARAM_CURSOR_disp, STANDARD.IDL.SEM_PHASE_L11.VIS_UTIL.PARAM_CURSOR_TYPE.ID
+	Sa	1, SELARG_L39_disp
+	La 0, STANDARD.IDL.TREE.use__info
+	Sa	1, SELARG_L39__u
+	LVA 1, SELARG_L39_disp
 	LI  15
 	CALL	STANDARD.IDL. ,D_L17
 	CALL	STANDARD.IDL.SEM_PHASE_L11.DEF_UTIL. ,GET_BASE_TYPE_L71
 	CALL	STANDARD.IDL.IDL_MAN. ,NODE_REP_L51
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	BRA	LOOP__1
-L30:					; post loop LOOP__1
-STR STR_L32, ")"				; constante string=")"
-	LCA	STR_L32.data_ptr
+L37:					; post loop LOOP__1
+STR STR_L40, ")"				; constante string=")"
+	LCA	STR_L40.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 					; debut if
-	LIb	1, HEADER_disp, STANDARD.IDL.TREE.TY
+	La	1, HEADER_disp
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	165
 	CEQ
-	BF	L34
-STR STR_L35, "->"				; constante string="->"
-	LCA	STR_L35.data_ptr
+	BF	L42
+STR STR_L43, "->"				; constante string="->"
+	LCA	STR_L43.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 VAR	ANON_95_14_disp, q
 VAR	ANON_95_14__u,   q
 namespace ANON_95_14_info
-  VAR SIZ,      d
-  VAR COMP_SIZ, d
-  VAR FST_1,    d
-  VAR LST_1,    d
+  VAR SIZ, d
+  VAR _COMP_SIZ, d
+  VAR _FST_1, d
+  VAR _LST_1, d
 end namespace
 	LVA 1, ANON_95_14_info.SIZ
 	Sa  1, ANON_95_14__u
@@ -557,15 +612,15 @@ VAR	ANON_95_39__dat, STANDARD.IDL.TREE.size
 	CALL	STANDARD.IDL.SEM_PHASE_L11.DEF_UTIL. ,GET_BASE_TYPE_L71
 	CALL	STANDARD.IDL.IDL_MAN. ,NODE_REP_L51
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
-	BRA	L33
-L34:
-L33:					; post if
+	BRA	L41
+L42:
+L41:					; post if
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
-	BRA	L28
-L29:
-L28:					; post if
+	BRA	L35
+L36:
+L35:					; post if
 ret_lbl:
 	UNLINK 1
 	RTD	prm_siz
@@ -794,7 +849,7 @@ LOOP__2:
 	CALL	STANDARD.IDL. ,IS_EMPTY_L23
 	LI	1
 	OUX
-	BF	L36
+	BF	L44
 	LVA  1,	DEF_disp
 	LVA  1,	DEFLIST_disp
 	CALL	STANDARD.IDL. ,POP_L24
@@ -819,7 +874,7 @@ VAR	ANON_147_21__dat, STANDARD.IDL.TREE.size
 	LVA 1,	REGION_DEF_disp
 	LVA 0,	STANDARD.IDL.TREE_VOID_disp
 	CNE
-	BF	L38
+	BF	L46
 	LI	0					; lieu resultat sur pile
 	LVA 1,	REGION_DEF_disp
 	LI  171
@@ -830,7 +885,7 @@ VAR	ANON_147_21__dat, STANDARD.IDL.TREE.size
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	CGT
-	BF	L40
+	BF	L48
 					; debut if
 	LI	0					; lieu resultat sur pile
 VAR	ANON_155_29_disp, q
@@ -846,7 +901,7 @@ VAR	ANON_155_29__dat, STANDARD.IDL.TREE.size
 	LI  168
 	CALL	STANDARD.IDL. ,D_L17
 	CALL	STANDARD.IDL.SEM_PHASE_L11.VIS_UTIL. ,IS_OVERLOADABLE_HEADER_L3
-	BF	L42
+	BF	L50
 	LVA 1,	NEST_OVLOAD_disp
 	La
 	LI	STANDARD.IDL.SEQ_TYPE.size
@@ -864,19 +919,19 @@ VAR	ANON_158_19__dat, STANDARD.IDL.SEQ_TYPE.size
 	CALL	STANDARD.IDL.IDL_MAN. ,APPEND_L34
 	La
 	BLKMOV
-	BRA	L41
-L42:
+	BRA	L49
+L50:
 	Ld 1,	LEVEL_disp
 	Ld 1,	NEST_UNIQUE_LEVEL_disp
 	CGT
 	DUP
-	BT	L44
+	BT	L52
 	DROP
 	Ld 1,	LEVEL_disp
 	Ld 1,	NEST_UNIQUE_LEVEL_disp
 	CEQ
 	DUP
-	BF	L45
+	BF	L53
 	DROP
 VAR	ANON_163_80_disp, q
 VAR	ANON_163_80__u,    q
@@ -892,9 +947,9 @@ VAR	ANON_163_80__dat, STANDARD.IDL.TREE.size
 	CALL	STANDARD.IDL. ,D_L17
 	LVA 0,	STANDARD.IDL.IDL_MAN.TREE_FALSE_disp
 	CEQ
-L45:
-L44:
-	BF	L43
+L53:
+L52:
+	BF	L51
 	Ld 1,	LEVEL_disp
 	Sd  1,	NEST_UNIQUE_LEVEL_disp
 	LVA 1,	NEST_UNIQUE_disp
@@ -905,29 +960,29 @@ L44:
 	BLKMOV
 	LI	0
 	Sb  1,	USED_IS_OK_disp
-	BRA	L41
-L43:
-L41:					; post if
-	BRA	L39
-L40:
+	BRA	L49
+L51:
+L49:					; post if
+	BRA	L47
+L48:
 	Lb 1,	USED_IS_OK_disp
 	DUP
-	BF	L48
+	BF	L56
 	DROP
 	LI	0					; lieu resultat sur pile
 	LVA 1,	REGION_DEF_disp
 	LI  172
 	CALL	STANDARD.IDL. ,DB_L19
-L48:
+L56:
 	DUP
-	BF	L47
+	BF	L55
 	DROP
 	LI	0					; lieu resultat sur pile
 	LVA 1,	DEF_disp
 	LI  170
 	CALL	STANDARD.IDL. ,DB_L19
-L47:
-	BF	L46
+L55:
+	BF	L54
 					; debut if
 	LI	0					; lieu resultat sur pile
 VAR	ANON_179_29_disp, q
@@ -944,12 +999,12 @@ VAR	ANON_179_29__dat, STANDARD.IDL.TREE.size
 	CALL	STANDARD.IDL. ,D_L17
 	CALL	STANDARD.IDL.SEM_PHASE_L11.VIS_UTIL. ,IS_OVERLOADABLE_HEADER_L3
 	DUP
-	BF	L51
+	BF	L59
 	DROP
 	LI	166
 	CNE
-L51:
-	BF	L50
+L59:
+	BF	L58
 	LVA 1,	USED_OVLOAD_disp
 	La
 	LI	STANDARD.IDL.SEQ_TYPE.size
@@ -967,13 +1022,13 @@ VAR	ANON_182_19__dat, STANDARD.IDL.SEQ_TYPE.size
 	CALL	STANDARD.IDL.IDL_MAN. ,APPEND_L34
 	La
 	BLKMOV
-	BRA	L49
-L50:
+	BRA	L57
+L58:
 	LVA 1,	USED_UNIQUE_disp
 	LVA 0,	STANDARD.IDL.TREE_VOID_disp
 	CEQ
 	DUP
-	BT	L53
+	BT	L61
 	DROP
 VAR	ANON_186_40_disp, q
 VAR	ANON_186_40__u,    q
@@ -989,41 +1044,41 @@ VAR	ANON_186_40__dat, STANDARD.IDL.TREE.size
 	CALL	STANDARD.IDL. ,D_L17
 	LVA 0,	STANDARD.IDL.IDL_MAN.TREE_FALSE_disp
 	CEQ
-L53:
-	BF	L52
+L61:
+	BF	L60
 	LVA 1,	USED_UNIQUE_disp
 	La
 	LI	STANDARD.IDL.TREE.size
 	LVA 1,	DEF_disp
 	La
 	BLKMOV
-	BRA	L49
-L52:
+	BRA	L57
+L60:
 	LI	0
 	Sb  1,	USED_IS_OK_disp
-L49:					; post if
-	BRA	L39
+L57:					; post if
+	BRA	L47
+L54:
+L47:					; post if
+	BRA	L45
 L46:
-L39:					; post if
-	BRA	L37
-L38:
-L37:					; post if
+L45:					; post if
 	BRA	LOOP__2
-L36:					; post loop LOOP__2
+L44:					; post loop LOOP__2
 					; debut if
 	LVA 1,	NEST_UNIQUE_disp
 	LVA 0,	STANDARD.IDL.TREE_VOID_disp
 	CNE
 	DUP
-	BF	L56
+	BF	L64
 	DROP
 	LI	0					; lieu resultat sur pile
 	LVA 1,	NEST_OVLOAD_disp
 	CALL	STANDARD.IDL. ,IS_EMPTY_L23
 	LI	1
 	OUX
-L56:
-	BF	L55
+L64:
+	BF	L63
 namespace	BLOCK__3
 ELB 2					;    BODY ELAB
 VAR TEMP_OVLOAD_disp, q			; variable record : pointeur aux data record
@@ -1067,7 +1122,7 @@ LOOP__10:
 	CALL	STANDARD.IDL. ,IS_EMPTY_L23
 	LI	1
 	OUX
-	BF	L57
+	BF	L65
 	LVA  2,	TEMP_OVLOAD_disp
 	LVA  1,	NEST_OVLOAD_disp
 	CALL	STANDARD.IDL. ,POP_L24
@@ -1089,7 +1144,7 @@ VAR	ANON_211_23__dat, STANDARD.IDL.TREE.size
 	CALL	STANDARD.IDL. ,DI_L21
 	Ld 1,	STANDARD.IDL.SEM_PHASE_L11.VIS_UTIL.FIND_DIRECT_VISIBILITY_L5.NEST_UNIQUE_LEVEL_disp
 	CGT
-	BF	L59
+	BF	L67
 	LVA 2,	NEW_DEFLIST_disp
 	La
 	LI	STANDARD.IDL.SEQ_TYPE.size
@@ -1113,11 +1168,11 @@ VAR	ANON_212_19__dat, STANDARD.IDL.SEQ_TYPE.size
 	LVA 0,	STANDARD.IDL.TREE_VOID_disp
 	La
 	BLKMOV
-	BRA	L58
-L59:
-L58:					; post if
+	BRA	L66
+L67:
+L66:					; post if
 	BRA	LOOP__10
-L57:					; post loop LOOP__10
+L65:					; post loop LOOP__10
 	LVA 1,	STANDARD.IDL.SEM_PHASE_L11.VIS_UTIL.FIND_DIRECT_VISIBILITY_L5.NEST_OVLOAD_disp
 	La
 	LI	STANDARD.IDL.SEQ_TYPE.size
@@ -1128,14 +1183,14 @@ L57:					; post loop LOOP__10
 endPRO
 	LI	0
 	Sb  1,	USED_IS_OK_disp
-	BRA	L54
-L55:
-L54:					; post if
+	BRA	L62
+L63:
+L62:					; post if
 					; debut if
 	LVA 1,	NEST_UNIQUE_disp
 	LVA 0,	STANDARD.IDL.TREE_VOID_disp
 	CNE
-	BF	L61
+	BF	L69
 namespace	BLOCK__4
 ELB 2					;    BODY ELAB
 VAR HEADER_disp, q				; variable record : pointeur aux data record
@@ -1172,28 +1227,44 @@ ELB 3					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 					; debut if
-; CODE_SELECTED.RECURSE_SELECTED DESIGNATOR.TY PAS FAIT: DN_DISCRIMINANT_ID
+	La	2, HEADER_disp
+	Ld
+	LI	0
+	LI	2
+	UBFX
 	LI	3
 	CEQ
-	BF	L63
-	LIb	2, HEADER_disp, STANDARD.IDL.TREE.NOTY
+	BF	L71
+	La	2, HEADER_disp
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	Sb  2,	HEADER_KIND_disp
-	BRA	L62
-L63:
-; CODE_SELECTED.RECURSE_SELECTED DESIGNATOR.TY PAS FAIT: DN_DISCRIMINANT_ID
+	BRA	L70
+L71:
+	La	2, HEADER_disp
+	Ld
+	LI	0
+	LI	2
+	UBFX
 	LI	1
 	CNE
-	BF	L64
-	LIb	2, HEADER_disp, STANDARD.IDL.TREE.TY
+	BF	L72
+	La	2, HEADER_disp
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	Sb  2,	HEADER_KIND_disp
-	BRA	L62
-L64:
-L62:					; post if
+	BRA	L70
+L72:
+L70:					; post if
 ; CHOICE_EXP in EXCEPTIONS todo
-	BRA	L65
-L66:
-STR STR_L67, "IDL-SEM_PHASE-VISUTIL-FIND_DIRECT_VISIBILITY : HEADER TYPE ERROR "	; constante string="IDL-SEM_PHASE-VISUTIL-FIND_DIRECT_VISIBILITY : HEADER TYPE ERROR "
-	LCA	STR_L67.data_ptr
+	BRA	L73
+L74:
+STR STR_L75, "IDL-SEM_PHASE-VISUTIL-FIND_DIRECT_VISIBILITY : HEADER TYPE ERROR "	; constante string="IDL-SEM_PHASE-VISUTIL-FIND_DIRECT_VISIBILITY : HEADER TYPE ERROR "
+	LCA	STR_L75.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 ; CODE & concat STRING
 VAR	ANON_239_9_data, q
@@ -1206,9 +1277,9 @@ VAR	ANON_239_9_disp, q
 VAR	ANON_239_9__u,   q
 namespace ANON_239_9_info
   VAR SIZ,      d
-  VAR COMP_SIZ, d
-  VAR FST_1,    d
-  VAR LST_1,    d
+  VAR _COMP_SIZ, d
+  VAR _FST_1,    d
+  VAR _LST_1,    d
 end namespace
 ; CODE & concat STRING
 VAR	ANON_239_9_data, q
@@ -1221,9 +1292,9 @@ VAR	ANON_239_9_disp, q
 VAR	ANON_239_9__u,   q
 namespace ANON_239_9_info
   VAR SIZ,      d
-  VAR COMP_SIZ, d
-  VAR FST_1,    d
-  VAR LST_1,    d
+  VAR _COMP_SIZ, d
+  VAR _FST_1,    d
+  VAR _LST_1,    d
 end namespace
 STR ANON_239_9, "(PT=>"			; constante string="(PT=>"
 	LCA	ANON_239_9.data_ptr
@@ -1233,22 +1304,26 @@ STR ANON_239_9, "(PT=>"			; constante string="(PT=>"
 	La  ,  8
 	Sa  3, ANON_239_9_info
 	LId 3, ANON_239_9_info, STRING.LST_1
-	INC
 	LId 3, ANON_239_9_info, STRING.FST_1
 	SUB
+	INC
 	Sa  3, ANON_239_9_len
 VAR	ANON_239_19_disp, q
 VAR	ANON_239_19__u,   q
 namespace ANON_239_19_info
-  VAR SIZ,      d
-  VAR COMP_SIZ, d
-  VAR FST_1,    d
-  VAR LST_1,    d
+  VAR SIZ, d
+  VAR _COMP_SIZ, d
+  VAR _FST_1, d
+  VAR _LST_1, d
 end namespace
 	LVA 3, ANON_239_19_info.SIZ
 	Sa  3, ANON_239_19__u
 	LVA 3, ANON_239_19_disp
-; CODE_SELECTED.RECURSE_SELECTED DESIGNATOR.TY PAS FAIT: DN_DISCRIMINANT_ID
+	La	2, HEADER_disp
+	Ld
+	LI	0
+	LI	2
+	UBFX
 	CALL	STANDARD. ,INTEGER_IMAGE_L9
 	DUP
 	La  ,  0
@@ -1256,9 +1331,9 @@ end namespace
 	La  ,  8
 	Sa  3, ANON_239_19_info
 	LId 3, ANON_239_19_info, STRING.LST_1
-	INC
 	LId 3, ANON_239_19_info, STRING.FST_1
 	SUB
+	INC
 	Sa  3, ANON_239_19_len
 	La  3, ANON_239_9_len
 	La  3, ANON_239_19_len
@@ -1266,13 +1341,13 @@ end namespace
 	CO_VAR
 	Sa  3, ANON_239_9_disp
 	LI	1
-	Sd  3, ANON_239_9_info.FST_1
+	Sd  3, ANON_239_9_info._FST_1
 	La  3, ANON_239_9_len
 	La  3, ANON_239_19_len
 	ADD
-	Sd  3, ANON_239_9_info.LST_1
+	Sd  3, ANON_239_9_info._LST_1
 	LI	8
-	Sd  3, ANON_239_9_info.COMP_SIZ
+	Sd  3, ANON_239_9_info._COMP_SIZ
 	La  3, ANON_239_9_len
 	La  3, ANON_239_19_len
 	ADD
@@ -1298,9 +1373,9 @@ end namespace
 	La  ,  8
 	Sa  3, ANON_239_9_info
 	LId 3, ANON_239_9_info, STRING.LST_1
-	INC
 	LId 3, ANON_239_9_info, STRING.FST_1
 	SUB
+	INC
 	Sa  3, ANON_239_9_len
 STR ANON_239_50, ")"			; constante string=")"
 	LCA	ANON_239_50.data_ptr
@@ -1310,9 +1385,9 @@ STR ANON_239_50, ")"			; constante string=")"
 	La  ,  8
 	Sa  3, ANON_239_50_info
 	LId 3, ANON_239_50_info, STRING.LST_1
-	INC
 	LId 3, ANON_239_50_info, STRING.FST_1
 	SUB
+	INC
 	Sa  3, ANON_239_50_len
 	La  3, ANON_239_9_len
 	La  3, ANON_239_50_len
@@ -1320,13 +1395,13 @@ STR ANON_239_50, ")"			; constante string=")"
 	CO_VAR
 	Sa  3, ANON_239_9_disp
 	LI	1
-	Sd  3, ANON_239_9_info.FST_1
+	Sd  3, ANON_239_9_info._FST_1
 	La  3, ANON_239_9_len
 	La  3, ANON_239_50_len
 	ADD
-	Sd  3, ANON_239_9_info.LST_1
+	Sd  3, ANON_239_9_info._LST_1
 	LI	8
-	Sd  3, ANON_239_9_info.COMP_SIZ
+	Sd  3, ANON_239_9_info._COMP_SIZ
 	La  3, ANON_239_9_len
 	La  3, ANON_239_50_len
 	ADD
@@ -1347,16 +1422,16 @@ STR ANON_239_50, ")"			; constante string=")"
 	BLKMOV
 	LVA 3, ANON_239_9_disp
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
-L65:
+L73:
 	UNLINK 3
 endPRO
 					; debut if
-	BF	L69
+	BF	L77
 					; debut if
 	Lb 2,	HEADER_KIND_disp
 	LI	3
 	CEQ
-	BF	L71
+	BF	L79
 ; CODE & concat STRING
 VAR	ANON_248_33_data, q
 VAR	ANON_248_33_info, q
@@ -1368,9 +1443,9 @@ VAR	ANON_248_33_disp, q
 VAR	ANON_248_33__u,   q
 namespace ANON_248_33_info
   VAR SIZ,      d
-  VAR COMP_SIZ, d
-  VAR FST_1,    d
-  VAR LST_1,    d
+  VAR _COMP_SIZ, d
+  VAR _FST_1,    d
+  VAR _LST_1,    d
 end namespace
 STR ANON_248_33, "PRIOR ERROR IN DECLARATION - "	; constante string="PRIOR ERROR IN DECLARATION - "
 	LCA	ANON_248_33.data_ptr
@@ -1380,17 +1455,17 @@ STR ANON_248_33, "PRIOR ERROR IN DECLARATION - "	; constante string="PRIOR ERROR
 	La  ,  8
 	Sa  2, ANON_248_33_info
 	LId 2, ANON_248_33_info, STRING.LST_1
-	INC
 	LId 2, ANON_248_33_info, STRING.FST_1
 	SUB
+	INC
 	Sa  2, ANON_248_33_len
 VAR	ANON_248_67_disp, q
 VAR	ANON_248_67__u,   q
 namespace ANON_248_67_info
-  VAR SIZ,      d
-  VAR COMP_SIZ, d
-  VAR FST_1,    d
-  VAR LST_1,    d
+  VAR SIZ, d
+  VAR _COMP_SIZ, d
+  VAR _FST_1, d
+  VAR _LST_1, d
 end namespace
 	LVA 2, ANON_248_67_info.SIZ
 	Sa  2, ANON_248_67__u
@@ -1414,9 +1489,9 @@ VAR	ANON_248_79__dat, STANDARD.IDL.TREE.size
 	La  ,  8
 	Sa  2, ANON_248_67_info
 	LId 2, ANON_248_67_info, STRING.LST_1
-	INC
 	LId 2, ANON_248_67_info, STRING.FST_1
 	SUB
+	INC
 	Sa  2, ANON_248_67_len
 	La  2, ANON_248_33_len
 	La  2, ANON_248_67_len
@@ -1424,13 +1499,13 @@ VAR	ANON_248_79__dat, STANDARD.IDL.TREE.size
 	CO_VAR
 	Sa  2, ANON_248_33_disp
 	LI	1
-	Sd  2, ANON_248_33_info.FST_1
+	Sd  2, ANON_248_33_info._FST_1
 	La  2, ANON_248_33_len
 	La  2, ANON_248_67_len
 	ADD
-	Sd  2, ANON_248_33_info.LST_1
+	Sd  2, ANON_248_33_info._LST_1
 	LI	8
-	Sd  2, ANON_248_33_info.COMP_SIZ
+	Sd  2, ANON_248_33_info._COMP_SIZ
 	La  2, ANON_248_33_len
 	La  2, ANON_248_67_len
 	ADD
@@ -1463,8 +1538,8 @@ VAR	ANON_248_13__dat, STANDARD.IDL.TREE.size
 	LI  154
 	CALL	STANDARD.IDL. ,D_L17
 	CALL	STANDARD.IDL.IDL_MAN. ,WARNING_L46
-	BRA	L70
-L71:
+	BRA	L78
+L79:
 ; CODE & concat STRING
 VAR	ANON_250_31_data, q
 VAR	ANON_250_31_info, q
@@ -1476,9 +1551,9 @@ VAR	ANON_250_31_disp, q
 VAR	ANON_250_31__u,   q
 namespace ANON_250_31_info
   VAR SIZ,      d
-  VAR COMP_SIZ, d
-  VAR FST_1,    d
-  VAR LST_1,    d
+  VAR _COMP_SIZ, d
+  VAR _FST_1,    d
+  VAR _LST_1,    d
 end namespace
 STR ANON_250_31, "NAME NOT YET VISIBLE - "	; constante string="NAME NOT YET VISIBLE - "
 	LCA	ANON_250_31.data_ptr
@@ -1488,17 +1563,17 @@ STR ANON_250_31, "NAME NOT YET VISIBLE - "	; constante string="NAME NOT YET VISI
 	La  ,  8
 	Sa  2, ANON_250_31_info
 	LId 2, ANON_250_31_info, STRING.LST_1
-	INC
 	LId 2, ANON_250_31_info, STRING.FST_1
 	SUB
+	INC
 	Sa  2, ANON_250_31_len
 VAR	ANON_250_59_disp, q
 VAR	ANON_250_59__u,   q
 namespace ANON_250_59_info
-  VAR SIZ,      d
-  VAR COMP_SIZ, d
-  VAR FST_1,    d
-  VAR LST_1,    d
+  VAR SIZ, d
+  VAR _COMP_SIZ, d
+  VAR _FST_1, d
+  VAR _LST_1, d
 end namespace
 	LVA 2, ANON_250_59_info.SIZ
 	Sa  2, ANON_250_59__u
@@ -1522,9 +1597,9 @@ VAR	ANON_250_71__dat, STANDARD.IDL.TREE.size
 	La  ,  8
 	Sa  2, ANON_250_59_info
 	LId 2, ANON_250_59_info, STRING.LST_1
-	INC
 	LId 2, ANON_250_59_info, STRING.FST_1
 	SUB
+	INC
 	Sa  2, ANON_250_59_len
 	La  2, ANON_250_31_len
 	La  2, ANON_250_59_len
@@ -1532,13 +1607,13 @@ VAR	ANON_250_71__dat, STANDARD.IDL.TREE.size
 	CO_VAR
 	Sa  2, ANON_250_31_disp
 	LI	1
-	Sd  2, ANON_250_31_info.FST_1
+	Sd  2, ANON_250_31_info._FST_1
 	La  2, ANON_250_31_len
 	La  2, ANON_250_59_len
 	ADD
-	Sd  2, ANON_250_31_info.LST_1
+	Sd  2, ANON_250_31_info._LST_1
 	LI	8
-	Sd  2, ANON_250_31_info.COMP_SIZ
+	Sd  2, ANON_250_31_info._COMP_SIZ
 	La  2, ANON_250_31_len
 	La  2, ANON_250_59_len
 	ADD
@@ -1571,14 +1646,14 @@ VAR	ANON_250_11__dat, STANDARD.IDL.TREE.size
 	LI  154
 	CALL	STANDARD.IDL. ,D_L17
 	CALL	STANDARD.IDL.IDL_MAN. ,ERROR_L45
-L70:					; post if
-	BRA	L68
-L69:
+L78:					; post if
+	BRA	L76
+L77:
 	LI  0
 	LVA 1,	STANDARD.IDL.SEM_PHASE_L11.VIS_UTIL.FIND_DIRECT_VISIBILITY_L5.NEST_UNIQUE_disp
 	LVA  1,	NEW_DEFSET_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL. ,ADD_TO_DEFSET_L79
-L68:					; post if
+L76:					; post if
 	La  1,	-DEFSET_ofs
 	La
 	LI	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL.DEFSET_TYPE.size
@@ -1589,14 +1664,14 @@ L68:					; post if
 	BRA ret_lbl
 	UNLINK 2
 endPRO
-	BRA	L60
-L61:
-L60:					; post if
+	BRA	L68
+L69:
+L68:					; post if
 					; debut if
 	Lb 1,	USED_IS_OK_disp
 	LI	1
 	OUX
-	BF	L73
+	BF	L81
 	LVA 1,	USED_UNIQUE_disp
 	La
 	LI	STANDARD.IDL.TREE.size
@@ -1620,14 +1695,14 @@ L60:					; post if
 	La  ,  0
 	BLKMOV
 	DROP
-	BRA	L72
-L73:
-L72:					; post if
+	BRA	L80
+L81:
+L80:					; post if
 					; debut if
 	LVA 1,	USED_UNIQUE_disp
 	LVA 0,	STANDARD.IDL.TREE_VOID_disp
 	CNE
-	BF	L75
+	BF	L83
 					; debut if
 VAR	ANON_282_10_disp, q
 VAR	ANON_282_10__u,    q
@@ -1643,7 +1718,7 @@ VAR	ANON_282_10__dat, STANDARD.IDL.TREE.size
 	CALL	STANDARD.IDL. ,D_L17
 	LVA 0,	STANDARD.IDL.IDL_MAN.TREE_FALSE_disp
 	CEQ
-	BF	L77
+	BF	L85
 ; CODE & concat STRING
 VAR	ANON_285_37_data, q
 VAR	ANON_285_37_info, q
@@ -1655,9 +1730,9 @@ VAR	ANON_285_37_disp, q
 VAR	ANON_285_37__u,   q
 namespace ANON_285_37_info
   VAR SIZ,      d
-  VAR COMP_SIZ, d
-  VAR FST_1,    d
-  VAR LST_1,    d
+  VAR _COMP_SIZ, d
+  VAR _FST_1,    d
+  VAR _LST_1,    d
 end namespace
 STR ANON_285_37, "PRIOR ERROR IN (USED) DECLARATION - "	; constante string="PRIOR ERROR IN (USED) DECLARATION - "
 	LCA	ANON_285_37.data_ptr
@@ -1667,17 +1742,17 @@ STR ANON_285_37, "PRIOR ERROR IN (USED) DECLARATION - "	; constante string="PRIO
 	La  ,  8
 	Sa  1, ANON_285_37_info
 	LId 1, ANON_285_37_info, STRING.LST_1
-	INC
 	LId 1, ANON_285_37_info, STRING.FST_1
 	SUB
+	INC
 	Sa  1, ANON_285_37_len
 VAR	ANON_285_78_disp, q
 VAR	ANON_285_78__u,   q
 namespace ANON_285_78_info
-  VAR SIZ,      d
-  VAR COMP_SIZ, d
-  VAR FST_1,    d
-  VAR LST_1,    d
+  VAR SIZ, d
+  VAR _COMP_SIZ, d
+  VAR _FST_1, d
+  VAR _LST_1, d
 end namespace
 	LVA 1, ANON_285_78_info.SIZ
 	Sa  1, ANON_285_78__u
@@ -1701,9 +1776,9 @@ VAR	ANON_285_90__dat, STANDARD.IDL.TREE.size
 	La  ,  8
 	Sa  1, ANON_285_78_info
 	LId 1, ANON_285_78_info, STRING.LST_1
-	INC
 	LId 1, ANON_285_78_info, STRING.FST_1
 	SUB
+	INC
 	Sa  1, ANON_285_78_len
 	La  1, ANON_285_37_len
 	La  1, ANON_285_78_len
@@ -1711,13 +1786,13 @@ VAR	ANON_285_90__dat, STANDARD.IDL.TREE.size
 	CO_VAR
 	Sa  1, ANON_285_37_disp
 	LI	1
-	Sd  1, ANON_285_37_info.FST_1
+	Sd  1, ANON_285_37_info._FST_1
 	La  1, ANON_285_37_len
 	La  1, ANON_285_78_len
 	ADD
-	Sd  1, ANON_285_37_info.LST_1
+	Sd  1, ANON_285_37_info._LST_1
 	LI	8
-	Sd  1, ANON_285_37_info.COMP_SIZ
+	Sd  1, ANON_285_37_info._COMP_SIZ
 	La  1, ANON_285_37_len
 	La  1, ANON_285_78_len
 	ADD
@@ -1757,19 +1832,19 @@ VAR	ANON_285_18__dat, STANDARD.IDL.TREE.size
 	La
 	BLKMOV
 	BRA ret_lbl
-	BRA	L76
-L77:
+	BRA	L84
+L85:
 	LI	0					; lieu resultat sur pile
 	LVA 1,	NEST_OVLOAD_disp
 	CALL	STANDARD.IDL. ,IS_EMPTY_L23
 	DUP
-	BF	L79
+	BF	L87
 	DROP
 	LI	0					; lieu resultat sur pile
 	LVA 1,	USED_OVLOAD_disp
 	CALL	STANDARD.IDL. ,IS_EMPTY_L23
-L79:
-	BF	L78
+L87:
+	BF	L86
 	LI  0
 	LVA 1,	USED_UNIQUE_disp
 	LVA  1,	NEW_DEFSET_disp
@@ -1781,8 +1856,8 @@ L79:
 	La
 	BLKMOV
 	BRA ret_lbl
-	BRA	L76
-L78:
+	BRA	L84
+L86:
 	LVA 1,	USED_UNIQUE_disp
 	La
 	LI	STANDARD.IDL.TREE.size
@@ -1806,10 +1881,10 @@ L78:
 	La  ,  0
 	BLKMOV
 	DROP
-L76:					; post if
-	BRA	L74
-L75:
-L74:					; post if
+L84:					; post if
+	BRA	L82
+L83:
+L82:					; post if
 	LVA 1,	DEFLIST_1_disp
 	La
 	LI	STANDARD.IDL.SEQ_TYPE.size
@@ -1822,7 +1897,7 @@ LOOP__5:
 	CALL	STANDARD.IDL. ,IS_EMPTY_L23
 	LI	1
 	OUX
-	BF	L80
+	BF	L88
 	LVA  1,	DEF_1_disp
 	LVA  1,	DEFLIST_1_disp
 	CALL	STANDARD.IDL. ,POP_L24
@@ -1838,7 +1913,7 @@ LOOP__6:
 	CALL	STANDARD.IDL. ,IS_EMPTY_L23
 	LI	1
 	OUX
-	BF	L81
+	BF	L89
 	LVA 1,	DEF_2_disp
 	La
 	LI	STANDARD.IDL.TREE.size
@@ -1860,7 +1935,7 @@ VAR	ANON_315_18__dat, STANDARD.IDL.TREE.size
 	LVA 1,	DEF_1_disp
 	CNE
 	DUP
-	BF	L84
+	BF	L92
 	DROP
 	LI	0					; lieu resultat sur pile
 VAR	ANON_316_81_disp, q
@@ -1888,8 +1963,8 @@ VAR	ANON_316_59__dat, STANDARD.IDL.TREE.size
 	LI  168
 	CALL	STANDARD.IDL. ,D_L17
 	CALL	STANDARD.IDL.SEM_PHASE_L11.DEF_UTIL. ,ARE_HOMOGRAPH_HEADERS_L63
-L84:
-	BF	L83
+L92:
+	BF	L91
 					; debut if
 	LI	0					; lieu resultat sur pile
 VAR	ANON_317_23_disp, q
@@ -1922,9 +1997,9 @@ VAR	ANON_317_69__dat, STANDARD.IDL.TREE.size
 	LI  171
 	CALL	STANDARD.IDL. ,DI_L21
 	CGT
-	BF	L86
-	BRA	L85
-L86:
+	BF	L94
+	BRA	L93
+L94:
 	LI	0					; lieu resultat sur pile
 VAR	ANON_319_26_disp, q
 VAR	ANON_319_26__u,    q
@@ -1956,77 +2031,77 @@ VAR	ANON_319_72__dat, STANDARD.IDL.TREE.size
 	LI  171
 	CALL	STANDARD.IDL. ,DI_L21
 	CLT
-	BF	L87
-	BRA	L81
-	BRA	L85
-L87:
-	LI	40
-	CEQ
-	DUP
-	BT	L90
-	DROP
-L90:
-	BF	L89
-	BRA	L81
-	BRA	L85
-L89:
-	LI	40
-	CEQ
-	DUP
-	BT	L93
-	DROP
-L93:
-	BF	L92
-	BRA	L85
-L92:
-	DUP
 	BF	L95
-	DROP
-	LI	176
-	CEQ
-	DUP
-	BT	L96
-	DROP
-	LI	175
-	CEQ
-	DUP
-	BF	L97
-	DROP
-	LI	176
-	CEQ
-L97:
-L96:
+	BRA	L89
+	BRA	L93
 L95:
-	BF	L94
-	BRA	L81
-	BRA	L85
-L94:
+	LI	40
+	CEQ
 	DUP
-	BF	L100
+	BT	L98
 	DROP
-	LI	176
+L98:
+	BF	L97
+	BRA	L89
+	BRA	L93
+L97:
+	LI	40
 	CEQ
 	DUP
 	BT	L101
 	DROP
-	LI	175
-	CEQ
+L101:
+	BF	L100
+	BRA	L93
+L100:
 	DUP
-	BF	L102
+	BF	L103
 	DROP
 	LI	176
 	CEQ
+	DUP
+	BT	L104
+	DROP
+	LI	175
+	CEQ
+	DUP
+	BF	L105
+	DROP
+	LI	176
+	CEQ
+L105:
+L104:
+L103:
+	BF	L102
+	BRA	L89
+	BRA	L93
 L102:
-L101:
-L100:
-	BF	L99
-	BRA	L85
-L99:
-	BRA	L81
-L85:					; post if
-	BRA	L82
-L83:
-L82:					; post if
+	DUP
+	BF	L108
+	DROP
+	LI	176
+	CEQ
+	DUP
+	BT	L109
+	DROP
+	LI	175
+	CEQ
+	DUP
+	BF	L110
+	DROP
+	LI	176
+	CEQ
+L110:
+L109:
+L108:
+	BF	L107
+	BRA	L93
+L107:
+	BRA	L89
+L93:					; post if
+	BRA	L90
+L91:
+L90:					; post if
 	LVA 1,	DEFLIST_2_disp
 	La
 	LI	STANDARD.IDL.SEQ_TYPE.size
@@ -2044,21 +2119,21 @@ VAR	ANON_345_22__dat, STANDARD.IDL.SEQ_TYPE.size
 	La
 	BLKMOV
 	BRA	LOOP__6
-L81:					; post loop LOOP__6
+L89:					; post loop LOOP__6
 					; debut if
 	LI	0					; lieu resultat sur pile
 	LVA 1,	DEFLIST_2_disp
 	CALL	STANDARD.IDL. ,IS_EMPTY_L23
-	BF	L105
+	BF	L113
 	LI  0
 	LVA 1,	DEF_1_disp
 	LVA  1,	NEW_DEFSET_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL. ,ADD_TO_DEFSET_L79
-	BRA	L104
-L105:
-L104:					; post if
+	BRA	L112
+L113:
+L112:					; post if
 	BRA	LOOP__5
-L80:					; post loop LOOP__5
+L88:					; post loop LOOP__5
 	LVA 1,	DEFLIST_1_disp
 	La
 	LI	STANDARD.IDL.SEQ_TYPE.size
@@ -2071,7 +2146,7 @@ LOOP__7:
 	CALL	STANDARD.IDL. ,IS_EMPTY_L23
 	LI	1
 	OUX
-	BF	L106
+	BF	L114
 	LVA  1,	DEF_1_disp
 	LVA  1,	DEFLIST_1_disp
 	CALL	STANDARD.IDL. ,POP_L24
@@ -2087,7 +2162,7 @@ LOOP__8:
 	CALL	STANDARD.IDL. ,IS_EMPTY_L23
 	LI	1
 	OUX
-	BF	L107
+	BF	L115
 	LVA 1,	DEF_2_disp
 	La
 	LI	STANDARD.IDL.TREE.size
@@ -2131,11 +2206,11 @@ VAR	ANON_361_35__dat, STANDARD.IDL.TREE.size
 	LI  168
 	CALL	STANDARD.IDL. ,D_L17
 	CALL	STANDARD.IDL.SEM_PHASE_L11.DEF_UTIL. ,ARE_HOMOGRAPH_HEADERS_L63
-	BF	L109
-	BRA	L107
-	BRA	L108
-L109:
-L108:					; post if
+	BF	L117
+	BRA	L115
+	BRA	L116
+L117:
+L116:					; post if
 	LVA 1,	DEFLIST_2_disp
 	La
 	LI	STANDARD.IDL.SEQ_TYPE.size
@@ -2153,12 +2228,12 @@ VAR	ANON_365_22__dat, STANDARD.IDL.SEQ_TYPE.size
 	La
 	BLKMOV
 	BRA	LOOP__8
-L107:					; post loop LOOP__8
+L115:					; post loop LOOP__8
 					; debut if
 	LI	0					; lieu resultat sur pile
 	LVA 1,	DEFLIST_2_disp
 	CALL	STANDARD.IDL. ,IS_EMPTY_L23
-	BF	L112
+	BF	L120
 	LVA 1,	DEFLIST_2_disp
 	La
 	LI	STANDARD.IDL.SEQ_TYPE.size
@@ -2171,7 +2246,7 @@ LOOP__9:
 	CALL	STANDARD.IDL. ,IS_EMPTY_L23
 	LI	1
 	OUX
-	BF	L113
+	BF	L121
 	LVA 1,	DEF_2_disp
 	La
 	LI	STANDARD.IDL.TREE.size
@@ -2193,7 +2268,7 @@ VAR	ANON_375_11__dat, STANDARD.IDL.TREE.size
 	LVA 1,	DEF_1_disp
 	CNE
 	DUP
-	BF	L116
+	BF	L124
 	DROP
 	LI	0					; lieu resultat sur pile
 VAR	ANON_376_74_disp, q
@@ -2221,8 +2296,8 @@ VAR	ANON_376_52__dat, STANDARD.IDL.TREE.size
 	LI  168
 	CALL	STANDARD.IDL. ,D_L17
 	CALL	STANDARD.IDL.SEM_PHASE_L11.DEF_UTIL. ,ARE_HOMOGRAPH_HEADERS_L63
-L116:
-	BF	L115
+L124:
+	BF	L123
 					; debut if
 VAR	ANON_378_7_disp, q
 VAR	ANON_378_7__u,    q
@@ -2249,76 +2324,76 @@ VAR	ANON_378_35__dat, STANDARD.IDL.TREE.size
 	LI  169
 	CALL	STANDARD.IDL. ,D_L17
 	CNE
-	BF	L118
-	BRA	L117
-L118:
-	LI	40
-	CEQ
-	DUP
-	BT	L120
-	DROP
-L120:
-	BF	L119
-	BRA	L113
-	BRA	L117
-L119:
-	LI	40
-	CEQ
-	DUP
-	BT	L123
-	DROP
-L123:
-	BF	L122
-	BRA	L117
-L122:
-	DUP
-	BF	L125
-	DROP
-	LI	176
-	CEQ
-	DUP
-	BT	L126
-	DROP
-	LI	175
-	CEQ
-	DUP
-	BF	L127
-	DROP
-	LI	176
-	CEQ
-L127:
+	BF	L126
+	BRA	L125
 L126:
-L125:
-	BF	L124
-	BRA	L113
-	BRA	L117
-L124:
+	LI	40
+	CEQ
 	DUP
-	BF	L130
+	BT	L128
 	DROP
-	LI	176
+L128:
+	BF	L127
+	BRA	L121
+	BRA	L125
+L127:
+	LI	40
 	CEQ
 	DUP
 	BT	L131
 	DROP
-	LI	175
-	CEQ
+L131:
+	BF	L130
+	BRA	L125
+L130:
 	DUP
-	BF	L132
+	BF	L133
 	DROP
 	LI	176
 	CEQ
+	DUP
+	BT	L134
+	DROP
+	LI	175
+	CEQ
+	DUP
+	BF	L135
+	DROP
+	LI	176
+	CEQ
+L135:
+L134:
+L133:
+	BF	L132
+	BRA	L121
+	BRA	L125
 L132:
-L131:
-L130:
-	BF	L129
-	BRA	L117
-L129:
-	BRA	L113
-L117:					; post if
-	BRA	L114
-L115:
-L114:					; post if
+	DUP
+	BF	L138
+	DROP
+	LI	176
+	CEQ
+	DUP
+	BT	L139
+	DROP
+	LI	175
+	CEQ
+	DUP
+	BF	L140
+	DROP
+	LI	176
+	CEQ
+L140:
+L139:
+L138:
+	BF	L137
+	BRA	L125
+L137:
+	BRA	L121
+L125:					; post if
+	BRA	L122
+L123:
+L122:					; post if
 	LVA 1,	DEFLIST_2_disp
 	La
 	LI	STANDARD.IDL.SEQ_TYPE.size
@@ -2336,29 +2411,29 @@ VAR	ANON_404_15__dat, STANDARD.IDL.SEQ_TYPE.size
 	La
 	BLKMOV
 	BRA	LOOP__9
-L113:					; post loop LOOP__9
-	BRA	L111
-L112:
-L111:					; post if
+L121:					; post loop LOOP__9
+	BRA	L119
+L120:
+L119:					; post if
 					; debut if
 	LI	0					; lieu resultat sur pile
 	LVA 1,	DEFLIST_2_disp
 	CALL	STANDARD.IDL. ,IS_EMPTY_L23
-	BF	L135
+	BF	L143
 	LI  0
 	LVA 1,	DEF_1_disp
 	LVA  1,	NEW_DEFSET_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL. ,ADD_TO_DEFSET_L79
-	BRA	L134
-L135:
-L134:					; post if
+	BRA	L142
+L143:
+L142:					; post if
 	BRA	LOOP__7
-L106:					; post loop LOOP__7
+L114:					; post loop LOOP__7
 					; debut if
 	LI	0					; lieu resultat sur pile
 	LVA 1,	NEW_DEFSET_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL. ,IS_EMPTY_L74
-	BF	L137
+	BF	L145
 ; CODE & concat STRING
 VAR	ANON_413_33_data, q
 VAR	ANON_413_33_info, q
@@ -2370,9 +2445,9 @@ VAR	ANON_413_33_disp, q
 VAR	ANON_413_33__u,   q
 namespace ANON_413_33_info
   VAR SIZ,      d
-  VAR COMP_SIZ, d
-  VAR FST_1,    d
-  VAR LST_1,    d
+  VAR _COMP_SIZ, d
+  VAR _FST_1,    d
+  VAR _LST_1,    d
 end namespace
 STR ANON_413_33, "NO DIRECTLY VISIBLE DECLARATION - "	; constante string="NO DIRECTLY VISIBLE DECLARATION - "
 	LCA	ANON_413_33.data_ptr
@@ -2382,17 +2457,17 @@ STR ANON_413_33, "NO DIRECTLY VISIBLE DECLARATION - "	; constante string="NO DIR
 	La  ,  8
 	Sa  1, ANON_413_33_info
 	LId 1, ANON_413_33_info, STRING.LST_1
-	INC
 	LId 1, ANON_413_33_info, STRING.FST_1
 	SUB
+	INC
 	Sa  1, ANON_413_33_len
 VAR	ANON_413_72_disp, q
 VAR	ANON_413_72__u,   q
 namespace ANON_413_72_info
-  VAR SIZ,      d
-  VAR COMP_SIZ, d
-  VAR FST_1,    d
-  VAR LST_1,    d
+  VAR SIZ, d
+  VAR _COMP_SIZ, d
+  VAR _FST_1, d
+  VAR _LST_1, d
 end namespace
 	LVA 1, ANON_413_72_info.SIZ
 	Sa  1, ANON_413_72__u
@@ -2416,9 +2491,9 @@ VAR	ANON_413_84__dat, STANDARD.IDL.TREE.size
 	La  ,  8
 	Sa  1, ANON_413_72_info
 	LId 1, ANON_413_72_info, STRING.LST_1
-	INC
 	LId 1, ANON_413_72_info, STRING.FST_1
 	SUB
+	INC
 	Sa  1, ANON_413_72_len
 	La  1, ANON_413_33_len
 	La  1, ANON_413_72_len
@@ -2426,13 +2501,13 @@ VAR	ANON_413_84__dat, STANDARD.IDL.TREE.size
 	CO_VAR
 	Sa  1, ANON_413_33_disp
 	LI	1
-	Sd  1, ANON_413_33_info.FST_1
+	Sd  1, ANON_413_33_info._FST_1
 	La  1, ANON_413_33_len
 	La  1, ANON_413_72_len
 	ADD
-	Sd  1, ANON_413_33_info.LST_1
+	Sd  1, ANON_413_33_info._LST_1
 	LI	8
-	Sd  1, ANON_413_33_info.COMP_SIZ
+	Sd  1, ANON_413_33_info._COMP_SIZ
 	La  1, ANON_413_33_len
 	La  1, ANON_413_72_len
 	ADD
@@ -2465,9 +2540,9 @@ VAR	ANON_413_14__dat, STANDARD.IDL.TREE.size
 	LI  154
 	CALL	STANDARD.IDL. ,D_L17
 	CALL	STANDARD.IDL.IDL_MAN. ,ERROR_L45
-	BRA	L136
-L137:
-L136:					; post if
+	BRA	L144
+L145:
+L144:					; post if
 	La  1,	-DEFSET_ofs
 	La
 	LI	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL.DEFSET_TYPE.size
@@ -2624,10 +2699,14 @@ VAR TEMP__dat, STANDARD.IDL.TREE.size
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 					; debut if
-	LIb	1, DESIGNATOR_disp, STANDARD.IDL.TREE.TY
+	La	1, DESIGNATOR_disp
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	151
 	CEQ
-	BF	L139
+	BF	L147
 	LVA 1,	DESIGNATOR_disp
 	La
 	LI	STANDARD.IDL.TREE.size
@@ -2648,16 +2727,16 @@ VAR	ANON_439_21__dat, STANDARD.IDL.TREE.size
 	La  1,	-SELECTED_ofs
 	LI  91
 	CALL	STANDARD.IDL. ,D_L16
-	BRA	L138
-L139:
-L138:					; post if
+	BRA	L146
+L147:
+L146:					; post if
 					; debut if
 	LI	0					; lieu resultat sur pile
 	LVA 1,	NAME_DEFSET_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL. ,IS_EMPTY_L74
 	LI	1
 	OUX
-	BF	L141
+	BF	L149
 	LVA 1,	NAME_DEF_disp
 	La
 	LI	STANDARD.IDL.TREE.size
@@ -2679,7 +2758,7 @@ VAR	ANON_470_19__dat, STANDARD.IDL.TREE.size
 	LVA 1,	NAME_DEF_disp
 	LVA 0,	STANDARD.IDL.TREE_VOID_disp
 	CNE
-	BF	L143
+	BF	L151
 	LVA 1,	TEMP_LIST_disp
 	La
 	LI	STANDARD.IDL.SEQ_TYPE.size
@@ -2713,7 +2792,7 @@ LOOP__12:
 	CALL	STANDARD.IDL. ,IS_EMPTY_L23
 	LI	1
 	OUX
-	BF	L144
+	BF	L152
 	LVA  1,	TEMP_disp
 	LVA  1,	TEMP_LIST_disp
 	CALL	STANDARD.IDL. ,POP_L24
@@ -2732,21 +2811,21 @@ VAR	ANON_481_5__dat, STANDARD.IDL.TREE.size
 	CALL	STANDARD.IDL. ,D_L17
 	LVA 1,	NAME_DEF_disp
 	CEQ
-	BF	L146
+	BF	L154
 	LI  0
 	LVA 1,	TEMP_disp
 	LVA  1,	NEW_DEFSET_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL. ,ADD_TO_DEFSET_L79
-	BRA	L145
-L146:
-L145:					; post if
+	BRA	L153
+L154:
+L153:					; post if
 	BRA	LOOP__12
-L144:					; post loop LOOP__12
-	BRA	L142
-L143:
+L152:					; post loop LOOP__12
+	BRA	L150
+L151:
 	LI	30
 	CEQ
-	BF	L147
+	BF	L155
 	LVA 1,	NAME_DEFINTERP_disp
 	La
 	LI	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL.DEFINTERP_TYPE.size
@@ -2782,7 +2861,7 @@ VAR	ANON_492_24__dat, STANDARD.IDL.TREE.size
 					; debut if
 	LI	168
 	CEQ
-	BF	L149
+	BF	L157
 	LVA 1,	NAME_DEF_disp
 	La
 	LI	STANDARD.IDL.TREE.size
@@ -2820,9 +2899,9 @@ VAR	ANON_494_48__dat, STANDARD.IDL.TREE.size
 	CALL	STANDARD.IDL.SEM_PHASE_L11.DEF_UTIL. ,GET_DEF_FOR_ID_L55
 	La
 	BLKMOV
-	BRA	L148
-L149:
-L148:					; post if
+	BRA	L156
+L157:
+L156:					; post if
 	LVA 1,	TEMP_LIST_disp
 	La
 	LI	STANDARD.IDL.SEQ_TYPE.size
@@ -2856,7 +2935,7 @@ LOOP__13:
 	CALL	STANDARD.IDL. ,IS_EMPTY_L23
 	LI	1
 	OUX
-	BF	L150
+	BF	L158
 	LVA  1,	TEMP_disp
 	LVA  1,	TEMP_LIST_disp
 	CALL	STANDARD.IDL. ,POP_L24
@@ -2876,43 +2955,47 @@ VAR	ANON_501_5__dat, STANDARD.IDL.TREE.size
 	LVA 1,	NAME_DEF_disp
 	CEQ
 	DUP
-	BF	L153
+	BF	L161
 	DROP
 	LI	0					; lieu resultat sur pile
 	LVA 1,	TEMP_disp
 	LI  170
 	CALL	STANDARD.IDL. ,DB_L19
-L153:
-	BF	L152
+L161:
+	BF	L160
 	LI  0
 	LVA 1,	TEMP_disp
 	LVA  1,	NEW_DEFSET_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL. ,ADD_TO_DEFSET_L79
-	BRA	L151
-L152:
-L151:					; post if
+	BRA	L159
+L160:
+L159:					; post if
 	BRA	LOOP__13
-L150:					; post loop LOOP__13
-	BRA	L142
-L147:
-L142:					; post if
-	BRA	L140
-L141:
-L140:					; post if
+L158:					; post loop LOOP__13
+	BRA	L150
+L155:
+L150:					; post if
+	BRA	L148
+L149:
+L148:					; post if
 					; debut if
 	LVA 1,	NAME_DEF_disp
 	LVA 0,	STANDARD.IDL.TREE_VOID_disp
 	CNE
-	BF	L155
+	BF	L163
 					; debut if
-	LIb	1, NAME_disp, STANDARD.IDL.TREE.TY
+	La	1, NAME_disp
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	137
 	CEQ
-	BF	L157
+	BF	L165
 					; debut if
 	LI	133
 	CEQ
-	BF	L159
+	BF	L167
 VAR	ANON_515_26_disp, q
 VAR	ANON_515_26__u,    q
 VAR	ANON_515_26__dat, STANDARD.IDL.TREE.size
@@ -2938,9 +3021,9 @@ VAR	ANON_515_57__dat, STANDARD.IDL.TREE.size
 	LVA 1,	NAME_disp
 	LI  91
 	CALL	STANDARD.IDL. ,D_L16
-	BRA	L158
-L159:
-L158:					; post if
+	BRA	L166
+L167:
+L166:					; post if
 VAR	ANON_517_46_disp, q
 VAR	ANON_517_46__u,    q
 VAR	ANON_517_46__dat, STANDARD.IDL.TREE.size
@@ -2967,13 +3050,17 @@ VAR	ANON_517_21__dat, STANDARD.IDL.TREE.size
 	CALL	STANDARD.IDL. ,D_L17
 	LI  89
 	CALL	STANDARD.IDL. ,D_L16
-	BRA	L156
-L157:
+	BRA	L164
+L165:
 					; debut if
-	LIb	1, NAME_disp, STANDARD.IDL.TREE.TY
+	La	1, NAME_disp
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	133
 	CEQ
-	BF	L161
+	BF	L169
 	LVA 1,	NAME_disp
 	La
 	LI	STANDARD.IDL.TREE.size
@@ -2994,9 +3081,9 @@ VAR	ANON_520_10__dat, STANDARD.IDL.TREE.size
 	La  1,	-SELECTED_ofs
 	LI  48
 	CALL	STANDARD.IDL. ,D_L16
-	BRA	L160
-L161:
-L160:					; post if
+	BRA	L168
+L169:
+L168:					; post if
 VAR	ANON_523_27_disp, q
 VAR	ANON_523_27__u,    q
 VAR	ANON_523_27__dat, STANDARD.IDL.TREE.size
@@ -3012,7 +3099,7 @@ VAR	ANON_523_27__dat, STANDARD.IDL.TREE.size
 	LVA 1,	NAME_disp
 	LI  89
 	CALL	STANDARD.IDL. ,D_L16
-L156:					; post if
+L164:					; post if
 namespace	BLOCK__14
 ELB 2					;    BODY ELAB
 VAR OLD_DEFSET_disp, q			; variable record : pointeur aux data record
@@ -3096,7 +3183,7 @@ LOOP__16:
 	CALL	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL. ,IS_EMPTY_L74
 	LI	1
 	OUX
-	BF	L162
+	BF	L170
 	LVA  2,	OLD_DEFINTERP_disp
 	LVA  2,	OLD_DEFSET_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL. ,POP_L75
@@ -3128,24 +3215,28 @@ VAR	ANON_538_31__dat, STANDARD.IDL.TREE.size
 	La
 	BLKMOV
 					; debut if
-	LIb	2, OLD_ID_disp, STANDARD.IDL.TREE.TY
+	La	2, OLD_ID_disp
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	40
 	CEQ
 	DUP
-	BT	L166
+	BT	L174
 	DROP
-L166:
+L174:
 	DUP
-	BT	L165
+	BT	L173
 	DROP
 	DUP
-	BF	L167
+	BF	L175
 	DROP
 	LI	169
 	CEQ
-L167:
-L165:
-	BF	L164
+L175:
+L173:
+	BF	L172
 	LVA 2,	TEMP_DEFSET_disp
 	La
 	LI	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL.DEFSET_TYPE.size
@@ -3158,7 +3249,7 @@ LOOP__17:
 	CALL	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL. ,IS_EMPTY_L74
 	LI	1
 	OUX
-	BF	L168
+	BF	L176
 	LVA 2,	TEMP_DEFINTERP_disp
 	La
 	LI	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL.DEFINTERP_TYPE.size
@@ -3180,7 +3271,7 @@ VAR	ANON_542_24__dat, STANDARD.IDL.SEM_PHASE_L11.SET_UTIL.DEFINTERP_TYPE.size
 	LVA 2,	OLD_DEFINTERP_disp
 	CNE
 	DUP
-	BF	L171
+	BF	L179
 	DROP
 	LI	0					; lieu resultat sur pile
 VAR	ANON_543_113_disp, q
@@ -3228,20 +3319,24 @@ VAR	ANON_543_87__dat, STANDARD.IDL.TREE.size
 	LI  168
 	CALL	STANDARD.IDL. ,D_L17
 	CALL	STANDARD.IDL.SEM_PHASE_L11.DEF_UTIL. ,ARE_HOMOGRAPH_HEADERS_L63
-L171:
-	BF	L170
+L179:
+	BF	L178
 					; debut if
-	LIb	2, OLD_ID_disp, STANDARD.IDL.TREE.TY
+	La	2, OLD_ID_disp
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	40
 	CEQ
 	DUP
-	BT	L174
+	BT	L182
 	DROP
-L174:
-	BF	L173
-	BRA	L168
-	BRA	L172
-L173:
+L182:
+	BF	L181
+	BRA	L176
+	BRA	L180
+L181:
 	LVA 2,	TEMP_ID_disp
 	La
 	LI	STANDARD.IDL.TREE.size
@@ -3270,46 +3365,50 @@ VAR	ANON_547_40__dat, STANDARD.IDL.TREE.size
 	La
 	BLKMOV
 					; debut if
-	LIb	2, TEMP_ID_disp, STANDARD.IDL.TREE.TY
+	La	2, TEMP_ID_disp
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	40
 	CNE
 	DUP
-	BF	L178
+	BF	L186
 	DROP
-L178:
-	BF	L177
-	BRA	L168
+L186:
+	BF	L185
 	BRA	L176
-L177:
-L176:					; post if
-L172:					; post if
-	BRA	L169
-L170:
-L169:					; post if
+	BRA	L184
+L185:
+L184:					; post if
+L180:					; post if
+	BRA	L177
+L178:
+L177:					; post if
 	LVA  2,	TEMP_DEFINTERP_disp
 	LVA  2,	TEMP_DEFSET_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL. ,POP_L75
 	BRA	LOOP__17
-L168:					; post loop LOOP__17
+L176:					; post loop LOOP__17
 					; debut if
 	LI	0					; lieu resultat sur pile
 	LVA 2,	TEMP_DEFSET_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL. ,IS_EMPTY_L74
-	BF	L181
+	BF	L189
 	LVA 2,	OLD_DEFINTERP_disp
 	LVA  2,	NEW_NEW_DEFSET_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL. ,ADD_TO_DEFSET_L80
-	BRA	L180
-L181:
-L180:					; post if
-	BRA	L163
-L164:
+	BRA	L188
+L189:
+L188:					; post if
+	BRA	L171
+L172:
 	LVA 2,	OLD_DEFINTERP_disp
 	LVA  2,	NEW_NEW_DEFSET_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL. ,ADD_TO_DEFSET_L80
-L163:					; post if
+L171:					; post if
 	BRA	LOOP__16
-L162:					; post loop LOOP__16
+L170:					; post loop LOOP__16
 	LVA 1,	STANDARD.IDL.SEM_PHASE_L11.VIS_UTIL.FIND_SELECTED_VISIBILITY_L6.NEW_DEFSET_disp
 	La
 	LI	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL.DEFSET_TYPE.size
@@ -3318,69 +3417,73 @@ L162:					; post loop LOOP__16
 	BLKMOV
 	UNLINK 2
 endPRO
-	BRA	L154
-L155:
+	BRA	L162
+L163:
 	LI	0					; lieu resultat sur pile
 	LVA 1,	NAME_DEFSET_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL. ,IS_EMPTY_L74
 	LI	1
 	OUX
-	BF	L182
+	BF	L190
 	LVA  1,	NAME_TYPESET_disp
 	LVA  1,	NAME_DEFSET_disp
-	CALL	STANDARD.IDL.SEM_PHASE_L11.VIS_UTIL. ,REDUCE_NAME_TYPES_L21
+	CALL	STANDARD.IDL.SEM_PHASE_L11.VIS_UTIL. ,REDUCE_NAME_TYPES_L28
 	LVA 1,	NAME_DEFSET_disp
 	LVA 1,	NAME_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL. ,STASH_DEFSET_L102
-	BRA	L154
-L182:
-L154:					; post if
+	BRA	L162
+L190:
+L162:					; post if
 					; debut if
 	LI	0					; lieu resultat sur pile
 	LVA 1,	NAME_TYPESET_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL. ,IS_EMPTY_L88
 	LI	1
 	OUX
-	BF	L184
+	BF	L192
 	LVA  1,	NEW_DEFSET_disp
 	LVA 1,	DESIGNATOR_disp
 	LVA  1,	NAME_TYPESET_disp
-	CALL	STANDARD.IDL.SEM_PHASE_L11.VIS_UTIL. ,FIND_SELECTED_DEFS_L22
-	BRA	L183
-L184:
-L183:					; post if
+	CALL	STANDARD.IDL.SEM_PHASE_L11.VIS_UTIL. ,FIND_SELECTED_DEFS_L29
+	BRA	L191
+L192:
+L191:					; post if
 					; debut if
-	LIb	1, NAME_disp, STANDARD.IDL.TREE.TY
+	La	1, NAME_disp
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	135
 	CNE
-	BF	L186
+	BF	L194
 	LVA 1,	NAME_TYPESET_disp
 	LVA 1,	NAME_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL. ,STASH_TYPESET_L104
-	BRA	L185
-L186:
-L185:					; post if
+	BRA	L193
+L194:
+L193:					; post if
 					; debut if
 	LI	0					; lieu resultat sur pile
 	LVA 1,	NEW_DEFSET_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL. ,IS_EMPTY_L74
 	DUP
-	BF	L189
+	BF	L197
 	DROP
 	LI	0					; lieu resultat sur pile
 	LVA 1,	NAME_DEFSET_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL. ,IS_EMPTY_L74
 	DUP
-	BF	L190
+	BF	L198
 	DROP
 	LI	0					; lieu resultat sur pile
 	LVA 1,	NAME_TYPESET_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL. ,IS_EMPTY_L88
-L190:
+L198:
 	LI	1
 	OUX
-L189:
-	BF	L188
+L197:
+	BF	L196
 ; CODE & concat STRING
 VAR	ANON_581_41_data, q
 VAR	ANON_581_41_info, q
@@ -3392,9 +3495,9 @@ VAR	ANON_581_41_disp, q
 VAR	ANON_581_41__u,   q
 namespace ANON_581_41_info
   VAR SIZ,      d
-  VAR COMP_SIZ, d
-  VAR FST_1,    d
-  VAR LST_1,    d
+  VAR _COMP_SIZ, d
+  VAR _FST_1,    d
+  VAR _LST_1,    d
 end namespace
 STR ANON_581_41, "NOT VISIBLE BY SELECTION - "	; constante string="NOT VISIBLE BY SELECTION - "
 	LCA	ANON_581_41.data_ptr
@@ -3404,17 +3507,17 @@ STR ANON_581_41, "NOT VISIBLE BY SELECTION - "	; constante string="NOT VISIBLE B
 	La  ,  8
 	Sa  1, ANON_581_41_info
 	LId 1, ANON_581_41_info, STRING.LST_1
-	INC
 	LId 1, ANON_581_41_info, STRING.FST_1
 	SUB
+	INC
 	Sa  1, ANON_581_41_len
 VAR	ANON_581_73_disp, q
 VAR	ANON_581_73__u,   q
 namespace ANON_581_73_info
-  VAR SIZ,      d
-  VAR COMP_SIZ, d
-  VAR FST_1,    d
-  VAR LST_1,    d
+  VAR SIZ, d
+  VAR _COMP_SIZ, d
+  VAR _FST_1, d
+  VAR _LST_1, d
 end namespace
 	LVA 1, ANON_581_73_info.SIZ
 	Sa  1, ANON_581_73__u
@@ -3438,9 +3541,9 @@ VAR	ANON_581_85__dat, STANDARD.IDL.TREE.size
 	La  ,  8
 	Sa  1, ANON_581_73_info
 	LId 1, ANON_581_73_info, STRING.LST_1
-	INC
 	LId 1, ANON_581_73_info, STRING.FST_1
 	SUB
+	INC
 	Sa  1, ANON_581_73_len
 	La  1, ANON_581_41_len
 	La  1, ANON_581_73_len
@@ -3448,13 +3551,13 @@ VAR	ANON_581_85__dat, STANDARD.IDL.TREE.size
 	CO_VAR
 	Sa  1, ANON_581_41_disp
 	LI	1
-	Sd  1, ANON_581_41_info.FST_1
+	Sd  1, ANON_581_41_info._FST_1
 	La  1, ANON_581_41_len
 	La  1, ANON_581_73_len
 	ADD
-	Sd  1, ANON_581_41_info.LST_1
+	Sd  1, ANON_581_41_info._LST_1
 	LI	8
-	Sd  1, ANON_581_41_info.COMP_SIZ
+	Sd  1, ANON_581_41_info._COMP_SIZ
 	La  1, ANON_581_41_len
 	La  1, ANON_581_73_len
 	ADD
@@ -3487,8 +3590,8 @@ VAR	ANON_581_14__dat, STANDARD.IDL.TREE.size
 	LI  154
 	CALL	STANDARD.IDL. ,D_L17
 	CALL	STANDARD.IDL.IDL_MAN. ,ERROR_L45
-	BRA	L187
-L188:
+	BRA	L195
+L196:
 namespace	BLOCK__15
 ELB 2					;    BODY ELAB
 VAR TEMP_DEFSET_disp, q			; variable record : pointeur aux data record
@@ -3522,7 +3625,7 @@ LOOP__18:
 	CALL	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL. ,IS_EMPTY_L74
 	LI	1
 	OUX
-	BF	L191
+	BF	L199
 	LVA  2,	TEMP_DEFINTERP_disp
 	LVA  2,	TEMP_DEFSET_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL. ,POP_L75
@@ -3566,14 +3669,18 @@ VAR	ANON_595_37__dat, STANDARD.IDL.TREE.size
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 					; debut if
-; CODE_SELECTED.RECURSE_SELECTED DESIGNATOR.TY PAS FAIT: DN_DISCRIMINANT_ID
+	La	3, HEADER_disp
+	Ld
+	LI	0
+	LI	2
+	UBFX
 	LI	3
 	CEQ
 	DUP
-	BF	L194
+	BF	L202
 	DROP
-L194:
-	BF	L193
+L202:
+	BF	L201
 	LVA 1,	STANDARD.IDL.SEM_PHASE_L11.VIS_UTIL.FIND_SELECTED_VISIBILITY_L6.NEW_DEFSET_disp
 	La
 	LI	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL.DEFSET_TYPE.size
@@ -3581,10 +3688,14 @@ L194:
 	La
 	BLKMOV
 					; debut if
-	LIb	3, HEADER_disp, STANDARD.IDL.TREE.NOTY
+	La	3, HEADER_disp
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	3
 	CEQ
-	BF	L196
+	BF	L204
 ; CODE & concat STRING
 VAR	ANON_606_45_data, q
 VAR	ANON_606_45_info, q
@@ -3596,9 +3707,9 @@ VAR	ANON_606_45_disp, q
 VAR	ANON_606_45__u,   q
 namespace ANON_606_45_info
   VAR SIZ,      d
-  VAR COMP_SIZ, d
-  VAR FST_1,    d
-  VAR LST_1,    d
+  VAR _COMP_SIZ, d
+  VAR _FST_1,    d
+  VAR _LST_1,    d
 end namespace
 STR ANON_606_45, "PRIOR ERROR IN DECLARATION - "	; constante string="PRIOR ERROR IN DECLARATION - "
 	LCA	ANON_606_45.data_ptr
@@ -3608,17 +3719,17 @@ STR ANON_606_45, "PRIOR ERROR IN DECLARATION - "	; constante string="PRIOR ERROR
 	La  ,  8
 	Sa  3, ANON_606_45_info
 	LId 3, ANON_606_45_info, STRING.LST_1
-	INC
 	LId 3, ANON_606_45_info, STRING.FST_1
 	SUB
+	INC
 	Sa  3, ANON_606_45_len
 VAR	ANON_606_79_disp, q
 VAR	ANON_606_79__u,   q
 namespace ANON_606_79_info
-  VAR SIZ,      d
-  VAR COMP_SIZ, d
-  VAR FST_1,    d
-  VAR LST_1,    d
+  VAR SIZ, d
+  VAR _COMP_SIZ, d
+  VAR _FST_1, d
+  VAR _LST_1, d
 end namespace
 	LVA 3, ANON_606_79_info.SIZ
 	Sa  3, ANON_606_79__u
@@ -3642,9 +3753,9 @@ VAR	ANON_606_91__dat, STANDARD.IDL.TREE.size
 	La  ,  8
 	Sa  3, ANON_606_79_info
 	LId 3, ANON_606_79_info, STRING.LST_1
-	INC
 	LId 3, ANON_606_79_info, STRING.FST_1
 	SUB
+	INC
 	Sa  3, ANON_606_79_len
 	La  3, ANON_606_45_len
 	La  3, ANON_606_79_len
@@ -3652,13 +3763,13 @@ VAR	ANON_606_91__dat, STANDARD.IDL.TREE.size
 	CO_VAR
 	Sa  3, ANON_606_45_disp
 	LI	1
-	Sd  3, ANON_606_45_info.FST_1
+	Sd  3, ANON_606_45_info._FST_1
 	La  3, ANON_606_45_len
 	La  3, ANON_606_79_len
 	ADD
-	Sd  3, ANON_606_45_info.LST_1
+	Sd  3, ANON_606_45_info._LST_1
 	LI	8
-	Sd  3, ANON_606_45_info.COMP_SIZ
+	Sd  3, ANON_606_45_info._COMP_SIZ
 	La  3, ANON_606_45_len
 	La  3, ANON_606_79_len
 	ADD
@@ -3691,8 +3802,8 @@ VAR	ANON_606_17__dat, STANDARD.IDL.TREE.size
 	LI  154
 	CALL	STANDARD.IDL. ,D_L17
 	CALL	STANDARD.IDL.IDL_MAN. ,WARNING_L46
-	BRA	L195
-L196:
+	BRA	L203
+L204:
 ; CODE & concat STRING
 VAR	ANON_608_43_data, q
 VAR	ANON_608_43_info, q
@@ -3704,9 +3815,9 @@ VAR	ANON_608_43_disp, q
 VAR	ANON_608_43__u,   q
 namespace ANON_608_43_info
   VAR SIZ,      d
-  VAR COMP_SIZ, d
-  VAR FST_1,    d
-  VAR LST_1,    d
+  VAR _COMP_SIZ, d
+  VAR _FST_1,    d
+  VAR _LST_1,    d
 end namespace
 STR ANON_608_43, "NAME NOT YET VISIBLE - "	; constante string="NAME NOT YET VISIBLE - "
 	LCA	ANON_608_43.data_ptr
@@ -3716,17 +3827,17 @@ STR ANON_608_43, "NAME NOT YET VISIBLE - "	; constante string="NAME NOT YET VISI
 	La  ,  8
 	Sa  3, ANON_608_43_info
 	LId 3, ANON_608_43_info, STRING.LST_1
-	INC
 	LId 3, ANON_608_43_info, STRING.FST_1
 	SUB
+	INC
 	Sa  3, ANON_608_43_len
 VAR	ANON_608_71_disp, q
 VAR	ANON_608_71__u,   q
 namespace ANON_608_71_info
-  VAR SIZ,      d
-  VAR COMP_SIZ, d
-  VAR FST_1,    d
-  VAR LST_1,    d
+  VAR SIZ, d
+  VAR _COMP_SIZ, d
+  VAR _FST_1, d
+  VAR _LST_1, d
 end namespace
 	LVA 3, ANON_608_71_info.SIZ
 	Sa  3, ANON_608_71__u
@@ -3750,9 +3861,9 @@ VAR	ANON_608_83__dat, STANDARD.IDL.TREE.size
 	La  ,  8
 	Sa  3, ANON_608_71_info
 	LId 3, ANON_608_71_info, STRING.LST_1
-	INC
 	LId 3, ANON_608_71_info, STRING.FST_1
 	SUB
+	INC
 	Sa  3, ANON_608_71_len
 	La  3, ANON_608_43_len
 	La  3, ANON_608_71_len
@@ -3760,13 +3871,13 @@ VAR	ANON_608_83__dat, STANDARD.IDL.TREE.size
 	CO_VAR
 	Sa  3, ANON_608_43_disp
 	LI	1
-	Sd  3, ANON_608_43_info.FST_1
+	Sd  3, ANON_608_43_info._FST_1
 	La  3, ANON_608_43_len
 	La  3, ANON_608_71_len
 	ADD
-	Sd  3, ANON_608_43_info.LST_1
+	Sd  3, ANON_608_43_info._LST_1
 	LI	8
-	Sd  3, ANON_608_43_info.COMP_SIZ
+	Sd  3, ANON_608_43_info._COMP_SIZ
 	La  3, ANON_608_43_len
 	La  3, ANON_608_71_len
 	ADD
@@ -3799,17 +3910,17 @@ VAR	ANON_608_15__dat, STANDARD.IDL.TREE.size
 	LI  154
 	CALL	STANDARD.IDL. ,D_L17
 	CALL	STANDARD.IDL.IDL_MAN. ,ERROR_L45
-L195:					; post if
-	BRA	L192
-L193:
-L192:					; post if
+L203:					; post if
+	BRA	L200
+L201:
+L200:					; post if
 	UNLINK 3
 endPRO
 	BRA	LOOP__18
-L191:					; post loop LOOP__18
+L199:					; post loop LOOP__18
 	UNLINK 2
 endPRO
-L187:					; post if
+L195:					; post if
 	La  1,	-DEFSET_ofs
 	La
 	LI	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL.DEFSET_TYPE.size
@@ -3889,7 +4000,7 @@ LOOP__20:
 	CALL	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL. ,IS_EMPTY_L74
 	LI	1
 	OUX
-	BF	L197
+	BF	L205
 	LVA  1,	DEFINTERP_disp
 	LVA  1,	TEMP_DEFSET_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL. ,POP_L75
@@ -3928,11 +4039,11 @@ VAR	ANON_640_28__dat, STANDARD.IDL.TREE.size
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	CEQ
-	BF	L199
-	BRA	L197
-	BRA	L198
-L199:
-L198:					; post if
+	BF	L207
+	BRA	L205
+	BRA	L206
+L207:
+L206:					; post if
 					; debut if
 	LI	0					; lieu resultat sur pile
 	LVA 1,	DEF_disp
@@ -3941,20 +4052,20 @@ L198:					; post if
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	CGT
-	BF	L202
+	BF	L210
 					; debut if
 	LVA 1,	ENCLOSING_DEF_disp
 	LVA 0,	STANDARD.IDL.TREE_VOID_disp
 	CEQ
-	BF	L204
+	BF	L212
 	LVA 1,	ENCLOSING_DEF_disp
 	La
 	LI	STANDARD.IDL.TREE.size
 	LVA 1,	DEF_disp
 	La
 	BLKMOV
-	BRA	L203
-L204:
+	BRA	L211
+L212:
 	LI	1
 	Sb  1,	IS_MULTIPLE_DEF_disp
 					; debut if
@@ -3967,27 +4078,27 @@ L204:
 	LI  171
 	CALL	STANDARD.IDL. ,DI_L21
 	CGT
-	BF	L206
+	BF	L214
 	LVA 1,	ENCLOSING_DEF_disp
 	La
 	LI	STANDARD.IDL.TREE.size
 	LVA 1,	DEF_disp
 	La
 	BLKMOV
-	BRA	L205
-L206:
-L205:					; post if
-L203:					; post if
-	BRA	L201
-L202:
-L201:					; post if
+	BRA	L213
+L214:
+L213:					; post if
+L211:					; post if
+	BRA	L209
+L210:
+L209:					; post if
 	BRA	LOOP__20
-L197:					; post loop LOOP__20
+L205:					; post loop LOOP__20
 					; debut if
 	Lb 1,	IS_MULTIPLE_DEF_disp
-	BF	L208
-STR STR_L209, "AMBIGUOUS ENCLOSING REGION"	; constante string="AMBIGUOUS ENCLOSING REGION"
-	LCA	STR_L209.data_ptr
+	BF	L216
+STR STR_L217, "AMBIGUOUS ENCLOSING REGION"	; constante string="AMBIGUOUS ENCLOSING REGION"
+	LCA	STR_L217.data_ptr
 VAR	ANON_668_14_disp, q
 VAR	ANON_668_14__u,    q
 VAR	ANON_668_14__dat, STANDARD.IDL.TREE.size
@@ -4001,9 +4112,9 @@ VAR	ANON_668_14__dat, STANDARD.IDL.TREE.size
 	LI  154
 	CALL	STANDARD.IDL. ,D_L17
 	CALL	STANDARD.IDL.IDL_MAN. ,ERROR_L45
-	BRA	L207
-L208:
-L207:					; post if
+	BRA	L215
+L216:
+L215:					; post if
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   1,	-result__ofs
 	La  ,  0
@@ -4138,8 +4249,8 @@ PRMS					;    debut parametrage
 endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
 
-if defined MAKE_UPPER_CASE_L210_
-PRO	MAKE_UPPER_CASE_L210			;---------- PRO MAKE_UPPER_CASE
+if defined MAKE_UPPER_CASE_L218_
+PRO	MAKE_UPPER_CASE_L218			;---------- PRO MAKE_UPPER_CASE
 PRMS					;    debut parametrage
 	PRM A_ofs				; in
 	PRM result__ofs				; resultat de fonction
@@ -4151,28 +4262,28 @@ VAR use__info, q
 VAR SIZ, d
 	LVA	2, SIZ
 	Sa	2, use__info
-VAR COMP_SIZ, d
-VAR FST_1, d
-VAR LST_1, d
+VAR _COMP_SIZ, d
+VAR _FST_1, d
+VAR _LST_1, d
 	LI	8
-	Sd	2, COMP_SIZ
-	Ld	2, COMP_SIZ
+	Sd	2, _COMP_SIZ
+	Ld	2, _COMP_SIZ
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
-	Sd	2, FST_1
+	Sd	2, _FST_1
 	LVA	2, -A_ofs
 	LIa	, , 8
 	Ld	, STRING.LST_1
-	INC
 	LVA	2, -A_ofs
 	LIa	, , 8
 	Ld	, STRING.FST_1
 	SUB
-	Sd	2, LST_1
-	Ld	2, LST_1
 	INC
-	Ld	2, FST_1
+	Sd	2, _LST_1
+	Ld	2, _LST_1
+	Ld	2, _FST_1
 	SUB
+	INC
 	MUL
 	Sd	2, SIZ
   virtual at 4
@@ -4192,29 +4303,21 @@ VAR A_WORK__u, q				; variable array : useinfo pointeur au rec info
 
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-VAR	IL212_disp, d				; compteur boucle LOOP__21
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	1
-	Sd  2,	IL212_disp
-VAR	LMT_IL212_disp, d			; limite boucle LOOP__21
-	LVA	2, -A_ofs
-	LIa	, , 8
-	Ld	, STRING.LST_1
-	INC
-	LVA	2, -A_ofs
-	LIa	, , 8
-	Ld	, STRING.FST_1
-	SUB
-	Sd  2,	LMT_IL212_disp
-	Ld  2,	IL212_disp				; test null range LOOP__21
-	Ld  2,	LMT_IL212_disp
+VAR	IL220_disp, d				; compteur boucle LOOP__21
+	LId	2, A_WORK__u, STRING.FST_1
+	Sd  2,	IL220_disp
+VAR	LMT_IL220_disp, d			; limite boucle LOOP__21
+	LId	2, A_WORK__u, STRING.LST_1
+	Sd  2,	LMT_IL220_disp
+	Ld  2,	IL220_disp				; test null range LOOP__21
+	Ld  2,	LMT_IL220_disp
 	CGT
-	BT	L211
+	BT	L219
 LOOP__21:					; corps boucle LOOP__21
 					; debut if
-	BF	L214
+	BF	L222
 	La	 2, A_WORK_disp				; array data start address on stack
-	Ld	2, IL212_disp
+	Ld	2, IL220_disp
 	LId	2, A_WORK__u, STANDARD.STRING.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	2, A_WORK__u, STANDARD.STRING.COMP_SIZ
@@ -4223,7 +4326,7 @@ LOOP__21:					; corps boucle LOOP__21
 	MUL
 	ADD					; add offset to start address
 	La	 2, A_WORK_disp				; array data start address on stack
-	Ld	2, IL212_disp
+	Ld	2, IL220_disp
 	LId	2, A_WORK__u, STANDARD.STRING.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	2, A_WORK__u, STANDARD.STRING.COMP_SIZ
@@ -4237,32 +4340,32 @@ LOOP__21:					; corps boucle LOOP__21
 	SUB
 	SUB
 	Sb
-	BRA	L213
-L214:
-L213:					; post if
-	Ld  2,	IL212_disp				; test de sortie LOOP__21
-	Ld  2,	LMT_IL212_disp
+	BRA	L221
+L222:
+L221:					; post if
+	Ld  2,	IL220_disp				; test de sortie LOOP__21
+	Ld  2,	LMT_IL220_disp
 	CEQ
-	BT	L211
-	Ld  2,	IL212_disp				; mise a jour compteur LOOP__21
+	BT	L219
+	Ld  2,	IL220_disp				; mise a jour compteur LOOP__21
 	INC
-	Sd  2,	IL212_disp
+	Sd  2,	IL220_disp
 	BRA	LOOP__21				; iteration suivante LOOP__21
-L211:					; post loop LOOP__21
+L219:					; post loop LOOP__21
 ; CODE_RETURN : EXPR TYPE = DN_CONSTRAINED_ARRAY
 	LVA 2,	A_WORK_disp
-VAR	RET_INFO_L215, q
+VAR	RET_INFO_L223, q
 	DUP
 	La  ,  0
 	SIq   2, -result__ofs,  0
 	DUP
 	La  ,  8
-	Sa   2, RET_INFO_L215
+	Sa   2, RET_INFO_L223
 	DROP
 	La   2, -result__ofs
 	La  ,  8
 	LI	16
-	La   2, RET_INFO_L215
+	La   2, RET_INFO_L223
 	BLKMOV
 	BRA ret_lbl
 ret_lbl:
@@ -4298,10 +4401,10 @@ VAR	ANON_701_80__dat, STANDARD.IDL.TREE.size
 VAR	ANON_701_91_disp, q
 VAR	ANON_701_91__u,   q
 namespace ANON_701_91_info
-  VAR SIZ,      d
-  VAR COMP_SIZ, d
-  VAR FST_1,    d
-  VAR LST_1,    d
+  VAR SIZ, d
+  VAR _COMP_SIZ, d
+  VAR _FST_1, d
+  VAR _LST_1, d
 end namespace
 	LVA 1, ANON_701_91_info.SIZ
 	Sa  1, ANON_701_91__u
@@ -4309,10 +4412,10 @@ end namespace
 VAR	ANON_701_108_disp, q
 VAR	ANON_701_108__u,   q
 namespace ANON_701_108_info
-  VAR SIZ,      d
-  VAR COMP_SIZ, d
-  VAR FST_1,    d
-  VAR LST_1,    d
+  VAR SIZ, d
+  VAR _COMP_SIZ, d
+  VAR _FST_1, d
+  VAR _LST_1, d
 end namespace
 	LVA 1, ANON_701_108_info.SIZ
 	Sa  1, ANON_701_108__u
@@ -4330,7 +4433,7 @@ VAR	ANON_701_120__dat, STANDARD.IDL.TREE.size
 	LI  13
 	CALL	STANDARD.IDL. ,D_L17
 	CALL	STANDARD.IDL. ,PRINT_NAME_L25
-	CALL	STANDARD.IDL.SEM_PHASE_L11.VIS_UTIL.MAKE_USED_OP_FROM_STRING_L9. ,MAKE_UPPER_CASE_L210
+	CALL	STANDARD.IDL.SEM_PHASE_L11.VIS_UTIL.MAKE_USED_OP_FROM_STRING_L9. ,MAKE_UPPER_CASE_L218
 	CALL	STANDARD.IDL.IDL_MAN. ,STORE_SYM_L40
 VAR	ANON_701_39_disp, q
 VAR	ANON_701_39__u,    q
@@ -4355,8 +4458,8 @@ excep:
 endPRO					;---------- end PRO MAKE_USED_OP_FROM_STRING
 end if
 
-if defined REDUCE_NAME_TYPES_L21_
-PRO	REDUCE_NAME_TYPES_L21			;---------- PRO REDUCE_NAME_TYPES
+if defined REDUCE_NAME_TYPES_L28_
+PRO	REDUCE_NAME_TYPES_L28			;---------- PRO REDUCE_NAME_TYPES
 PRMS					;    debut parametrage
 	PRM DEFSET_ofs				; in out
 	PRM TYPESET_ofs				; out
@@ -4425,7 +4528,7 @@ LOOP__22:
 	CALL	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL. ,IS_EMPTY_L74
 	LI	1
 	OUX
-	BF	L216
+	BF	L224
 	LVA  1,	DEFINTERP_disp
 	La  1,	-DEFSET_ofs
 	CALL	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL. ,POP_L75
@@ -4465,7 +4568,7 @@ VAR	ANON_720_20__dat, STANDARD.IDL.TREE.size
 	LVA 1,	TYPE_SPEC_disp
 	LVA 0,	STANDARD.IDL.TREE_VOID_disp
 	CNE
-	BF	L218
+	BF	L226
 	LVA 1,	DEFINTERP_disp
 	LVA  1,	NEW_DEFSET_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL. ,ADD_TO_DEFSET_L80
@@ -4483,11 +4586,11 @@ VAR	ANON_724_49__dat, STANDARD.IDL.SEM_PHASE_L11.SET_UTIL.EXTRAINFO_TYPE.size
 	LVA 1,	TYPE_SPEC_disp
 	LVA  1,	NEW_TYPESET_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL. ,ADD_TO_TYPESET_L92
-	BRA	L217
-L218:
-L217:					; post if
+	BRA	L225
+L226:
+L225:					; post if
 	BRA	LOOP__22
-L216:					; post loop LOOP__22
+L224:					; post loop LOOP__22
 	La  1,	-DEFSET_ofs
 	La
 	LI	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL.DEFSET_TYPE.size
@@ -4567,14 +4670,18 @@ VAR	ANON_739_31__dat, STANDARD.IDL.TREE.size
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 					; debut if
-	LIb	1, ID_disp, STANDARD.IDL.TREE.TY
+	La	1, ID_disp
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	14
 	CEQ
-	BF	L220
+	BF	L228
 					; debut if
 	LI	217
 	CEQ
-	BF	L222
+	BF	L230
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   1,	-result__ofs
 	La  ,  0
@@ -4593,8 +4700,8 @@ VAR	ANON_743_16__dat, STANDARD.IDL.TREE.size
 	La  ,  0
 	BLKMOV
 	BRA ret_lbl
-	BRA	L221
-L222:
+	BRA	L229
+L230:
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   1,	-result__ofs
 	La  ,  0
@@ -4613,10 +4720,10 @@ VAR	ANON_745_16__dat, STANDARD.IDL.TREE.size
 	La  ,  0
 	BLKMOV
 	BRA ret_lbl
-L221:					; post if
-	BRA	L219
-L220:
-	BF	L223
+L229:					; post if
+	BRA	L227
+L228:
+	BF	L231
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   1,	-result__ofs
 	La  ,  0
@@ -4645,18 +4752,22 @@ VAR	ANON_748_29__dat, STANDARD.IDL.TREE.size
 	La  ,  0
 	BLKMOV
 	BRA ret_lbl
-	BRA	L219
-L223:
-	LIb	1, HEADER_disp, STANDARD.IDL.TREE.TY
+	BRA	L227
+L231:
+	La	1, HEADER_disp
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	165
 	CEQ
 	DUP
-	BF	L225
+	BF	L233
 	DROP
 	LI	0					; lieu resultat sur pile
 	CALL	STANDARD.IDL.SEM_PHASE_L11.VIS_UTIL. ,ALL_PARAMETERS_HAVE_DEFAULTS_L11
-L225:
-	BF	L224
+L233:
+	BF	L232
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   1,	-result__ofs
 	La  ,  0
@@ -4685,16 +4796,16 @@ VAR	ANON_750_29__dat, STANDARD.IDL.TREE.size
 	La  ,  0
 	BLKMOV
 	BRA ret_lbl
-	BRA	L219
-L224:
+	BRA	L227
+L232:
 	DUP
-	BF	L228
+	BF	L236
 	DROP
 	LI	201
 	CEQ
-L228:
+L236:
 	DUP
-	BF	L227
+	BF	L235
 	DROP
 	LI	0					; lieu resultat sur pile
 VAR	ANON_751_109_disp, q
@@ -4733,8 +4844,8 @@ VAR	ANON_751_144__dat, STANDARD.IDL.TREE.size
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	CGT
-L227:
-	BF	L226
+L235:
+	BF	L234
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   1,	-result__ofs
 	La  ,  0
@@ -4752,8 +4863,8 @@ VAR	ANON_752_14__dat, STANDARD.IDL.TREE.size
 	La  ,  0
 	BLKMOV
 	BRA ret_lbl
-	BRA	L219
-L226:
+	BRA	L227
+L234:
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   1,	-result__ofs
 	La  ,  0
@@ -4762,7 +4873,7 @@ L226:
 	La  ,  0
 	BLKMOV
 	BRA ret_lbl
-L219:					; post if
+L227:					; post if
 ret_lbl:
 	UNLINK 1
 	RTD	prm_siz-8
@@ -4829,7 +4940,7 @@ LOOP__23:
 	CALL	STANDARD.IDL. ,IS_EMPTY_L23
 	LI	1
 	OUX
-	BF	L229
+	BF	L237
 	LVA  1,	PARAM_disp
 	LVA  1,	PARAM_LIST_disp
 	CALL	STANDARD.IDL. ,POP_L24
@@ -4848,16 +4959,16 @@ VAR	ANON_772_10__dat, STANDARD.IDL.TREE.size
 	CALL	STANDARD.IDL. ,D_L17
 	LVA 0,	STANDARD.IDL.TREE_VOID_disp
 	CEQ
-	BF	L231
+	BF	L239
 ; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
 	LI	0
 	Sb  1,	-result__ofs
 	BRA ret_lbl
-	BRA	L230
-L231:
-L230:					; post if
+	BRA	L238
+L239:
+L238:					; post if
 	BRA	LOOP__23
-L229:					; post loop LOOP__23
+L237:					; post loop LOOP__23
 ; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
 	LI	1
 	Sb  1,	-result__ofs
@@ -4879,28 +4990,50 @@ ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 ; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
-; CODE_SELECTED.RECURSE_SELECTED DESIGNATOR.TY PAS FAIT: DN_DISCRIMINANT_ID
+	La 1, -HEADER_ofs
+	La	-1, 0
+	Ld
+	LI	0
+	LI	2
+	UBFX
 	LI	0
 	CEQ
-; CODE_SELECTED.RECURSE_SELECTED DESIGNATOR.TY PAS FAIT: DN_DISCRIMINANT_ID
+	La 1, -HEADER_ofs
+	La	-1, 0
+	Ld
+	LI	0
+	LI	2
+	UBFX
 	LI	2
 	CEQ
 	DUP
-	BF	L232
+	BF	L240
 	DROP
 	La 1, -HEADER_ofs
-	LIb	, 0, STANDARD.IDL.TREE.TY
+	La	-1, 0
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	165
 	CEQ
 	La 1, -HEADER_ofs
-	LIb	, 0, STANDARD.IDL.TREE.TY
+	La	-1, 0
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	164
 	CEQ
 	La 1, -HEADER_ofs
-	LIb	, 0, STANDARD.IDL.TREE.TY
+	La	-1, 0
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	166
 	CEQ
-L232:
+L240:
 	Sb  1,	-result__ofs
 	BRA ret_lbl
 ret_lbl:
@@ -4979,13 +5112,23 @@ ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 					; debut if
-; CODE_SELECTED.RECURSE_SELECTED DESIGNATOR.TY PAS FAIT: DN_DISCRIMINANT_ID
+	La 1, -T_ofs
+	La	-1, 0
+	Ld
+	LI	0
+	LI	2
+	UBFX
 	LI	3
 	CEQ
-; CODE_SELECTED.RECURSE_SELECTED DESIGNATOR.TY PAS FAIT: DN_DISCRIMINANT_ID
+	La 1, -T_ofs
+	La	-1, 0
+	Ld
+	LI	0
+	LI	2
+	UBFX
 	LI	1
 	CEQ
-	BF	L234
+	BF	L242
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   1,	-result__ofs
 	La  ,  0
@@ -4994,8 +5137,8 @@ begin:					;---------- BDY INSTRUCTIONS
 	La  ,  0
 	BLKMOV
 	BRA ret_lbl
-	BRA	L233
-L234:
+	BRA	L241
+L242:
 namespace	BLOCK__24
 ELB 2					;    BODY ELAB
 VAR LENGTH_disp, w				; variable entiere
@@ -5022,24 +5165,28 @@ VAR	ANON_821_27__dat, STANDARD.IDL.TREE.size
 					; doublet resultat record anonyme
 	Lw 2,	LENGTH_disp
 	La 1, -T_ofs
-	LIb	, 0, STANDARD.IDL.TREE.TY
+	La	-1, 0
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	CALL	STANDARD.IDL.IDL_MAN. ,MAKE_L48
 	La  ,  0
 	BLKMOV
 
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-VAR	IL236_disp, b				; compteur boucle LOOP__25
+VAR	IL244_disp, b				; compteur boucle LOOP__25
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
-	Sb  2,	IL236_disp
-VAR	LMT_IL236_disp, b			; limite boucle LOOP__25
+	Sb  2,	IL244_disp
+VAR	LMT_IL244_disp, b			; limite boucle LOOP__25
 	Lw 2,	LENGTH_disp
-	Sb  2,	LMT_IL236_disp
-	Lb  2,	IL236_disp				; test null range LOOP__25
-	Lb  2,	LMT_IL236_disp
+	Sb  2,	LMT_IL244_disp
+	Lb  2,	IL244_disp				; test null range LOOP__25
+	Lb  2,	LMT_IL244_disp
 	CGT
-	BT	L235
+	BT	L243
 LOOP__25:					; corps boucle LOOP__25
 VAR	ANON_824_19_disp, q
 VAR	ANON_824_19__u,    q
@@ -5051,20 +5198,20 @@ VAR	ANON_824_19__dat, STANDARD.IDL.TREE.size
 	LVA 2, ANON_824_19_disp
 					; doublet resultat record anonyme
 	La  1,	-T_ofs
-	Lb  2,	IL236_disp
+	Lb  2,	IL244_disp
 	CALL	STANDARD.IDL.IDL_MAN. ,DABS_L38
 	LVA 2,	RESULT_disp
-	Lb  2,	IL236_disp
+	Lb  2,	IL244_disp
 	CALL	STANDARD.IDL.IDL_MAN. ,DABS_L37
-	Lb  2,	IL236_disp				; test de sortie LOOP__25
-	Lb  2,	LMT_IL236_disp
+	Lb  2,	IL244_disp				; test de sortie LOOP__25
+	Lb  2,	LMT_IL244_disp
 	CEQ
-	BT	L235
-	Lb  2,	IL236_disp				; mise a jour compteur LOOP__25
+	BT	L243
+	Lb  2,	IL244_disp				; mise a jour compteur LOOP__25
 	INC
-	Sb  2,	IL236_disp
+	Sb  2,	IL244_disp
 	BRA	LOOP__25				; iteration suivante LOOP__25
-L235:					; post loop LOOP__25
+L243:					; post loop LOOP__25
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   2,	-result__ofs
 	La  ,  0
@@ -5076,7 +5223,7 @@ L235:					; post loop LOOP__25
 	BRA ret_lbl
 	UNLINK 2
 endPRO
-L233:					; post if
+L241:					; post if
 ret_lbl:
 	UNLINK 1
 	RTD	prm_siz-8
@@ -5084,8 +5231,8 @@ excep:
 endPRO					;---------- end PRO COPY_NODE
 end if
 
-if defined FIND_SELECTED_DEFS_L22_
-PRO	FIND_SELECTED_DEFS_L22			;---------- PRO FIND_SELECTED_DEFS
+if defined FIND_SELECTED_DEFS_L29_
+PRO	FIND_SELECTED_DEFS_L29			;---------- PRO FIND_SELECTED_DEFS
 PRMS					;    debut parametrage
 	PRM NAME_TYPESET_ofs			; in out
 	PRM DESIGNATOR_ofs				; in
@@ -5231,7 +5378,7 @@ LOOP__26:
 	CALL	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL. ,IS_EMPTY_L88
 	LI	1
 	OUX
-	BF	L237
+	BF	L245
 	LVA  1,	NAME_TYPEINTERP_disp
 	LVA  1,	TEMP_NAME_TYPESET_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL. ,POP_L89
@@ -5262,10 +5409,14 @@ VAR	ANON_858_39__dat, STANDARD.IDL.TREE.size
 	La
 	BLKMOV
 					; debut if
-	LIb	1, NAME_STRUCT_disp, STANDARD.IDL.TREE.TY
+	La	1, NAME_STRUCT_disp
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	208
 	CEQ
-	BF	L239
+	BF	L247
 	LVA 1,	NAME_STRUCT_disp
 	La
 	LI	STANDARD.IDL.TREE.size
@@ -5293,17 +5444,25 @@ VAR	ANON_862_41__dat, STANDARD.IDL.TREE.size
 	CALL	STANDARD.IDL.SEM_PHASE_L11.REQ_UTIL. ,GET_BASE_STRUCT_L108
 	La
 	BLKMOV
-	BRA	L238
-L239:
-L238:					; post if
+	BRA	L246
+L247:
+L246:					; post if
 					; debut if
-	LIb	1, NAME_STRUCT_disp, STANDARD.IDL.TREE.TY
+	La	1, NAME_STRUCT_disp
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	207
 	CEQ
-	LIb	1, NAME_STRUCT_disp, STANDARD.IDL.TREE.TY
+	La	1, NAME_STRUCT_disp
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	201
 	CEQ
-	BF	L241
+	BF	L249
 	LVA 1,	NAME_TYPE_ID_disp
 	La
 	LI	STANDARD.IDL.TREE.size
@@ -5322,10 +5481,14 @@ VAR	ANON_869_25__dat, STANDARD.IDL.TREE.size
 	La
 	BLKMOV
 					; debut if
-	LIb	1, NAME_TYPE_ID_disp, STANDARD.IDL.TREE.TY
+	La	1, NAME_TYPE_ID_disp
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	23
 	CEQ
-	BF	L243
+	BF	L251
 	LVA 1,	NAME_TYPE_ID_disp
 	La
 	LI	STANDARD.IDL.TREE.size
@@ -5343,9 +5506,9 @@ VAR	ANON_871_18__dat, STANDARD.IDL.TREE.size
 	CALL	STANDARD.IDL. ,D_L17
 	La
 	BLKMOV
-	BRA	L242
-L243:
-L242:					; post if
+	BRA	L250
+L251:
+L250:					; post if
 	LVA 1,	NAME_DEF_disp
 	La
 	LI	STANDARD.IDL.TREE.size
@@ -5374,7 +5537,7 @@ LOOP__27:
 	CALL	STANDARD.IDL. ,IS_EMPTY_L23
 	LI	1
 	OUX
-	BF	L244
+	BF	L252
 	LVA  1,	TEMP_DEF_disp
 	LVA  1,	TEMP_DEFLIST_disp
 	CALL	STANDARD.IDL. ,POP_L24
@@ -5393,7 +5556,7 @@ VAR	ANON_879_16__dat, STANDARD.IDL.TREE.size
 	LI  169
 	CALL	STANDARD.IDL. ,D_L17
 	CEQ
-	BF	L246
+	BF	L254
 namespace	BLOCK__28
 ELB 2					;    BODY ELAB
 VAR HEADER_disp, q				; variable record : pointeur aux data record
@@ -5415,7 +5578,7 @@ VAR	ANON_882_22__dat, STANDARD.IDL.TREE.size
 	Sa  2, ANON_882_22__u
 	LVA 2, ANON_882_22_disp
 					; doublet resultat record anonyme
-	LVA 1,	STANDARD.IDL.SEM_PHASE_L11.VIS_UTIL.FIND_SELECTED_DEFS_L22.TEMP_DEF_disp
+	LVA 1,	STANDARD.IDL.SEM_PHASE_L11.VIS_UTIL.FIND_SELECTED_DEFS_L29.TEMP_DEF_disp
 	LI  168
 	CALL	STANDARD.IDL. ,D_L17
 	La  ,  0
@@ -5424,28 +5587,32 @@ VAR	ANON_882_22__dat, STANDARD.IDL.TREE.size
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 					; debut if
-; CODE_SELECTED.RECURSE_SELECTED DESIGNATOR.TY PAS FAIT: DN_DISCRIMINANT_ID
+	La	2, HEADER_disp
+	Ld
+	LI	0
+	LI	2
+	UBFX
 	LI	3
 	CEQ
 	DUP
-	BF	L249
+	BF	L257
 	DROP
-L249:
-	BF	L248
-	LVA 1,	STANDARD.IDL.SEM_PHASE_L11.VIS_UTIL.FIND_SELECTED_DEFS_L22.NEW_DEFSET_disp
+L257:
+	BF	L256
+	LVA 1,	STANDARD.IDL.SEM_PHASE_L11.VIS_UTIL.FIND_SELECTED_DEFS_L29.NEW_DEFSET_disp
 	La
 	LI	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL.DEFSET_TYPE.size
 	LVA 1,	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL.EMPTY_DEFSET_disp
 	La
 	BLKMOV
 	LI  0
-	LVA 1,	STANDARD.IDL.SEM_PHASE_L11.VIS_UTIL.FIND_SELECTED_DEFS_L22.TEMP_DEF_disp
+	LVA 1,	STANDARD.IDL.SEM_PHASE_L11.VIS_UTIL.FIND_SELECTED_DEFS_L29.TEMP_DEF_disp
 	LVA  1,	NEW_DEFSET_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL. ,ADD_TO_DEFSET_L79
 	La  1,	-DEFSET_ofs
 	La
 	LI	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL.DEFSET_TYPE.size
-	LVA 1,	STANDARD.IDL.SEM_PHASE_L11.VIS_UTIL.FIND_SELECTED_DEFS_L22.NEW_DEFSET_disp
+	LVA 1,	STANDARD.IDL.SEM_PHASE_L11.VIS_UTIL.FIND_SELECTED_DEFS_L29.NEW_DEFSET_disp
 	La
 	BLKMOV
 	La  1,	-NAME_TYPESET_ofs
@@ -5456,9 +5623,9 @@ L249:
 	BLKMOV
 	UNLINK 2
 	BRA ret_lbl
-	BRA	L247
-L248:
-L247:					; post if
+	BRA	L255
+L256:
+L255:					; post if
 	UNLINK 2
 endPRO
 	LVA 1,	NAME_TYPEINTERP_disp
@@ -5479,16 +5646,16 @@ VAR	ANON_896_41__dat, STANDARD.IDL.SEM_PHASE_L11.SET_UTIL.EXTRAINFO_TYPE.size
 	LVA 1,	TEMP_DEF_disp
 	LVA  1,	NEW_DEFSET_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL. ,ADD_TO_DEFSET_L79
-	BRA	L245
-L246:
-L245:					; post if
+	BRA	L253
+L254:
+L253:					; post if
 	BRA	LOOP__27
-L244:					; post loop LOOP__27
-	BRA	L240
-L241:
-L240:					; post if
+L252:					; post loop LOOP__27
+	BRA	L248
+L249:
+L248:					; post if
 	BRA	LOOP__26
-L237:					; post loop LOOP__26
+L245:					; post loop LOOP__26
 	La  1,	-NAME_TYPESET_ofs
 	La
 	LI	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL.TYPESET_TYPE.size

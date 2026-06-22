@@ -349,13 +349,13 @@ is					---------
 
       generic
         with function IS_XXX ( ITEM :TREE ) return BOOLEAN;
-	MESSAGE :in STRING;
-        procedure REQ_DEF_XXX		( EXP :TREE; DEFSET	:in out DEFSET_TYPE	);
+        MESSAGE :in STRING;
+      procedure REQ_DEF_XXX		( EXP :TREE; DEFSET	:in out DEFSET_TYPE	);
 
-        generic
-	with function IS_XXX ( ITEM :TREE ) return BOOLEAN;
-	MESSAGE: in STRING;
-        procedure REQ_TYPE_XXX	( EXP :TREE; TYPESET :in out TYPESET_TYPE );
+      generic
+        with function IS_XXX ( ITEM :TREE ) return BOOLEAN;
+        MESSAGE: in STRING;
+      procedure REQ_TYPE_XXX	( EXP :TREE; TYPESET :in out TYPESET_TYPE );
 
     --|----------------------------------------------------------------------------------------
     end REQ_GENE;

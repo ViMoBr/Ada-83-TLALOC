@@ -378,9 +378,9 @@ is
 
 
 
-			--===================================--
-  procedure		  PROCESS_CONSTRAINED_ARRAY_TYPE_SPEC		( TYPE_SPEC :TREE )
-  is			--===================================--
+			--^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^--
+  procedure		  PROCESS_CONSTRAINED_ARRAY_TYPE_SPEC	( TYPE_SPEC :TREE; CONSTRAINT :TREE := TREE_VOID )
+  is			---------------------------------------
 
     DIM_NBR		: NATURAL			:= 0;
     LVL			: LEVEL_NUM		renames CODI.CUR_LEVEL;
@@ -400,12 +400,17 @@ declare
     ARRAY_STATIC_SIZE	: NATURAL			:= 0;
 
 		----------------------------
-    procedure	COMPILE_ARRAY_TYPE_DIMENSION		( IDX_TYPE_LIST :in	out SEQ_TYPE )
+    procedure	COMPILE_ARRAY_TYPE_DIMENSION		( IDX_TYPE_LIST, RANGE_LIST :in out SEQ_TYPE;
+						  HAS_RANGES :BOOLEAN )
     is
       IDX_TYPE		: TREE;
+      SRC_RANGE		: TREE		:= TREE_VOID;
       DIM_NBR_STR		:constant	STRING	:= IMAGE(	DIM_NBR+1	);
     begin
       POP( IDX_TYPE_LIST, IDX_TYPE );
+      if  HAS_RANGES  then
+        POP( RANGE_LIST, SRC_RANGE );
+      end if;
       DIM_NBR := DIM_NBR + 1;
 
       if	IS_EMPTY(	IDX_TYPE_LIST )  then
@@ -424,7 +429,7 @@ declare
         end;
 
       else
-        COMPILE_ARRAY_TYPE_DIMENSION( IDX_TYPE_LIST );
+        COMPILE_ARRAY_TYPE_DIMENSION( IDX_TYPE_LIST, RANGE_LIST, HAS_RANGES );
 
         PUT_LINE( "VAR _SIZ_" & DIM_NBR_STR & ", d" );
         PUT_LINE( "VAR _FST_" & DIM_NBR_STR & ", d" );
@@ -435,7 +440,16 @@ declare
         PUT_LINE( tab & "Ld" & tab & LVL_STR & ", _SIZ_" & DIM_NBR_STR );					-- recharge pour MUL suivant
       end	if;
 
-      if	IDX_TYPE.TY = DN_INTEGER  then
+      if  HAS_RANGES  and then  SRC_RANGE /= TREE_VOID  then
+        IS_STATIC := FALSE;
+
+        EXPRESSIONS.CODE_DISCRETE_RANGE_BOUND( SRC_RANGE, IS_LAST => FALSE );
+        PUT_LINE( tab & "Sd" & tab & LVL_STR & ", _FST_" & DIM_NBR_STR );
+
+        EXPRESSIONS.CODE_DISCRETE_RANGE_BOUND( SRC_RANGE, IS_LAST => TRUE );
+        PUT_LINE( tab & "Sd" & tab & LVL_STR & ", _LST_" & DIM_NBR_STR );
+
+      elsif	IDX_TYPE.TY = DN_INTEGER  then
         declare
 	IDX_RANGE		: TREE		:= D( SM_RANGE, IDX_TYPE );
 	RANGE_FIRST	: TREE		:= D( AS_EXP1, IDX_RANGE );
@@ -452,16 +466,22 @@ declare
 	EXPRESSIONS.CODE_EXP( RANGE_LAST );
 	PUT_LINE(	tab & "Sd" & tab & LVL_STR & ", _LST_" & DIM_NBR_STR );
 
-	PUT_LINE(	tab & "Ld" & tab & LVL_STR & ", _LST_" & DIM_NBR_STR );
-	PUT_LINE(	tab & "INC" );
-	PUT_LINE(	tab & "Ld" & tab & LVL_STR & ", _FST_" & DIM_NBR_STR );
-	PUT_LINE(	tab & "SUB" );
 
 	if  IS_STATIC  then
 	  ARRAY_STATIC_SIZE	:= ( DI( SM_VALUE, RANGE_LAST	) + 1 - DI( SM_VALUE, RANGE_FIRST ) ) *	ARRAY_STATIC_SIZE;
 	end if;
         end;
+
+      else
+        IS_STATIC := FALSE;
+        PUT_LINE( "; PROCESS_CONSTRAINED_ARRAY_TYPE_SPEC : index type non integer non traite "
+                  & NODE_NAME'IMAGE( IDX_TYPE.TY ) );
       end	if;
+
+      PUT_LINE( tab & "Ld" & tab & LVL_STR & ", _LST_" & DIM_NBR_STR );
+      PUT_LINE( tab & "Ld" & tab & LVL_STR & ", _FST_" & DIM_NBR_STR );
+      PUT_LINE( tab & "SUB" );
+      PUT_LINE( tab & "INC" );
 
     end	COMPILE_ARRAY_TYPE_DIMENSION;
 	----------------------------
@@ -509,11 +529,22 @@ declare
 			-------------------
 			DESCRIPTOR_ON_STACK:
     begin
-      declare
-        IDX_TYPE_LIST	: SEQ_TYPE	:= LIST( D( SM_INDEX_SUBTYPE_S, TYPE_SPEC ) );
-      begin
-        COMPILE_ARRAY_TYPE_DIMENSION( IDX_TYPE_LIST );
-      end;
+      if  CONSTRAINT /= TREE_VOID  and then  CONSTRAINT.TY = DN_INDEX_CONSTRAINT  then
+        declare
+	IDX_TYPE_LIST	: SEQ_TYPE	:= LIST( D( SM_INDEX_SUBTYPE_S, TYPE_SPEC ) );
+	RANGE_LIST	: SEQ_TYPE	:= LIST( D( AS_DISCRETE_RANGE_S, CONSTRAINT ) );
+        begin
+	COMPILE_ARRAY_TYPE_DIMENSION( IDX_TYPE_LIST, RANGE_LIST, TRUE );
+        end;
+      else
+        declare
+	IDX_TYPE_LIST	: SEQ_TYPE	:= LIST( D( SM_INDEX_SUBTYPE_S, TYPE_SPEC ) );
+	DUMMY_LIST	: SEQ_TYPE	:= LIST( D( SM_INDEX_SUBTYPE_S, TYPE_SPEC ) );
+        begin
+	COMPILE_ARRAY_TYPE_DIMENSION( IDX_TYPE_LIST, DUMMY_LIST, FALSE );
+        end;
+      end if;
+
       PUT_LINE( tab	& "MUL" );
       PUT_LINE( tab	& "Sd" & tab & LVL_STR & ", SIZ" );
 
@@ -557,7 +588,11 @@ declare
     PUT_LINE( TYPE_NAME_STR &	" = '" & TYPE_NAME_STR & "'" );
     PUT_LINE( "namespace " & TYPE_NAME_STR );
 
-    PROCESS_CONSTRAINED_ARRAY_TYPE_SPEC( TYPE_SPEC );
+    if  TYPE_DECL.TY = DN_CONSTRAINED_ARRAY_DEF  then
+      PROCESS_CONSTRAINED_ARRAY_TYPE_SPEC( TYPE_SPEC, D( AS_CONSTRAINT, TYPE_DECL ) );
+    else
+      PROCESS_CONSTRAINED_ARRAY_TYPE_SPEC( TYPE_SPEC );
+    end if;
 
   end	CODE_CONSTRAINED_ARRAY_DECL;
 	---------------------------
@@ -857,9 +892,9 @@ put_line( "; TRAITER_LES_CHAMPS SM_SIZE DU TYPE " & TYPE_ID_STR );
 
 
 
-				--=================--
+				--^^^^^^^^^^^^^^^^^--
   procedure			  CODE_SUBTYPE_DECL		( SUBTYPE_DECL :TREE )
-  is				--=================--
+  is				---------------------
 
     SUBTYPE_ID		: TREE		:= D( AS_SOURCE_NAME, SUBTYPE_DECL) ;
     TYPE_SPEC		: TREE		:= D( SM_TYPE_SPEC,	SUBTYPE_ID );
@@ -965,7 +1000,7 @@ put_line( "; TRAITER_LES_CHAMPS SM_SIZE DU TYPE " & TYPE_ID_STR );
       if	CODI.DEBUG  then PUT( tab50 &	"; " & SUBTYPE_STR & " CONSTRAINED ARRAY SUBTYPE INFO" ); end if;
       NEW_LINE;
 
-      PROCESS_CONSTRAINED_ARRAY_TYPE_SPEC( TYPE_SPEC );
+      PROCESS_CONSTRAINED_ARRAY_TYPE_SPEC( TYPE_SPEC, D( AS_CONSTRAINT, D( AS_SUBTYPE_INDICATION, SUBTYPE_DECL ) ) );
 
     else
       PUT_LINE( ";  CODE_SUBTYPE_DECL : TYPE_SPEC.TY PAS FAIT " & NODE_NAME'IMAGE( TYPE_SPEC.TY ) );
