@@ -1,0 +1,27 @@
+-- AVAT020.ADA
+
+-- CHECK WHETHER SYSTEM.MAX_DIGITS IS AS SPECIFIED.
+-- IF SO, THIS UNIT WILL BE REPLACED.
+
+-- PWB 08/11/87  CREATED ORIGINAL TEST FILE.
+
+WITH DATA_COLLECTION, SYSTEM;
+USE DATA_COLLECTION;
+
+PROCEDURE AVAT020 IS
+
+     TYPE FLT IS DIGITS 3;
+     TESTED : THINGS_TO_SUPPORT := CHECK_MAX_DIGITS;
+     LINE1 : CONSTANT STRING := "     SYSTEM.MAX_DIGITS DOES NOT " &
+                                "HAVE SPECIFIED BEHAVIOR";
+     LINE2 : CONSTANT STRING := "          VALUE OF " &
+                                "SYSTEM.MAX_DIGITS IS " &
+                                INTEGER'IMAGE (SYSTEM.MAX_DIGITS);
+     LINE3 : CONSTANT STRING := "          TYPE DECLARATION REJECTED " &
+                                "WITH DIGITS " &
+                                INTEGER'IMAGE (SYSTEM.MAX_DIGITS);
+BEGIN
+     FEATURE (TESTED) := (3, ((LINE1'LENGTH, LINE1),
+                              (LINE2'LENGTH, LINE2),
+                              (LINE3'LENGTH, LINE3)) );
+END AVAT020;

@@ -1,0 +1,13 @@
+-- BA1011B2.ADA
+
+-- SPECIFICATION IS IN BA1011B1.
+
+-- BHS 7/25/84
+
+PROCEDURE BA1011B1 (X : INTEGER := 3) IS      -- ERROR: DEFAULT VALUE
+                                              -- DOES NOT CONFORM.
+BEGIN
+
+     NULL;
+
+END BA1011B1;

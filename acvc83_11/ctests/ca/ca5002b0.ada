@@ -1,0 +1,11 @@
+-- CA5002B0.ADA
+
+-- WKB 7/16/81
+
+PACKAGE CA5002B0 IS
+
+     ELAB_ORDER : STRING (1..3) := "   ";
+
+     NEXT : NATURAL := 1;
+
+END CA5002B0;

@@ -603,23 +603,82 @@ null;--	     declare
     NAME			: TREE	:= D( AS_NAME, SLICE );
     DISCRETE_RANGE		: TREE	:= D( AS_DISCRETE_RANGE, SLICE );
     SLICE_TYPE		: TREE	:= D( SM_EXP_TYPE, SLICE );
-    SLICE_COMP_TYPE		: TREE	:= D( SM_COMP_TYPE,	SLICE_TYPE );
-    COMP_SIZE		: INTEGER	:= DI( CD_IMPL_SIZE, SLICE_COMP_TYPE );
+--    SLICE_COMP_TYPE		: TREE	:= D( SM_COMP_TYPE,	SLICE_TYPE );
+--    COMP_SIZE		: INTEGER	:= DI( CD_IMPL_SIZE, SLICE_COMP_TYPE );
+    SLICE_ARRAY_TYPE	: TREE	:= SLICE_TYPE;
+    SLICE_COMP_TYPE		: TREE;
+    COMP_SIZE		: INTEGER;
+
   begin
+    -- Une tranche d'un tableau contraint a souvent pour SM_EXP_TYPE un
+    -- DN_CONSTRAINED_ARRAY. Le type composant est alors porte par le
+    -- DN_ARRAY de base, pas directement par le subtype contraint.
+    if  SLICE_ARRAY_TYPE.TY = DN_CONSTRAINED_ARRAY  then
+      SLICE_ARRAY_TYPE := D( SM_BASE_TYPE, SLICE_ARRAY_TYPE );
+    end if;
+
+    SLICE_COMP_TYPE := D( SM_COMP_TYPE, SLICE_ARRAY_TYPE );
+    COMP_SIZE := DI( CD_IMPL_SIZE, SLICE_COMP_TYPE );
+
     if  NAME.TY = DN_SELECTED	 then
       CODE_SELECTED( NAME );
 
     elsif	 NAME.TY = DN_USED_OBJECT_ID	then
       declare
-	DEFN		: TREE		:= D( SM_DEFN, NAME	);
-	DEFN_LVL		: INTEGER		:= DI( CD_LEVEL, DEFN );
-	DEFN_STR		:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, DEFN ) );
+        DEFN		: TREE		:= D( SM_DEFN, NAME	);
+        DEFN_LVL		: INTEGER		:= DI( CD_LEVEL, DEFN );
+        DEFN_STR		:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, DEFN ) );
+        PREFIX_ARRAY_TYPE	: TREE		:= D( SM_EXP_TYPE, NAME );
+		---------------------
+        procedure	PUT_PREFIX_TYPE_FIELD	( FIELD : STRING )
+        is	---------------------
+          TYPE_NAME		: TREE		:= D( XD_SOURCE_NAME, PREFIX_ARRAY_TYPE );
+          TYPE_NAME_STR	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
+        begin
+          CODI.REGIONS_PATH( TYPE_NAME );
+          PUT( TYPE_NAME_STR & FIELD );
+        end	PUT_PREFIX_TYPE_FIELD;
+		---------------------
       begin
-	PUT_LINE(	tab & "La " & IMAGE( DEFN_LVL	) & ", " & DEFN_STR & "_disp" );
-	CODE_EXP(	D( AS_EXP1, DISCRETE_RANGE ) );
-	PUT_LINE(	tab & "LId " & IMAGE( DEFN_LVL ) & ", " & DEFN_STR & "__u"
-		& ", " & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, SLICE_TYPE ) ) )
-		& ".FST_1" );
+        if  PREFIX_ARRAY_TYPE.TY = DN_CONSTRAINED_ARRAY  then
+          PREFIX_ARRAY_TYPE := D( SM_BASE_TYPE, PREFIX_ARRAY_TYPE );
+        end if;
+
+        -- Adresse de début des données du tableau préfixe.
+        if  DEFN.TY in CLASS_PARAM_NAME  then
+          -- Paramètre composite : le slot -MSG_ofs contient l'adresse du doublet.
+          -- On charge le data_ptr, offset 0 du doublet.
+          PUT_LINE( tab & "LVA" & tab & IMAGE( DEFN_LVL ) & ", -" & DEFN_STR & "_ofs" );
+          PUT_LINE( tab & "LIa" & tab & ", , 0" );
+        else
+          -- Variable tableau autonome : _disp contient directement data_ptr.
+          PUT_LINE( tab & "La " & IMAGE( DEFN_LVL ) & ", " & DEFN_STR & "_disp" );
+        end if;
+
+        -- Offset de la borne inférieure de la slice :
+        -- @data + (FIRST(slice) - FIRST(prefix)) * component_size
+        CODE_EXP( D( AS_EXP1, DISCRETE_RANGE ) );
+
+        if  DEFN.TY in CLASS_PARAM_NAME  then
+          -- Paramètre composite : use_info_ptr est à l'offset 8 du doublet.
+          PUT_LINE( tab & "LVA" & tab & IMAGE( DEFN_LVL ) & ", -" & DEFN_STR & "_ofs" );
+          PUT_LINE( tab & "LIa" & tab & ", ," & INTEGER'IMAGE( CODI.ADDR_SIZE ) );
+          PUT( tab & "Ld" & tab & ", " );
+          PUT_PREFIX_TYPE_FIELD( ".FST_1" );
+          NEW_LINE;
+        else
+          -- Variable autonome : __u contient use_info_ptr.
+          PUT( tab & "LId " & IMAGE( DEFN_LVL ) & ", " & DEFN_STR & "__u" & ", " );
+          PUT_PREFIX_TYPE_FIELD( ".FST_1" );
+          NEW_LINE;
+        end if;
+
+--	PUT_LINE(	tab & "La " & IMAGE( DEFN_LVL	) & ", " & DEFN_STR & "_disp" );
+--	CODE_EXP(	D( AS_EXP1, DISCRETE_RANGE ) );
+--	PUT_LINE(	tab & "LId " & IMAGE( DEFN_LVL ) & ", " & DEFN_STR & "__u"
+--		& ", " & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, SLICE_TYPE ) ) )
+--		& ".FST_1" );
+
 	PUT_LINE(	tab & "SUB" );
 	PUT_LINE(	tab & "LI" & tab & IMAGE( COMP_SIZE / CODI.STORAGE_UNIT ) );
 	PUT_LINE(	tab & "MUL" );
@@ -918,8 +977,13 @@ null;--	     declare
       CODE_INDEXED( NAME );
 
     when DN_SLICE =>
-      PUT_LINE( "; CODE_OBJECT_ADDRESS: renames slice a traiter plus tard" );
-      raise PROGRAM_ERROR;
+--      PUT_LINE( "; CODE_OBJECT_ADDRESS: renames slice a traiter plus tard" );
+--      raise PROGRAM_ERROR;
+      -- Adresse brute du premier composant de la tranche.
+      -- CODE_SLICE en mode destination laisse : @data_slice, taille_octets.
+      -- Pour un calcul d'adresse d'objet, on conserve seulement @data_slice.
+      CODE_SLICE( NAME, IS_DESTINATION => TRUE );
+      PUT_LINE( tab & "DROP" );
 
     when DN_ALL =>
       CODE_EXP( D( AS_NAME, NAME ) );							-- valeur access = @objet designe

@@ -1,0 +1,28 @@
+-- AVAT000.ADA
+
+-- COMMENT HEADER FOR ADA VALIDATION ASSISTANT TOOL (AVAT) PART ONE.
+
+-- TBN 11/18/87  CREATED ORIGINAL FILE.
+
+WITH DATA_COLLECTION; USE DATA_COLLECTION;
+
+PROCEDURE AVAT000 IS
+     TESTED : THINGS_TO_SUPPORT := HEADER_PART_ONE;
+     LINE1 : CONSTANT STRING := "====== ADA VALIDATION ASSISTANT " &
+                                "TOOL (AVAT) ======";
+     LINE2 : CONSTANT STRING := "";
+     LINE3 : CONSTANT STRING := "AVAT IS A SET OF FIVE PROGRAMS, " &
+                                "EACH CONSISTING OF MULTIPLE LIBRARY";
+     LINE4 : CONSTANT STRING := "UNITS, WHICH TEST IMPLEMENTATION-" &
+                                "DEPENDENT FEATURES AND PRODUCE A LIST";
+     LINE5 : CONSTANT STRING := "OF TESTS WHICH ARE POSSIBLY " &
+                                "INAPPLICABLE.";
+     LINE6 : CONSTANT STRING := "";
+BEGIN
+     FEATURE (TESTED) := (6, ((LINE1'LENGTH, LINE1),
+                              (LINE2'LENGTH, LINE2),
+                              (LINE3'LENGTH, LINE3),
+                              (LINE4'LENGTH, LINE4),
+                              (LINE5'LENGTH, LINE5),
+                              (LINE6'LENGTH, LINE6)));
+END AVAT000;

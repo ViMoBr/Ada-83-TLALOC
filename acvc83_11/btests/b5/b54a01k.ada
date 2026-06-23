@@ -1,0 +1,18 @@
+-- B54A01K.ADA
+
+-- CHECK THAT 'ESAC' CANNOT BE USED IN PLACE OF 'END CASE'.
+
+-- DAT 3/18/81
+-- ABW 6/11/82
+
+PROCEDURE B54A01K IS
+
+     I : INTEGER := 4;
+
+BEGIN
+
+     CASE I IS
+          WHEN OTHERS => NULL; NULL;
+     ESAC; NULL;                        -- ERROR: ESAC.
+
+END B54A01K;

@@ -1,0 +1,35 @@
+-- AVAT019.ADA
+
+-- OBJECTIVE:
+--     CHECK WHETHER SYSTEM.MAX_MANTISSA IS AS SPECIFIED.
+--     IF SO, THIS UNIT WILL BE REJECTED AND THE PREVIOUSLY COMPILED
+--     AVAT017 WILL BE RETAINED.
+
+-- HISTORY:
+--     PWB 08/11/87  CREATED ORIGINAL TEST FILE.
+--     BCB 04/10/89  MODIFIED HEADER AND CHANGED EXPONENT ON TYPE FIXED.
+
+WITH DATA_COLLECTION, SYSTEM;
+USE DATA_COLLECTION;
+
+PROCEDURE AVAT017 IS
+
+     TYPE FIXED IS DELTA 2.0 ** (- SYSTEM.MAX_MANTISSA - 1)
+                   RANGE -1.0 .. 1.0;
+     TESTED : THINGS_TO_SUPPORT := CHECK_MAX_MANTISSA;
+     LINE1 : CONSTANT STRING := "     SYSTEM.MAX_MANTISSA DOES NOT " &
+                                " HAVE SPECIFIED BEHAVIOR";
+     LINE2 : CONSTANT STRING := "          VALUE OF " &
+                                "SYSTEM.MAX_MANTISSA IS " &
+                                INTEGER'IMAGE (SYSTEM.MAX_MANTISSA);
+     LINE3 : CONSTANT STRING := "          TYPE DECLARATION ACCEPTED " &
+                                "WITH DELTA";
+     LINE4 : CONSTANT STRING := "          2.0 ** (" &
+                                INTEGER'IMAGE (- SYSTEM.MAX_MANTISSA) &
+                                ") AND RANGE -1.0 .. 1.0";
+BEGIN
+     FEATURE (TESTED) := (4, ((LINE1'LENGTH, LINE1),
+                              (LINE2'LENGTH, LINE2),
+                              (LINE3'LENGTH, LINE3),
+                              (LINE4'LENGTH, LINE4)));
+END AVAT017;

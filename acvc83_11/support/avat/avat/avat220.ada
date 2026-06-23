@@ -1,0 +1,28 @@
+-- AVAT220.ADA
+
+-- COMMENT HEADER FOR WITH MACHINE CODE.
+
+-- THIS PROGRAM CHECKS WHETHER A WITH CLAUSE SPECIFYING
+-- MACHINE_CODE IS ACCEPTED.
+
+-- DHH 08/09/89 CREATED ORIGINAL FILE.
+
+WITH DATA_COLLECTION; USE DATA_COLLECTION;
+PROCEDURE AVAT220 IS
+     TESTED : THINGS_TO_SUPPORT := MACHINE_CODE;
+     LINE1 : CONSTANT STRING := "====== WITH CLAUSES FOR " &
+                                "MACHINE_CODE ======";
+     LINE2 : CONSTANT STRING := "     ";
+     LINE3 : CONSTANT STRING := "     'WITH' STATEMENTS FOR MACHINE  " &
+                                "CODE ARE NOT ACCEPTED.";
+     LINE4 : CONSTANT STRING := "          THIS INDICATES THAT THE " &
+                                "FOLLOWING TESTS ARE INAPPLICABLE:";
+     LINE5 : CONSTANT STRING := "               BD8001A  BD8003A  " &
+                                "BD8004A  BD8004B  AD8011A";
+BEGIN
+     FEATURE (TESTED) := (5, ((LINE1'LENGTH, LINE1),
+                              (LINE2'LENGTH, LINE2),
+                              (LINE3'LENGTH, LINE3),
+                              (LINE4'LENGTH, LINE4),
+                              (LINE5'LENGTH, LINE5)));
+END AVAT220;

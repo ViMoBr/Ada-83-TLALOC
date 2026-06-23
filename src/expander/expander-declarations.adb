@@ -861,27 +861,72 @@ put_line( "; CODE_VC_NAME " & NODE_NAME'IMAGE( VC_NAME.TY ) );
         end loop;
 
       -- Le renommage est représenté par un pointeur vers les données réelles.
-        PUT_LINE( "VAR " & SRC_STR & "_disp, q" );
+ --       PUT_LINE( "VAR " & SRC_STR & "_disp, q" );
 
-        EXPRESSIONS.CODE_OBJECT_ADDRESS( NAME );
-        PUT_LINE( tab & "Sa" & tab & LVL_STR & ", " & SRC_STR & "_disp" );
+ --       EXPRESSIONS.CODE_OBJECT_ADDRESS( NAME );
+ --       PUT_LINE( tab & "Sa" & tab & LVL_STR & ", " & SRC_STR & "_disp" );
 
       -- Pour les composites, on garde le doublet TLALOC habituel.
-        if  SRC_TYPE.TY = DN_RECORD  or else  SRC_TYPE.TY = DN_ARRAY  or else  SRC_TYPE.TY = DN_CONSTRAINED_ARRAY
-        then
-	declare
-	  TYPE_NAME	: TREE		:= D( XD_SOURCE_NAME, SRC_TYPE );
-	  TYPE_NAME_STR	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
-	begin
-	  PUT_LINE( "VAR " & SRC_STR & "__u, q" );
+ --       if  SRC_TYPE.TY = DN_RECORD  or else  SRC_TYPE.TY = DN_ARRAY  or else  SRC_TYPE.TY = DN_CONSTRAINED_ARRAY
+ --       then
+--	declare
+--	  TYPE_NAME	: TREE		:= D( XD_SOURCE_NAME, SRC_TYPE );
+--	  TYPE_NAME_STR	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
+--	begin
+--	  PUT_LINE( "VAR " & SRC_STR & "__u, q" );
 
-	  PUT( tab & "LVA" & tab & LVL_STR & ", " );
-	  CODI.REGIONS_PATH( TYPE_NAME );
-	  PUT_LINE( TYPE_NAME_STR & ".SIZ" );
+--	  PUT( tab & "LVA" & tab & LVL_STR & ", " );
+--	  CODI.REGIONS_PATH( TYPE_NAME );
+--	  PUT_LINE( TYPE_NAME_STR & ".SIZ" );
 
-	  PUT_LINE( tab & "Sa" & tab & LVL_STR & ", " & SRC_STR & "__u" );
-	end;
-        end if;
+--	  PUT_LINE( tab & "Sa" & tab & LVL_STR & ", " & SRC_STR & "__u" );
+--	end;
+--        end if;
+
+      -- Cas particulier important : une tranche est un objet composite dont
+      -- les bornes peuvent etre dynamiques. Il faut donc reprendre le doublet
+      -- anonyme construit par CODE_SLICE, et non pointer vers le use_info du
+      -- type source complet.
+        declare
+	IS_COMPOSITE : constant BOOLEAN :=
+	    SRC_TYPE.TY = DN_RECORD
+	    or else SRC_TYPE.TY = DN_ARRAY
+	    or else SRC_TYPE.TY = DN_CONSTRAINED_ARRAY;
+        begin
+	  if  IS_COMPOSITE  and then  NAME.TY = DN_SLICE  then
+	    PUT_LINE( "VAR " & SRC_STR & "_disp, q" );
+	    PUT_LINE( "VAR " & SRC_STR & "__u, q" );
+
+	    EXPRESSIONS.CODE_SLICE( NAME, IS_DESTINATION => FALSE );
+	    PUT_LINE( tab & "DUP" );
+	    PUT_LINE( tab & "La" );
+	    PUT_LINE( tab & "Sa" & tab & LVL_STR & ", " & SRC_STR & "_disp" );
+	    PUT_LINE( tab & "La" & tab & ", 8" );
+	    PUT_LINE( tab & "Sa" & tab & LVL_STR & ", " & SRC_STR & "__u" );
+
+	  else
+	    PUT_LINE( "VAR " & SRC_STR & "_disp, q" );
+
+	    EXPRESSIONS.CODE_OBJECT_ADDRESS( NAME );
+	    PUT_LINE( tab & "Sa" & tab & LVL_STR & ", " & SRC_STR & "_disp" );
+
+	  -- Pour les composites non-tranches, on garde le doublet TLALOC habituel.
+	    if  IS_COMPOSITE  then
+	      declare
+	        TYPE_NAME	: TREE		:= D( XD_SOURCE_NAME, SRC_TYPE );
+	        TYPE_NAME_STR	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
+	      begin
+	        PUT_LINE( "VAR " & SRC_STR & "__u, q" );
+
+	        PUT( tab & "LVA" & tab & LVL_STR & ", " );
+	        CODI.REGIONS_PATH( TYPE_NAME );
+	        PUT_LINE( TYPE_NAME_STR & ".SIZ" );
+
+	        PUT_LINE( tab & "Sa" & tab & LVL_STR & ", " & SRC_STR & "__u" );
+	      end;
+	    end if;
+	  end if;
+        end;
 
         DI( CD_LEVEL, SOURCE_NAME, INTEGER( LVL ) );
         DB( CD_COMPILED, SOURCE_NAME, TRUE );

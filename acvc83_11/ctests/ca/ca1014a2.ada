@@ -1,0 +1,17 @@
+-- CA1014A2.ADA
+
+-- JRK 5/20/81
+
+SEPARATE (CA1014A0M)
+PACKAGE BODY CA1014A2 IS
+
+     PROCEDURE P (I : IN OUT INTEGER) IS
+     BEGIN
+          I := I - 20;
+     END P;
+
+BEGIN
+
+     I := I + 5;
+
+END CA1014A2;

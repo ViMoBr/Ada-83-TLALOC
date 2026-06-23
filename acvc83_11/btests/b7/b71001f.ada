@@ -1,0 +1,17 @@
+-- B71001F.ADA
+
+-- CHECK THAT TASK BODIES CANNOT APPEAR IN A PACKAGE SPEC.
+
+-- DAT 4/3/81
+
+PROCEDURE B71001F IS
+
+     PACKAGE P IS
+          TASK T;
+          TASK BODY T IS                     -- ERROR: BODY.
+          BEGIN NULL; END T;
+     END P;
+
+BEGIN
+     NULL;
+END B71001F;

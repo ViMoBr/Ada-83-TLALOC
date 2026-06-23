@@ -44,7 +44,7 @@
 ./a83.sh ./ ../src/sem_phase/idl-sem_phase-instant.adb W
 ./a83.sh ./ ../src/sem_phase/idl-sem_phase-make_nod.adb W
 ./a83.sh ./ ../src/sem_phase/idl-sem_phase-newsnam.adb W
-./a83.sh ./ ../src/sem_phase/idl-sem_phase-nod_walk.adb w
+./a83.sh ./ ../src/sem_phase/idl-sem_phase-nod_walk.adb W
 ./a83.sh ./ ../src/sem_phase/idl-sem_phase-pra_walk.adb W
 ./a83.sh ./ ../src/sem_phase/idl-sem_phase-pre_fcns.adb W
 ./a83.sh ./ ../src/sem_phase/idl-sem_phase-red_subp.adb W
@@ -68,13 +68,13 @@
 #	EXPANDER
 #--------------------------------------------------
 ./a83.sh ./ ../src/expander/expander.ads W
-./a83.sh ./ ../src/expander/expander.adb w
+./a83.sh ./ ../src/expander/expander.adb W
 ./a83.sh ./ ../src/expander/expander-utils.adb w
-./a83.sh ./ ../src/expander/expander-expressions.adb w
-./a83.sh ./ ../src/expander/expander-declarations.adb w
-./a83.sh ./ ../src/expander/expander-declarations-types_decls.adb w
-./a83.sh ./ ../src/expander/expander-instructions.adb w
-./a83.sh ./ ../src/expander/expander-structures.adb w
+./a83.sh ./ ../src/expander/expander-expressions.adb W
+./a83.sh ./ ../src/expander/expander-declarations.adb W
+./a83.sh ./ ../src/expander/expander-declarations-types_decls.adb W
+./a83.sh ./ ../src/expander/expander-instructions.adb W
+./a83.sh ./ ../src/expander/expander-structures.adb W
 #--------------------------------------------------
 #	ADA_COMP
 #--------------------------------------------------

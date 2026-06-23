@@ -1,0 +1,13 @@
+-- BA1101B3.ADA
+
+-- WKB 6/19/81
+
+PACKAGE BA1101B3 IS
+
+     PACKAGE P IS
+
+          J : INTEGER := 1;
+
+     END P;
+
+END BA1101B3;

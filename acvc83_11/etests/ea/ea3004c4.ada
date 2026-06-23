@@ -1,0 +1,13 @@
+-- EA3004C4.ADA
+
+-- WKB 7/13/81
+-- JRK 5/21/85
+
+PACKAGE BODY EA3004C0 IS
+
+     PROCEDURE P (I : IN OUT INTEGER) IS
+     BEGIN
+          I := I + 5;
+     END P;
+
+END EA3004C0;

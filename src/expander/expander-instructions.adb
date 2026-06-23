@@ -1421,14 +1421,27 @@ raise PROGRAM_ERROR;
 
       elsif  DST_NAME.TY = DN_SLICE  then								-- AFFECTATION A UNE TRANCHE
         EXPRESSIONS.CODE_SLICE( DST_NAME );
+
         if  SRC_EXP.TY = DN_AGGREGATE  then
+	PUT_LINE( tab & "DROP" );
 	EXPRESSIONS.CODE_AGGREGATE( SRC_EXP, D( SM_EXP_TYPE, DST_NAME ) );
+
+        elsif SRC_EXP.TY = DN_SLICE then
+      -- Source slice : laisse @src, len_src
+	EXPRESSIONS.CODE_SLICE( SRC_EXP, IS_DESTINATION => TRUE );
+
+      -- On copie avec la longueur destination.
+      -- Pile avant DROP : @dst, len_dst, @src, len_src
+      -- Pile après DROP : @dst, len_dst, @src
+	PUT_LINE( tab & "DROP" );
+	PUT_LINE( tab & "BLKMOV" );									-- COPY_BLOCK;	- @DST @SRC LEN
+
         else
 	EXPRESSIONS.CODE_EXP( SRC_EXP );
+	PUT_LINE( tab & "La" );
+	PUT_LINE( tab & "BLKMOV" );									-- COPY_BLOCK;	- @DST @SRC LEN
         end if;
 
-        PUT_LINE( tab & "La" );
-        PUT_LINE( tab & "BLKMOV" );									-- COPY_BLOCK;	- @DST @SRC LEN
       end if;
     end;
   end	CODE_ASSIGN;

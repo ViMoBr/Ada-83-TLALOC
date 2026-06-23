@@ -1,0 +1,18 @@
+-- B54A01I.ADA
+
+-- CHECK THAT A CASE STATEMENT CANNOT END WITH 'END;'.
+
+-- DAT 3/18/81
+-- ABW 6/11/82
+
+PROCEDURE B54A01I IS
+
+     I : INTEGER := 4;
+
+BEGIN
+
+     CASE I IS
+          WHEN OTHERS => NULL;
+     END;                         -- ERROR: MISSING 'CASE'.
+
+END B54A01I;

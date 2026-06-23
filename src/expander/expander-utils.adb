@@ -11,7 +11,7 @@ separate ( EXPANDER	)
 is					-----
 
 
-  INACTIVE	: BOOLEAN	renames TRUE;
+--  INACTIVE	: BOOLEAN	renames TRUE;
 
   INT_LABEL	: LABEL_TYPE	:= 1;
   FS		: FILE_TYPE;

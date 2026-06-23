@@ -1,0 +1,113 @@
+--- /mnt/data/expander-expressions.adb	2026-06-22 21:45:18.031454407 +0000
++++ /mnt/data/expander-expressions.slice_fix.adb	2026-06-22 21:47:21.039914068 +0000
+@@ -603,9 +603,20 @@
+     NAME			: TREE	:= D( AS_NAME, SLICE );
+     DISCRETE_RANGE		: TREE	:= D( AS_DISCRETE_RANGE, SLICE );
+     SLICE_TYPE		: TREE	:= D( SM_EXP_TYPE, SLICE );
+-    SLICE_COMP_TYPE		: TREE	:= D( SM_COMP_TYPE,	SLICE_TYPE );
+-    COMP_SIZE		: INTEGER	:= DI( CD_IMPL_SIZE, SLICE_COMP_TYPE );
++    SLICE_ARRAY_TYPE	: TREE	:= SLICE_TYPE;
++    SLICE_COMP_TYPE		: TREE;
++    COMP_SIZE		: INTEGER;
+   begin
++    -- Une tranche d'un tableau contraint a souvent pour SM_EXP_TYPE un
++    -- DN_CONSTRAINED_ARRAY. Le type composant est alors porte par le
++    -- DN_ARRAY de base, pas directement par le subtype contraint.
++    if  SLICE_ARRAY_TYPE.TY = DN_CONSTRAINED_ARRAY  then
++      SLICE_ARRAY_TYPE := D( SM_BASE_TYPE, SLICE_ARRAY_TYPE );
++    end if;
++
++    SLICE_COMP_TYPE := D( SM_COMP_TYPE, SLICE_ARRAY_TYPE );
++    COMP_SIZE := DI( CD_IMPL_SIZE, SLICE_COMP_TYPE );
++
+     if  NAME.TY = DN_SELECTED	 then
+       CODE_SELECTED( NAME );
+ 
+@@ -918,8 +929,11 @@
+       CODE_INDEXED( NAME );
+ 
+     when DN_SLICE =>
+-      PUT_LINE( "; CODE_OBJECT_ADDRESS: renames slice a traiter plus tard" );
+-      raise PROGRAM_ERROR;
++      -- Adresse brute du premier composant de la tranche.
++      -- CODE_SLICE en mode destination laisse : @data_slice, taille_octets.
++      -- Pour un calcul d'adresse d'objet, on conserve seulement @data_slice.
++      CODE_SLICE( NAME, IS_DESTINATION => TRUE );
++      PUT_LINE( tab & "DROP" );
+ 
+     when DN_ALL =>
+       CODE_EXP( D( AS_NAME, NAME ) );							-- valeur access = @objet designe
+--- /mnt/data/expander-declarations.adb	2026-06-22 21:45:17.812928500 +0000
++++ /mnt/data/expander-declarations.slice_fix.adb	2026-06-22 21:47:21.040423240 +0000
+@@ -861,27 +861,50 @@
+         end loop;
+ 
+       -- Le renommage est représenté par un pointeur vers les données réelles.
+-        PUT_LINE( "VAR " & SRC_STR & "_disp, q" );
+-
+-        EXPRESSIONS.CODE_OBJECT_ADDRESS( NAME );
+-        PUT_LINE( tab & "Sa" & tab & LVL_STR & ", " & SRC_STR & "_disp" );
+-
+-      -- Pour les composites, on garde le doublet TLALOC habituel.
+-        if  SRC_TYPE.TY = DN_RECORD  or else  SRC_TYPE.TY = DN_ARRAY  or else  SRC_TYPE.TY = DN_CONSTRAINED_ARRAY
+-        then
+-	declare
+-	  TYPE_NAME	: TREE		:= D( XD_SOURCE_NAME, SRC_TYPE );
+-	  TYPE_NAME_STR	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
+-	begin
+-	  PUT_LINE( "VAR " & SRC_STR & "__u, q" );
+-
+-	  PUT( tab & "LVA" & tab & LVL_STR & ", " );
+-	  CODI.REGIONS_PATH( TYPE_NAME );
+-	  PUT_LINE( TYPE_NAME_STR & ".SIZ" );
+-
+-	  PUT_LINE( tab & "Sa" & tab & LVL_STR & ", " & SRC_STR & "__u" );
+-	end;
+-        end if;
++      -- Cas particulier important : une tranche est un objet composite dont
++      -- les bornes peuvent etre dynamiques. Il faut donc reprendre le doublet
++      -- anonyme construit par CODE_SLICE, et non pointer vers le use_info du
++      -- type source complet.
++        declare
++	  IS_COMPOSITE : constant BOOLEAN :=
++	    SRC_TYPE.TY = DN_RECORD
++	    or else SRC_TYPE.TY = DN_ARRAY
++	    or else SRC_TYPE.TY = DN_CONSTRAINED_ARRAY;
++        begin
++	  if  IS_COMPOSITE  and then  NAME.TY = DN_SLICE  then
++	    PUT_LINE( "VAR " & SRC_STR & "_disp, q" );
++	    PUT_LINE( "VAR " & SRC_STR & "__u, q" );
++
++	    EXPRESSIONS.CODE_SLICE( NAME, IS_DESTINATION => FALSE );
++	    PUT_LINE( tab & "DUP" );
++	    PUT_LINE( tab & "La" );
++	    PUT_LINE( tab & "Sa" & tab & LVL_STR & ", " & SRC_STR & "_disp" );
++	    PUT_LINE( tab & "La" & tab & ", 8" );
++	    PUT_LINE( tab & "Sa" & tab & LVL_STR & ", " & SRC_STR & "__u" );
++
++	  else
++	    PUT_LINE( "VAR " & SRC_STR & "_disp, q" );
++
++	    EXPRESSIONS.CODE_OBJECT_ADDRESS( NAME );
++	    PUT_LINE( tab & "Sa" & tab & LVL_STR & ", " & SRC_STR & "_disp" );
++
++	  -- Pour les composites non-tranches, on garde le doublet TLALOC habituel.
++	    if  IS_COMPOSITE  then
++	      declare
++	        TYPE_NAME	: TREE		:= D( XD_SOURCE_NAME, SRC_TYPE );
++	        TYPE_NAME_STR	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
++	      begin
++	        PUT_LINE( "VAR " & SRC_STR & "__u, q" );
++
++	        PUT( tab & "LVA" & tab & LVL_STR & ", " );
++	        CODI.REGIONS_PATH( TYPE_NAME );
++	        PUT_LINE( TYPE_NAME_STR & ".SIZ" );
++
++	        PUT_LINE( tab & "Sa" & tab & LVL_STR & ", " & SRC_STR & "__u" );
++	      end;
++	    end if;
++	  end if;
++        end;
+ 
+         DI( CD_LEVEL, SOURCE_NAME, INTEGER( LVL ) );
+         DB( CD_COMPILED, SOURCE_NAME, TRUE );

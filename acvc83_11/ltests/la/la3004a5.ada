@@ -1,0 +1,12 @@
+-- LA3004A5.ADA
+
+-- WKB 7/13/81
+
+PACKAGE BODY LA3004A0 IS
+
+     PROCEDURE P (I : IN OUT INTEGER) IS
+     BEGIN
+          I := I + 5;
+     END P;
+
+END LA3004A0;

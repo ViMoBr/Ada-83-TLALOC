@@ -1,0 +1,20 @@
+-- B55A01T.ADA
+
+-- CHECK THAT 'LOOP' CANNOT BE FOLLOWED BY ';'.
+
+-- CHECK BASIC LOOPS.
+
+-- JRK 7/2/82
+-- SPS 3/1/83
+
+PROCEDURE B55A01T IS
+
+     VBT : BOOLEAN := TRUE;
+
+BEGIN
+
+     LOOP;               -- ERROR: ';'.
+          EXIT WHEN VBT;
+     END LOOP;
+
+END B55A01T;
