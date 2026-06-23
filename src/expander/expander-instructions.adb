@@ -951,17 +951,220 @@ raise PROGRAM_ERROR;
   end	CODE_DELAY;
 
 
-
+				---------
   procedure			CODE_CASE			( ADA_CASE :TREE )
-  is
+  is				---------
+
+    CASE_EXP		: TREE		:= D( AS_EXP, ADA_CASE );
+    ALTERNATIVE_S		: TREE		:= D( AS_ALTERNATIVE_S, ADA_CASE );
+    POST_CASE_LBL		: constant STRING	:= NEW_LABEL;
+
+    HAS_OTHERS		: BOOLEAN		:= FALSE;
+    OTHERS_LBL		: LABEL_TYPE	:= 0;
+
+		----------------------
+    function	ALTERNATIVE_HAS_OTHERS	( ALTERNATIVE :TREE ) return BOOLEAN
+    is		----------------------
+      CHOICE_SEQ	: SEQ_TYPE	:= LIST( D( AS_CHOICE_S, ALTERNATIVE ) );
+      CHOICE		: TREE;
+    begin
+      while not IS_EMPTY( CHOICE_SEQ ) loop
+        POP( CHOICE_SEQ, CHOICE );
+
+        if CHOICE.TY = DN_CHOICE_OTHERS then
+	return TRUE;
+        end if;
+      end loop;
+
+      return FALSE;
+    end	ALTERNATIVE_HAS_OTHERS;
+
+
+    procedure		ALLOCATE_ALTERNATIVE_LABELS
+    is
+      ALT_SEQ		: SEQ_TYPE	:= LIST( ALTERNATIVE_S );
+      ALT_ELEM		: TREE;
+      CHOICE_S		: TREE;
+      ALT_LBL		: LABEL_TYPE;
+    begin
+      while not IS_EMPTY( ALT_SEQ ) loop
+        POP( ALT_SEQ, ALT_ELEM );
+
+        if ALT_ELEM.TY = DN_ALTERNATIVE then
+	CHOICE_S := D( AS_CHOICE_S, ALT_ELEM );
+	ALT_LBL  := NEW_LABEL;
+
+	DI( CD_LABEL, CHOICE_S, INTEGER( ALT_LBL ) );
+
+	if ALTERNATIVE_HAS_OTHERS( ALT_ELEM ) then
+	  HAS_OTHERS := TRUE;
+	  OTHERS_LBL := ALT_LBL;
+	end if;
+
+        elsif ALT_ELEM.TY = DN_ALTERNATIVE_PRAGMA then
+	null;
+        end if;
+      end loop;
+    end	ALLOCATE_ALTERNATIVE_LABELS;
+
+
+    procedure		CODE_CHOICE_EXP_TEST	( CHOICE :TREE; ALT_LBL :LABEL_TYPE )
+    is
+      CHOICE_EXP	: TREE		:= D( AS_EXP, CHOICE );
+    begin
+      PUT_LINE( tab & "DUP" );					-- garde le selecteur case
+      EXPRESSIONS.CODE_EXP( CHOICE_EXP );			-- valeur du choix
+      PUT_LINE( tab & "CEQ" );
+      PUT_LINE( tab & "BT" & tab & LABEL_STR( ALT_LBL ) );
+    end	CODE_CHOICE_EXP_TEST;
+
+
+    procedure		CODE_CHOICE_RANGE_TEST	( CHOICE :TREE; ALT_LBL :LABEL_TYPE )
+    is
+      DISCRETE_RANGE	: TREE		:= D( AS_DISCRETE_RANGE, CHOICE );
+      NEXT_CHOICE_LBL	: constant STRING	:= NEW_LABEL;
+    begin
+      if DISCRETE_RANGE.TY = DN_RANGE then
+
+        -- Test borne basse : selector >= first
+        PUT_LINE( tab & "DUP" );
+        EXPRESSIONS.CODE_EXP( D( AS_EXP1, DISCRETE_RANGE ) );
+        PUT_LINE( tab & "CGE" );
+        PUT_LINE( tab & "BF" & tab & NEXT_CHOICE_LBL );
+
+        -- Test borne haute : not (selector > last)
+        PUT_LINE( tab & "DUP" );
+        EXPRESSIONS.CODE_EXP( D( AS_EXP2, DISCRETE_RANGE ) );
+        PUT_LINE( tab & "CGT" );
+        PUT_LINE( tab & "BF" & tab & LABEL_STR( ALT_LBL ) );
+
+        PUT_LINE( NEXT_CHOICE_LBL & ':' );
+
+      else
+        PUT_LINE( "; CODE_CASE : choice_range non DN_RANGE a completer" );
+      end if;
+    end	CODE_CHOICE_RANGE_TEST;
+
+
+    procedure		CODE_ALTERNATIVE_TESTS	( ALTERNATIVE :TREE )
+    is
+      CHOICE_S		: TREE		:= D( AS_CHOICE_S, ALTERNATIVE );
+      CHOICE_SEQ	: SEQ_TYPE	:= LIST( CHOICE_S );
+      CHOICE		: TREE;
+      ALT_LBL		: LABEL_TYPE	:= LABEL_TYPE( DI( CD_LABEL, CHOICE_S ) );
+    begin
+      while not IS_EMPTY( CHOICE_SEQ ) loop
+        POP( CHOICE_SEQ, CHOICE );
+
+        if CHOICE.TY = DN_CHOICE_EXP then
+	CODE_CHOICE_EXP_TEST( CHOICE, ALT_LBL );
+
+        elsif CHOICE.TY = DN_CHOICE_RANGE then
+	CODE_CHOICE_RANGE_TEST( CHOICE, ALT_LBL );
+
+        elsif CHOICE.TY = DN_CHOICE_OTHERS then
+	null;						-- traite apres tous les tests
+
+        else
+	PUT_LINE( "; CODE_CASE : choix inconnu" );
+        end if;
+      end loop;
+    end	CODE_ALTERNATIVE_TESTS;
+
+
+    procedure		CODE_ALL_TESTS
+    is
+      ALT_SEQ		: SEQ_TYPE	:= LIST( ALTERNATIVE_S );
+      ALT_ELEM		: TREE;
+    begin
+      while not IS_EMPTY( ALT_SEQ ) loop
+        POP( ALT_SEQ, ALT_ELEM );
+
+        if ALT_ELEM.TY = DN_ALTERNATIVE then
+	CODE_ALTERNATIVE_TESTS( ALT_ELEM );
+
+        elsif ALT_ELEM.TY = DN_ALTERNATIVE_PRAGMA then
+	null;
+        end if;
+      end loop;
+    end	CODE_ALL_TESTS;
+
+
+    procedure		CODE_ALTERNATIVE_BODY	( ALTERNATIVE :TREE )
+    is
+      CHOICE_S		: TREE		:= D( AS_CHOICE_S, ALTERNATIVE );
+      ALT_LBL		: LABEL_TYPE	:= LABEL_TYPE( DI( CD_LABEL, CHOICE_S ) );
+      IS_OTHERS_ALT	: BOOLEAN	:= ALTERNATIVE_HAS_OTHERS( ALTERNATIVE );
+    begin
+      PUT_LINE( LABEL_STR( ALT_LBL ) & ':' );
+
+      -- Les alternatives ordinaires sont atteintes par BT avec le selecteur
+      -- encore sur la pile. L'alternative others est atteinte apres DROP.
+      if not IS_OTHERS_ALT then
+        PUT_LINE( tab & "DROP" );
+      end if;
+
+      CODE_STM_S( D( AS_STM_S, ALTERNATIVE ) );
+      PUT_LINE( tab & "BRA" & tab & POST_CASE_LBL );
+    end	CODE_ALTERNATIVE_BODY;
+
+
+    procedure		CODE_ALL_BODIES
+    is
+      ALT_SEQ		: SEQ_TYPE	:= LIST( ALTERNATIVE_S );
+      ALT_ELEM		: TREE;
+    begin
+      while not IS_EMPTY( ALT_SEQ ) loop
+        POP( ALT_SEQ, ALT_ELEM );
+
+        if ALT_ELEM.TY = DN_ALTERNATIVE then
+	CODE_ALTERNATIVE_BODY( ALT_ELEM );
+
+        elsif ALT_ELEM.TY = DN_ALTERNATIVE_PRAGMA then
+	null;
+        end if;
+      end loop;
+    end	CODE_ALL_BODIES;
+
+
   begin
-    null;
+    if CODI.DEBUG then
+      PUT( tab50 & "; debut case" );
+      NEW_LINE;
+    end if;
+
+    ALLOCATE_ALTERNATIVE_LABELS;
+
+    -- Le selecteur reste vivant sur la pile pendant tous les tests.
+    EXPRESSIONS.CODE_EXP( CASE_EXP );
+
+    CODE_ALL_TESTS;
+
+    -- Aucun choix ordinaire n'a reussi : on consomme le selecteur.
+    PUT_LINE( tab & "DROP" );
+
+    if HAS_OTHERS then
+      PUT_LINE( tab & "BRA" & tab & LABEL_STR( OTHERS_LBL ) );
+    else
+      -- Normalement impossible si la semantique Ada a verifie l'exhaustivite.
+      PUT_LINE( tab & "BRA" & tab & POST_CASE_LBL );
+    end if;
+
+    CODE_ALL_BODIES;
+
+    PUT_LINE( POST_CASE_LBL & ':' );
+
+    if CODI.DEBUG then
+      PUT( tab50 & "; fin case" );
+      NEW_LINE;
+    end if;
+
   end	CODE_CASE;
+	---------
 
-
-
-  procedure			CODE_STM_WITH_EXP_NAME	( STM_WITH_EXP_NAME :TREE )
-  is
+			----------------------
+  procedure		CODE_STM_WITH_EXP_NAME	( STM_WITH_EXP_NAME :TREE )
+  is			----------------------
   begin
     if  STM_WITH_EXP_NAME.TY = DN_CODE
     then

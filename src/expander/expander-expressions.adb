@@ -1727,11 +1727,134 @@ null;--	     declare
             COMP_BITS	: INTEGER		:= DI( CD_IMPL_SIZE, COMP_TYPE );
             COMP_BYTES	: INTEGER		:= COMP_BITS / CODI.STORAGE_UNIT;
             LVL		:constant STRING	:= IMAGE( CODI.CUR_LEVEL );
-            ANON_G		:constant STRING	:= ANONYMOUS_NAME_AT( PRM_1 );
-            ANON_D		:constant STRING	:= ANONYMOUS_NAME_AT( PRM_2 );
-            ANON_R		:constant STRING	:= ANONYMOUS_NAME_AT( FUNCTION_CALL );
-            TYPE_STR	:constant STRING
-					:= PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, RES_TYPE ) ) );
+--            ANON_G		:constant STRING	:= ANONYMOUS_NAME_AT( PRM_1 );
+--            ANON_D		:constant STRING	:= ANONYMOUS_NAME_AT( PRM_2 );
+--            ANON_R		:constant STRING	:= ANONYMOUS_NAME_AT( FUNCTION_CALL );
+
+	  CONCAT_UID	:constant STRING	:= NEW_LABEL;
+	  ANON_G		:constant STRING	:= ANONYMOUS_NAME_AT( PRM_1 ) & "_" & CONCAT_UID & "_G";
+	  ANON_D		:constant STRING	:= ANONYMOUS_NAME_AT( PRM_2 ) & "_" & CONCAT_UID & "_D";
+	  ANON_R		:constant STRING	:= ANONYMOUS_NAME_AT( FUNCTION_CALL ) & "_" & CONCAT_UID & "_R";
+
+            TYPE_STR	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, RES_TYPE ) ) );
+
+			----------------------------
+	  procedure	CODE_ARRAY_AGGREGATE_OPERAND		( AGG : TREE; ANON : STRING )
+	  is		----------------------------
+
+	    LVL		: constant STRING := IMAGE( CODI.CUR_LEVEL );
+
+	    AGG_TYPE	: TREE := D( SM_EXP_TYPE, AGG );
+	    RNG		: TREE := TREE_VOID;
+			---------------
+	    function	AGGREGATE_RANGE		return TREE
+	    is		---------------
+	      R		: TREE := D( SM_DISCRETE_RANGE, AGG );
+	      SEQ		: SEQ_TYPE;
+	      ASSOC	: TREE;
+	      CHOICES	: SEQ_TYPE;
+	      CH		: TREE;
+	    begin
+	      if R /= TREE_VOID then
+	        return R;
+	      end if;
+
+	      -- Cas fréquent des agrégats nommés :
+	      -- (1..TEST_NAME_LEN => ' ')
+	      SEQ := LIST( D( SM_NORMALIZED_COMP_S, AGG ) );
+
+	      while not IS_EMPTY( SEQ ) loop
+	        POP( SEQ, ASSOC );
+
+	        if ASSOC.TY = DN_NAMED then
+		CHOICES := LIST( D( AS_CHOICE_S, ASSOC ) );
+
+		while not IS_EMPTY( CHOICES ) loop
+		  POP( CHOICES, CH );
+
+		  if CH.TY = DN_CHOICE_RANGE then
+		    return D( AS_DISCRETE_RANGE, CH );
+		  end if;
+		end loop;
+	        end if;
+	      end loop;
+
+	      return  TREE_VOID;
+
+	    end	AGGREGATE_RANGE;
+		---------------
+	  begin
+	    if  AGG_TYPE = TREE_VOID  or else  AGG_TYPE.TY = DN_VOID  then
+	      -- Dans une concaténation de STRING, le type contextuel est le
+	      -- type résultat de l'opérateur "&".
+	      AGG_TYPE := RES_TYPE;
+	    end if;
+
+	    RNG := AGGREGATE_RANGE;
+
+	    if RNG = TREE_VOID then
+	      PUT_LINE( "; CODE & concat : aggregate operand sans range explicite" );
+	      raise PROGRAM_ERROR;
+	    end if;
+
+	    PUT_LINE( "VAR" & tab & ANON & "_disp, q" );
+	    PUT_LINE( "VAR" & tab & ANON & "__u,   q" );
+
+	    PUT_LINE( "namespace " & ANON & "_info" );
+	    PUT_LINE( "  VAR SIZ,      d" );
+	    PUT_LINE( "  VAR _COMP_SIZ, d" );
+	    PUT_LINE( "  VAR _FST_1,    d" );
+	    PUT_LINE( "  VAR _LST_1,    d" );
+	    PUT_LINE( "end namespace" );
+
+	    -- FST_1
+	    CODE_EXP( D( AS_EXP1, RNG ) );
+	    PUT_LINE( tab & "Sd  " & LVL & ", " & ANON & "_info._FST_1" );
+
+	    -- LST_1, en gardant une copie pour COUNT
+	    CODE_EXP( D( AS_EXP2, RNG ) );
+	    PUT_LINE( tab & "DUP" );
+	    PUT_LINE( tab & "Sd  " & LVL & ", " & ANON & "_info._LST_1" );
+
+	    -- COUNT = LST - FST + 1
+	    CODE_EXP( D( AS_EXP1, RNG ) );
+	    PUT_LINE( tab & "SUB" );
+	    PUT_LINE( tab & "INC" );
+
+	    -- COMP_SIZ en bits
+	    PUT_LINE( tab & "LI" & tab & IMAGE( COMP_BITS ) );
+	    PUT_LINE( tab & "Sd  " & LVL & ", " & ANON & "_info._COMP_SIZ" );
+
+	    -- SIZ = COUNT * COMP_BITS
+	    PUT_LINE( tab & "DUP" );
+	    if COMP_BITS /= 1 then
+	      PUT_LINE( tab & "LI" & tab & IMAGE( COMP_BITS ) );
+	      PUT_LINE( tab & "MUL" );
+	    end if;
+	    PUT_LINE( tab & "Sd  " & LVL & ", " & ANON & "_info.SIZ" );
+
+	    -- Allocation données : COUNT * COMP_BYTES
+	    if COMP_BYTES /= 1 then
+	      PUT_LINE( tab & "LI" & tab & IMAGE( COMP_BYTES ) );
+	      PUT_LINE( tab & "MUL" );
+	    end if;
+	    PUT_LINE( tab & "CO_VAR" );
+	    PUT_LINE( tab & "Sa  " & LVL & ", " & ANON & "_disp" );
+
+	    -- use_info du doublet temporaire
+	    PUT_LINE( tab & "LVA " & LVL & ", " & ANON & "_info.SIZ" );
+	    PUT_LINE( tab & "Sa  " & LVL & ", " & ANON & "__u" );
+
+	    -- Remplissage des données de l'agrégat.
+	    -- CODE_AGGREGATE attend l'adresse des données au sommet de pile.
+	    PUT_LINE( tab & "La  " & LVL & ", " & ANON & "_disp" );
+	    CODE_AGGREGATE( AGG, AGG_TYPE );
+
+	    -- Résultat attendu par la concat : adresse du doublet.
+	    PUT_LINE( tab & "LVA " & LVL & ", " & ANON & "_disp" );
+
+	  end	CODE_ARRAY_AGGREGATE_OPERAND;
+		----------------------------
 
 			------------------
 	  procedure	CODE_ARRAY_OPERAND ( E : TREE; ANON : STRING )
@@ -1787,6 +1910,9 @@ null;--	     declare
 
     -- Résultat attendu par la concat : @doublet.
 	      PUT_LINE( tab & "LVA " & LVL & ", " & ANON & "_disp" );
+
+	    elsif E.TY = DN_AGGREGATE then
+	      CODE_ARRAY_AGGREGATE_OPERAND( E, ANON );
 
 	    else
 	      CODE_EXP( E );
@@ -2546,9 +2672,9 @@ null;--	     declare
     end	EMIS_NAME;
 	---------
 
-			---------------------
-    procedure		ADD_DIMENSION_RANGE	( RNG :TREE )
-    is			---------------------
+			-------------------
+    procedure		ADD_DIMENSION_RANGE		( RNG :TREE )
+    is			-------------------
       FST	: TREE;
       LST	: TREE;
     begin
@@ -2572,9 +2698,9 @@ null;--	     declare
     end	ADD_DIMENSION_RANGE;
 	---------------------
 
-			---------------------
-    procedure		ADD_INDEX_DIMENSION	( INDEX_NODE :TREE )
-    is			---------------------
+			-------------------
+    procedure		ADD_INDEX_DIMENSION		( INDEX_NODE :TREE )
+    is			-------------------
       RNG	: TREE;
       IDX_TYPE	: TREE;
     begin
@@ -2593,11 +2719,11 @@ null;--	     declare
 
       ADD_DIMENSION_RANGE( RNG );
     end	ADD_INDEX_DIMENSION;
-	---------------------
+	-------------------
 
-			--------------------------
+			--------------------
     function		FIRST_RANGE_FROM_AGG	( AGG :TREE ) return TREE
-    is			--------------------------
+    is			--------------------
       RNG	: TREE		:= D( SM_DISCRETE_RANGE, AGG );
       SEQ	: SEQ_TYPE;
       ASSOC	: TREE;
@@ -2625,11 +2751,11 @@ null;--	     declare
 
       return TREE_VOID;
     end	FIRST_RANGE_FROM_AGG;
-	--------------------------
+	--------------------
 
-			--------------------------
+			----------------------
     function		FIRST_NESTED_AGGREGATE	( AGG :TREE ) return TREE
-    is			--------------------------
+    is			----------------------
       SEQ	: SEQ_TYPE	:= LIST( D( SM_NORMALIZED_COMP_S, AGG ) );
       ASSOC	: TREE;
       EXP	: TREE;
@@ -2650,11 +2776,11 @@ null;--	     declare
 
       return TREE_VOID;
     end	FIRST_NESTED_AGGREGATE;
-	--------------------------
+	----------------------
 
-			---------------------------
+			-----------------
     procedure		ADD_AGG_DIMENSION	( AGG :TREE; INDEX_NODE :TREE )
-    is			---------------------------
+    is			-----------------
       RNG	: TREE	:= TREE_VOID;
     begin
       if  AGG /= TREE_VOID  then
@@ -2670,9 +2796,9 @@ null;--	     declare
     end	ADD_AGG_DIMENSION;
 	---------------------------
 
-			----------------------
+			------------------
     procedure		COLLECT_DIMENSIONS	( AGG :TREE; TS :TREE )
-    is			----------------------
+    is			------------------
       CUR_TYPE	: TREE	:= TS;
       CUR_AGG	: TREE	:= AGG;
       BASE_TYPE	: TREE;
@@ -2804,7 +2930,7 @@ null;--	     declare
 
 			-----------------
     procedure		EMIT_AGG_AT_DEPTH	( AGG :TREE; DEPTH :NATURAL );
-		-----------------
+			-----------------
 
 			-------------
     procedure		EMIT_ONE_COMP	( COMP :TREE; DEPTH :NATURAL )
@@ -2905,7 +3031,7 @@ null;--	     declare
         if  ASSOC.TY = DN_NAMED  then
           declare
             COMP_EXP	: TREE		:= D( AS_EXP, ASSOC );
-            CHOICES	: SEQ_TYPE	:= LIST( D( AS_CHOICE_S, ASSOC ) );
+            CHOICES		: SEQ_TYPE	:= LIST( D( AS_CHOICE_S, ASSOC ) );
             CH		: TREE;
             HAD_CHOICE	: BOOLEAN	:= FALSE;
           begin
