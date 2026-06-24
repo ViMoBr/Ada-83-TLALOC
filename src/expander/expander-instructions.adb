@@ -604,7 +604,7 @@ null;
 	      ANON	:constant STRING	:= "SELARG_" & NEW_LABEL;
 	      LVL_STR	:constant STRING	:= IMAGE( CODI.CUR_LEVEL );
 	      TYPE_NAME	: TREE		:= D( XD_SOURCE_NAME, ACT_TYPE );
-	      TYPE_NAME_STR	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
+	      TYPE_NAME_STR	:constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
 	    begin
 	      PUT_LINE( tab & "VAR " & ANON & "_disp, q" );
 	      PUT_LINE( tab & "VAR " & ANON & "__u, q" );
@@ -744,7 +744,7 @@ null;
 	  ANONYMOUS_STR	:constant STRING	:= ANONYMOUS_NAME_AT( ACT_PRM );
 	  TYPE_SPEC	: TREE		:= D( SM_EXP_TYPE, ACT_PRM );
 	  TYPE_NAME	: TREE		:= D( XD_SOURCE_NAME, TYPE_SPEC );
-	  TYPE_NAME_STR	:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
+	  TYPE_NAME_STR	:constant	STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
 	begin
 	  PUT_LINE( tab & "VAR " & ANONYMOUS_STR	& "_disp, q" );
 	  PUT_LINE( tab & "VAR " & ANONYMOUS_STR	& "__u, q" );
@@ -898,7 +898,7 @@ raise PROGRAM_ERROR;
 	    end loop;
 	    declare
 	      TYPE_NAME	: TREE		:= D( XD_SOURCE_NAME, TYPE_SPEC );
-	      TN_STR	: constant STRING	:= PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
+	      TN_STR	: constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
 	      LVL_STR	: constant STRING	:= INTEGER'IMAGE( CODI.CUR_LEVEL );
 	    begin
 	      if  EXP.TY = DN_AGGREGATE  then
@@ -1366,7 +1366,7 @@ raise PROGRAM_ERROR;
 	if  DST_TYPE.TY = DN_RECORD  then
 	  PUT( tab & "LI" & tab );
 	  CODI.REGIONS_PATH( D( XD_SOURCE_NAME, DST_TYPE ) );
-	  PUT_LINE( PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, DST_TYPE ) ) ) & ".size" );
+	  PUT_LINE( '_' & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, DST_TYPE ) ) ) & ".size" );
 	  if  SRC_EXP.TY = DN_AGGREGATE  then
 	    EXPRESSIONS.CODE_AGGREGATE( SRC_EXP, DST_TYPE );
 	  else
@@ -1419,7 +1419,7 @@ raise PROGRAM_ERROR;
 	  else
 	    PUT( tab & "LI" & tab );
 	    CODI.REGIONS_PATH( D( XD_SOURCE_NAME, DST_TYPE ) );
-	    PUT_LINE( PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, DST_TYPE ) ) ) & ".size" );
+	    PUT_LINE( '_' & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, DST_TYPE ) ) ) & ".size" );
 	    EXPRESSIONS.CODE_EXP( SRC_EXP );
 	    PUT_LINE( tab & "BLKMOV" );
 	  end if;
@@ -1431,7 +1431,7 @@ raise PROGRAM_ERROR;
 	  else
 	    PUT( tab & "LI" & tab );
 	    CODI.REGIONS_PATH( D( XD_SOURCE_NAME, DST_TYPE ) );
-	    PUT_LINE( PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, DST_TYPE ) ) ) & ".size" );
+	    PUT_LINE( '_' & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, DST_TYPE ) ) ) & ".size" );
 	    EXPRESSIONS.CODE_EXP( SRC_EXP );
 --	    PUT_LINE( tab & "La" );
 	    PUT_LINE( tab & "BLKMOV" );
@@ -1468,7 +1468,7 @@ raise PROGRAM_ERROR;
   	then
 	  PUT( tab & "LI" & tab );
 	  CODI.REGIONS_PATH( D( XD_SOURCE_NAME, INDEXED_TYPE ) );
-	  PUT_LINE( PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, INDEXED_TYPE ) ) ) & ".size" );
+	  PUT_LINE( '_' & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, INDEXED_TYPE ) ) ) & ".size" );
 
 	  EXPRESSIONS.CODE_EXP( SRC_EXP );								-- Pour DN_INDEXED : laisse @SRC
 
@@ -1599,7 +1599,7 @@ raise PROGRAM_ERROR;
 
 	  PUT( tab & "LI" & tab );
 	  CODI.REGIONS_PATH( D( XD_SOURCE_NAME, NAME_TYPE ) );
-	  PUT_LINE( PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, NAME_TYPE ) ) ) & ".size" );			-- LEN (taille en octets, calculee par FASM)
+	  PUT_LINE( '_' & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, NAME_TYPE ) ) ) & ".size" );			-- LEN (taille en octets, calculee par FASM)
 
 	  if  SRC_EXP.TY = DN_AGGREGATE  then
 	    EXPRESSIONS.CODE_AGGREGATE( SRC_EXP, NAME_TYPE );

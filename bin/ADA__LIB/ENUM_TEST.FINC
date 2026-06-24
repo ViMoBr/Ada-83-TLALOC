@@ -4,9 +4,9 @@ end if
 PRO	ENUM_TEST_L1				;---------- PRO ENUM_TEST
 ELB 1					;    BODY ELAB
 
-					; COULEUR ENUMERATION TYPE INFO
-COULEUR = 'COULEUR'
-namespace COULEUR
+					; _COULEUR ENUMERATION TYPE INFO
+_COULEUR = '_COULEUR'
+namespace _COULEUR
 VAR use__info, q
 BEGIN_BLOC_DEF
 db 0, 4, "BLEU"
@@ -24,9 +24,9 @@ end postpone
 	Sa	1, use__info
 end namespace
 
-					; JOUR ENUMERATION TYPE INFO
-JOUR = 'JOUR'
-namespace JOUR
+					; _JOUR ENUMERATION TYPE INFO
+_JOUR = '_JOUR'
+namespace _JOUR
 VAR use__info, q
 BEGIN_BLOC_DEF
 db 0, 5, "LUNDI"
@@ -83,7 +83,7 @@ VAR COULEUR__ld_ofs, q
 	LCA LD_COULEUR.elab
 	Sa	 1, COULEUR__ld_ofs
 VAR COULEUR__u_ofs, q
-	La	 1, STANDARD.ENUM_TEST_L1.COULEUR.use__info
+	La	 1, STANDARD.ENUM_TEST_L1._COULEUR.use__info
 	Sa	 1, COULEUR__u_ofs
 VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
 VAR DEFAULT_WIDTH_disp, d			; variable entiere
@@ -238,7 +238,7 @@ VAR JOUR__ld_ofs, q
 	LCA LD_JOUR.elab
 	Sa	 1, JOUR__ld_ofs
 VAR JOUR__u_ofs, q
-	La	 1, STANDARD.ENUM_TEST_L1.JOUR.use__info
+	La	 1, STANDARD.ENUM_TEST_L1._JOUR.use__info
 	Sa	 1, JOUR__u_ofs
 VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
 VAR DEFAULT_WIDTH_disp, d			; variable entiere
@@ -393,7 +393,7 @@ VAR FILE_MODE__ld_ofs, q
 	LCA LD_FILE_MODE.elab
 	Sa	 1, FILE_MODE__ld_ofs
 VAR FILE_MODE__u_ofs, q
-	La	 0, STANDARD.TEXT_IO.FILE_MODE.use__info
+	La	 0, STANDARD.TEXT_IO._FILE_MODE.use__info
 	Sa	 1, FILE_MODE__u_ofs
 VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
 VAR DEFAULT_WIDTH_disp, d			; variable entiere
@@ -518,50 +518,50 @@ VAR J_disp, b				; variable entiere
 
 VAR G_disp, q				; variable record : pointeur aux data record
 VAR G__u, q				; variable record : pointeur aux useinfo
-VAR G__dat, STANDARD.TEXT_IO.FILE_TYPE.size
+VAR G__dat, STANDARD.TEXT_IO._FILE_TYPE.size
 	LVA	1, G__dat
 	Sa	1, G_disp				; record fin
-	LVA	1, STANDARD.TEXT_IO.FILE_TYPE.SIZ
+	LVA	1, STANDARD.TEXT_IO._FILE_TYPE.SIZ
 	Sa	1, G__u
 ; CODE_VC_NAME DN_VARIABLE_ID
-	LIVa 1, G_disp, STANDARD.TEXT_IO.FILE_TYPE.ID
+	LIVa 1, G_disp, STANDARD.TEXT_IO._FILE_TYPE.ID
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	NEG
 	Sd
-	LIVa 1, G_disp, STANDARD.TEXT_IO.FILE_TYPE.IS_OPENED
+	LIVa 1, G_disp, STANDARD.TEXT_IO._FILE_TYPE.IS_OPENED
 	LI	0
 	Sb
-	LIVa 1, G_disp, STANDARD.TEXT_IO.FILE_TYPE.PAGE_LENGTH
+	LIVa 1, G_disp, STANDARD.TEXT_IO._FILE_TYPE.PAGE_LENGTH
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	72
 	Sd
-	LIVa 1, G_disp, STANDARD.TEXT_IO.FILE_TYPE.LINE_LENGTH
+	LIVa 1, G_disp, STANDARD.TEXT_IO._FILE_TYPE.LINE_LENGTH
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	256
 	Sd
-	LIVa 1, G_disp, STANDARD.TEXT_IO.FILE_TYPE.PAGE
+	LIVa 1, G_disp, STANDARD.TEXT_IO._FILE_TYPE.PAGE
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	Sd
-	LIVa 1, G_disp, STANDARD.TEXT_IO.FILE_TYPE.LINE
+	LIVa 1, G_disp, STANDARD.TEXT_IO._FILE_TYPE.LINE
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	Sd
-	LIVa 1, G_disp, STANDARD.TEXT_IO.FILE_TYPE.COL
+	LIVa 1, G_disp, STANDARD.TEXT_IO._FILE_TYPE.COL
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	Sd
-	LIVa 1, G_disp, STANDARD.TEXT_IO.FILE_TYPE.IS_DEFAULT_IO
+	LIVa 1, G_disp, STANDARD.TEXT_IO._FILE_TYPE.IS_DEFAULT_IO
 	LI	0
 	Sb
-	LIVa 1, G_disp, STANDARD.TEXT_IO.FILE_TYPE.LOOK_AHEAD
+	LIVa 1, G_disp, STANDARD.TEXT_IO._FILE_TYPE.LOOK_AHEAD
 	LI	 0
 	Sb
-	LIVa 1, G_disp, STANDARD.TEXT_IO.FILE_TYPE.HAS_LOOK_AHEAD
+	LIVa 1, G_disp, STANDARD.TEXT_IO._FILE_TYPE.HAS_LOOK_AHEAD
 	LI	0
 	Sb
-	LIVa 1, G_disp, STANDARD.TEXT_IO.FILE_TYPE.AT_END_OF_FILE
+	LIVa 1, G_disp, STANDARD.TEXT_IO._FILE_TYPE.AT_END_OF_FILE
 	LI	0
 	Sb
 
@@ -1296,8 +1296,8 @@ STR STR_L111, "=== 18. PUT (string) ==="	; constante string="=== 18. PUT (string
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
 namespace	BLOCK__8
 ELB 2					;    BODY ELAB
-STRING = 'STRING'
-namespace STRING				; array var constrained array type info
+_STRING = '_STRING'
+namespace _STRING				; array var constrained array type info
 VAR use__info, q
 VAR SIZ, d
 	LVA	2, SIZ
@@ -1331,16 +1331,16 @@ LST_1 = $
 end namespace
 VAR S1_disp, q				; variable array : pointeur aux data
 VAR S1__u, q				; variable array : useinfo pointeur au rec info
-	La 2, STRING.use__info
+	La 2, _STRING.use__info
 	Sa	2, S1__u				; array info ptr at __u
-	Ld	2, STRING.SIZ
+	Ld	2, _STRING.SIZ
 	LI	8
 	DIV
 	CO_VAR
 	Sa	2, S1_disp				; array data ptr at _disp
 
-STRING = 'STRING'
-namespace STRING				; array var constrained array type info
+_STRING = '_STRING'
+namespace _STRING				; array var constrained array type info
 VAR use__info, q
 VAR SIZ, d
 	LVA	2, SIZ
@@ -1374,9 +1374,9 @@ LST_1 = $
 end namespace
 VAR S2_disp, q				; variable array : pointeur aux data
 VAR S2__u, q				; variable array : useinfo pointeur au rec info
-	La 2, STRING.use__info
+	La 2, _STRING.use__info
 	Sa	2, S2__u				; array info ptr at __u
-	Ld	2, STRING.SIZ
+	Ld	2, _STRING.SIZ
 	LI	8
 	DIV
 	CO_VAR

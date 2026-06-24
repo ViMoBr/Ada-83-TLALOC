@@ -527,7 +527,7 @@ null;
         VC_STR		:constant	STRING		:= PRINT_NAME( D( LX_SYMREP, VC_NAME ) );
         TYPE_NAME		: TREE			:= D( XD_SOURCE_NAME, TYPE_SPEC );
         TYPE_LEVEL		: INTEGER;
-        TYPE_NAME_STR	:constant	STRING		:= PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
+        TYPE_NAME_STR	:constant	STRING		:= '_' & PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
         DIM_NBR		: NATURAL			:= 1;
         LVL		: LEVEL_NUM		renames CODI.CUR_LEVEL;
         LVL_STR		:constant	STRING		:= IMAGE(	CODI.CUR_LEVEL );
@@ -682,7 +682,7 @@ end;
         LVL		: LEVEL_NUM	renames CODI.CUR_LEVEL;
         LVL_STR		:constant	STRING	:= IMAGE(	LVL );
         TYPE_NAME		: TREE		:= D( XD_SOURCE_NAME, TYPE_SPEC );
-        TYPE_NAME_STR	:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
+        TYPE_NAME_STR	:constant	STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
 
       begin
         PUT( "VAR "	& VC_STR & "_disp, q" );								-- Ptr to	rec
@@ -733,7 +733,7 @@ put_line( "; CODE_VC_NAME " & NODE_NAME'IMAGE( VC_NAME.TY ) );
 
           declare
             TYPE_NAME2  : TREE            := D( XD_SOURCE_NAME, TYPE_SPEC );
-            TN_STR2     : constant STRING := PRINT_NAME( D( LX_SYMREP, TYPE_NAME2 ) );
+            TN_STR2     : constant STRING := '_' & PRINT_NAME( D( LX_SYMREP, TYPE_NAME2 ) );
           begin
             PUT( tab & "LI" & tab );
             CODI.REGIONS_PATH( TYPE_NAME2 );
@@ -797,15 +797,26 @@ put_line( "; CODE_VC_NAME " & NODE_NAME'IMAGE( VC_NAME.TY ) );
 	------------------
 
 
+      function FULL_VIEW ( TYPE_SPEC : TREE ) return TREE is
+        TS	: TREE	:= TYPE_SPEC;
+      begin
+        loop
+	if  TS.TY = DN_L_PRIVATE  or  TS.TY = DN_PRIVATE  then
+	  TS := D( SM_TYPE_SPEC, TS );
+
+	elsif  TS.TY = DN_INCOMPLETE  then
+	  TS := D( XD_FULL_TYPE_SPEC, TS );
+
+	else
+	  return  TS;
+	end if;
+        end loop;
+
+      end	FULL_VIEW;
+	---------
+
     begin
-
---      if	TYPE_SPEC.TY = DN_L_PRIVATE  or  TYPE_SPEC.TY = DN_PRIVATE  then
---	TYPE_SPEC	:= D( SM_TYPE_SPEC,	TYPE_SPEC	);
---      end	if;
-
-      while  TYPE_SPEC.TY = DN_L_PRIVATE  or  TYPE_SPEC.TY = DN_PRIVATE  loop
-        TYPE_SPEC := D( SM_TYPE_SPEC, TYPE_SPEC );
-      end	loop;
+      TYPE_SPEC := FULL_VIEW( TYPE_SPEC );
 
       case TYPE_SPEC.TY is
       when DN_ENUMERATION		=> TYPE_SYMREP := D( XD_SOURCE_NAME, TYPE_SPEC );
@@ -913,8 +924,8 @@ put_line( "; CODE_VC_NAME " & NODE_NAME'IMAGE( VC_NAME.TY ) );
 	  -- Pour les composites non-tranches, on garde le doublet TLALOC habituel.
 	    if  IS_COMPOSITE  then
 	      declare
-	        TYPE_NAME	: TREE		:= D( XD_SOURCE_NAME, SRC_TYPE );
-	        TYPE_NAME_STR	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
+	        TYPE_NAME		: TREE		:= D( XD_SOURCE_NAME, SRC_TYPE );
+	        TYPE_NAME_STR	:constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
 	      begin
 	        PUT_LINE( "VAR " & SRC_STR & "__u, q" );
 
@@ -1238,9 +1249,9 @@ put_line( "; CODE_VC_NAME " & NODE_NAME'IMAGE( VC_NAME.TY ) );
 	  end if;
 
 	  PUT_LINE( "VAR " & GNAME_STR & "__u_ofs, q"	);
-	  PUT( tab & "La" & tab &	INTEGER'IMAGE( DI( CD_LEVEL, D( SM_TYPE_SPEC, DEFN ) ) ) & ", " );
+	  PUT( tab & "La" & tab & INTEGER'IMAGE( DI( CD_LEVEL, D( SM_TYPE_SPEC, DEFN ) ) ) & ", " );
 	  CODI.REGIONS_PATH( DEFN	);
-	  PUT_LINE( DEFN_STR & ".use__info"	);
+	  PUT_LINE( '_' & DEFN_STR & ".use__info"	);
 	  PUT_LINE( tab	& "Sa" & tab & LVL_STR & ", "	& GNAME_STR & "__u_ofs" );
 
 	end	ACTUAL_GENERIC_TYPE;

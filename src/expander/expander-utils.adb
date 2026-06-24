@@ -512,7 +512,17 @@ is					-----
 
     else
       REGIONS_PATH(	REGION );
-      PUT( RGN_NAME	);
+
+      if  REGION.TY = DN_TYPE_ID
+      or else REGION.TY = DN_SUBTYPE_ID
+      or else REGION.TY = DN_PRIVATE_TYPE_ID
+      or else REGION.TY = DN_L_PRIVATE_TYPE_ID
+      then
+        PUT( '_' );
+      end if;
+
+      PUT( RGN_NAME );
+
       if	REGION.TY	= DN_PROCEDURE_ID  or  REGION.TY = DN_FUNCTION_ID  then
         PUT( '_' & LABEL_STR(	LABEL_TYPE( DI( CD_LABEL, REGION ) ) ) );
       end	if;

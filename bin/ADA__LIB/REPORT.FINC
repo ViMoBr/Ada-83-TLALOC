@@ -6,9 +6,9 @@ namespace REPORT				;---------- PACKAGE
 elab_spec:				;    SPEC ELAB
 
 
-					; FILE_NUM INTEGER SUBTYPE INFO
-FILE_NUM = 'FILE_NUM'
-namespace FILE_NUM
+					; _FILE_NUM INTEGER SUBTYPE INFO
+_FILE_NUM = '_FILE_NUM'
+namespace _FILE_NUM
 VAR use__info, q
 VAR SIZ, d
 	LVA	0, SIZ
@@ -24,14 +24,14 @@ VAR LST, d
 	LI	3
 	Sd	0, LST
 VAR PARENT__u, q
-	La	0, STANDARD.INTEGER.use__info
+	La	0, STANDARD._INTEGER.use__info
 	Sa	0, PARENT__u
 end namespace
 					;    BODY ELAB
 
-					; STATUS ENUMERATION TYPE INFO
-STATUS = 'STATUS'
-namespace STATUS
+					; _STATUS ENUMERATION TYPE INFO
+_STATUS = '_STATUS'
+namespace _STATUS
 VAR use__info, q
 BEGIN_BLOC_DEF
 db 0, 4, "PASS"
@@ -53,8 +53,8 @@ VAR TEST_STATUS_disp, b			; variable entiere
 	LI	1
 	Sb  0,	TEST_STATUS_disp
 
-STRING = 'STRING'
-namespace STRING				; array var constrained array type info
+_STRING = '_STRING'
+namespace _STRING				; array var constrained array type info
 VAR use__info, q
 VAR SIZ, d
 	LVA	0, SIZ
@@ -88,16 +88,16 @@ LST_1 = $
 end namespace
 VAR TEST_NAME_disp, q			; variable array : pointeur aux data
 VAR TEST_NAME__u, q				; variable array : useinfo pointeur au rec info
-	La 0, STRING.use__info
+	La 0, _STRING.use__info
 	Sa	0, TEST_NAME__u				; array info ptr at __u
-	Ld	0, STRING.SIZ
+	Ld	0, _STRING.SIZ
 	LI	8
 	DIV
 	CO_VAR
 	Sa	0, TEST_NAME_disp			; array data ptr at _disp
 
-STRING = 'STRING'
-namespace STRING				; array var constrained array type info
+_STRING = '_STRING'
+namespace _STRING				; array var constrained array type info
 VAR use__info, q
 VAR SIZ, d
 	LVA	0, SIZ
@@ -131,7 +131,7 @@ LST_1 = $
 end namespace
 VAR NO_NAME_disp, q				; variable array : pointeur aux data
 VAR NO_NAME__u, q				; variable array : useinfo pointeur au rec info
-	La 0, STRING.use__info
+	La 0, _STRING.use__info
 	Sa	0, NO_NAME__u				; array info ptr at __u
 STR NO_NAME, "NO_NAME"			; constante string="NO_NAME"
 	LCA	NO_NAME.data_ptr
@@ -173,7 +173,7 @@ VAR I_disp, d				; variable entiere
 VAR M_disp, d				; variable entiere
 	LVA	1, -MSG_ofs
 	LIa	, , 8
-	Ld	, STRING.FST_1
+	Ld	, _STRING.FST_1
 	Sd  1,	M_disp
 
 VAR N_disp, d				; variable entiere
@@ -185,7 +185,7 @@ LOOP__1:
 	Ld 1,	I_disp
 	LVA	1, -MSG_ofs
 	LIa	, , 8
-	Ld	, STRING.LST_1
+	Ld	, _STRING.LST_1
 	Ld 1,	M_disp
 	SUB
 ; CODE_NUMERIC_LITERAL DN_INTEGER
@@ -210,11 +210,11 @@ LOOP__1:
 	Ld 1,	N_disp
 	LVA	1, -MSG_ofs
 	LIa	, 0,  8
-	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
+	Ld	, STANDARD._STRING.FST_1			; (index - FST_1) * SIZ_1
 	SUB
 	LVA	1, -MSG_ofs
 	LIa	, , 8
-	Ld	, STANDARD.STRING.COMP_SIZ
+	Ld	, STANDARD._STRING.COMP_SIZ
 	LI	8
 	DIV
 	MUL
@@ -238,11 +238,11 @@ LOOP__2:
 	ADD
 	LVA	1, -MSG_ofs
 	LIa	, 0,  8
-	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
+	Ld	, STANDARD._STRING.FST_1			; (index - FST_1) * SIZ_1
 	SUB
 	LVA	1, -MSG_ofs
 	LIa	, , 8
-	Ld	, STANDARD.STRING.COMP_SIZ
+	Ld	, STANDARD._STRING.COMP_SIZ
 	LI	8
 	DIV
 	MUL
@@ -283,7 +283,7 @@ L5:					; post if
 L4:
 	LVA	1, -MSG_ofs
 	LIa	, , 8
-	Ld	, STRING.LST_1
+	Ld	, _STRING.LST_1
 	Sd  1,	N_disp
 L3:					; post if
 	Ld 1,	I_disp
@@ -293,10 +293,10 @@ L3:					; post if
 ; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
 VAR	ANON_53_25_disp, q
 VAR	ANON_53_25__u,    q
-VAR	ANON_53_25__dat, STANDARD.TEXT_IO.FILE_TYPE.size
+VAR	ANON_53_25__dat, STANDARD.TEXT_IO._FILE_TYPE.size
 	LVA 1, ANON_53_25__dat
 	Sa  1, ANON_53_25_disp
-	La  0, STANDARD.TEXT_IO.FILE_TYPE.use__info
+	La  0, STANDARD.TEXT_IO._FILE_TYPE.use__info
 	Sa  1, ANON_53_25__u
 	LVA 1, ANON_53_25_disp
 					; doublet resultat record anonyme
@@ -307,7 +307,7 @@ VAR	ANON_53_25__dat, STANDARD.TEXT_IO.FILE_TYPE.size
 	Ld 1,	M_disp
 	LVA	1, -MSG_ofs
 	LIa	, , 8
-	Ld	, STANDARD.STRING.FST_1
+	Ld	, STANDARD._STRING.FST_1
 	SUB
 	LI	1
 	MUL
@@ -339,10 +339,10 @@ VAR _LST_1, d
 end namespace
 VAR	ANON_54_26_disp, q
 VAR	ANON_54_26__u,    q
-VAR	ANON_54_26__dat, STANDARD.TEXT_IO.FILE_TYPE.size
+VAR	ANON_54_26__dat, STANDARD.TEXT_IO._FILE_TYPE.size
 	LVA 1, ANON_54_26__dat
 	Sa  1, ANON_54_26_disp
-	La  0, STANDARD.TEXT_IO.FILE_TYPE.use__info
+	La  0, STANDARD.TEXT_IO._FILE_TYPE.use__info
 	Sa  1, ANON_54_26__u
 	LVA 1, ANON_54_26_disp
 					; doublet resultat record anonyme
@@ -359,7 +359,7 @@ LOOP__3:
 	Ld 1,	M_disp
 	LVA	1, -MSG_ofs
 	LIa	, , 8
-	Ld	, STRING.LST_1
+	Ld	, _STRING.LST_1
 	CLE
 	DUP
 	BF	L12
@@ -369,11 +369,11 @@ LOOP__3:
 	Ld 1,	M_disp
 	LVA	1, -MSG_ofs
 	LIa	, 0,  8
-	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
+	Ld	, STANDARD._STRING.FST_1			; (index - FST_1) * SIZ_1
 	SUB
 	LVA	1, -MSG_ofs
 	LIa	, , 8
-	Ld	, STANDARD.STRING.COMP_SIZ
+	Ld	, STANDARD._STRING.COMP_SIZ
 	LI	8
 	DIV
 	MUL
@@ -393,7 +393,7 @@ L11:					; post loop LOOP__3
 	Ld 1,	M_disp
 	LVA	1, -MSG_ofs
 	LIa	, , 8
-	Ld	, STRING.LST_1
+	Ld	, _STRING.LST_1
 	CGT
 	BT	L2
 	BRA	LOOP__1
@@ -419,10 +419,10 @@ begin:					;---------- BDY INSTRUCTIONS
 					; debut if
 	LVA	1, -NAME_ofs
 	LIa	, , 8
-	Ld	, STRING.LST_1
+	Ld	, _STRING.LST_1
 	LVA	1, -NAME_ofs
 	LIa	, , 8
-	Ld	, STRING.FST_1
+	Ld	, _STRING.FST_1
 	SUB
 	INC
 ; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
@@ -431,10 +431,10 @@ begin:					;---------- BDY INSTRUCTIONS
 	BF	L15
 	LVA	1, -NAME_ofs
 	LIa	, , 8
-	Ld	, STRING.LST_1
+	Ld	, _STRING.LST_1
 	LVA	1, -NAME_ofs
 	LIa	, , 8
-	Ld	, STRING.FST_1
+	Ld	, _STRING.FST_1
 	SUB
 	INC
 	Sd  0,	TEST_NAME_LEN_disp
@@ -447,7 +447,7 @@ L14:					; post if
 	La 0, TEST_NAME_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
-	LId 0, TEST_NAME__u, STANDARD.STRING.FST_1
+	LId 0, TEST_NAME__u, STANDARD._STRING.FST_1
 	SUB
 	LI	1
 	MUL
@@ -463,17 +463,17 @@ L14:					; post if
 	LIa	, , 0
 	LVA	1, -NAME_ofs
 	LIa	, , 8
-	Ld	, STRING.FST_1
+	Ld	, _STRING.FST_1
 	LVA	1, -NAME_ofs
 	LIa	, , 8
-	Ld	, STANDARD.STRING.FST_1
+	Ld	, STANDARD._STRING.FST_1
 	SUB
 	LI	1
 	MUL
 	ADD
 	LVA	1, -NAME_ofs
 	LIa	, , 8
-	Ld	, STRING.FST_1
+	Ld	, _STRING.FST_1
 	Ld 0,	STANDARD.REPORT.TEST_NAME_LEN_disp
 	ADD
 ; CODE_NUMERIC_LITERAL DN_INTEGER
@@ -482,7 +482,7 @@ L14:					; post if
 	INC
 	LVA	1, -NAME_ofs
 	LIa	, , 8
-	Ld	, STRING.FST_1
+	Ld	, _STRING.FST_1
 	SUB
 	LI	1
 	MUL
@@ -491,7 +491,7 @@ L14:					; post if
 STR STR_L16, ""				; constante string=""
 	LCA	STR_L16.data_ptr
 	CALL	STANDARD.REPORT. ,PUT_MSG_L1
-; CODE & concat STRING
+; CODE & concat _STRING
 VAR	ANON_74_20_L17_G_data, q
 VAR	ANON_74_20_L17_G_info, q
 VAR	ANON_75_28_L17_D_data, q
@@ -506,7 +506,7 @@ namespace ANON_74_20_L17_R_info
   VAR _FST_1,    d
   VAR _LST_1,    d
 end namespace
-; CODE & concat STRING
+; CODE & concat _STRING
 VAR	ANON_74_20_L18_G_data, q
 VAR	ANON_74_20_L18_G_info, q
 VAR	ANON_75_20_L18_D_data, q
@@ -521,7 +521,7 @@ namespace ANON_74_20_L18_R_info
   VAR _FST_1,    d
   VAR _LST_1,    d
 end namespace
-; CODE & concat STRING
+; CODE & concat _STRING
 VAR	ANON_74_20_L19_G_data, q
 VAR	ANON_74_20_L19_G_info, q
 VAR	ANON_74_61_L19_D_data, q
@@ -536,7 +536,7 @@ namespace ANON_74_20_L19_R_info
   VAR _FST_1,    d
   VAR _LST_1,    d
 end namespace
-; CODE & concat STRING
+; CODE & concat _STRING
 VAR	ANON_74_20_L20_G_data, q
 VAR	ANON_74_20_L20_G_info, q
 VAR	ANON_74_30_L20_D_data, q
@@ -558,8 +558,8 @@ STR ANON_74_20_L20_G, "---- "			; constante string="---- "
 	Sa  1, ANON_74_20_L20_G_data
 	La  ,  8
 	Sa  1, ANON_74_20_L20_G_info
-	LId 1, ANON_74_20_L20_G_info, STRING.LST_1
-	LId 1, ANON_74_20_L20_G_info, STRING.FST_1
+	LId 1, ANON_74_20_L20_G_info, _STRING.LST_1
+	LId 1, ANON_74_20_L20_G_info, _STRING.FST_1
 	SUB
 	INC
 	Sa  1, ANON_74_20_L20_G_len
@@ -576,7 +576,7 @@ end namespace
 	La 0, TEST_NAME_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
-	LId 0, TEST_NAME__u, STANDARD.STRING.FST_1
+	LId 0, TEST_NAME__u, STANDARD._STRING.FST_1
 	SUB
 	LI	1
 	MUL
@@ -610,8 +610,8 @@ end namespace
 	Sa  1, ANON_74_30_L20_D_data
 	La  ,  8
 	Sa  1, ANON_74_30_L20_D_info
-	LId 1, ANON_74_30_L20_D_info, STRING.LST_1
-	LId 1, ANON_74_30_L20_D_info, STRING.FST_1
+	LId 1, ANON_74_30_L20_D_info, _STRING.LST_1
+	LId 1, ANON_74_30_L20_D_info, _STRING.FST_1
 	SUB
 	INC
 	Sa  1, ANON_74_30_L20_D_len
@@ -652,8 +652,8 @@ end namespace
 	Sa  1, ANON_74_20_L19_G_data
 	La  ,  8
 	Sa  1, ANON_74_20_L19_G_info
-	LId 1, ANON_74_20_L19_G_info, STRING.LST_1
-	LId 1, ANON_74_20_L19_G_info, STRING.FST_1
+	LId 1, ANON_74_20_L19_G_info, _STRING.LST_1
+	LId 1, ANON_74_20_L19_G_info, _STRING.FST_1
 	SUB
 	INC
 	Sa  1, ANON_74_20_L19_G_len
@@ -664,8 +664,8 @@ STR ANON_74_61_L19_D, " "			; constante string=" "
 	Sa  1, ANON_74_61_L19_D_data
 	La  ,  8
 	Sa  1, ANON_74_61_L19_D_info
-	LId 1, ANON_74_61_L19_D_info, STRING.LST_1
-	LId 1, ANON_74_61_L19_D_info, STRING.FST_1
+	LId 1, ANON_74_61_L19_D_info, _STRING.LST_1
+	LId 1, ANON_74_61_L19_D_info, _STRING.FST_1
 	SUB
 	INC
 	Sa  1, ANON_74_61_L19_D_len
@@ -706,8 +706,8 @@ STR ANON_74_61_L19_D, " "			; constante string=" "
 	Sa  1, ANON_74_20_L18_G_data
 	La  ,  8
 	Sa  1, ANON_74_20_L18_G_info
-	LId 1, ANON_74_20_L18_G_info, STRING.LST_1
-	LId 1, ANON_74_20_L18_G_info, STRING.FST_1
+	LId 1, ANON_74_20_L18_G_info, _STRING.LST_1
+	LId 1, ANON_74_20_L18_G_info, _STRING.FST_1
 	SUB
 	INC
 	Sa  1, ANON_74_20_L18_G_len
@@ -717,8 +717,8 @@ STR ANON_74_61_L19_D, " "			; constante string=" "
 	Sa  1, ANON_75_20_L18_D_data
 	La  ,  8
 	Sa  1, ANON_75_20_L18_D_info
-	LId 1, ANON_75_20_L18_D_info, STRING.LST_1
-	LId 1, ANON_75_20_L18_D_info, STRING.FST_1
+	LId 1, ANON_75_20_L18_D_info, _STRING.LST_1
+	LId 1, ANON_75_20_L18_D_info, _STRING.FST_1
 	SUB
 	INC
 	Sa  1, ANON_75_20_L18_D_len
@@ -759,8 +759,8 @@ STR ANON_74_61_L19_D, " "			; constante string=" "
 	Sa  1, ANON_74_20_L17_G_data
 	La  ,  8
 	Sa  1, ANON_74_20_L17_G_info
-	LId 1, ANON_74_20_L17_G_info, STRING.LST_1
-	LId 1, ANON_74_20_L17_G_info, STRING.FST_1
+	LId 1, ANON_74_20_L17_G_info, _STRING.LST_1
+	LId 1, ANON_74_20_L17_G_info, _STRING.FST_1
 	SUB
 	INC
 	Sa  1, ANON_74_20_L17_G_len
@@ -771,8 +771,8 @@ STR ANON_75_28_L17_D, "."			; constante string="."
 	Sa  1, ANON_75_28_L17_D_data
 	La  ,  8
 	Sa  1, ANON_75_28_L17_D_info
-	LId 1, ANON_75_28_L17_D_info, STRING.LST_1
-	LId 1, ANON_75_28_L17_D_info, STRING.FST_1
+	LId 1, ANON_75_28_L17_D_info, _STRING.LST_1
+	LId 1, ANON_75_28_L17_D_info, _STRING.FST_1
 	SUB
 	INC
 	Sa  1, ANON_75_28_L17_D_len
@@ -824,7 +824,7 @@ endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-; CODE & concat STRING
+; CODE & concat _STRING
 VAR	ANON_80_20_L21_G_data, q
 VAR	ANON_80_20_L21_G_info, q
 VAR	ANON_81_28_L21_D_data, q
@@ -839,7 +839,7 @@ namespace ANON_80_20_L21_R_info
   VAR _FST_1,    d
   VAR _LST_1,    d
 end namespace
-; CODE & concat STRING
+; CODE & concat _STRING
 VAR	ANON_80_20_L22_G_data, q
 VAR	ANON_80_20_L22_G_info, q
 VAR	ANON_81_20_L22_D_data, q
@@ -854,7 +854,7 @@ namespace ANON_80_20_L22_R_info
   VAR _FST_1,    d
   VAR _LST_1,    d
 end namespace
-; CODE & concat STRING
+; CODE & concat _STRING
 VAR	ANON_80_20_L23_G_data, q
 VAR	ANON_80_20_L23_G_info, q
 VAR	ANON_80_61_L23_D_data, q
@@ -869,7 +869,7 @@ namespace ANON_80_20_L23_R_info
   VAR _FST_1,    d
   VAR _LST_1,    d
 end namespace
-; CODE & concat STRING
+; CODE & concat _STRING
 VAR	ANON_80_20_L24_G_data, q
 VAR	ANON_80_20_L24_G_info, q
 VAR	ANON_80_30_L24_D_data, q
@@ -891,8 +891,8 @@ STR ANON_80_20_L24_G, "   - "			; constante string="   - "
 	Sa  1, ANON_80_20_L24_G_data
 	La  ,  8
 	Sa  1, ANON_80_20_L24_G_info
-	LId 1, ANON_80_20_L24_G_info, STRING.LST_1
-	LId 1, ANON_80_20_L24_G_info, STRING.FST_1
+	LId 1, ANON_80_20_L24_G_info, _STRING.LST_1
+	LId 1, ANON_80_20_L24_G_info, _STRING.FST_1
 	SUB
 	INC
 	Sa  1, ANON_80_20_L24_G_len
@@ -909,7 +909,7 @@ end namespace
 	La 0, TEST_NAME_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
-	LId 0, TEST_NAME__u, STANDARD.STRING.FST_1
+	LId 0, TEST_NAME__u, STANDARD._STRING.FST_1
 	SUB
 	LI	1
 	MUL
@@ -943,8 +943,8 @@ end namespace
 	Sa  1, ANON_80_30_L24_D_data
 	La  ,  8
 	Sa  1, ANON_80_30_L24_D_info
-	LId 1, ANON_80_30_L24_D_info, STRING.LST_1
-	LId 1, ANON_80_30_L24_D_info, STRING.FST_1
+	LId 1, ANON_80_30_L24_D_info, _STRING.LST_1
+	LId 1, ANON_80_30_L24_D_info, _STRING.FST_1
 	SUB
 	INC
 	Sa  1, ANON_80_30_L24_D_len
@@ -985,8 +985,8 @@ end namespace
 	Sa  1, ANON_80_20_L23_G_data
 	La  ,  8
 	Sa  1, ANON_80_20_L23_G_info
-	LId 1, ANON_80_20_L23_G_info, STRING.LST_1
-	LId 1, ANON_80_20_L23_G_info, STRING.FST_1
+	LId 1, ANON_80_20_L23_G_info, _STRING.LST_1
+	LId 1, ANON_80_20_L23_G_info, _STRING.FST_1
 	SUB
 	INC
 	Sa  1, ANON_80_20_L23_G_len
@@ -997,8 +997,8 @@ STR ANON_80_61_L23_D, " "			; constante string=" "
 	Sa  1, ANON_80_61_L23_D_data
 	La  ,  8
 	Sa  1, ANON_80_61_L23_D_info
-	LId 1, ANON_80_61_L23_D_info, STRING.LST_1
-	LId 1, ANON_80_61_L23_D_info, STRING.FST_1
+	LId 1, ANON_80_61_L23_D_info, _STRING.LST_1
+	LId 1, ANON_80_61_L23_D_info, _STRING.FST_1
 	SUB
 	INC
 	Sa  1, ANON_80_61_L23_D_len
@@ -1039,8 +1039,8 @@ STR ANON_80_61_L23_D, " "			; constante string=" "
 	Sa  1, ANON_80_20_L22_G_data
 	La  ,  8
 	Sa  1, ANON_80_20_L22_G_info
-	LId 1, ANON_80_20_L22_G_info, STRING.LST_1
-	LId 1, ANON_80_20_L22_G_info, STRING.FST_1
+	LId 1, ANON_80_20_L22_G_info, _STRING.LST_1
+	LId 1, ANON_80_20_L22_G_info, _STRING.FST_1
 	SUB
 	INC
 	Sa  1, ANON_80_20_L22_G_len
@@ -1050,8 +1050,8 @@ STR ANON_80_61_L23_D, " "			; constante string=" "
 	Sa  1, ANON_81_20_L22_D_data
 	La  ,  8
 	Sa  1, ANON_81_20_L22_D_info
-	LId 1, ANON_81_20_L22_D_info, STRING.LST_1
-	LId 1, ANON_81_20_L22_D_info, STRING.FST_1
+	LId 1, ANON_81_20_L22_D_info, _STRING.LST_1
+	LId 1, ANON_81_20_L22_D_info, _STRING.FST_1
 	SUB
 	INC
 	Sa  1, ANON_81_20_L22_D_len
@@ -1092,8 +1092,8 @@ STR ANON_80_61_L23_D, " "			; constante string=" "
 	Sa  1, ANON_80_20_L21_G_data
 	La  ,  8
 	Sa  1, ANON_80_20_L21_G_info
-	LId 1, ANON_80_20_L21_G_info, STRING.LST_1
-	LId 1, ANON_80_20_L21_G_info, STRING.FST_1
+	LId 1, ANON_80_20_L21_G_info, _STRING.LST_1
+	LId 1, ANON_80_20_L21_G_info, _STRING.FST_1
 	SUB
 	INC
 	Sa  1, ANON_80_20_L21_G_len
@@ -1104,8 +1104,8 @@ STR ANON_81_28_L21_D, "."			; constante string="."
 	Sa  1, ANON_81_28_L21_D_data
 	La  ,  8
 	Sa  1, ANON_81_28_L21_D_info
-	LId 1, ANON_81_28_L21_D_info, STRING.LST_1
-	LId 1, ANON_81_28_L21_D_info, STRING.FST_1
+	LId 1, ANON_81_28_L21_D_info, _STRING.LST_1
+	LId 1, ANON_81_28_L21_D_info, _STRING.FST_1
 	SUB
 	INC
 	Sa  1, ANON_81_28_L21_D_len
@@ -1159,7 +1159,7 @@ ELB 1					;    BODY ELAB
 begin:					;---------- BDY INSTRUCTIONS
 	LI	1
 	Sb  0,	TEST_STATUS_disp
-; CODE & concat STRING
+; CODE & concat _STRING
 VAR	ANON_87_20_L25_G_data, q
 VAR	ANON_87_20_L25_G_info, q
 VAR	ANON_88_28_L25_D_data, q
@@ -1174,7 +1174,7 @@ namespace ANON_87_20_L25_R_info
   VAR _FST_1,    d
   VAR _LST_1,    d
 end namespace
-; CODE & concat STRING
+; CODE & concat _STRING
 VAR	ANON_87_20_L26_G_data, q
 VAR	ANON_87_20_L26_G_info, q
 VAR	ANON_88_20_L26_D_data, q
@@ -1189,7 +1189,7 @@ namespace ANON_87_20_L26_R_info
   VAR _FST_1,    d
   VAR _LST_1,    d
 end namespace
-; CODE & concat STRING
+; CODE & concat _STRING
 VAR	ANON_87_20_L27_G_data, q
 VAR	ANON_87_20_L27_G_info, q
 VAR	ANON_87_61_L27_D_data, q
@@ -1204,7 +1204,7 @@ namespace ANON_87_20_L27_R_info
   VAR _FST_1,    d
   VAR _LST_1,    d
 end namespace
-; CODE & concat STRING
+; CODE & concat _STRING
 VAR	ANON_87_20_L28_G_data, q
 VAR	ANON_87_20_L28_G_info, q
 VAR	ANON_87_30_L28_D_data, q
@@ -1226,8 +1226,8 @@ STR ANON_87_20_L28_G, "   * "			; constante string="   * "
 	Sa  1, ANON_87_20_L28_G_data
 	La  ,  8
 	Sa  1, ANON_87_20_L28_G_info
-	LId 1, ANON_87_20_L28_G_info, STRING.LST_1
-	LId 1, ANON_87_20_L28_G_info, STRING.FST_1
+	LId 1, ANON_87_20_L28_G_info, _STRING.LST_1
+	LId 1, ANON_87_20_L28_G_info, _STRING.FST_1
 	SUB
 	INC
 	Sa  1, ANON_87_20_L28_G_len
@@ -1244,7 +1244,7 @@ end namespace
 	La 0, TEST_NAME_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
-	LId 0, TEST_NAME__u, STANDARD.STRING.FST_1
+	LId 0, TEST_NAME__u, STANDARD._STRING.FST_1
 	SUB
 	LI	1
 	MUL
@@ -1278,8 +1278,8 @@ end namespace
 	Sa  1, ANON_87_30_L28_D_data
 	La  ,  8
 	Sa  1, ANON_87_30_L28_D_info
-	LId 1, ANON_87_30_L28_D_info, STRING.LST_1
-	LId 1, ANON_87_30_L28_D_info, STRING.FST_1
+	LId 1, ANON_87_30_L28_D_info, _STRING.LST_1
+	LId 1, ANON_87_30_L28_D_info, _STRING.FST_1
 	SUB
 	INC
 	Sa  1, ANON_87_30_L28_D_len
@@ -1320,8 +1320,8 @@ end namespace
 	Sa  1, ANON_87_20_L27_G_data
 	La  ,  8
 	Sa  1, ANON_87_20_L27_G_info
-	LId 1, ANON_87_20_L27_G_info, STRING.LST_1
-	LId 1, ANON_87_20_L27_G_info, STRING.FST_1
+	LId 1, ANON_87_20_L27_G_info, _STRING.LST_1
+	LId 1, ANON_87_20_L27_G_info, _STRING.FST_1
 	SUB
 	INC
 	Sa  1, ANON_87_20_L27_G_len
@@ -1332,8 +1332,8 @@ STR ANON_87_61_L27_D, " "			; constante string=" "
 	Sa  1, ANON_87_61_L27_D_data
 	La  ,  8
 	Sa  1, ANON_87_61_L27_D_info
-	LId 1, ANON_87_61_L27_D_info, STRING.LST_1
-	LId 1, ANON_87_61_L27_D_info, STRING.FST_1
+	LId 1, ANON_87_61_L27_D_info, _STRING.LST_1
+	LId 1, ANON_87_61_L27_D_info, _STRING.FST_1
 	SUB
 	INC
 	Sa  1, ANON_87_61_L27_D_len
@@ -1374,8 +1374,8 @@ STR ANON_87_61_L27_D, " "			; constante string=" "
 	Sa  1, ANON_87_20_L26_G_data
 	La  ,  8
 	Sa  1, ANON_87_20_L26_G_info
-	LId 1, ANON_87_20_L26_G_info, STRING.LST_1
-	LId 1, ANON_87_20_L26_G_info, STRING.FST_1
+	LId 1, ANON_87_20_L26_G_info, _STRING.LST_1
+	LId 1, ANON_87_20_L26_G_info, _STRING.FST_1
 	SUB
 	INC
 	Sa  1, ANON_87_20_L26_G_len
@@ -1385,8 +1385,8 @@ STR ANON_87_61_L27_D, " "			; constante string=" "
 	Sa  1, ANON_88_20_L26_D_data
 	La  ,  8
 	Sa  1, ANON_88_20_L26_D_info
-	LId 1, ANON_88_20_L26_D_info, STRING.LST_1
-	LId 1, ANON_88_20_L26_D_info, STRING.FST_1
+	LId 1, ANON_88_20_L26_D_info, _STRING.LST_1
+	LId 1, ANON_88_20_L26_D_info, _STRING.FST_1
 	SUB
 	INC
 	Sa  1, ANON_88_20_L26_D_len
@@ -1427,8 +1427,8 @@ STR ANON_87_61_L27_D, " "			; constante string=" "
 	Sa  1, ANON_87_20_L25_G_data
 	La  ,  8
 	Sa  1, ANON_87_20_L25_G_info
-	LId 1, ANON_87_20_L25_G_info, STRING.LST_1
-	LId 1, ANON_87_20_L25_G_info, STRING.FST_1
+	LId 1, ANON_87_20_L25_G_info, _STRING.LST_1
+	LId 1, ANON_87_20_L25_G_info, _STRING.FST_1
 	SUB
 	INC
 	Sa  1, ANON_87_20_L25_G_len
@@ -1439,8 +1439,8 @@ STR ANON_88_28_L25_D, "."			; constante string="."
 	Sa  1, ANON_88_28_L25_D_data
 	La  ,  8
 	Sa  1, ANON_88_28_L25_D_info
-	LId 1, ANON_88_28_L25_D_info, STRING.LST_1
-	LId 1, ANON_88_28_L25_D_info, STRING.FST_1
+	LId 1, ANON_88_28_L25_D_info, _STRING.LST_1
+	LId 1, ANON_88_28_L25_D_info, _STRING.FST_1
 	SUB
 	INC
 	Sa  1, ANON_88_28_L25_D_len
@@ -1505,7 +1505,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	BRA	L29
 L30:
 L29:					; post if
-; CODE & concat STRING
+; CODE & concat _STRING
 VAR	ANON_96_20_L31_G_data, q
 VAR	ANON_96_20_L31_G_info, q
 VAR	ANON_97_28_L31_D_data, q
@@ -1520,7 +1520,7 @@ namespace ANON_96_20_L31_R_info
   VAR _FST_1,    d
   VAR _LST_1,    d
 end namespace
-; CODE & concat STRING
+; CODE & concat _STRING
 VAR	ANON_96_20_L32_G_data, q
 VAR	ANON_96_20_L32_G_info, q
 VAR	ANON_97_20_L32_D_data, q
@@ -1535,7 +1535,7 @@ namespace ANON_96_20_L32_R_info
   VAR _FST_1,    d
   VAR _LST_1,    d
 end namespace
-; CODE & concat STRING
+; CODE & concat _STRING
 VAR	ANON_96_20_L33_G_data, q
 VAR	ANON_96_20_L33_G_info, q
 VAR	ANON_96_61_L33_D_data, q
@@ -1550,7 +1550,7 @@ namespace ANON_96_20_L33_R_info
   VAR _FST_1,    d
   VAR _LST_1,    d
 end namespace
-; CODE & concat STRING
+; CODE & concat _STRING
 VAR	ANON_96_20_L34_G_data, q
 VAR	ANON_96_20_L34_G_info, q
 VAR	ANON_96_30_L34_D_data, q
@@ -1572,8 +1572,8 @@ STR ANON_96_20_L34_G, "   + "			; constante string="   + "
 	Sa  1, ANON_96_20_L34_G_data
 	La  ,  8
 	Sa  1, ANON_96_20_L34_G_info
-	LId 1, ANON_96_20_L34_G_info, STRING.LST_1
-	LId 1, ANON_96_20_L34_G_info, STRING.FST_1
+	LId 1, ANON_96_20_L34_G_info, _STRING.LST_1
+	LId 1, ANON_96_20_L34_G_info, _STRING.FST_1
 	SUB
 	INC
 	Sa  1, ANON_96_20_L34_G_len
@@ -1590,7 +1590,7 @@ end namespace
 	La 0, TEST_NAME_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
-	LId 0, TEST_NAME__u, STANDARD.STRING.FST_1
+	LId 0, TEST_NAME__u, STANDARD._STRING.FST_1
 	SUB
 	LI	1
 	MUL
@@ -1624,8 +1624,8 @@ end namespace
 	Sa  1, ANON_96_30_L34_D_data
 	La  ,  8
 	Sa  1, ANON_96_30_L34_D_info
-	LId 1, ANON_96_30_L34_D_info, STRING.LST_1
-	LId 1, ANON_96_30_L34_D_info, STRING.FST_1
+	LId 1, ANON_96_30_L34_D_info, _STRING.LST_1
+	LId 1, ANON_96_30_L34_D_info, _STRING.FST_1
 	SUB
 	INC
 	Sa  1, ANON_96_30_L34_D_len
@@ -1666,8 +1666,8 @@ end namespace
 	Sa  1, ANON_96_20_L33_G_data
 	La  ,  8
 	Sa  1, ANON_96_20_L33_G_info
-	LId 1, ANON_96_20_L33_G_info, STRING.LST_1
-	LId 1, ANON_96_20_L33_G_info, STRING.FST_1
+	LId 1, ANON_96_20_L33_G_info, _STRING.LST_1
+	LId 1, ANON_96_20_L33_G_info, _STRING.FST_1
 	SUB
 	INC
 	Sa  1, ANON_96_20_L33_G_len
@@ -1678,8 +1678,8 @@ STR ANON_96_61_L33_D, " "			; constante string=" "
 	Sa  1, ANON_96_61_L33_D_data
 	La  ,  8
 	Sa  1, ANON_96_61_L33_D_info
-	LId 1, ANON_96_61_L33_D_info, STRING.LST_1
-	LId 1, ANON_96_61_L33_D_info, STRING.FST_1
+	LId 1, ANON_96_61_L33_D_info, _STRING.LST_1
+	LId 1, ANON_96_61_L33_D_info, _STRING.FST_1
 	SUB
 	INC
 	Sa  1, ANON_96_61_L33_D_len
@@ -1720,8 +1720,8 @@ STR ANON_96_61_L33_D, " "			; constante string=" "
 	Sa  1, ANON_96_20_L32_G_data
 	La  ,  8
 	Sa  1, ANON_96_20_L32_G_info
-	LId 1, ANON_96_20_L32_G_info, STRING.LST_1
-	LId 1, ANON_96_20_L32_G_info, STRING.FST_1
+	LId 1, ANON_96_20_L32_G_info, _STRING.LST_1
+	LId 1, ANON_96_20_L32_G_info, _STRING.FST_1
 	SUB
 	INC
 	Sa  1, ANON_96_20_L32_G_len
@@ -1731,8 +1731,8 @@ STR ANON_96_61_L33_D, " "			; constante string=" "
 	Sa  1, ANON_97_20_L32_D_data
 	La  ,  8
 	Sa  1, ANON_97_20_L32_D_info
-	LId 1, ANON_97_20_L32_D_info, STRING.LST_1
-	LId 1, ANON_97_20_L32_D_info, STRING.FST_1
+	LId 1, ANON_97_20_L32_D_info, _STRING.LST_1
+	LId 1, ANON_97_20_L32_D_info, _STRING.FST_1
 	SUB
 	INC
 	Sa  1, ANON_97_20_L32_D_len
@@ -1773,8 +1773,8 @@ STR ANON_96_61_L33_D, " "			; constante string=" "
 	Sa  1, ANON_96_20_L31_G_data
 	La  ,  8
 	Sa  1, ANON_96_20_L31_G_info
-	LId 1, ANON_96_20_L31_G_info, STRING.LST_1
-	LId 1, ANON_96_20_L31_G_info, STRING.FST_1
+	LId 1, ANON_96_20_L31_G_info, _STRING.LST_1
+	LId 1, ANON_96_20_L31_G_info, _STRING.FST_1
 	SUB
 	INC
 	Sa  1, ANON_96_20_L31_G_len
@@ -1785,8 +1785,8 @@ STR ANON_97_28_L31_D, "."			; constante string="."
 	Sa  1, ANON_97_28_L31_D_data
 	La  ,  8
 	Sa  1, ANON_97_28_L31_D_info
-	LId 1, ANON_97_28_L31_D_info, STRING.LST_1
-	LId 1, ANON_97_28_L31_D_info, STRING.FST_1
+	LId 1, ANON_97_28_L31_D_info, _STRING.LST_1
+	LId 1, ANON_97_28_L31_D_info, _STRING.FST_1
 	SUB
 	INC
 	Sa  1, ANON_97_28_L31_D_len
@@ -1848,7 +1848,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	BRA	L35
 L36:
 L35:					; post if
-; CODE & concat STRING
+; CODE & concat _STRING
 VAR	ANON_105_20_L37_G_data, q
 VAR	ANON_105_20_L37_G_info, q
 VAR	ANON_106_28_L37_D_data, q
@@ -1863,7 +1863,7 @@ namespace ANON_105_20_L37_R_info
   VAR _FST_1,    d
   VAR _LST_1,    d
 end namespace
-; CODE & concat STRING
+; CODE & concat _STRING
 VAR	ANON_105_20_L38_G_data, q
 VAR	ANON_105_20_L38_G_info, q
 VAR	ANON_106_20_L38_D_data, q
@@ -1878,7 +1878,7 @@ namespace ANON_105_20_L38_R_info
   VAR _FST_1,    d
   VAR _LST_1,    d
 end namespace
-; CODE & concat STRING
+; CODE & concat _STRING
 VAR	ANON_105_20_L39_G_data, q
 VAR	ANON_105_20_L39_G_info, q
 VAR	ANON_105_61_L39_D_data, q
@@ -1893,7 +1893,7 @@ namespace ANON_105_20_L39_R_info
   VAR _FST_1,    d
   VAR _LST_1,    d
 end namespace
-; CODE & concat STRING
+; CODE & concat _STRING
 VAR	ANON_105_20_L40_G_data, q
 VAR	ANON_105_20_L40_G_info, q
 VAR	ANON_105_30_L40_D_data, q
@@ -1915,8 +1915,8 @@ STR ANON_105_20_L40_G, "   ! "		; constante string="   ! "
 	Sa  1, ANON_105_20_L40_G_data
 	La  ,  8
 	Sa  1, ANON_105_20_L40_G_info
-	LId 1, ANON_105_20_L40_G_info, STRING.LST_1
-	LId 1, ANON_105_20_L40_G_info, STRING.FST_1
+	LId 1, ANON_105_20_L40_G_info, _STRING.LST_1
+	LId 1, ANON_105_20_L40_G_info, _STRING.FST_1
 	SUB
 	INC
 	Sa  1, ANON_105_20_L40_G_len
@@ -1933,7 +1933,7 @@ end namespace
 	La 0, TEST_NAME_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
-	LId 0, TEST_NAME__u, STANDARD.STRING.FST_1
+	LId 0, TEST_NAME__u, STANDARD._STRING.FST_1
 	SUB
 	LI	1
 	MUL
@@ -1967,8 +1967,8 @@ end namespace
 	Sa  1, ANON_105_30_L40_D_data
 	La  ,  8
 	Sa  1, ANON_105_30_L40_D_info
-	LId 1, ANON_105_30_L40_D_info, STRING.LST_1
-	LId 1, ANON_105_30_L40_D_info, STRING.FST_1
+	LId 1, ANON_105_30_L40_D_info, _STRING.LST_1
+	LId 1, ANON_105_30_L40_D_info, _STRING.FST_1
 	SUB
 	INC
 	Sa  1, ANON_105_30_L40_D_len
@@ -2009,8 +2009,8 @@ end namespace
 	Sa  1, ANON_105_20_L39_G_data
 	La  ,  8
 	Sa  1, ANON_105_20_L39_G_info
-	LId 1, ANON_105_20_L39_G_info, STRING.LST_1
-	LId 1, ANON_105_20_L39_G_info, STRING.FST_1
+	LId 1, ANON_105_20_L39_G_info, _STRING.LST_1
+	LId 1, ANON_105_20_L39_G_info, _STRING.FST_1
 	SUB
 	INC
 	Sa  1, ANON_105_20_L39_G_len
@@ -2021,8 +2021,8 @@ STR ANON_105_61_L39_D, " "			; constante string=" "
 	Sa  1, ANON_105_61_L39_D_data
 	La  ,  8
 	Sa  1, ANON_105_61_L39_D_info
-	LId 1, ANON_105_61_L39_D_info, STRING.LST_1
-	LId 1, ANON_105_61_L39_D_info, STRING.FST_1
+	LId 1, ANON_105_61_L39_D_info, _STRING.LST_1
+	LId 1, ANON_105_61_L39_D_info, _STRING.FST_1
 	SUB
 	INC
 	Sa  1, ANON_105_61_L39_D_len
@@ -2063,8 +2063,8 @@ STR ANON_105_61_L39_D, " "			; constante string=" "
 	Sa  1, ANON_105_20_L38_G_data
 	La  ,  8
 	Sa  1, ANON_105_20_L38_G_info
-	LId 1, ANON_105_20_L38_G_info, STRING.LST_1
-	LId 1, ANON_105_20_L38_G_info, STRING.FST_1
+	LId 1, ANON_105_20_L38_G_info, _STRING.LST_1
+	LId 1, ANON_105_20_L38_G_info, _STRING.FST_1
 	SUB
 	INC
 	Sa  1, ANON_105_20_L38_G_len
@@ -2074,8 +2074,8 @@ STR ANON_105_61_L39_D, " "			; constante string=" "
 	Sa  1, ANON_106_20_L38_D_data
 	La  ,  8
 	Sa  1, ANON_106_20_L38_D_info
-	LId 1, ANON_106_20_L38_D_info, STRING.LST_1
-	LId 1, ANON_106_20_L38_D_info, STRING.FST_1
+	LId 1, ANON_106_20_L38_D_info, _STRING.LST_1
+	LId 1, ANON_106_20_L38_D_info, _STRING.FST_1
 	SUB
 	INC
 	Sa  1, ANON_106_20_L38_D_len
@@ -2116,8 +2116,8 @@ STR ANON_105_61_L39_D, " "			; constante string=" "
 	Sa  1, ANON_105_20_L37_G_data
 	La  ,  8
 	Sa  1, ANON_105_20_L37_G_info
-	LId 1, ANON_105_20_L37_G_info, STRING.LST_1
-	LId 1, ANON_105_20_L37_G_info, STRING.FST_1
+	LId 1, ANON_105_20_L37_G_info, _STRING.LST_1
+	LId 1, ANON_105_20_L37_G_info, _STRING.FST_1
 	SUB
 	INC
 	Sa  1, ANON_105_20_L37_G_len
@@ -2128,8 +2128,8 @@ STR ANON_106_28_L37_D, "."			; constante string="."
 	Sa  1, ANON_106_28_L37_D_data
 	La  ,  8
 	Sa  1, ANON_106_28_L37_D_info
-	LId 1, ANON_106_28_L37_D_info, STRING.LST_1
-	LId 1, ANON_106_28_L37_D_info, STRING.FST_1
+	LId 1, ANON_106_28_L37_D_info, _STRING.LST_1
+	LId 1, ANON_106_28_L37_D_info, _STRING.FST_1
 	SUB
 	INC
 	Sa  1, ANON_106_28_L37_D_len
@@ -2196,7 +2196,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	BRA	L45
 L42:
 	DROP
-; CODE & concat STRING
+; CODE & concat _STRING
 VAR	ANON_113_25_L46_G_data, q
 VAR	ANON_113_25_L46_G_info, q
 VAR	ANON_114_25_L46_D_data, q
@@ -2211,7 +2211,7 @@ namespace ANON_113_25_L46_R_info
   VAR _FST_1,    d
   VAR _LST_1,    d
 end namespace
-; CODE & concat STRING
+; CODE & concat _STRING
 VAR	ANON_113_25_L47_G_data, q
 VAR	ANON_113_25_L47_G_info, q
 VAR	ANON_113_35_L47_D_data, q
@@ -2233,8 +2233,8 @@ STR ANON_113_25_L47_G, "==== "		; constante string="==== "
 	Sa  1, ANON_113_25_L47_G_data
 	La  ,  8
 	Sa  1, ANON_113_25_L47_G_info
-	LId 1, ANON_113_25_L47_G_info, STRING.LST_1
-	LId 1, ANON_113_25_L47_G_info, STRING.FST_1
+	LId 1, ANON_113_25_L47_G_info, _STRING.LST_1
+	LId 1, ANON_113_25_L47_G_info, _STRING.FST_1
 	SUB
 	INC
 	Sa  1, ANON_113_25_L47_G_len
@@ -2251,7 +2251,7 @@ end namespace
 	La 0, TEST_NAME_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
-	LId 0, TEST_NAME__u, STANDARD.STRING.FST_1
+	LId 0, TEST_NAME__u, STANDARD._STRING.FST_1
 	SUB
 	LI	1
 	MUL
@@ -2285,8 +2285,8 @@ end namespace
 	Sa  1, ANON_113_35_L47_D_data
 	La  ,  8
 	Sa  1, ANON_113_35_L47_D_info
-	LId 1, ANON_113_35_L47_D_info, STRING.LST_1
-	LId 1, ANON_113_35_L47_D_info, STRING.FST_1
+	LId 1, ANON_113_35_L47_D_info, _STRING.LST_1
+	LId 1, ANON_113_35_L47_D_info, _STRING.FST_1
 	SUB
 	INC
 	Sa  1, ANON_113_35_L47_D_len
@@ -2327,8 +2327,8 @@ end namespace
 	Sa  1, ANON_113_25_L46_G_data
 	La  ,  8
 	Sa  1, ANON_113_25_L46_G_info
-	LId 1, ANON_113_25_L46_G_info, STRING.LST_1
-	LId 1, ANON_113_25_L46_G_info, STRING.FST_1
+	LId 1, ANON_113_25_L46_G_info, _STRING.LST_1
+	LId 1, ANON_113_25_L46_G_info, _STRING.FST_1
 	SUB
 	INC
 	Sa  1, ANON_113_25_L46_G_len
@@ -2339,8 +2339,8 @@ STR ANON_114_25_L46_D, " PASSED ============================."	; constante strin
 	Sa  1, ANON_114_25_L46_D_data
 	La  ,  8
 	Sa  1, ANON_114_25_L46_D_info
-	LId 1, ANON_114_25_L46_D_info, STRING.LST_1
-	LId 1, ANON_114_25_L46_D_info, STRING.FST_1
+	LId 1, ANON_114_25_L46_D_info, _STRING.LST_1
+	LId 1, ANON_114_25_L46_D_info, _STRING.FST_1
 	SUB
 	INC
 	Sa  1, ANON_114_25_L46_D_len
@@ -2380,7 +2380,7 @@ STR ANON_114_25_L46_D, " PASSED ============================."	; constante strin
 	BRA	L41
 L43:
 	DROP
-; CODE & concat STRING
+; CODE & concat _STRING
 VAR	ANON_116_25_L48_G_data, q
 VAR	ANON_116_25_L48_G_info, q
 VAR	ANON_117_25_L48_D_data, q
@@ -2395,7 +2395,7 @@ namespace ANON_116_25_L48_R_info
   VAR _FST_1,    d
   VAR _LST_1,    d
 end namespace
-; CODE & concat STRING
+; CODE & concat _STRING
 VAR	ANON_116_25_L49_G_data, q
 VAR	ANON_116_25_L49_G_info, q
 VAR	ANON_116_35_L49_D_data, q
@@ -2417,8 +2417,8 @@ STR ANON_116_25_L49_G, "++++ "		; constante string="++++ "
 	Sa  1, ANON_116_25_L49_G_data
 	La  ,  8
 	Sa  1, ANON_116_25_L49_G_info
-	LId 1, ANON_116_25_L49_G_info, STRING.LST_1
-	LId 1, ANON_116_25_L49_G_info, STRING.FST_1
+	LId 1, ANON_116_25_L49_G_info, _STRING.LST_1
+	LId 1, ANON_116_25_L49_G_info, _STRING.FST_1
 	SUB
 	INC
 	Sa  1, ANON_116_25_L49_G_len
@@ -2435,7 +2435,7 @@ end namespace
 	La 0, TEST_NAME_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
-	LId 0, TEST_NAME__u, STANDARD.STRING.FST_1
+	LId 0, TEST_NAME__u, STANDARD._STRING.FST_1
 	SUB
 	LI	1
 	MUL
@@ -2469,8 +2469,8 @@ end namespace
 	Sa  1, ANON_116_35_L49_D_data
 	La  ,  8
 	Sa  1, ANON_116_35_L49_D_info
-	LId 1, ANON_116_35_L49_D_info, STRING.LST_1
-	LId 1, ANON_116_35_L49_D_info, STRING.FST_1
+	LId 1, ANON_116_35_L49_D_info, _STRING.LST_1
+	LId 1, ANON_116_35_L49_D_info, _STRING.FST_1
 	SUB
 	INC
 	Sa  1, ANON_116_35_L49_D_len
@@ -2511,8 +2511,8 @@ end namespace
 	Sa  1, ANON_116_25_L48_G_data
 	La  ,  8
 	Sa  1, ANON_116_25_L48_G_info
-	LId 1, ANON_116_25_L48_G_info, STRING.LST_1
-	LId 1, ANON_116_25_L48_G_info, STRING.FST_1
+	LId 1, ANON_116_25_L48_G_info, _STRING.LST_1
+	LId 1, ANON_116_25_L48_G_info, _STRING.FST_1
 	SUB
 	INC
 	Sa  1, ANON_116_25_L48_G_len
@@ -2523,8 +2523,8 @@ STR ANON_117_25_L48_D, " NOT-APPLICABLE ++++++++++++++++++++."	; constante strin
 	Sa  1, ANON_117_25_L48_D_data
 	La  ,  8
 	Sa  1, ANON_117_25_L48_D_info
-	LId 1, ANON_117_25_L48_D_info, STRING.LST_1
-	LId 1, ANON_117_25_L48_D_info, STRING.FST_1
+	LId 1, ANON_117_25_L48_D_info, _STRING.LST_1
+	LId 1, ANON_117_25_L48_D_info, _STRING.FST_1
 	SUB
 	INC
 	Sa  1, ANON_117_25_L48_D_len
@@ -2564,7 +2564,7 @@ STR ANON_117_25_L48_D, " NOT-APPLICABLE ++++++++++++++++++++."	; constante strin
 	BRA	L41
 L44:
 	DROP
-; CODE & concat STRING
+; CODE & concat _STRING
 VAR	ANON_119_25_L50_G_data, q
 VAR	ANON_119_25_L50_G_info, q
 VAR	ANON_120_25_L50_D_data, q
@@ -2579,7 +2579,7 @@ namespace ANON_119_25_L50_R_info
   VAR _FST_1,    d
   VAR _LST_1,    d
 end namespace
-; CODE & concat STRING
+; CODE & concat _STRING
 VAR	ANON_119_25_L51_G_data, q
 VAR	ANON_119_25_L51_G_info, q
 VAR	ANON_119_35_L51_D_data, q
@@ -2601,8 +2601,8 @@ STR ANON_119_25_L51_G, "!!!! "		; constante string="!!!! "
 	Sa  1, ANON_119_25_L51_G_data
 	La  ,  8
 	Sa  1, ANON_119_25_L51_G_info
-	LId 1, ANON_119_25_L51_G_info, STRING.LST_1
-	LId 1, ANON_119_25_L51_G_info, STRING.FST_1
+	LId 1, ANON_119_25_L51_G_info, _STRING.LST_1
+	LId 1, ANON_119_25_L51_G_info, _STRING.FST_1
 	SUB
 	INC
 	Sa  1, ANON_119_25_L51_G_len
@@ -2619,7 +2619,7 @@ end namespace
 	La 0, TEST_NAME_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
-	LId 0, TEST_NAME__u, STANDARD.STRING.FST_1
+	LId 0, TEST_NAME__u, STANDARD._STRING.FST_1
 	SUB
 	LI	1
 	MUL
@@ -2653,8 +2653,8 @@ end namespace
 	Sa  1, ANON_119_35_L51_D_data
 	La  ,  8
 	Sa  1, ANON_119_35_L51_D_info
-	LId 1, ANON_119_35_L51_D_info, STRING.LST_1
-	LId 1, ANON_119_35_L51_D_info, STRING.FST_1
+	LId 1, ANON_119_35_L51_D_info, _STRING.LST_1
+	LId 1, ANON_119_35_L51_D_info, _STRING.FST_1
 	SUB
 	INC
 	Sa  1, ANON_119_35_L51_D_len
@@ -2695,8 +2695,8 @@ end namespace
 	Sa  1, ANON_119_25_L50_G_data
 	La  ,  8
 	Sa  1, ANON_119_25_L50_G_info
-	LId 1, ANON_119_25_L50_G_info, STRING.LST_1
-	LId 1, ANON_119_25_L50_G_info, STRING.FST_1
+	LId 1, ANON_119_25_L50_G_info, _STRING.LST_1
+	LId 1, ANON_119_25_L50_G_info, _STRING.FST_1
 	SUB
 	INC
 	Sa  1, ANON_119_25_L50_G_len
@@ -2707,8 +2707,8 @@ STR ANON_120_25_L50_D, " TENTATIVELY PASSED !!!!!!!!!!!!!!!!."	; constante strin
 	Sa  1, ANON_120_25_L50_D_data
 	La  ,  8
 	Sa  1, ANON_120_25_L50_D_info
-	LId 1, ANON_120_25_L50_D_info, STRING.LST_1
-	LId 1, ANON_120_25_L50_D_info, STRING.FST_1
+	LId 1, ANON_120_25_L50_D_info, _STRING.LST_1
+	LId 1, ANON_120_25_L50_D_info, _STRING.FST_1
 	SUB
 	INC
 	Sa  1, ANON_120_25_L50_D_len
@@ -2745,7 +2745,7 @@ STR ANON_120_25_L50_D, " TENTATIVELY PASSED !!!!!!!!!!!!!!!!."	; constante strin
 	BLKMOV
 	LVA 1, ANON_119_25_L50_R_disp
 	CALL	STANDARD.REPORT. ,PUT_MSG_L1
-; CODE & concat STRING
+; CODE & concat _STRING
 VAR	ANON_121_25_L52_G_data, q
 VAR	ANON_121_25_L52_G_info, q
 VAR	ANON_122_25_L52_D_data, q
@@ -2760,7 +2760,7 @@ namespace ANON_121_25_L52_R_info
   VAR _FST_1,    d
   VAR _LST_1,    d
 end namespace
-; CODE & concat STRING
+; CODE & concat _STRING
 VAR	ANON_121_25_L53_G_data, q
 VAR	ANON_121_25_L53_G_info, q
 VAR	ANON_121_35_L53_D_data, q
@@ -2782,8 +2782,8 @@ STR ANON_121_25_L53_G, "!!!! "		; constante string="!!!! "
 	Sa  1, ANON_121_25_L53_G_data
 	La  ,  8
 	Sa  1, ANON_121_25_L53_G_info
-	LId 1, ANON_121_25_L53_G_info, STRING.LST_1
-	LId 1, ANON_121_25_L53_G_info, STRING.FST_1
+	LId 1, ANON_121_25_L53_G_info, _STRING.LST_1
+	LId 1, ANON_121_25_L53_G_info, _STRING.FST_1
 	SUB
 	INC
 	Sa  1, ANON_121_25_L53_G_len
@@ -2875,8 +2875,8 @@ L55:
 	Sa  1, ANON_121_35_L53_D_data
 	La  ,  8
 	Sa  1, ANON_121_35_L53_D_info
-	LId 1, ANON_121_35_L53_D_info, STRING.LST_1
-	LId 1, ANON_121_35_L53_D_info, STRING.FST_1
+	LId 1, ANON_121_35_L53_D_info, _STRING.LST_1
+	LId 1, ANON_121_35_L53_D_info, _STRING.FST_1
 	SUB
 	INC
 	Sa  1, ANON_121_35_L53_D_len
@@ -2917,8 +2917,8 @@ L55:
 	Sa  1, ANON_121_25_L52_G_data
 	La  ,  8
 	Sa  1, ANON_121_25_L52_G_info
-	LId 1, ANON_121_25_L52_G_info, STRING.LST_1
-	LId 1, ANON_121_25_L52_G_info, STRING.FST_1
+	LId 1, ANON_121_25_L52_G_info, _STRING.LST_1
+	LId 1, ANON_121_25_L52_G_info, _STRING.FST_1
 	SUB
 	INC
 	Sa  1, ANON_121_25_L52_G_len
@@ -2929,8 +2929,8 @@ STR ANON_122_25_L52_D, " SEE '!' COMMENTS FOR SPECIAL NOTES!!"	; constante strin
 	Sa  1, ANON_122_25_L52_D_data
 	La  ,  8
 	Sa  1, ANON_122_25_L52_D_info
-	LId 1, ANON_122_25_L52_D_info, STRING.LST_1
-	LId 1, ANON_122_25_L52_D_info, STRING.FST_1
+	LId 1, ANON_122_25_L52_D_info, _STRING.LST_1
+	LId 1, ANON_122_25_L52_D_info, _STRING.FST_1
 	SUB
 	INC
 	Sa  1, ANON_122_25_L52_D_len
@@ -2969,7 +2969,7 @@ STR ANON_122_25_L52_D, " SEE '!' COMMENTS FOR SPECIAL NOTES!!"	; constante strin
 	CALL	STANDARD.REPORT. ,PUT_MSG_L1
 	BRA	L41
 L45:
-; CODE & concat STRING
+; CODE & concat _STRING
 VAR	ANON_124_25_L56_G_data, q
 VAR	ANON_124_25_L56_G_info, q
 VAR	ANON_125_25_L56_D_data, q
@@ -2984,7 +2984,7 @@ namespace ANON_124_25_L56_R_info
   VAR _FST_1,    d
   VAR _LST_1,    d
 end namespace
-; CODE & concat STRING
+; CODE & concat _STRING
 VAR	ANON_124_25_L57_G_data, q
 VAR	ANON_124_25_L57_G_info, q
 VAR	ANON_124_35_L57_D_data, q
@@ -3006,8 +3006,8 @@ STR ANON_124_25_L57_G, "**** "		; constante string="**** "
 	Sa  1, ANON_124_25_L57_G_data
 	La  ,  8
 	Sa  1, ANON_124_25_L57_G_info
-	LId 1, ANON_124_25_L57_G_info, STRING.LST_1
-	LId 1, ANON_124_25_L57_G_info, STRING.FST_1
+	LId 1, ANON_124_25_L57_G_info, _STRING.LST_1
+	LId 1, ANON_124_25_L57_G_info, _STRING.FST_1
 	SUB
 	INC
 	Sa  1, ANON_124_25_L57_G_len
@@ -3024,7 +3024,7 @@ end namespace
 	La 0, TEST_NAME_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
-	LId 0, TEST_NAME__u, STANDARD.STRING.FST_1
+	LId 0, TEST_NAME__u, STANDARD._STRING.FST_1
 	SUB
 	LI	1
 	MUL
@@ -3058,8 +3058,8 @@ end namespace
 	Sa  1, ANON_124_35_L57_D_data
 	La  ,  8
 	Sa  1, ANON_124_35_L57_D_info
-	LId 1, ANON_124_35_L57_D_info, STRING.LST_1
-	LId 1, ANON_124_35_L57_D_info, STRING.FST_1
+	LId 1, ANON_124_35_L57_D_info, _STRING.LST_1
+	LId 1, ANON_124_35_L57_D_info, _STRING.FST_1
 	SUB
 	INC
 	Sa  1, ANON_124_35_L57_D_len
@@ -3100,8 +3100,8 @@ end namespace
 	Sa  1, ANON_124_25_L56_G_data
 	La  ,  8
 	Sa  1, ANON_124_25_L56_G_info
-	LId 1, ANON_124_25_L56_G_info, STRING.LST_1
-	LId 1, ANON_124_25_L56_G_info, STRING.FST_1
+	LId 1, ANON_124_25_L56_G_info, _STRING.LST_1
+	LId 1, ANON_124_25_L56_G_info, _STRING.FST_1
 	SUB
 	INC
 	Sa  1, ANON_124_25_L56_G_len
@@ -3112,8 +3112,8 @@ STR ANON_125_25_L56_D, " FAILED ****************************."	; constante strin
 	Sa  1, ANON_125_25_L56_D_data
 	La  ,  8
 	Sa  1, ANON_125_25_L56_D_info
-	LId 1, ANON_125_25_L56_D_info, STRING.LST_1
-	LId 1, ANON_125_25_L56_D_info, STRING.FST_1
+	LId 1, ANON_125_25_L56_D_info, _STRING.LST_1
+	LId 1, ANON_125_25_L56_D_info, _STRING.FST_1
 	SUB
 	INC
 	Sa  1, ANON_125_25_L56_D_len
@@ -3155,15 +3155,15 @@ L41:
 					; fin case
 	LI	1
 	Sb  0,	TEST_STATUS_disp
-	LId	0, NO_NAME__u, STRING.LST_1
-	LId	0, NO_NAME__u, STRING.FST_1
+	LId	0, NO_NAME__u, _STRING.LST_1
+	LId	0, NO_NAME__u, _STRING.FST_1
 	SUB
 	INC
 	Sd  0,	TEST_NAME_LEN_disp
 	La 0, TEST_NAME_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
-	LId 0, TEST_NAME__u, STANDARD.STRING.FST_1
+	LId 0, TEST_NAME__u, STANDARD._STRING.FST_1
 	SUB
 	LI	1
 	MUL
@@ -3298,18 +3298,18 @@ begin:					;---------- BDY INSTRUCTIONS
 	LI	0					; lieu resultat sur pile
 	LVA	1, -X_ofs
 	LIa	, , 8
-	Ld	, STRING.LST_1
+	Ld	, _STRING.LST_1
 	LVA	1, -X_ofs
 	LIa	, , 8
-	Ld	, STRING.FST_1
+	Ld	, _STRING.FST_1
 	SUB
 	INC
 	LVA	1, -X_ofs
 	LIa	, , 8
-	Ld	, STRING.LST_1
+	Ld	, _STRING.LST_1
 	LVA	1, -X_ofs
 	LIa	, , 8
-	Ld	, STRING.FST_1
+	Ld	, _STRING.FST_1
 	SUB
 	INC
 	CALL	STANDARD.REPORT. ,EQUAL_L11
@@ -3452,8 +3452,8 @@ PRMS					;    debut parametrage
 	PRM result__ofs				; resultat de fonction
 endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
-STRING = 'STRING'
-namespace STRING				; array var constrained array type info
+_STRING = '_STRING'
+namespace _STRING				; array var constrained array type info
 VAR use__info, q
 VAR SIZ, d
 	LVA	1, SIZ
@@ -3487,9 +3487,9 @@ LST_1 = $
 end namespace
 VAR SUFFIX_disp, q				; variable array : pointeur aux data
 VAR SUFFIX__u, q				; variable array : useinfo pointeur au rec info
-	La 1, STRING.use__info
+	La 1, _STRING.use__info
 	Sa	1, SUFFIX__u				; array info ptr at __u
-	Ld	1, STRING.SIZ
+	Ld	1, _STRING.SIZ
 	LI	8
 	DIV
 	CO_VAR
@@ -3506,7 +3506,7 @@ STR ANON_193_20, ""				; constante string=""
 	La 0, TEST_NAME_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	3
-	LId 0, TEST_NAME__u, STANDARD.STRING.FST_1
+	LId 0, TEST_NAME__u, STANDARD._STRING.FST_1
 	SUB
 	LI	1
 	MUL
@@ -3528,7 +3528,7 @@ L76:
 	LI	3
 	LVA	1, -NAM_ofs
 	LIa	, , 8
-	Ld	, STANDARD.STRING.FST_1
+	Ld	, STANDARD._STRING.FST_1
 	SUB
 	LI	1
 	MUL
@@ -3564,7 +3564,7 @@ L75:					; post if
 L78:
 	DROP
 ; CODE_RETURN : EXPR TYPE = DN_ARRAY
-; CODE & concat STRING
+; CODE & concat _STRING
 VAR	ANON_200_34_L81_G_data, q
 VAR	ANON_200_34_L81_G_info, q
 VAR	ANON_200_40_L81_D_data, q
@@ -3585,8 +3585,8 @@ end namespace
 	Sa  1, ANON_200_34_L81_G_data
 	La  ,  8
 	Sa  1, ANON_200_34_L81_G_info
-	LId 1, ANON_200_34_L81_G_info, STRING.LST_1
-	LId 1, ANON_200_34_L81_G_info, STRING.FST_1
+	LId 1, ANON_200_34_L81_G_info, _STRING.LST_1
+	LId 1, ANON_200_34_L81_G_info, _STRING.FST_1
 	SUB
 	INC
 	Sa  1, ANON_200_34_L81_G_len
@@ -3596,8 +3596,8 @@ end namespace
 	Sa  1, ANON_200_40_L81_D_data
 	La  ,  8
 	Sa  1, ANON_200_40_L81_D_info
-	LId 1, ANON_200_40_L81_D_info, STRING.LST_1
-	LId 1, ANON_200_40_L81_D_info, STRING.FST_1
+	LId 1, ANON_200_40_L81_D_info, _STRING.LST_1
+	LId 1, ANON_200_40_L81_D_info, _STRING.FST_1
 	SUB
 	INC
 	Sa  1, ANON_200_40_L81_D_len
@@ -3651,7 +3651,7 @@ VAR	RET_INFO_L82, q
 L79:
 	DROP
 ; CODE_RETURN : EXPR TYPE = DN_ARRAY
-; CODE & concat STRING
+; CODE & concat _STRING
 VAR	ANON_201_34_L83_G_data, q
 VAR	ANON_201_34_L83_G_info, q
 VAR	ANON_201_40_L83_D_data, q
@@ -3672,8 +3672,8 @@ end namespace
 	Sa  1, ANON_201_34_L83_G_data
 	La  ,  8
 	Sa  1, ANON_201_34_L83_G_info
-	LId 1, ANON_201_34_L83_G_info, STRING.LST_1
-	LId 1, ANON_201_34_L83_G_info, STRING.FST_1
+	LId 1, ANON_201_34_L83_G_info, _STRING.LST_1
+	LId 1, ANON_201_34_L83_G_info, _STRING.FST_1
 	SUB
 	INC
 	Sa  1, ANON_201_34_L83_G_len
@@ -3683,8 +3683,8 @@ end namespace
 	Sa  1, ANON_201_40_L83_D_data
 	La  ,  8
 	Sa  1, ANON_201_40_L83_D_info
-	LId 1, ANON_201_40_L83_D_info, STRING.LST_1
-	LId 1, ANON_201_40_L83_D_info, STRING.FST_1
+	LId 1, ANON_201_40_L83_D_info, _STRING.LST_1
+	LId 1, ANON_201_40_L83_D_info, _STRING.FST_1
 	SUB
 	INC
 	Sa  1, ANON_201_40_L83_D_len
@@ -3738,7 +3738,7 @@ VAR	RET_INFO_L84, q
 L80:
 	DROP
 ; CODE_RETURN : EXPR TYPE = DN_ARRAY
-; CODE & concat STRING
+; CODE & concat _STRING
 VAR	ANON_202_34_L85_G_data, q
 VAR	ANON_202_34_L85_G_info, q
 VAR	ANON_202_40_L85_D_data, q
@@ -3759,8 +3759,8 @@ end namespace
 	Sa  1, ANON_202_34_L85_G_data
 	La  ,  8
 	Sa  1, ANON_202_34_L85_G_info
-	LId 1, ANON_202_34_L85_G_info, STRING.LST_1
-	LId 1, ANON_202_34_L85_G_info, STRING.FST_1
+	LId 1, ANON_202_34_L85_G_info, _STRING.LST_1
+	LId 1, ANON_202_34_L85_G_info, _STRING.FST_1
 	SUB
 	INC
 	Sa  1, ANON_202_34_L85_G_len
@@ -3770,8 +3770,8 @@ end namespace
 	Sa  1, ANON_202_40_L85_D_data
 	La  ,  8
 	Sa  1, ANON_202_40_L85_D_info
-	LId 1, ANON_202_40_L85_D_info, STRING.LST_1
-	LId 1, ANON_202_40_L85_D_info, STRING.FST_1
+	LId 1, ANON_202_40_L85_D_info, _STRING.LST_1
+	LId 1, ANON_202_40_L85_D_info, _STRING.FST_1
 	SUB
 	INC
 	Sa  1, ANON_202_40_L85_D_len
@@ -3831,15 +3831,15 @@ excep:
 endPRO					;---------- end PRO LEGAL_FILE_NAME
 end if
 begin:					;---------- package BDY INSTRUCTIONS
-	LId	0, NO_NAME__u, STRING.LST_1
-	LId	0, NO_NAME__u, STRING.FST_1
+	LId	0, NO_NAME__u, _STRING.LST_1
+	LId	0, NO_NAME__u, _STRING.FST_1
 	SUB
 	INC
 	Sd  0,	TEST_NAME_LEN_disp
 	La 0, TEST_NAME_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
-	LId 0, TEST_NAME__u, STANDARD.STRING.FST_1
+	LId 0, TEST_NAME__u, STANDARD._STRING.FST_1
 	SUB
 	LI	1
 	MUL

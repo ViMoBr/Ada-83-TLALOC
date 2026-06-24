@@ -85,7 +85,7 @@ is
 
     TYPE_ID	: TREE		:= D( AS_SOURCE_NAME, TYPE_DECL );
     TYPE_SPEC	: TREE		:= D( SM_TYPE_SPEC,	TYPE_ID );
-    TYPE_STR	:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, TYPE_ID ) );
+    TYPE_STR	:constant	STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, TYPE_ID ) );
     MAX_REP	: INTEGER		:= INTEGER'FIRST;
     MIN_REP	: INTEGER		:= INTEGER'LAST;
 
@@ -153,7 +153,7 @@ is
   is			-----------------
 
     TYPE_ID		: TREE		:= D( AS_SOURCE_NAME, TYPE_DECL );
-    TYPE_STR		:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, TYPE_ID ) );
+    TYPE_STR		:constant	STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, TYPE_ID ) );
     INTEGER_SPEC		: TREE		:= D( SM_TYPE_SPEC,	TYPE_ID );
     INT_RANGE		: TREE		:= D( SM_RANGE, INTEGER_SPEC );
     EXP_FST		: TREE		:= D( AS_EXP1, INT_RANGE );
@@ -197,7 +197,7 @@ is
   is			---------------
 
     TYPE_ID		: TREE		:= D( AS_SOURCE_NAME, TYPE_DECL );
-    TYPE_STR		:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, TYPE_ID ) );
+    TYPE_STR		:constant	STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, TYPE_ID ) );
     FIXED_SPEC		: TREE		:= D( SM_TYPE_SPEC,	TYPE_ID );
     SIZE_CHAR		: CHARACTER	:= OPER_SIZ_CHAR( FIXED_SPEC );
     SMALL_VAL		: TREE		:= D( CD_IMPL_SMALL, FIXED_SPEC );
@@ -259,7 +259,7 @@ is
   is			---------------
 
     TYPE_ID		: TREE		:= D( AS_SOURCE_NAME, TYPE_DECL );
-    TYPE_STR		:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, TYPE_ID ) );
+    TYPE_STR		:constant	STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, TYPE_ID ) );
     FLOAT_SPEC		: TREE		:= D( SM_TYPE_SPEC,	TYPE_ID );
     SIZE_CHAR		: CHARACTER	:= OPER_SIZ_CHAR( FLOAT_SPEC );
 
@@ -298,7 +298,7 @@ is
   is			-----------------------------
 
     TYPE_ID		: TREE		:= D( AS_SOURCE_NAME, TYPE_DECL );
-    TYPE_ID_STR		:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, TYPE_ID ) );
+    TYPE_ID_STR		:constant	STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, TYPE_ID ) );
     TYPE_SPEC		: TREE		:= D( SM_TYPE_SPEC,	TYPE_ID );
     INDEX_SUBTYPE_S		: SEQ_TYPE	:= LIST( D( SM_INDEX_S, TYPE_SPEC ) );
     DIM_NBR		: NATURAL		:= 1;
@@ -579,7 +579,7 @@ declare
   is			---------------------------
 
     TYPE_NAME		: TREE			:= D( AS_SOURCE_NAME, TYPE_DECL );
-    TYPE_NAME_STR		:constant	STRING		:= PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
+    TYPE_NAME_STR		:constant	STRING		:= '_' & PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
     TYPE_SPEC		: TREE			:= D( SM_TYPE_SPEC,	TYPE_NAME	);
 
   begin
@@ -605,7 +605,7 @@ declare
 
     TYPE_ID		: TREE			:= D( AS_SOURCE_NAME, TYPE_DECL );
     TYPE_SPEC		: TREE			:= D( SM_TYPE_SPEC,	TYPE_ID );
-    TYPE_ID_STR		:constant	STRING		:= PRINT_NAME( D( LX_SYMREP, TYPE_ID ) );
+    TYPE_ID_STR		:constant	STRING		:= '_' & PRINT_NAME( D( LX_SYMREP, TYPE_ID ) );
     LVL			: LEVEL_NUM		renames CODI.CUR_LEVEL;
     LVL_STR		:constant	STRING		:= IMAGE(	LVL );
     IS_STATIC		: BOOLEAN			:= TRUE;
@@ -657,7 +657,7 @@ declare
 	    DISCRIMINANT_TYPE_SPEC	: TREE		:= D( SM_OBJ_TYPE, DISCRIMINANT_ID );
 	    DISCRIMINANT_TYPE_NAME	: TREE		:= D( XD_SOURCE_NAME, DISCRIMINANT_TYPE_SPEC );
 	    DISCRIMINANT_STR	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, DISCRIMINANT_ID ) );
-	    DISCRIMINANT_TYPE_STR	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, DISCRIMINANT_TYPE_NAME ) );
+	    DISCRIMINANT_TYPE_STR	:constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, DISCRIMINANT_TYPE_NAME ) );
 	  begin
 	    PUT( "USEINFO " & LVL_STR & ", " & DISCRIMINANT_STR & ", " );
 	    PUT( tab & "La " & IMAGE( DI( CD_LEVEL, DISCRIMINANT_TYPE_SPEC ) ) & ", " );
@@ -694,7 +694,7 @@ declare
 
 	  declare
 	    COMP_TYPE_NAME	: TREE		:= D( XD_SOURCE_NAME, COMP_TYPE );
-	    COMP_TYPE_STR	:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, COMP_TYPE_NAME ) );
+	    COMP_TYPE_STR	:constant	STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, COMP_TYPE_NAME ) );
 	    COMP_ID_STR	:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, COMP_ID ) );
 
 	  begin
@@ -714,7 +714,7 @@ declare
 	      PUT( "USEINFO " & LVL_STR & ", " & COMP_ID_STR & ", "	);
 	      PUT( tab & "La " & IMAGE( DI( CD_LEVEL, COMP_TYPE ) ) & ", " );
 	      REGIONS_PATH(	COMP_TYPE_NAME );
-	      PUT_LINE( PRINT_NAME( D( LX_SYMREP, COMP_TYPE_NAME ) )  & ".use__info" );
+	      PUT_LINE( COMP_TYPE_STR  & ".use__info" );
 	    end if;
 
 	    if  COMP_TYPE.TY = DN_ACCESS  then
@@ -805,7 +805,7 @@ declare
 
 	  declare
 	    COMP_TYPE_NAME	: TREE		:= D( XD_SOURCE_NAME, COMP_TYPE );
-	    COMP_TYPE_STR	:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, COMP_TYPE_NAME ) );
+	    COMP_TYPE_STR	:constant	STRING	:= '_'  & PRINT_NAME( D( LX_SYMREP, COMP_TYPE_NAME ) );
 	    COMP_ID_STR	:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, COMP_ID ) );
 	    COMP_SIZE	: NATURAL;
 
@@ -861,32 +861,50 @@ put_line( "; TRAITER_LES_CHAMPS SM_SIZE DU TYPE " & TYPE_ID_STR );
   is				----------------
     TYPE_ID		: TREE		:= D( AS_SOURCE_NAME, TYPE_DECL );
     TYPE_SPEC		: TREE		:= D( SM_TYPE_SPEC, TYPE_ID );
-    TYPE_STR		: constant STRING	:= PRINT_NAME( D( LX_SYMREP, TYPE_ID ) );
+    TYPE_STR		: constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, TYPE_ID ) );
     DESIG_TYPE		: TREE		:= D( SM_DESIG_TYPE, TYPE_SPEC );
-    DESIG_NAME		: TREE		:= D( XD_SOURCE_NAME, DESIG_TYPE );
-    DESIG_STR		: constant STRING	:= PRINT_NAME( D( LX_SYMREP, DESIG_NAME ) );
-    LVL_STR		: constant STRING	:= IMAGE( CODI.CUR_LEVEL );
+--    DESIG_NAME		: TREE		:= D( XD_SOURCE_NAME, DESIG_TYPE );
+--    DESIG_STR		: constant STRING	:= PRINT_NAME( D( LX_SYMREP, DESIG_NAME ) );
+--    LVL_STR		: constant STRING	:= IMAGE( CODI.CUR_LEVEL );
   begin
     DI( CD_LEVEL,      TYPE_SPEC, INTEGER( CODI.CUR_LEVEL ) );
 --    DI( CD_IMPL_SIZE,  TYPE_SPEC, CODI.ADDR_SIZE * CODI.STORAGE_UNIT );
     DB( CD_COMPILED,   TYPE_SPEC, TRUE );
 
-    if  CODI.DEBUG then NEW_LINE; PUT_LINE( tab50 & "; " & TYPE_STR & " ACCESS TYPE INFO" ); end if;
+    --  Si le type désigné est incomplet, l'access type est légalement
+    --  déclaré avant le full type. On utilise alors le full type comme
+    --  source du use_info, mais sans le marquer compilé.
+    if  DESIG_TYPE.TY = DN_INCOMPLETE  then
+      DESIG_TYPE := D( XD_FULL_TYPE_SPEC, DESIG_TYPE );
 
-    PUT_LINE( TYPE_STR & " = '" & TYPE_STR & "'" );
-    PUT_LINE( "namespace " & TYPE_STR );
-    PUT_LINE( "VAR use__info, q" );
-    PUT_LINE( "VAR SIZ, d" );
-    PUT_LINE( tab & "LVA" & tab & LVL_STR & ", SIZ" );
-    PUT_LINE( tab & "Sa"  & tab & LVL_STR & ", use__info" );
-    PUT_LINE( tab & "LI"  & tab & IMAGE( CODI.ADDR_SIZE * CODI.STORAGE_UNIT ) );
-    PUT_LINE( tab & "Sd"  & tab & LVL_STR & ", SIZ" );
-    PUT_LINE( "VAR DESIG__u, q" );
-    PUT( tab & "La " & IMAGE( DI( CD_LEVEL, DESIG_TYPE ) ) & ", " );
-    REGIONS_PATH( DESIG_NAME );
-    PUT_LINE( DESIG_STR & ".use__info" );
-    PUT_LINE( tab & "Sa" & tab & LVL_STR & ", DESIG__u" );
-    PUT_LINE( "end namespace" );
+      --  Le full type sera codé plus tard dans la même partie déclarative.
+      --  On initialise seulement son niveau pour permettre la référence
+      --  forward à CELL.use__info.
+      DI( CD_LEVEL, DESIG_TYPE, INTEGER( CODI.CUR_LEVEL ) );
+    end if;
+
+    declare
+      DESIG_NAME	: TREE		:= D( XD_SOURCE_NAME, DESIG_TYPE );
+      DESIG_STR	:constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, DESIG_NAME ) );
+      LVL_STR	:constant STRING	:= IMAGE( DI( CD_LEVEL, DESIG_TYPE ) );
+    begin
+      if  CODI.DEBUG then NEW_LINE; PUT_LINE( tab50 & "; " & TYPE_STR & " ACCESS TYPE INFO" ); end if;
+
+      PUT_LINE( TYPE_STR & " = '" & TYPE_STR & "'" );
+      PUT_LINE( "namespace " & TYPE_STR );
+      PUT_LINE( "VAR use__info, q" );
+      PUT_LINE( "VAR SIZ, d" );
+      PUT_LINE( tab & "LVA" & tab & LVL_STR & ", SIZ" );
+      PUT_LINE( tab & "Sa"  & tab & LVL_STR & ", use__info" );
+      PUT_LINE( tab & "LI"  & tab & IMAGE( CODI.ADDR_SIZE * CODI.STORAGE_UNIT ) );
+      PUT_LINE( tab & "Sd"  & tab & LVL_STR & ", SIZ" );
+      PUT_LINE( "VAR DESIG__u, q" );
+      PUT( tab & "La " & IMAGE( DI( CD_LEVEL, DESIG_TYPE ) ) & ", " );
+      REGIONS_PATH( DESIG_NAME );
+      PUT_LINE( DESIG_STR & ".use__info" );
+      PUT_LINE( tab & "Sa" & tab & LVL_STR & ", DESIG__u" );
+      PUT_LINE( "end namespace" );
+    end;
   end	CODE_ACCESS_DECL;
 	----------------
 
@@ -898,7 +916,7 @@ put_line( "; TRAITER_LES_CHAMPS SM_SIZE DU TYPE " & TYPE_ID_STR );
 
     SUBTYPE_ID		: TREE		:= D( AS_SOURCE_NAME, SUBTYPE_DECL) ;
     TYPE_SPEC		: TREE		:= D( SM_TYPE_SPEC,	SUBTYPE_ID );
-    SUBTYPE_STR		:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, SUBTYPE_ID	) );
+    SUBTYPE_STR		:constant	STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, SUBTYPE_ID	) );
     LVL_STR		:constant STRING	:= IMAGE( CODI.CUR_LEVEL );
   begin
     DI( CD_LEVEL,	  TYPE_SPEC, INTEGER( CODI.CUR_LEVEL ) );
@@ -914,7 +932,7 @@ put_line( "; TRAITER_LES_CHAMPS SM_SIZE DU TYPE " & TYPE_ID_STR );
         EXP_LST		: TREE		:= D( AS_EXP2, INT_RANGE );
         LVL_STR		:constant	STRING	:= IMAGE(	CODI.CUR_LEVEL );
         BASE_TYPE		: TREE		:= D( SM_BASE_TYPE, TYPE_SPEC );
-        BASETYPE_STR	:constant	STRING	:= PRINT_NAME( D( LX_SYMREP,
+        BASETYPE_STR	:constant	STRING	:= '_' & PRINT_NAME( D( LX_SYMREP,
 					   D( XD_SOURCE_NAME, BASE_TYPE ) ) );
       begin
         if  CODI.DEBUG  then NEW_LINE; PUT_LINE( tab50 & "; " & SUBTYPE_STR & " INTEGER SUBTYPE INFO" ); end if;
@@ -957,7 +975,7 @@ put_line( "; TRAITER_LES_CHAMPS SM_SIZE DU TYPE " & TYPE_ID_STR );
         EXP_FST		: TREE		:= D( AS_EXP1, ENUM_RANGE );
         EXP_LST		: TREE		:= D( AS_EXP2, ENUM_RANGE );
         LVL_STR		:constant	STRING	:= IMAGE(	CODI.CUR_LEVEL );
-        BASETYPE_STR	:constant	STRING	:= PRINT_NAME( D( LX_SYMREP,
+        BASETYPE_STR	:constant	STRING	:= '_' & PRINT_NAME( D( LX_SYMREP,
 					   D( XD_SOURCE_NAME, D( SM_BASE_TYPE, TYPE_SPEC ) ) ) );
       begin
 

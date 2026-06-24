@@ -1,0 +1,48 @@
+if ~ definite REPORT
+include 'REPORT.FINC'
+end if
+PRO	A2A031A_L1				;---------- PRO A2A031A
+ELB 1					;    BODY ELAB
+
+					; _ENUM ENUMERATION TYPE INFO
+_ENUM = '_ENUM'
+namespace _ENUM
+VAR use__info, q
+BEGIN_BLOC_DEF
+db 0, 2, "E1"
+db 1, 2, "E2"
+db 2, 2, "E3"
+END_BLOC_DEF
+IMAGES	BYTES_BLOC
+CST LST, d, 2
+CST FST, d, 0
+CST SIZ, d, 8	; SIZ en bits !
+postpone
+  align_q
+end postpone
+	LCA	SIZ
+	Sa	1, use__info
+end namespace
+
+					; _REC RECORD TYPE INFO
+_REC = '_REC'
+namespace _REC
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+USEINFO 1, A, 	La 1, STANDARD.A2A031A_L1._ENUM.use__info
+USEINFO 1, B, 	La 1, STANDARD.A2A031A_L1._ENUM.use__info
+USEINFO 1, C, 	La 0, STANDARD._INTEGER.use__info
+virtual at 0				; calcul des offsets statiques
+	LI 0	 ; offset a faire
+	Sd	1, A__o
+	LI 0	 ; offset a faire
+	Sd	1, B__o
+STATOFS C, 4
+size = $
+end virtual
+	LI	 size*8
+	Sd	1, SIZ
+end namespace
+; ERREUR CODE_VC_NAME, TYPE_SPEC.TY = DN_CONSTRAINED_RECORD

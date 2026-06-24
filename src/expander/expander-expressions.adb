@@ -381,8 +381,8 @@ null;--	     declare
     if  NAME.TY = DN_ALL  then
       declare
         EXP_TYPE		: TREE		:= D( SM_EXP_TYPE, NAME );
-        EXP_TYPE_NAME		: TREE		:= D( XD_SOURCE_NAME, EXP_TYPE );
-        TYPE_NAME_STR		:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, EXP_TYPE_NAME ) );
+        EXP_TYPE_NAME	: TREE		:= D( XD_SOURCE_NAME, EXP_TYPE );
+        TYPE_NAME_STR	:constant	STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, EXP_TYPE_NAME ) );
         TYPE_LVL		: INTEGER		:= DI( CD_LEVEL, EXP_TYPE );
         INDEX_NUM		: INTEGER		:= 1;
         NB_DIMS		: INTEGER		:= 0;
@@ -453,7 +453,7 @@ null;--	     declare
     ARRAY_DEFN		: TREE			:= D( SM_DEFN, NAME	);
     EXP_TYPE		: TREE			:= D( SM_EXP_TYPE, NAME );
     EXP_TYPE_NAME		: TREE			:= D( XD_SOURCE_NAME, EXP_TYPE );
-    TYPE_NAME_STR		:constant	STRING		:= PRINT_NAME( D( LX_SYMREP, EXP_TYPE_NAME ) );
+    TYPE_NAME_STR		:constant	STRING		:= '_' & PRINT_NAME( D( LX_SYMREP, EXP_TYPE_NAME ) );
     ARRAY_LVL		: INTEGER			:= 0;
     TYPE_LVL		: INTEGER			:= DI( CD_LEVEL, EXP_TYPE );
     INDEX_NUM		: INTEGER			:= 1;
@@ -633,7 +633,7 @@ null;--	     declare
         procedure	PUT_PREFIX_TYPE_FIELD	( FIELD : STRING )
         is	---------------------
           TYPE_NAME		: TREE		:= D( XD_SOURCE_NAME, PREFIX_ARRAY_TYPE );
-          TYPE_NAME_STR	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
+          TYPE_NAME_STR	:constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
         begin
           CODI.REGIONS_PATH( TYPE_NAME );
           PUT( TYPE_NAME_STR & FIELD );
@@ -1197,7 +1197,7 @@ null;--	     declare
 	declare
 	  ARRAY_LVL	: INTEGER		:= DI( CD_LEVEL, PREFIX_DEFN );
 	  PREFIX_TYPE	: TREE		:= D( SM_EXP_TYPE, PREFIX_NAME );
-	  TYPE_STR	:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, PREFIX_TYPE	) ) );
+	  TYPE_STR	:constant	STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, PREFIX_TYPE	) ) );
 	  DIM_EXP		: TREE		:= D( AS_EXP, ATTRIBUTE );
 	  NUM_DIM		: INTEGER		:= 1;
 	begin
@@ -1221,7 +1221,7 @@ null;--	     declare
 	declare
 	  ARRAY_LVL	: INTEGER		:= DI( CD_LEVEL, PREFIX_DEFN );
 	  PREFIX_TYPE	: TREE		:= D( SM_EXP_TYPE, PREFIX_NAME );
-	  TYPE_STR	:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, PREFIX_TYPE	) ) );
+	  TYPE_STR	:constant	STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, PREFIX_TYPE	) ) );
 	  DIM_EXP		: TREE		:= D( AS_EXP, ATTRIBUTE );
 	  NUM_DIM		: INTEGER		:= 1;
 	begin
@@ -1248,7 +1248,7 @@ null;--	     declare
 
 	  declare
 	    CHN_LID	:constant	STRING
-			 := tab & "LId , -" & CHN_PREFIX & "__u_ofs, STANDARD.ENUM_USE_INFO";
+			 := tab & "LId , -" & CHN_PREFIX & "__u_ofs, STANDARD._ENUM_USE_INFO";
 
 	  begin
 	    PUT_LINE( tab & "La " & IMAGE( CODI.GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );
@@ -1327,7 +1327,7 @@ null;--	     declare
 
       declare
         ARRAY_LVL		: INTEGER		:= DI( CD_LEVEL, PREFIX_DEFN );
-        PREFIX_TYPE_STR	:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, PREFIX_TYPE	) ) );
+        PREFIX_TYPE_STR	:constant	STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, PREFIX_TYPE	) ) );
       begin
         if  PREFIX_DEFN.TY in CLASS_PARAM_NAME  then							-- On a juste l'adresse de la	VAR disp
 
@@ -1400,7 +1400,7 @@ null;--	     declare
 	PUT( tab & "LId" & tab );
 	PUT( INTEGER'IMAGE( DI( CD_LEVEL, TYPE_SPEC ) ) & ", " );
 	CODI.REGIONS_PATH( TYPE_NAME );
-	PUT_LINE( TYPE_STR & ".use__info" );
+	PUT_LINE( '_' & TYPE_STR & ".use__info" );
         end if;
 
       end		TYPE_SIZE;
@@ -1423,11 +1423,11 @@ null;--	     declare
 	TYPE_STR		: constant STRING	:= PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
         begin
 	PUT_LINE( tab & "La " & IMAGE( GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );			-- Adresse de frame generique
-	PUT_LINE( tab & "LIq , -" & TYPE_STR & "__u_ofs, STANDARD.FIXED_USE_INFO.NUMER " );			-- Charge l'entier NUMER
+	PUT_LINE( tab & "LIq , -" & TYPE_STR & "__u_ofs, STANDARD._FIXED_USE_INFO.NUMER " );			-- Charge l'entier NUMER
 	PUT_LINE( tab & "CVTIF" );
 
 	PUT_LINE( tab & "La " & IMAGE( GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );			-- Adresse de frame generique
-	PUT_LINE( tab & "LIq , -" & TYPE_STR & "__u_ofs, STANDARD.FIXED_USE_INFO.DENOM" );			-- Charge l'entier DENOM
+	PUT_LINE( tab & "LIq , -" & TYPE_STR & "__u_ofs, STANDARD._FIXED_USE_INFO.DENOM" );			-- Charge l'entier DENOM
 	PUT_LINE( tab & "CVTIF" );
 	PUT_LINE( tab & "FDIV" );									-- / DENOM
         end;
@@ -1736,7 +1736,7 @@ null;--	     declare
 	  ANON_D		:constant STRING	:= ANONYMOUS_NAME_AT( PRM_2 ) & "_" & CONCAT_UID & "_D";
 	  ANON_R		:constant STRING	:= ANONYMOUS_NAME_AT( FUNCTION_CALL ) & "_" & CONCAT_UID & "_R";
 
-            TYPE_STR	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, RES_TYPE ) ) );
+            TYPE_STR	:constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, RES_TYPE ) ) );
 
 			----------------------------
 	  procedure	CODE_ARRAY_AGGREGATE_OPERAND		( AGG : TREE; ANON : STRING )
@@ -2180,7 +2180,7 @@ null;--	     declare
           declare
             ANON_STR  : constant STRING := ANONYMOUS_NAME_AT( FUNCTION_CALL );
             TYPE_NAME : TREE            := D( XD_SOURCE_NAME, RET_TS );
-            TN_STR    : constant STRING := PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
+            TN_STR    : constant STRING := '_' & PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
             LVL_STR   : constant STRING := IMAGE( CODI.CUR_LEVEL );
           begin
             PUT_LINE( "VAR" & tab & ANON_STR & "_disp, q" );
@@ -2238,7 +2238,7 @@ null;--	     declare
     QUALIFIED	: TREE		:= D( AS_QUALIFIED, QUALIFIED_ALLOCATOR );
     DESIG_TYPE	: TREE		:= D( SM_EXP_TYPE, QUALIFIED );
     DESIG_NAME	: TREE		:= D( XD_SOURCE_NAME, DESIG_TYPE );
-    DESIG_STR	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, DESIG_NAME ) );
+    DESIG_STR	:constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, DESIG_NAME ) );
     ANON		:constant STRING	:= "NEW_" & NEW_LABEL;
 
   begin
@@ -2271,7 +2271,7 @@ null;--	     declare
   is				----------------------
     DESIG_TYPE	: TREE	:= D( SM_DESIG_TYPE, SUBTYPE_ALLOCATOR );
     DESIG_NAME	: TREE	:= D( XD_SOURCE_NAME, DESIG_TYPE );
-    DESIG_STR	: constant STRING := PRINT_NAME( D( LX_SYMREP, DESIG_NAME ) );
+    DESIG_STR	:constant STRING := '_' & PRINT_NAME( D( LX_SYMREP, DESIG_NAME ) );
 
   begin
     if  DESIG_TYPE.TY = DN_RECORD  then
@@ -3085,7 +3085,7 @@ null;--	     declare
   is				--------------
 
     TYPE_NAME		: TREE			:= D( XD_SOURCE_NAME, TYPE_SPEC );
-    TYPE_NAME_STR		:constant	STRING		:= PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
+    TYPE_NAME_STR		:constant	STRING		:= '_' & PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
     LVL_STR		:constant	STRING		:= IMAGE(	CODI.CUR_LEVEL );
     NORM_SEQ		: SEQ_TYPE		:= LIST( D( SM_NORMALIZED_COMP_S, AGGREGATE ) );
 
@@ -3149,7 +3149,7 @@ SCAN_IDS:
 	          if  EFFECTIVE_COMP_TYPE.TY = DN_RECORD  then
 	            -- Composante record : BLKMOV depuis les donnees de la source vers l'offset dans le parent
 	            declare
-	              CN_STR : constant STRING := PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, EFFECTIVE_COMP_TYPE ) ) );
+	              CN_STR : constant STRING := '_' & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, EFFECTIVE_COMP_TYPE ) ) );
 	            begin
 	              -- @DST = adresse de la composante dans le record parent
 	              PUT_LINE( tab & "DUP" );
@@ -3245,7 +3245,7 @@ SCAN_IDS:
 	    PUT_LINE( tab & "LI" & tab & PRINT_NUM( D( XD_NUMER, VALUE ) ) );					-- Numerateur valeur NV
 
 	    PUT_LINE( tab & "La " & IMAGE( GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );			-- Adresse de frame generique
-	    PUT_LINE( tab & "LIq , -" & TYPE_STR & "__u_ofs, STANDARD.FIXED_USE_INFO.DENOM" );			-- Charge l'entier DENOM small
+	    PUT_LINE( tab & "LIq , -" & TYPE_STR & "__u_ofs, STANDARD._FIXED_USE_INFO.DENOM" );			-- Charge l'entier DENOM small
 
 	    PUT_LINE( tab & "LI" & tab & PRINT_NUM( D( XD_DENOM, VALUE ) ) );					-- Denominateur valeur DV
 
@@ -3400,9 +3400,9 @@ SCAN_IDS:
 
 	        begin										-- L'entier MANTISSA est empilé
 		PUT_LINE( tab & "La " & IMAGE( GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );		-- Adresse de frame generique
-		PUT_LINE( tab & "LIq , -" & TYPE_STR & "__u_ofs, STANDARD.FIXED_USE_INFO.NUMER" );		-- Charge l'entier NUMER
+		PUT_LINE( tab & "LIq , -" & TYPE_STR & "__u_ofs, STANDARD._FIXED_USE_INFO.NUMER" );		-- Charge l'entier NUMER
 		PUT_LINE( tab & "La " & IMAGE( GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );		-- Adresse de frame generique
-		PUT_LINE( tab & "LIq , -" & TYPE_STR & "__u_ofs, STANDARD.FIXED_USE_INFO.DENOM" );		-- Charge l'entier DENOM
+		PUT_LINE( tab & "LIq , -" & TYPE_STR & "__u_ofs, STANDARD._FIXED_USE_INFO.DENOM" );		-- Charge l'entier DENOM
 		PUT_LINE( tab & "CVTXI" );								-- / DENOM
 	        end;
 
@@ -3444,11 +3444,11 @@ SCAN_IDS:
 		begin
 		  PUT_LINE( tab & "CVTIF" );								-- La mantisse fixed est deja au sommet de la pile.
 		  PUT_LINE( tab & "La " & IMAGE( GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );		-- Adresse de frame generique
-		  PUT_LINE( tab & "LIq , -" & SRC_TYPE_STR & "__u_ofs, STANDARD.FIXED_USE_INFO.NUMER" );		-- Charge l'entier NUMER
+		  PUT_LINE( tab & "LIq , -" & SRC_TYPE_STR & "__u_ofs, STANDARD._FIXED_USE_INFO.NUMER" );		-- Charge l'entier NUMER
 		  PUT_LINE( tab & "CVTIF" );
 		  PUT_LINE( tab & "FMUL" );
 		  PUT_LINE( tab & "La " & IMAGE( GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );		-- Adresse de frame generique
-		  PUT_LINE( tab & "LIq , -" & SRC_TYPE_STR & "__u_ofs, STANDARD.FIXED_USE_INFO.DENOM" );		-- Charge l'entier DENOM
+		  PUT_LINE( tab & "LIq , -" & SRC_TYPE_STR & "__u_ofs, STANDARD._FIXED_USE_INFO.DENOM" );		-- Charge l'entier DENOM
 		  PUT_LINE( tab & "CVTIF" );
 		  PUT_LINE( tab & "FDIV" );
 
@@ -3515,11 +3515,11 @@ SCAN_IDS:
 		TARGET_TYPE_STR	: constant STRING	:= PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
 	        begin
 		PUT_LINE( tab & "La " & IMAGE( GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );		-- Adresse de frame generique
-		PUT_LINE( tab & "LIq , -" & TARGET_TYPE_STR & "__u_ofs, STANDARD.FIXED_USE_INFO.DENOM" );		-- Charge l'entier DENOM
+		PUT_LINE( tab & "LIq , -" & TARGET_TYPE_STR & "__u_ofs, STANDARD._FIXED_USE_INFO.DENOM" );		-- Charge l'entier DENOM
 		PUT_LINE( tab & "CVTIF" );
 		PUT_LINE( tab & "FMUL" );								-- MANTISSA * DENOM
 		PUT_LINE( tab & "La " & IMAGE( GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );		-- Adresse de frame generique
-		PUT_LINE( tab & "LIq , -" & TARGET_TYPE_STR & "__u_ofs, STANDARD.FIXED_USE_INFO.NUMER" );		-- Charge l'entier NUMER
+		PUT_LINE( tab & "LIq , -" & TARGET_TYPE_STR & "__u_ofs, STANDARD._FIXED_USE_INFO.NUMER" );		-- Charge l'entier NUMER
 		PUT_LINE( tab & "CVTIF" );
 		PUT_LINE( tab & "FDIV" );								-- / NUMER
 		PUT_LINE( tab & "CVTFIR" );
@@ -3535,9 +3535,9 @@ SCAN_IDS:
 		TARGET_TYPE_STR	: constant STRING	:= PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
 	        begin
 		PUT_LINE( tab & "La " & IMAGE( GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );		-- Adresse de frame generique
-		PUT_LINE( tab & "LIq , -" & TARGET_TYPE_STR & "__u_ofs, STANDARD.FIXED_USE_INFO.DENOM" );		-- Charge l'entier DENOM
+		PUT_LINE( tab & "LIq , -" & TARGET_TYPE_STR & "__u_ofs, STANDARD._FIXED_USE_INFO.DENOM" );		-- Charge l'entier DENOM
 		PUT_LINE( tab & "La " & IMAGE( GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );		-- Adresse de frame generique
-		PUT_LINE( tab & "LIq , -" & TARGET_TYPE_STR & "__u_ofs, STANDARD.FIXED_USE_INFO.NUMER" );		-- Charge l'entier NUMER
+		PUT_LINE( tab & "LIq , -" & TARGET_TYPE_STR & "__u_ofs, STANDARD._FIXED_USE_INFO.NUMER" );		-- Charge l'entier NUMER
 		PUT_LINE( tab & "CVTIX" );
 
 	        end	INTEGER_TO_FIXED_IN_GENERIC;
@@ -3961,7 +3961,7 @@ put_line( "; CODE_QUALIFIED : DN_QUALIFIED" & NODE_NAME'IMAGE( SRC_EXP.TY ) );
 
 	declare
 	  TYPE_NAME	: TREE		:= D( XD_SOURCE_NAME, PREFIX_TYPE );
-	  TYPE_STR	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
+	  TYPE_STR	:constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
 	begin
 	  if  PREFIX_DEFN.TY in CLASS_PARAM_NAME  then
 	    PUT_LINE( tab & "LVA" & tab & IMAGE( ARRAY_LVL ) & ", -" & PREFIX_STR & "_ofs" );

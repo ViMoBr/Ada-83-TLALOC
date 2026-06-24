@@ -271,7 +271,7 @@ is
   procedure		CODE_REPRESENTED_RECORD_DECL		( TYPE_ID :TREE; TYPE_SPEC :TREE )
   is			----------------------------
 
-    TYPE_ID_STR	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, TYPE_ID ) );
+    TYPE_ID_STR	:constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, TYPE_ID ) );
     LVL_STR	:constant STRING	:= IMAGE( CODI.CUR_LEVEL );
     SIZE_BITS	: INTEGER;
 
