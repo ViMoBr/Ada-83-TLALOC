@@ -748,10 +748,17 @@ put_line( "; CODE_VC_NAME " & NODE_NAME'IMAGE( VC_NAME.TY ) );
 				-- No explicit aggregate : initialize
 				-- fields	that have	default values
 	declare
-	  COMP_DECL_S	: SEQ_TYPE	:= LIST( D( AS_DECL_S,
-				    D( SM_COMP_LIST, TYPE_SPEC ) ) );
+	  COMP_DECL_S	: SEQ_TYPE;
 	  COMP_DECL	: TREE;
 	begin
+	  if  TYPE_SPEC.TY = DN_CONSTRAINED_RECORD  then
+	    COMP_DECL_S := LIST( D( AS_DECL_S, D( SM_COMP_LIST, D( SM_BASE_TYPE, TYPE_SPEC ) ) ) );
+
+	  else
+	    COMP_DECL_S := LIST( D( AS_DECL_S, D( SM_COMP_LIST, TYPE_SPEC ) ) );
+
+	  end if;
+
 	  while  not IS_EMPTY( COMP_DECL_S )  loop
 	    POP( COMP_DECL_S, COMP_DECL );
 	    declare
@@ -825,9 +832,10 @@ put_line( "; CODE_VC_NAME " & NODE_NAME'IMAGE( VC_NAME.TY ) );
       when DN_FIXED			=> COMPILE_VC_NAME_FIXED(		VC_NAME );
       when DN_FLOAT			=> COMPILE_VC_NAME_FLOAT(		VC_NAME );
       when DN_ACCESS		=> COMPILE_ACCESS_VAR(		VC_NAME, TYPE_SPEC );
-      when DN_RECORD		=> COMPILE_RECORD_VAR(		VC_NAME, TYPE_SPEC );
+      when DN_CONSTRAINED_RECORD
+	| DN_RECORD		=> COMPILE_RECORD_VAR(		VC_NAME, TYPE_SPEC );
       when DN_CONSTRAINED_ARRAY
-        |	DN_ARRAY			=> COMPILE_ARRAY_VAR(		VC_NAME, TYPE_SPEC );
+	| DN_ARRAY		=> COMPILE_ARRAY_VAR(		VC_NAME, TYPE_SPEC );
       when others =>
         PUT_LINE( "; ERREUR CODE_VC_NAME, TYPE_SPEC.TY = " & NODE_NAME'IMAGE( TYPE_SPEC.TY ) );
         raise PROGRAM_ERROR;

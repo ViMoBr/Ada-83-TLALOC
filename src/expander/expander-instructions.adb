@@ -1588,26 +1588,35 @@ raise PROGRAM_ERROR;
 	  EXPRESSIONS.CODE_EXP( SRC_EXP );
 	  STORE_OR_CALLI;
 
-	elsif  NAME_TYPE.TY = DN_RECORD  then								-- OBJET ASSIGNE RECORD
-	  if  DEFN.TY = DN_COMPONENT_ID  then
-	    PUT_LINE( "; !!! ASSIGN DST COMPONENT_ID DN_RECORD A FAIRE" );
+	elsif  NAME_TYPE.TY = DN_RECORD  or else NAME_TYPE.TY = DN_CONSTRAINED_RECORD  then
+	  declare
+	    REC_TYPE : TREE := NAME_TYPE;
+	  begin
+	    if  REC_TYPE.TY = DN_CONSTRAINED_RECORD  then
+	      REC_TYPE := D( SM_BASE_TYPE, REC_TYPE );
+	    end if;
 
-	  else
-	    CODI.LOAD_MEM( DEFN );									-- @variable (adresse du doublet @data @use__info)
-	  end if;
-	  PUT_LINE( tab & "La" );									-- @DST (adresse des data)
+	    if  DEFN.TY = DN_COMPONENT_ID  then
+	      PUT_LINE( "; !!! ASSIGN DST COMPONENT_ID DN_RECORD A FAIRE" );
 
-	  PUT( tab & "LI" & tab );
-	  CODI.REGIONS_PATH( D( XD_SOURCE_NAME, NAME_TYPE ) );
-	  PUT_LINE( '_' & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, NAME_TYPE ) ) ) & ".size" );			-- LEN (taille en octets, calculee par FASM)
+	    else
+	      CODI.LOAD_MEM( DEFN );									-- @variable (adresse du doublet @data @use__info)
+	    end if;
+	    PUT_LINE( tab & "La" );									-- @DST (adresse des data)
 
-	  if  SRC_EXP.TY = DN_AGGREGATE  then
-	    EXPRESSIONS.CODE_AGGREGATE( SRC_EXP, NAME_TYPE );
-	  else
-	    EXPRESSIONS.CODE_EXP( SRC_EXP );								-- @variable (adresse du doublet)
-	    PUT_LINE( tab & "La" );									-- @SRC (adresse des data)
-	    PUT_LINE( tab & "BLKMOV" );									-- COPY_BLOCK  @DST LEN @SRC
-	  end if;
+	    if  SRC_EXP.TY = DN_AGGREGATE  then
+	      EXPRESSIONS.CODE_AGGREGATE( SRC_EXP, REC_TYPE );
+
+	    else
+ 	      PUT( tab & "LI" & tab );
+	      CODI.REGIONS_PATH( D( XD_SOURCE_NAME, NAME_TYPE ) );
+	      PUT_LINE( '_' & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, NAME_TYPE ) ) ) & ".size" );			-- LEN (taille en octets, calculee par FASM)
+
+	      EXPRESSIONS.CODE_EXP( SRC_EXP );								-- @variable (adresse du doublet)
+	      PUT_LINE( tab & "La" );									-- @SRC (adresse des data)
+	      PUT_LINE( tab & "BLKMOV" );									-- COPY_BLOCK  @DST LEN @SRC
+	    end if;
+	  end;
 
 	else											-- AUTRE TYPE SCALAIRE (type formel generique, etc.)
 	  if  CODI.IN_GENERIC_BODY  and then  ( DEFN.TY = DN_OUT_ID  or  DEFN.TY = DN_IN_OUT_ID )  then

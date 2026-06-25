@@ -184,7 +184,7 @@ begin
   CHECK( "H.V(4) apres assign", H.V(4), 444 );
 
   CHECK_VECTEUR_PARAM( H.V, 11, 222, 333, 444 );
-  CHECK_VECTEUR_PARAM( RV.V, 11, 222, 333, 444 );
+  CHECK_VECTEUR_PARAM( RV.V, 11, 22, 33, 44 );
 
   CHECK( "H.P.Z",  H.P.Z,  7 );
 

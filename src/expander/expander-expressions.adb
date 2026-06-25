@@ -3084,108 +3084,216 @@ null;--	     declare
   procedure			CODE_AGGREGATE		( AGGREGATE, TYPE_SPEC :TREE )
   is				--------------
 
-    TYPE_NAME		: TREE			:= D( XD_SOURCE_NAME, TYPE_SPEC );
-    TYPE_NAME_STR		:constant	STRING		:= '_' & PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
+    EFFECTIVE_TYPE		: TREE			:= TYPE_SPEC;
     LVL_STR		:constant	STRING		:= IMAGE(	CODI.CUR_LEVEL );
     NORM_SEQ		: SEQ_TYPE		:= LIST( D( SM_NORMALIZED_COMP_S, AGGREGATE ) );
 
   begin
-    if  TYPE_SPEC.TY = DN_CONSTRAINED_ARRAY  or  TYPE_SPEC.TY = DN_ARRAY  then					-- L'adresse de debut data est deja empilee
+    while  EFFECTIVE_TYPE.TY = DN_PRIVATE  or else  EFFECTIVE_TYPE.TY = DN_L_PRIVATE  loop
+      EFFECTIVE_TYPE := D( SM_TYPE_SPEC, EFFECTIVE_TYPE );
+    end loop;
 
-      CODE_ARRAY_AGGREGATE( AGGREGATE, TYPE_SPEC );
+    if  EFFECTIVE_TYPE.TY = DN_CONSTRAINED_RECORD  then
+      EFFECTIVE_TYPE := D( SM_BASE_TYPE, EFFECTIVE_TYPE );
+    end if;
 
+    if  EFFECTIVE_TYPE = TREE_VOID  then
+      PUT_LINE( "; CODE_AGGREGATE : type contexte absent pour l'agregat" );
+      raise PROGRAM_ERROR;
+    end if;
 
-    elsif  TYPE_SPEC.TY = DN_RECORD  then								-- L'adresse du doublet est deja empilee
+    if  EFFECTIVE_TYPE.TY = DN_CONSTRAINED_ARRAY  or  TYPE_SPEC.TY = DN_ARRAY  then				-- L'adresse de debut data est deja empilee
+      CODE_ARRAY_AGGREGATE( AGGREGATE, EFFECTIVE_TYPE );
 
-      if REPRESENTED_ITEMS.HAS_RECORD_REP( TYPE_SPEC ) then							-- Intercepter les records representes
-        REPRESENTED_ITEMS.CODE_REPRESENTED_RECORD_AGGREGATE( AGGREGATE, TYPE_SPEC );
-        return;
-      end if;
-
-      if  CODI.DEBUG  then PUT_LINE( tab50 & "; Assign_record_aggregate type " & NODE_NAME'IMAGE( TYPE_SPEC.TY ) );
-      end if;
-				-----------------------
-				ASSIGN_RECORD_AGGREGATE:
+    elsif  EFFECTIVE_TYPE.TY = DN_RECORD  then								-- L'adresse du doublet est deja empilee
       declare
-        COMP_DECL_S		: SEQ_TYPE	:= LIST( D( AS_DECL_S, D( SM_COMP_LIST, TYPE_SPEC ) ) );
-        COMP_EXP		: TREE;
-        COMP_DECL		: TREE;
+        TYPE_NAME		: TREE			:= D( XD_SOURCE_NAME, EFFECTIVE_TYPE );
+        TYPE_NAME_STR	:constant	STRING		:= '_' & PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
 
       begin
-SCAN_DECLS:
-        while not IS_EMPTY( COMP_DECL_S )  loop
-	POP( COMP_DECL_S, COMP_DECL );
-	declare
-	  COMP_ID_S	: SEQ_TYPE	:= LIST( D( AS_SOURCE_NAME_S, COMP_DECL ) );
-	  COMP_ID		: TREE;
+        if REPRESENTED_ITEMS.HAS_RECORD_REP( EFFECTIVE_TYPE ) then							-- Intercepter les records representes
+	REPRESENTED_ITEMS.CODE_REPRESENTED_RECORD_AGGREGATE( AGGREGATE, EFFECTIVE_TYPE );
+	return;
+        end if;
 
+        if  CODI.DEBUG  then PUT_LINE( tab50 & "; Assign_record_aggregate type " & NODE_NAME'IMAGE( EFFECTIVE_TYPE.TY ) );
+        end if;
+
+				-----------------------------
+				NAMED_ASSIGN_RECORD_AGGREGATE:
+
+        declare
+	ASSOC_S   : SEQ_TYPE := LIST( D( AS_GENERAL_ASSOC_S, AGGREGATE ) );
+	ASSOC     : TREE;
+	HAS_NAMED : BOOLEAN := FALSE;
+		------------------
+	procedure	STORE_RECORD_FIELD ( FIELD_ID : TREE; FIELD_EXP : TREE )
+	is	------------------
+	  FIELD_TYPE	: TREE		:= D( SM_OBJ_TYPE, FIELD_ID );
+	  FIELD_STR	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, FIELD_ID ) );
 	begin
-SCAN_IDS:
-	  while not IS_EMPTY( COMP_ID_S )  loop
-	    POP( COMP_ID_S, COMP_ID	);
-	    exit SCAN_DECLS  when  IS_EMPTY( NORM_SEQ );							-- securite : agregat plus court que decls
-	    POP( NORM_SEQ, COMP_EXP );
+	  while  FIELD_TYPE.TY = DN_PRIVATE  or else  FIELD_TYPE.TY = DN_L_PRIVATE  loop
+	    FIELD_TYPE := D( SM_TYPE_SPEC, FIELD_TYPE );
+	  end loop;
+
+	  if  FIELD_TYPE.TY = DN_CONSTRAINED_RECORD  then
+	    FIELD_TYPE := D( SM_BASE_TYPE, FIELD_TYPE );
+	  end if;
+
+	  PUT_LINE( tab & "DUP" );
+	  PUT( tab & "LVA" & tab & ", " );
+	  CODI.REGIONS_PATH( TYPE_NAME );
+	  PUT_LINE( TYPE_NAME_STR & "." & FIELD_STR );
+
+	  if  FIELD_EXP.TY = DN_AGGREGATE  then
+	    CODE_AGGREGATE( FIELD_EXP, FIELD_TYPE );
+
+	  elsif  FIELD_TYPE.TY = DN_RECORD  then
+	    PUT( tab & "LI" & tab );
+	    CODI.REGIONS_PATH( D( XD_SOURCE_NAME, FIELD_TYPE ) );
+	    PUT_LINE( '_' & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, FIELD_TYPE ) ) ) & ".size" );
+
+	    EXPRESSIONS.CODE_EXP( FIELD_EXP );
+	    PUT_LINE( tab & "La  ,  0" );
+	    PUT_LINE( tab & "BLKMOV" );
+
+	  else
+	    EXPRESSIONS.CODE_EXP( FIELD_EXP );
+	    PUT_LINE( tab & "S" & CODI.OPER_SIZ_CHAR( FIELD_TYPE ) );
+	  end if;
+
+          end	STORE_RECORD_FIELD;
+		------------------
+
+        begin
+	while  not IS_EMPTY( ASSOC_S )  loop
+	  POP( ASSOC_S, ASSOC );
+
+	  if  ASSOC.TY = DN_NAMED  then
+	    HAS_NAMED := TRUE;
+
 	    declare
-	      COMP_TYPE	: TREE		:= D( SM_OBJ_TYPE, COMP_ID );
-	      COMP_STR	:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, COMP_ID ) );
-
+	      FIELD_EXP	: TREE		:= D( AS_EXP, ASSOC );
+	      CHOICES	: SEQ_TYPE	:= LIST( D( AS_CHOICE_S, ASSOC ) );
+	      CH		: TREE;
+	      FIELD_ID	: TREE;
 	    begin
-	      if  COMP_EXP.TY = DN_AGGREGATE  then
-	        PUT_LINE( tab & "DUP" );
-	        PUT( tab & "LVA" & tab & ", " );							-- composant composite : calculer adresse dans zone parent
-	        CODI.REGIONS_PATH( TYPE_NAME );
-	        PUT_LINE( TYPE_NAME_STR & "." & COMP_STR );
-	        CODE_AGGREGATE( COMP_EXP, COMP_TYPE );							-- adresse du sous-composant empilée, appel récursif
+	      while  not IS_EMPTY( CHOICES )  loop
+	        POP( CHOICES, CH );
 
-	      else
-	        declare
-	          EFFECTIVE_COMP_TYPE : TREE := COMP_TYPE;
-	        begin
-	          while  EFFECTIVE_COMP_TYPE.TY = DN_L_PRIVATE
-	             or  EFFECTIVE_COMP_TYPE.TY = DN_PRIVATE  loop
-	            EFFECTIVE_COMP_TYPE := D( SM_TYPE_SPEC, EFFECTIVE_COMP_TYPE );
-	          end loop;
+	        if  CH.TY = DN_CHOICE_EXP  then
+		FIELD_ID := D( SM_DEFN, D( AS_EXP, CH ) );
 
-	          if  EFFECTIVE_COMP_TYPE.TY = DN_RECORD  then
+		if  FIELD_ID = TREE_VOID  or else  FIELD_ID = TREE_NIL  then
+		  PUT_LINE( "; CODE_AGGREGATE record : choix sans SM_DEFN" );
+		  raise PROGRAM_ERROR;
+		end if;
+
+		STORE_RECORD_FIELD( FIELD_ID, FIELD_EXP );
+
+	        elsif CH.TY = DN_CHOICE_OTHERS then
+		PUT_LINE( "; CODE_AGGREGATE record : others non encore traite" );
+		raise PROGRAM_ERROR;
+
+	        else
+		PUT_LINE( "; CODE_AGGREGATE record : choix non gere " & NODE_NAME'IMAGE( CH.TY ) );
+		raise PROGRAM_ERROR;
+	        end if;
+	      end loop;
+	    end;
+	  end if;
+	end loop;
+
+	if  HAS_NAMED  then
+	  PUT_LINE( tab & "DROP" );      -- enlever @record initial
+	  return;
+	end if;
+        end	NAMED_ASSIGN_RECORD_AGGREGATE;
+		-----------------------------
+
+				-----------------------
+				ASSIGN_RECORD_AGGREGATE:
+        declare
+	COMP_DECL_S	: SEQ_TYPE	:= LIST( D( AS_DECL_S, D( SM_COMP_LIST, EFFECTIVE_TYPE ) ) );
+	COMP_EXP		: TREE;
+	COMP_DECL		: TREE;
+
+        begin
+SCAN_DECLS:
+	while not IS_EMPTY( COMP_DECL_S )  loop
+	  POP( COMP_DECL_S, COMP_DECL );
+	  declare
+	    COMP_ID_S	: SEQ_TYPE	:= LIST( D( AS_SOURCE_NAME_S, COMP_DECL ) );
+	    COMP_ID	: TREE;
+
+	  begin
+SCAN_IDS:
+	    while  not IS_EMPTY( COMP_ID_S )  loop
+	      POP( COMP_ID_S, COMP_ID	);
+	      exit SCAN_DECLS  when  IS_EMPTY( NORM_SEQ );							-- securite : agregat plus court que decls
+	      POP( NORM_SEQ, COMP_EXP );
+	      declare
+	        COMP_TYPE	: TREE		:= D( SM_OBJ_TYPE, COMP_ID );
+	        COMP_STR	:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, COMP_ID ) );
+
+	      begin
+	        if  COMP_EXP.TY = DN_AGGREGATE  then
+		PUT_LINE( tab & "DUP" );
+		PUT( tab & "LVA" & tab & ", " );							-- composant composite : calculer adresse dans zone parent
+		CODI.REGIONS_PATH( TYPE_NAME );
+		PUT_LINE( TYPE_NAME_STR & "." & COMP_STR );
+		CODE_AGGREGATE( COMP_EXP, COMP_TYPE );							-- adresse du sous-composant empilée, appel récursif
+
+	        else
+		declare
+		  EFFECTIVE_COMP_TYPE	: TREE	:= COMP_TYPE;
+		begin
+	            while  EFFECTIVE_COMP_TYPE.TY = DN_L_PRIVATE
+			or  EFFECTIVE_COMP_TYPE.TY = DN_PRIVATE  loop
+	              EFFECTIVE_COMP_TYPE := D( SM_TYPE_SPEC, EFFECTIVE_COMP_TYPE );
+	            end loop;
+
+	            if  EFFECTIVE_COMP_TYPE.TY = DN_RECORD  then
 	            -- Composante record : BLKMOV depuis les donnees de la source vers l'offset dans le parent
-	            declare
-	              CN_STR : constant STRING := '_' & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, EFFECTIVE_COMP_TYPE ) ) );
-	            begin
+	              declare
+	                CN_STR : constant STRING := '_' & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, EFFECTIVE_COMP_TYPE ) ) );
+	              begin
 	              -- @DST = adresse de la composante dans le record parent
-	              PUT_LINE( tab & "DUP" );
+	                PUT_LINE( tab & "DUP" );
+	                PUT( tab & "LVA" & tab & ", " );
+	                CODI.REGIONS_PATH( TYPE_NAME );
+	                PUT_LINE( TYPE_NAME_STR & "." & COMP_STR );
+
+	                PUT( tab & "LI" & tab );
+	                CODI.REGIONS_PATH( D( XD_SOURCE_NAME, EFFECTIVE_COMP_TYPE ) );
+	                PUT_LINE( CN_STR & ".size" );              -- LEN
+
+	                EXPRESSIONS.CODE_EXP( COMP_EXP );         -- empiле @doublet source
+	                PUT_LINE( tab & "La  ,  0" );              -- @SRC = data_ptr
+
+	                PUT_LINE( tab & "BLKMOV" );
+	              end;
+
+	            else
+	            -- Composante scalaire : store direct
+		    PUT_LINE( tab & "DUP" );
 	              PUT( tab & "LVA" & tab & ", " );
 	              CODI.REGIONS_PATH( TYPE_NAME );
 	              PUT_LINE( TYPE_NAME_STR & "." & COMP_STR );
+	              EXPRESSIONS.CODE_EXP( COMP_EXP );
+	              PUT_LINE( tab & "S" & CODI.OPER_SIZ_CHAR( EFFECTIVE_COMP_TYPE ) );
+	            end if;
+		end;
+	        end if;
+	      end;
+	    end loop		SCAN_IDS;
+	  end;
+          end loop		SCAN_DECLS;
+          PUT_LINE( tab & "DROP" );									-- Enlever l'adresse de debut data record de reference
 
-	              PUT( tab & "LI" & tab );
-	              CODI.REGIONS_PATH( D( XD_SOURCE_NAME, EFFECTIVE_COMP_TYPE ) );
-	              PUT_LINE( CN_STR & ".size" );              -- LEN
-
-	              EXPRESSIONS.CODE_EXP( COMP_EXP );         -- empiле @doublet source
-	              PUT_LINE( tab & "La  ,  0" );              -- @SRC = data_ptr
-
-	              PUT_LINE( tab & "BLKMOV" );
-	            end;
-
-	          else
-	            -- Composante scalaire : store direct
-	            PUT_LINE( tab & "DUP" );
-	            PUT( tab & "LVA" & tab & ", " );
-	            CODI.REGIONS_PATH( TYPE_NAME );
-	            PUT_LINE( TYPE_NAME_STR & "." & COMP_STR );
-	            EXPRESSIONS.CODE_EXP( COMP_EXP );
-	            PUT_LINE( tab & "S" & CODI.OPER_SIZ_CHAR( EFFECTIVE_COMP_TYPE ) );
-	          end if;
-	        end;
-	      end if;
-	    end;
-	  end loop		SCAN_IDS;
-	end;
-        end loop		SCAN_DECLS;
-        PUT_LINE( tab & "DROP" );									-- Enlever l'adresse de debut data record de reference
-
-      end		ASSIGN_RECORD_AGGREGATE;
+        end	ASSIGN_RECORD_AGGREGATE;
 		-----------------------
+      end;
     end if;
 
   end	CODE_AGGREGATE;
