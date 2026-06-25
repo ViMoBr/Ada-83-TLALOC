@@ -277,7 +277,7 @@ is
       NEW_LINE;
       CODI.IN_GENERIC_BODY := FALSE;
       CODI.GENERIC_BASE_LEVEL := SAVE_GENERIC_LEVEL;
-end;
+      end;
     else
 
       if  PACK_BODY.TY = DN_STUB  then
@@ -292,19 +292,26 @@ end;
         if  CAS_NORMAL  then
 	PUT_LINE( PACK_NAME & " = " & "'" & PACK_NAME & "'" );
 	PUT( "namespace " & PACK_NAME );
-	if  CODI.DEBUG  then PUT( tab50 & ";---------- PACKAGE" ); end if;
+	if  CODI.DEBUG  then PUT( tab50 & ";---------- PACKAGE (BDY)" ); end if;
 	NEW_LINE;
         end if;
 
---if  ENCLOSING_BODY /= TREE_VOID then
-        PUT( "elab_spec:" );
-        if  CODI.DEBUG  then PUT_LINE( tab50 & ";    SPEC ELAB" ); end if;
-        NEW_LINE;
+--  Si la spec du package a déjà été émise par CODE_PACKAGE_DECL
+--  dans la même unité / le même bloc, ne pas la réémettre dans le body.
+--  Le body ne doit coder ici que ses déclarations propres.
+        if  not DB( CD_COMPILED, D( SM_FIRST, PACK_ID ) )
+	or else D( XD_REGION, PACK_ID ) = TREE_VOID							-- STANDARD
+	or else  PRINT_NAME( D( LX_SYMREP, D( XD_REGION, PACK_ID ) ) ) = "STANDARD"				-- Package librairie
+        then
+	PUT( "elab_spec:" );
+	if  CODI.DEBUG  then PUT_LINE( tab50 & ";    SPEC ELAB" ); end if;
+	NEW_LINE;
 
-        DECLARATIONS.CODE_PACKAGE_SPEC( D( SM_SPEC, PACK_ID ) );
---end if;
+	DECLARATIONS.CODE_PACKAGE_SPEC( D( SM_SPEC, PACK_ID ) );
+	DB( CD_COMPILED, PACK_ID, TRUE );
+        end if;
         ENCLOSING_BODY := PACKAGE_BODY;
-        CODE_BLOCK_BODY( PACK_BODY );
+        CODE_BLOCK_BODY( PACK_BODY, IS_PACK_BODY=> TRUE );
 
         if  CAS_NORMAL  then
 	PUT( "end namespace " );
@@ -323,7 +330,7 @@ end;
 
 
 			--===============--
-  procedure		  CODE_BLOCK_BODY	( BLOCK_BODY :TREE )
+  procedure		  CODE_BLOCK_BODY	( BLOCK_BODY :TREE; IS_PACK_BODY :BOOLEAN := FALSE )
   is			--===============--
 
 
@@ -352,7 +359,7 @@ end;
   begin
     DI( CD_LEVEL, BLOCK_BODY, INTEGER( CODI.CUR_LEVEL ) );
 
-    if  CODI.CUR_LEVEL /= 0
+    if  CODI.CUR_LEVEL /= 0  and then  not IS_PACK_BODY
     then  PUT( "ELB" & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL ) );
     end if;
 

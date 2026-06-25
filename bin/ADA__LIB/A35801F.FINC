@@ -1,0 +1,276 @@
+if ~ definite REPORT
+include 'REPORT.FINC'
+end if
+PRO	A35801F_L1				;---------- PRO A35801F
+ELB 1					;    BODY ELAB
+
+					; _REAL FLOAT TYPE INFO
+_REAL = '_REAL'
+namespace _REAL
+VAR use__info, q
+CST LST, q,  1.0E308
+CST FST, q, -1.0E308
+CST SIZ, d, 32
+	LCA	SIZ
+	Sa	1, use__info
+end namespace
+;  CODE_SUBTYPE_DECL : TYPE_SPEC.TY PAS FAIT DN_FLOAT
+
+					; _NFLT FLOAT TYPE INFO
+_NFLT = '_NFLT'
+namespace _NFLT
+VAR use__info, q
+CST LST, q,  1.0E308
+CST FST, q, -1.0E308
+CST SIZ, d, 32
+	LCA	SIZ
+	Sa	1, use__info
+end namespace
+;  CODE_SUBTYPE_DECL : TYPE_SPEC.TY PAS FAIT DN_FLOAT
+;  CODE_SUBTYPE_DECL : TYPE_SPEC.TY PAS FAIT DN_FLOAT
+VAR R1_disp, q				; variable flottante
+	Sq  1,	R1_disp
+
+VAR R2_disp, q				; variable flottante
+	Sq  1,	R2_disp
+
+VAR N1_disp, q				; variable flottante
+	Sq  1,	N1_disp
+
+VAR N2_disp, q				; variable flottante
+	Sq  1,	N2_disp
+
+VAR F1_disp, q				; variable flottante
+	LI	PRINT_NUM : LE HI N EST PAS UN DN_NUM_VAL PAS DE CHAINE ???
+	Sq  1,	F1_disp
+
+VAR F2_disp, q				; variable flottante
+	LI	PRINT_NUM : LE HI N EST PAS UN DN_NUM_VAL PAS DE CHAINE ???
+	Sq  1,	F2_disp
+
+VAR E1_disp, q				; variable flottante
+	Sq  1,	E1_disp
+
+VAR E2_disp, q				; variable flottante
+	Sq  1,	E2_disp
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+; CODE & concat _STRING
+VAR	ANON_36_24_L2_G_data, q
+VAR	ANON_36_24_L2_G_info, q
+VAR	ANON_39_24_L2_D_data, q
+VAR	ANON_39_24_L2_D_info, q
+VAR	ANON_36_24_L2_G_len,  q
+VAR	ANON_39_24_L2_D_len,  q
+VAR	ANON_36_24_L2_R_disp, q
+VAR	ANON_36_24_L2_R__u,   q
+namespace ANON_36_24_L2_R_info
+  VAR SIZ,      d
+  VAR _COMP_SIZ, d
+  VAR _FST_1,    d
+  VAR _LST_1,    d
+end namespace
+; CODE & concat _STRING
+VAR	ANON_36_24_L3_G_data, q
+VAR	ANON_36_24_L3_G_info, q
+VAR	ANON_38_24_L3_D_data, q
+VAR	ANON_38_24_L3_D_info, q
+VAR	ANON_36_24_L3_G_len,  q
+VAR	ANON_38_24_L3_D_len,  q
+VAR	ANON_36_24_L3_R_disp, q
+VAR	ANON_36_24_L3_R__u,   q
+namespace ANON_36_24_L3_R_info
+  VAR SIZ,      d
+  VAR _COMP_SIZ, d
+  VAR _FST_1,    d
+  VAR _LST_1,    d
+end namespace
+; CODE & concat _STRING
+VAR	ANON_36_24_L4_G_data, q
+VAR	ANON_36_24_L4_G_info, q
+VAR	ANON_37_24_L4_D_data, q
+VAR	ANON_37_24_L4_D_info, q
+VAR	ANON_36_24_L4_G_len,  q
+VAR	ANON_37_24_L4_D_len,  q
+VAR	ANON_36_24_L4_R_disp, q
+VAR	ANON_36_24_L4_R__u,   q
+namespace ANON_36_24_L4_R_info
+  VAR SIZ,      d
+  VAR _COMP_SIZ, d
+  VAR _FST_1,    d
+  VAR _LST_1,    d
+end namespace
+STR ANON_36_24_L4_G, "CHECK THAT THE ATTRIBUTES FIRST AND LAST "	; constante string="CHECK THAT THE ATTRIBUTES FIRST AND LAST "
+	LCA	ANON_36_24_L4_G.data_ptr
+	DUP
+	La  ,  0
+	Sa  1, ANON_36_24_L4_G_data
+	La  ,  8
+	Sa  1, ANON_36_24_L4_G_info
+	LId 1, ANON_36_24_L4_G_info, _STRING.LST_1
+	LId 1, ANON_36_24_L4_G_info, _STRING.FST_1
+	SUB
+	INC
+	Sa  1, ANON_36_24_L4_G_len
+STR ANON_37_24_L4_D, "RETURN VALUES HAVING THE SAME BASE TYPE AS "	; constante string="RETURN VALUES HAVING THE SAME BASE TYPE AS "
+	LCA	ANON_37_24_L4_D.data_ptr
+	DUP
+	La  ,  0
+	Sa  1, ANON_37_24_L4_D_data
+	La  ,  8
+	Sa  1, ANON_37_24_L4_D_info
+	LId 1, ANON_37_24_L4_D_info, _STRING.LST_1
+	LId 1, ANON_37_24_L4_D_info, _STRING.FST_1
+	SUB
+	INC
+	Sa  1, ANON_37_24_L4_D_len
+	La  1, ANON_36_24_L4_G_len
+	La  1, ANON_37_24_L4_D_len
+	ADD
+	CO_VAR
+	Sa  1, ANON_36_24_L4_R_disp
+	LI	1
+	Sd  1, ANON_36_24_L4_R_info._FST_1
+	La  1, ANON_36_24_L4_G_len
+	La  1, ANON_37_24_L4_D_len
+	ADD
+	Sd  1, ANON_36_24_L4_R_info._LST_1
+	LI	8
+	Sd  1, ANON_36_24_L4_R_info._COMP_SIZ
+	La  1, ANON_36_24_L4_G_len
+	La  1, ANON_37_24_L4_D_len
+	ADD
+	LI	8
+	MUL
+	Sd  1, ANON_36_24_L4_R_info.SIZ
+	LVA 1, ANON_36_24_L4_R_info.SIZ
+	Sa  1, ANON_36_24_L4_R__u
+	La  1, ANON_36_24_L4_R_disp
+	La  1, ANON_36_24_L4_G_len
+	La  1, ANON_36_24_L4_G_data
+	BLKMOV
+	La  1, ANON_36_24_L4_R_disp
+	La  1, ANON_36_24_L4_G_len
+	ADD
+	La  1, ANON_37_24_L4_D_len
+	La  1, ANON_37_24_L4_D_data
+	BLKMOV
+	LVA 1, ANON_36_24_L4_R_disp
+	DUP
+	La  ,  0
+	Sa  1, ANON_36_24_L3_G_data
+	La  ,  8
+	Sa  1, ANON_36_24_L3_G_info
+	LId 1, ANON_36_24_L3_G_info, _STRING.LST_1
+	LId 1, ANON_36_24_L3_G_info, _STRING.FST_1
+	SUB
+	INC
+	Sa  1, ANON_36_24_L3_G_len
+STR ANON_38_24_L3_D, "THE PREFIX WHEN THE PREFIX IS A FLOATING "	; constante string="THE PREFIX WHEN THE PREFIX IS A FLOATING "
+	LCA	ANON_38_24_L3_D.data_ptr
+	DUP
+	La  ,  0
+	Sa  1, ANON_38_24_L3_D_data
+	La  ,  8
+	Sa  1, ANON_38_24_L3_D_info
+	LId 1, ANON_38_24_L3_D_info, _STRING.LST_1
+	LId 1, ANON_38_24_L3_D_info, _STRING.FST_1
+	SUB
+	INC
+	Sa  1, ANON_38_24_L3_D_len
+	La  1, ANON_36_24_L3_G_len
+	La  1, ANON_38_24_L3_D_len
+	ADD
+	CO_VAR
+	Sa  1, ANON_36_24_L3_R_disp
+	LI	1
+	Sd  1, ANON_36_24_L3_R_info._FST_1
+	La  1, ANON_36_24_L3_G_len
+	La  1, ANON_38_24_L3_D_len
+	ADD
+	Sd  1, ANON_36_24_L3_R_info._LST_1
+	LI	8
+	Sd  1, ANON_36_24_L3_R_info._COMP_SIZ
+	La  1, ANON_36_24_L3_G_len
+	La  1, ANON_38_24_L3_D_len
+	ADD
+	LI	8
+	MUL
+	Sd  1, ANON_36_24_L3_R_info.SIZ
+	LVA 1, ANON_36_24_L3_R_info.SIZ
+	Sa  1, ANON_36_24_L3_R__u
+	La  1, ANON_36_24_L3_R_disp
+	La  1, ANON_36_24_L3_G_len
+	La  1, ANON_36_24_L3_G_data
+	BLKMOV
+	La  1, ANON_36_24_L3_R_disp
+	La  1, ANON_36_24_L3_G_len
+	ADD
+	La  1, ANON_38_24_L3_D_len
+	La  1, ANON_38_24_L3_D_data
+	BLKMOV
+	LVA 1, ANON_36_24_L3_R_disp
+	DUP
+	La  ,  0
+	Sa  1, ANON_36_24_L2_G_data
+	La  ,  8
+	Sa  1, ANON_36_24_L2_G_info
+	LId 1, ANON_36_24_L2_G_info, _STRING.LST_1
+	LId 1, ANON_36_24_L2_G_info, _STRING.FST_1
+	SUB
+	INC
+	Sa  1, ANON_36_24_L2_G_len
+STR ANON_39_24_L2_D, "POINT TYPE"		; constante string="POINT TYPE"
+	LCA	ANON_39_24_L2_D.data_ptr
+	DUP
+	La  ,  0
+	Sa  1, ANON_39_24_L2_D_data
+	La  ,  8
+	Sa  1, ANON_39_24_L2_D_info
+	LId 1, ANON_39_24_L2_D_info, _STRING.LST_1
+	LId 1, ANON_39_24_L2_D_info, _STRING.FST_1
+	SUB
+	INC
+	Sa  1, ANON_39_24_L2_D_len
+	La  1, ANON_36_24_L2_G_len
+	La  1, ANON_39_24_L2_D_len
+	ADD
+	CO_VAR
+	Sa  1, ANON_36_24_L2_R_disp
+	LI	1
+	Sd  1, ANON_36_24_L2_R_info._FST_1
+	La  1, ANON_36_24_L2_G_len
+	La  1, ANON_39_24_L2_D_len
+	ADD
+	Sd  1, ANON_36_24_L2_R_info._LST_1
+	LI	8
+	Sd  1, ANON_36_24_L2_R_info._COMP_SIZ
+	La  1, ANON_36_24_L2_G_len
+	La  1, ANON_39_24_L2_D_len
+	ADD
+	LI	8
+	MUL
+	Sd  1, ANON_36_24_L2_R_info.SIZ
+	LVA 1, ANON_36_24_L2_R_info.SIZ
+	Sa  1, ANON_36_24_L2_R__u
+	La  1, ANON_36_24_L2_R_disp
+	La  1, ANON_36_24_L2_G_len
+	La  1, ANON_36_24_L2_G_data
+	BLKMOV
+	La  1, ANON_36_24_L2_R_disp
+	La  1, ANON_36_24_L2_G_len
+	ADD
+	La  1, ANON_39_24_L2_D_len
+	La  1, ANON_39_24_L2_D_data
+	BLKMOV
+	LVA 1, ANON_36_24_L2_R_disp
+STR STR_L5, "A35801F"			; constante string="A35801F"
+	LCA	STR_L5.data_ptr
+	CALL	STANDARD.REPORT. ,TEST_L1
+	CALL	STANDARD.REPORT. ,RESULT_L6
+ret_lbl:
+	UNLINK 1
+	RTD
+excep:
+endPRO					;---------- end PRO A35801F

@@ -292,7 +292,7 @@ is
   is
 
     procedure CODE_COMPILATION_UNIT	( COMPILATION_UNIT :TREE );
-    procedure CODE_BLOCK_BODY		( BLOCK_BODY :TREE );
+    procedure CODE_BLOCK_BODY		( BLOCK_BODY :TREE; IS_PACK_BODY :BOOLEAN := FALSE );
 
 
   private

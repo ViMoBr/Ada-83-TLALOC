@@ -1,0 +1,76 @@
+if ~ definite REPORT
+include 'REPORT.FINC'
+end if
+if ~ definite SYSTEM
+include 'SYSTEM.FINC'
+end if
+PRO	A39005C_L1				;---------- PRO A39005C
+ELB 1					;    BODY ELAB
+
+					; _CELL RECORD TYPE INFO
+_CELL = '_CELL'
+namespace _CELL
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+NAME = 'NAME'
+ namespace _STRING
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+VAR _COMP_SIZ, d
+VAR _FST_1, d
+VAR _LST_1, d
+	LI	8
+	Sd	1, _COMP_SIZ
+	Ld	1, _COMP_SIZ
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd	1, _FST_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	5
+	Sd	1, _LST_1
+	Ld	1, _LST_1
+	Ld	1, _FST_1
+	SUB
+	INC
+	MUL
+	Sd	1, SIZ
+  virtual at 4
+COMP_SIZ = $
+	rd 1 
+FST_1 = $
+	rd 1 
+LST_1 = $
+	rd 1 
+  end virtual
+end namespace
+USEINFO 1, NAME, 	La 1, STANDARD._STRING.use__info
+virtual at 0				; calcul des offsets statiques
+STATOFS NAME, 5
+size = $
+end virtual
+	LI	 size*8
+	Sd	1, SIZ
+end namespace
+
+					; _LIST ACCESS TYPE INFO
+_LIST = '_LIST'
+namespace _LIST
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+	LI	64
+	Sd	1, SIZ
+VAR DESIG__u, q
+	La 1, STANDARD.A39005C_L1._CELL.use__info
+	Sa	1, DESIG__u
+end namespace
+
+					; array decl constrained array type info
+_LIST_ARRAY = '_LIST_ARRAY'
+namespace _LIST_ARRAY
+!! FUNCTION D : PAS D ATTRIBUT CD_IMPL_SIZE DANS [DN_ACCESS<116.104]>

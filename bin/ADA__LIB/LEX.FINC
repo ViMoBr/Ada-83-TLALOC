@@ -2,13 +2,13 @@ if ~ definite TEXT_IO
 include 'TEXT_IO.FINC'
 end if
 LEX = 'LEX'
-namespace LEX				;---------- PACKAGE
+namespace LEX				;---------- PACKAGE (BDY)
 elab_spec:				;    SPEC ELAB
 
 
-					; LEX_TYPE ENUMERATION TYPE INFO
-LEX_TYPE = 'LEX_TYPE'
-namespace LEX_TYPE
+					; _LEX_TYPE ENUMERATION TYPE INFO
+_LEX_TYPE = '_LEX_TYPE'
+namespace _LEX_TYPE
 VAR use__info, q
 BEGIN_BLOC_DEF
 db 0, 8, "LT_ERROR"
@@ -118,9 +118,9 @@ end postpone
 	Sa	0, use__info
 end namespace
 
-					; LT_RESERVED ENUMERATION SUBTYPE INFO
-LT_RESERVED = 'LT_RESERVED'
-namespace LT_RESERVED
+					; _LT_RESERVED ENUMERATION SUBTYPE INFO
+_LT_RESERVED = '_LT_RESERVED'
+namespace _LT_RESERVED
 VAR use__info, q
 VAR SIZ, d
 	LVA	0, SIZ
@@ -134,13 +134,13 @@ VAR LST, b
 	LI	63
 	Sb	0, LST
 VAR PARENT__u, q
-	La	0, STANDARD.LEX.LEX_TYPE.use__info
+	La	0, STANDARD.LEX._LEX_TYPE.use__info
 	Sa	0, PARENT__u
 end namespace
 
-					; LT_SYMBOL ENUMERATION SUBTYPE INFO
-LT_SYMBOL = 'LT_SYMBOL'
-namespace LT_SYMBOL
+					; _LT_SYMBOL ENUMERATION SUBTYPE INFO
+_LT_SYMBOL = '_LT_SYMBOL'
+namespace _LT_SYMBOL
 VAR use__info, q
 VAR SIZ, d
 	LVA	0, SIZ
@@ -154,13 +154,13 @@ VAR LST, b
 	LI	89
 	Sb	0, LST
 VAR PARENT__u, q
-	La	0, STANDARD.LEX.LEX_TYPE.use__info
+	La	0, STANDARD.LEX._LEX_TYPE.use__info
 	Sa	0, PARENT__u
 end namespace
 
-					; LT_TERMINAL ENUMERATION SUBTYPE INFO
-LT_TERMINAL = 'LT_TERMINAL'
-namespace LT_TERMINAL
+					; _LT_TERMINAL ENUMERATION SUBTYPE INFO
+_LT_TERMINAL = '_LT_TERMINAL'
+namespace _LT_TERMINAL
 VAR use__info, q
 VAR SIZ, d
 	LVA	0, SIZ
@@ -174,13 +174,13 @@ VAR LST, b
 	LI	89
 	Sb	0, LST
 VAR PARENT__u, q
-	La	0, STANDARD.LEX.LEX_TYPE.use__info
+	La	0, STANDARD.LEX._LEX_TYPE.use__info
 	Sa	0, PARENT__u
 end namespace
 
-					; LT_WITH_SEMANTICS ENUMERATION SUBTYPE INFO
-LT_WITH_SEMANTICS = 'LT_WITH_SEMANTICS'
-namespace LT_WITH_SEMANTICS
+					; _LT_WITH_SEMANTICS ENUMERATION SUBTYPE INFO
+_LT_WITH_SEMANTICS = '_LT_WITH_SEMANTICS'
+namespace _LT_WITH_SEMANTICS
 VAR use__info, q
 VAR SIZ, d
 	LVA	0, SIZ
@@ -194,7 +194,7 @@ VAR LST, b
 	LI	93
 	Sb	0, LST
 VAR PARENT__u, q
-	La	0, STANDARD.LEX.LEX_TYPE.use__info
+	La	0, STANDARD.LEX._LEX_TYPE.use__info
 	Sa	0, PARENT__u
 end namespace
 VAR MAX_STRING_disp, d			; variable entiere
@@ -203,15 +203,15 @@ VAR MAX_STRING_disp, d			; variable entiere
 	Sd  0,	MAX_STRING_disp
 
 
-					; LINE_OF_SOURCE RECORD TYPE INFO
-LINE_OF_SOURCE = 'LINE_OF_SOURCE'
-namespace LINE_OF_SOURCE
+					; _LINE_OF_SOURCE RECORD TYPE INFO
+_LINE_OF_SOURCE = '_LINE_OF_SOURCE'
+namespace _LINE_OF_SOURCE
 VAR use__info, q
 VAR SIZ, d
 	LVA	0, SIZ
 	Sa	0, use__info
-USEINFO 0, LEN, 	La 0, STANDARD.NATURAL.use__info
-USEINFO 0, BDY, 	La 0, STANDARD.STRING.use__info
+USEINFO 0, LEN, 	La 0, STANDARD._NATURAL.use__info
+USEINFO 0, BDY, 	La 0, STANDARD._STRING.use__info
 virtual at 0				; calcul des offsets statiques
 STATOFS LEN, 4
 STATOFS BDY, 1
@@ -222,10 +222,10 @@ end virtual
 end namespace
 VAR SLINE_disp, q				; variable record : pointeur aux data record
 VAR SLINE__u, q				; variable record : pointeur aux useinfo
-VAR SLINE__dat, STANDARD.LEX.LINE_OF_SOURCE.size
+VAR SLINE__dat, STANDARD.LEX._LINE_OF_SOURCE.size
 	LVA	0, SLINE__dat
 	Sa	0, SLINE_disp				; record fin
-	LVA	0, STANDARD.LEX.LINE_OF_SOURCE.SIZ
+	LVA	0, STANDARD.LEX._LINE_OF_SOURCE.SIZ
 	Sa	0, SLINE__u
 ; CODE_VC_NAME DN_VARIABLE_ID
 
@@ -249,9 +249,9 @@ VAR ATTRIBUTE_CONTEXT_disp, d			; variable bool char enum
 	Sb  0,	ATTRIBUTE_CONTEXT_disp
 
 
-					; TOKEN_TYPE ENUMERATION TYPE INFO
-TOKEN_TYPE = 'TOKEN_TYPE'
-namespace TOKEN_TYPE
+					; _TOKEN_TYPE ENUMERATION TYPE INFO
+_TOKEN_TYPE = '_TOKEN_TYPE'
+namespace _TOKEN_TYPE
 VAR use__info, q
 BEGIN_BLOC_DEF
 db 0, 3, "NIL"
@@ -273,8 +273,8 @@ end postpone
 	LCA	SIZ
 	Sa	0, use__info
 end namespace
-STRING = 'STRING'
-namespace STRING				; array var constrained array type info
+_STRING = '_STRING'
+namespace _STRING				; array var constrained array type info
 VAR use__info, q
 VAR SIZ, d
 	LVA	0, SIZ
@@ -308,9 +308,9 @@ LST_1 = $
 end namespace
 VAR TEXT_disp, q				; variable array : pointeur aux data
 VAR TEXT__u, q				; variable array : useinfo pointeur au rec info
-	La 0, STRING.use__info
+	La 0, _STRING.use__info
 	Sa	0, TEXT__u				; array info ptr at __u
-	Ld	0, STRING.SIZ
+	Ld	0, _STRING.SIZ
 	LI	8
 	DIV
 	CO_VAR
@@ -323,8 +323,8 @@ VAR HASH_SIZE_disp, d			; variable entiere
 	LI	311
 	Sd  0,	HASH_SIZE_disp
 
-HASH_TABLE = 'HASH_TABLE'
-namespace HASH_TABLE			; array var constrained array type info
+_HASH_TABLE = '_HASH_TABLE'
+namespace _HASH_TABLE			; array var constrained array type info
 VAR use__info, q
 VAR SIZ, d
 	LVA	0, SIZ
@@ -360,9 +360,9 @@ LST_1 = $
 end namespace
 VAR HASH_TABLE_disp, q			; variable array : pointeur aux data
 VAR HASH_TABLE__u, q			; variable array : useinfo pointeur au rec info
-	La 0, HASH_TABLE.use__info
+	La 0, _HASH_TABLE.use__info
 	Sa	0, HASH_TABLE__u			; array info ptr at __u
-	Ld	0, HASH_TABLE.SIZ
+	Ld	0, _HASH_TABLE.SIZ
 	LI	8
 	DIV
 	CO_VAR
@@ -438,10 +438,10 @@ VAR I_disp, d				; variable entiere
 begin:					;---------- BDY INSTRUCTIONS
 	LVA	1, -TXT_ofs
 	LIa	, , 8
-	Ld	, STRING.LST_1
+	Ld	, _STRING.LST_1
 	LVA	1, -TXT_ofs
 	LIa	, , 8
-	Ld	, STRING.FST_1
+	Ld	, _STRING.FST_1
 	SUB
 	INC
 ; CODE_NUMERIC_LITERAL DN_INTEGER
@@ -450,14 +450,14 @@ begin:					;---------- BDY INSTRUCTIONS
 	LIa	, , 0				; array data start address on stack
 	LVA	1, -TXT_ofs
 	LIa	, , 8
-	Ld	, STRING.LST_1
+	Ld	, _STRING.LST_1
 	LVA	1, -TXT_ofs
 	LIa	, 0,  8
-	Ld	, STANDARD.STRING.FST_1			; (index - FST_1) * SIZ_1
+	Ld	, STANDARD._STRING.FST_1			; (index - FST_1) * SIZ_1
 	SUB
 	LVA	1, -TXT_ofs
 	LIa	, , 8
-	Ld	, STANDARD.STRING.COMP_SIZ
+	Ld	, STANDARD._STRING.COMP_SIZ
 	LI	8
 	DIV
 	MUL
@@ -473,9 +473,9 @@ begin:					;---------- BDY INSTRUCTIONS
 LOOP__1:
 	La	 0, HASH_TABLE_disp			; array data start address on stack
 	Ld 1,	I_disp
-	LId	0, HASH_TABLE__u, STANDARD.LEX.HASH_TABLE.FST_1	; (index - FST_1) * SIZ_1
+	LId	0, HASH_TABLE__u, STANDARD.LEX._HASH_TABLE.FST_1	; (index - FST_1) * SIZ_1
 	SUB
-	LId	0, HASH_TABLE__u, STANDARD.LEX.HASH_TABLE.COMP_SIZ
+	LId	0, HASH_TABLE__u, STANDARD.LEX._HASH_TABLE.COMP_SIZ
 	LI	8
 	DIV
 	MUL
@@ -499,9 +499,9 @@ end namespace
 	LVA 1, ANON_32_49_disp
 	La	 0, HASH_TABLE_disp			; array data start address on stack
 	Ld 1,	I_disp
-	LId	0, HASH_TABLE__u, STANDARD.LEX.HASH_TABLE.FST_1	; (index - FST_1) * SIZ_1
+	LId	0, HASH_TABLE__u, STANDARD.LEX._HASH_TABLE.FST_1	; (index - FST_1) * SIZ_1
 	SUB
-	LId	0, HASH_TABLE__u, STANDARD.LEX.HASH_TABLE.COMP_SIZ
+	LId	0, HASH_TABLE__u, STANDARD.LEX._HASH_TABLE.COMP_SIZ
 	LI	8
 	DIV
 	MUL
@@ -555,9 +555,9 @@ begin:					;---------- BDY INSTRUCTIONS
 	LI	0					; lieu resultat sur pile
 	La  1,	-TXT_ofs
 	CALL	STANDARD.LEX. ,HASH_POS_L3
-	LId	0, HASH_TABLE__u, STANDARD.LEX.HASH_TABLE.FST_1	; (index - FST_1) * SIZ_1
+	LId	0, HASH_TABLE__u, STANDARD.LEX._HASH_TABLE.FST_1	; (index - FST_1) * SIZ_1
 	SUB
-	LId	0, HASH_TABLE__u, STANDARD.LEX.HASH_TABLE.COMP_SIZ
+	LId	0, HASH_TABLE__u, STANDARD.LEX._HASH_TABLE.COMP_SIZ
 	LI	8
 	DIV
 	MUL
@@ -602,11 +602,11 @@ VAR SL_disp, q
 	La	0, SLINE_disp
 	Sa	1, SL_disp
 VAR SL__u, q
-	LVA	1, STANDARD.LEX.LINE_OF_SOURCE.SIZ
+	LVA	1, STANDARD.LEX._LINE_OF_SOURCE.SIZ
 	Sa	1, SL__u
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-	LId	0, SLINE_disp, STANDARD.LEX.LINE_OF_SOURCE.LEN
+	LId	0, SLINE_disp, STANDARD.LEX._LINE_OF_SOURCE.LEN
 	Sd  1,	LINE_LENGTH_disp
 	Ld 0,	STANDARD.LEX.COL_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
@@ -618,12 +618,12 @@ LOOP__2:
 	Ld 1,	LINE_LENGTH_disp
 	CLE
 	BF	L10
-	LIVA 	1, SL_disp, STANDARD.LEX.LINE_OF_SOURCE.BDY
+	LIVA 	1, SL_disp, STANDARD.LEX._LINE_OF_SOURCE.BDY
 ; EXPRESSIONS.CODE_INDEXED adresse component id
 	Ld 1,	W_COL_disp
-	Ld	 0, STANDARD.STRING._FST_1		; (index - FST_1) * SIZ_1
+	Ld	 0, STANDARD._STRING._FST_1		; (index - FST_1) * SIZ_1
 	SUB
-	Ld	 0, STANDARD.STRING._COMP_SIZ
+	Ld	 0, STANDARD._STRING._COMP_SIZ
 	LI	8
 	DIV
 	MUL
@@ -663,9 +663,9 @@ L13:					; post if
 	La	 0, TEXT_disp				; array data start address on stack
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
-	LId	0, TEXT__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
+	LId	0, TEXT__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
-	LId	0, TEXT__u, STANDARD.STRING.COMP_SIZ
+	LId	0, TEXT__u, STANDARD._STRING.COMP_SIZ
 	LI	8
 	DIV
 	MUL
@@ -687,12 +687,12 @@ L13:					; post if
 	Ld 1,	LINE_LENGTH_disp
 	CLE
 	BF	L16
-	LIVA 	1, SL_disp, STANDARD.LEX.LINE_OF_SOURCE.BDY
+	LIVA 	1, SL_disp, STANDARD.LEX._LINE_OF_SOURCE.BDY
 ; EXPRESSIONS.CODE_INDEXED adresse component id
 	Ld 1,	W_COL_disp
-	Ld	 0, STANDARD.STRING._FST_1		; (index - FST_1) * SIZ_1
+	Ld	 0, STANDARD._STRING._FST_1		; (index - FST_1) * SIZ_1
 	SUB
-	Ld	 0, STANDARD.STRING._COMP_SIZ
+	Ld	 0, STANDARD._STRING._COMP_SIZ
 	LI	8
 	DIV
 	MUL
@@ -708,9 +708,9 @@ L15:					; post if
 	La	 0, TEXT_disp				; array data start address on stack
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
-	LId	0, TEXT__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
+	LId	0, TEXT__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
-	LId	0, TEXT__u, STANDARD.STRING.COMP_SIZ
+	LId	0, TEXT__u, STANDARD._STRING.COMP_SIZ
 	LI	8
 	DIV
 	MUL
@@ -840,9 +840,9 @@ L20:
 	La	 0, TEXT_disp				; array data start address on stack
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
-	LId	0, TEXT__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
+	LId	0, TEXT__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
-	LId	0, TEXT__u, STANDARD.STRING.COMP_SIZ
+	LId	0, TEXT__u, STANDARD._STRING.COMP_SIZ
 	LI	8
 	DIV
 	MUL
@@ -850,9 +850,9 @@ L20:
 	La	 0, TEXT_disp				; array data start address on stack
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
-	LId	0, TEXT__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
+	LId	0, TEXT__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
-	LId	0, TEXT__u, STANDARD.STRING.COMP_SIZ
+	LId	0, TEXT__u, STANDARD._STRING.COMP_SIZ
 	LI	8
 	DIV
 	MUL
@@ -878,9 +878,9 @@ L22:
 	La	 0, TEXT_disp				; array data start address on stack
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
-	LId	0, TEXT__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
+	LId	0, TEXT__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
-	LId	0, TEXT__u, STANDARD.STRING.COMP_SIZ
+	LId	0, TEXT__u, STANDARD._STRING.COMP_SIZ
 	LI	8
 	DIV
 	MUL
@@ -890,9 +890,9 @@ L22:
 	La	 0, TEXT_disp				; array data start address on stack
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
-	LId	0, TEXT__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
+	LId	0, TEXT__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
-	LId	0, TEXT__u, STANDARD.STRING.COMP_SIZ
+	LId	0, TEXT__u, STANDARD._STRING.COMP_SIZ
 	LI	8
 	DIV
 	MUL
@@ -932,9 +932,9 @@ L32:
 	La	 0, TEXT_disp				; array data start address on stack
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
-	LId	0, TEXT__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
+	LId	0, TEXT__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
-	LId	0, TEXT__u, STANDARD.STRING.COMP_SIZ
+	LId	0, TEXT__u, STANDARD._STRING.COMP_SIZ
 	LI	8
 	DIV
 	MUL
@@ -948,9 +948,9 @@ L33:
 	La	 0, TEXT_disp				; array data start address on stack
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
-	LId	0, TEXT__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
+	LId	0, TEXT__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
-	LId	0, TEXT__u, STANDARD.STRING.COMP_SIZ
+	LId	0, TEXT__u, STANDARD._STRING.COMP_SIZ
 	LI	8
 	DIV
 	MUL
@@ -970,9 +970,9 @@ L17:
 	Sd  0,	TOKEN_LENGTH_disp
 	La	 0, TEXT_disp				; array data start address on stack
 	Ld 0,	STANDARD.LEX.TOKEN_LENGTH_disp
-	LId	0, TEXT__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
+	LId	0, TEXT__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
-	LId	0, TEXT__u, STANDARD.STRING.COMP_SIZ
+	LId	0, TEXT__u, STANDARD._STRING.COMP_SIZ
 	LI	8
 	DIV
 	MUL
@@ -989,12 +989,12 @@ L17:
 	Ld 1,	LINE_LENGTH_disp
 	CLE
 	BF	L40
-	LIVA 	1, SL_disp, STANDARD.LEX.LINE_OF_SOURCE.BDY
+	LIVA 	1, SL_disp, STANDARD.LEX._LINE_OF_SOURCE.BDY
 ; EXPRESSIONS.CODE_INDEXED adresse component id
 	Ld 1,	W_COL_disp
-	Ld	 0, STANDARD.STRING._FST_1		; (index - FST_1) * SIZ_1
+	Ld	 0, STANDARD._STRING._FST_1		; (index - FST_1) * SIZ_1
 	SUB
-	Ld	 0, STANDARD.STRING._COMP_SIZ
+	Ld	 0, STANDARD._STRING._COMP_SIZ
 	LI	8
 	DIV
 	MUL
@@ -1008,9 +1008,9 @@ L40:
 L39:					; post if
 	La	 0, TEXT_disp				; array data start address on stack
 	Ld 0,	STANDARD.LEX.TOKEN_LENGTH_disp
-	LId	0, TEXT__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
+	LId	0, TEXT__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
-	LId	0, TEXT__u, STANDARD.STRING.COMP_SIZ
+	LId	0, TEXT__u, STANDARD._STRING.COMP_SIZ
 	LI	8
 	DIV
 	MUL
@@ -1027,12 +1027,12 @@ L39:					; post if
 	Ld 1,	LINE_LENGTH_disp
 	CLE
 	BF	L42
-	LIVA 	1, SL_disp, STANDARD.LEX.LINE_OF_SOURCE.BDY
+	LIVA 	1, SL_disp, STANDARD.LEX._LINE_OF_SOURCE.BDY
 ; EXPRESSIONS.CODE_INDEXED adresse component id
 	Ld 1,	W_COL_disp
-	Ld	 0, STANDARD.STRING._FST_1		; (index - FST_1) * SIZ_1
+	Ld	 0, STANDARD._STRING._FST_1		; (index - FST_1) * SIZ_1
 	SUB
-	Ld	 0, STANDARD.STRING._COMP_SIZ
+	Ld	 0, STANDARD._STRING._COMP_SIZ
 	LI	8
 	DIV
 	MUL
@@ -1061,9 +1061,9 @@ L44:
 L43:					; post if
 	La	 0, TEXT_disp				; array data start address on stack
 	Ld 0,	STANDARD.LEX.TOKEN_LENGTH_disp
-	LId	0, TEXT__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
+	LId	0, TEXT__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
-	LId	0, TEXT__u, STANDARD.STRING.COMP_SIZ
+	LId	0, TEXT__u, STANDARD._STRING.COMP_SIZ
 	LI	8
 	DIV
 	MUL
@@ -1080,12 +1080,12 @@ L43:					; post if
 	Ld 1,	LINE_LENGTH_disp
 	CLE
 	BF	L48
-	LIVA 	1, SL_disp, STANDARD.LEX.LINE_OF_SOURCE.BDY
+	LIVA 	1, SL_disp, STANDARD.LEX._LINE_OF_SOURCE.BDY
 ; EXPRESSIONS.CODE_INDEXED adresse component id
 	Ld 1,	W_COL_disp
-	Ld	 0, STANDARD.STRING._FST_1		; (index - FST_1) * SIZ_1
+	Ld	 0, STANDARD._STRING._FST_1		; (index - FST_1) * SIZ_1
 	SUB
-	Ld	 0, STANDARD.STRING._COMP_SIZ
+	Ld	 0, STANDARD._STRING._COMP_SIZ
 	LI	8
 	DIV
 	MUL
@@ -1106,9 +1106,9 @@ L50:
 L49:					; post if
 	La	 0, TEXT_disp				; array data start address on stack
 	Ld 0,	STANDARD.LEX.TOKEN_LENGTH_disp
-	LId	0, TEXT__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
+	LId	0, TEXT__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
-	LId	0, TEXT__u, STANDARD.STRING.COMP_SIZ
+	LId	0, TEXT__u, STANDARD._STRING.COMP_SIZ
 	LI	8
 	DIV
 	MUL
@@ -1125,12 +1125,12 @@ L49:					; post if
 	Ld 1,	LINE_LENGTH_disp
 	CLE
 	BF	L52
-	LIVA 	1, SL_disp, STANDARD.LEX.LINE_OF_SOURCE.BDY
+	LIVA 	1, SL_disp, STANDARD.LEX._LINE_OF_SOURCE.BDY
 ; EXPRESSIONS.CODE_INDEXED adresse component id
 	Ld 1,	W_COL_disp
-	Ld	 0, STANDARD.STRING._FST_1		; (index - FST_1) * SIZ_1
+	Ld	 0, STANDARD._STRING._FST_1		; (index - FST_1) * SIZ_1
 	SUB
-	Ld	 0, STANDARD.STRING._COMP_SIZ
+	Ld	 0, STANDARD._STRING._COMP_SIZ
 	LI	8
 	DIV
 	MUL
@@ -1177,9 +1177,9 @@ L59:
 	MUL
 	La	 0, TEXT_disp				; array data start address on stack
 	Ld	1, IL56_disp
-	LId	0, TEXT__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
+	LId	0, TEXT__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
-	LId	0, TEXT__u, STANDARD.STRING.COMP_SIZ
+	LId	0, TEXT__u, STANDARD._STRING.COMP_SIZ
 	LI	8
 	DIV
 	MUL
@@ -1243,9 +1243,9 @@ L62:					; post if
 	Sd  0,	TOKEN_LENGTH_disp
 	La	 0, TEXT_disp				; array data start address on stack
 	Ld 0,	STANDARD.LEX.TOKEN_LENGTH_disp
-	LId	0, TEXT__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
+	LId	0, TEXT__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
-	LId	0, TEXT__u, STANDARD.STRING.COMP_SIZ
+	LId	0, TEXT__u, STANDARD._STRING.COMP_SIZ
 	LI	8
 	DIV
 	MUL
@@ -1262,12 +1262,12 @@ L62:					; post if
 	Ld 1,	LINE_LENGTH_disp
 	CLE
 	BF	L65
-	LIVA 	1, SL_disp, STANDARD.LEX.LINE_OF_SOURCE.BDY
+	LIVA 	1, SL_disp, STANDARD.LEX._LINE_OF_SOURCE.BDY
 ; EXPRESSIONS.CODE_INDEXED adresse component id
 	Ld 1,	W_COL_disp
-	Ld	 0, STANDARD.STRING._FST_1		; (index - FST_1) * SIZ_1
+	Ld	 0, STANDARD._STRING._FST_1		; (index - FST_1) * SIZ_1
 	SUB
-	Ld	 0, STANDARD.STRING._COMP_SIZ
+	Ld	 0, STANDARD._STRING._COMP_SIZ
 	LI	8
 	DIV
 	MUL
@@ -1292,15 +1292,15 @@ L68:
 	BRA	L66
 L67:
 L66:					; post if
-	LIVA 	1, SL_disp, STANDARD.LEX.LINE_OF_SOURCE.BDY
+	LIVA 	1, SL_disp, STANDARD.LEX._LINE_OF_SOURCE.BDY
 ; EXPRESSIONS.CODE_INDEXED adresse component id
 	Ld 1,	W_COL_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
-	Ld	 0, STANDARD.STRING._FST_1		; (index - FST_1) * SIZ_1
+	Ld	 0, STANDARD._STRING._FST_1		; (index - FST_1) * SIZ_1
 	SUB
-	Ld	 0, STANDARD.STRING._COMP_SIZ
+	Ld	 0, STANDARD._STRING._COMP_SIZ
 	LI	8
 	DIV
 	MUL
@@ -1338,9 +1338,9 @@ L72:
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SUB
-	LId	0, TEXT__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
+	LId	0, TEXT__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
-	LId	0, TEXT__u, STANDARD.STRING.COMP_SIZ
+	LId	0, TEXT__u, STANDARD._STRING.COMP_SIZ
 	LI	8
 	DIV
 	MUL
@@ -1349,9 +1349,9 @@ L72:
 	Sb
 	La	 0, TEXT_disp				; array data start address on stack
 	Ld 0,	STANDARD.LEX.TOKEN_LENGTH_disp
-	LId	0, TEXT__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
+	LId	0, TEXT__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
-	LId	0, TEXT__u, STANDARD.STRING.COMP_SIZ
+	LId	0, TEXT__u, STANDARD._STRING.COMP_SIZ
 	LI	8
 	DIV
 	MUL
@@ -1396,12 +1396,12 @@ L74:					; post if
 	Ld 1,	LINE_LENGTH_disp
 	CLE
 	BF	L80
-	LIVA 	1, SL_disp, STANDARD.LEX.LINE_OF_SOURCE.BDY
+	LIVA 	1, SL_disp, STANDARD.LEX._LINE_OF_SOURCE.BDY
 ; EXPRESSIONS.CODE_INDEXED adresse component id
 	Ld 1,	W_COL_disp
-	Ld	 0, STANDARD.STRING._FST_1		; (index - FST_1) * SIZ_1
+	Ld	 0, STANDARD._STRING._FST_1		; (index - FST_1) * SIZ_1
 	SUB
-	Ld	 0, STANDARD.STRING._COMP_SIZ
+	Ld	 0, STANDARD._STRING._COMP_SIZ
 	LI	8
 	DIV
 	MUL
@@ -1543,9 +1543,9 @@ L87:					; post if
 	Sd  0,	TOKEN_LENGTH_disp
 	La	 0, TEXT_disp				; array data start address on stack
 	Ld 0,	STANDARD.LEX.TOKEN_LENGTH_disp
-	LId	0, TEXT__u, STANDARD.STRING.FST_1		; (index - FST_1) * SIZ_1
+	LId	0, TEXT__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
-	LId	0, TEXT__u, STANDARD.STRING.COMP_SIZ
+	LId	0, TEXT__u, STANDARD._STRING.COMP_SIZ
 	LI	8
 	DIV
 	MUL
@@ -1562,12 +1562,12 @@ L87:					; post if
 	Ld 1,	LINE_LENGTH_disp
 	CLE
 	BF	L90
-	LIVA 	1, SL_disp, STANDARD.LEX.LINE_OF_SOURCE.BDY
+	LIVA 	1, SL_disp, STANDARD.LEX._LINE_OF_SOURCE.BDY
 ; EXPRESSIONS.CODE_INDEXED adresse component id
 	Ld 1,	W_COL_disp
-	Ld	 0, STANDARD.STRING._FST_1		; (index - FST_1) * SIZ_1
+	Ld	 0, STANDARD._STRING._FST_1		; (index - FST_1) * SIZ_1
 	SUB
-	Ld	 0, STANDARD.STRING._COMP_SIZ
+	Ld	 0, STANDARD._STRING._COMP_SIZ
 	LI	8
 	DIV
 	MUL
@@ -1680,7 +1680,7 @@ L99:
 	La 0, TEXT_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
-	LId 0, TEXT__u, STANDARD.STRING.FST_1
+	LId 0, TEXT__u, STANDARD._STRING.FST_1
 	SUB
 	LI	1
 	MUL
@@ -1759,7 +1759,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	La 0, TEXT_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
-	LId 0, TEXT__u, STANDARD.STRING.FST_1
+	LId 0, TEXT__u, STANDARD._STRING.FST_1
 	SUB
 	LI	1
 	MUL
@@ -1851,8 +1851,8 @@ L107:
 	DROP
 namespace	BLOCK__5
 ELB 2					;    BODY ELAB
-STRING = 'STRING'
-namespace STRING				; array var constrained array type info
+_STRING = '_STRING'
+namespace _STRING				; array var constrained array type info
 VAR use__info, q
 VAR SIZ, d
 	LVA	2, SIZ
@@ -1886,7 +1886,7 @@ LST_1 = $
 end namespace
 VAR OP_TEXT_disp, q				; variable array : pointeur aux data
 VAR OP_TEXT__u, q				; variable array : useinfo pointeur au rec info
-	La 2, STRING.use__info
+	La 2, _STRING.use__info
 	Sa	2, OP_TEXT__u				; array info ptr at __u
 STR OP_TEXT, "& ' ( ) * + , - . / : ; < = > | =>..**:=/=>=<=<<>><>"	; constante string="& ' ( ) * + , - . / : ; < = > | =>..**:=/=>=<=<<>><>"
 	LCA	OP_TEXT.data_ptr
@@ -1911,8 +1911,8 @@ VAR II_disp, d				; variable entiere
 	ADD
 	Sd  2,	II_disp
 
-STRING = 'STRING'
-namespace STRING				; array var constrained array type info
+_STRING = '_STRING'
+namespace _STRING				; array var constrained array type info
 VAR use__info, q
 VAR SIZ, d
 	LVA	2, SIZ
@@ -1946,7 +1946,7 @@ LST_1 = $
 end namespace
 VAR TEMP_STRING_disp, q			; variable array : pointeur aux data
 VAR TEMP_STRING__u, q			; variable array : useinfo pointeur au rec info
-	La 2, STRING.use__info
+	La 2, _STRING.use__info
 	Sa	2, TEMP_STRING__u			; array info ptr at __u
 ; COMPILE_ARRAY_VAR ASSOC.TY non gere DN_SLICE
 
@@ -1956,9 +1956,9 @@ begin:					;---------- BDY INSTRUCTIONS
 	La	 2, TEMP_STRING_disp			; array data start address on stack
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	2
-	LId	2, TEMP_STRING__u, STANDARD.STRING.FST_1	; (index - FST_1) * SIZ_1
+	LId	2, TEMP_STRING__u, STANDARD._STRING.FST_1	; (index - FST_1) * SIZ_1
 	SUB
-	LId	2, TEMP_STRING__u, STANDARD.STRING.COMP_SIZ
+	LId	2, TEMP_STRING__u, STANDARD._STRING.COMP_SIZ
 	LI	8
 	DIV
 	MUL
@@ -1971,7 +1971,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	La 2, TEMP_STRING_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
-	LId 2, TEMP_STRING__u, STANDARD.STRING.FST_1
+	LId 2, TEMP_STRING__u, STANDARD._STRING.FST_1
 	SUB
 	LI	1
 	MUL
@@ -2005,7 +2005,7 @@ L118:
 	La 2, TEMP_STRING_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
-	LId 2, TEMP_STRING__u, STANDARD.STRING.FST_1
+	LId 2, TEMP_STRING__u, STANDARD._STRING.FST_1
 	SUB
 	LI	1
 	MUL
@@ -2043,7 +2043,7 @@ namespace	BLOCK__6
 ELB 2					;    BODY ELAB
 VAR IMAGE_disp, q				; variable array : pointeur aux data
 VAR IMAGE__u, q				; variable array : useinfo pointeur au rec info
-	La 0, STRING.use__info
+	La 0, _STRING.use__info
 	Sa	2, IMAGE__u				; array info ptr at __u
 VAR	ANON_671_35_disp, q
 VAR	ANON_671_35__u,   q
@@ -2064,8 +2064,8 @@ end namespace
 	La , 8
 	Sa	2, IMAGE__u				; array info ptr from function result
 
-STRING = 'STRING'
-namespace STRING				; array var constrained array type info
+_STRING = '_STRING'
+namespace _STRING				; array var constrained array type info
 VAR use__info, q
 VAR SIZ, d
 	LVA	2, SIZ
@@ -2079,8 +2079,8 @@ VAR _LST_1, d
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	Sd	2, _FST_1
-	LId	2, IMAGE__u, STRING.LST_1
-	LId	2, IMAGE__u, STRING.FST_1
+	LId	2, IMAGE__u, _STRING.LST_1
+	LId	2, IMAGE__u, _STRING.FST_1
 	SUB
 	INC
 ; CODE_NUMERIC_LITERAL DN_INTEGER
@@ -2104,7 +2104,7 @@ LST_1 = $
 end namespace
 VAR TRONQ_disp, q				; variable array : pointeur aux data
 VAR TRONQ__u, q				; variable array : useinfo pointeur au rec info
-	La 2, STRING.use__info
+	La 2, _STRING.use__info
 	Sa	2, TRONQ__u				; array info ptr at __u
 ; COMPILE_ARRAY_VAR ASSOC.TY non gere DN_SLICE
 
@@ -2196,9 +2196,9 @@ end namespace
 	Lb  0,	LTL123_disp
 	CALL	STANDARD.LEX. ,LEX_IMAGE_L3
 	CALL	STANDARD.LEX. ,HASH_POS_L3
-	LId	0, HASH_TABLE__u, STANDARD.LEX.HASH_TABLE.FST_1	; (index - FST_1) * SIZ_1
+	LId	0, HASH_TABLE__u, STANDARD.LEX._HASH_TABLE.FST_1	; (index - FST_1) * SIZ_1
 	SUB
-	LId	0, HASH_TABLE__u, STANDARD.LEX.HASH_TABLE.COMP_SIZ
+	LId	0, HASH_TABLE__u, STANDARD.LEX._HASH_TABLE.COMP_SIZ
 	LI	8
 	DIV
 	MUL

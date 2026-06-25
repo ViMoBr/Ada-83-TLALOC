@@ -947,14 +947,26 @@ declare
     TYPE_ID		: TREE		:= D( AS_SOURCE_NAME, TYPE_DECL );
     TYPE_SPEC		: TREE		:= D( SM_TYPE_SPEC, TYPE_ID );
     TYPE_STR		: constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, TYPE_ID ) );
-    DESIG_TYPE		: TREE		:= D( SM_DESIG_TYPE, TYPE_SPEC );
---    DESIG_NAME		: TREE		:= D( XD_SOURCE_NAME, DESIG_TYPE );
---    DESIG_STR		: constant STRING	:= PRINT_NAME( D( LX_SYMREP, DESIG_NAME ) );
---    LVL_STR		: constant STRING	:= IMAGE( CODI.CUR_LEVEL );
+    RAW_DESIG_TYPE		: TREE		:= D( SM_DESIG_TYPE, TYPE_SPEC );
+    DESIG_TYPE		: TREE		:= RAW_DESIG_TYPE;
+    LVL_STR		:constant STRING	:= IMAGE( CODI.CUR_LEVEL );
+
   begin
     DI( CD_LEVEL,      TYPE_SPEC, INTEGER( CODI.CUR_LEVEL ) );
---    DI( CD_IMPL_SIZE,  TYPE_SPEC, CODI.ADDR_SIZE * CODI.STORAGE_UNIT );
     DB( CD_COMPILED,   TYPE_SPEC, TRUE );
+
+--  Le type access lui-même est complet immédiatement :
+  --  sa représentation est toujours un pointeur machine.
+  --  En revanche, le type désigné peut encore être une vue privée
+  --  ou un incomplete.
+
+    while  DESIG_TYPE.TY = DN_PRIVATE  or else  DESIG_TYPE.TY = DN_L_PRIVATE  loop
+      if  D( SM_TYPE_SPEC, DESIG_TYPE ) = TREE_VOID  then
+        exit;
+      end if;
+
+      DESIG_TYPE := D( SM_TYPE_SPEC, DESIG_TYPE );
+    end loop;
 
     --  Si le type désigné est incomplet, l'access type est légalement
     --  déclaré avant le full type. On utilise alors le full type comme
@@ -968,28 +980,43 @@ declare
       DI( CD_LEVEL, DESIG_TYPE, INTEGER( CODI.CUR_LEVEL ) );
     end if;
 
-    declare
-      DESIG_NAME	: TREE		:= D( XD_SOURCE_NAME, DESIG_TYPE );
-      DESIG_STR	:constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, DESIG_NAME ) );
-      LVL_STR	:constant STRING	:= IMAGE( DI( CD_LEVEL, DESIG_TYPE ) );
-    begin
-      if  CODI.DEBUG then NEW_LINE; PUT_LINE( tab50 & "; " & TYPE_STR & " ACCESS TYPE INFO" ); end if;
+    if  CODI.DEBUG  then
+      NEW_LINE;
+      PUT_LINE( tab50 & "; " & TYPE_STR & " ACCESS TYPE INFO" );
+    end if;
 
-      PUT_LINE( TYPE_STR & " = '" & TYPE_STR & "'" );
-      PUT_LINE( "namespace " & TYPE_STR );
-      PUT_LINE( "VAR use__info, q" );
-      PUT_LINE( "VAR SIZ, d" );
-      PUT_LINE( tab & "LVA" & tab & LVL_STR & ", SIZ" );
-      PUT_LINE( tab & "Sa"  & tab & LVL_STR & ", use__info" );
-      PUT_LINE( tab & "LI"  & tab & IMAGE( CODI.ADDR_SIZE * CODI.STORAGE_UNIT ) );
-      PUT_LINE( tab & "Sd"  & tab & LVL_STR & ", SIZ" );
-      PUT_LINE( "VAR DESIG__u, q" );
-      PUT( tab & "La " & IMAGE( DI( CD_LEVEL, DESIG_TYPE ) ) & ", " );
-      REGIONS_PATH( DESIG_NAME );
-      PUT_LINE( DESIG_STR & ".use__info" );
-      PUT_LINE( tab & "Sa" & tab & LVL_STR & ", DESIG__u" );
-      PUT_LINE( "end namespace" );
-    end;
+    PUT_LINE( TYPE_STR & " = '" & TYPE_STR & "'" );
+    PUT_LINE( "namespace " & TYPE_STR );
+
+    PUT_LINE( "VAR use__info, q" );
+    PUT_LINE( "VAR SIZ, d" );
+    PUT_LINE( tab & "LVA" & tab & LVL_STR & ", SIZ" );
+    PUT_LINE( tab & "Sa"  & tab & LVL_STR & ", use__info" );
+    PUT_LINE( tab & "LI"  & tab & IMAGE( CODI.ADDR_SIZE * CODI.STORAGE_UNIT ) );
+    PUT_LINE( tab & "Sd"  & tab & LVL_STR & ", SIZ" );
+
+    PUT_LINE( "VAR DESIG__u, q" );
+
+    if  DESIG_TYPE.TY = DN_PRIVATE  or else  DESIG_TYPE.TY = DN_L_PRIVATE
+	or else  DESIG_TYPE.TY = DN_INCOMPLETE  or else  DESIG_TYPE = TREE_VOID
+    then
+    --  Patron désigné encore indisponible.
+    --  Suffisant pour les déclarations pures de A33003A.
+      PUT_LINE( tab & "LI" & tab & "0" );
+    else
+      declare
+        DESIG_NAME	: TREE		:= D( XD_SOURCE_NAME, DESIG_TYPE );
+        DESIG_STR	:constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, DESIG_NAME ) );
+      begin
+        PUT( tab & "La " & IMAGE( DI( CD_LEVEL, DESIG_TYPE ) ) & ", " );
+        REGIONS_PATH( DESIG_NAME );
+        PUT_LINE( DESIG_STR & ".use__info" );
+      end;
+    end if;
+
+    PUT_LINE( tab & "Sa" & tab & LVL_STR & ", DESIG__u" );
+    PUT_LINE( "end namespace" );
+
   end	CODE_ACCESS_DECL;
 	----------------
 
@@ -1004,6 +1031,19 @@ declare
     SUBTYPE_STR		:constant	STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, SUBTYPE_ID	) );
     LVL_STR		:constant STRING	:= IMAGE( CODI.CUR_LEVEL );
   begin
+    if  TYPE_SPEC.TY = DN_PRIVATE  or else  TYPE_SPEC.TY = DN_L_PRIVATE  then
+      if  CODI.DEBUG  then
+        PUT_LINE( "; CODE_SUBTYPE_DECL : skip PRIVATE subtype " & SUBTYPE_STR & " (deferred to full type)" );
+      end if;
+      return;
+
+    elsif  TYPE_SPEC.TY = DN_INCOMPLETE  then
+      if  CODI.DEBUG  then
+        PUT_LINE( "; CODE_SUBTYPE_DECL : skip INCOMPLETE subtype " & SUBTYPE_STR & " (deferred to full type)" );
+      end if;
+      return;
+    end if;
+
     DI( CD_LEVEL,	  TYPE_SPEC, INTEGER( CODI.CUR_LEVEL ) );
     DB( CD_COMPILED,  TYPE_SPEC, TRUE );
 

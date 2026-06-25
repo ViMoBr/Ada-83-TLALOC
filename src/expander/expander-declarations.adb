@@ -1567,8 +1567,8 @@ put_line( "; CODE_VC_NAME " & NODE_NAME'IMAGE( VC_NAME.TY ) );
 
     if  CAS_NORMAL	then
       PUT_LINE( "end namespace" );
-      DB( CD_COMPILED, D(	AS_SOURCE_NAME, PACKAGE_DECL ), TRUE );
     end if;
+    DB( CD_COMPILED, PACK_ID, TRUE );
     if  CODI.DEBUG	then  NEW_LINE; end	if;
 
     CODI.NO_SUBP_PARAMS := SAVE_NO_SUB_PARAM;
