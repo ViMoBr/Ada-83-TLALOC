@@ -419,25 +419,135 @@ CST SIZ, d, 32
 end namespace
 VAR I1_disp, d				; variable entiere
 	LI	6
+	LI	 6
 	Sd  3,	I1_disp
 
 VAR I2_disp, d				; variable entiere
+	LI	 24
 	Sd  3,	I2_disp
 
 VAR NI1_disp, d				; variable entiere
 	LI	6
+	LI	 6
+	LI	 24
 	ADD
 	Sd  3,	NI1_disp
 
 VAR I4_disp, d				; variable entiere
+	LI	 128
 	Sd  3,	I4_disp
 
 VAR I5_disp, d				; variable entiere
+	LI	 128
 	Sd  3,	I5_disp
 
 VAR NI2_disp, d				; variable entiere
+	LI	 128
+	LI	 24
 	ADD
 	Sd  3,	NI2_disp
 
 VAR F1_disp, q				; variable flottante
-!! FUNCTION D : PAS D ATTRIBUT CD_IMPL_SMALL DANS [DN_FLOAT<119.35]>
+	LIF	1.1754943508222875E-38
+	Sq  3,	F1_disp
+
+VAR F2_disp, q				; variable flottante
+	LIF	3.4028234663852886E38
+	Sq  3,	F2_disp
+
+VAR NF1_disp, q				; variable flottante
+	LIF	1.1754943508222875E-38
+	Sq  3,	NF1_disp
+
+VAR NF2_disp, q				; variable flottante
+	LIF	3.4028234663852886E38
+	Sq  3,	NF2_disp
+
+VAR F3_disp, q				; variable flottante
+	LIF	1.1920928955078125E-7
+	Sq  3,	F3_disp
+
+VAR NF3_disp, q				; variable flottante
+	LIF	1.1920928955078125E-7
+	Sq  3,	NF3_disp
+
+VAR F4_disp, q				; variable flottante
+	LIF	1.1754943508222875E-38
+	Sq  3,	F4_disp
+
+VAR F5_disp, q				; variable flottante
+	LIF	3.4028234663852886E38
+	Sq  3,	F5_disp
+
+VAR NF4_disp, q				; variable flottante
+	LIF	1.1754943508222875E-38
+	Sq  3,	NF4_disp
+
+VAR NF5_disp, q				; variable flottante
+	LIF	3.4028234663852886E38
+	Sq  3,	NF5_disp
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+ret_lbl:
+	UNLINK 3
+	RTD
+excep:
+endPRO					;---------- end PRO P
+end if
+BRA post_LD_FLOAT
+LD_FLOAT.elab:
+	Lq -1, 0
+	RTD 0
+post_LD_FLOAT:
+BRA post_ST_FLOAT
+ST_FLOAT.elab:
+	Sq -1, 0
+	RTD 0
+post_ST_FLOAT:
+BRA post_INADR_FLOAT
+INADR_FLOAT.elab:
+	RTD 0
+post_INADR_FLOAT:
+BRA post_OUTADR_FLOAT
+OUTADR_FLOAT.elab:
+	La
+	RTD 0
+post_OUTADR_FLOAT:
+VAR FLOAT__outadr_ofs, q
+	LCA OUTADR_FLOAT.elab
+	Sa	 2, FLOAT__outadr_ofs
+VAR FLOAT__inadr_ofs, q
+	LCA INADR_FLOAT.elab
+	Sa	 2, FLOAT__inadr_ofs
+VAR FLOAT__st_ofs, q
+	LCA ST_FLOAT.elab
+	Sa	 2, FLOAT__st_ofs
+VAR FLOAT__ld_ofs, q
+	LCA LD_FLOAT.elab
+	Sa	 2, FLOAT__ld_ofs
+VAR FLOAT__u_ofs, q
+	La	 0, STANDARD._FLOAT.use__info
+	Sa	 2, FLOAT__u_ofs
+VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
+if defined NP_L9_
+PRO	NP_L9					;---------- PRO NP
+ELB 3
+begin:
+	LVA	 2, GFP_disp
+	CALL	STANDARD.A35801B_L1.BLOCK__1. ,P_L8
+	UNLINK	 3
+	RTD	prm_siz
+endPRO					;---------- end PRO NP
+end if
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	CALL	STANDARD.A35801B_L1.BLOCK__1. ,NP_L9
+	UNLINK 2
+endPRO
+	CALL	STANDARD.REPORT. ,RESULT_L6
+ret_lbl:
+	UNLINK 1
+	RTD
+excep:
+endPRO					;---------- end PRO A35801B

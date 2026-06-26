@@ -1078,16 +1078,200 @@ null;--	     declare
 	------------------------
 
 
+		-----------------
+    function	IS_BASE_ATTRIBUTE		( A : TREE )	return BOOLEAN
+    is		-----------------
+    begin
+      if  A.TY = DN_ATTRIBUTE  then
+        declare
+          A_NAME	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, D( AS_USED_NAME_ID, A ) ) );
+        begin
+          return  A_NAME = "BASE";
+        end;
+      end if;
+
+      return FALSE;
+
+    end	IS_BASE_ATTRIBUTE;
+	-----------------
+
+		----------------------
+    function	NORMALIZED_PREFIX_NAME	( RAW_PREFIX :TREE ) 	return TREE
+    is		----------------------
+    begin
+      if  IS_BASE_ATTRIBUTE( RAW_PREFIX )  then
+        return  LAST_OF_SELECTED( D( AS_NAME, RAW_PREFIX ) );
+      else
+        return  LAST_OF_SELECTED( RAW_PREFIX );
+      end if;
+
+    end	NORMALIZED_PREFIX_NAME;
+	----------------------
+
+
 				--------------
   procedure			CODE_ATTRIBUTE		( ATTRIBUTE :TREE )
   is				--------------
 
-    PREFIX_NAME		: TREE		:= LAST_OF_SELECTED( D( AS_NAME, ATTRIBUTE ) );
+    RAW_PREFIX		: TREE		:= D( AS_NAME, ATTRIBUTE );
+    CHN_ATTR_NAME		: constant STRING	:= PRINT_NAME( D( LX_SYMREP, D( AS_USED_NAME_ID, ATTRIBUTE ) ) );
+
+    PREFIX_NAME		: TREE		:= NORMALIZED_PREFIX_NAME( RAW_PREFIX );
+    PREFIX_HAS_BASE		: BOOLEAN		:= IS_BASE_ATTRIBUTE( RAW_PREFIX );
     CHN_PREFIX		:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, PREFIX_NAME ) );
-    CHN_ATTR_NAME		:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, D( AS_USED_NAME_ID, ATTRIBUTE ) ) );
     subtype CHN_STD		is STRING( 1 .. CHN_ATTR_NAME'LENGTH );
     CHN_ATTR		: CHN_STD		:= CHN_ATTR_NAME;						-- NORMALISER EN STRING A FIRST=1
 
+		----------------
+    function	PREFIX_TYPE_SPEC	return TREE
+    is		----------------
+      PREFIX_DEFN : TREE := D( SM_DEFN, PREFIX_NAME );
+      TYPE_SPEC   : TREE := TREE_VOID;
+    begin
+      if  PREFIX_DEFN.TY in CLASS_TYPE_NAME  then
+        TYPE_SPEC := D( SM_TYPE_SPEC, PREFIX_DEFN );
+
+      elsif  PREFIX_DEFN.TY in CLASS_OBJECT_NAME  then
+        TYPE_SPEC := D( SM_OBJ_TYPE, PREFIX_DEFN );
+
+      else
+        return  TREE_VOID;
+      end if;
+
+      if  TYPE_SPEC /= TREE_VOID  then
+        if  TYPE_SPEC.TY = DN_PRIVATE  or else  TYPE_SPEC.TY = DN_L_PRIVATE  then
+          TYPE_SPEC := D( SM_TYPE_SPEC, TYPE_SPEC );
+        end if;
+
+        if  PREFIX_HAS_BASE  then
+          case  TYPE_SPEC.TY  is
+            when DN_INTEGER
+               | DN_ENUMERATION
+               | DN_FLOAT
+               | DN_FIXED
+               | DN_CONSTRAINED_ARRAY
+               | DN_CONSTRAINED_RECORD
+               | DN_CONSTRAINED_ACCESS =>
+              TYPE_SPEC := D( SM_BASE_TYPE, TYPE_SPEC );
+
+            when others =>
+              null;
+          end case;
+        end if;
+      end if;
+
+      return  TYPE_SPEC;
+
+    end	PREFIX_TYPE_SPEC;
+	----------------
+
+		----------
+    function	FLOAT_BITS	return INTEGER
+    is		----------
+      T : TREE := PREFIX_TYPE_SPEC;
+    begin
+      if T /= TREE_VOID and then T.TY = DN_FLOAT then
+        if DI( CD_IMPL_SIZE, T ) <= 32 then
+          return 32;
+        else
+          return 64;
+        end if;
+      end if;
+
+      return 64;
+
+    end	FLOAT_BITS;
+	----------
+
+    procedure PUSH_INT ( I : INTEGER )
+    is
+    begin
+      PUT_LINE( tab & "LI" & tab & INTEGER'IMAGE( I ) );
+    end PUSH_INT;
+
+
+    procedure PUSH_FLOAT_LITERAL ( S : STRING )
+    is
+    begin
+      PUT_LINE( tab & "LIF" & tab & S );
+    end PUSH_FLOAT_LITERAL;
+
+
+    procedure CODE_FLOAT_DIGITS
+    is
+    begin
+      if FLOAT_BITS <= 32 then
+        PUSH_INT( 6 );
+      else
+        PUSH_INT( 15 );
+      end if;
+    end CODE_FLOAT_DIGITS;
+
+
+    procedure CODE_FLOAT_MANTISSA
+    is
+    begin
+      if FLOAT_BITS <= 32 then
+        PUSH_INT( 24 );
+      else
+        PUSH_INT( 53 );
+      end if;
+    end CODE_FLOAT_MANTISSA;
+
+
+    procedure CODE_FLOAT_EPSILON
+    is
+    begin
+      if FLOAT_BITS <= 32 then
+        PUSH_FLOAT_LITERAL( "1.1920928955078125E-7" );
+      else
+        PUSH_FLOAT_LITERAL( "2.2204460492503131E-16" );
+      end if;
+    end CODE_FLOAT_EPSILON;
+
+
+    procedure CODE_FLOAT_EMAX
+    is
+    begin
+      if FLOAT_BITS <= 32 then
+        PUSH_INT( 128 );
+      else
+        PUSH_INT( 1024 );
+      end if;
+    end CODE_FLOAT_EMAX;
+
+
+    procedure CODE_FLOAT_EMIN
+    is
+    begin
+      if FLOAT_BITS <= 32 then
+        PUSH_INT( -125 );
+      else
+        PUSH_INT( -1021 );
+      end if;
+    end CODE_FLOAT_EMIN;
+
+
+    procedure CODE_FLOAT_SMALL
+    is
+    begin
+      if FLOAT_BITS <= 32 then
+        PUSH_FLOAT_LITERAL( "1.1754943508222875E-38" );
+      else
+        PUSH_FLOAT_LITERAL( "2.2250738585072014E-308" );
+      end if;
+    end CODE_FLOAT_SMALL;
+
+
+    procedure CODE_FLOAT_LARGE
+    is
+    begin
+      if FLOAT_BITS <= 32 then
+        PUSH_FLOAT_LITERAL( "3.4028234663852886E38" );
+      else
+        PUSH_FLOAT_LITERAL( "1.7976931348623157E308" );
+      end if;
+    end CODE_FLOAT_LARGE;
 
 
 		------------
@@ -1546,47 +1730,54 @@ null;--	     declare
     when	'D' =>
       if	CHN_ATTR(	2 ) = 'E'	 then null;					-- DELTA
       else								-- DIGITS
-        declare
-	PREFIX_DEFN	: TREE	:= D( SM_DEFN, PREFIX_NAME );
-	TYPE_SPEC	: TREE	:= TREE_VOID;
-	ACCURACY	: TREE;
-        begin
+        if PREFIX_HAS_BASE then
+          CODE_FLOAT_DIGITS;
+        else
+
+	declare
+	  PREFIX_DEFN	: TREE	:= D( SM_DEFN, PREFIX_NAME );
+	  TYPE_SPEC	: TREE	:= TREE_VOID;
+	  ACCURACY	: TREE;
+	begin
 	-- Chercher le TYPE_SPEC du prefix, quel que soit	le type de noeud
-	if  PREFIX_DEFN.TY = DN_TYPE_ID
-	or  PREFIX_DEFN.TY = DN_SUBTYPE_ID
-	then
-	  TYPE_SPEC := D( SM_TYPE_SPEC, PREFIX_DEFN );
-	end if;
+	  if  PREFIX_DEFN.TY = DN_TYPE_ID
+	      or  PREFIX_DEFN.TY = DN_SUBTYPE_ID
+	  then
+	    TYPE_SPEC := D( SM_TYPE_SPEC, PREFIX_DEFN );
+	  end if;
 
 	-- Traverser private/constrained vers le type reel
-	if  TYPE_SPEC /= TREE_VOID  then
-	  if  TYPE_SPEC.TY = DN_L_PRIVATE  or  TYPE_SPEC.TY = DN_PRIVATE  then
-	    TYPE_SPEC := D(	SM_TYPE_SPEC, TYPE_SPEC );
+	  if  TYPE_SPEC /= TREE_VOID  then
+	    if  TYPE_SPEC.TY = DN_L_PRIVATE  or  TYPE_SPEC.TY = DN_PRIVATE  then
+	      TYPE_SPEC := D( SM_TYPE_SPEC, TYPE_SPEC );
+	    end if;
 	  end if;
-	end if;
 
 	-- Extraire SM_ACCURACY du DN_FLOAT
-	if  TYPE_SPEC /= TREE_VOID  and then  TYPE_SPEC.TY = DN_FLOAT  then
-	  ACCURACY := D( SM_ACCURACY,	TYPE_SPEC	);
-	  if  ACCURACY /= TREE_VOID  then
-	    if  ACCURACY.PT	= HI  then
-	      PUT_LINE( tab	& "LI" & tab & IMAGE( NATURAL( ACCURACY.ABSS ) ) );
+	  if  TYPE_SPEC /= TREE_VOID  and then  TYPE_SPEC.TY = DN_FLOAT  then
+	    ACCURACY := D( SM_ACCURACY, TYPE_SPEC );
+	    if  ACCURACY /= TREE_VOID  then
+	      if  ACCURACY.PT = HI  then
+	        PUT_LINE( tab & "LI" & tab & IMAGE( NATURAL( ACCURACY.ABSS ) ) );
+	      else
+	        PUT_LINE( tab & "LI" & tab & PRINT_NUM( ACCURACY ) );
+	      end if;
 	    else
-	      PUT_LINE( tab	& "LI" & tab & PRINT_NUM( ACCURACY ) );
+	      PUT_LINE( tab & "LI" & tab & "6" );							-- defaut	Ada 83 pour FLOAT
 	    end if;
 	  else
-	    PUT_LINE( tab &	"LI" & tab & "6" );		-- defaut	Ada 83 pour FLOAT
+	    PUT_LINE( tab & "LI" & tab & "6" );								-- defaut	Ada 83 pour FLOAT
 	  end if;
-	else
-	  PUT_LINE( tab & "LI" & tab & "6" );		-- defaut	Ada 83 pour FLOAT
-	end if;
-        end;
-      end	if;
-
+          end;
+	CODE_FLOAT_DIGITS;
+        end if;
+      end if;
     when	'E' =>
-      if	CHN_ATTR(	2 ) = 'M'	 then null;					-- EMAX
-      else null;								-- EPSILON
-      end	if;
+      if	CHN_ATTR(	2 ) = 'M'	 then
+        CODE_FLOAT_EMAX;										-- EMAX
+      else
+        CODE_FLOAT_EPSILON;										-- EPSILON
+      end if;
 
     when	'F' =>
       if	CHN_ATTR(	2 ) = 'I'	 then						-- FIRST
@@ -1597,7 +1788,8 @@ null;--	     declare
     when	'I' => CODE_IMAGE;							-- IMAGE
 
     when	'L' =>
-      if	CHN_ATTR(	2 .. 3 ) = "AR"  then null;					-- LARGE
+      if	CHN_ATTR(	2 .. 3 ) = "AR"  then
+        CODE_FLOAT_LARGE;                         -- LARGE
       elsif  CHN_ATTR( 2 .. 3	) = "AS"	then
         if  CHN_ATTR'LENGTH =	4  then						-- LAST
 	CODE_FIRST_LAST( IS_LAST => TRUE );
@@ -1608,13 +1800,20 @@ null;--	     declare
       end	if;
 
     when	'M' =>
-      if	CHN_ATTR(	3 ) = 'N'	 then null;					-- MANTISSA
-      elsif  CHN_ATTR( 11 ) =	'A'  then	 null;					-- MACHINE_EMAX
-      elsif  CHN_ATTR( 11 ) =	'I'  then	 null;					-- MACHINE_EMIN
-      elsif  CHN_ATTR( 9 ) = 'M'   then	 null;					-- MACHINE_MANTISSA
-      elsif  CHN_ATTR( 9 ) = 'O'   then	 null;					-- MACHINE_OVERFLOW
-      elsif  CHN_ATTR( 10 ) =	'A'  then	 null;					-- MACHINE_RADIX
-      elsif  CHN_ATTR( 10 ) =	'O'  then	 null;					-- MACHINE_ROUNDS
+      if	CHN_ATTR(	3 ) = 'N'	 then
+        CODE_FLOAT_MANTISSA;							-- MANTISSA
+      elsif  CHN_ATTR( 11 ) =	'A'  then
+         CODE_FLOAT_EMAX;							-- MACHINE_EMAX
+     elsif  CHN_ATTR( 11 ) =	'I'  then
+        CODE_FLOAT_EMIN;							-- MACHINE_EMIN
+      elsif  CHN_ATTR( 9 ) = 'M'   then
+        CODE_FLOAT_MANTISSA;							-- MACHINE_MANTISSA
+      elsif  CHN_ATTR( 9 ) = 'O'   then
+        PUSH_INT( 1 );							-- MACHINE_OVERFLOWS
+      elsif  CHN_ATTR( 10 ) =	'A'  then
+        PUSH_INT( 2 );							-- MACHINE_RADIX
+      elsif  CHN_ATTR( 10 ) =	'O'  then
+        PUSH_INT( 1 );							-- MACHINE_ROUNDS
       end	if;
 
     when	'P' =>
@@ -1632,15 +1831,27 @@ null;--	     declare
 
     when	'S' =>
       if	CHN_ATTR(	2 ) = 'I'		then CODE_SIZE;				-- SIZE
-      elsif  CHN_ATTR( 2 ) = 'M'	then CODE_SMALL;				-- SMALL
+      elsif  CHN_ATTR( 2 ) = 'M'	then					-- SMALL
+        declare
+	T	: TREE	:= PREFIX_TYPE_SPEC;
+        begin
+          if T /= TREE_VOID and then T.TY = DN_FLOAT then
+            CODE_FLOAT_SMALL;							-- FLOAT'SMALL
+          else
+            CODE_SMALL;							-- FIXED'SMALL, ancien chemin
+          end if;
+        end;
       elsif  CHN_ATTR( 2 ) = 'T'  then	 null;					-- STORAGE
       elsif  CHN_ATTR( 2 ) = 'U'  then						-- SUCC
         -- T'SUCC(X) : retourne X+1
         CODE_EXP( D( AS_EXP, ATTRIBUTE ) );
         PUT_LINE( tab & "INC"	);
-      elsif  CHN_ATTR( 6 ) = 'E'  then	 null;					-- SAFE_EMAX
-      elsif  CHN_ATTR( 6 ) = 'L'  then	 null;					-- SAFE_LARGE
-      elsif  CHN_ATTR( 6 ) = 'S'  then	 null;					-- SAFE_SMALL
+      elsif  CHN_ATTR( 6 ) = 'E'  then
+        CODE_FLOAT_EMAX;							-- SAFE_EMAX
+      elsif  CHN_ATTR( 6 ) = 'L'  then
+        CODE_FLOAT_LARGE;							-- SAFE_LARGE
+      elsif  CHN_ATTR( 6 ) = 'S'  then
+        CODE_FLOAT_SMALL;							-- SAFE_SMALL
       end	if;
 
     when	'T' =>	null;							-- TERMINATED
