@@ -1322,7 +1322,13 @@ put_line( "; CODE_VC_NAME " & NODE_NAME'IMAGE( VC_NAME.TY ) );
   procedure		  CODE_SUBPROG_ENTRY_DECL	( SUBPROG_ENTRY_DECL :TREE )
   is			--=======================--
 
-    SOURCE_NAME	: TREE	    := D(	AS_SOURCE_NAME, SUBPROG_ENTRY_DECL );
+    SOURCE_NAME			: TREE	:= D( AS_SOURCE_NAME, SUBPROG_ENTRY_DECL );
+
+    SAVE_NO_SUB_PARAM		: BOOLEAN	:= CODI.NO_SUBP_PARAMS;
+    SAVE_IN_GENERIC_INSTANTIATION	: BOOLEAN	:= CODI.IN_GENERIC_INSTANTIATION;
+    SAVE_INSTANTIATION_MODEL_NAME	: TREE	:= CODI.INSTANTIATION_MODEL_NAME;
+    SAVE_OUTPUT_CODE		: BOOLEAN	:= CODI.OUTPUT_CODE;
+
   begin
     if  not (SOURCE_NAME.TY in CLASS_SUBPROG_NAME)  then
       PUT_LINE( "ANOMALIE : EXPANDER.DECLARATIONS.CODE_SUBPROG_ENTRY_DECL ; SOURCE_NAME.TY pas dans CLASS_SUBPROG_NAME"	);
@@ -1345,7 +1351,7 @@ put_line( "; CODE_VC_NAME " & NODE_NAME'IMAGE( VC_NAME.TY ) );
 
     INC_LEVEL;
     declare
-      HEADER	: TREE	        := D( AS_HEADER, SUBPROG_ENTRY_DECL );
+      HEADER	: TREE;
       LBL		: LABEL_TYPE	:= NEW_LABEL;
     begin
 
@@ -1359,10 +1365,14 @@ put_line( "; CODE_VC_NAME " & NODE_NAME'IMAGE( VC_NAME.TY ) );
       if	not IN_GENERIC_INSTANTIATION	then CODI.OUTPUT_CODE := FALSE; end if;					-- ne pas	coder les	parametres (le body	fera ca)
 
       if	IN_GENERIC_INSTANTIATION  then
+        HEADER := D( SM_SPEC, SOURCE_NAME );
+				----------------
+				MODULE_GENERIQUE:
         declare
 	SOURCE_NAME	: TREE		:= D( AS_SOURCE_NAME, SUBPROG_ENTRY_DECL );
 	SUB_NAME		:constant	STRING	:= LETTERED_SUBNAME( PRINT_NAME( D( LX_SYMREP, SOURCE_NAME ) ) );
 	LBL		: LABEL_TYPE	:= LABEL_TYPE( DI( CD_LABEL, SOURCE_NAME ) );
+
         begin
 	PUT_LINE(	"if defined " & SUB_NAME & '_' & LABEL_STR( LBL )	& '_' );
 	PUT( "PRO" & tab & SUB_NAME &	'_' & LABEL_STR( LBL ) );
@@ -1384,8 +1394,10 @@ put_line( "; CODE_VC_NAME " & NODE_NAME'IMAGE( VC_NAME.TY ) );
 	declare
 	  PRM_SECTIONS_S	: SEQ_TYPE	:= LIST( D( AS_PARAM_S, D( SM_SPEC, SOURCE_NAME )	) );
 
-	  procedure INVERSE_RECURSE_PRM_SECTIONS ( REMAIN_SECTIONS :in out SEQ_TYPE )
-	  is
+			----------------------------
+	  procedure	INVERSE_RECURSE_PRM_SECTIONS	( REMAIN_SECTIONS :in out SEQ_TYPE )
+	  is		----------------------------
+
 	    PRM_SECTION		: TREE;
 	  begin
 	    if  IS_EMPTY( REMAIN_SECTIONS )  then return;	end if;
@@ -1393,11 +1405,13 @@ put_line( "; CODE_VC_NAME " & NODE_NAME'IMAGE( VC_NAME.TY ) );
 	    INVERSE_RECURSE_PRM_SECTIONS( REMAIN_SECTIONS	);
 
 	    declare
-	      NAME_S		: SEQ_TYPE	:= LIST( D( AS_SOURCE_NAME_S,	PRM_SECTION ) );
+	      NAME_S	: SEQ_TYPE	:= LIST( D( AS_SOURCE_NAME_S,	PRM_SECTION ) );
 
-	      procedure INVERSE_RECURSE_NAMES (	NAMES :in	out SEQ_TYPE )
-	      is
+			---------------------
+	      procedure	INVERSE_RECURSE_NAMES	( NAMES :in out SEQ_TYPE )
+	      is		---------------------
 	        NAME	: TREE;
+
 	      begin
 	        if  IS_EMPTY( NAMES )	 then return; end if;
 	        POP( NAMES,	NAME );
@@ -1414,36 +1428,64 @@ put_line( "; CODE_VC_NAME " & NODE_NAME'IMAGE( VC_NAME.TY ) );
 			& ", -" &	PRINT_NAME( D( LX_SYMREP, NAME ) ) & "_ofs" );
 	        end if;
 	      end	INVERSE_RECURSE_NAMES;
+		---------------------
 
 	    begin
 	      INVERSE_RECURSE_NAMES( NAME_S );
 	    end;
+
 	  end	INVERSE_RECURSE_PRM_SECTIONS;
+		----------------------------
 
 	begin
 	  INVERSE_RECURSE_PRM_SECTIONS( PRM_SECTIONS_S );
 	end;
 
-	PUT( tab & "CALL" &	tab );
-	REGIONS_PATH( D( SM_DEFN, CODI.INSTANTIATION_MODEL_NAME ) );
-
-	PUT( PRINT_NAME( D(	LX_SYMREP, CODI.INSTANTIATION_MODEL_NAME ) ) & ". ," );
 	declare
-	  MODEL_DECL	: TREE;
+	  MODEL_DEFN	: TREE	:= D( SM_DEFN, CODI.INSTANTIATION_MODEL_NAME );
+	  MODEL_SPEC	: TREE	:= D( SM_SPEC, MODEL_DEFN );
 	begin
-	  while  not( IS_EMPTY( CODI.GENERIC_MODEL_DECL_SEQ ) )  loop
-	    POP( CODI.GENERIC_MODEL_DECL_SEQ, MODEL_DECL );
-	    if  MODEL_DECL.TY = DN_SUBPROG_ENTRY_DECL  then
-	      declare
-	        NAME	: TREE	:= D( AS_SOURCE_NAME, MODEL_DECL );
-	        LBL	: INTEGER	:= DI( CD_LABEL, NAME );
-	      begin
-	        PUT_LINE( PRINT_NAME(	D( LX_SYMREP, NAME ) ) & "_L"	& IMAGE( LBL ) );
-	        exit;
-	      end;
-	    end if;
-	  end loop;
-	end;
+	  if  MODEL_DEFN.TY = DN_GENERIC_ID  and then  MODEL_SPEC.TY in CLASS_SUBP_ENTRY_HEADER  then
+				-----------------------
+				DIRECT_SUBPROG_INSTANCE:						-- procedure NP is new P (...);
+	    declare
+	      MODEL_BDY	: TREE		:= D( XD_BODY, MODEL_DEFN );
+	      MODEL_NAME	:constant STRING	:= LETTERED_SUBNAME( PRINT_NAME( D( LX_SYMREP, MODEL_DEFN ) ) );
+	      MODEL_LBL	: LABEL_TYPE	:= LABEL_TYPE( DI( CD_LABEL, D( AS_SOURCE_NAME, MODEL_BDY ) ) );
+
+	    begin
+	      PUT( tab & "CALL" & tab );
+	      REGIONS_PATH( MODEL_DEFN );
+	      PUT_LINE( " ," & MODEL_NAME & '_' & LABEL_STR( MODEL_LBL ) );
+
+	    end	DIRECT_SUBPROG_INSTANCE;
+		-----------------------
+	  else
+	    PUT( tab & "CALL" & tab );
+	    REGIONS_PATH( D( SM_DEFN, CODI.INSTANTIATION_MODEL_NAME ) );
+	    PUT( PRINT_NAME( D( LX_SYMREP, CODI.INSTANTIATION_MODEL_NAME ) ) & ". ," );
+			----------------------------------------
+			SUBPROG_IN_GENERIC_PACKAGE_INSTANTIATION:
+	    declare
+	      MODEL_DECL	: TREE;
+
+	    begin
+	      while  not( IS_EMPTY( CODI.GENERIC_MODEL_DECL_SEQ ) )  loop
+	        POP( CODI.GENERIC_MODEL_DECL_SEQ, MODEL_DECL );
+	        if  MODEL_DECL.TY = DN_SUBPROG_ENTRY_DECL  then
+		declare
+		  NAME	: TREE	:= D( AS_SOURCE_NAME, MODEL_DECL );
+		  LBL	: INTEGER	:= DI( CD_LABEL, NAME );
+	          begin
+		  PUT_LINE( PRINT_NAME( D( LX_SYMREP, NAME ) ) & "_L" & IMAGE( LBL ) );
+		  exit;
+	          end;
+	        end if;
+	      end loop;
+	    end	SUBPROG_IN_GENERIC_PACKAGE_INSTANTIATION;
+		----------------------------------------
+            end if;
+          end;
 
 	if  SOURCE_NAME.TY = DN_FUNCTION_ID  or	 SOURCE_NAME.TY = DN_OPERATOR_ID  then
 
@@ -1485,9 +1527,13 @@ put_line( "; CODE_VC_NAME " & NODE_NAME'IMAGE( VC_NAME.TY ) );
 	if  CODI.DEBUG  then PUT( tab50 & ";---------- end PRO " & SUB_NAME);	end if;
 	NEW_LINE;
 	PUT_LINE(	"end if" );
-        end;
-
+        end		MODULE_GENERIQUE;
+			----------------
       else
+        HEADER := D( AS_HEADER, SUBPROG_ENTRY_DECL );
+
+				---------------------
+				SOUS_PROGRAMME_NORMAL:
         declare
 	SAVE_NO_SUB_PARAM	: BOOLEAN		:= CODI.NO_SUBP_PARAMS;
         begin
@@ -1495,11 +1541,17 @@ put_line( "; CODE_VC_NAME " & NODE_NAME'IMAGE( VC_NAME.TY ) );
 	CODE_HEADER( HEADER );
 	CODI.OUTPUT_CODE := TRUE;
 	CODI.NO_SUBP_PARAMS := SAVE_NO_SUB_PARAM;
-        end;
+        end		SOUS_PROGRAMME_NORMAL;
+			---------------------
       end	if;
 
     end;
     DEC_LEVEL;
+
+    CODI.NO_SUBP_PARAMS := SAVE_NO_SUB_PARAM;
+    CODI.IN_GENERIC_INSTANTIATION := SAVE_IN_GENERIC_INSTANTIATION;
+    CODI.INSTANTIATION_MODEL_NAME := SAVE_INSTANTIATION_MODEL_NAME;
+    CODI.OUTPUT_CODE := SAVE_OUTPUT_CODE;
 
    end	  CODE_SUBPROG_ENTRY_DECL;
 	--=======================--

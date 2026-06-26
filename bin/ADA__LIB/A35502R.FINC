@@ -448,8 +448,20 @@ end postpone
 end namespace
 ; GENERIC_SUBPROGRAM_SPEC
 
-if defined P_L25241_
-PRO	P_L25241				;---------- PRO P
+if defined P_L9_
+PRO	P_L9					;---------- PRO P
+virtual at 8
+	T__u_ofs = $
+	rq 1
+	T__ld_ofs = $
+	rq 1
+	T__st_ofs = $
+	rq 1
+	T__inadr_ofs = $
+	rq 1
+	T__outadr_ofs = $
+	rq 1
+end virtual
 PRMS					;    debut parametrage
 	PRM T1_ofs				; in
 	PRM STR_ofs				; in
@@ -497,7 +509,7 @@ VAR I1_disp, d				; variable entiere
 
 VAR I2_disp, d				; variable entiere
 	LVA  3,	-T1_ofs
-	La  1,	-GFP_ofs
+	La  3,	-GFP_ofs
 	La ,	-T__ld_ofs
 	CALLI
 	Sd  3,	I2_disp
@@ -512,7 +524,7 @@ VAR N1_disp, d				; variable entiere
 
 VAR N2_disp, d				; variable entiere
 	LVA  3,	-T1_ofs
-	La  1,	-GFP_ofs
+	La  3,	-GFP_ofs
 	La ,	-T__ld_ofs
 	CALLI
 	Sd  3,	N2_disp
@@ -524,7 +536,7 @@ VAR C1_disp, q				; variable entiere
 
 VAR C2_disp, q				; variable entiere
 	LVA  3,	-T1_ofs
-	La  1,	-GFP_ofs
+	La  3,	-GFP_ofs
 	La ,	-T__ld_ofs
 	CALLI
 	INC
@@ -532,7 +544,7 @@ VAR C2_disp, q				; variable entiere
 
 VAR C3_disp, q				; variable entiere
 	LVA  3,	-T1_ofs
-	La  1,	-GFP_ofs
+	La  3,	-GFP_ofs
 	La ,	-T__ld_ofs
 	CALLI
 	DEC
@@ -543,12 +555,12 @@ VAR C4_disp, q				; variable entiere
 	Sq  3,	C4_disp
 
 VAR C5_disp, q				; variable entiere
-	La 1,	-GFP_ofs
+	La 3,	-GFP_ofs
 	LId , -T__u_ofs, STANDARD._ENUM_USE_INFO.FST
 	Sq  3,	C5_disp
 
 VAR C6_disp, q				; variable entiere
-	La 1,	-GFP_ofs
+	La 3,	-GFP_ofs
 	LId , -T__u_ofs, STANDARD._ENUM_USE_INFO.LST
 	Sq  3,	C6_disp
 
@@ -568,7 +580,7 @@ end namespace
 	Sa  3, ANON_45_40__u
 	LVA 3, ANON_45_40_disp
 	LVA  3,	-T1_ofs
-	La  1,	-GFP_ofs
+	La  3,	-GFP_ofs
 	La ,	-T__ld_ofs
 	CALLI
 	CALL	STANDARD. ,INTEGER_IMAGE_L9
@@ -621,23 +633,28 @@ VAR COLOR__u_ofs, q
 	La	 2, STANDARD.A35502R_L1.BLOCK__1._COLOR.use__info
 	Sa	 2, COLOR__u_ofs
 VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
-if defined NP_L9_
-PRO	NP_L9					;---------- PRO NP
+if defined NP_L10_
+PRO	NP_L10				;---------- PRO NP
+PRMS					;    debut parametrage
+	PRM T1_ofs				; in
+	PRM STR_ofs				; in
+endPRMS					;    fin parametrage
 ELB 3
 begin:
 	LVA	 2, GFP_disp
 	La 	 3, -STR_ofs
 	Lb	 3, -T1_ofs
-	CALL	STANDARD.A35502R_L1.BLOCK__1.P. ,	UNLINK	 3
+	CALL	STANDARD.A35502R_L1.BLOCK__1. ,P_L9
+	UNLINK	 3
 	RTD	prm_siz
 endPRO					;---------- end PRO NP
 end if
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-STR STR_L10, "BLUE"				; constante string="BLUE"
-	LCA	STR_L10.data_ptr
+STR STR_L11, "BLUE"				; constante string="BLUE"
+	LCA	STR_L11.data_ptr
 	LI  1
-	CALL	STANDARD.A35502R_L1.BLOCK__1. ,NP_L9
+	CALL	STANDARD.A35502R_L1.BLOCK__1. ,NP_L10
 	UNLINK 2
 endPRO
 	CALL	STANDARD.REPORT. ,RESULT_L6

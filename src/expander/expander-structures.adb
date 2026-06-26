@@ -125,6 +125,46 @@ is
 	-----------------
 
 
+		--------------------------
+  procedure	CODE_GENERIC_FRAME_OFFSETS ( GENERIC_ID : TREE )
+  is		--------------------------
+    GPRM_SEQ : SEQ_TYPE := LIST( D( SM_GENERIC_PARAM_S, GENERIC_ID ) );
+    GPRM     : TREE;
+  begin
+    PUT_LINE( "virtual at 8" );
+
+    while not IS_EMPTY( GPRM_SEQ ) loop
+      POP( GPRM_SEQ, GPRM );
+
+      if GPRM.TY = DN_TYPE_DECL then
+        declare
+          GTYPE_ID   : TREE := D( AS_SOURCE_NAME, GPRM );
+          GPRM_NAME  : constant STRING :=
+            PRINT_NAME( D( LX_SYMREP, GTYPE_ID ) );
+        begin
+          PUT_LINE( tab & GPRM_NAME & "__u_ofs = $" );
+          PUT_LINE( tab & "rq 1" );
+
+          PUT_LINE( tab & GPRM_NAME & "__ld_ofs = $" );
+          PUT_LINE( tab & "rq 1" );
+
+          PUT_LINE( tab & GPRM_NAME & "__st_ofs = $" );
+          PUT_LINE( tab & "rq 1" );
+
+          PUT_LINE( tab & GPRM_NAME & "__inadr_ofs = $" );
+          PUT_LINE( tab & "rq 1" );
+
+          PUT_LINE( tab & GPRM_NAME & "__outadr_ofs = $" );
+          PUT_LINE( tab & "rq 1" );
+        end;
+      end if;
+    end loop;
+
+    PUT_LINE( "end virtual" );
+
+  end	CODE_GENERIC_FRAME_OFFSETS;
+	--------------------------
+
 
 			--------------------
   procedure		CODE_SUBPROGRAM_BODY	( SUBPROGRAM_BODY :TREE )
@@ -137,6 +177,10 @@ is
     SAVE_ENCLOSING		: TREE		:= ENCLOSING_BODY;
     SAVE_NO_SUB_PARAM	: BOOLEAN		:= CODI.NO_SUBP_PARAMS;
     SUB_BODY		: TREE		:= D( AS_BODY, SUBPROGRAM_BODY );
+
+    SAVE_IN_GENERIC_BODY	: BOOLEAN		:= CODI.IN_GENERIC_BODY;
+    SAVE_ENCLOSING_GENERIC	: TREE		:= CODI.ENCLOSING_GENERIC;
+    SAVE_GENERIC_BASE_LEVEL	: LEVEL_NUM	:= CODI.GENERIC_BASE_LEVEL;
 
   begin
     INC_LEVEL;
@@ -154,7 +198,13 @@ is
       end if;
 
     else
+      LBL := NEW_LABEL;
+      DI( CD_LEVEL, SOURCE_NAME, INTEGER( CODI.CUR_LEVEL ) );
+      DI( CD_LABEL, SOURCE_NAME, INTEGER( LBL ) );
+      DB( CD_COMPILED, SOURCE_NAME, TRUE );
       CODI.IN_GENERIC_BODY := TRUE;
+      CODI.ENCLOSING_GENERIC := DECL_ID;
+      CODI.GENERIC_BASE_LEVEL := CODI.CUR_LEVEL - 1;
 
     end if;
 
@@ -176,6 +226,10 @@ is
       if  CODI.DEBUG  then PUT( tab50 & ";---------- PRO " & SUB_NAME ); end if;
       NEW_LINE;
 
+      if DECL_ID.TY = DN_GENERIC_ID then
+        CODE_GENERIC_FRAME_OFFSETS( DECL_ID );
+      end if;
+
       DECLARATIONS.CODE_HEADER( D( SM_SPEC, SOURCE_NAME ) );
 
       ENCLOSING_BODY := SUBPROGRAM_BODY;
@@ -190,7 +244,6 @@ is
         if  SOURCE_NAME.TY = DN_FUNCTION_ID  then
           PUT( INTEGER'IMAGE( - STACK_ELEMENT_SIZE ) );							-- POUR UNE FONCTION NE PAS LIBERER LE RESULTAT
         end if;
---        PUT( ')' );
       end if;
       CODI.NO_SUBP_PARAMS := SAVE_NO_SUB_PARAM;
       NEW_LINE;
@@ -201,15 +254,19 @@ is
       NEW_LINE;
     end if;
 
-    if  CODI.IN_GENERIC_BODY  and  ENCLOSING_BODY = TREE_VOID  then						-- Cas du sous-programme générique
-      CODI.IN_GENERIC_BODY := FALSE;
-    end if;
+--    if  CODI.IN_GENERIC_BODY  and  ENCLOSING_BODY = TREE_VOID  then						-- Cas du sous-programme générique
+--      CODI.IN_GENERIC_BODY := FALSE;
+--    end if;
 
     DEC_LEVEL;
     ENCLOSING_BODY := SAVE_ENCLOSING;
     if  ENCLOSING_BODY /= TREE_VOID  then
       PUT_LINE( "end if" );
     end if;
+
+    CODI.IN_GENERIC_BODY    := SAVE_IN_GENERIC_BODY;
+    CODI.ENCLOSING_GENERIC  := SAVE_ENCLOSING_GENERIC;
+    CODI.GENERIC_BASE_LEVEL := SAVE_GENERIC_BASE_LEVEL;
 
   end	CODE_SUBPROGRAM_BODY;
 	--------------------
