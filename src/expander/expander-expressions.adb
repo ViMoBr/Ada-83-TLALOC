@@ -1362,32 +1362,54 @@ null;--	     declare
 		------------
     procedure	CODE_ADDRESS
     is		------------
-      PREFIX_DEFN		: TREE		:= D( SM_DEFN, PREFIX_NAME );
-      PREFIX_LVL		: INTEGER		:= DI( CD_LEVEL, PREFIX_DEFN );
-      TYPE_SPEC		: TREE		:= D( SM_OBJ_TYPE, PREFIX_DEFN );
-      TYPE_NAME		: TREE		:= D( XD_SOURCE_NAME, TYPE_SPEC );
-      TYPE_STR		:constant STRING	:= PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
     begin
-      if  CODI.IN_GENERIC_BODY  then
+      if  CODI.IN_GENERIC_BODY  and then  RAW_PREFIX.TY = DN_USED_OBJECT_ID  then
+				-----------------
+				OBJECT_IN_GENERIC:
+        declare
+	PREFIX_DEFN : TREE := D( SM_DEFN, RAW_PREFIX );
+        begin
+	if  PREFIX_DEFN.TY in CLASS_PARAM_NAME  then
+				----------------
+				PARAM_IN_GENERIC:
+	  declare
+	    PREFIX_LVL : INTEGER := DI( CD_LEVEL, PREFIX_DEFN );
+	    TYPE_SPEC  : TREE    := D( SM_OBJ_TYPE, PREFIX_DEFN );
+	    TYPE_NAME  : TREE    := D( XD_SOURCE_NAME, TYPE_SPEC );
+	    TYPE_STR   : constant STRING	:= PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
+	  begin
 
-        if  PREFIX_DEFN.TY = DN_IN_ID  then
-	PUT_LINE( tab & "LVA"	& tab & IMAGE( PREFIX_LVL ) & ", -" & CHN_PREFIX & "_ofs" );
-          PUT_LINE( tab & "La " & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL ) & ',' & tab & "-GFP_ofs" );
-          PUT_LINE( tab & "La" & tab & ", -" & TYPE_STR & "__inadr_ofs" );					-- Conversion pout IN
+	    if  IS_GENERIC_FORMAL_TYPE( TYPE_NAME )  then
 
-        elsif  PREFIX_DEFN.TY  in  CLASS_PARAM_IO_O  then
-	PUT_LINE( tab & "LVA"	& tab & IMAGE( PREFIX_LVL ) & ", -" & CHN_PREFIX & "_ofs" );
-          PUT_LINE( tab & "La " & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL ) & ',' & tab & "-GFP_ofs" );
-          PUT_LINE( tab & "La" & tab & ", -" & TYPE_STR & "__outadr_ofs" );					-- Conversion pour OUT ou IN_OUT
+	      if  PREFIX_DEFN.TY = DN_IN_ID  then
+	        PUT_LINE( tab & "LVA"	& tab & IMAGE( PREFIX_LVL ) & ", -" & CHN_PREFIX & "_ofs" );
+	        PUT_LINE( tab & "La " & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL ) & ',' & tab & "-GFP_ofs" );
+	        PUT_LINE( tab & "La" & tab & ", -" & TYPE_STR & "__inadr_ofs" );				-- Conversion pout IN
 
-        else
-	PUT_LINE( "; CODE_ADDRESS PREFIX_DEFN.TY pas gere " & NODE_NAME'IMAGE( PREFIX_DEFN.TY ) );
+	      elsif  PREFIX_DEFN.TY  in  CLASS_PARAM_IO_O  then
+	        PUT_LINE( tab & "LVA"	& tab & IMAGE( PREFIX_LVL ) & ", -" & CHN_PREFIX & "_ofs" );
+	        PUT_LINE( tab & "La " & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL ) & ',' & tab & "-GFP_ofs" );
+	        PUT_LINE( tab & "La" & tab & ", -" & TYPE_STR & "__outadr_ofs" );				-- Conversion pour OUT ou IN_OUT
 
-        end if;
+	      else
+	        CODE_OBJECT_ADDRESS( RAW_PREFIX );
+	        return;
 
-        PUT_LINE( tab & "CALLI" );
+	      end if;
 
+	      PUT_LINE( tab & "CALLI" );
+	      return;
+	    end if;
+            end		PARAM_IN_GENERIC;
+			----------------
+          end if;
+        end	OBJECT_IN_GENERIC;
+		-----------------
       end if;
+
+      -- Cas général : ne pas utiliser PREFIX_NAME ici.
+      -- Pour C3.Y'ADDRESS, RAW_PREFIX est encore le DN_SELECTED complet.
+      CODE_OBJECT_ADDRESS( RAW_PREFIX );
 
     end	CODE_ADDRESS;
 	------------
@@ -1452,6 +1474,31 @@ null;--	     declare
 
     end	CODE_CONSTRAINED;
 	----------------
+
+
+		------------------------------
+    procedure	CODE_SCALAR_SUBTYPE_FIRST_LAST	( SUBTYPE_ID :TREE; TYPE_SPEC  :TREE; IS_LAST :BOOLEAN )
+    is		------------------------------
+      SUBTYPE_STR	:constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, SUBTYPE_ID ) );
+      TYPE_LVL	: INTEGER		:= DI( CD_LEVEL, TYPE_SPEC );
+      SIZ_CHAR	: CHARACTER	:= OPER_SIZ_CHAR( TYPE_SPEC );
+    begin
+      PUT( tab & 'L' & SIZ_CHAR & tab & IMAGE( TYPE_LVL ) & ", " );
+
+      if  TYPE_LVL /= INTEGER( CODI.CUR_LEVEL )  or else  D( XD_REGION, SUBTYPE_ID ).TY = DN_PACKAGE_ID  then
+        REGIONS_PATH( SUBTYPE_ID );
+      end if;
+
+      PUT( SUBTYPE_STR & "." );
+
+      if  IS_LAST  then
+        PUT_LINE( "LST" );
+      else
+        PUT_LINE( "FST" );
+      end if;
+
+    end	CODE_SCALAR_SUBTYPE_FIRST_LAST;
+	------------------------------
 
 		---------------
     procedure	CODE_FIRST_LAST	( IS_LAST	:BOOLEAN )
@@ -1610,6 +1657,11 @@ end;
 	        end if;
 	      end;
 
+	    elsif PREFIX_DEFN.TY = DN_SUBTYPE_ID  and then
+		( TYPE_SPEC.TY = DN_INTEGER  or else  TYPE_SPEC.TY = DN_ENUMERATION
+		  or else  TYPE_SPEC.TY = DN_FIXED )  then
+	      CODE_SCALAR_SUBTYPE_FIRST_LAST( SUBTYPE_ID=> PREFIX_DEFN, TYPE_SPEC=> TYPE_SPEC, IS_LAST=> IS_LAST );
+
 	    else
 	      declare
 	        TYPE_RANGE	: TREE	:= D( SM_RANGE, D( SM_TYPE_SPEC, PREFIX_DEFN ) );
@@ -1622,6 +1674,7 @@ end;
 	        end if;
 	      end;
 	    end if;
+
 	  end		NORMAL_FIRST_LAST;
 			-----------------
 	end if;
@@ -4525,8 +4578,8 @@ put_line( "; CODE_QUALIFIED : DN_QUALIFIED" & NODE_NAME'IMAGE( SRC_EXP.TY ) );
     procedure	CODE_RANGE_ATTRIBUTE_BOUND ( RANGE_ATTRIBUTE :TREE )
     is		--------------------------
 
-      PREFIX_NAME	: TREE	:= LAST_OF_SELECTED( D( AS_NAME, RANGE_ATTRIBUTE ) );
-      PREFIX_DEFN	: TREE	:= D( SM_DEFN, PREFIX_NAME );
+      RAW_PREFIX  : TREE := D( AS_NAME, RANGE_ATTRIBUTE );
+      PREFIX_NAME	: TREE	:= RAW_PREFIX;
       DIM_EXP	: TREE	:= D( AS_EXP, RANGE_ATTRIBUTE );
       NUM_DIM	: INTEGER	:= 1;
 
@@ -4535,49 +4588,89 @@ put_line( "; CODE_QUALIFIED : DN_QUALIFIED" & NODE_NAME'IMAGE( SRC_EXP.TY ) );
         NUM_DIM := DI( SM_VALUE, DIM_EXP );
       end if;
 
-      if  PREFIX_NAME.TY = DN_USED_OBJECT_ID  then
+  -- Cas important pour A62006D :
+  -- C3.X'RANGE, où C3.X est un DN_SELECTED et X est un composant array.
+  -- Il ne faut pas prendre LAST_OF_SELECTED, car X seul est un component_id.
+      if  RAW_PREFIX.TY = DN_SELECTED  then
         declare
+	PREFIX_TYPE : TREE := D( SM_EXP_TYPE, RAW_PREFIX );
+        begin
+	while  PREFIX_TYPE.TY = DN_PRIVATE  or else  PREFIX_TYPE.TY = DN_L_PRIVATE  loop
+	  PREFIX_TYPE := D( SM_TYPE_SPEC, PREFIX_TYPE );
+	end loop;
+
+	if  PREFIX_TYPE.TY = DN_CONSTRAINED_ARRAY  or else  PREFIX_TYPE.TY = DN_ARRAY  then
+	  declare
+	    TYPE_NAME	: TREE		:= D( XD_SOURCE_NAME, PREFIX_TYPE );
+	    TYPE_STR	: constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
+	    TYPE_LVL	: INTEGER		:= DI( CD_LEVEL, PREFIX_TYPE );
+	  begin
+	    PUT( tab & "Ld" & tab & IMAGE( TYPE_LVL ) & ", " );
+
+	    if  TYPE_LVL /= INTEGER( CODI.CUR_LEVEL )  or else  D( XD_REGION, TYPE_NAME ).TY = DN_PACKAGE_ID
+	    then
+	      REGIONS_PATH( TYPE_NAME );
+	    end if;
+
+	    PUT( TYPE_STR & "." );
+
+	    if  IS_LAST  then
+	      PUT( "_LST_" );
+	    else
+	      PUT( "_FST_" );
+	    end if;
+
+	    PUT_LINE( IMAGE( NUM_DIM ) );
+	    return;
+	  end;
+	end if;
+        end;
+      end if;
+
+      if  RAW_PREFIX.TY = DN_USED_OBJECT_ID  then
+        declare
+	PREFIX_DEFN	: TREE		:= D( SM_DEFN, RAW_PREFIX );
 	ARRAY_LVL		: INTEGER		:= DI( CD_LEVEL, PREFIX_DEFN );
-	PREFIX_TYPE	: TREE		:= D( SM_EXP_TYPE, PREFIX_NAME );
+	PREFIX_TYPE	: TREE		:= D( SM_EXP_TYPE, RAW_PREFIX );
 	PREFIX_STR	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, PREFIX_DEFN ) );
         begin
 
-if  PREFIX_TYPE.TY = DN_ACCESS  then
-  declare
-    DESIG_TYPE : TREE := D( SM_DESIG_TYPE, PREFIX_TYPE );
-  begin
-    while  DESIG_TYPE.TY = DN_PRIVATE or else DESIG_TYPE.TY = DN_L_PRIVATE  loop
-      DESIG_TYPE := D( SM_TYPE_SPEC, DESIG_TYPE );
-    end loop;
+	if  PREFIX_TYPE.TY = DN_ACCESS  then
+	  declare
+	    DESIG_TYPE : TREE := D( SM_DESIG_TYPE, PREFIX_TYPE );
+	  begin
+	    while  DESIG_TYPE.TY = DN_PRIVATE or else DESIG_TYPE.TY = DN_L_PRIVATE  loop
+	      DESIG_TYPE := D( SM_TYPE_SPEC, DESIG_TYPE );
+	    end loop;
 
-    if  DESIG_TYPE.TY = DN_INCOMPLETE  then
-      DESIG_TYPE := D( XD_FULL_TYPE_SPEC, DESIG_TYPE );
-    end if;
+	    if  DESIG_TYPE.TY = DN_INCOMPLETE  then
+	      DESIG_TYPE := D( XD_FULL_TYPE_SPEC, DESIG_TYPE );
+	    end if;
 
-    if  DESIG_TYPE.TY = DN_CONSTRAINED_ARRAY
-      or else DESIG_TYPE.TY = DN_ARRAY
-    then
-      declare
-        TYPE_NAME : TREE := D( XD_SOURCE_NAME, DESIG_TYPE );
-        TYPE_STR  : constant STRING := '_' & PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
-        TYPE_LVL  : INTEGER := DI( CD_LEVEL, DESIG_TYPE );
-      begin
-        PUT( tab & "Ld" & tab & IMAGE( TYPE_LVL ) & ", " );
-        REGIONS_PATH( TYPE_NAME );
-        PUT( TYPE_STR );
+	    if  DESIG_TYPE.TY = DN_CONSTRAINED_ARRAY
+	      or else DESIG_TYPE.TY = DN_ARRAY
+	    then
+	      declare
+	        TYPE_NAME : TREE := D( XD_SOURCE_NAME, DESIG_TYPE );
+	        TYPE_STR  : constant STRING := '_' & PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
+	        TYPE_LVL  : INTEGER := DI( CD_LEVEL, DESIG_TYPE );
+	      begin
+	        PUT( tab & "Ld" & tab & IMAGE( TYPE_LVL ) & ", " );
+	        REGIONS_PATH( TYPE_NAME );
+	        PUT( TYPE_STR );
 
-        if  IS_LAST  then
-          PUT( "._LST_" );
-        else
-          PUT( "._FST_" );
-        end if;
+	        if  IS_LAST  then
+	          PUT( "._LST_" );
+	        else
+	          PUT( "._FST_" );
+	        end if;
 
-        PUT_LINE( IMAGE( NUM_DIM ) );
-        return;
-      end;
-    end if;
-  end;
-end if;
+	        PUT_LINE( IMAGE( NUM_DIM ) );
+	        return;
+	      end;
+	    end if;
+	  end;
+	end if;
 
 	while  PREFIX_TYPE.TY = DN_PRIVATE  or else  PREFIX_TYPE.TY = DN_L_PRIVATE  loop
 	  PREFIX_TYPE := D( SM_TYPE_SPEC, PREFIX_TYPE );
@@ -4610,9 +4703,11 @@ end if;
 	end;
         end;
 
-    elsif  PREFIX_NAME.TY = DN_USED_NAME_ID  then
+    elsif  RAW_PREFIX.TY = DN_USED_NAME_ID  then
       declare
-        TYPE_SPEC	: TREE	:= TREE_VOID;
+        PREFIX_DEFN		: TREE	:= D( SM_DEFN, RAW_PREFIX );
+        TYPE_SPEC		: TREE	:= TREE_VOID;
+
       begin
         if  PREFIX_DEFN.TY in CLASS_TYPE_NAME  then
           TYPE_SPEC := D( SM_TYPE_SPEC, PREFIX_DEFN );
@@ -4630,7 +4725,7 @@ end if;
       end;
 
     else
-      PUT_LINE( "; RANGE_ATTRIBUTE: prefix non traite " & NODE_NAME'IMAGE( PREFIX_NAME.TY ) );
+      PUT_LINE( "; RANGE_ATTRIBUTE: prefix non traite " & NODE_NAME'IMAGE( RAW_PREFIX.TY ) );
       PUT_LINE( tab & "LI" & tab & "0" );
     end if;
 

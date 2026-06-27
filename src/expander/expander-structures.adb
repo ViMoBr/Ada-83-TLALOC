@@ -105,13 +105,13 @@ is
 
 	    elsif  DEFN.TY = DN_PROCEDURE_ID  then
 	      if  not DB( CD_COMPILED, DEFN )  then
-	        declare
-		SUBP_LBL	:constant STRING	:= NEW_LABEL;
-	        begin
+--	        declare
+--		SUBP_LBL	:constant STRING	:= NEW_LABEL;
+--	        begin
 		DI( CD_LEVEL,      DEFN,  1 );
 		DI( CD_PARAM_SIZE, DEFN,  0 );
 		DB( CD_COMPILED,   DEFN,  TRUE );
-	        end;
+--	        end;
 	      end if;
 	    end if;
 	  end;

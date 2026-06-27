@@ -1,0 +1,161 @@
+if ~ definite A63202A1
+include 'A63202A1.FINC'
+end if
+if ~ definite REPORT
+include 'REPORT.FINC'
+end if
+PRO	A63202A_L1				;---------- PRO A63202A
+ELB 1					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+STR STR_L2, "CHECK THAT ILLEGAL INLINE PRAGMAS ARE IGNORED"	; constante string="CHECK THAT ILLEGAL INLINE PRAGMAS ARE IGNORED"
+	LCA	STR_L2.data_ptr
+STR STR_L3, "A63202A"			; constante string="A63202A"
+	LCA	STR_L3.data_ptr
+	CALL	STANDARD.REPORT. ,TEST_L1
+namespace	BLOCK__1
+ELB 2					;    BODY ELAB
+VAR X_disp, d				; variable entiere
+
+
+if defined P_L4_
+PRO	P_L4					;---------- PRO P
+ELB 3					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+ret_lbl:
+	UNLINK 3
+	RTD
+excep:
+endPRO					;---------- end PRO P
+end if
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	CALL	STANDARD.A63202A_L1.BLOCK__1. ,P_L4
+namespace	BLOCK__4
+ELB 3					;    BODY ELAB
+
+if defined Q_L5_
+PRO	Q_L5					;---------- PRO Q
+ELB 4					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+ret_lbl:
+	UNLINK 4
+	RTD
+excep:
+endPRO					;---------- end PRO Q
+end if
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	UNLINK 3
+endPRO
+	UNLINK 2
+endPRO
+namespace	BLOCK__2
+ELB 2					;    BODY ELAB
+; GENERIC_SUBPROGRAM_SPEC
+
+if defined GP_L7_
+PRO	GP_L7					;---------- PRO GP
+virtual at 8
+	ITEM__u_ofs = $
+	rq 1
+	ITEM__ld_ofs = $
+	rq 1
+	ITEM__st_ofs = $
+	rq 1
+	ITEM__inadr_ofs = $
+	rq 1
+	ITEM__outadr_ofs = $
+	rq 1
+end virtual
+ELB 3					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+ret_lbl:
+	UNLINK 3
+	RTD
+excep:
+endPRO					;---------- end PRO GP
+end if
+BRA post_LD_INTEGER
+LD_INTEGER.elab:
+	Ld -1, 0
+	RTD 0
+post_LD_INTEGER:
+BRA post_ST_INTEGER
+ST_INTEGER.elab:
+	Sd -1, 0
+	RTD 0
+post_ST_INTEGER:
+BRA post_INADR_INTEGER
+INADR_INTEGER.elab:
+	RTD 0
+post_INADR_INTEGER:
+BRA post_OUTADR_INTEGER
+OUTADR_INTEGER.elab:
+	La
+	RTD 0
+post_OUTADR_INTEGER:
+VAR INTEGER__outadr_ofs, q
+	LCA OUTADR_INTEGER.elab
+	Sa	 2, INTEGER__outadr_ofs
+VAR INTEGER__inadr_ofs, q
+	LCA INADR_INTEGER.elab
+	Sa	 2, INTEGER__inadr_ofs
+VAR INTEGER__st_ofs, q
+	LCA ST_INTEGER.elab
+	Sa	 2, INTEGER__st_ofs
+VAR INTEGER__ld_ofs, q
+	LCA LD_INTEGER.elab
+	Sa	 2, INTEGER__ld_ofs
+VAR INTEGER__u_ofs, q
+	La	 0, STANDARD._INTEGER.use__info
+	Sa	 2, INTEGER__u_ofs
+VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
+if defined NGP_L8_
+PRO	NGP_L8				;---------- PRO NGP
+ELB 3
+begin:
+	LVA	 2, GFP_disp
+	CALL	STANDARD.A63202A_L1.BLOCK__2. ,GP_L7
+	UNLINK	 3
+	RTD
+endPRO					;---------- end PRO NGP
+end if
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	UNLINK 2
+endPRO
+namespace	BLOCK__3
+ELB 2					;    BODY ELAB
+
+if defined X_L9_
+PRO	X_L9					;---------- PRO X
+ELB 3					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+ret_lbl:
+	UNLINK 3
+	RTD
+excep:
+endPRO					;---------- end PRO X
+end if
+Y = 'Y'
+namespace Y				;---------- PACKAGE DECLARATION
+VAR Z_disp, d				; variable entiere
+
+; EXC_LBL	L10
+end namespace
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	UNLINK 2
+endPRO
+	CALL	STANDARD.REPORT. ,RESULT_L6
+ret_lbl:
+	UNLINK 1
+	RTD
+excep:
+endPRO					;---------- end PRO A63202A
