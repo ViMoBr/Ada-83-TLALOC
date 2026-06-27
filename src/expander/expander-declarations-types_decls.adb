@@ -16,6 +16,7 @@ is
     procedure CODE_FLOAT_DECL			( TYPE_DECL :TREE );
 
     procedure CODE_RECORD_DECL		( TYPE_DECL :TREE );
+    procedure CODE_CONSTRAINED_RECORD_DECL	( TYPE_NAME : TREE; TYPE_SPEC : TREE );
     procedure CODE_UNCONSTRAINED_ARRAY_DECL	( TYPE_DECL :TREE );
     procedure CODE_CONSTRAINED_ARRAY_DECL	( TYPE_DECL :TREE );
     procedure CODE_ACCESS_DECL		( TYPE_DECL :TREE );
@@ -37,7 +38,8 @@ is
     elsif	 TYPE_SPEC.TY = DN_FLOAT		then  CODE_FLOAT_DECL	     ( TYPE_DECL );
 
     elsif	 TYPE_SPEC.TY = DN_RECORD		then  CODE_RECORD_DECL	     ( TYPE_DECL );
-    elsif	 TYPE_SPEC.TY = DN_ARRAY		then  CODE_UNCONSTRAINED_ARRAY_DECL( TYPE_DECL );
+    elsif  TYPE_SPEC.TY = DN_CONSTRAINED_RECORD	then  CODE_CONSTRAINED_RECORD_DECL ( TYPE_NAME, TYPE_SPEC );
+   elsif	 TYPE_SPEC.TY = DN_ARRAY		then  CODE_UNCONSTRAINED_ARRAY_DECL( TYPE_DECL );
     elsif	 TYPE_SPEC.TY = DN_ACCESS		then  CODE_ACCESS_DECL	     ( TYPE_DECL );
 
     elsif	 TYPE_SPEC.TY = DN_CONSTRAINED_ARRAY	then  CODE_CONSTRAINED_ARRAY_DECL  ( TYPE_DECL );
@@ -735,67 +737,70 @@ is
         while not IS_EMPTY( V_DECL_S ) loop
 	POP( V_DECL_S, V_DECL );
 
-	declare
-	  COMP_ID_S	: SEQ_TYPE := LIST( D( AS_SOURCE_NAME_S, V_DECL ) );
-	  COMP_ID		: TREE;
-	  COMP_TYPE	: TREE;
-	begin
-	  while  not IS_EMPTY( COMP_ID_S )  loop
-	    POP( COMP_ID_S, COMP_ID );
+	if  V_DECL.TY /= DN_NULL_COMP_DECL  then
 
-	    COMP_TYPE := D( SM_OBJ_TYPE, COMP_ID );
+	  declare
+	    COMP_ID_S	: SEQ_TYPE := LIST( D( AS_SOURCE_NAME_S, V_DECL ) );
+	    COMP_ID		: TREE;
+	    COMP_TYPE	: TREE;
+	  begin
+	    while  not IS_EMPTY( COMP_ID_S )  loop
+	      POP( COMP_ID_S, COMP_ID );
 
-	    if  COMP_TYPE.TY = DN_PRIVATE  or else  COMP_TYPE.TY = DN_L_PRIVATE  then
-	      COMP_TYPE := D( SM_TYPE_SPEC, COMP_TYPE );
-	    end if;
+	      COMP_TYPE := D( SM_OBJ_TYPE, COMP_ID );
 
-	    declare
-	      COMP_TYPE_NAME	: TREE		:= D( XD_SOURCE_NAME, COMP_TYPE );
-	      COMP_TYPE_STR		:constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, COMP_TYPE_NAME ) );
-	      COMP_ID_STR		: constant STRING	:= PRINT_NAME( D( LX_SYMREP, COMP_ID ) );
-	    begin
-	      if  COMP_TYPE.TY = DN_CONSTRAINED_ARRAY  then
-
-	        if  not DB( CD_COMPILED, COMP_TYPE )  then
-		PUT_LINE( COMP_ID_STR & " = '" & COMP_ID_STR & "'" );
-		PUT_LINE( " namespace " & COMP_TYPE_STR );
-		PROCESS_CONSTRAINED_ARRAY_TYPE_SPEC( COMP_TYPE );
-	        end if;
-
-	        PUT( "USEINFO " & LVL_STR & ", " & COMP_ID_STR & ", " );
-	        PUT( tab & "La " & IMAGE( DI( CD_LEVEL, COMP_TYPE ) ) & ", " );
-	        REGIONS_PATH( D( XD_SOURCE_NAME, D( SM_TYPE_SPEC, COMP_TYPE_NAME ) ) );
-	        PUT_LINE( COMP_TYPE_STR & ".use__info" );
-
-	      else
-	        PUT( "USEINFO " & LVL_STR & ", " & COMP_ID_STR & ", " );
-	        PUT( tab & "La " & IMAGE( DI( CD_LEVEL, COMP_TYPE ) ) & ", " );
-	        REGIONS_PATH( COMP_TYPE_NAME );
-	        PUT_LINE( COMP_TYPE_STR & ".use__info" );
+	      if  COMP_TYPE.TY = DN_PRIVATE  or else  COMP_TYPE.TY = DN_L_PRIVATE  then
+	        COMP_TYPE := D( SM_TYPE_SPEC, COMP_TYPE );
 	      end if;
+
+	      declare
+	        COMP_TYPE_NAME	: TREE		:= D( XD_SOURCE_NAME, COMP_TYPE );
+	        COMP_TYPE_STR		:constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, COMP_TYPE_NAME ) );
+	        COMP_ID_STR		: constant STRING	:= PRINT_NAME( D( LX_SYMREP, COMP_ID ) );
+	      begin
+	        if  COMP_TYPE.TY = DN_CONSTRAINED_ARRAY  then
+
+		if  not DB( CD_COMPILED, COMP_TYPE )  then
+		  PUT_LINE( COMP_ID_STR & " = '" & COMP_ID_STR & "'" );
+		  PUT_LINE( " namespace " & COMP_TYPE_STR );
+		  PROCESS_CONSTRAINED_ARRAY_TYPE_SPEC( COMP_TYPE );
+		end if;
+
+		PUT( "USEINFO " & LVL_STR & ", " & COMP_ID_STR & ", " );
+		PUT( tab & "La " & IMAGE( DI( CD_LEVEL, COMP_TYPE ) ) & ", " );
+		REGIONS_PATH( D( XD_SOURCE_NAME, D( SM_TYPE_SPEC, COMP_TYPE_NAME ) ) );
+		PUT_LINE( COMP_TYPE_STR & ".use__info" );
+
+	        else
+		PUT( "USEINFO " & LVL_STR & ", " & COMP_ID_STR & ", " );
+		PUT( tab & "La " & IMAGE( DI( CD_LEVEL, COMP_TYPE ) ) & ", " );
+		REGIONS_PATH( COMP_TYPE_NAME );
+		PUT_LINE( COMP_TYPE_STR & ".use__info" );
+	        end if;
 
                   -- calcul IS_STATIC inchangé
-	      if  COMP_TYPE.TY = DN_ACCESS  then
-                     null;
+	        if  COMP_TYPE.TY = DN_ACCESS  then
+		null;
 
-	      elsif  COMP_TYPE.TY in CLASS_SCALAR  or else  COMP_TYPE.TY in CLASS_CONSTRAINED  then
-	        if  D( CD_IMPL_SIZE, COMP_TYPE ) = TREE_VOID  then
-		IS_STATIC := FALSE;
-	        end if;
+	        elsif  COMP_TYPE.TY in CLASS_SCALAR  or else  COMP_TYPE.TY in CLASS_CONSTRAINED  then
+		if  D( CD_IMPL_SIZE, COMP_TYPE ) = TREE_VOID  then
+		  IS_STATIC := FALSE;
+		end if;
 
-	      elsif  COMP_TYPE.TY = DN_RECORD  then
-	        if  not IS_EMPTY( LIST( D( SM_DISCRIMINANT_S, COMP_TYPE ) ) )
+	        elsif  COMP_TYPE.TY = DN_RECORD  then
+		if  not IS_EMPTY( LIST( D( SM_DISCRIMINANT_S, COMP_TYPE ) ) )
 		  and then  D( SM_SIZE, COMP_TYPE ) = TREE_VOID
-	        then
+		then
+		  IS_STATIC := FALSE;
+		end if;
+
+	        else
 		IS_STATIC := FALSE;
 	        end if;
-
-	      else
-	        IS_STATIC := FALSE;
-	      end if;
-	    end;
-            end loop;
-          end;
+	      end;
+              end loop;
+            end;
+	end if;
         end loop;
 
       -- 2. Champs contenus dans les variantes de CE comp_list
@@ -893,49 +898,53 @@ is
 
         while  not IS_EMPTY( V_DECL_S )  loop
 	POP( V_DECL_S, V_DECL	);
+
+	if  V_DECL.TY /= DN_NULL_COMP_DECL  then
+
 			----------------
 			CHAMPS_REGULIERS:
-	declare
-	  COMP_ID_S	: SEQ_TYPE	:= LIST( D( AS_SOURCE_NAME_S,	V_DECL ) );
-	  COMP_ID		: TREE;
-	  COMP_TYPE	: TREE;
+	  declare
+	    COMP_ID_S	: SEQ_TYPE	:= LIST( D( AS_SOURCE_NAME_S,	V_DECL ) );
+	    COMP_ID	: TREE;
+	    COMP_TYPE	: TREE;
 
-	begin
-	  while  not IS_EMPTY( COMP_ID_S )  loop
-	    POP( COMP_ID_S, COMP_ID );
-	    COMP_TYPE := D( SM_OBJ_TYPE, COMP_ID );
-	    if  COMP_TYPE.TY = DN_PRIVATE  or  COMP_TYPE.TY = DN_L_PRIVATE  then
-	      COMP_TYPE := D( SM_TYPE_SPEC, COMP_TYPE );
-	    end if;
+	  begin
+	    while  not IS_EMPTY( COMP_ID_S )  loop
+	      POP( COMP_ID_S, COMP_ID );
+	      COMP_TYPE := D( SM_OBJ_TYPE, COMP_ID );
+	      if  COMP_TYPE.TY = DN_PRIVATE  or  COMP_TYPE.TY = DN_L_PRIVATE  then
+	        COMP_TYPE := D( SM_TYPE_SPEC, COMP_TYPE );
+	      end if;
 
-	    declare
-	      COMP_TYPE_NAME	: TREE		:= D( XD_SOURCE_NAME, COMP_TYPE );
-	      COMP_TYPE_STR		:constant	STRING	:= '_'  & PRINT_NAME( D( LX_SYMREP, COMP_TYPE_NAME ) );
-	      COMP_ID_STR		:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, COMP_ID ) );
-	      COMP_SIZE		: NATURAL;
+	      declare
+	        COMP_TYPE_NAME	: TREE		:= D( XD_SOURCE_NAME, COMP_TYPE );
+	        COMP_TYPE_STR	:constant	STRING	:= '_'  & PRINT_NAME( D( LX_SYMREP, COMP_TYPE_NAME ) );
+	        COMP_ID_STR		:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, COMP_ID ) );
+	        COMP_SIZE		: NATURAL;
 
-	    begin
-	      if  IS_STATIC  then
-	        if  COMP_TYPE.TY = DN_ACCESS  then
-		COMP_SIZE := CODI.ADDR_SIZE * CODI.STORAGE_UNIT;  -- bits : 8 octets sur x86_64
-	        else
-		COMP_SIZE := DI( CD_IMPL_SIZE, COMP_TYPE );
-	        end if;
-	        if  COMP_SIZE < CODI.STORAGE_UNIT  then
-		COMP_SIZE := CODI.STORAGE_UNIT;
-	        end if;
-	        PUT_LINE( "STATOFS " & COMP_ID_STR & ','
+	      begin
+	        if  IS_STATIC  then
+	          if  COMP_TYPE.TY = DN_ACCESS  then
+		  COMP_SIZE := CODI.ADDR_SIZE * CODI.STORAGE_UNIT;  -- bits : 8 octets sur x86_64
+	          else
+		  COMP_SIZE := DI( CD_IMPL_SIZE, COMP_TYPE );
+	          end if;
+	          if  COMP_SIZE < CODI.STORAGE_UNIT  then
+		  COMP_SIZE := CODI.STORAGE_UNIT;
+	          end if;
+	          PUT_LINE( "STATOFS " & COMP_ID_STR & ','
 			& INTEGER'IMAGE( ( COMP_SIZE + CODI.STORAGE_UNIT - 1 ) / CODI.STORAGE_UNIT ) );
-	        STATIC_SIZE := STATIC_SIZE
+	          STATIC_SIZE := STATIC_SIZE
 			   + CODI.STORAGE_UNIT * ( ( COMP_SIZE + CODI.STORAGE_UNIT - 1 ) / CODI.STORAGE_UNIT );
 
-	      else
-	        PUT_LINE( "; OFFSET NON STATIQUE A FAIRE" );
-	      end if;
-	    end;
-	  end loop;
-          end		CHAMPS_REGULIERS;
+	        else
+	          PUT_LINE( "; OFFSET NON STATIQUE A FAIRE" );
+	        end if;
+	      end;
+	    end loop;
+            end		CHAMPS_REGULIERS;
 			----------------
+	end if;
         end loop;
 			----------------
 			CHAMPS_VARIANTES:
@@ -986,6 +995,168 @@ is
 	----------------
 
 
+  function FULL_VIEW ( T : TREE ) return TREE is
+    R : TREE := T;
+  begin
+    loop
+      if R.TY = DN_PRIVATE or else R.TY = DN_L_PRIVATE then
+        R := D( SM_TYPE_SPEC, R );
+
+      elsif R.TY = DN_INCOMPLETE then
+        R := D( XD_FULL_TYPE_SPEC, R );
+
+      else
+        return R;
+      end if;
+    end loop;
+  end FULL_VIEW;
+
+  function ROOT_RECORD ( T : TREE ) return TREE is
+    R : TREE := FULL_VIEW( T );
+  begin
+    while R.TY = DN_CONSTRAINED_RECORD loop
+      R := FULL_VIEW( D( SM_BASE_TYPE, R ) );
+    end loop;
+
+    return R;
+  end ROOT_RECORD;
+
+		----------------------------
+  procedure	CODE_CONSTRAINED_RECORD_DECL	( TYPE_NAME : TREE; TYPE_SPEC : TREE )
+  is
+    TYPE_STR	:constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
+    LVL_STR	:constant STRING	:= IMAGE( CODI.CUR_LEVEL );
+
+
+  BASE_REC  : TREE := ROOT_RECORD( TYPE_SPEC );
+  BASE_NAME : TREE := D( XD_SOURCE_NAME, BASE_REC );
+  BASE_STR  : constant STRING := '_' & PRINT_NAME( D( LX_SYMREP, BASE_NAME ) );
+
+  procedure EMIT_BASE_PREFIX is
+  begin
+    REGIONS_PATH( BASE_NAME );
+    PUT( BASE_STR );
+  end EMIT_BASE_PREFIX;
+
+  procedure EMIT_ALIAS ( NAME : STRING ) is
+  begin
+    PUT( NAME & " = " );
+    EMIT_BASE_PREFIX;
+    PUT_LINE( "." & NAME );
+  end EMIT_ALIAS;
+
+  procedure EMIT_COMP_LIST_ALIASES ( CL : TREE ) is
+    V_DECL_S : SEQ_TYPE;
+    V_DECL   : TREE;
+  begin
+    if CL = TREE_VOID or else CL = TREE_NIL then
+      return;
+    end if;
+
+    V_DECL_S := LIST( D( AS_DECL_S, CL ) );
+
+    while not IS_EMPTY( V_DECL_S ) loop
+      POP( V_DECL_S, V_DECL );
+
+      if V_DECL.TY /= DN_NULL_COMP_DECL then
+        declare
+          COMP_ID_S : SEQ_TYPE := LIST( D( AS_SOURCE_NAME_S, V_DECL ) );
+          COMP_ID   : TREE;
+        begin
+          while not IS_EMPTY( COMP_ID_S ) loop
+            POP( COMP_ID_S, COMP_ID );
+            EMIT_ALIAS( PRINT_NAME( D( LX_SYMREP, COMP_ID ) ) );
+          end loop;
+        end;
+      end if;
+    end loop;
+
+    declare
+      VP : TREE := D( AS_VARIANT_PART, CL );
+    begin
+      if VP /= TREE_VOID and then VP /= TREE_NIL then
+        declare
+          VAR_S : SEQ_TYPE := LIST( D( AS_VARIANT_S, VP ) );
+          VAR_E : TREE;
+        begin
+          while not IS_EMPTY( VAR_S ) loop
+            POP( VAR_S, VAR_E );
+
+            if VAR_E.TY = DN_VARIANT then
+              EMIT_COMP_LIST_ALIASES( D( AS_COMP_LIST, VAR_E ) );
+            end if;
+          end loop;
+        end;
+      end if;
+    end;
+  end EMIT_COMP_LIST_ALIASES;
+
+begin
+  if BASE_REC.TY /= DN_RECORD then
+    PUT_LINE( "; CODE_CONSTRAINED_RECORD_DECL : base non record "
+            & NODE_NAME'IMAGE( BASE_REC.TY ) );
+    raise PROGRAM_ERROR;
+  end if;
+
+  DI( CD_LEVEL, TYPE_SPEC, INTEGER( CODI.CUR_LEVEL ) );
+  DB( CD_COMPILED, TYPE_SPEC, TRUE );
+
+  if D( CD_IMPL_SIZE, BASE_REC ) /= TREE_VOID then
+    DI( CD_IMPL_SIZE, TYPE_SPEC, DI( CD_IMPL_SIZE, BASE_REC ) );
+  end if;
+
+--  if D( CD_ALIGNMENT, BASE_REC ) /= TREE_VOID then		-- A VOIR
+--    DI( CD_ALIGNMENT, TYPE_SPEC, DI( CD_ALIGNMENT, BASE_REC ) );
+--  end if;
+
+  if CODI.DEBUG then
+    NEW_LINE;
+    PUT_LINE( tab50 & "; " & TYPE_STR & " CONSTRAINED RECORD VIEW" );
+  end if;
+
+  PUT_LINE( TYPE_STR & " = '" & TYPE_STR & "'" );
+  PUT_LINE( "namespace " & TYPE_STR );
+
+  PUT( "use__info = " );
+  EMIT_BASE_PREFIX;
+  PUT_LINE( ".use__info" );
+
+  PUT( "SIZ = " );
+  EMIT_BASE_PREFIX;
+  PUT_LINE( ".SIZ" );
+
+  PUT( "size = " );
+  EMIT_BASE_PREFIX;
+  PUT_LINE( ".size" );
+
+  -- Discriminants du record racine.
+  declare
+    DSCRMT_DECL_S : SEQ_TYPE := LIST( D( SM_DISCRIMINANT_S, BASE_REC ) );
+    DSCRMT_DECL   : TREE;
+  begin
+    while not IS_EMPTY( DSCRMT_DECL_S ) loop
+      POP( DSCRMT_DECL_S, DSCRMT_DECL );
+
+      declare
+        DISCR_ID_S : SEQ_TYPE := LIST( D( AS_SOURCE_NAME_S, DSCRMT_DECL ) );
+        DISCR_ID   : TREE;
+      begin
+        while not IS_EMPTY( DISCR_ID_S ) loop
+          POP( DISCR_ID_S, DISCR_ID );
+          EMIT_ALIAS( PRINT_NAME( D( LX_SYMREP, DISCR_ID ) ) );
+        end loop;
+      end;
+    end loop;
+  end;
+
+  -- Composants ordinaires et variants du record racine.
+  EMIT_COMP_LIST_ALIASES( D( SM_COMP_LIST, BASE_REC ) );
+
+  PUT_LINE( "end namespace" );
+
+  end	CODE_CONSTRAINED_RECORD_DECL;
+	----------------------------
+
 
 				----------------
   procedure			CODE_ACCESS_DECL		( TYPE_DECL :TREE )
@@ -995,6 +1166,7 @@ is
     TYPE_STR		: constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, TYPE_ID ) );
     RAW_DESIG_TYPE		: TREE		:= D( SM_DESIG_TYPE, TYPE_SPEC );
     DESIG_TYPE		: TREE		:= RAW_DESIG_TYPE;
+    DESIG_IS_FORWARD	: BOOLEAN		:= FALSE;
     LVL_STR		:constant STRING	:= IMAGE( CODI.CUR_LEVEL );
 
   begin
@@ -1035,6 +1207,23 @@ is
 		--------------------
     end if;
 
+    if  DESIG_TYPE /= TREE_VOID
+	and then DESIG_TYPE.TY /= DN_PRIVATE
+	and then DESIG_TYPE.TY /= DN_L_PRIVATE
+	and then DESIG_TYPE.TY /= DN_INCOMPLETE
+    then
+put_line( "; CODE_ACCESS_DECL cd_level void ? " & boolean'image( D( CD_LEVEL, DESIG_TYPE )= TREE_VOID ) );
+      if  D( CD_LEVEL, DESIG_TYPE ).PT = P  and then  D( CD_LEVEL, DESIG_TYPE ).TY = DN_VIRGIN  then
+      --  Cas : access vers un full type connu sémantiquement,
+      --  mais déclaré/codé plus loin dans la même région.
+
+put_line( "; CODE_ACCESS_DECL cd_level rempli" );
+
+        DI( CD_LEVEL, DESIG_TYPE, INTEGER( CODI.CUR_LEVEL ) );
+        DESIG_IS_FORWARD := TRUE;
+      end if;
+    end if;
+
     if  CODI.DEBUG  then
       NEW_LINE;
       PUT_LINE( tab50 & "; " & TYPE_STR & " ACCESS TYPE INFO" );
@@ -1058,14 +1247,33 @@ is
     --  Patron désigné encore indisponible.
     --  Suffisant pour les déclarations pures de A33003A.
       PUT_LINE( tab & "LI" & tab & "0" );
+
     else
       declare
         DESIG_NAME	: TREE		:= D( XD_SOURCE_NAME, DESIG_TYPE );
         DESIG_STR	:constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, DESIG_NAME ) );
+        DESIG_LVL	:constant INTEGER	:= DI( CD_LEVEL, DESIG_TYPE );
+
       begin
-        PUT( tab & "La " & IMAGE( DI( CD_LEVEL, DESIG_TYPE ) ) & ", " );
-        REGIONS_PATH( DESIG_NAME );
-        PUT_LINE( DESIG_STR & ".use__info" );
+        if  DESIG_IS_FORWARD  then
+         --  Important : ne pas faire La ..., use__info ici.
+         --  Le code de TA est exécuté avant l'initialisation de TD.use__info.
+         --  On stocke donc directement le pointeur vers le bloc use_info.
+	if  DESIG_TYPE.TY = DN_ENUMERATION  then
+	  PUT( tab & "LCA" & tab );
+	  REGIONS_PATH( DESIG_NAME );
+	  PUT_LINE( DESIG_STR & ".SIZ" );
+	else
+	  PUT( tab & "LVA" & tab & IMAGE( DESIG_LVL ) & ", " );
+	  REGIONS_PATH( DESIG_NAME );
+	  PUT_LINE( DESIG_STR & ".SIZ" );
+	end if;
+
+        else
+	PUT( tab & "La " & IMAGE( DI( CD_LEVEL, DESIG_TYPE ) ) & ", " );
+	REGIONS_PATH( DESIG_NAME );
+	PUT_LINE( DESIG_STR & ".use__info" );
+        end if;
       end;
     end if;
 
@@ -1269,7 +1477,7 @@ is
       end		FLOAT_SUBTYPE;
 		-------------
 
-   elsif  TYPE_SPEC.TY = DN_CONSTRAINED_ARRAY
+    elsif  TYPE_SPEC.TY = DN_CONSTRAINED_ARRAY
     then
       PUT_LINE( SUBTYPE_STR &	" = '" & SUBTYPE_STR & "'" );
       PUT( "namespace " & SUBTYPE_STR );
@@ -1277,6 +1485,9 @@ is
       NEW_LINE;
 
       PROCESS_CONSTRAINED_ARRAY_TYPE_SPEC( TYPE_SPEC, D( AS_CONSTRAINT, D( AS_SUBTYPE_INDICATION, SUBTYPE_DECL ) ) );
+
+    elsif  TYPE_SPEC.TY = DN_CONSTRAINED_RECORD  then
+      CODE_CONSTRAINED_RECORD_DECL( SUBTYPE_ID, TYPE_SPEC );
 
     else
       PUT_LINE( ";  CODE_SUBTYPE_DECL : TYPE_SPEC.TY PAS FAIT " & NODE_NAME'IMAGE( TYPE_SPEC.TY ) );

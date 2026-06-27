@@ -533,6 +533,113 @@ null;--	     declare
       NAME := D( AS_DESIGNATOR, NAME );
     end if;
 
+
+if  NAME.TY = DN_INDEXED  then
+   declare
+      PREFIX_TYPE      : TREE := D( SM_EXP_TYPE, NAME );
+      PREFIX_BASE_TYPE : TREE;
+      PREFIX_TYPE_NAME : TREE;
+      TYPE_NAME_STR    : STRING(1 .. 200);
+      TYPE_NAME_LEN    : NATURAL := 0;
+      TYPE_LVL         : INTEGER;
+      INDEX_NUM        : INTEGER := 1;
+      NB_DIMS          : INTEGER := 0;
+
+      function FULL_VIEW_LOCAL ( T : TREE ) return TREE
+      is
+         R : TREE := T;
+      begin
+         loop
+            if  R.TY = DN_PRIVATE or else R.TY = DN_L_PRIVATE  then
+               R := D( SM_TYPE_SPEC, R );
+
+            elsif  R.TY = DN_INCOMPLETE  then
+               R := D( XD_FULL_TYPE_SPEC, R );
+
+            else
+               return R;
+            end if;
+         end loop;
+      end FULL_VIEW_LOCAL;
+
+      procedure SET_TYPE_NAME ( S : STRING )
+      is
+      begin
+         TYPE_NAME_LEN := S'LENGTH;
+         TYPE_NAME_STR(1 .. TYPE_NAME_LEN) := S;
+      end SET_TYPE_NAME;
+
+      procedure INDEX ( EXP : TREE )
+      is
+         INDEX_NUM_IMG : constant STRING := IMAGE( INDEX_NUM );
+      begin
+         CODE_EXP( EXP );
+
+         PUT( tab & "Ld" & tab & INTEGER'IMAGE( TYPE_LVL ) & ", " );
+         REGIONS_PATH( PREFIX_TYPE_NAME );
+         PUT_LINE( TYPE_NAME_STR(1 .. TYPE_NAME_LEN) & "._FST_" & INDEX_NUM_IMG );
+
+         PUT_LINE( tab & "SUB" );
+
+         PUT( tab & "Ld" & tab & INTEGER'IMAGE( TYPE_LVL ) & ", " );
+         REGIONS_PATH( PREFIX_TYPE_NAME );
+
+         if  INDEX_NUM < NB_DIMS  then
+            PUT_LINE( TYPE_NAME_STR(1 .. TYPE_NAME_LEN) & ".SIZ_" & INDEX_NUM_IMG );
+         else
+            PUT_LINE( TYPE_NAME_STR(1 .. TYPE_NAME_LEN) & "._COMP_SIZ" );
+         end if;
+
+         PUT_LINE( tab & "LI" & tab & IMAGE( CODI.STORAGE_UNIT ) );
+         PUT_LINE( tab & "DIV" );
+         PUT_LINE( tab & "MUL" );
+         PUT_LINE( tab & "ADD" );
+      end INDEX;
+
+   begin
+      PREFIX_TYPE := FULL_VIEW_LOCAL( PREFIX_TYPE );
+
+      if  PREFIX_TYPE.TY = DN_CONSTRAINED_ARRAY  then
+         PREFIX_BASE_TYPE := D( SM_BASE_TYPE, PREFIX_TYPE );
+      else
+         PREFIX_BASE_TYPE := PREFIX_TYPE;
+      end if;
+
+      PREFIX_TYPE_NAME := D( XD_SOURCE_NAME, PREFIX_TYPE );
+      TYPE_LVL         := DI( CD_LEVEL, PREFIX_TYPE );
+
+      SET_TYPE_NAME( '_' & PRINT_NAME( D( LX_SYMREP, PREFIX_TYPE_NAME ) ) );
+
+      --  Calcule l'adresse de X2(1), c'est-à-dire l'adresse de début
+      --  du tableau composant T2.
+      CODE_INDEXED( NAME );
+
+      declare
+         CNT_SEQ : SEQ_TYPE := LIST( D( AS_EXP_S, INDEXED ) );
+         DUMMY   : TREE;
+      begin
+         while  not IS_EMPTY( CNT_SEQ )  loop
+            POP( CNT_SEQ, DUMMY );
+            NB_DIMS := NB_DIMS + 1;
+         end loop;
+      end;
+
+      declare
+         EXP_SEQ : SEQ_TYPE := LIST( D( AS_EXP_S, INDEXED ) );
+         EXP     : TREE;
+      begin
+         while  not IS_EMPTY( EXP_SEQ )  loop
+            POP( EXP_SEQ, EXP );
+            INDEX( EXP );
+            INDEX_NUM := INDEX_NUM + 1;
+         end loop;
+      end;
+
+      return;
+   end;
+end if;
+
+
     declare
     ARRAY_NAME		:constant	STRING		:= PRINT_NAME( D( LX_SYMREP, NAME ) );
     ARRAY_DEFN		: TREE			:= D( SM_DEFN, NAME	);
@@ -2171,6 +2278,51 @@ end;
   end	CODE_STATIC_FIXED_VALUE;
 	-----------------------
 
+		---------
+  function	FULL_VIEW	( T : TREE )	return TREE
+  is		---------
+    R	: TREE	:= T;
+  begin
+    loop
+      if  R.TY = DN_PRIVATE or else R.TY = DN_L_PRIVATE  then
+        if D( SM_TYPE_SPEC, R ) = TREE_VOID then
+	return R;
+        end if;
+
+        R := D( SM_TYPE_SPEC, R );
+
+      elsif  R.TY = DN_INCOMPLETE  then
+        if D( XD_FULL_TYPE_SPEC, R ) = TREE_VOID then
+	return R;
+        end if;
+
+        R := D( XD_FULL_TYPE_SPEC, R );
+
+      else
+        return R;
+      end if;
+    end loop;
+
+  end	FULL_VIEW;
+	---------
+
+		--------------
+    function	COMP_SIZE_BITS	( T : TREE )	return INTEGER
+    is		--------------
+      E	: TREE	:= FULL_VIEW( T );
+    begin
+      if  E.TY = DN_ACCESS  then
+        return CODI.ADDR_SIZE * CODI.STORAGE_UNIT;
+
+      elsif  E.TY = DN_FLOAT  then
+        return CODI.ADDR_SIZE * CODI.STORAGE_UNIT;
+
+      else
+        return DI( CD_IMPL_SIZE, E );
+      end if;
+
+    end	COMP_SIZE_BITS;
+	--------------
 
 				------------------
   procedure			CODE_FUNCTION_CALL		( FUNCTION_CALL :TREE )
@@ -2212,8 +2364,8 @@ end;
 
         if  OP_STR = """&"""  then
           declare
-            COMP_TYPE	: TREE		:= D( SM_COMP_TYPE, D( SM_BASE_TYPE, RES_TYPE ) );
-            COMP_BITS	: INTEGER		:= DI( CD_IMPL_SIZE, COMP_TYPE );
+            COMP_TYPE	: TREE		:= FULL_VIEW( D( SM_COMP_TYPE, D( SM_BASE_TYPE, RES_TYPE ) ) );
+            COMP_BITS	: INTEGER		:= COMP_SIZE_BITS( COMP_TYPE );
             COMP_BYTES	: INTEGER		:= COMP_BITS / CODI.STORAGE_UNIT;
             LVL		:constant STRING	:= IMAGE( CODI.CUR_LEVEL );
 
@@ -2717,30 +2869,6 @@ end;
   end	CODE_FUNCTION_CALL;
 	------------------
 
-
-function FULL_VIEW ( T : TREE ) return TREE is
-  R : TREE := T;
-begin
-  loop
-    if  R.TY = DN_PRIVATE or else R.TY = DN_L_PRIVATE  then
-      if D( SM_TYPE_SPEC, R ) = TREE_VOID then
-        return R;
-      end if;
-
-      R := D( SM_TYPE_SPEC, R );
-
-    elsif  R.TY = DN_INCOMPLETE  then
-      if D( XD_FULL_TYPE_SPEC, R ) = TREE_VOID then
-        return R;
-      end if;
-
-      R := D( XD_FULL_TYPE_SPEC, R );
-
-    else
-      return R;
-    end if;
-  end loop;
-end FULL_VIEW;
 
 				------------------------
   procedure			CODE_QUALIFIED_ALLOCATOR	( QUALIFIED_ALLOCATOR :TREE )
@@ -3341,7 +3469,7 @@ end FULL_VIEW;
         end loop;
 
         BASE_TYPE := D( SM_BASE_TYPE, CUR_TYPE );
-        COMP_TYPE := D( SM_COMP_TYPE, BASE_TYPE );
+        COMP_TYPE := FULL_VIEW( D( SM_COMP_TYPE, BASE_TYPE ) );
         CUR_TYPE  := COMP_TYPE;
       end loop;
 
@@ -3352,7 +3480,7 @@ end FULL_VIEW;
 
       if  COMP_TYPE = TREE_VOID  then
         BASE_TYPE := D( SM_BASE_TYPE, TYPE_SPEC );
-        COMP_TYPE := D( SM_COMP_TYPE, BASE_TYPE );
+        COMP_TYPE := FULL_VIEW( D( SM_COMP_TYPE, BASE_TYPE ) );
       end if;
     end	COLLECT_DIMENSIONS;
 	----------------------
@@ -3579,7 +3707,8 @@ end FULL_VIEW;
 
     COLLECT_DIMENSIONS( AGGREGATE, TYPE_SPEC );
 
-    COMP_BITS  := DI( CD_IMPL_SIZE, COMP_TYPE );
+    COMP_TYPE := FULL_VIEW( COMP_TYPE );
+    COMP_BITS  := COMP_SIZE_BITS( COMP_TYPE );
     COMP_BYTES := COMP_BITS / CODI.STORAGE_UNIT;
     if  COMP_BYTES = 0  then
       COMP_BYTES := 1;
@@ -3735,6 +3864,9 @@ end FULL_VIEW;
 SCAN_DECLS:
 	while not IS_EMPTY( COMP_DECL_S )  loop
 	  POP( COMP_DECL_S, COMP_DECL );
+
+if  COMP_DECL.TY /= DN_NULL_COMP_DECL  then
+
 	  declare
 	    COMP_ID_S	: SEQ_TYPE	:= LIST( D( AS_SOURCE_NAME_S, COMP_DECL ) );
 	    COMP_ID	: TREE;
@@ -3801,6 +3933,7 @@ SCAN_IDS:
 	      end;
 	    end loop		SCAN_IDS;
 	  end;
+	  end if;
           end loop		SCAN_DECLS;
           PUT_LINE( tab & "DROP" );									-- Enlever l'adresse de debut data record de reference
 
@@ -4555,10 +4688,9 @@ put_line( "; CODE_QUALIFIED : DN_QUALIFIED" & NODE_NAME'IMAGE( SRC_EXP.TY ) );
         LOAD_MEM( VC_ID );
       end if;
 
-    when DN_RECORD | DN_PRIVATE | DN_L_PRIVATE =>
-      LOAD_MEM( VC_ID );
-
-    when DN_ARRAY |	DN_CONSTRAINED_ARRAY =>
+    when DN_RECORD | DN_CONSTRAINED_RECORD
+	| DN_ARRAY | DN_CONSTRAINED_ARRAY
+	| DN_PRIVATE | DN_L_PRIVATE =>
       LOAD_MEM( VC_ID );
 
     when others

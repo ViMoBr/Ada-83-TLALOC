@@ -761,6 +761,9 @@ put_line( "; CODE_VC_NAME " & NODE_NAME'IMAGE( VC_NAME.TY ) );
 
 	  while  not IS_EMPTY( COMP_DECL_S )  loop
 	    POP( COMP_DECL_S, COMP_DECL );
+
+	    if  COMP_DECL.TY /= DN_NULL_COMP_DECL  then
+
 	    declare
 	      COMP_ID_S	: SEQ_TYPE	:= LIST( D( AS_SOURCE_NAME_S,	COMP_DECL	) );
 	      COMP_ID	: TREE;
@@ -797,6 +800,7 @@ put_line( "; CODE_VC_NAME " & NODE_NAME'IMAGE( VC_NAME.TY ) );
 	        end;
 	      end	loop;
 	    end;
+	    end if;
 	  end loop;
 	end;
         end if;

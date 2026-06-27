@@ -125,6 +125,10 @@ is					-----
   begin
     case TYPE_SPEC.TY is
     when DN_ACCESS			=> return	ADDR_SIZE;
+    when DN_RECORD
+	=> return ( DI( CD_IMPL_SIZE, TYPE_SPEC ) + STORAGE_UNIT - 1 ) / STORAGE_UNIT;
+    when DN_CONSTRAINED_RECORD
+	=> return TYPE_SIZE( D( SM_BASE_TYPE, TYPE_SPEC ) );
     when DN_ARRAY			=> return	2 * ADDR_SIZE;
     when DN_ENUMERATION | DN_INTEGER	=> return	INTG_SIZE;
     when DN_FLOAT			=> return	ADDR_SIZE;			-- 8 octets = 64 bits IEEE 754 double
