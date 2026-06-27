@@ -926,7 +926,7 @@ VAR ROUND_LEN_disp, w			; variable entiere
 
 VAR VDP_disp, q				; variable record : pointeur aux data record
 VAR VDP__u, q				; variable record : pointeur aux useinfo
-	LI	PRINT_NUM : LE HI N EST PAS UN DN_NUM_VAL PAS DE CHAINE ???
+	LI	PRINT_NUM : LE HI N EST PAS UN DN_NUM_VAL (DN_VOID PAS DE CHAINE !
 	Sa	3, VDP_disp
 	LVA	3, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR_PAIRS.SIZ
 	Sa	3, VDP__u
@@ -1006,6 +1006,7 @@ VAR GFP_disp, q				; Lieu du Generic Frame Pointer
 if defined CAST_TREE_L28_
 PRO	CAST_TREE_L28				;---------- PRO CAST_TREE
 PRMS					;    debut parametrage
+	PRM S_ofs				; in
 	PRM result__ofs				; resultat de fonction
 endPRMS					;    fin parametrage
 ELB 4
@@ -1013,7 +1014,13 @@ begin:
 	LI	0					; lieu result
 	LVA	 3, GFP_disp
 	La 	 4, -S_ofs
-	CALL	STANDARD.UNCHECKED_CONVERSION. ,	UNLINK	 4
+	La	4, -result__ofs
+	La	, 0
+	LI	STANDARD.IDL._TREE.size
+	La	4, -S_ofs
+	La	, 0
+	BLKMOV
+	UNLINK	 4
 	RTD	prm_siz-8
 endPRO					;---------- end PRO CAST_TREE
 end if
@@ -1139,7 +1146,7 @@ endPRO
 endPRO
 ret_lbl:
 	UNLINK 1
-	RTD
+	RTD	prm_siz-8
 excep:
 endPRO					;---------- end PRO U_INT
 end if
@@ -1535,7 +1542,7 @@ VAR	ANON_202_25__dat, STANDARD.IDL._TREE.size
 
 VAR VDP_disp, q				; variable record : pointeur aux data record
 VAR VDP__u, q				; variable record : pointeur aux useinfo
-	LI	PRINT_NUM : LE HI N EST PAS UN DN_NUM_VAL PAS DE CHAINE ???
+	LI	PRINT_NUM : LE HI N EST PAS UN DN_NUM_VAL (DN_VOID PAS DE CHAINE !
 	Sa	2, VDP_disp
 	LVA	2, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR_PAIRS.SIZ
 	Sa	2, VDP__u
@@ -1615,6 +1622,7 @@ VAR GFP_disp, q				; Lieu du Generic Frame Pointer
 if defined CAST_UDIGIT_PAIR_L47_
 PRO	CAST_UDIGIT_PAIR_L47			;---------- PRO CAST_UDIGIT_PAIR
 PRMS					;    debut parametrage
+	PRM S_ofs				; in
 	PRM result__ofs				; resultat de fonction
 endPRMS					;    fin parametrage
 ELB 3
@@ -1622,7 +1630,13 @@ begin:
 	LI	0					; lieu result
 	LVA	 2, GFP_disp
 	La 	 3, -S_ofs
-	CALL	STANDARD.UNCHECKED_CONVERSION. ,	UNLINK	 3
+	La	3, -result__ofs
+	La	, 0
+	LI	STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._UDIGIT_PAIR_TYPE.size
+	La	3, -S_ofs
+	La	, 0
+	BLKMOV
+	UNLINK	 3
 	RTD	prm_siz-8
 endPRO					;---------- end PRO CAST_UDIGIT_PAIR
 end if
@@ -1987,7 +2001,7 @@ endPRO
 L56:
 ret_lbl:
 	UNLINK 1
-	RTD
+	RTD	prm_siz
 excep:
 endPRO					;---------- end PRO SPREAD
 end if

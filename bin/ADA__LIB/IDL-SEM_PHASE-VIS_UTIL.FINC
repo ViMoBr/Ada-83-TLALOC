@@ -4388,6 +4388,31 @@ VAR	LMT_IL227_disp, d			; limite boucle LOOP__21
 	BT	L226
 LOOP__21:					; corps boucle LOOP__21
 					; debut if
+	La	 2, A_WORK_disp				; array data start address on stack
+	Ld	2, IL227_disp
+	LId	2, A_WORK__u, STANDARD._STRING.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	2, A_WORK__u, STANDARD._STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb
+	LI	65
+	CGE
+	LI	90
+	La	 2, A_WORK_disp				; array data start address on stack
+	Ld	2, IL227_disp
+	LId	2, A_WORK__u, STANDARD._STRING.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	2, A_WORK__u, STANDARD._STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb
+	CGE
+	ET
 	BF	L229
 	La	 2, A_WORK_disp				; array data start address on stack
 	Ld	2, IL227_disp

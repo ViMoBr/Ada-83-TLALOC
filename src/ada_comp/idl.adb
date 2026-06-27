@@ -517,7 +517,7 @@ is					---
 
     if  T.PT = HI  then										--| VALEUR COURTE 16 BITS
       if	T.NOTY /=	DN_NUM_VAL  then									--| SI CE	N'EST PAS	UN NUMVAL
-        return "PRINT_NUM : LE HI N EST PAS UN DN_NUM_VAL PAS DE CHAINE ???";					--| CHAINE PAS DE NOM
+        return "PRINT_NUM : LE HI N EST PAS UN DN_NUM_VAL ("& NODE_NAME'IMAGE( T.NOTY ) & " PAS DE CHAINE !";		--| CHAINE PAS DE NOM
       end	if;
 
       if	T.NSIZ = 1  then										--| VALEUR NEGATIVE
@@ -527,8 +527,13 @@ is					---
       end	if;
 
     elsif	 T.PT = P	then
+
+      if  T.TY = DN_REAL_VAL  then
+        return  PRINT_NUM( D( XD_NUMER, T ) ) & '/' & PRINT_NUM( D( XD_DENOM, T ) );
+      end if;
+
       if	T.TY /= DN_NUM_VAL	then									--| SI CE	N'EST PAS	UN NUMVAL
-        return "PRINT_NUM : LE HI N EST PAS UN DN_NUM_VAL PAS DE CHAINE ???";					--| CHAINE PAS DE NOM
+        return "PRINT_NUM : LE HI N EST PAS UN DN_NUM_VAL ("& NODE_NAME'IMAGE( T.TY ) & " PAS DE CHAINE !";		--| CHAINE PAS DE NOM
       end	if;
 
       declare											--| UN VRAI DN_NUM_VAL

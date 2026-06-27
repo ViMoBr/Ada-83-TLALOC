@@ -1445,7 +1445,160 @@ put_line( "; CODE_VC_NAME " & NODE_NAME'IMAGE( VC_NAME.TY ) );
 	  MODEL_DEFN	: TREE	:= D( SM_DEFN, CODI.INSTANTIATION_MODEL_NAME );
 	  MODEL_SPEC	: TREE	:= D( SM_SPEC, MODEL_DEFN );
 	begin
-	  if  MODEL_DEFN.TY = DN_GENERIC_ID  and then  MODEL_SPEC.TY in CLASS_SUBP_ENTRY_HEADER  then
+	  if  MODEL_DEFN.TY = DN_GENERIC_ID
+	      and then  PRINT_NAME( D( LX_SYMREP, MODEL_DEFN ) ) = "UNCHECKED_CONVERSION"
+	  then
+
+	    declare
+			----------------------------------
+	      procedure	CODE_UNCHECKED_CONVERSION_INSTANCE	( SUBPROG_ENTRY_DECL :TREE; SOURCE_NAME :TREE )
+	      is
+  UNIT_KIND : TREE := D( AS_UNIT_KIND, SUBPROG_ENTRY_DECL );
+
+  ACTUALS   : SEQ_TYPE := LIST( D( AS_GENERAL_ASSOC_S, UNIT_KIND ) );
+  SRC_ACT   : TREE;
+  DST_ACT   : TREE;
+
+  SRC_DEFN  : TREE;
+  DST_DEFN  : TREE;
+
+  SRC_TYPE  : TREE;
+  DST_TYPE  : TREE;
+
+  function ACTUAL_EXP ( A : TREE ) return TREE is
+  begin
+    if A.TY = DN_ASSOC then
+      return D( AS_EXP, A );
+    else
+      return A;
+    end if;
+  end ACTUAL_EXP;
+
+  function FULL_VIEW ( T : TREE ) return TREE is
+    R : TREE := T;
+  begin
+    loop
+      if R.TY = DN_PRIVATE or else R.TY = DN_L_PRIVATE then
+        R := D( SM_TYPE_SPEC, R );
+
+      elsif R.TY = DN_INCOMPLETE then
+        R := D( XD_FULL_TYPE_SPEC, R );
+
+      else
+        return R;
+      end if;
+    end loop;
+  end FULL_VIEW;
+
+  procedure EMIT_TYPE_SIZE_BYTES ( T : TREE ) is
+    TT : TREE := FULL_VIEW( T );
+  begin
+    if TT.TY = DN_RECORD then
+      declare
+        TN : TREE := D( XD_SOURCE_NAME, TT );
+        TS : constant STRING := '_' & PRINT_NAME( D( LX_SYMREP, TN ) );
+      begin
+        PUT( tab & "LI" & tab );
+        REGIONS_PATH( TN );
+        PUT_LINE( TS & ".size" );
+      end;
+
+    elsif TT.TY = DN_CONSTRAINED_ARRAY or else TT.TY = DN_ARRAY then
+      declare
+        TN : TREE := D( XD_SOURCE_NAME, TT );
+        TS : constant STRING := '_' & PRINT_NAME( D( LX_SYMREP, TN ) );
+      begin
+        PUT( tab & "Ld" & tab & IMAGE( DI( CD_LEVEL, TT ) ) & ", " );
+        REGIONS_PATH( TN );
+        PUT_LINE( TS & ".SIZ" );
+
+        PUT_LINE( tab & "LI" & tab & IMAGE( CODI.STORAGE_UNIT ) );
+        PUT_LINE( tab & "DIV" );
+      end;
+
+    elsif TT.TY in CLASS_SCALAR or else TT.TY = DN_ACCESS then
+      PUT_LINE( tab & "LI" & tab & IMAGE( CODI.TYPE_SIZE( TT ) ) );
+
+    else
+      PUT_LINE( "; UNCHECKED_CONVERSION : taille cible non geree "
+              & NODE_NAME'IMAGE( TT.TY ) );
+      raise PROGRAM_ERROR;
+    end if;
+  end EMIT_TYPE_SIZE_BYTES;
+
+function IS_COMPOSITE ( T : TREE ) return BOOLEAN is
+  TT : TREE := FULL_VIEW( T );
+begin
+  return TT.TY = DN_RECORD
+      or else TT.TY = DN_CONSTRAINED_RECORD
+      or else TT.TY = DN_ARRAY
+      or else TT.TY = DN_CONSTRAINED_ARRAY;
+end IS_COMPOSITE;
+
+begin
+  POP( ACTUALS, SRC_ACT );
+  POP( ACTUALS, DST_ACT );
+
+  SRC_ACT := ACTUAL_EXP( SRC_ACT );
+  DST_ACT := ACTUAL_EXP( DST_ACT );
+
+  SRC_DEFN := D( SM_DEFN, SRC_ACT );
+  DST_DEFN := D( SM_DEFN, DST_ACT );
+
+  SRC_TYPE := FULL_VIEW( D( SM_TYPE_SPEC, SRC_DEFN ) );
+  DST_TYPE := FULL_VIEW( D( SM_TYPE_SPEC, DST_DEFN ) );
+
+  -- Version minimale robuste pour composite -> composite.
+  if  (SRC_TYPE.TY = DN_ARRAY or else SRC_TYPE.TY = DN_CONSTRAINED_ARRAY
+       or else SRC_TYPE.TY = DN_RECORD)
+  and (DST_TYPE.TY = DN_ARRAY or else DST_TYPE.TY = DN_CONSTRAINED_ARRAY
+       or else DST_TYPE.TY = DN_RECORD)
+  then
+    -- @DST = result__ofs.data_ptr
+    PUT_LINE( tab & "La" & tab & IMAGE( CODI.CUR_LEVEL ) & ", -result__ofs" );
+    PUT_LINE( tab & "La" & tab & ", 0" );
+
+    -- LEN = taille du type cible en octets
+    EMIT_TYPE_SIZE_BYTES( DST_TYPE );
+
+    -- @SRC = S.data_ptr
+    PUT_LINE( tab & "La" & tab & IMAGE( CODI.CUR_LEVEL ) & ", -S_ofs" );
+    PUT_LINE( tab & "La" & tab & ", 0" );
+
+    PUT_LINE( tab & "BLKMOV" );
+
+elsif  IS_COMPOSITE( SRC_TYPE )
+and then (DST_TYPE.TY in CLASS_SCALAR or else DST_TYPE.TY = DN_ACCESS)
+then
+  -- Source composite passée par adresse de doublet.
+  -- result__ofs est un résultat scalaire.
+  PUT_LINE( tab & "La" & tab & IMAGE( CODI.CUR_LEVEL ) & ", -S_ofs" );
+  PUT_LINE( tab & "La" & tab & ", 0" );
+
+  -- Lire les octets bruts avec la taille du type cible.
+  PUT_LINE( tab & "L" & OPER_SIZ_CHAR( DST_TYPE ) );
+
+  -- Stocker dans le slot résultat.
+  PUT_LINE( tab & "S" & OPER_SIZ_CHAR( DST_TYPE )
+          & tab & IMAGE( CODI.CUR_LEVEL ) & ", -result__ofs" );
+
+  else
+    PUT_LINE( "; UNCHECKED_CONVERSION : cas non encore gere "
+            & NODE_NAME'IMAGE( SRC_TYPE.TY )
+            & " -> "
+            & NODE_NAME'IMAGE( DST_TYPE.TY ) );
+    raise PROGRAM_ERROR;
+  end if;
+	      end	CODE_UNCHECKED_CONVERSION_INSTANCE;
+		----------------------------------
+
+	    begin
+	      CODE_UNCHECKED_CONVERSION_INSTANCE( SUBPROG_ENTRY_DECL => SUBPROG_ENTRY_DECL,
+					SOURCE_NAME        => SOURCE_NAME
+				);
+	    end;
+
+	  elsif  MODEL_DEFN.TY = DN_GENERIC_ID  and then  MODEL_SPEC.TY in CLASS_SUBP_ENTRY_HEADER  then
 				-----------------------
 				DIRECT_SUBPROG_INSTANCE:						-- procedure NP is new P (...);
 	    declare
@@ -1517,12 +1670,16 @@ put_line( "; CODE_VC_NAME " & NODE_NAME'IMAGE( VC_NAME.TY ) );
 	end if;
 
 	PUT_LINE(	tab & "UNLINK" & tab & LEVEL_NUM'IMAGE(	CODI.CUR_LEVEL ) );
-	if  SOURCE_NAME.TY = DN_FUNCTION_ID  then
-	  PUT_LINE( tab & "RTD" & tab	& "prm_siz-8" );
-	else
-	  PUT_LINE( tab & "RTD" & tab	& "prm_siz" );
-	end if;
 
+	if  CODI.NO_SUBP_PARAMS  then
+	  PUT_LINE( tab & "RTD" );
+	else
+	  if  SOURCE_NAME.TY = DN_FUNCTION_ID  then
+	    PUT_LINE( tab & "RTD" & tab & "prm_siz-8" );
+	  else
+	    PUT_LINE( tab & "RTD" & tab & "prm_siz" );
+	  end if;
+	end if;
 	PUT( "endPRO" );
 	if  CODI.DEBUG  then PUT( tab50 & ";---------- end PRO " & SUB_NAME);	end if;
 	NEW_LINE;

@@ -134,7 +134,7 @@ VAR LST, b
 	LI	63
 	Sb	0, LST
 VAR PARENT__u, q
-	La	0, STANDARD.LEX._LEX_TYPE.use__info
+	La 0	, STANDARD.LEX._LEX_TYPE.use__info
 	Sa	0, PARENT__u
 end namespace
 
@@ -154,7 +154,7 @@ VAR LST, b
 	LI	89
 	Sb	0, LST
 VAR PARENT__u, q
-	La	0, STANDARD.LEX._LEX_TYPE.use__info
+	La 0	, STANDARD.LEX._LEX_TYPE.use__info
 	Sa	0, PARENT__u
 end namespace
 
@@ -174,7 +174,7 @@ VAR LST, b
 	LI	89
 	Sb	0, LST
 VAR PARENT__u, q
-	La	0, STANDARD.LEX._LEX_TYPE.use__info
+	La 0	, STANDARD.LEX._LEX_TYPE.use__info
 	Sa	0, PARENT__u
 end namespace
 
@@ -194,7 +194,7 @@ VAR LST, b
 	LI	93
 	Sb	0, LST
 VAR PARENT__u, q
-	La	0, STANDARD.LEX._LEX_TYPE.use__info
+	La 0	, STANDARD.LEX._LEX_TYPE.use__info
 	Sa	0, PARENT__u
 end namespace
 VAR MAX_STRING_disp, d			; variable entiere
@@ -636,6 +636,15 @@ LOOP__2:
 	DUP
 	BF	L12
 	DROP
+	Lb 1,	CHR_disp
+	LI	 9
+	CGE
+	LI	 13
+	Lb 1,	CHR_disp
+	CGE
+	ET
+	LI	1
+	OUX
 L12:
 	BT	L10
 	Ld 1,	W_COL_disp
@@ -944,6 +953,36 @@ L32:
 	BRA	L17
 L33:
 					; debut if
+	La	 0, TEXT_disp				; array data start address on stack
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	LId	0, TEXT__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
+	SUB
+	LId	0, TEXT__u, STANDARD._STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb
+	LI	32
+	CGE
+; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
+	LI	127
+	La	 0, TEXT_disp				; array data start address on stack
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	LId	0, TEXT__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
+	SUB
+	LId	0, TEXT__u, STANDARD._STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb
+	CGE
+	ET
+	LI	1
+	OUX
 	BF	L38
 	La	 0, TEXT_disp				; array data start address on stack
 ; CODE_NUMERIC_LITERAL DN_INTEGER
@@ -1045,13 +1084,40 @@ L42:
 	Sb  1,	CHR_disp
 L41:					; post if
 					; debut if
+	Lb 1,	CHR_disp
+	LI	65
+	CGE
+	LI	90
+	Lb 1,	CHR_disp
+	CGE
+	ET
+	LI	1
+	OUX
 	DUP
 	BF	L46
 	DROP
+	Lb 1,	CHR_disp
+	LI	97
+	CGE
+	LI	122
+	Lb 1,	CHR_disp
+	CGE
+	ET
+	LI	1
+	OUX
 L46:
 	DUP
 	BF	L45
 	DROP
+	Lb 1,	CHR_disp
+	LI	48
+	CGE
+	LI	57
+	Lb 1,	CHR_disp
+	CGE
+	ET
+	LI	1
+	OUX
 L45:
 	BF	L44
 	LI	7
@@ -1098,6 +1164,15 @@ L48:
 	Sb  1,	CHR_disp
 L47:					; post if
 					; debut if
+	Lb 1,	CHR_disp
+	LI	48
+	CGE
+	LI	57
+	Lb 1,	CHR_disp
+	CGE
+	ET
+	LI	1
+	OUX
 	BF	L50
 	LI	7
 	Sb  1,	TOK_TYP_disp
@@ -1143,6 +1218,15 @@ L52:
 	Sb  1,	CHR_disp
 L51:					; post if
 					; debut if
+	Lb 1,	CHR_disp
+	LI	48
+	CGE
+	LI	57
+	Lb 1,	CHR_disp
+	CGE
+	ET
+	LI	1
+	OUX
 	BF	L54
 	LI	7
 	Sb  1,	TOK_TYP_disp
@@ -1162,6 +1246,31 @@ VAR	LMT_IL56_disp, d			; limite boucle LOOP__3
 	BT	L55
 LOOP__3:					; corps boucle LOOP__3
 					; debut if
+	La	 0, TEXT_disp				; array data start address on stack
+	Ld	1, IL56_disp
+	LId	0, TEXT__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
+	SUB
+	LId	0, TEXT__u, STANDARD._STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb
+	LI	48
+	CGE
+	LI	57
+	La	 0, TEXT_disp				; array data start address on stack
+	Ld	1, IL56_disp
+	LId	0, TEXT__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
+	SUB
+	LId	0, TEXT__u, STANDARD._STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb
+	CGE
+	ET
 	DUP
 	BF	L59
 	DROP
@@ -1202,6 +1311,17 @@ L57:					; post if
 	BRA	LOOP__3				; iteration suivante LOOP__3
 L55:					; post loop LOOP__3
 					; debut if
+	Ld 1,	BASE_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	2
+	CGE
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	16
+	Ld 1,	BASE_disp
+	CGE
+	ET
+	LI	1
+	OUX
 	BF	L61
 	LI	7
 	Sb  1,	TOK_TYP_disp
@@ -1280,13 +1400,34 @@ L65:
 	Sb  1,	CHR_disp
 L64:					; post if
 					; debut if
+	Lb 1,	CHR_disp
+	LI	48
+	CGE
+	LI	57
+	Lb 1,	CHR_disp
+	CGE
+	ET
 	DUP
 	BT	L69
 	DROP
+	Lb 1,	CHR_disp
+	LI	65
+	CGE
+	LI	90
+	Lb 1,	CHR_disp
+	CGE
+	ET
 L69:
 	DUP
 	BT	L68
 	DROP
+	Lb 1,	CHR_disp
+	LI	97
+	CGE
+	LI	122
+	Lb 1,	CHR_disp
+	CGE
+	ET
 L68:
 	BF	L67
 	BRA	L66
@@ -1308,6 +1449,13 @@ L66:					; post if
 	Lb
 	Sb  1,	CHR_disp
 					; debut if
+	Lb 1,	CHR_disp
+	LI	48
+	CGE
+	LI	57
+	Lb 1,	CHR_disp
+	CGE
+	ET
 	DUP
 	BT	L73
 	DROP
@@ -1378,6 +1526,41 @@ L77:
 	DUP
 	BT	L78
 	DROP
+	LIVA 	1, SL_disp, STANDARD.LEX._LINE_OF_SOURCE.BDY
+; EXPRESSIONS.CODE_INDEXED adresse component id
+	Ld 1,	W_COL_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Ld	 0, STANDARD._STRING._FST_1		; (index - FST_1) * SIZ_1
+	SUB
+	Ld	 0, STANDARD._STRING._COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb
+	LI	48
+	CGE
+	LI	57
+	LIVA 	1, SL_disp, STANDARD.LEX._LINE_OF_SOURCE.BDY
+; EXPRESSIONS.CODE_INDEXED adresse component id
+	Ld 1,	W_COL_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Ld	 0, STANDARD._STRING._FST_1		; (index - FST_1) * SIZ_1
+	SUB
+	Ld	 0, STANDARD._STRING._COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb
+	CGE
+	ET
+	LI	1
+	OUX
 L78:
 L76:
 	BF	L75
@@ -1530,6 +1713,16 @@ L82:
 	BRA	L81
 L83:
 					; debut if
+	Lb 1,	CHR_disp
+	LI	32
+	CGE
+; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
+	LI	127
+	Lb 1,	CHR_disp
+	CGE
+	ET
+	LI	1
+	OUX
 	BF	L88
 	LI	63
 	Sb  1,	CHR_disp

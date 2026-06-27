@@ -418,10 +418,8 @@ macro			LI?	val				; Load Integer
 ;  db 0x48, 0xC7, 0xC0						; mov rax, val
 ;  dd val
 
-  db 0x48, 0xB8						; mov rax, quadval
+  db 0x48, 0xB8							; mov rax, quadval
   dq val
-;  db 0x90, 0x90, 0x90, 0x90					; contourne une bizarrerie de fasmg qui bute parfois sur les 10 octets précédents
-
   PUSH_RAX
 end macro
 
@@ -439,7 +437,7 @@ end macro
 ;-----------------------------------------------------------------------------------------------------------------------
 
 ;			---------------------
-macro			LCA?	ptr, disp:0				; Load Constant Address (distinguer de LI - qui charge en 32 bits - car les adresses sont	en 64 bits sur x64)
+macro			LCA?	ptr, disp:0			; Load Constant Address (distinguer de LI - qui charge en 32 bits - car les adresses sont	en 64 bits sur x64)
 ;			---------------------
   db 0x48, 0xB8							; movabs rax, ptr
   dq ptr+disp

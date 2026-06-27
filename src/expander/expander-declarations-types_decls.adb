@@ -274,17 +274,41 @@ is
 
     PUT_LINE( "VAR use__info, q" );
 
-    if  SIZE_CHAR = 'd'  then
-      PUT_LINE( "CST LST, " & SIZE_CHAR & ",  1.0E38" );							-- ATTENTION : CST ne sens inverse a cause de postpone
-      PUT_LINE( "CST FST, " & SIZE_CHAR & ", -1.0E38" );
-    elsif  SIZE_CHAR = 'q'  then
-      PUT_LINE( "CST LST, " & SIZE_CHAR & ",  1.0E308" );
-      PUT_LINE( "CST FST, " & SIZE_CHAR & ", -1.0E308" );
-    end if;
+    PUT_LINE( "VAR SIZ, d" );
+    PUT_LINE( "VAR FST, q" );
+    PUT_LINE( "VAR LST, q" );
 
-    PUT_LINE( "CST SIZ, d," &	INTEGER'IMAGE( DI( CD_IMPL_SIZE, FLOAT_SPEC ) ) );
-    PUT_LINE( tab &	"LCA" & tab & "SIZ" );
-    PUT_LINE( tab &	"Sa" & tab & IMAGE( CODI.CUR_LEVEL ) & ", use__info" );
+    declare
+      FLOAT_RANGE	: TREE		:= D( SM_RANGE, FLOAT_SPEC );
+      EXP_FST	: TREE		:= D( AS_EXP1, FLOAT_RANGE );
+      EXP_LST	: TREE		:= D( AS_EXP2, FLOAT_RANGE );
+      LVL_STR	:constant STRING	:= IMAGE( CODI.CUR_LEVEL );
+    begin
+      PUT_LINE( tab & "LVA" & tab & LVL_STR & ", SIZ" );
+      PUT_LINE( tab & "Sa"  & tab & LVL_STR & ", use__info" );
+
+      PUT_LINE( tab & "LI" & tab & INTEGER'IMAGE( DI( CD_IMPL_SIZE, FLOAT_SPEC ) ) );
+      PUT_LINE( tab & "Sd" & tab & LVL_STR & ", SIZ" );
+
+      EXPRESSIONS.CODE_EXP( EXP_FST );
+      PUT_LINE( tab & "Sq" & tab & LVL_STR & ", FST" );
+
+      EXPRESSIONS.CODE_EXP( EXP_LST );
+      PUT_LINE( tab & "Sq" & tab & LVL_STR & ", LST" );
+    end;
+
+
+--    if  SIZE_CHAR = 'd'  then
+--      PUT_LINE( "CST LST, " & SIZE_CHAR & ",  1.0E38" );							-- ATTENTION : CST ne sens inverse a cause de postpone
+--      PUT_LINE( "CST FST, " & SIZE_CHAR & ", -1.0E38" );
+--    elsif  SIZE_CHAR = 'q'  then
+--      PUT_LINE( "CST LST, " & SIZE_CHAR & ",  1.0E308" );
+--      PUT_LINE( "CST FST, " & SIZE_CHAR & ", -1.0E308" );
+--    end if;
+
+--    PUT_LINE( "CST SIZ, d," &	INTEGER'IMAGE( DI( CD_IMPL_SIZE, FLOAT_SPEC ) ) );
+--    PUT_LINE( tab &	"LCA" & tab & "SIZ" );
+--    PUT_LINE( tab &	"Sa" & tab & IMAGE( CODI.CUR_LEVEL ) & ", use__info" );
 
     PUT_LINE( "end namespace"	);
 
@@ -389,15 +413,30 @@ is
 
     BASE_TYPE		: TREE			:= D( SM_BASE_TYPE,	TYPE_SPEC	);
     COMP_TYPE		: TREE			:= D( SM_COMP_TYPE,	BASE_TYPE	);
-begin
-  if  COMP_TYPE.TY = DN_PRIVATE  or  COMP_TYPE.TY = DN_L_PRIVATE  then
-    COMP_TYPE := D( SM_TYPE_SPEC, COMP_TYPE );
-  end if;
+  begin
+    if  COMP_TYPE.TY = DN_PRIVATE  or  COMP_TYPE.TY = DN_L_PRIVATE  then
+      COMP_TYPE := D( SM_TYPE_SPEC, COMP_TYPE );
+    end if;
 
-declare
-    COMP_SIZE_TREE		: TREE			:= D( CD_IMPL_SIZE,	COMP_TYPE	);
-    IS_STATIC		: BOOLEAN			:= COMP_SIZE_TREE /= TREE_VOID;
-    ARRAY_STATIC_SIZE	: NATURAL			:= 0;
+    declare
+      COMP_SIZE_TREE	: TREE			:= TREE_VOID;
+      IS_STATIC		: BOOLEAN			:= COMP_SIZE_TREE /= TREE_VOID;
+      ARRAY_STATIC_SIZE	: NATURAL			:= 0;
+		--------------
+      function	COMP_SIZE_BITS	return NATURAL
+      is		--------------
+      begin
+        if  COMP_TYPE.TY = DN_ACCESS  then
+	return CODI.ADDR_SIZE * CODI.STORAGE_UNIT;
+        elsif  COMP_TYPE.TY = DN_FLOAT  then
+        -- Convention backend TLALOC : les flottants sont stockés en double 64 bits.
+	return CODI.ADDR_SIZE * CODI.STORAGE_UNIT;
+        else
+	return DI( CD_IMPL_SIZE, COMP_TYPE );
+        end if;
+
+      end	COMP_SIZE_BITS;
+	--------------
 
 		----------------------------
     procedure	COMPILE_ARRAY_TYPE_DIMENSION		( IDX_TYPE_LIST, RANGE_LIST :in out SEQ_TYPE;
@@ -415,7 +454,7 @@ declare
 
       if	IS_EMPTY(	IDX_TYPE_LIST )  then
         declare
-	ELEMENT_SIZ		: NATURAL		:= DI( CD_IMPL_SIZE, COMP_TYPE );			-- TAILLE	EN BITS
+	ELEMENT_SIZ		: NATURAL		:= COMP_SIZE_BITS;					-- TAILLE	EN BITS
 	ELEMENT_SIZ_STR		:constant	STRING	:= IMAGE(	ELEMENT_SIZ );				-- IMAGE DE TAILLE EN BITS
         begin
 	ARRAY_STATIC_SIZE := ELEMENT_SIZ;
@@ -519,6 +558,13 @@ declare
 	--------------------
 
   begin
+    if  COMP_TYPE.TY = DN_ACCESS  or else  COMP_TYPE.TY = DN_FLOAT  then
+      IS_STATIC := TRUE;
+    else
+      COMP_SIZE_TREE := D( CD_IMPL_SIZE, COMP_TYPE );
+      IS_STATIC := COMP_SIZE_TREE /= TREE_VOID;
+    end if;
+
     DI( CD_LEVEL, TYPE_SPEC, INTEGER( LVL ) );
 
     PUT_LINE( "VAR use__info, q" );
@@ -972,12 +1018,21 @@ declare
     --  déclaré avant le full type. On utilise alors le full type comme
     --  source du use_info, mais sans le marquer compilé.
     if  DESIG_TYPE.TY = DN_INCOMPLETE  then
-      DESIG_TYPE := D( XD_FULL_TYPE_SPEC, DESIG_TYPE );
+			--------------------
+			ACCESS_TO_INCOMPLETE:
+      declare
+        FULL_DESIG_TYPE : TREE := D( XD_FULL_TYPE_SPEC, DESIG_TYPE );
+      begin
+        if  FULL_DESIG_TYPE /= TREE_VOID  then
+          DESIG_TYPE := FULL_DESIG_TYPE;
 
-      --  Le full type sera codé plus tard dans la même partie déclarative.
-      --  On initialise seulement son niveau pour permettre la référence
-      --  forward à CELL.use__info.
-      DI( CD_LEVEL, DESIG_TYPE, INTEGER( CODI.CUR_LEVEL ) );
+          --  Le full type sera codé plus tard dans la même partie déclarative.
+          --  On initialise seulement son niveau pour permettre la référence
+          --  forward à CELL.use__info.
+          DI( CD_LEVEL, DESIG_TYPE, INTEGER( CODI.CUR_LEVEL ) );
+        end if;
+      end		ACCESS_TO_INCOMPLETE;
+		--------------------
     end if;
 
     if  CODI.DEBUG  then
@@ -1100,8 +1155,9 @@ declare
         EXP_FST		: TREE		:= D( AS_EXP1, ENUM_RANGE );
         EXP_LST		: TREE		:= D( AS_EXP2, ENUM_RANGE );
         LVL_STR		:constant	STRING	:= IMAGE(	CODI.CUR_LEVEL );
+        BASE_TYPE		: TREE		:= D( SM_BASE_TYPE, TYPE_SPEC );
         BASETYPE_STR	:constant	STRING	:= '_' & PRINT_NAME( D( LX_SYMREP,
-					   D( XD_SOURCE_NAME, D( SM_BASE_TYPE, TYPE_SPEC ) ) ) );
+					   D( XD_SOURCE_NAME, BASE_TYPE ) ) );
       begin
 
         if  CODI.DEBUG  then NEW_LINE; PUT_LINE( tab50 & "; " & SUBTYPE_STR & " ENUMERATION SUBTYPE INFO" ); end if;
@@ -1126,8 +1182,8 @@ declare
         PUT_LINE( tab & 'S' & SIZE_CHAR & tab & LVL_STR & ", LST" );
 
         PUT_LINE( "VAR PARENT__u, q" );
-        PUT( tab & "La" & tab & LVL_STR & ", " );
-        REGIONS_PATH( D( XD_SOURCE_NAME, D( SM_BASE_TYPE, TYPE_SPEC ) ) );
+        PUT( tab & "La " & IMAGE( DI( CD_LEVEL, BASE_TYPE ) ) & tab & ", " );
+        REGIONS_PATH( D( XD_SOURCE_NAME, BASE_TYPE ) );
         PUT_LINE(  BASETYPE_STR & ".use__info"	);
         PUT_LINE( tab & "Sa" & tab & LVL_STR & ", PARENT__u" );
 
@@ -1135,6 +1191,83 @@ declare
 
       end		ENUMERATION_SUBTYPE;
 		-------------------
+
+    elsif  TYPE_SPEC.TY = DN_FLOAT  then
+			------------
+			GARDE_FORMEL:
+  declare
+    FLOAT_RANGE : TREE := D( SM_RANGE, TYPE_SPEC );
+    BASE_TYPE   : TREE := D( SM_BASE_TYPE, TYPE_SPEC );
+  begin
+    if FLOAT_RANGE = TREE_VOID then
+      -- Cas typique : SUBTYPE SF IS F; où F est un type formel flottant.
+      -- Ne surtout pas chercher AS_EXP1/AS_EXP2.
+      if CODI.DEBUG then
+        PUT_LINE( "; CODE_SUBTYPE_DECL : FLOAT subtype without range "
+                & SUBTYPE_STR & " treated as alias" );
+      end if;
+
+      -- Minimalement : le type est connu/compilé, mais aucun patron FST/LST
+      -- propre n'est généré.
+      DB( CD_COMPILED, TYPE_SPEC, TRUE );
+
+      -- Option utile si CD_IMPL_SIZE n'est pas posé par la sémantique :
+--      if BASE_TYPE /= TREE_VOID and then BASE_TYPE.TY = DN_FLOAT then
+--        if HAS_ATTR( CD_IMPL_SIZE, BASE_TYPE ) then   -- pseudo, selon tes utilitaires
+--          DI( CD_IMPL_SIZE, TYPE_SPEC, DI( CD_IMPL_SIZE, BASE_TYPE ) );
+--        end if;
+--      end if;
+
+      return;
+    end if;
+
+  end	GARDE_FORMEL;
+	------------
+
+				-------------
+				FLOAT_SUBTYPE:
+      declare
+        FLOAT_RANGE		: TREE		:= D( SM_RANGE, TYPE_SPEC );
+        EXP_FST		: TREE		:= D( AS_EXP1, FLOAT_RANGE );
+        EXP_LST		: TREE		:= D( AS_EXP2, FLOAT_RANGE );
+        BASE_TYPE		: TREE		:= D( SM_BASE_TYPE, TYPE_SPEC );
+        BASETYPE_STR	:constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, BASE_TYPE ) ) );
+      begin
+        if  CODI.DEBUG  then
+	NEW_LINE;
+	PUT_LINE( tab50 & "; " & SUBTYPE_STR & " FLOAT SUBTYPE INFO" );
+        end if;
+
+        PUT_LINE( SUBTYPE_STR & " = '" & SUBTYPE_STR & "'" );
+        PUT_LINE( "namespace " & SUBTYPE_STR );
+
+        PUT_LINE( "VAR use__info, q" );
+        PUT_LINE( "VAR SIZ, d" );
+        PUT_LINE( "VAR FST, q" );
+        PUT_LINE( "VAR LST, q" );
+
+        PUT_LINE( tab & "LVA" & tab & LVL_STR & ", SIZ" );
+        PUT_LINE( tab & "Sa"  & tab & LVL_STR & ", use__info" );
+
+        PUT_LINE( tab & "LI" & tab & IMAGE( DI( CD_IMPL_SIZE, TYPE_SPEC ) ) );
+        PUT_LINE( tab & "Sd" & tab & LVL_STR & ", SIZ" );
+
+        EXPRESSIONS.CODE_EXP( EXP_FST );
+        PUT_LINE( tab & "Sq" & tab & LVL_STR & ", FST" );
+
+        EXPRESSIONS.CODE_EXP( EXP_LST );
+        PUT_LINE( tab & "Sq" & tab & LVL_STR & ", LST" );
+
+        PUT_LINE( "VAR PARENT__u, q" );
+        PUT( tab & "La " & IMAGE( DI( CD_LEVEL, BASE_TYPE ) ) & tab & ", " );
+        REGIONS_PATH( D( XD_SOURCE_NAME, BASE_TYPE ) );
+        PUT_LINE( BASETYPE_STR & ".use__info" );
+        PUT_LINE( tab & "Sa" & tab & LVL_STR & ", PARENT__u" );
+
+        PUT_LINE( "end namespace" );
+
+      end		FLOAT_SUBTYPE;
+		-------------
 
    elsif  TYPE_SPEC.TY = DN_CONSTRAINED_ARRAY
     then

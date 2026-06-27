@@ -158,33 +158,57 @@ ELB 2					;    BODY ELAB
 _REAL = '_REAL'
 namespace _REAL
 VAR use__info, q
-CST LST, q,  1.0E308
-CST FST, q, -1.0E308
-CST SIZ, d, 64
-	LCA	SIZ
+VAR SIZ, d
+VAR FST, q
+VAR LST, q
+	LVA	2, SIZ
 	Sa	2, use__info
+	LI	 64
+	Sd	2, SIZ
+; CODE_NUMERIC_LITERAL DN_UNIVERSAL_REAL
+	LIF	1.0E308
+	FNEG
+	Sq	2, FST
+; CODE_NUMERIC_LITERAL DN_UNIVERSAL_REAL
+	LIF	1.0E308
+	Sq	2, LST
 end namespace
 
 					; _F1 FLOAT TYPE INFO
 _F1 = '_F1'
 namespace _F1
 VAR use__info, q
-CST LST, q,  1.0E308
-CST FST, q, -1.0E308
-CST SIZ, d, 64
-	LCA	SIZ
+VAR SIZ, d
+VAR FST, q
+VAR LST, q
+	LVA	2, SIZ
 	Sa	2, use__info
+	LI	 64
+	Sd	2, SIZ
+	LIF	2.2250738585072014E-308
+	Sq	2, FST
+	LIF	1.7976931348623157E308
+	Sq	2, LST
 end namespace
 
 					; _F2 FLOAT TYPE INFO
 _F2 = '_F2'
 namespace _F2
 VAR use__info, q
-CST LST, q,  1.0E308
-CST FST, q, -1.0E308
-CST SIZ, d, 32
-	LCA	SIZ
+VAR SIZ, d
+VAR FST, q
+VAR LST, q
+	LVA	2, SIZ
 	Sa	2, use__info
+	LI	 32
+	Sd	2, SIZ
+; CODE_NUMERIC_LITERAL DN_UNIVERSAL_REAL
+	LIF	1.0
+	FNEG
+	Sq	2, FST
+; CODE_NUMERIC_LITERAL DN_UNIVERSAL_REAL
+	LIF	1.0
+	Sq	2, LST
 end namespace
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS

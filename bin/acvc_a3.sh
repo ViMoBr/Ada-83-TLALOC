@@ -2,6 +2,8 @@
 ./comp_predef_units.sh
 ./a83.sh ./ ../acvc83_11/support/repspec.ada W
 ./a83.sh ./ ../acvc83_11/support/repbody.ada W
+./a83.sh ./ ../acvc83_11/atests/a3/a38199c0.ads W
+./a83.sh ./ ../acvc83_11/atests/a3/a38199c0.adb W
 
 # acvc_a3.sh — compile, assemble et exécute la séquence de tests "A3"
 # de l'ACVC 1.11 (Ada 83), à la suite de acvc.sh.
@@ -42,14 +44,12 @@ TESTS=(
   "A38106E:a38106e.ada"
   "A38199A:a38199a.ada"
   "A38199B:a38199b.ada"
-  "A38199C0:a38199c0.ada"
   "A38199C1M:a38199c1m.ada"
-  "A38199C2:a38199c2.ada"
   "A39005B:a39005b.ada"
   "A39005C:a39005c.ada"
 # a39005d.tst
-  "a39005E:a39005e.ada"
-  "a39005F:a39005f.ada"
+  "A39005E:a39005e.ada"
+  "A39005F:a39005f.ada"
 )
 
 # ---------------------------------------------------------------------

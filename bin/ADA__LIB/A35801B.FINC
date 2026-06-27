@@ -374,7 +374,7 @@ virtual at 8
 	rq 1
 end virtual
 ELB 3					;    BODY ELAB
-;  CODE_SUBTYPE_DECL : TYPE_SPEC.TY PAS FAIT DN_FLOAT
+; CODE_SUBTYPE_DECL : FLOAT subtype without range _SF treated as alias
 
 					; _NINT TYPE RANGE INFO
 _NINT = '_NINT'
@@ -411,11 +411,20 @@ end namespace
 _NFLT = '_NFLT'
 namespace _NFLT
 VAR use__info, q
-CST LST, q,  1.0E308
-CST FST, q, -1.0E308
-CST SIZ, d, 32
-	LCA	SIZ
+VAR SIZ, d
+VAR FST, q
+VAR LST, q
+	LVA	3, SIZ
 	Sa	3, use__info
+	LI	 32
+	Sd	3, SIZ
+; CODE_NUMERIC_LITERAL DN_UNIVERSAL_REAL
+	LIF	1.0E38
+	FNEG
+	Sq	3, FST
+; CODE_NUMERIC_LITERAL DN_UNIVERSAL_REAL
+	LIF	1.0E38
+	Sq	3, LST
 end namespace
 VAR I1_disp, d				; variable entiere
 	LI	6
@@ -537,7 +546,7 @@ begin:
 	LVA	 2, GFP_disp
 	CALL	STANDARD.A35801B_L1.BLOCK__1. ,P_L8
 	UNLINK	 3
-	RTD	prm_siz
+	RTD
 endPRO					;---------- end PRO NP
 end if
 					;    end elab

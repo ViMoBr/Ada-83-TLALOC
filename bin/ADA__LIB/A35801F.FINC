@@ -8,50 +8,140 @@ ELB 1					;    BODY ELAB
 _REAL = '_REAL'
 namespace _REAL
 VAR use__info, q
-CST LST, q,  1.0E308
-CST FST, q, -1.0E308
-CST SIZ, d, 32
-	LCA	SIZ
+VAR SIZ, d
+VAR FST, q
+VAR LST, q
+	LVA	1, SIZ
 	Sa	1, use__info
+	LI	 32
+	Sd	1, SIZ
+; CODE_NUMERIC_LITERAL DN_UNIVERSAL_REAL
+	LIF	100.0
+	FNEG
+	Sq	1, FST
+; CODE_NUMERIC_LITERAL DN_UNIVERSAL_REAL
+	LIF	100.0
+	Sq	1, LST
 end namespace
-;  CODE_SUBTYPE_DECL : TYPE_SPEC.TY PAS FAIT DN_FLOAT
+
+					; _SURREAL FLOAT SUBTYPE INFO
+_SURREAL = '_SURREAL'
+namespace _SURREAL
+VAR use__info, q
+VAR SIZ, d
+VAR FST, q
+VAR LST, q
+	LVA	1, SIZ
+	Sa	1, use__info
+	LI	32
+	Sd	1, SIZ
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	50.0
+	FNEG
+	Sq	1, FST
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	50.0
+	Sq	1, LST
+VAR PARENT__u, q
+	La 0	, STANDARD.A35801F_L1._REAL.use__info
+	Sa	1, PARENT__u
+end namespace
 
 					; _NFLT FLOAT TYPE INFO
 _NFLT = '_NFLT'
 namespace _NFLT
 VAR use__info, q
-CST LST, q,  1.0E308
-CST FST, q, -1.0E308
-CST SIZ, d, 32
-	LCA	SIZ
+VAR SIZ, d
+VAR FST, q
+VAR LST, q
+	LVA	1, SIZ
 	Sa	1, use__info
+	LI	 32
+	Sd	1, SIZ
+; CODE_NUMERIC_LITERAL DN_UNIVERSAL_REAL
+	LIF	1.0E38
+	FNEG
+	Sq	1, FST
+; CODE_NUMERIC_LITERAL DN_UNIVERSAL_REAL
+	LIF	1.0E38
+	Sq	1, LST
 end namespace
-;  CODE_SUBTYPE_DECL : TYPE_SPEC.TY PAS FAIT DN_FLOAT
-;  CODE_SUBTYPE_DECL : TYPE_SPEC.TY PAS FAIT DN_FLOAT
+
+					; _UNIT FLOAT SUBTYPE INFO
+_UNIT = '_UNIT'
+namespace _UNIT
+VAR use__info, q
+VAR SIZ, d
+VAR FST, q
+VAR LST, q
+	LVA	1, SIZ
+	Sa	1, use__info
+	LI	32
+	Sd	1, SIZ
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	1.0
+	FNEG
+	Sq	1, FST
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	1.0
+	Sq	1, LST
+VAR PARENT__u, q
+	La 1	, STANDARD.A35801F_L1._NFLT.use__info
+	Sa	1, PARENT__u
+end namespace
+
+					; _EMPTY FLOAT SUBTYPE INFO
+_EMPTY = '_EMPTY'
+namespace _EMPTY
+VAR use__info, q
+VAR SIZ, d
+VAR FST, q
+VAR LST, q
+	LVA	1, SIZ
+	Sa	1, use__info
+	LI	32
+	Sd	1, SIZ
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	1.0
+	Sq	1, FST
+; CODE_NUMERIC_LITERAL DN_FLOAT
+	LIF	1.0
+	FNEG
+	Sq	1, LST
+VAR PARENT__u, q
+	La 0	, STANDARD._FLOAT.use__info
+	Sa	1, PARENT__u
+end namespace
 VAR R1_disp, q				; variable flottante
+	Lq	1, _SURREAL.FST
 	Sq  1,	R1_disp
 
 VAR R2_disp, q				; variable flottante
+	Lq	1, _SURREAL.LST
 	Sq  1,	R2_disp
 
 VAR N1_disp, q				; variable flottante
+	Lq	1, _UNIT.FST
 	Sq  1,	N1_disp
 
 VAR N2_disp, q				; variable flottante
+	Lq	1, _UNIT.LST
 	Sq  1,	N2_disp
 
 VAR F1_disp, q				; variable flottante
-	LI	PRINT_NUM : LE HI N EST PAS UN DN_NUM_VAL PAS DE CHAINE ???
+	Lq	0, STANDARD._FLOAT.FST
 	Sq  1,	F1_disp
 
 VAR F2_disp, q				; variable flottante
-	LI	PRINT_NUM : LE HI N EST PAS UN DN_NUM_VAL PAS DE CHAINE ???
+	Lq	0, STANDARD._FLOAT.LST
 	Sq  1,	F2_disp
 
 VAR E1_disp, q				; variable flottante
+	Lq	1, _EMPTY.FST
 	Sq  1,	E1_disp
 
 VAR E2_disp, q				; variable flottante
+	Lq	1, _EMPTY.LST
 	Sq  1,	E2_disp
 
 					;    end elab
