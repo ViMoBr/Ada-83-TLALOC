@@ -1,0 +1,325 @@
+if ~ definite REPORT
+include 'REPORT.FINC'
+end if
+PRO	A83C01I_L1				;---------- PRO A83C01I
+ELB 1					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+; CODE & concat _STRING
+VAR	ANON_19_24_L2_G_data, q
+VAR	ANON_19_24_L2_G_info, q
+VAR	ANON_20_24_L2_D_data, q
+VAR	ANON_20_24_L2_D_info, q
+VAR	ANON_19_24_L2_G_len,  q
+VAR	ANON_20_24_L2_D_len,  q
+VAR	ANON_19_24_L2_R_disp, q
+VAR	ANON_19_24_L2_R__u,   q
+namespace ANON_19_24_L2_R_info
+  VAR SIZ,      d
+  VAR _COMP_SIZ, d
+  VAR _FST_1,    d
+  VAR _LST_1,    d
+end namespace
+STR ANON_19_24_L2_G, "CHECK THAT COMPONENT NAMES MAY BE THE SAME AS"	; constante string="CHECK THAT COMPONENT NAMES MAY BE THE SAME AS"
+	LCA	ANON_19_24_L2_G.data_ptr
+	DUP
+	La  ,  0
+	Sa  1, ANON_19_24_L2_G_data
+	La  ,  8
+	Sa  1, ANON_19_24_L2_G_info
+	LId 1, ANON_19_24_L2_G_info, _STRING.LST_1
+	LId 1, ANON_19_24_L2_G_info, _STRING.FST_1
+	SUB
+	INC
+	Sa  1, ANON_19_24_L2_G_len
+STR ANON_20_24_L2_D, " NAMES OF LOOP PARAMETERS"	; constante string=" NAMES OF LOOP PARAMETERS"
+	LCA	ANON_20_24_L2_D.data_ptr
+	DUP
+	La  ,  0
+	Sa  1, ANON_20_24_L2_D_data
+	La  ,  8
+	Sa  1, ANON_20_24_L2_D_info
+	LId 1, ANON_20_24_L2_D_info, _STRING.LST_1
+	LId 1, ANON_20_24_L2_D_info, _STRING.FST_1
+	SUB
+	INC
+	Sa  1, ANON_20_24_L2_D_len
+	La  1, ANON_19_24_L2_G_len
+	La  1, ANON_20_24_L2_D_len
+	ADD
+	CO_VAR
+	Sa  1, ANON_19_24_L2_R_disp
+	LI	1
+	Sd  1, ANON_19_24_L2_R_info._FST_1
+	La  1, ANON_19_24_L2_G_len
+	La  1, ANON_20_24_L2_D_len
+	ADD
+	Sd  1, ANON_19_24_L2_R_info._LST_1
+	LI	8
+	Sd  1, ANON_19_24_L2_R_info._COMP_SIZ
+	La  1, ANON_19_24_L2_G_len
+	La  1, ANON_20_24_L2_D_len
+	ADD
+	LI	8
+	MUL
+	Sd  1, ANON_19_24_L2_R_info.SIZ
+	LVA 1, ANON_19_24_L2_R_info.SIZ
+	Sa  1, ANON_19_24_L2_R__u
+	La  1, ANON_19_24_L2_R_disp
+	La  1, ANON_19_24_L2_G_len
+	La  1, ANON_19_24_L2_G_data
+	BLKMOV
+	La  1, ANON_19_24_L2_R_disp
+	La  1, ANON_19_24_L2_G_len
+	ADD
+	La  1, ANON_20_24_L2_D_len
+	La  1, ANON_20_24_L2_D_data
+	BLKMOV
+	LVA 1, ANON_19_24_L2_R_disp
+STR STR_L3, "A83C01I"			; constante string="A83C01I"
+	LCA	STR_L3.data_ptr
+	CALL	STANDARD.REPORT. ,TEST_L1
+namespace	BLOCK__1
+ELB 2					;    BODY ELAB
+
+					; _R1A RECORD TYPE INFO
+_R1A = '_R1A'
+namespace _R1A
+VAR use__info, q
+VAR SIZ, d
+	LVA	2, SIZ
+	Sa	2, use__info
+USEINFO 2, LOOP3, 	La 0, STANDARD._INTEGER.use__info
+virtual at 0				; calcul des offsets statiques
+STATOFS LOOP3, 4
+size = $
+end virtual
+	LI	 size*8
+	Sd	2, SIZ
+end namespace
+
+					; _R1 RECORD TYPE INFO
+_R1 = '_R1'
+namespace _R1
+VAR use__info, q
+VAR SIZ, d
+	LVA	2, SIZ
+	Sa	2, use__info
+USEINFO 2, LOOP1, 	La 0, STANDARD._INTEGER.use__info
+USEINFO 2, LOOP2, 	La 2, STANDARD.A83C01I_L1.BLOCK__1._R1A.use__info
+virtual at 0				; calcul des offsets statiques
+STATOFS LOOP1, 4
+STATOFS LOOP2, 4
+size = $
+end virtual
+	LI	 size*8
+	Sd	2, SIZ
+end namespace
+VAR A1_disp, q				; variable record : pointeur aux data record
+VAR A1__u, q				; variable record : pointeur aux useinfo
+VAR A1__dat, STANDARD.A83C01I_L1.BLOCK__1._R1.size
+	LVA	2, A1__dat
+	Sa	2, A1_disp				; record fin
+	LVA	2, STANDARD.A83C01I_L1.BLOCK__1._R1.SIZ
+	Sa	2, A1__u
+; CODE_VC_NAME DN_VARIABLE_ID
+	La 2, A1_disp
+					; Assign_record_aggregate type DN_RECORD
+	DUP
+	LVA	, STANDARD.A83C01I_L1.BLOCK__1._R1.LOOP1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	3
+	Sd
+	DUP
+	LVA	, STANDARD.A83C01I_L1.BLOCK__1._R1.LOOP2
+					; Assign_record_aggregate type DN_RECORD
+	DUP
+	LVA	, STANDARD.A83C01I_L1.BLOCK__1._R1A.LOOP3
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	7
+	Sd
+	DROP
+	DROP
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+VAR	LOOP1L5_disp, d				; compteur boucle LOOP__2
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	Sd  2,	LOOP1L5_disp
+VAR	LMT_LOOP1L5_disp, d			; limite boucle LOOP__2
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd  2,	LMT_LOOP1L5_disp
+	Ld  2,	LOOP1L5_disp			; test null range LOOP__2
+	Ld  2,	LMT_LOOP1L5_disp
+	CGT
+	BT	L4
+LOOP__2:					; corps boucle LOOP__2
+VAR	LOOP2L7_disp, d				; compteur boucle LOOP__3
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	Sd  2,	LOOP2L7_disp
+VAR	LMT_LOOP2L7_disp, d			; limite boucle LOOP__3
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	2
+	Sd  2,	LMT_LOOP2L7_disp
+	Ld  2,	LOOP2L7_disp			; test null range LOOP__3
+	Ld  2,	LMT_LOOP2L7_disp
+	CGT
+	BT	L6
+LOOP__3:					; corps boucle LOOP__3
+VAR	LOOP3L9_disp, d				; compteur boucle LOOP__4
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	Sd  2,	LOOP3L9_disp
+VAR	LMT_LOOP3L9_disp, d			; limite boucle LOOP__4
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	3
+	Sd  2,	LMT_LOOP3L9_disp
+	Ld  2,	LOOP3L9_disp			; test null range LOOP__4
+	Ld  2,	LMT_LOOP3L9_disp
+	CGT
+	BT	L8
+LOOP__4:					; corps boucle LOOP__4
+	LIVA 	2, A1_disp, STANDARD.A83C01I_L1.BLOCK__1._R1.LOOP1
+	LIVA 	2, A1_disp, STANDARD.A83C01I_L1.BLOCK__1._R1.LOOP2
+	Ld	, STANDARD.A83C01I_L1.BLOCK__1._R1A.LOOP3
+	Sd
+namespace	BLOCK__5
+ELB 3					;    BODY ELAB
+
+					; _R1A RECORD TYPE INFO
+_R1A = '_R1A'
+namespace _R1A
+VAR use__info, q
+VAR SIZ, d
+	LVA	3, SIZ
+	Sa	3, use__info
+USEINFO 3, LOOP3, 	La 0, STANDARD._INTEGER.use__info
+USEINFO 3, LOOP4, 	La 0, STANDARD._INTEGER.use__info
+virtual at 0				; calcul des offsets statiques
+STATOFS LOOP3, 4
+STATOFS LOOP4, 4
+size = $
+end virtual
+	LI	 size*8
+	Sd	3, SIZ
+end namespace
+
+					; _R1 RECORD TYPE INFO
+_R1 = '_R1'
+namespace _R1
+VAR use__info, q
+VAR SIZ, d
+	LVA	3, SIZ
+	Sa	3, use__info
+USEINFO 3, LOOP1, 	La 0, STANDARD._INTEGER.use__info
+USEINFO 3, LOOP2, 	La 3, STANDARD.A83C01I_L1.BLOCK__1.BLOCK__5._R1A.use__info
+virtual at 0				; calcul des offsets statiques
+STATOFS LOOP1, 4
+STATOFS LOOP2, 8
+size = $
+end virtual
+	LI	 size*8
+	Sd	3, SIZ
+end namespace
+VAR A1_disp, q				; variable record : pointeur aux data record
+VAR A1__u, q				; variable record : pointeur aux useinfo
+VAR A1__dat, STANDARD.A83C01I_L1.BLOCK__1.BLOCK__5._R1.size
+	LVA	3, A1__dat
+	Sa	3, A1_disp				; record fin
+	LVA	3, STANDARD.A83C01I_L1.BLOCK__1.BLOCK__5._R1.SIZ
+	Sa	3, A1__u
+; CODE_VC_NAME DN_VARIABLE_ID
+	La 3, A1_disp
+					; Assign_record_aggregate type DN_RECORD
+	DUP
+	LVA	, STANDARD.A83C01I_L1.BLOCK__1.BLOCK__5._R1.LOOP1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	3
+	Sd
+	DUP
+	LVA	, STANDARD.A83C01I_L1.BLOCK__1.BLOCK__5._R1.LOOP2
+					; Assign_record_aggregate type DN_RECORD
+	DUP
+	LVA	, STANDARD.A83C01I_L1.BLOCK__1.BLOCK__5._R1A.LOOP3
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	6
+	Sd
+	DUP
+	LVA	, STANDARD.A83C01I_L1.BLOCK__1.BLOCK__5._R1A.LOOP4
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	7
+	Sd
+	DROP
+	DROP
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+VAR	LOOP4L11_disp, d			; compteur boucle LOOP__6
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	Sd  3,	LOOP4L11_disp
+VAR	LMT_LOOP4L11_disp, d			; limite boucle LOOP__6
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	4
+	Sd  3,	LMT_LOOP4L11_disp
+	Ld  3,	LOOP4L11_disp			; test null range LOOP__6
+	Ld  3,	LMT_LOOP4L11_disp
+	CGT
+	BT	L10
+LOOP__6:					; corps boucle LOOP__6
+	LIVA 	3, A1_disp, STANDARD.A83C01I_L1.BLOCK__1.BLOCK__5._R1.LOOP1
+	LIVA 	3, A1_disp, STANDARD.A83C01I_L1.BLOCK__1.BLOCK__5._R1.LOOP2
+	Ld	, STANDARD.A83C01I_L1.BLOCK__1.BLOCK__5._R1A.LOOP3
+	LIVA 	3, A1_disp, STANDARD.A83C01I_L1.BLOCK__1.BLOCK__5._R1.LOOP2
+	Ld	, STANDARD.A83C01I_L1.BLOCK__1.BLOCK__5._R1A.LOOP4
+	ADD
+	Sd
+	Ld  3,	LOOP4L11_disp			; test de sortie LOOP__6
+	Ld  3,	LMT_LOOP4L11_disp
+	CEQ
+	BT	L10
+	Ld  3,	LOOP4L11_disp			; mise a jour compteur LOOP__6
+	INC
+	Sd  3,	LOOP4L11_disp
+	BRA	LOOP__6				; iteration suivante LOOP__6
+L10:					; post loop LOOP__6
+	UNLINK 3
+endPRO
+	Ld  2,	LOOP3L9_disp			; test de sortie LOOP__4
+	Ld  2,	LMT_LOOP3L9_disp
+	CEQ
+	BT	L8
+	Ld  2,	LOOP3L9_disp			; mise a jour compteur LOOP__4
+	INC
+	Sd  2,	LOOP3L9_disp
+	BRA	LOOP__4				; iteration suivante LOOP__4
+L8:					; post loop LOOP__4
+	Ld  2,	LOOP2L7_disp			; test de sortie LOOP__3
+	Ld  2,	LMT_LOOP2L7_disp
+	CEQ
+	BT	L6
+	Ld  2,	LOOP2L7_disp			; mise a jour compteur LOOP__3
+	INC
+	Sd  2,	LOOP2L7_disp
+	BRA	LOOP__3				; iteration suivante LOOP__3
+L6:					; post loop LOOP__3
+	Ld  2,	LOOP1L5_disp			; test de sortie LOOP__2
+	Ld  2,	LMT_LOOP1L5_disp
+	CEQ
+	BT	L4
+	Ld  2,	LOOP1L5_disp			; mise a jour compteur LOOP__2
+	INC
+	Sd  2,	LOOP1L5_disp
+	BRA	LOOP__2				; iteration suivante LOOP__2
+L4:					; post loop LOOP__2
+	UNLINK 2
+endPRO
+	CALL	STANDARD.REPORT. ,RESULT_L6
+ret_lbl:
+	UNLINK 1
+	RTD
+excep:
+endPRO					;---------- end PRO A83C01I

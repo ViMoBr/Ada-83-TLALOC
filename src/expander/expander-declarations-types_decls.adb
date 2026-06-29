@@ -37,40 +37,56 @@ is
     elsif	 TYPE_SPEC.TY = DN_FIXED		then  CODE_FIXED_DECL	     ( TYPE_DECL );
     elsif	 TYPE_SPEC.TY = DN_FLOAT		then  CODE_FLOAT_DECL	     ( TYPE_DECL );
 
+				-- COMPOSITE TYPES
+
     elsif	 TYPE_SPEC.TY = DN_RECORD		then  CODE_RECORD_DECL	     ( TYPE_DECL );
     elsif  TYPE_SPEC.TY = DN_CONSTRAINED_RECORD	then  CODE_CONSTRAINED_RECORD_DECL ( TYPE_NAME, TYPE_SPEC );
-   elsif	 TYPE_SPEC.TY = DN_ARRAY		then  CODE_UNCONSTRAINED_ARRAY_DECL( TYPE_DECL );
-    elsif	 TYPE_SPEC.TY = DN_ACCESS		then  CODE_ACCESS_DECL	     ( TYPE_DECL );
-
+    elsif	 TYPE_SPEC.TY = DN_ARRAY		then  CODE_UNCONSTRAINED_ARRAY_DECL( TYPE_DECL );
     elsif	 TYPE_SPEC.TY = DN_CONSTRAINED_ARRAY	then  CODE_CONSTRAINED_ARRAY_DECL  ( TYPE_DECL );
 
-				-- PRIVATE / LIMITED PRIVATE TYPES
-				-- Nothing to generate here; the full
-				-- type declaration	in the private part
-				-- will be processed normally.
+				-- ACCESS TYPES
 
-    elsif	 TYPE_SPEC.TY = DN_PRIVATE
-    or	 TYPE_SPEC.TY = DN_L_PRIVATE
-    then
+    elsif	 TYPE_SPEC.TY = DN_ACCESS		then  CODE_ACCESS_DECL	     ( TYPE_DECL );
+
+			-- PRIVATE / LIMITED PRIVATE / INCOMPLETE TYPES
+
+    elsif	 TYPE_SPEC.TY = DN_PRIVATE  or  TYPE_SPEC.TY = DN_L_PRIVATE  then
+				------------------------
+				ANTICIPATE_PRIVATE_LEVEL:
+      declare
+        FULL_TYPE_SPEC	: TREE	:= D( SM_TYPE_SPEC, TYPE_SPEC );
+
+      begin
+        if  not (FULL_TYPE_SPEC.TY = DN_VOID)
+	and then  not ( (FULL_TYPE_SPEC.TY = DN_PRIVATE)  or  (FULL_TYPE_SPEC.TY = DN_L_PRIVATE ))
+	and then  not DB( CD_COMPILED, FULL_TYPE_SPEC )  then
+	DI( CD_LEVEL, FULL_TYPE_SPEC, CODI.CUR_LEVEL );
+        end if;
+      end			ANTICIPATE_PRIVATE_LEVEL;
+			------------------------
       if	CODI.DEBUG  then
-	PUT_LINE(	"; CODE_TYPE_DECL : skip PRIVATE "
-		& PRINT_NAME( D( LX_SYMREP, TYPE_NAME )	)
-		& " (deferred to full type)" );
+        PUT_LINE( "; EXPANDER.DECLARATIONS.CODE_TYPE_DECL : skip PRIVATE "
+		& PRINT_NAME( D( LX_SYMREP, TYPE_NAME )	) & " (deferred to full type)" );
       end	if;
 
-				-- INCOMPLETE TYPES
-				-- Same: deferred to full type.
-
-    elsif	 TYPE_SPEC.TY = DN_INCOMPLETE
-    then
+    elsif  TYPE_SPEC.TY = DN_INCOMPLETE  then
+				---------------------------
+				ANTICIPATE_INCOMPLETE_LEVEL:
+      declare
+        FULL_TYPE_SPEC	: TREE	:= D( XD_FULL_TYPE_SPEC, TYPE_SPEC );
+      begin
+        if  not (FULL_TYPE_SPEC.TY = DN_VOID)  and then  not DB( CD_COMPILED, FULL_TYPE_SPEC )  then
+	DI( CD_LEVEL, FULL_TYPE_SPEC, CODI.CUR_LEVEL );
+        end if;
+      end			ANTICIPATE_INCOMPLETE_LEVEL;
+			---------------------------
       if	CODI.DEBUG  then
-	PUT_LINE(	"; CODE_TYPE_DECL : skip INCOMPLETE "
-		& PRINT_NAME( D( LX_SYMREP, TYPE_NAME )	)
-		& " (deferred to full type)" );
+        PUT_LINE(	"; EXPANDER.DECLARATIONS.CODE_TYPE_DECL : skip INCOMPLETE "
+		& PRINT_NAME( D( LX_SYMREP, TYPE_NAME )	) & " (deferred to full type)" );
       end	if;
 
     else
-      PUT_LINE( "; CODE_GEN.DECLARATIONS.CODE_TYPE_DECL : TYPE_SPEC.TY ("
+      PUT_LINE( "; EXPANDER.DECLARATIONS.CODE_TYPE_DECL : TYPE_SPEC.TY ("
 		& NODE_NAME'IMAGE( TYPE_SPEC.TY ) & " NON FAIT POUR ) "
 		& PRINT_NAME( D( LX_SYMREP, TYPE_NAME )	)
 	        );
@@ -734,14 +750,14 @@ is
         V_DECL_S := LIST( D( AS_DECL_S, CL ) );
 
       -- 1. Champs ordinaires de CE comp_list
-        while not IS_EMPTY( V_DECL_S ) loop
+        while  not IS_EMPTY( V_DECL_S )  loop
 	POP( V_DECL_S, V_DECL );
 
 	if  V_DECL.TY /= DN_NULL_COMP_DECL  then
 
 	  declare
 	    COMP_ID_S	: SEQ_TYPE := LIST( D( AS_SOURCE_NAME_S, V_DECL ) );
-	    COMP_ID		: TREE;
+	    COMP_ID	: TREE;
 	    COMP_TYPE	: TREE;
 	  begin
 	    while  not IS_EMPTY( COMP_ID_S )  loop
@@ -752,14 +768,16 @@ is
 	      if  COMP_TYPE.TY = DN_PRIVATE  or else  COMP_TYPE.TY = DN_L_PRIVATE  then
 	        COMP_TYPE := D( SM_TYPE_SPEC, COMP_TYPE );
 	      end if;
-
+			----------------------------
+			PROCESS_INSERT_ONE_COMPONENT:
 	      declare
 	        COMP_TYPE_NAME	: TREE		:= D( XD_SOURCE_NAME, COMP_TYPE );
-	        COMP_TYPE_STR		:constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, COMP_TYPE_NAME ) );
-	        COMP_ID_STR		: constant STRING	:= PRINT_NAME( D( LX_SYMREP, COMP_ID ) );
-	      begin
-	        if  COMP_TYPE.TY = DN_CONSTRAINED_ARRAY  then
+	        COMP_TYPE_STR	:constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, COMP_TYPE_NAME ) );
+	        COMP_ID_STR		:constant STRING	:= PRINT_NAME( D( LX_SYMREP, COMP_ID ) );
 
+	      begin
+
+	        if  COMP_TYPE.TY = DN_CONSTRAINED_ARRAY  then
 		if  not DB( CD_COMPILED, COMP_TYPE )  then
 		  PUT_LINE( COMP_ID_STR & " = '" & COMP_ID_STR & "'" );
 		  PUT_LINE( " namespace " & COMP_TYPE_STR );
@@ -778,11 +796,8 @@ is
 		PUT_LINE( COMP_TYPE_STR & ".use__info" );
 	        end if;
 
-                  -- calcul IS_STATIC inchangé
-	        if  COMP_TYPE.TY = DN_ACCESS  then
-		null;
-
-	        elsif  COMP_TYPE.TY in CLASS_SCALAR  or else  COMP_TYPE.TY in CLASS_CONSTRAINED  then
+                  -- calcul IS_STATIC
+	        if  COMP_TYPE.TY in CLASS_SCALAR  or else  COMP_TYPE.TY in CLASS_CONSTRAINED  then
 		if  D( CD_IMPL_SIZE, COMP_TYPE ) = TREE_VOID  then
 		  IS_STATIC := FALSE;
 		end if;
@@ -793,11 +808,15 @@ is
 		then
 		  IS_STATIC := FALSE;
 		end if;
+	        elsif  COMP_TYPE.TY = DN_ACCESS  then
+		null;
 
 	        else
 		IS_STATIC := FALSE;
 	        end if;
-	      end;
+
+	      end		PROCESS_INSERT_ONE_COMPONENT;
+			----------------------------
               end loop;
             end;
 	end if;

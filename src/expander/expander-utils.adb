@@ -317,30 +317,39 @@ is					-----
 
   begin
     if  CODI.IN_GENERIC_BODY
-        and then  DEFN.TY in CLASS_PARAM_NAME  and then  EXPRESSIONS.IS_GENERIC_FORMAL_OBJECT( DEFN )  then
+        and then  DEFN.TY in CLASS_PARAM_NAME
+        and then  EXPRESSIONS.IS_GENERIC_FORMAL_OBJECT( DEFN )  then
       declare
-        OBJ_TYPE	: TREE		:= D( SM_OBJ_TYPE, DEFN );
-        DEFN_STR	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, DEFN ) );
+        DEFN_STR		:constant STRING	:= PRINT_NAME( D( LX_SYMREP, DEFN ) );
+        OBJ_TYPE		: TREE		:= D( SM_OBJ_TYPE, DEFN );
+        HAS_GENERIC_TYPE	: BOOLEAN
+			:= EXPRESSIONS.IS_GENERIC_FORMAL_TYPE( D( XD_SOURCE_NAME, OBJ_TYPE ) );
       begin
-        while  OBJ_TYPE.TY = DN_PRIVATE  or else  OBJ_TYPE.TY = DN_L_PRIVATE  loop
-	OBJ_TYPE := D( SM_TYPE_SPEC, OBJ_TYPE );
-        end loop;
 
-    -- Adresse du Generic Frame Pointer transmis au modèle.
-        PUT_LINE( tab & "La " & IMAGE( CODI.GENERIC_BASE_LEVEL + 1 ) & "," & tab & "-GFP_ofs" );
+        if  HAS_GENERIC_TYPE  then
+	PUT_LINE( tab & "La " & IMAGE( CODI.GENERIC_BASE_LEVEL + 1 ) & "," & tab & "-GFP_ofs" );
+	PUT_LINE( tab & "LVA ," & tab & "-" & DEFN_STR & "_ofs" );
 
-        if  OBJ_TYPE.TY in CLASS_SCALAR  or else  OBJ_TYPE.TY = DN_ACCESS  then
-      -- Objet formel générique scalaire :
-      --   GFP -> slot contenant directement la valeur.
-	PUT_LINE( tab & "L" & OPER_SIZ_CHAR( OBJ_TYPE ) & " ," & tab & "-" & DEFN_STR & "_disp" );
+	PUT_LINE( tab & "La" & LEVEL_NUM'IMAGE( CODI.GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );
+	PUT_LINE( tab & "La ," & tab & '-'
+			& PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, D( SM_OBJ_TYPE, DEFN ) ) ) )
+			& "__ld_ofs" );
+	PUT_LINE( tab & "CALLI" );
 
         else
-      -- Objet formel générique composite :
-      --   GFP -> doublet {data_ptr,use_info_ptr}.
-      -- On laisse l'adresse du doublet sur la pile.
-	PUT_LINE( tab & "LVA ," & tab & "-" & DEFN_STR & "_disp" );
-        end if;
+	while  OBJ_TYPE.TY = DN_PRIVATE  or else  OBJ_TYPE.TY = DN_L_PRIVATE  loop
+	  OBJ_TYPE := D( SM_TYPE_SPEC, OBJ_TYPE );
+	end loop;
 
+	PUT_LINE( tab & "La " & IMAGE( CODI.GENERIC_BASE_LEVEL + 1 ) & "," & tab & "-GFP_ofs" );
+
+	if  OBJ_TYPE.TY in CLASS_SCALAR  or else  OBJ_TYPE.TY = DN_ACCESS  then
+	  PUT_LINE( tab & "L" & OPER_SIZ_CHAR( OBJ_TYPE ) & " ," & tab & "-" & DEFN_STR & "_disp" );
+
+	else
+	  PUT_LINE( tab & "LVA ," & tab & "-" & DEFN_STR & "_disp" );
+	end if;
+        end if;
         return;
       end;
     end if;

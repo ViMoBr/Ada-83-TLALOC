@@ -1141,6 +1141,10 @@ put_line( "; CODE_VC_NAME " & NODE_NAME'IMAGE( VC_NAME.TY ) );
         GNAME := D( AS_EXP, GNAME );
       end if;
 
+      while  GNAME.TY = DN_SELECTED  loop
+        GNAME := D( AS_NAME, GNAME );
+      end loop;
+
       declare
         DEFN		: TREE		:= D( SM_DEFN, GNAME );
         GNAME_STR		:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, GNAME ) );

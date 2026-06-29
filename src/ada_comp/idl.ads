@@ -84,6 +84,7 @@ is
   TREE_NIL		:constant	TREE	:= (P, TY	=> DN_NIL,   PG => 0, LN => 0);
   TREE_VOID		:constant	TREE	:= (P, TY	=> DN_VOID,  PG => 0, LN => 0);			--| POINTEUR NON TYPE MAIS PAS NIL EN GENERAL (POINTE QUELQUE CHOSE)
   TREE_ROOT		:constant	TREE	:= (P, TY	=> DN_ROOT,  PG => 1, LN => 0);
+  TREE_VIRGIN		:constant TREE	:= (P, TY	=> DN_VIRGIN, PG =>	0, LN => 0);				--| POINTEUR NON INITIALISE
 
   type SEQ_TYPE		is record
 			  FIRST, NEXT	: TREE;

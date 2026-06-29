@@ -662,17 +662,35 @@ null;
 	  elsif  DEFN.TY = DN_IN_ID  then								-- Appel avec un parametre entrant de la procedure englobante
 
 	    if  not CODI.IN_GENERIC_BODY  then
-	      LOAD_MEM( DEFN );
-	    elsif  EXPRESSIONS.IS_GENERIC_FORMAL_TYPE( D( XD_SOURCE_NAME, D( SM_OBJ_TYPE, DEFN ) ) )  then
-	      PUT_LINE( tab & "LVA " & IMAGE( DI( CD_LEVEL, DEFN ) ) & ','
-		    & tab & '-' & PRINT_NAME( D( LX_SYMREP, DEFN ) ) & "_ofs" );
-	      PUT_LINE( tab & "La" & LEVEL_NUM'IMAGE( CODI.GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );
-	      PUT_LINE( tab & "La ," & tab & '-' & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, D( SM_OBJ_TYPE, DEFN ) ) ) )
-			& "__ld_ofs" );
-	      PUT_LINE( tab & "CALLI" );
+	      LOAD_MEM( DEFN );									-- Parametre entree "normal" hors generique
 
-	    else
-	      LOAD_MEM( DEFN );
+	    else											-- On fait un appel au sein d'un generique
+				-----------------------------
+				PARAMETRE_ENTREE_EN_GENERIQUE:
+	      declare
+	        HAS_GENERIC_TYPE	: BOOLEAN
+			:= EXPRESSIONS.IS_GENERIC_FORMAL_TYPE( D( XD_SOURCE_NAME, D( SM_OBJ_TYPE, DEFN ) ) );
+
+	      begin
+	        if  D( XD_REGION, DEFN ).TY /= DN_GENERIC_ID  then						-- Un parametre entree "normal"
+		if  HAS_GENERIC_TYPE  then								-- Mais a type generique
+		  PUT_LINE( tab & "LVA " & IMAGE( DI( CD_LEVEL, DEFN ) ) & ','
+		    & tab & '-' & PRINT_NAME( D( LX_SYMREP, DEFN ) ) & "_ofs" );
+		  PUT_LINE( tab & "La" & LEVEL_NUM'IMAGE( CODI.GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );
+		  PUT_LINE( tab & "La ," & tab & '-'
+			& PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, D( SM_OBJ_TYPE, DEFN ) ) ) )
+			& "__ld_ofs" );
+		  PUT_LINE( tab & "CALLI" );
+
+		else										-- Mais a type non generique
+		  LOAD_MEM( DEFN );
+		end if;
+
+	        else										-- Un objet formel generique en entree
+		LOAD_MEM( DEFN );
+	        end if;
+	      end		PARAMETRE_ENTREE_EN_GENERIQUE;
+			-----------------------------
 	    end if;
 
 	  elsif  DEFN.TY = DN_OUT_ID  or  DEFN.TY = DN_IN_OUT_ID  then					-- Param out/in_out de la procedure englobante

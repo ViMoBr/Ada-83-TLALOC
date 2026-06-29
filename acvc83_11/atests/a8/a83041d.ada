@@ -24,8 +24,8 @@ BEGIN
           PACKAGE P IS
                TYPE A IS ARRAY(INTEGER RANGE 1..10) OF INTEGER;
                TYPE B IS ACCESS INTEGER;
-               TYPE C(NUM : POSITIVE := 1) IS PRIVATE;
-               TYPE R (NUM : POSITIVE := 1)IS
+               TYPE C (NUM : POSITIVE := 1) IS PRIVATE;
+               TYPE R (NUM : POSITIVE := 1) IS
                     RECORD
                          S : INTEGER;
                          T : B;

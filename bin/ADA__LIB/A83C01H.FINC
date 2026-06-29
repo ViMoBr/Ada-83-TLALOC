@@ -1,0 +1,226 @@
+if ~ definite REPORT
+include 'REPORT.FINC'
+end if
+PRO	A83C01H_L1				;---------- PRO A83C01H
+ELB 1					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+; CODE & concat _STRING
+VAR	ANON_19_24_L2_G_data, q
+VAR	ANON_19_24_L2_G_info, q
+VAR	ANON_20_24_L2_D_data, q
+VAR	ANON_20_24_L2_D_info, q
+VAR	ANON_19_24_L2_G_len,  q
+VAR	ANON_20_24_L2_D_len,  q
+VAR	ANON_19_24_L2_R_disp, q
+VAR	ANON_19_24_L2_R__u,   q
+namespace ANON_19_24_L2_R_info
+  VAR SIZ,      d
+  VAR _COMP_SIZ, d
+  VAR _FST_1,    d
+  VAR _LST_1,    d
+end namespace
+STR ANON_19_24_L2_G, "CHECK THAT COMPONENT NAMES MAY BE THE SAME AS"	; constante string="CHECK THAT COMPONENT NAMES MAY BE THE SAME AS"
+	LCA	ANON_19_24_L2_G.data_ptr
+	DUP
+	La  ,  0
+	Sa  1, ANON_19_24_L2_G_data
+	La  ,  8
+	Sa  1, ANON_19_24_L2_G_info
+	LId 1, ANON_19_24_L2_G_info, _STRING.LST_1
+	LId 1, ANON_19_24_L2_G_info, _STRING.FST_1
+	SUB
+	INC
+	Sa  1, ANON_19_24_L2_G_len
+STR ANON_20_24_L2_D, " NAMES OF LABELS"		; constante string=" NAMES OF LABELS"
+	LCA	ANON_20_24_L2_D.data_ptr
+	DUP
+	La  ,  0
+	Sa  1, ANON_20_24_L2_D_data
+	La  ,  8
+	Sa  1, ANON_20_24_L2_D_info
+	LId 1, ANON_20_24_L2_D_info, _STRING.LST_1
+	LId 1, ANON_20_24_L2_D_info, _STRING.FST_1
+	SUB
+	INC
+	Sa  1, ANON_20_24_L2_D_len
+	La  1, ANON_19_24_L2_G_len
+	La  1, ANON_20_24_L2_D_len
+	ADD
+	CO_VAR
+	Sa  1, ANON_19_24_L2_R_disp
+	LI	1
+	Sd  1, ANON_19_24_L2_R_info._FST_1
+	La  1, ANON_19_24_L2_G_len
+	La  1, ANON_20_24_L2_D_len
+	ADD
+	Sd  1, ANON_19_24_L2_R_info._LST_1
+	LI	8
+	Sd  1, ANON_19_24_L2_R_info._COMP_SIZ
+	La  1, ANON_19_24_L2_G_len
+	La  1, ANON_20_24_L2_D_len
+	ADD
+	LI	8
+	MUL
+	Sd  1, ANON_19_24_L2_R_info.SIZ
+	LVA 1, ANON_19_24_L2_R_info.SIZ
+	Sa  1, ANON_19_24_L2_R__u
+	La  1, ANON_19_24_L2_R_disp
+	La  1, ANON_19_24_L2_G_len
+	La  1, ANON_19_24_L2_G_data
+	BLKMOV
+	La  1, ANON_19_24_L2_R_disp
+	La  1, ANON_19_24_L2_G_len
+	ADD
+	La  1, ANON_20_24_L2_D_len
+	La  1, ANON_20_24_L2_D_data
+	BLKMOV
+	LVA 1, ANON_19_24_L2_R_disp
+STR STR_L3, "A83C01H"			; constante string="A83C01H"
+	LCA	STR_L3.data_ptr
+	CALL	STANDARD.REPORT. ,TEST_L1
+namespace	BLOCK__1
+ELB 2					;    BODY ELAB
+
+					; _R1A RECORD TYPE INFO
+_R1A = '_R1A'
+namespace _R1A
+VAR use__info, q
+VAR SIZ, d
+	LVA	2, SIZ
+	Sa	2, use__info
+USEINFO 2, LAB3, 	La 0, STANDARD._INTEGER.use__info
+virtual at 0				; calcul des offsets statiques
+STATOFS LAB3, 4
+size = $
+end virtual
+	LI	 size*8
+	Sd	2, SIZ
+end namespace
+
+					; _R1 RECORD TYPE INFO
+_R1 = '_R1'
+namespace _R1
+VAR use__info, q
+VAR SIZ, d
+	LVA	2, SIZ
+	Sa	2, use__info
+USEINFO 2, LAB1, 	La 0, STANDARD._INTEGER.use__info
+USEINFO 2, LAB2, 	La 2, STANDARD.A83C01H_L1.BLOCK__1._R1A.use__info
+virtual at 0				; calcul des offsets statiques
+STATOFS LAB1, 4
+STATOFS LAB2, 4
+size = $
+end virtual
+	LI	 size*8
+	Sd	2, SIZ
+end namespace
+VAR A1_disp, q				; variable record : pointeur aux data record
+VAR A1__u, q				; variable record : pointeur aux useinfo
+VAR A1__dat, STANDARD.A83C01H_L1.BLOCK__1._R1.size
+	LVA	2, A1__dat
+	Sa	2, A1_disp				; record fin
+	LVA	2, STANDARD.A83C01H_L1.BLOCK__1._R1.SIZ
+	Sa	2, A1__u
+; CODE_VC_NAME DN_VARIABLE_ID
+	La 2, A1_disp
+					; Assign_record_aggregate type DN_RECORD
+	DUP
+	LVA	, STANDARD.A83C01H_L1.BLOCK__1._R1.LAB1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd
+	DUP
+	LVA	, STANDARD.A83C01H_L1.BLOCK__1._R1.LAB2
+					; Assign_record_aggregate type DN_RECORD
+	DUP
+	LVA	, STANDARD.A83C01H_L1.BLOCK__1._R1A.LAB3
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	5
+	Sd
+	DROP
+	DROP
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+namespace	BLOCK__2
+ELB 3					;    BODY ELAB
+
+					; _R1A RECORD TYPE INFO
+_R1A = '_R1A'
+namespace _R1A
+VAR use__info, q
+VAR SIZ, d
+	LVA	3, SIZ
+	Sa	3, use__info
+USEINFO 3, LAB3, 	La 0, STANDARD._INTEGER.use__info
+USEINFO 3, LAB4, 	La 0, STANDARD._INTEGER.use__info
+virtual at 0				; calcul des offsets statiques
+STATOFS LAB3, 4
+STATOFS LAB4, 4
+size = $
+end virtual
+	LI	 size*8
+	Sd	3, SIZ
+end namespace
+
+					; _R1 RECORD TYPE INFO
+_R1 = '_R1'
+namespace _R1
+VAR use__info, q
+VAR SIZ, d
+	LVA	3, SIZ
+	Sa	3, use__info
+USEINFO 3, LAB1, 	La 0, STANDARD._INTEGER.use__info
+USEINFO 3, LAB2, 	La 3, STANDARD.A83C01H_L1.BLOCK__1.BLOCK__2._R1A.use__info
+virtual at 0				; calcul des offsets statiques
+STATOFS LAB1, 4
+STATOFS LAB2, 8
+size = $
+end virtual
+	LI	 size*8
+	Sd	3, SIZ
+end namespace
+VAR A1_disp, q				; variable record : pointeur aux data record
+VAR A1__u, q				; variable record : pointeur aux useinfo
+VAR A1__dat, STANDARD.A83C01H_L1.BLOCK__1.BLOCK__2._R1.size
+	LVA	3, A1__dat
+	Sa	3, A1_disp				; record fin
+	LVA	3, STANDARD.A83C01H_L1.BLOCK__1.BLOCK__2._R1.SIZ
+	Sa	3, A1__u
+; CODE_VC_NAME DN_VARIABLE_ID
+	La 3, A1_disp
+					; Assign_record_aggregate type DN_RECORD
+	DUP
+	LVA	, STANDARD.A83C01H_L1.BLOCK__1.BLOCK__2._R1.LAB1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	3
+	Sd
+	DUP
+	LVA	, STANDARD.A83C01H_L1.BLOCK__1.BLOCK__2._R1.LAB2
+					; Assign_record_aggregate type DN_RECORD
+	DUP
+	LVA	, STANDARD.A83C01H_L1.BLOCK__1.BLOCK__2._R1A.LAB3
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	6
+	Sd
+	DUP
+	LVA	, STANDARD.A83C01H_L1.BLOCK__1.BLOCK__2._R1A.LAB4
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	7
+	Sd
+	DROP
+	DROP
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	UNLINK 3
+endPRO
+	UNLINK 2
+endPRO
+	CALL	STANDARD.REPORT. ,RESULT_L6
+ret_lbl:
+	UNLINK 1
+	RTD
+excep:
+endPRO					;---------- end PRO A83C01H

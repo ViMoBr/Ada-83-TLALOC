@@ -13,8 +13,6 @@ is					---
 
   DEBUG		: BOOLEAN		:= FALSE;								--| POSITIONNE PAR LE "PRAGMA DEBUG;" (VOIR PRA_WALK)
 
-  TREE_VIRGIN	: constant TREE	:= (P, TY	=> DN_VIRGIN, PG =>	0, LN => 0);				--| POINTEUR NON INITIALISE
-
   package	INT_IO	is new INTEGER_IO (	INTEGER );							--| POUR L'IO D'ENTIERS
 
 

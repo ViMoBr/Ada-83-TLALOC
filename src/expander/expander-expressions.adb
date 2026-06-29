@@ -1611,9 +1611,21 @@ end if;
     procedure	CODE_FIRST_LAST	( IS_LAST	:BOOLEAN )
     is		---------------
       PREFIX_DEFN		: TREE		:= D( SM_DEFN, PREFIX_NAME );
+      PREFIX_LVL		: INTEGER;
+
     begin
 
       if	PREFIX_NAME.TY = DN_USED_OBJECT_ID  then
+
+     if  PREFIX_DEFN.TY = DN_COMPONENT_ID  then
+        declare
+	PARENT_TYPE_SPEC	: TREE	:= D( SM_TYPE_SPEC, D( XD_REGION, PREFIX_DEFN ) );
+        begin
+          PREFIX_LVL := DI( CD_LEVEL, PARENT_TYPE_SPEC );
+        end;
+      else
+        PREFIX_LVL := DI( CD_LEVEL, PREFIX_DEFN );
+      end if;
 
 declare
   PREFIX_TYPE : TREE := D( SM_EXP_TYPE, PREFIX_NAME );
@@ -1669,7 +1681,7 @@ end;
          or ( D( SM_EXP_TYPE,	PREFIX_NAME ).TY = DN_ARRAY  and  D( SM_DEFN, PREFIX_NAME ).TY = DN_CONSTANT_ID	)
         then
 	declare
-	  ARRAY_LVL	: INTEGER		:= DI( CD_LEVEL, PREFIX_DEFN );
+	  ARRAY_LVL	: INTEGER		:= PREFIX_LVL;
 	  PREFIX_TYPE	: TREE		:= D( SM_EXP_TYPE, PREFIX_NAME );
 	  TYPE_STR	:constant	STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, PREFIX_TYPE	) ) );
 	  DIM_EXP		: TREE		:= D( AS_EXP, ATTRIBUTE );
@@ -1693,7 +1705,7 @@ end;
         then
 	-- Parametre array : acces useinfo via le doublet
 	declare
-	  ARRAY_LVL	: INTEGER		:= DI( CD_LEVEL, PREFIX_DEFN );
+	  ARRAY_LVL	: INTEGER		:= PREFIX_LVL;
 	  PREFIX_TYPE	: TREE		:= D( SM_EXP_TYPE, PREFIX_NAME );
 	  TYPE_STR	:constant	STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, PREFIX_TYPE	) ) );
 	  DIM_EXP		: TREE		:= D( AS_EXP, ATTRIBUTE );
