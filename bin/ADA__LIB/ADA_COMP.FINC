@@ -9,8 +9,8 @@ include 'IDL.FINC'
 end if
 PRO	ADA_COMP_L1				;---------- PRO ADA_COMP
 ELB 1					;    BODY ELAB
-_STRING = '_STRING'
-namespace _STRING				; array var constrained array type info
+_CMD_FROM_STDIN__type = '_CMD_FROM_STDIN__type'
+namespace _CMD_FROM_STDIN__type		; array var constrained array type info
 VAR use__info, q
 VAR SIZ, d
 	LVA	1, SIZ
@@ -44,9 +44,9 @@ LST_1 = $
 end namespace
 VAR CMD_FROM_STDIN_disp, q			; variable array : pointeur aux data
 VAR CMD_FROM_STDIN__u, q			; variable array : useinfo pointeur au rec info
-	La 1, _STRING.use__info
+	La 1, _CMD_FROM_STDIN__type.use__info
 	Sa	1, CMD_FROM_STDIN__u			; array info ptr at __u
-	Ld	1, _STRING.SIZ
+	Ld	1, _CMD_FROM_STDIN__type.SIZ
 	LI	8
 	DIV
 	CO_VAR
@@ -54,8 +54,8 @@ VAR CMD_FROM_STDIN__u, q			; variable array : useinfo pointeur au rec info
 
 VAR CMD_LENGTH_disp, d			; variable entiere
 
-_STRING = '_STRING'
-namespace _STRING				; array var constrained array type info
+_ACCES_TEXTE__type = '_ACCES_TEXTE__type'
+namespace _ACCES_TEXTE__type			; array var constrained array type info
 VAR use__info, q
 VAR SIZ, d
 	LVA	1, SIZ
@@ -89,9 +89,9 @@ LST_1 = $
 end namespace
 VAR ACCES_TEXTE_disp, q			; variable array : pointeur aux data
 VAR ACCES_TEXTE__u, q			; variable array : useinfo pointeur au rec info
-	La 1, _STRING.use__info
+	La 1, _ACCES_TEXTE__type.use__info
 	Sa	1, ACCES_TEXTE__u			; array info ptr at __u
-	Ld	1, _STRING.SIZ
+	Ld	1, _ACCES_TEXTE__type.SIZ
 	LI	8
 	DIV
 	CO_VAR
@@ -117,7 +117,7 @@ begin:					;---------- BDY INSTRUCTIONS
 namespace	BLOCK__1
 ELB 2					;    BODY ELAB
 VAR CHN_START_disp, d			; variable entiere
-	LId	1, CMD_FROM_STDIN__u, _STRING.FST_1
+	LId	1, STANDARD.ADA_COMP_L1.CMD_FROM_STDIN__u, STANDARD._STRING.FST_1
 	Sd  2,	CHN_START_disp
 
 VAR POST_CHN_disp, d			; variable entiere
@@ -212,8 +212,8 @@ L3:					; post loop FIND_POST_END_1
 endPRO
 	Ld	0, LIB_PATH_LENGTH
 	Ld	0, PROJECT_PATH_LENGTH
-	LId	0, DEFAULT_LIB_PATH__u, _STRING.LST_1
-	LId	0, DEFAULT_LIB_PATH__u, _STRING.FST_1
+	LId	0, STANDARD.IDL.DEFAULT_LIB_PATH__u, STANDARD._STRING.LST_1
+	LId	0, STANDARD.IDL.DEFAULT_LIB_PATH__u, STANDARD._STRING.FST_1
 	SUB
 	INC
 	ADD
@@ -381,7 +381,7 @@ FIND_POST_END_2:
 	Sd  2,	POST_CHN_disp
 					; debut if
 	Ld 2,	STANDARD.ADA_COMP_L1.BLOCK__1.POST_CHN_disp
-	LId	1, CMD_FROM_STDIN__u, _STRING.LST_1
+	LId	1, STANDARD.ADA_COMP_L1.CMD_FROM_STDIN__u, STANDARD._STRING.LST_1
 	CGT
 	BF	L11
 	LI	1
@@ -535,7 +535,7 @@ namespace	BLOCK__2
 ELB 3					;    BODY ELAB
 VAR CHEMIN_TEXTE_disp, q			; variable array : pointeur aux data
 VAR CHEMIN_TEXTE__u, q			; variable array : useinfo pointeur au rec info
-	La 0, _STRING.use__info
+	La 0, STANDARD._STRING.use__info
 	Sa	3, CHEMIN_TEXTE__u			; array info ptr at __u
 ; CODE & concat _STRING
 VAR	ANON_141_40_L20_G_data, q
@@ -688,7 +688,7 @@ end namespace
 
 VAR NOM_TEXTE_disp, q			; variable array : pointeur aux data
 VAR NOM_TEXTE__u, q				; variable array : useinfo pointeur au rec info
-	La 0, _STRING.use__info
+	La 0, STANDARD._STRING.use__info
 	Sa	3, NOM_TEXTE__u				; array info ptr at __u
 ; COMPILE_ARRAY_VAR ASSOC.TY non gere DN_SLICE
 

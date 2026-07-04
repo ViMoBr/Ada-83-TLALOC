@@ -52,9 +52,9 @@ LST_1 = $
 end namespace
 VAR A_disp, q				; variable array : pointeur aux data
 VAR A__u, q				; variable array : useinfo pointeur au rec info
-	La 2, _TABLE.use__info
+	La 2, STANDARD.A21001A_L1.BLOCK__1._TABLE.use__info
 	Sa	2, A__u				; array info ptr at __u
-	Ld	2, _TABLE.SIZ
+	Ld	2, STANDARD.A21001A_L1.BLOCK__1._TABLE.SIZ
 	LI	8
 	DIV
 	CO_VAR
@@ -284,8 +284,8 @@ VAR I2_disp, d				; variable entiere
 
 VAR I3_disp, d				; variable entiere
 
-_STRING = '_STRING'
-namespace _STRING				; array var constrained array type info
+_C1__type = '_C1__type'
+namespace _C1__type				; array var constrained array type info
 VAR use__info, q
 VAR SIZ, d
 	LVA	2, SIZ
@@ -319,26 +319,59 @@ LST_1 = $
 end namespace
 VAR C1_disp, q				; variable array : pointeur aux data
 VAR C1__u, q				; variable array : useinfo pointeur au rec info
-	La 2, _STRING.use__info
+	La 2, _C1__type.use__info
 	Sa	2, C1__u				; array info ptr at __u
-	Ld	2, _STRING.SIZ
+	Ld	2, _C1__type.SIZ
 	LI	8
 	DIV
 	CO_VAR
 	Sa	2, C1_disp				; array data ptr at _disp
 
+_C2__type = '_C2__type'
+namespace _C2__type				; array var constrained array type info
+VAR use__info, q
+VAR SIZ, d
+	LVA	2, SIZ
+	Sa	2, use__info
+VAR _COMP_SIZ, d
+VAR _FST_1, d
+VAR _LST_1, d
+	LI	8
+	Sd	2, _COMP_SIZ
+	Ld	2, _COMP_SIZ
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd	2, _FST_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	6
+	Sd	2, _LST_1
+	Ld	2, _LST_1
+	Ld	2, _FST_1
+	SUB
+	INC
+	MUL
+	Sd	2, SIZ
+  virtual at 4
+COMP_SIZ = $
+	rd 1 
+FST_1 = $
+	rd 1 
+LST_1 = $
+	rd 1 
+  end virtual
+end namespace
 VAR C2_disp, q				; variable array : pointeur aux data
 VAR C2__u, q				; variable array : useinfo pointeur au rec info
-	La 2, _STRING.use__info
+	La 2, _C2__type.use__info
 	Sa	2, C2__u				; array info ptr at __u
-	Ld	2, _STRING.SIZ
+	Ld	2, _C2__type.SIZ
 	LI	8
 	DIV
 	CO_VAR
 	Sa	2, C2_disp				; array data ptr at _disp
 
-_STRING = '_STRING'
-namespace _STRING				; array var constrained array type info
+_C3__type = '_C3__type'
+namespace _C3__type				; array var constrained array type info
 VAR use__info, q
 VAR SIZ, d
 	LVA	2, SIZ
@@ -372,9 +405,9 @@ LST_1 = $
 end namespace
 VAR C3_disp, q				; variable array : pointeur aux data
 VAR C3__u, q				; variable array : useinfo pointeur au rec info
-	La 2, _STRING.use__info
+	La 2, _C3__type.use__info
 	Sa	2, C3__u				; array info ptr at __u
-	Ld	2, _STRING.SIZ
+	Ld	2, _C3__type.SIZ
 	LI	8
 	DIV
 	CO_VAR
@@ -478,7 +511,7 @@ end namespace
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	13
 	Sd  2,	I2_disp
-	LId	2, A__u, _TABLE.LST_1
+	LId	2, STANDARD.A21001A_L1.BLOCK__1.A__u, STANDARD.A21001A_L1.BLOCK__1._TABLE.LST_1
 	Sd  2,	I3_disp
 	LIVA 	2, R1_disp, STANDARD.A21001A_L1.BLOCK__1._BUFFER.POS
 ; CODE_NUMERIC_LITERAL DN_INTEGER

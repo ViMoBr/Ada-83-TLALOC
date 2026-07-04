@@ -290,6 +290,7 @@ namespace	BLOCK__1
 ELB 2					;    BODY ELAB
 P = 'P'
 namespace P				;---------- PACKAGE DECLARATION
+					; CODE_PACKAGE_SPEC
 
 					; _A TYPE RANGE INFO
 _A = '_A'
@@ -507,9 +508,9 @@ VAR FIP_L_disp, q				; variable fixed
 
 VAR LIT_L_disp, q				; variable array : pointeur aux data
 VAR LIT_L__u, q				; variable array : useinfo pointeur au rec info
-	La 2, _LINE.use__info
+	La 2, STANDARD.A83041B_L1.BLOCK__1.P._LINE.use__info
 	Sa	2, LIT_L__u				; array info ptr at __u
-	Ld	2, _LINE.SIZ
+	Ld	2, STANDARD.A83041B_L1.BLOCK__1.P._LINE.SIZ
 	LI	8
 	DIV
 	CO_VAR
@@ -517,9 +518,9 @@ VAR LIT_L__u, q				; variable array : useinfo pointeur au rec info
 
 VAR ARR2_L_disp, q				; variable array : pointeur aux data
 VAR ARR2_L__u, q				; variable array : useinfo pointeur au rec info
-	La 2, _E2.use__info
+	La 2, STANDARD.A83041B_L1.BLOCK__1.P._E2.use__info
 	Sa	2, ARR2_L__u				; array info ptr at __u
-	Ld	2, _E2.SIZ
+	Ld	2, STANDARD.A83041B_L1.BLOCK__1.P._E2.SIZ
 	LI	8
 	DIV
 	CO_VAR
@@ -592,9 +593,118 @@ L9:
 
 VAR AR12_L_disp, q				; variable array : pointeur aux data
 VAR AR12_L__u, q				; variable array : useinfo pointeur au rec info
-	La 2, _E2.use__info
+	La 2, STANDARD.A83041B_L1.BLOCK__1.P._E2.use__info
 	Sa	2, AR12_L__u				; array info ptr at __u
-; COMPILE_ARRAY_VAR ASSOC.TY non gere DN_QUALIFIED
+	Ld	2, STANDARD.A83041B_L1.BLOCK__1.P._E2.SIZ
+	LI	8
+	DIV
+	CO_VAR
+	Sa	2, AR12_L_disp				; array data ptr at _disp
+					; array data qualified aggregate
+	La	2, AR12_L_disp
+					; Assign_array_aggregate dynamic type DN_CONSTRAINED_ARRAY
+namespace ANON_47_33_aga
+  VAR _FST_1, d
+  VAR _LST_1, d
+  VAR _LEN_1, d
+  VAR _STR_1, d
+  VAR _PTR_1, q
+  VAR _CNT_1, d
+  VAR _EMIS_1, d
+end namespace
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	4
+	Sd  2, ANON_47_33_aga._FST_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	6
+	Sd  2, ANON_47_33_aga._LST_1
+	Ld  2, ANON_47_33_aga._LST_1
+	Ld  2, ANON_47_33_aga._FST_1
+	SUB
+	INC
+	Sd  2, ANON_47_33_aga._LEN_1
+	LI	2
+	Sd  2, ANON_47_33_aga._STR_1
+	Sa  2, ANON_47_33_aga._PTR_1
+	LI	0
+	Sd  2, ANON_47_33_aga._EMIS_1
+	LI	1
+	Sd  2, ANON_47_33_aga._CNT_1
+	Ld  2, ANON_47_33_aga._CNT_1
+	LI	0
+	CLE
+	BT  L11
+L10:
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	8
+	SIw  2, ANON_47_33_aga._PTR_1, 0
+	La  2, ANON_47_33_aga._PTR_1
+	Ld  2, ANON_47_33_aga._STR_1
+	ADD
+	Sa  2, ANON_47_33_aga._PTR_1
+	Ld  2, ANON_47_33_aga._EMIS_1
+	INC
+	Sd  2, ANON_47_33_aga._EMIS_1
+	Ld  2, ANON_47_33_aga._CNT_1
+	DEC
+	DUP
+	Sd  2, ANON_47_33_aga._CNT_1
+	LI	0
+	CGT
+	BT  L10
+L11:
+	LI	1
+	Sd  2, ANON_47_33_aga._CNT_1
+	Ld  2, ANON_47_33_aga._CNT_1
+	LI	0
+	CLE
+	BT  L13
+L12:
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	3
+	SIw  2, ANON_47_33_aga._PTR_1, 0
+	La  2, ANON_47_33_aga._PTR_1
+	Ld  2, ANON_47_33_aga._STR_1
+	ADD
+	Sa  2, ANON_47_33_aga._PTR_1
+	Ld  2, ANON_47_33_aga._EMIS_1
+	INC
+	Sd  2, ANON_47_33_aga._EMIS_1
+	Ld  2, ANON_47_33_aga._CNT_1
+	DEC
+	DUP
+	Sd  2, ANON_47_33_aga._CNT_1
+	LI	0
+	CGT
+	BT  L12
+L13:
+	Ld  2, ANON_47_33_aga._LEN_1
+	Ld  2, ANON_47_33_aga._EMIS_1
+	SUB
+	Sd  2, ANON_47_33_aga._CNT_1
+	Ld  2, ANON_47_33_aga._CNT_1
+	LI	0
+	CLE
+	BT  L15
+L14:
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	SIw  2, ANON_47_33_aga._PTR_1, 0
+	La  2, ANON_47_33_aga._PTR_1
+	Ld  2, ANON_47_33_aga._STR_1
+	ADD
+	Sa  2, ANON_47_33_aga._PTR_1
+	Ld  2, ANON_47_33_aga._EMIS_1
+	INC
+	Sd  2, ANON_47_33_aga._EMIS_1
+	Ld  2, ANON_47_33_aga._CNT_1
+	DEC
+	DUP
+	Sd  2, ANON_47_33_aga._CNT_1
+	LI	0
+	CGT
+	BT  L14
+L15:
 
 VAR ACC1_L_disp, q
 	LI	0
@@ -665,9 +775,9 @@ VAR FIP_disp, q				; variable fixed
 
 VAR LIT_disp, q				; variable array : pointeur aux data
 VAR LIT__u, q				; variable array : useinfo pointeur au rec info
-	La 2, _LINE.use__info
+	La 2, STANDARD.A83041B_L1.BLOCK__1.P._LINE.use__info
 	Sa	2, LIT__u				; array info ptr at __u
-	Ld	2, _LINE.SIZ
+	Ld	2, STANDARD.A83041B_L1.BLOCK__1.P._LINE.SIZ
 	LI	8
 	DIV
 	CO_VAR
@@ -675,9 +785,9 @@ VAR LIT__u, q				; variable array : useinfo pointeur au rec info
 
 VAR ARR2_disp, q				; variable array : pointeur aux data
 VAR ARR2__u, q				; variable array : useinfo pointeur au rec info
-	La 2, _E2.use__info
+	La 2, STANDARD.A83041B_L1.BLOCK__1.P._E2.use__info
 	Sa	2, ARR2__u				; array info ptr at __u
-	Ld	2, _E2.SIZ
+	Ld	2, STANDARD.A83041B_L1.BLOCK__1.P._E2.SIZ
 	LI	8
 	DIV
 	CO_VAR
@@ -727,8 +837,8 @@ end namespace
 	Ld  2, ANON_60_29_aga._CNT_1
 	LI	0
 	CLE
-	BT  L11
-L10:
+	BT  L17
+L16:
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	3
 	SIw  2, ANON_60_29_aga._PTR_1, 0
@@ -745,14 +855,123 @@ L10:
 	Sd  2, ANON_60_29_aga._CNT_1
 	LI	0
 	CGT
-	BT  L10
-L11:
+	BT  L16
+L17:
 
 VAR AR12_disp, q				; variable array : pointeur aux data
 VAR AR12__u, q				; variable array : useinfo pointeur au rec info
-	La 2, _E2.use__info
+	La 2, STANDARD.A83041B_L1.BLOCK__1.P._E2.use__info
 	Sa	2, AR12__u				; array info ptr at __u
-; COMPILE_ARRAY_VAR ASSOC.TY non gere DN_QUALIFIED
+	Ld	2, STANDARD.A83041B_L1.BLOCK__1.P._E2.SIZ
+	LI	8
+	DIV
+	CO_VAR
+	Sa	2, AR12_disp				; array data ptr at _disp
+					; array data qualified aggregate
+	La	2, AR12_disp
+					; Assign_array_aggregate dynamic type DN_CONSTRAINED_ARRAY
+namespace ANON_61_32_aga
+  VAR _FST_1, d
+  VAR _LST_1, d
+  VAR _LEN_1, d
+  VAR _STR_1, d
+  VAR _PTR_1, q
+  VAR _CNT_1, d
+  VAR _EMIS_1, d
+end namespace
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	4
+	Sd  2, ANON_61_32_aga._FST_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	6
+	Sd  2, ANON_61_32_aga._LST_1
+	Ld  2, ANON_61_32_aga._LST_1
+	Ld  2, ANON_61_32_aga._FST_1
+	SUB
+	INC
+	Sd  2, ANON_61_32_aga._LEN_1
+	LI	2
+	Sd  2, ANON_61_32_aga._STR_1
+	Sa  2, ANON_61_32_aga._PTR_1
+	LI	0
+	Sd  2, ANON_61_32_aga._EMIS_1
+	LI	1
+	Sd  2, ANON_61_32_aga._CNT_1
+	Ld  2, ANON_61_32_aga._CNT_1
+	LI	0
+	CLE
+	BT  L19
+L18:
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	8
+	SIw  2, ANON_61_32_aga._PTR_1, 0
+	La  2, ANON_61_32_aga._PTR_1
+	Ld  2, ANON_61_32_aga._STR_1
+	ADD
+	Sa  2, ANON_61_32_aga._PTR_1
+	Ld  2, ANON_61_32_aga._EMIS_1
+	INC
+	Sd  2, ANON_61_32_aga._EMIS_1
+	Ld  2, ANON_61_32_aga._CNT_1
+	DEC
+	DUP
+	Sd  2, ANON_61_32_aga._CNT_1
+	LI	0
+	CGT
+	BT  L18
+L19:
+	LI	1
+	Sd  2, ANON_61_32_aga._CNT_1
+	Ld  2, ANON_61_32_aga._CNT_1
+	LI	0
+	CLE
+	BT  L21
+L20:
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	3
+	SIw  2, ANON_61_32_aga._PTR_1, 0
+	La  2, ANON_61_32_aga._PTR_1
+	Ld  2, ANON_61_32_aga._STR_1
+	ADD
+	Sa  2, ANON_61_32_aga._PTR_1
+	Ld  2, ANON_61_32_aga._EMIS_1
+	INC
+	Sd  2, ANON_61_32_aga._EMIS_1
+	Ld  2, ANON_61_32_aga._CNT_1
+	DEC
+	DUP
+	Sd  2, ANON_61_32_aga._CNT_1
+	LI	0
+	CGT
+	BT  L20
+L21:
+	Ld  2, ANON_61_32_aga._LEN_1
+	Ld  2, ANON_61_32_aga._EMIS_1
+	SUB
+	Sd  2, ANON_61_32_aga._CNT_1
+	Ld  2, ANON_61_32_aga._CNT_1
+	LI	0
+	CLE
+	BT  L23
+L22:
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	SIw  2, ANON_61_32_aga._PTR_1, 0
+	La  2, ANON_61_32_aga._PTR_1
+	Ld  2, ANON_61_32_aga._STR_1
+	ADD
+	Sa  2, ANON_61_32_aga._PTR_1
+	Ld  2, ANON_61_32_aga._EMIS_1
+	INC
+	Sd  2, ANON_61_32_aga._EMIS_1
+	Ld  2, ANON_61_32_aga._CNT_1
+	DEC
+	DUP
+	Sd  2, ANON_61_32_aga._CNT_1
+	LI	0
+	CGT
+	BT  L22
+L23:
 
 VAR ACC1_disp, q
 	LI	0
@@ -964,8 +1183,8 @@ end namespace
 	Ld  2, ANON_83_24_aga._CNT_1
 	LI	0
 	CLE
-	BT  L13
-L12:
+	BT  L25
+L24:
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	2
 	SIw  2, ANON_83_24_aga._PTR_1, 0
@@ -982,8 +1201,8 @@ L12:
 	Sd  2, ANON_83_24_aga._CNT_1
 	LI	0
 	CGT
-	BT  L12
-L13:
+	BT  L24
+L25:
 end namespace 				;---------- end package BDY P
 
 					;    end elab
@@ -1153,8 +1372,8 @@ end namespace
 	Ld  2, ANON_101_21_aga._CNT_1
 	LI	0
 	CLE
-	BT  L15
-L14:
+	BT  L27
+L26:
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	2
 	SIw  2, ANON_101_21_aga._PTR_1, 0
@@ -1171,8 +1390,8 @@ L14:
 	Sd  2, ANON_101_21_aga._CNT_1
 	LI	0
 	CGT
-	BT  L14
-L15:
+	BT  L26
+L27:
 	UNLINK 2
 endPRO
 	CALL	STANDARD.REPORT. ,RESULT_L6

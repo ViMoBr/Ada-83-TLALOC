@@ -474,6 +474,8 @@ end if
 if defined P_L11_
 PRO	P_L11					;---------- PRO P
 virtual at 8
+	F__call_ofs = $
+	rq 1
 	T__u_ofs = $
 	rq 1
 	T__ld_ofs = $
@@ -485,6 +487,9 @@ virtual at 8
 	T__outadr_ofs = $
 	rq 1
 end virtual
+PRMS					;    debut parametrage
+	PRM GFP_ofs
+endPRMS					;    fin parametrage
 ELB 3					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
@@ -494,42 +499,46 @@ ret_lbl:
 excep:
 endPRO					;---------- end PRO P
 end if
-BRA post_LD_INTEGER
-LD_INTEGER.elab:
+					; sub program entry decl (in instantiation FALSE )
+if defined P1_L12_
+BRA post_LD_P1_L12T
+LD_P1_L12T.elab:
 	Ld -1, 0
 	RTD 0
-post_LD_INTEGER:
-BRA post_ST_INTEGER
-ST_INTEGER.elab:
+post_LD_P1_L12T:
+BRA post_ST_P1_L12T
+ST_P1_L12T.elab:
 	Sd -1, 0
 	RTD 0
-post_ST_INTEGER:
-BRA post_INADR_INTEGER
-INADR_INTEGER.elab:
+post_ST_P1_L12T:
+BRA post_INADR_P1_L12T
+INADR_P1_L12T.elab:
 	RTD 0
-post_INADR_INTEGER:
-BRA post_OUTADR_INTEGER
-OUTADR_INTEGER.elab:
+post_INADR_P1_L12T:
+BRA post_OUTADR_P1_L12T
+OUTADR_P1_L12T.elab:
 	La
 	RTD 0
-post_OUTADR_INTEGER:
-VAR INTEGER__outadr_ofs, q
-	LCA OUTADR_INTEGER.elab
-	Sa	 2, INTEGER__outadr_ofs
-VAR INTEGER__inadr_ofs, q
-	LCA INADR_INTEGER.elab
-	Sa	 2, INTEGER__inadr_ofs
-VAR INTEGER__st_ofs, q
-	LCA ST_INTEGER.elab
-	Sa	 2, INTEGER__st_ofs
-VAR INTEGER__ld_ofs, q
-	LCA LD_INTEGER.elab
-	Sa	 2, INTEGER__ld_ofs
-VAR INTEGER__u_ofs, q
+post_OUTADR_P1_L12T:
+VAR P1_L12T__outadr_ofs, q
+	LCA OUTADR_P1_L12T.elab
+	Sa	 2, P1_L12T__outadr_ofs
+VAR P1_L12T__inadr_ofs, q
+	LCA INADR_P1_L12T.elab
+	Sa	 2, P1_L12T__inadr_ofs
+VAR P1_L12T__st_ofs, q
+	LCA ST_P1_L12T.elab
+	Sa	 2, P1_L12T__st_ofs
+VAR P1_L12T__ld_ofs, q
+	LCA LD_P1_L12T.elab
+	Sa	 2, P1_L12T__ld_ofs
+VAR P1_L12T__u_ofs, q
 	La	 0, STANDARD._INTEGER.use__info
-	Sa	 2, INTEGER__u_ofs
+	Sa	 2, P1_L12T__u_ofs
+VAR F__call_ofs, q
+	LCA F1_L9.elab
+	Sa	 2, F__call_ofs
 VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
-if defined P1_L12_
 PRO	P1_L12				;---------- PRO P1
 ELB 3
 begin:
@@ -539,43 +548,47 @@ begin:
 	RTD
 endPRO					;---------- end PRO P1
 end if
-BRA post_LD_BOOLEAN
-LD_BOOLEAN.elab:
+					; sub program entry decl (in instantiation FALSE )
+if defined P2_L14_
+BRA post_LD_P2_L14T
+LD_P2_L14T.elab:
 	Lb -1, 0
 	RTD 0
-post_LD_BOOLEAN:
-BRA post_ST_BOOLEAN
-ST_BOOLEAN.elab:
+post_LD_P2_L14T:
+BRA post_ST_P2_L14T
+ST_P2_L14T.elab:
 	Sb -1, 0
 	RTD 0
-post_ST_BOOLEAN:
-BRA post_INADR_BOOLEAN
-INADR_BOOLEAN.elab:
+post_ST_P2_L14T:
+BRA post_INADR_P2_L14T
+INADR_P2_L14T.elab:
 	RTD 0
-post_INADR_BOOLEAN:
-BRA post_OUTADR_BOOLEAN
-OUTADR_BOOLEAN.elab:
+post_INADR_P2_L14T:
+BRA post_OUTADR_P2_L14T
+OUTADR_P2_L14T.elab:
 	La
 	RTD 0
-post_OUTADR_BOOLEAN:
-VAR BOOLEAN__outadr_ofs, q
-	LCA OUTADR_BOOLEAN.elab
-	Sa	 2, BOOLEAN__outadr_ofs
-VAR BOOLEAN__inadr_ofs, q
-	LCA INADR_BOOLEAN.elab
-	Sa	 2, BOOLEAN__inadr_ofs
-VAR BOOLEAN__st_ofs, q
-	LCA ST_BOOLEAN.elab
-	Sa	 2, BOOLEAN__st_ofs
-VAR BOOLEAN__ld_ofs, q
-	LCA LD_BOOLEAN.elab
-	Sa	 2, BOOLEAN__ld_ofs
-VAR BOOLEAN__u_ofs, q
+post_OUTADR_P2_L14T:
+VAR P2_L14T__outadr_ofs, q
+	LCA OUTADR_P2_L14T.elab
+	Sa	 2, P2_L14T__outadr_ofs
+VAR P2_L14T__inadr_ofs, q
+	LCA INADR_P2_L14T.elab
+	Sa	 2, P2_L14T__inadr_ofs
+VAR P2_L14T__st_ofs, q
+	LCA ST_P2_L14T.elab
+	Sa	 2, P2_L14T__st_ofs
+VAR P2_L14T__ld_ofs, q
+	LCA LD_P2_L14T.elab
+	Sa	 2, P2_L14T__ld_ofs
+VAR P2_L14T__u_ofs, q
 	La	 0, STANDARD._BOOLEAN.use__info
-	Sa	 2, BOOLEAN__u_ofs
+	Sa	 2, P2_L14T__u_ofs
+VAR F__call_ofs, q
+	LCA F1_L10.elab
+	Sa	 2, F__call_ofs
 VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
-if defined P2_L13_
-PRO	P2_L13				;---------- PRO P2
+PRO	P2_L14				;---------- PRO P2
 ELB 3
 begin:
 	LVA	 2, GFP_disp
@@ -587,14 +600,14 @@ end if
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 	CALL	STANDARD.A87B59A_L1.BLOCK__1. ,P1_L12
-	CALL	STANDARD.A87B59A_L1.BLOCK__1. ,P2_L13
+	CALL	STANDARD.A87B59A_L1.BLOCK__1. ,P2_L14
 	UNLINK 2
 endPRO
 namespace	BLOCK__2
 ELB 2					;    BODY ELAB
 
-if defined F1_L14_
-PRO	F1_L14				;---------- PRO F1
+if defined F1_L16_
+PRO	F1_L16				;---------- PRO F1
 PRMS					;    debut parametrage
 	PRM X_ofs				; in
 	PRM B_ofs				; in
@@ -616,8 +629,8 @@ excep:
 endPRO					;---------- end PRO F1
 end if
 
-if defined F1_L15_
-PRO	F1_L15				;---------- PRO F1
+if defined F1_L17_
+PRO	F1_L17				;---------- PRO F1
 PRMS					;    debut parametrage
 	PRM X_ofs				; in
 	PRM B_ofs				; in
@@ -639,8 +652,8 @@ excep:
 endPRO					;---------- end PRO F1
 end if
 
-if defined F1_L16_
-PRO	F1_L16				;---------- PRO F1
+if defined F1_L18_
+PRO	F1_L18				;---------- PRO F1
 PRMS					;    debut parametrage
 	PRM B_ofs				; in
 	PRM X_ofs				; in
@@ -663,18 +676,10 @@ endPRO					;---------- end PRO F1
 end if
 ; GENERIC_SUBPROGRAM_SPEC
 
-if defined P1_L17_
-PRO	P1_L17				;---------- PRO P1
+if defined P1_L19_
+PRO	P1_L19				;---------- PRO P1
 virtual at 8
-	T1__u_ofs = $
-	rq 1
-	T1__ld_ofs = $
-	rq 1
-	T1__st_ofs = $
-	rq 1
-	T1__inadr_ofs = $
-	rq 1
-	T1__outadr_ofs = $
+	F__call_ofs = $
 	rq 1
 	T2__u_ofs = $
 	rq 1
@@ -686,7 +691,20 @@ virtual at 8
 	rq 1
 	T2__outadr_ofs = $
 	rq 1
+	T1__u_ofs = $
+	rq 1
+	T1__ld_ofs = $
+	rq 1
+	T1__st_ofs = $
+	rq 1
+	T1__inadr_ofs = $
+	rq 1
+	T1__outadr_ofs = $
+	rq 1
 end virtual
+PRMS					;    debut parametrage
+	PRM GFP_ofs
+endPRMS					;    fin parametrage
 ELB 3					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
@@ -698,18 +716,10 @@ endPRO					;---------- end PRO P1
 end if
 ; GENERIC_SUBPROGRAM_SPEC
 
-if defined P2_L18_
-PRO	P2_L18				;---------- PRO P2
+if defined P2_L20_
+PRO	P2_L20				;---------- PRO P2
 virtual at 8
-	T1__u_ofs = $
-	rq 1
-	T1__ld_ofs = $
-	rq 1
-	T1__st_ofs = $
-	rq 1
-	T1__inadr_ofs = $
-	rq 1
-	T1__outadr_ofs = $
+	F__call_ofs = $
 	rq 1
 	T2__u_ofs = $
 	rq 1
@@ -721,7 +731,20 @@ virtual at 8
 	rq 1
 	T2__outadr_ofs = $
 	rq 1
+	T1__u_ofs = $
+	rq 1
+	T1__ld_ofs = $
+	rq 1
+	T1__st_ofs = $
+	rq 1
+	T1__inadr_ofs = $
+	rq 1
+	T1__outadr_ofs = $
+	rq 1
 end virtual
+PRMS					;    debut parametrage
+	PRM GFP_ofs
+endPRMS					;    fin parametrage
 ELB 3					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
@@ -731,247 +754,259 @@ ret_lbl:
 excep:
 endPRO					;---------- end PRO P2
 end if
-BRA post_LD_INTEGER
-LD_INTEGER.elab:
+					; sub program entry decl (in instantiation FALSE )
+if defined PROC1_L21_
+BRA post_LD_PROC1_L21T1
+LD_PROC1_L21T1.elab:
 	Ld -1, 0
 	RTD 0
-post_LD_INTEGER:
-BRA post_ST_INTEGER
-ST_INTEGER.elab:
+post_LD_PROC1_L21T1:
+BRA post_ST_PROC1_L21T1
+ST_PROC1_L21T1.elab:
 	Sd -1, 0
 	RTD 0
-post_ST_INTEGER:
-BRA post_INADR_INTEGER
-INADR_INTEGER.elab:
+post_ST_PROC1_L21T1:
+BRA post_INADR_PROC1_L21T1
+INADR_PROC1_L21T1.elab:
 	RTD 0
-post_INADR_INTEGER:
-BRA post_OUTADR_INTEGER
-OUTADR_INTEGER.elab:
+post_INADR_PROC1_L21T1:
+BRA post_OUTADR_PROC1_L21T1
+OUTADR_PROC1_L21T1.elab:
 	La
 	RTD 0
-post_OUTADR_INTEGER:
-VAR INTEGER__outadr_ofs, q
-	LCA OUTADR_INTEGER.elab
-	Sa	 2, INTEGER__outadr_ofs
-VAR INTEGER__inadr_ofs, q
-	LCA INADR_INTEGER.elab
-	Sa	 2, INTEGER__inadr_ofs
-VAR INTEGER__st_ofs, q
-	LCA ST_INTEGER.elab
-	Sa	 2, INTEGER__st_ofs
-VAR INTEGER__ld_ofs, q
-	LCA LD_INTEGER.elab
-	Sa	 2, INTEGER__ld_ofs
-VAR INTEGER__u_ofs, q
+post_OUTADR_PROC1_L21T1:
+VAR PROC1_L21T1__outadr_ofs, q
+	LCA OUTADR_PROC1_L21T1.elab
+	Sa	 2, PROC1_L21T1__outadr_ofs
+VAR PROC1_L21T1__inadr_ofs, q
+	LCA INADR_PROC1_L21T1.elab
+	Sa	 2, PROC1_L21T1__inadr_ofs
+VAR PROC1_L21T1__st_ofs, q
+	LCA ST_PROC1_L21T1.elab
+	Sa	 2, PROC1_L21T1__st_ofs
+VAR PROC1_L21T1__ld_ofs, q
+	LCA LD_PROC1_L21T1.elab
+	Sa	 2, PROC1_L21T1__ld_ofs
+VAR PROC1_L21T1__u_ofs, q
 	La	 0, STANDARD._INTEGER.use__info
-	Sa	 2, INTEGER__u_ofs
-BRA post_LD_BOOLEAN
-LD_BOOLEAN.elab:
+	Sa	 2, PROC1_L21T1__u_ofs
+BRA post_LD_PROC1_L21T2
+LD_PROC1_L21T2.elab:
 	Lb -1, 0
 	RTD 0
-post_LD_BOOLEAN:
-BRA post_ST_BOOLEAN
-ST_BOOLEAN.elab:
+post_LD_PROC1_L21T2:
+BRA post_ST_PROC1_L21T2
+ST_PROC1_L21T2.elab:
 	Sb -1, 0
 	RTD 0
-post_ST_BOOLEAN:
-BRA post_INADR_BOOLEAN
-INADR_BOOLEAN.elab:
+post_ST_PROC1_L21T2:
+BRA post_INADR_PROC1_L21T2
+INADR_PROC1_L21T2.elab:
 	RTD 0
-post_INADR_BOOLEAN:
-BRA post_OUTADR_BOOLEAN
-OUTADR_BOOLEAN.elab:
+post_INADR_PROC1_L21T2:
+BRA post_OUTADR_PROC1_L21T2
+OUTADR_PROC1_L21T2.elab:
 	La
 	RTD 0
-post_OUTADR_BOOLEAN:
-VAR BOOLEAN__outadr_ofs, q
-	LCA OUTADR_BOOLEAN.elab
-	Sa	 2, BOOLEAN__outadr_ofs
-VAR BOOLEAN__inadr_ofs, q
-	LCA INADR_BOOLEAN.elab
-	Sa	 2, BOOLEAN__inadr_ofs
-VAR BOOLEAN__st_ofs, q
-	LCA ST_BOOLEAN.elab
-	Sa	 2, BOOLEAN__st_ofs
-VAR BOOLEAN__ld_ofs, q
-	LCA LD_BOOLEAN.elab
-	Sa	 2, BOOLEAN__ld_ofs
-VAR BOOLEAN__u_ofs, q
+post_OUTADR_PROC1_L21T2:
+VAR PROC1_L21T2__outadr_ofs, q
+	LCA OUTADR_PROC1_L21T2.elab
+	Sa	 2, PROC1_L21T2__outadr_ofs
+VAR PROC1_L21T2__inadr_ofs, q
+	LCA INADR_PROC1_L21T2.elab
+	Sa	 2, PROC1_L21T2__inadr_ofs
+VAR PROC1_L21T2__st_ofs, q
+	LCA ST_PROC1_L21T2.elab
+	Sa	 2, PROC1_L21T2__st_ofs
+VAR PROC1_L21T2__ld_ofs, q
+	LCA LD_PROC1_L21T2.elab
+	Sa	 2, PROC1_L21T2__ld_ofs
+VAR PROC1_L21T2__u_ofs, q
 	La	 0, STANDARD._BOOLEAN.use__info
-	Sa	 2, BOOLEAN__u_ofs
+	Sa	 2, PROC1_L21T2__u_ofs
+VAR F__call_ofs, q
+	LCA F1_L16.elab
+	Sa	 2, F__call_ofs
 VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
-if defined PROC1_L19_
-PRO	PROC1_L19				;---------- PRO PROC1
+PRO	PROC1_L21				;---------- PRO PROC1
 ELB 3
 begin:
 	LVA	 2, GFP_disp
-	CALL	STANDARD.A87B59A_L1.BLOCK__2. ,P1_L17
+	CALL	STANDARD.A87B59A_L1.BLOCK__2. ,P1_L19
 	UNLINK	 3
 	RTD
 endPRO					;---------- end PRO PROC1
 end if
-BRA post_LD_BOOLEAN
-LD_BOOLEAN.elab:
+					; sub program entry decl (in instantiation FALSE )
+if defined PROC2_L23_
+BRA post_LD_PROC2_L23T1
+LD_PROC2_L23T1.elab:
 	Lb -1, 0
 	RTD 0
-post_LD_BOOLEAN:
-BRA post_ST_BOOLEAN
-ST_BOOLEAN.elab:
+post_LD_PROC2_L23T1:
+BRA post_ST_PROC2_L23T1
+ST_PROC2_L23T1.elab:
 	Sb -1, 0
 	RTD 0
-post_ST_BOOLEAN:
-BRA post_INADR_BOOLEAN
-INADR_BOOLEAN.elab:
+post_ST_PROC2_L23T1:
+BRA post_INADR_PROC2_L23T1
+INADR_PROC2_L23T1.elab:
 	RTD 0
-post_INADR_BOOLEAN:
-BRA post_OUTADR_BOOLEAN
-OUTADR_BOOLEAN.elab:
+post_INADR_PROC2_L23T1:
+BRA post_OUTADR_PROC2_L23T1
+OUTADR_PROC2_L23T1.elab:
 	La
 	RTD 0
-post_OUTADR_BOOLEAN:
-VAR BOOLEAN__outadr_ofs, q
-	LCA OUTADR_BOOLEAN.elab
-	Sa	 2, BOOLEAN__outadr_ofs
-VAR BOOLEAN__inadr_ofs, q
-	LCA INADR_BOOLEAN.elab
-	Sa	 2, BOOLEAN__inadr_ofs
-VAR BOOLEAN__st_ofs, q
-	LCA ST_BOOLEAN.elab
-	Sa	 2, BOOLEAN__st_ofs
-VAR BOOLEAN__ld_ofs, q
-	LCA LD_BOOLEAN.elab
-	Sa	 2, BOOLEAN__ld_ofs
-VAR BOOLEAN__u_ofs, q
+post_OUTADR_PROC2_L23T1:
+VAR PROC2_L23T1__outadr_ofs, q
+	LCA OUTADR_PROC2_L23T1.elab
+	Sa	 2, PROC2_L23T1__outadr_ofs
+VAR PROC2_L23T1__inadr_ofs, q
+	LCA INADR_PROC2_L23T1.elab
+	Sa	 2, PROC2_L23T1__inadr_ofs
+VAR PROC2_L23T1__st_ofs, q
+	LCA ST_PROC2_L23T1.elab
+	Sa	 2, PROC2_L23T1__st_ofs
+VAR PROC2_L23T1__ld_ofs, q
+	LCA LD_PROC2_L23T1.elab
+	Sa	 2, PROC2_L23T1__ld_ofs
+VAR PROC2_L23T1__u_ofs, q
 	La	 0, STANDARD._BOOLEAN.use__info
-	Sa	 2, BOOLEAN__u_ofs
-BRA post_LD_INTEGER
-LD_INTEGER.elab:
+	Sa	 2, PROC2_L23T1__u_ofs
+BRA post_LD_PROC2_L23T2
+LD_PROC2_L23T2.elab:
 	Ld -1, 0
 	RTD 0
-post_LD_INTEGER:
-BRA post_ST_INTEGER
-ST_INTEGER.elab:
+post_LD_PROC2_L23T2:
+BRA post_ST_PROC2_L23T2
+ST_PROC2_L23T2.elab:
 	Sd -1, 0
 	RTD 0
-post_ST_INTEGER:
-BRA post_INADR_INTEGER
-INADR_INTEGER.elab:
+post_ST_PROC2_L23T2:
+BRA post_INADR_PROC2_L23T2
+INADR_PROC2_L23T2.elab:
 	RTD 0
-post_INADR_INTEGER:
-BRA post_OUTADR_INTEGER
-OUTADR_INTEGER.elab:
+post_INADR_PROC2_L23T2:
+BRA post_OUTADR_PROC2_L23T2
+OUTADR_PROC2_L23T2.elab:
 	La
 	RTD 0
-post_OUTADR_INTEGER:
-VAR INTEGER__outadr_ofs, q
-	LCA OUTADR_INTEGER.elab
-	Sa	 2, INTEGER__outadr_ofs
-VAR INTEGER__inadr_ofs, q
-	LCA INADR_INTEGER.elab
-	Sa	 2, INTEGER__inadr_ofs
-VAR INTEGER__st_ofs, q
-	LCA ST_INTEGER.elab
-	Sa	 2, INTEGER__st_ofs
-VAR INTEGER__ld_ofs, q
-	LCA LD_INTEGER.elab
-	Sa	 2, INTEGER__ld_ofs
-VAR INTEGER__u_ofs, q
+post_OUTADR_PROC2_L23T2:
+VAR PROC2_L23T2__outadr_ofs, q
+	LCA OUTADR_PROC2_L23T2.elab
+	Sa	 2, PROC2_L23T2__outadr_ofs
+VAR PROC2_L23T2__inadr_ofs, q
+	LCA INADR_PROC2_L23T2.elab
+	Sa	 2, PROC2_L23T2__inadr_ofs
+VAR PROC2_L23T2__st_ofs, q
+	LCA ST_PROC2_L23T2.elab
+	Sa	 2, PROC2_L23T2__st_ofs
+VAR PROC2_L23T2__ld_ofs, q
+	LCA LD_PROC2_L23T2.elab
+	Sa	 2, PROC2_L23T2__ld_ofs
+VAR PROC2_L23T2__u_ofs, q
 	La	 0, STANDARD._INTEGER.use__info
-	Sa	 2, INTEGER__u_ofs
+	Sa	 2, PROC2_L23T2__u_ofs
+VAR F__call_ofs, q
+	LCA F1_L18.elab
+	Sa	 2, F__call_ofs
 VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
-if defined PROC2_L20_
-PRO	PROC2_L20				;---------- PRO PROC2
+PRO	PROC2_L23				;---------- PRO PROC2
 ELB 3
 begin:
 	LVA	 2, GFP_disp
-	CALL	STANDARD.A87B59A_L1.BLOCK__2. ,P1_L17
+	CALL	STANDARD.A87B59A_L1.BLOCK__2. ,P1_L19
 	UNLINK	 3
 	RTD
 endPRO					;---------- end PRO PROC2
 end if
-BRA post_LD_INTEGER
-LD_INTEGER.elab:
+					; sub program entry decl (in instantiation FALSE )
+if defined PROC3_L25_
+BRA post_LD_PROC3_L25T1
+LD_PROC3_L25T1.elab:
 	Ld -1, 0
 	RTD 0
-post_LD_INTEGER:
-BRA post_ST_INTEGER
-ST_INTEGER.elab:
+post_LD_PROC3_L25T1:
+BRA post_ST_PROC3_L25T1
+ST_PROC3_L25T1.elab:
 	Sd -1, 0
 	RTD 0
-post_ST_INTEGER:
-BRA post_INADR_INTEGER
-INADR_INTEGER.elab:
+post_ST_PROC3_L25T1:
+BRA post_INADR_PROC3_L25T1
+INADR_PROC3_L25T1.elab:
 	RTD 0
-post_INADR_INTEGER:
-BRA post_OUTADR_INTEGER
-OUTADR_INTEGER.elab:
+post_INADR_PROC3_L25T1:
+BRA post_OUTADR_PROC3_L25T1
+OUTADR_PROC3_L25T1.elab:
 	La
 	RTD 0
-post_OUTADR_INTEGER:
-VAR INTEGER__outadr_ofs, q
-	LCA OUTADR_INTEGER.elab
-	Sa	 2, INTEGER__outadr_ofs
-VAR INTEGER__inadr_ofs, q
-	LCA INADR_INTEGER.elab
-	Sa	 2, INTEGER__inadr_ofs
-VAR INTEGER__st_ofs, q
-	LCA ST_INTEGER.elab
-	Sa	 2, INTEGER__st_ofs
-VAR INTEGER__ld_ofs, q
-	LCA LD_INTEGER.elab
-	Sa	 2, INTEGER__ld_ofs
-VAR INTEGER__u_ofs, q
+post_OUTADR_PROC3_L25T1:
+VAR PROC3_L25T1__outadr_ofs, q
+	LCA OUTADR_PROC3_L25T1.elab
+	Sa	 2, PROC3_L25T1__outadr_ofs
+VAR PROC3_L25T1__inadr_ofs, q
+	LCA INADR_PROC3_L25T1.elab
+	Sa	 2, PROC3_L25T1__inadr_ofs
+VAR PROC3_L25T1__st_ofs, q
+	LCA ST_PROC3_L25T1.elab
+	Sa	 2, PROC3_L25T1__st_ofs
+VAR PROC3_L25T1__ld_ofs, q
+	LCA LD_PROC3_L25T1.elab
+	Sa	 2, PROC3_L25T1__ld_ofs
+VAR PROC3_L25T1__u_ofs, q
 	La	 0, STANDARD._INTEGER.use__info
-	Sa	 2, INTEGER__u_ofs
-BRA post_LD_BOOLEAN
-LD_BOOLEAN.elab:
+	Sa	 2, PROC3_L25T1__u_ofs
+BRA post_LD_PROC3_L25T2
+LD_PROC3_L25T2.elab:
 	Lb -1, 0
 	RTD 0
-post_LD_BOOLEAN:
-BRA post_ST_BOOLEAN
-ST_BOOLEAN.elab:
+post_LD_PROC3_L25T2:
+BRA post_ST_PROC3_L25T2
+ST_PROC3_L25T2.elab:
 	Sb -1, 0
 	RTD 0
-post_ST_BOOLEAN:
-BRA post_INADR_BOOLEAN
-INADR_BOOLEAN.elab:
+post_ST_PROC3_L25T2:
+BRA post_INADR_PROC3_L25T2
+INADR_PROC3_L25T2.elab:
 	RTD 0
-post_INADR_BOOLEAN:
-BRA post_OUTADR_BOOLEAN
-OUTADR_BOOLEAN.elab:
+post_INADR_PROC3_L25T2:
+BRA post_OUTADR_PROC3_L25T2
+OUTADR_PROC3_L25T2.elab:
 	La
 	RTD 0
-post_OUTADR_BOOLEAN:
-VAR BOOLEAN__outadr_ofs, q
-	LCA OUTADR_BOOLEAN.elab
-	Sa	 2, BOOLEAN__outadr_ofs
-VAR BOOLEAN__inadr_ofs, q
-	LCA INADR_BOOLEAN.elab
-	Sa	 2, BOOLEAN__inadr_ofs
-VAR BOOLEAN__st_ofs, q
-	LCA ST_BOOLEAN.elab
-	Sa	 2, BOOLEAN__st_ofs
-VAR BOOLEAN__ld_ofs, q
-	LCA LD_BOOLEAN.elab
-	Sa	 2, BOOLEAN__ld_ofs
-VAR BOOLEAN__u_ofs, q
+post_OUTADR_PROC3_L25T2:
+VAR PROC3_L25T2__outadr_ofs, q
+	LCA OUTADR_PROC3_L25T2.elab
+	Sa	 2, PROC3_L25T2__outadr_ofs
+VAR PROC3_L25T2__inadr_ofs, q
+	LCA INADR_PROC3_L25T2.elab
+	Sa	 2, PROC3_L25T2__inadr_ofs
+VAR PROC3_L25T2__st_ofs, q
+	LCA ST_PROC3_L25T2.elab
+	Sa	 2, PROC3_L25T2__st_ofs
+VAR PROC3_L25T2__ld_ofs, q
+	LCA LD_PROC3_L25T2.elab
+	Sa	 2, PROC3_L25T2__ld_ofs
+VAR PROC3_L25T2__u_ofs, q
 	La	 0, STANDARD._BOOLEAN.use__info
-	Sa	 2, BOOLEAN__u_ofs
+	Sa	 2, PROC3_L25T2__u_ofs
+VAR F__call_ofs, q
+	LCA F1_L17.elab
+	Sa	 2, F__call_ofs
 VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
-if defined PROC3_L21_
-PRO	PROC3_L21				;---------- PRO PROC3
+PRO	PROC3_L25				;---------- PRO PROC3
 ELB 3
 begin:
 	LVA	 2, GFP_disp
-	CALL	STANDARD.A87B59A_L1.BLOCK__2. ,P2_L18
+	CALL	STANDARD.A87B59A_L1.BLOCK__2. ,P2_L20
 	UNLINK	 3
 	RTD
 endPRO					;---------- end PRO PROC3
 end if
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-	CALL	STANDARD.A87B59A_L1.BLOCK__2. ,PROC1_L19
-	CALL	STANDARD.A87B59A_L1.BLOCK__2. ,PROC2_L20
+	CALL	STANDARD.A87B59A_L1.BLOCK__2. ,PROC1_L21
+	CALL	STANDARD.A87B59A_L1.BLOCK__2. ,PROC2_L23
 	UNLINK 2
 endPRO
 namespace	BLOCK__3
@@ -1022,9 +1057,11 @@ VAR L_disp, b				; variable entiere
 
 ; GENERIC_SUBPROGRAM_SPEC
 
-if defined GF_L22_
-PRO	GF_L22				;---------- PRO GF
+if defined GF_L27_
+PRO	GF_L27				;---------- PRO GF
 virtual at 8
+	F__call_ofs = $
+	rq 1
 	T__u_ofs = $
 	rq 1
 	T__ld_ofs = $
@@ -1047,7 +1084,9 @@ begin:					;---------- BDY INSTRUCTIONS
 	LI	0					; lieu resultat sur pile
 	LI	0					; lieu resultat sur pile
 	La  3,	-GFP_ofs				; propagation GFP generique
-	CALL	STANDARD.A87B59A_L1.BLOCK__3.GF. ,F_L0
+	La 3,	-GFP_ofs
+	La ,	-F__call_ofs
+	CALLI
 	CALL	STANDARD.REPORT. ,IDENT_INT_L7
 	Sq  3,	-result__ofs
 	BRA ret_lbl
@@ -1057,43 +1096,47 @@ ret_lbl:
 excep:
 endPRO					;---------- end PRO GF
 end if
-BRA post_LD_COLOR
-LD_COLOR.elab:
+					; sub program entry decl (in instantiation FALSE )
+if defined F1_L28_
+BRA post_LD_F1_L28T
+LD_F1_L28T.elab:
 	Lb -1, 0
 	RTD 0
-post_LD_COLOR:
-BRA post_ST_COLOR
-ST_COLOR.elab:
+post_LD_F1_L28T:
+BRA post_ST_F1_L28T
+ST_F1_L28T.elab:
 	Sb -1, 0
 	RTD 0
-post_ST_COLOR:
-BRA post_INADR_COLOR
-INADR_COLOR.elab:
+post_ST_F1_L28T:
+BRA post_INADR_F1_L28T
+INADR_F1_L28T.elab:
 	RTD 0
-post_INADR_COLOR:
-BRA post_OUTADR_COLOR
-OUTADR_COLOR.elab:
+post_INADR_F1_L28T:
+BRA post_OUTADR_F1_L28T
+OUTADR_F1_L28T.elab:
 	La
 	RTD 0
-post_OUTADR_COLOR:
-VAR COLOR__outadr_ofs, q
-	LCA OUTADR_COLOR.elab
-	Sa	 2, COLOR__outadr_ofs
-VAR COLOR__inadr_ofs, q
-	LCA INADR_COLOR.elab
-	Sa	 2, COLOR__inadr_ofs
-VAR COLOR__st_ofs, q
-	LCA ST_COLOR.elab
-	Sa	 2, COLOR__st_ofs
-VAR COLOR__ld_ofs, q
-	LCA LD_COLOR.elab
-	Sa	 2, COLOR__ld_ofs
-VAR COLOR__u_ofs, q
+post_OUTADR_F1_L28T:
+VAR F1_L28T__outadr_ofs, q
+	LCA OUTADR_F1_L28T.elab
+	Sa	 2, F1_L28T__outadr_ofs
+VAR F1_L28T__inadr_ofs, q
+	LCA INADR_F1_L28T.elab
+	Sa	 2, F1_L28T__inadr_ofs
+VAR F1_L28T__st_ofs, q
+	LCA ST_F1_L28T.elab
+	Sa	 2, F1_L28T__st_ofs
+VAR F1_L28T__ld_ofs, q
+	LCA LD_F1_L28T.elab
+	Sa	 2, F1_L28T__ld_ofs
+VAR F1_L28T__u_ofs, q
 	La	 2, STANDARD.A87B59A_L1.BLOCK__3._COLOR.use__info
-	Sa	 2, COLOR__u_ofs
+	Sa	 2, F1_L28T__u_ofs
+VAR F_disp, q
+	LI	0
+	Sb  2, F_disp
 VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
-if defined F1_L23_
-PRO	F1_L23				;---------- PRO F1
+PRO	F1_L28				;---------- PRO F1
 PRMS					;    debut parametrage
 	PRM result__ofs				; resultat de fonction
 endPRMS					;    fin parametrage
@@ -1101,48 +1144,52 @@ ELB 3
 begin:
 	LI	0					; lieu result
 	LVA	 2, GFP_disp
-	CALL	STANDARD.A87B59A_L1.BLOCK__3. ,GF_L22
+	CALL	STANDARD.A87B59A_L1.BLOCK__3. ,GF_L27
 	UNLINK	 3
 	RTD
 endPRO					;---------- end PRO F1
 end if
-BRA post_LD_LIGHT
-LD_LIGHT.elab:
+					; sub program entry decl (in instantiation FALSE )
+if defined F2_L30_
+BRA post_LD_F2_L30T
+LD_F2_L30T.elab:
 	Lb -1, 0
 	RTD 0
-post_LD_LIGHT:
-BRA post_ST_LIGHT
-ST_LIGHT.elab:
+post_LD_F2_L30T:
+BRA post_ST_F2_L30T
+ST_F2_L30T.elab:
 	Sb -1, 0
 	RTD 0
-post_ST_LIGHT:
-BRA post_INADR_LIGHT
-INADR_LIGHT.elab:
+post_ST_F2_L30T:
+BRA post_INADR_F2_L30T
+INADR_F2_L30T.elab:
 	RTD 0
-post_INADR_LIGHT:
-BRA post_OUTADR_LIGHT
-OUTADR_LIGHT.elab:
+post_INADR_F2_L30T:
+BRA post_OUTADR_F2_L30T
+OUTADR_F2_L30T.elab:
 	La
 	RTD 0
-post_OUTADR_LIGHT:
-VAR LIGHT__outadr_ofs, q
-	LCA OUTADR_LIGHT.elab
-	Sa	 2, LIGHT__outadr_ofs
-VAR LIGHT__inadr_ofs, q
-	LCA INADR_LIGHT.elab
-	Sa	 2, LIGHT__inadr_ofs
-VAR LIGHT__st_ofs, q
-	LCA ST_LIGHT.elab
-	Sa	 2, LIGHT__st_ofs
-VAR LIGHT__ld_ofs, q
-	LCA LD_LIGHT.elab
-	Sa	 2, LIGHT__ld_ofs
-VAR LIGHT__u_ofs, q
+post_OUTADR_F2_L30T:
+VAR F2_L30T__outadr_ofs, q
+	LCA OUTADR_F2_L30T.elab
+	Sa	 2, F2_L30T__outadr_ofs
+VAR F2_L30T__inadr_ofs, q
+	LCA INADR_F2_L30T.elab
+	Sa	 2, F2_L30T__inadr_ofs
+VAR F2_L30T__st_ofs, q
+	LCA ST_F2_L30T.elab
+	Sa	 2, F2_L30T__st_ofs
+VAR F2_L30T__ld_ofs, q
+	LCA LD_F2_L30T.elab
+	Sa	 2, F2_L30T__ld_ofs
+VAR F2_L30T__u_ofs, q
 	La	 2, STANDARD.A87B59A_L1.BLOCK__3._LIGHT.use__info
-	Sa	 2, LIGHT__u_ofs
+	Sa	 2, F2_L30T__u_ofs
+VAR F_disp, q
+	LI	1
+	Sb  2, F_disp
 VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
-if defined F2_L24_
-PRO	F2_L24				;---------- PRO F2
+PRO	F2_L30				;---------- PRO F2
 PRMS					;    debut parametrage
 	PRM result__ofs				; resultat de fonction
 endPRMS					;    fin parametrage
@@ -1150,7 +1197,7 @@ ELB 3
 begin:
 	LI	0					; lieu result
 	LVA	 2, GFP_disp
-	CALL	STANDARD.A87B59A_L1.BLOCK__3. ,GF_L22
+	CALL	STANDARD.A87B59A_L1.BLOCK__3. ,GF_L27
 	UNLINK	 3
 	RTD
 endPRO					;---------- end PRO F2
@@ -1158,10 +1205,10 @@ end if
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 	LI	0					; lieu resultat sur pile
-	CALL	STANDARD.A87B59A_L1.BLOCK__3. ,F1_L23
+	CALL	STANDARD.A87B59A_L1.BLOCK__3. ,F1_L28
 	Sb  2,	C_disp
 	LI	0					; lieu resultat sur pile
-	CALL	STANDARD.A87B59A_L1.BLOCK__3. ,F2_L24
+	CALL	STANDARD.A87B59A_L1.BLOCK__3. ,F2_L30
 	Sb  2,	L_disp
 	UNLINK 2
 endPRO
@@ -1169,7 +1216,7 @@ namespace	BLOCK__4
 ELB 2					;    BODY ELAB
 PKG = 'PKG'
 namespace PKG
-					;---------- GENERIC PACKAGE BODY ----------
+					;---------- GENERIC PACKAGE ----------
 
 PRMS
 	PRM T1__u_ofs
@@ -1182,11 +1229,24 @@ PRMS
 	PRM T2__st_ofs
 	PRM T2__inadr_ofs
 	PRM T2__outadr_ofs
+	PRM P1__call_ofs
+	PRM P2__call_ofs
 endPRMS
-ELB 2					;    BODY ELAB
 
-if defined P_L26_
-PRO	P_L26					;---------- PRO P
+					;---------- GENERIC PACKAGE SPEC OF BODY ----------
+
+					; CODE_PACKAGE_SPEC
+					; sub program entry decl (in instantiation FALSE )
+
+					;---------- GENERIC PACKAGE BODY ----------
+
+					;    BODY ELAB
+
+if defined P_L33_
+PRO	P_L33					;---------- PRO P
+PRMS					;    debut parametrage
+	PRM GFP_ofs
+endPRMS					;    fin parametrage
 ELB 3					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
@@ -1197,20 +1257,24 @@ begin:					;---------- BDY INSTRUCTIONS
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	3
 	CALL	STANDARD.REPORT. ,EQUAL_L11
-	BF	L28
+	BF	L35
 	La  3,	-GFP_ofs				; propagation GFP generique
 ; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
 	LI	1
-	CALL	STANDARD.A87B59A_L1.BLOCK__4.PKG. ,P1_L0
+	La 3,	-GFP_ofs
+	La ,	-P1__call_ofs
+	CALLI
 	La  3,	-GFP_ofs				; propagation GFP generique
 ; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
 	LI	1
 ; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
 	LI	0
-	CALL	STANDARD.A87B59A_L1.BLOCK__4.PKG. ,P2_L0
-	BRA	L27
-L28:
-L27:					; post if
+	La 3,	-GFP_ofs
+	La ,	-P2__call_ofs
+	CALLI
+	BRA	L34
+L35:
+L34:					; post if
 ret_lbl:
 	UNLINK 3
 	RTD
@@ -1223,81 +1287,85 @@ PK1 = 'PK1'
 namespace PK1				;---------- GENERIC PACKAGE INSTANTIATION
 elab_spec:				;    SPEC ELAB
 
-BRA post_LD_INTEGER
-LD_INTEGER.elab:
+BRA post_LD_T1
+LD_T1.elab:
 	Ld -1, 0
 	RTD 0
-post_LD_INTEGER:
-BRA post_ST_INTEGER
-ST_INTEGER.elab:
+post_LD_T1:
+BRA post_ST_T1
+ST_T1.elab:
 	Sd -1, 0
 	RTD 0
-post_ST_INTEGER:
-BRA post_INADR_INTEGER
-INADR_INTEGER.elab:
+post_ST_T1:
+BRA post_INADR_T1
+INADR_T1.elab:
 	RTD 0
-post_INADR_INTEGER:
-BRA post_OUTADR_INTEGER
-OUTADR_INTEGER.elab:
+post_INADR_T1:
+BRA post_OUTADR_T1
+OUTADR_T1.elab:
 	La
 	RTD 0
-post_OUTADR_INTEGER:
-VAR INTEGER__outadr_ofs, q
-	LCA OUTADR_INTEGER.elab
-	Sa	 2, INTEGER__outadr_ofs
-VAR INTEGER__inadr_ofs, q
-	LCA INADR_INTEGER.elab
-	Sa	 2, INTEGER__inadr_ofs
-VAR INTEGER__st_ofs, q
-	LCA ST_INTEGER.elab
-	Sa	 2, INTEGER__st_ofs
-VAR INTEGER__ld_ofs, q
-	LCA LD_INTEGER.elab
-	Sa	 2, INTEGER__ld_ofs
-VAR INTEGER__u_ofs, q
+post_OUTADR_T1:
+VAR T1__outadr_ofs, q
+	LCA OUTADR_T1.elab
+	Sa	 2, T1__outadr_ofs
+VAR T1__inadr_ofs, q
+	LCA INADR_T1.elab
+	Sa	 2, T1__inadr_ofs
+VAR T1__st_ofs, q
+	LCA ST_T1.elab
+	Sa	 2, T1__st_ofs
+VAR T1__ld_ofs, q
+	LCA LD_T1.elab
+	Sa	 2, T1__ld_ofs
+VAR T1__u_ofs, q
 	La	 0, STANDARD._INTEGER.use__info
-	Sa	 2, INTEGER__u_ofs
-BRA post_LD_BOOLEAN
-LD_BOOLEAN.elab:
+	Sa	 2, T1__u_ofs
+BRA post_LD_T2
+LD_T2.elab:
 	Lb -1, 0
 	RTD 0
-post_LD_BOOLEAN:
-BRA post_ST_BOOLEAN
-ST_BOOLEAN.elab:
+post_LD_T2:
+BRA post_ST_T2
+ST_T2.elab:
 	Sb -1, 0
 	RTD 0
-post_ST_BOOLEAN:
-BRA post_INADR_BOOLEAN
-INADR_BOOLEAN.elab:
+post_ST_T2:
+BRA post_INADR_T2
+INADR_T2.elab:
 	RTD 0
-post_INADR_BOOLEAN:
-BRA post_OUTADR_BOOLEAN
-OUTADR_BOOLEAN.elab:
+post_INADR_T2:
+BRA post_OUTADR_T2
+OUTADR_T2.elab:
 	La
 	RTD 0
-post_OUTADR_BOOLEAN:
-VAR BOOLEAN__outadr_ofs, q
-	LCA OUTADR_BOOLEAN.elab
-	Sa	 2, BOOLEAN__outadr_ofs
-VAR BOOLEAN__inadr_ofs, q
-	LCA INADR_BOOLEAN.elab
-	Sa	 2, BOOLEAN__inadr_ofs
-VAR BOOLEAN__st_ofs, q
-	LCA ST_BOOLEAN.elab
-	Sa	 2, BOOLEAN__st_ofs
-VAR BOOLEAN__ld_ofs, q
-	LCA LD_BOOLEAN.elab
-	Sa	 2, BOOLEAN__ld_ofs
-VAR BOOLEAN__u_ofs, q
+post_OUTADR_T2:
+VAR T2__outadr_ofs, q
+	LCA OUTADR_T2.elab
+	Sa	 2, T2__outadr_ofs
+VAR T2__inadr_ofs, q
+	LCA INADR_T2.elab
+	Sa	 2, T2__inadr_ofs
+VAR T2__st_ofs, q
+	LCA ST_T2.elab
+	Sa	 2, T2__st_ofs
+VAR T2__ld_ofs, q
+	LCA LD_T2.elab
+	Sa	 2, T2__ld_ofs
+VAR T2__u_ofs, q
 	La	 0, STANDARD._BOOLEAN.use__info
-	Sa	 2, BOOLEAN__u_ofs
+	Sa	 2, T2__u_ofs
+VAR P1__call_ofs, q
+VAR P2__call_ofs, q
 VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
-if defined P_L29_
-PRO	P_L29					;---------- PRO P
+					; CODE_PACKAGE_SPEC
+					; sub program entry decl (in instantiation TRUE )
+if defined P_L38_
+PRO	P_L38					;---------- PRO P
 ELB 3
 begin:
 	LVA	 2, GFP_disp
-	CALL	STANDARD.A87B59A_L1.BLOCK__4.PKG. ,P_L26
+	CALL	STANDARD.A87B59A_L1.BLOCK__4.PKG. ,P_L33
 	UNLINK	 3
 	RTD
 endPRO					;---------- end PRO P
@@ -1309,81 +1377,85 @@ PK2 = 'PK2'
 namespace PK2				;---------- GENERIC PACKAGE INSTANTIATION
 elab_spec:				;    SPEC ELAB
 
-BRA post_LD_BOOLEAN
-LD_BOOLEAN.elab:
+BRA post_LD_T1
+LD_T1.elab:
 	Lb -1, 0
 	RTD 0
-post_LD_BOOLEAN:
-BRA post_ST_BOOLEAN
-ST_BOOLEAN.elab:
+post_LD_T1:
+BRA post_ST_T1
+ST_T1.elab:
 	Sb -1, 0
 	RTD 0
-post_ST_BOOLEAN:
-BRA post_INADR_BOOLEAN
-INADR_BOOLEAN.elab:
+post_ST_T1:
+BRA post_INADR_T1
+INADR_T1.elab:
 	RTD 0
-post_INADR_BOOLEAN:
-BRA post_OUTADR_BOOLEAN
-OUTADR_BOOLEAN.elab:
+post_INADR_T1:
+BRA post_OUTADR_T1
+OUTADR_T1.elab:
 	La
 	RTD 0
-post_OUTADR_BOOLEAN:
-VAR BOOLEAN__outadr_ofs, q
-	LCA OUTADR_BOOLEAN.elab
-	Sa	 2, BOOLEAN__outadr_ofs
-VAR BOOLEAN__inadr_ofs, q
-	LCA INADR_BOOLEAN.elab
-	Sa	 2, BOOLEAN__inadr_ofs
-VAR BOOLEAN__st_ofs, q
-	LCA ST_BOOLEAN.elab
-	Sa	 2, BOOLEAN__st_ofs
-VAR BOOLEAN__ld_ofs, q
-	LCA LD_BOOLEAN.elab
-	Sa	 2, BOOLEAN__ld_ofs
-VAR BOOLEAN__u_ofs, q
+post_OUTADR_T1:
+VAR T1__outadr_ofs, q
+	LCA OUTADR_T1.elab
+	Sa	 2, T1__outadr_ofs
+VAR T1__inadr_ofs, q
+	LCA INADR_T1.elab
+	Sa	 2, T1__inadr_ofs
+VAR T1__st_ofs, q
+	LCA ST_T1.elab
+	Sa	 2, T1__st_ofs
+VAR T1__ld_ofs, q
+	LCA LD_T1.elab
+	Sa	 2, T1__ld_ofs
+VAR T1__u_ofs, q
 	La	 0, STANDARD._BOOLEAN.use__info
-	Sa	 2, BOOLEAN__u_ofs
-BRA post_LD_INTEGER
-LD_INTEGER.elab:
+	Sa	 2, T1__u_ofs
+BRA post_LD_T2
+LD_T2.elab:
 	Ld -1, 0
 	RTD 0
-post_LD_INTEGER:
-BRA post_ST_INTEGER
-ST_INTEGER.elab:
+post_LD_T2:
+BRA post_ST_T2
+ST_T2.elab:
 	Sd -1, 0
 	RTD 0
-post_ST_INTEGER:
-BRA post_INADR_INTEGER
-INADR_INTEGER.elab:
+post_ST_T2:
+BRA post_INADR_T2
+INADR_T2.elab:
 	RTD 0
-post_INADR_INTEGER:
-BRA post_OUTADR_INTEGER
-OUTADR_INTEGER.elab:
+post_INADR_T2:
+BRA post_OUTADR_T2
+OUTADR_T2.elab:
 	La
 	RTD 0
-post_OUTADR_INTEGER:
-VAR INTEGER__outadr_ofs, q
-	LCA OUTADR_INTEGER.elab
-	Sa	 2, INTEGER__outadr_ofs
-VAR INTEGER__inadr_ofs, q
-	LCA INADR_INTEGER.elab
-	Sa	 2, INTEGER__inadr_ofs
-VAR INTEGER__st_ofs, q
-	LCA ST_INTEGER.elab
-	Sa	 2, INTEGER__st_ofs
-VAR INTEGER__ld_ofs, q
-	LCA LD_INTEGER.elab
-	Sa	 2, INTEGER__ld_ofs
-VAR INTEGER__u_ofs, q
+post_OUTADR_T2:
+VAR T2__outadr_ofs, q
+	LCA OUTADR_T2.elab
+	Sa	 2, T2__outadr_ofs
+VAR T2__inadr_ofs, q
+	LCA INADR_T2.elab
+	Sa	 2, T2__inadr_ofs
+VAR T2__st_ofs, q
+	LCA ST_T2.elab
+	Sa	 2, T2__st_ofs
+VAR T2__ld_ofs, q
+	LCA LD_T2.elab
+	Sa	 2, T2__ld_ofs
+VAR T2__u_ofs, q
 	La	 0, STANDARD._INTEGER.use__info
-	Sa	 2, INTEGER__u_ofs
+	Sa	 2, T2__u_ofs
+VAR P1__call_ofs, q
+VAR P2__call_ofs, q
 VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
-if defined P_L30_
-PRO	P_L30					;---------- PRO P
+					; CODE_PACKAGE_SPEC
+					; sub program entry decl (in instantiation TRUE )
+if defined P_L41_
+PRO	P_L41					;---------- PRO P
 ELB 3
 begin:
 	LVA	 2, GFP_disp
-	CALL	STANDARD.A87B59A_L1.BLOCK__4.PKG. ,P_L26
+	CALL	STANDARD.A87B59A_L1.BLOCK__4.PKG. ,P_L33
 	UNLINK	 3
 	RTD
 endPRO					;---------- end PRO P
@@ -1393,15 +1465,15 @@ end namespace
 
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-	CALL	STANDARD.A87B59A_L1.BLOCK__4.PK1. ,P_L29
-	CALL	STANDARD.A87B59A_L1.BLOCK__4.PK2. ,P_L30
+	CALL	STANDARD.A87B59A_L1.BLOCK__4.PK1. ,P_L38
+	CALL	STANDARD.A87B59A_L1.BLOCK__4.PK2. ,P_L41
 	UNLINK 2
 endPRO
 namespace	BLOCK__5
 ELB 2					;    BODY ELAB
 
-if defined _PLUS__L31_
-PRO	_PLUS__L31				;---------- PRO _PLUS_
+if defined _PLUS__L42_
+PRO	_PLUS__L42				;---------- PRO _PLUS_
 PRMS					;    debut parametrage
 	PRM X_ofs				; in
 	PRM Y_ofs				; in
@@ -1425,9 +1497,11 @@ endPRO					;---------- end PRO _PLUS_
 end if
 ; GENERIC_SUBPROGRAM_SPEC
 
-if defined P_L32_
-PRO	P_L32					;---------- PRO P
+if defined P_L43_
+PRO	P_L43					;---------- PRO P
 virtual at 8
+	_PLUS___call_ofs = $
+	rq 1
 	T__u_ofs = $
 	rq 1
 	T__ld_ofs = $
@@ -1439,6 +1513,9 @@ virtual at 8
 	T__outadr_ofs = $
 	rq 1
 end virtual
+PRMS					;    debut parametrage
+	PRM GFP_ofs
+endPRMS					;    fin parametrage
 ELB 3					;    BODY ELAB
 VAR S_disp, q				; variable entiere
 
@@ -1456,100 +1533,106 @@ ret_lbl:
 excep:
 endPRO					;---------- end PRO P
 end if
-BRA post_LD_BOOLEAN
-LD_BOOLEAN.elab:
+					; sub program entry decl (in instantiation FALSE )
+if defined P1_L44_
+BRA post_LD_P1_L44T
+LD_P1_L44T.elab:
 	Lb -1, 0
 	RTD 0
-post_LD_BOOLEAN:
-BRA post_ST_BOOLEAN
-ST_BOOLEAN.elab:
+post_LD_P1_L44T:
+BRA post_ST_P1_L44T
+ST_P1_L44T.elab:
 	Sb -1, 0
 	RTD 0
-post_ST_BOOLEAN:
-BRA post_INADR_BOOLEAN
-INADR_BOOLEAN.elab:
+post_ST_P1_L44T:
+BRA post_INADR_P1_L44T
+INADR_P1_L44T.elab:
 	RTD 0
-post_INADR_BOOLEAN:
-BRA post_OUTADR_BOOLEAN
-OUTADR_BOOLEAN.elab:
+post_INADR_P1_L44T:
+BRA post_OUTADR_P1_L44T
+OUTADR_P1_L44T.elab:
 	La
 	RTD 0
-post_OUTADR_BOOLEAN:
-VAR BOOLEAN__outadr_ofs, q
-	LCA OUTADR_BOOLEAN.elab
-	Sa	 2, BOOLEAN__outadr_ofs
-VAR BOOLEAN__inadr_ofs, q
-	LCA INADR_BOOLEAN.elab
-	Sa	 2, BOOLEAN__inadr_ofs
-VAR BOOLEAN__st_ofs, q
-	LCA ST_BOOLEAN.elab
-	Sa	 2, BOOLEAN__st_ofs
-VAR BOOLEAN__ld_ofs, q
-	LCA LD_BOOLEAN.elab
-	Sa	 2, BOOLEAN__ld_ofs
-VAR BOOLEAN__u_ofs, q
+post_OUTADR_P1_L44T:
+VAR P1_L44T__outadr_ofs, q
+	LCA OUTADR_P1_L44T.elab
+	Sa	 2, P1_L44T__outadr_ofs
+VAR P1_L44T__inadr_ofs, q
+	LCA INADR_P1_L44T.elab
+	Sa	 2, P1_L44T__inadr_ofs
+VAR P1_L44T__st_ofs, q
+	LCA ST_P1_L44T.elab
+	Sa	 2, P1_L44T__st_ofs
+VAR P1_L44T__ld_ofs, q
+	LCA LD_P1_L44T.elab
+	Sa	 2, P1_L44T__ld_ofs
+VAR P1_L44T__u_ofs, q
 	La	 0, STANDARD._BOOLEAN.use__info
-	Sa	 2, BOOLEAN__u_ofs
+	Sa	 2, P1_L44T__u_ofs
+VAR _PLUS___call_ofs, q
+	LCA _PLUS__L42.elab
+	Sa	 2, _PLUS___call_ofs
 VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
-if defined P1_L33_
-PRO	P1_L33				;---------- PRO P1
+PRO	P1_L44				;---------- PRO P1
 ELB 3
 begin:
 	LVA	 2, GFP_disp
-	CALL	STANDARD.A87B59A_L1.BLOCK__5. ,P_L32
+	CALL	STANDARD.A87B59A_L1.BLOCK__5. ,P_L43
 	UNLINK	 3
 	RTD
 endPRO					;---------- end PRO P1
 end if
-BRA post_LD_INTEGER
-LD_INTEGER.elab:
+					; sub program entry decl (in instantiation FALSE )
+if defined P2_L46_
+BRA post_LD_P2_L46T
+LD_P2_L46T.elab:
 	Ld -1, 0
 	RTD 0
-post_LD_INTEGER:
-BRA post_ST_INTEGER
-ST_INTEGER.elab:
+post_LD_P2_L46T:
+BRA post_ST_P2_L46T
+ST_P2_L46T.elab:
 	Sd -1, 0
 	RTD 0
-post_ST_INTEGER:
-BRA post_INADR_INTEGER
-INADR_INTEGER.elab:
+post_ST_P2_L46T:
+BRA post_INADR_P2_L46T
+INADR_P2_L46T.elab:
 	RTD 0
-post_INADR_INTEGER:
-BRA post_OUTADR_INTEGER
-OUTADR_INTEGER.elab:
+post_INADR_P2_L46T:
+BRA post_OUTADR_P2_L46T
+OUTADR_P2_L46T.elab:
 	La
 	RTD 0
-post_OUTADR_INTEGER:
-VAR INTEGER__outadr_ofs, q
-	LCA OUTADR_INTEGER.elab
-	Sa	 2, INTEGER__outadr_ofs
-VAR INTEGER__inadr_ofs, q
-	LCA INADR_INTEGER.elab
-	Sa	 2, INTEGER__inadr_ofs
-VAR INTEGER__st_ofs, q
-	LCA ST_INTEGER.elab
-	Sa	 2, INTEGER__st_ofs
-VAR INTEGER__ld_ofs, q
-	LCA LD_INTEGER.elab
-	Sa	 2, INTEGER__ld_ofs
-VAR INTEGER__u_ofs, q
+post_OUTADR_P2_L46T:
+VAR P2_L46T__outadr_ofs, q
+	LCA OUTADR_P2_L46T.elab
+	Sa	 2, P2_L46T__outadr_ofs
+VAR P2_L46T__inadr_ofs, q
+	LCA INADR_P2_L46T.elab
+	Sa	 2, P2_L46T__inadr_ofs
+VAR P2_L46T__st_ofs, q
+	LCA ST_P2_L46T.elab
+	Sa	 2, P2_L46T__st_ofs
+VAR P2_L46T__ld_ofs, q
+	LCA LD_P2_L46T.elab
+	Sa	 2, P2_L46T__ld_ofs
+VAR P2_L46T__u_ofs, q
 	La	 0, STANDARD._INTEGER.use__info
-	Sa	 2, INTEGER__u_ofs
+	Sa	 2, P2_L46T__u_ofs
+VAR _PLUS___call_ofs, q
 VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
-if defined P2_L34_
-PRO	P2_L34				;---------- PRO P2
+PRO	P2_L46				;---------- PRO P2
 ELB 3
 begin:
 	LVA	 2, GFP_disp
-	CALL	STANDARD.A87B59A_L1.BLOCK__5. ,P_L32
+	CALL	STANDARD.A87B59A_L1.BLOCK__5. ,P_L43
 	UNLINK	 3
 	RTD
 endPRO					;---------- end PRO P2
 end if
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-	CALL	STANDARD.A87B59A_L1.BLOCK__5. ,P1_L33
-	CALL	STANDARD.A87B59A_L1.BLOCK__5. ,P2_L34
+	CALL	STANDARD.A87B59A_L1.BLOCK__5. ,P1_L44
+	CALL	STANDARD.A87B59A_L1.BLOCK__5. ,P2_L46
 	UNLINK 2
 endPRO
 namespace	BLOCK__6
@@ -1576,28 +1659,18 @@ end postpone
 end namespace
 ; GENERIC_SUBPROGRAM_SPEC
 
-if defined P_L35_
-PRO	P_L35					;---------- PRO P
+if defined P_L48_
+PRO	P_L48					;---------- PRO P
 virtual at 8
-	T1__u_ofs = $
+	F2__call_ofs = $
 	rq 1
-	T1__ld_ofs = $
+	F1__call_ofs = $
 	rq 1
-	T1__st_ofs = $
+	X3__u_ofs = $
 	rq 1
-	T1__inadr_ofs = $
+	X3_ofs = $
 	rq 1
-	T1__outadr_ofs = $
-	rq 1
-	T2__u_ofs = $
-	rq 1
-	T2__ld_ofs = $
-	rq 1
-	T2__st_ofs = $
-	rq 1
-	T2__inadr_ofs = $
-	rq 1
-	T2__outadr_ofs = $
+	X2_ofs = $
 	rq 1
 	T3__u_ofs = $
 	rq 1
@@ -1609,12 +1682,35 @@ virtual at 8
 	rq 1
 	T3__outadr_ofs = $
 	rq 1
+	T2__u_ofs = $
+	rq 1
+	T2__ld_ofs = $
+	rq 1
+	T2__st_ofs = $
+	rq 1
+	T2__inadr_ofs = $
+	rq 1
+	T2__outadr_ofs = $
+	rq 1
+	T1__u_ofs = $
+	rq 1
+	T1__ld_ofs = $
+	rq 1
+	T1__st_ofs = $
+	rq 1
+	T1__inadr_ofs = $
+	rq 1
+	T1__outadr_ofs = $
+	rq 1
 end virtual
+PRMS					;    debut parametrage
+	PRM GFP_ofs
+endPRMS					;    fin parametrage
 ELB 3					;    BODY ELAB
 VAR A_disp, q				; variable entiere
 
-_T3 = '_T3'
-namespace _T3				; array var constrained array type info
+_S__type = '_S__type'
+namespace _S__type				; array var constrained array type info
 VAR use__info, q
 VAR SIZ, d
 	LVA	3, SIZ
@@ -1652,9 +1748,9 @@ LST_1 = $
 end namespace
 VAR S_disp, q				; variable array : pointeur aux data
 VAR S__u, q				; variable array : useinfo pointeur au rec info
-	La 3, _T3.use__info
+	La 3, _S__type.use__info
 	Sa	3, S__u				; array info ptr at __u
-	Ld	3, _T3.SIZ
+	Ld	3, _S__type.SIZ
 	LI	8
 	DIV
 	CO_VAR
@@ -1664,7 +1760,9 @@ VAR S__u, q				; variable array : useinfo pointeur au rec info
 begin:					;---------- BDY INSTRUCTIONS
 	LI	0					; lieu resultat sur pile
 	La  3,	-GFP_ofs				; propagation GFP generique
-	CALL	STANDARD.A87B59A_L1.BLOCK__6.P. ,F1_L0
+	La 3,	-GFP_ofs
+	La ,	-F1__call_ofs
+	CALLI
 	Sq  3,	A_disp
 	La  3,	S_disp
 VAR	ANON_217_21_disp, q
@@ -1689,114 +1787,154 @@ end namespace
 	La 3,	-GFP_ofs
 	La ,	-T2__ld_ofs
 	CALLI
-	CALL	STANDARD.A87B59A_L1.BLOCK__6.P. ,F2_L0
+	La 3,	-GFP_ofs
+	La ,	-F2__call_ofs
+	CALLI
 ret_lbl:
 	UNLINK 3
 	RTD
 excep:
 endPRO					;---------- end PRO P
 end if
-BRA post_LD_ADD_OPS
-LD_ADD_OPS.elab:
+					; sub program entry decl (in instantiation FALSE )
+if defined P1_L49_
+BRA post_LD_P1_L49T1
+LD_P1_L49T1.elab:
 	Lb -1, 0
 	RTD 0
-post_LD_ADD_OPS:
-BRA post_ST_ADD_OPS
-ST_ADD_OPS.elab:
+post_LD_P1_L49T1:
+BRA post_ST_P1_L49T1
+ST_P1_L49T1.elab:
 	Sb -1, 0
 	RTD 0
-post_ST_ADD_OPS:
-BRA post_INADR_ADD_OPS
-INADR_ADD_OPS.elab:
+post_ST_P1_L49T1:
+BRA post_INADR_P1_L49T1
+INADR_P1_L49T1.elab:
 	RTD 0
-post_INADR_ADD_OPS:
-BRA post_OUTADR_ADD_OPS
-OUTADR_ADD_OPS.elab:
+post_INADR_P1_L49T1:
+BRA post_OUTADR_P1_L49T1
+OUTADR_P1_L49T1.elab:
 	La
 	RTD 0
-post_OUTADR_ADD_OPS:
-VAR ADD_OPS__outadr_ofs, q
-	LCA OUTADR_ADD_OPS.elab
-	Sa	 2, ADD_OPS__outadr_ofs
-VAR ADD_OPS__inadr_ofs, q
-	LCA INADR_ADD_OPS.elab
-	Sa	 2, ADD_OPS__inadr_ofs
-VAR ADD_OPS__st_ofs, q
-	LCA ST_ADD_OPS.elab
-	Sa	 2, ADD_OPS__st_ofs
-VAR ADD_OPS__ld_ofs, q
-	LCA LD_ADD_OPS.elab
-	Sa	 2, ADD_OPS__ld_ofs
-VAR ADD_OPS__u_ofs, q
+post_OUTADR_P1_L49T1:
+VAR P1_L49T1__outadr_ofs, q
+	LCA OUTADR_P1_L49T1.elab
+	Sa	 2, P1_L49T1__outadr_ofs
+VAR P1_L49T1__inadr_ofs, q
+	LCA INADR_P1_L49T1.elab
+	Sa	 2, P1_L49T1__inadr_ofs
+VAR P1_L49T1__st_ofs, q
+	LCA ST_P1_L49T1.elab
+	Sa	 2, P1_L49T1__st_ofs
+VAR P1_L49T1__ld_ofs, q
+	LCA LD_P1_L49T1.elab
+	Sa	 2, P1_L49T1__ld_ofs
+VAR P1_L49T1__u_ofs, q
 	La	 2, STANDARD.A87B59A_L1.BLOCK__6._ADD_OPS.use__info
-	Sa	 2, ADD_OPS__u_ofs
-BRA post_LD_CHARACTER
-LD_CHARACTER.elab:
+	Sa	 2, P1_L49T1__u_ofs
+BRA post_LD_P1_L49T2
+LD_P1_L49T2.elab:
 	Lb -1, 0
 	RTD 0
-post_LD_CHARACTER:
-BRA post_ST_CHARACTER
-ST_CHARACTER.elab:
+post_LD_P1_L49T2:
+BRA post_ST_P1_L49T2
+ST_P1_L49T2.elab:
 	Sb -1, 0
 	RTD 0
-post_ST_CHARACTER:
-BRA post_INADR_CHARACTER
-INADR_CHARACTER.elab:
+post_ST_P1_L49T2:
+BRA post_INADR_P1_L49T2
+INADR_P1_L49T2.elab:
 	RTD 0
-post_INADR_CHARACTER:
-BRA post_OUTADR_CHARACTER
-OUTADR_CHARACTER.elab:
+post_INADR_P1_L49T2:
+BRA post_OUTADR_P1_L49T2
+OUTADR_P1_L49T2.elab:
 	La
 	RTD 0
-post_OUTADR_CHARACTER:
-VAR CHARACTER__outadr_ofs, q
-	LCA OUTADR_CHARACTER.elab
-	Sa	 2, CHARACTER__outadr_ofs
-VAR CHARACTER__inadr_ofs, q
-	LCA INADR_CHARACTER.elab
-	Sa	 2, CHARACTER__inadr_ofs
-VAR CHARACTER__st_ofs, q
-	LCA ST_CHARACTER.elab
-	Sa	 2, CHARACTER__st_ofs
-VAR CHARACTER__ld_ofs, q
-	LCA LD_CHARACTER.elab
-	Sa	 2, CHARACTER__ld_ofs
-VAR CHARACTER__u_ofs, q
+post_OUTADR_P1_L49T2:
+VAR P1_L49T2__outadr_ofs, q
+	LCA OUTADR_P1_L49T2.elab
+	Sa	 2, P1_L49T2__outadr_ofs
+VAR P1_L49T2__inadr_ofs, q
+	LCA INADR_P1_L49T2.elab
+	Sa	 2, P1_L49T2__inadr_ofs
+VAR P1_L49T2__st_ofs, q
+	LCA ST_P1_L49T2.elab
+	Sa	 2, P1_L49T2__st_ofs
+VAR P1_L49T2__ld_ofs, q
+	LCA LD_P1_L49T2.elab
+	Sa	 2, P1_L49T2__ld_ofs
+VAR P1_L49T2__u_ofs, q
 	La	 0, STANDARD._CHARACTER.use__info
-	Sa	 2, CHARACTER__u_ofs
-BRA post_LD_STRING
-LD_STRING.elab:
+	Sa	 2, P1_L49T2__u_ofs
+BRA post_LD_P1_L49T3
+LD_P1_L49T3.elab:
 	LI 0
 	RTD 0
-post_LD_STRING:
-BRA post_ST_STRING
-ST_STRING.elab:
+post_LD_P1_L49T3:
+BRA post_ST_P1_L49T3
+ST_P1_L49T3.elab:
 	DROP
 	RTD 0
-post_ST_STRING:
-BRA post_INADR_STRING
-INADR_STRING.elab:
+post_ST_P1_L49T3:
+BRA post_INADR_P1_L49T3
+INADR_P1_L49T3.elab:
 	LIa
 	RTD 0
-post_INADR_STRING:
-BRA post_OUTADR_STRING
-OUTADR_STRING.elab:
+post_INADR_P1_L49T3:
+BRA post_OUTADR_P1_L49T3
+OUTADR_P1_L49T3.elab:
 	LIa
 	RTD 0
-post_OUTADR_STRING:
-VAR STRING__outadr_ofs, q
-	LCA OUTADR_STRING.elab
-	Sa	 2, STRING__outadr_ofs
-VAR STRING__inadr_ofs, q
-	LCA INADR_STRING.elab
-	Sa	 2, STRING__inadr_ofs
-VAR STRING__st_ofs, q
-	LCA ST_STRING.elab
-	Sa	 2, STRING__st_ofs
-VAR STRING__ld_ofs, q
-	LCA LD_STRING.elab
-	Sa	 2, STRING__ld_ofs
-VAR STRING__u_ofs, q
+post_OUTADR_P1_L49T3:
+VAR P1_L49T3__outadr_ofs, q
+	LCA OUTADR_P1_L49T3.elab
+	Sa	 2, P1_L49T3__outadr_ofs
+VAR P1_L49T3__inadr_ofs, q
+	LCA INADR_P1_L49T3.elab
+	Sa	 2, P1_L49T3__inadr_ofs
+VAR P1_L49T3__st_ofs, q
+	LCA ST_P1_L49T3.elab
+	Sa	 2, P1_L49T3__st_ofs
+VAR P1_L49T3__ld_ofs, q
+	LCA LD_P1_L49T3.elab
+	Sa	 2, P1_L49T3__ld_ofs
+VAR P1_L49T3__u_ofs, q
 	La	 0, STANDARD._STRING.use__info
-	Sa	 2, STRING__u_ofs
-!! FUNCTION D : PAS D ATTRIBUT SM_DEFN DANS [DN_STRING_LITERAL<56.18]>
+	Sa	 2, P1_L49T3__u_ofs
+VAR P1_L49X2_disp, q
+	LI	38
+	Sb  2, P1_L49X2_disp
+VAR P1_L49X3_disp, q
+VAR P1_L49X3__u, q
+STR STR_L51, "&"				; constante string="&"
+	LCA	STR_L51.data_ptr
+	DUP
+	La  ,  0
+	Sa  2, P1_L49X3_disp
+	La  ,  8
+	Sa  2, P1_L49X3__u
+VAR F1_disp, q
+	LI	2
+	Sb  2, F1_disp
+VAR F2__call_ofs, q
+VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
+PRO	P1_L49				;---------- PRO P1
+ELB 3
+begin:
+	LVA	 2, GFP_disp
+	CALL	STANDARD.A87B59A_L1.BLOCK__6. ,P_L48
+	UNLINK	 3
+	RTD
+endPRO					;---------- end PRO P1
+end if
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	CALL	STANDARD.A87B59A_L1.BLOCK__6. ,P1_L49
+	UNLINK 2
+endPRO
+	CALL	STANDARD.REPORT. ,RESULT_L6
+ret_lbl:
+	UNLINK 1
+	RTD
+excep:
+endPRO					;---------- end PRO A87B59A

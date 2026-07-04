@@ -373,6 +373,9 @@ virtual at 8
 	F__outadr_ofs = $
 	rq 1
 end virtual
+PRMS					;    debut parametrage
+	PRM GFP_ofs
+endPRMS					;    fin parametrage
 ELB 3					;    BODY ELAB
 ; CODE_SUBTYPE_DECL : FLOAT subtype without range _SF treated as alias
 
@@ -504,42 +507,43 @@ ret_lbl:
 excep:
 endPRO					;---------- end PRO P
 end if
-BRA post_LD_FLOAT
-LD_FLOAT.elab:
+					; sub program entry decl (in instantiation FALSE )
+if defined NP_L9_
+BRA post_LD_NP_L9F
+LD_NP_L9F.elab:
 	Lq -1, 0
 	RTD 0
-post_LD_FLOAT:
-BRA post_ST_FLOAT
-ST_FLOAT.elab:
+post_LD_NP_L9F:
+BRA post_ST_NP_L9F
+ST_NP_L9F.elab:
 	Sq -1, 0
 	RTD 0
-post_ST_FLOAT:
-BRA post_INADR_FLOAT
-INADR_FLOAT.elab:
+post_ST_NP_L9F:
+BRA post_INADR_NP_L9F
+INADR_NP_L9F.elab:
 	RTD 0
-post_INADR_FLOAT:
-BRA post_OUTADR_FLOAT
-OUTADR_FLOAT.elab:
+post_INADR_NP_L9F:
+BRA post_OUTADR_NP_L9F
+OUTADR_NP_L9F.elab:
 	La
 	RTD 0
-post_OUTADR_FLOAT:
-VAR FLOAT__outadr_ofs, q
-	LCA OUTADR_FLOAT.elab
-	Sa	 2, FLOAT__outadr_ofs
-VAR FLOAT__inadr_ofs, q
-	LCA INADR_FLOAT.elab
-	Sa	 2, FLOAT__inadr_ofs
-VAR FLOAT__st_ofs, q
-	LCA ST_FLOAT.elab
-	Sa	 2, FLOAT__st_ofs
-VAR FLOAT__ld_ofs, q
-	LCA LD_FLOAT.elab
-	Sa	 2, FLOAT__ld_ofs
-VAR FLOAT__u_ofs, q
+post_OUTADR_NP_L9F:
+VAR NP_L9F__outadr_ofs, q
+	LCA OUTADR_NP_L9F.elab
+	Sa	 2, NP_L9F__outadr_ofs
+VAR NP_L9F__inadr_ofs, q
+	LCA INADR_NP_L9F.elab
+	Sa	 2, NP_L9F__inadr_ofs
+VAR NP_L9F__st_ofs, q
+	LCA ST_NP_L9F.elab
+	Sa	 2, NP_L9F__st_ofs
+VAR NP_L9F__ld_ofs, q
+	LCA LD_NP_L9F.elab
+	Sa	 2, NP_L9F__ld_ofs
+VAR NP_L9F__u_ofs, q
 	La	 0, STANDARD._FLOAT.use__info
-	Sa	 2, FLOAT__u_ofs
+	Sa	 2, NP_L9F__u_ofs
 VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
-if defined NP_L9_
 PRO	NP_L9					;---------- PRO NP
 ELB 3
 begin:

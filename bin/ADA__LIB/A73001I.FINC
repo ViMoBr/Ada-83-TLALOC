@@ -221,6 +221,8 @@ namespace	BLOCK__1
 ELB 2					;    BODY ELAB
 PACK1 = 'PACK1'
 namespace PACK1				;---------- PACKAGE DECLARATION
+					; CODE_PACKAGE_SPEC
+					; sub program entry decl (in instantiation FALSE )
 ; EXC_LBL	L7
 end namespace
 
@@ -261,42 +263,44 @@ endPRO					;---------- end PRO P
 end if
 PACK2 = 'PACK2'
 namespace PACK2				;---------- PACKAGE DECLARATION
-BRA post_LD_INTEGER
-LD_INTEGER.elab:
+					; CODE_PACKAGE_SPEC
+					; sub program entry decl (in instantiation FALSE )
+if defined NADA_L9_
+BRA post_LD_NADA_L9ITEM
+LD_NADA_L9ITEM.elab:
 	Ld -1, 0
 	RTD 0
-post_LD_INTEGER:
-BRA post_ST_INTEGER
-ST_INTEGER.elab:
+post_LD_NADA_L9ITEM:
+BRA post_ST_NADA_L9ITEM
+ST_NADA_L9ITEM.elab:
 	Sd -1, 0
 	RTD 0
-post_ST_INTEGER:
-BRA post_INADR_INTEGER
-INADR_INTEGER.elab:
+post_ST_NADA_L9ITEM:
+BRA post_INADR_NADA_L9ITEM
+INADR_NADA_L9ITEM.elab:
 	RTD 0
-post_INADR_INTEGER:
-BRA post_OUTADR_INTEGER
-OUTADR_INTEGER.elab:
+post_INADR_NADA_L9ITEM:
+BRA post_OUTADR_NADA_L9ITEM
+OUTADR_NADA_L9ITEM.elab:
 	La
 	RTD 0
-post_OUTADR_INTEGER:
-VAR INTEGER__outadr_ofs, q
-	LCA OUTADR_INTEGER.elab
-	Sa	 2, INTEGER__outadr_ofs
-VAR INTEGER__inadr_ofs, q
-	LCA INADR_INTEGER.elab
-	Sa	 2, INTEGER__inadr_ofs
-VAR INTEGER__st_ofs, q
-	LCA ST_INTEGER.elab
-	Sa	 2, INTEGER__st_ofs
-VAR INTEGER__ld_ofs, q
-	LCA LD_INTEGER.elab
-	Sa	 2, INTEGER__ld_ofs
-VAR INTEGER__u_ofs, q
+post_OUTADR_NADA_L9ITEM:
+VAR NADA_L9ITEM__outadr_ofs, q
+	LCA OUTADR_NADA_L9ITEM.elab
+	Sa	 2, NADA_L9ITEM__outadr_ofs
+VAR NADA_L9ITEM__inadr_ofs, q
+	LCA INADR_NADA_L9ITEM.elab
+	Sa	 2, NADA_L9ITEM__inadr_ofs
+VAR NADA_L9ITEM__st_ofs, q
+	LCA ST_NADA_L9ITEM.elab
+	Sa	 2, NADA_L9ITEM__st_ofs
+VAR NADA_L9ITEM__ld_ofs, q
+	LCA LD_NADA_L9ITEM.elab
+	Sa	 2, NADA_L9ITEM__ld_ofs
+VAR NADA_L9ITEM__u_ofs, q
 	La	 0, STANDARD._INTEGER.use__info
-	Sa	 2, INTEGER__u_ofs
+	Sa	 2, NADA_L9ITEM__u_ofs
 VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
-if defined NADA_L9_
 PRO	NADA_L9				;---------- PRO NADA
 PRMS					;    debut parametrage
 	PRM X_ofs				; in out

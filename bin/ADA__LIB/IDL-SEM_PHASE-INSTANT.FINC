@@ -42,6 +42,12 @@ LST_1 = $
 	rd 1 
   end virtual
 end namespace
+					; sub program entry decl (in instantiation FALSE )
+					; sub program entry decl (in instantiation FALSE )
+					; sub program entry decl (in instantiation FALSE )
+					; sub program entry decl (in instantiation FALSE )
+					; sub program entry decl (in instantiation FALSE )
+					; sub program entry decl (in instantiation FALSE )
 
 if defined LENGTH_L7_
 PRO	LENGTH_L7				;---------- PRO LENGTH
@@ -673,8 +679,8 @@ VAR UNIT_DESC__dat, STANDARD.IDL._TREE.size
 	Sa	1, UNIT_DESC__u
 ; CODE_VC_NAME DN_VARIABLE_ID
 
-_FORMAL_ARRAY_TYPE = '_FORMAL_ARRAY_TYPE'
-namespace _FORMAL_ARRAY_TYPE			; array var constrained array type info
+_FORMAL__type = '_FORMAL__type'
+namespace _FORMAL__type			; array var constrained array type info
 VAR use__info, q
 VAR SIZ, d
 	LVA	1, SIZ
@@ -707,16 +713,16 @@ LST_1 = $
 end namespace
 VAR FORMAL_disp, q				; variable array : pointeur aux data
 VAR FORMAL__u, q				; variable array : useinfo pointeur au rec info
-	La 1, _FORMAL_ARRAY_TYPE.use__info
+	La 1, _FORMAL__type.use__info
 	Sa	1, FORMAL__u				; array info ptr at __u
-	Ld	1, _FORMAL_ARRAY_TYPE.SIZ
+	Ld	1, _FORMAL__type.SIZ
 	LI	8
 	DIV
 	CO_VAR
 	Sa	1, FORMAL_disp				; array data ptr at _disp
 
-_ACTUAL_TO_FORMAL = '_ACTUAL_TO_FORMAL'
-namespace _ACTUAL_TO_FORMAL			; array var constrained array type info
+_ACTUAL_TO_FORMAL__type = '_ACTUAL_TO_FORMAL__type'
+namespace _ACTUAL_TO_FORMAL__type		; array var constrained array type info
 VAR use__info, q
 VAR SIZ, d
 	LVA	1, SIZ
@@ -751,9 +757,9 @@ LST_1 = $
 end namespace
 VAR ACTUAL_TO_FORMAL_disp, q			; variable array : pointeur aux data
 VAR ACTUAL_TO_FORMAL__u, q			; variable array : useinfo pointeur au rec info
-	La 1, _ACTUAL_TO_FORMAL.use__info
+	La 1, _ACTUAL_TO_FORMAL__type.use__info
 	Sa	1, ACTUAL_TO_FORMAL__u			; array info ptr at __u
-	Ld	1, _ACTUAL_TO_FORMAL.SIZ
+	Ld	1, _ACTUAL_TO_FORMAL__type.SIZ
 	LI	8
 	DIV
 	CO_VAR
@@ -843,7 +849,7 @@ L19:
 	Sd  1,	ACTUAL_SUB_disp
 					; debut if
 	Ld 1,	ACTUAL_SUB_disp
-	LId	1, FORMAL__u, _FORMAL_ARRAY_TYPE.LST_1
+	LId	1, STANDARD.IDL.SEM_PHASE_L11.INSTANT.RESOLVE_GENERIC_FORMALS_L1.FORMAL__u, STANDARD.IDL.SEM_PHASE_L11.INSTANT._FORMAL_ARRAY_TYPE.LST_1
 	CGT
 	BF	L21
 STR STR_L22, "TOO MANY ACTUALS"		; constante string="TOO MANY ACTUALS"
@@ -971,7 +977,7 @@ VAR	IL28_disp, d				; compteur boucle LOOP__6
 	Ld 1,	FIRST_NAMED_SUB_disp
 	Sd  1,	IL28_disp
 VAR	LMT_IL28_disp, d			; limite boucle LOOP__6
-	LId	1, FORMAL__u, _FORMAL_ARRAY_TYPE.LST_1
+	LId	1, STANDARD.IDL.SEM_PHASE_L11.INSTANT.RESOLVE_GENERIC_FORMALS_L1.FORMAL__u, STANDARD.IDL.SEM_PHASE_L11.INSTANT._FORMAL_ARRAY_TYPE.LST_1
 	Sd  1,	LMT_IL28_disp
 	Ld  1,	IL28_disp				; test null range LOOP__6
 	Ld  1,	LMT_IL28_disp
@@ -1086,10 +1092,10 @@ L24:					; post if
 	BRA	LOOP__5
 L23:					; post loop LOOP__5
 VAR	IL39_disp, d				; compteur boucle LOOP__7
-	LId	1, FORMAL__u, _FORMAL_ARRAY_TYPE.FST_1
+	LId	1, FORMAL__u, STANDARD.IDL.SEM_PHASE_L11.INSTANT._FORMAL_ARRAY_TYPE.FST_1
 	Sd  1,	IL39_disp
 VAR	LMT_IL39_disp, d			; limite boucle LOOP__7
-	LId	1, FORMAL__u, _FORMAL_ARRAY_TYPE.LST_1
+	LId	1, FORMAL__u, STANDARD.IDL.SEM_PHASE_L11.INSTANT._FORMAL_ARRAY_TYPE.LST_1
 	Sd  1,	LMT_IL39_disp
 	Ld  1,	IL39_disp				; test null range LOOP__7
 	Ld  1,	LMT_IL39_disp
@@ -1805,10 +1811,10 @@ L69:					; post if
 	BRA	LOOP__7				; iteration suivante LOOP__7
 L38:					; post loop LOOP__7
 VAR	IL72_disp, d				; compteur boucle LOOP__9
-	LId	1, ACTUAL_TO_FORMAL__u, _ACTUAL_TO_FORMAL.FST_1
+	LId	1, ACTUAL_TO_FORMAL__u, STANDARD.IDL.SEM_PHASE_L11.INSTANT.RESOLVE_GENERIC_FORMALS_L1._ACTUAL_TO_FORMAL.FST_1
 	Sd  1,	IL72_disp
 VAR	LMT_IL72_disp, d			; limite boucle LOOP__9
-	LId	1, ACTUAL_TO_FORMAL__u, _ACTUAL_TO_FORMAL.LST_1
+	LId	1, ACTUAL_TO_FORMAL__u, STANDARD.IDL.SEM_PHASE_L11.INSTANT.RESOLVE_GENERIC_FORMALS_L1._ACTUAL_TO_FORMAL.LST_1
 	Sd  1,	LMT_IL72_disp
 	Ld  1,	IL72_disp				; test null range LOOP__9
 	Ld  1,	LMT_IL72_disp
@@ -2432,10 +2438,10 @@ VAR	ANON_388_22__dat, STANDARD.IDL._TREE.size
 	LVA  1,	BASE_TYPE_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.GEN_SUBS. ,SUBSTITUTE_L437
 	LVA  1,	TYPESET_disp
-	LId  1,	-ACTUAL_EXP_ofs
+	La  1,	-ACTUAL_EXP_ofs
 	CALL	STANDARD.IDL.SEM_PHASE_L11.EXP_TYPE. ,EVAL_EXP_TYPES_L215
 	LVA  1,	TYPESET_disp
-	LId  1,	-ACTUAL_EXP_ofs
+	La  1,	-ACTUAL_EXP_ofs
 VAR	ANON_391_23_disp, q
 VAR	ANON_391_23__u,    q
 VAR	ANON_391_23__dat, STANDARD.IDL._TREE.size
@@ -2461,7 +2467,7 @@ VAR	ANON_392_23__dat, STANDARD.IDL._TREE.size
 	LVA 1, ANON_392_23_disp
 					; doublet resultat record anonyme
 	LVA 1,	TYPESET_disp
-	LId  1,	-ACTUAL_EXP_ofs
+	La  1,	-ACTUAL_EXP_ofs
 	CALL	STANDARD.IDL.SEM_PHASE_L11.EXPRESO. ,RESOLVE_EXP_L162
 	La
 	BLKMOV
@@ -2480,7 +2486,7 @@ VAR	ANON_395_23__dat, STANDARD.IDL._TREE.size
 	Sa  1, ANON_395_23__u
 	LVA 1, ANON_395_23_disp
 					; doublet resultat record anonyme
-	LId  1,	-ACTUAL_EXP_ofs
+	La  1,	-ACTUAL_EXP_ofs
 	CALL	STANDARD.IDL.SEM_PHASE_L11.NOD_WALK. ,WALK_TYPE_MARK_L187
 	La
 	BLKMOV
@@ -2499,7 +2505,7 @@ VAR	ANON_399_23__dat, STANDARD.IDL._TREE.size
 	Sa  1, ANON_399_23__u
 	LVA 1, ANON_399_23_disp
 					; doublet resultat record anonyme
-	LId  1,	-ACTUAL_EXP_ofs
+	La  1,	-ACTUAL_EXP_ofs
 	CALL	STANDARD.IDL.SEM_PHASE_L11.NOD_WALK. ,WALK_TYPE_MARK_L187
 	La
 	BLKMOV
@@ -2540,7 +2546,7 @@ VAR	ANON_405_23__dat, STANDARD.IDL._TREE.size
 	LVA 1, ANON_405_23_disp
 					; doublet resultat record anonyme
 	LVA 1,	HEADER_disp
-	LId  1,	-ACTUAL_EXP_ofs
+	La  1,	-ACTUAL_EXP_ofs
 	CALL	STANDARD.IDL.SEM_PHASE_L11.HOM_UNIT. ,WALK_HOMOGRAPH_UNIT_L223
 	La
 	BLKMOV
@@ -3242,7 +3248,7 @@ VAR	ANON_490_22__dat, STANDARD.IDL._SEQ_TYPE.size
 	LVA 1, ANON_490_22_disp
 					; doublet resultat record anonyme
 	LVA 1,	NEW_DECL_disp
-	LIq  1,	-NEW_DECL_LIST_ofs
+	La  1,	-NEW_DECL_LIST_ofs
 	CALL	STANDARD.IDL.IDL_MAN. ,APPEND_L34
 	La
 	BLKMOV

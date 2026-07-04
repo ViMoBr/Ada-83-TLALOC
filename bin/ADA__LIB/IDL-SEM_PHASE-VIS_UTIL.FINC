@@ -175,6 +175,8 @@ ret_lbl:
 excep:
 endPRO					;---------- end PRO ADVANCE_PARAM_CURSOR
 end if
+					; sub program entry decl (in instantiation FALSE )
+					; sub program entry decl (in instantiation FALSE )
 
 if defined DEBUG_PRINT_DEF_L16_
 PRO	DEBUG_PRINT_DEF_L16			;---------- PRO DEBUG_PRINT_DEF
@@ -241,8 +243,8 @@ VAR PARAM_CURSOR__dat, STANDARD.IDL.SEM_PHASE_L11.VIS_UTIL._PARAM_CURSOR_TYPE.si
 	Sa	1, PARAM_CURSOR__u
 ; CODE_VC_NAME DN_VARIABLE_ID
 
-_STRING = '_STRING'
-namespace _STRING				; array var constrained array type info
+_PAREN_OR_COMMA__type = '_PAREN_OR_COMMA__type'
+namespace _PAREN_OR_COMMA__type		; array var constrained array type info
 VAR use__info, q
 VAR SIZ, d
 	LVA	1, SIZ
@@ -276,7 +278,7 @@ LST_1 = $
 end namespace
 VAR PAREN_OR_COMMA_disp, q			; variable array : pointeur aux data
 VAR PAREN_OR_COMMA__u, q			; variable array : useinfo pointeur au rec info
-	La 1, _STRING.use__info
+	La 1, _PAREN_OR_COMMA__type.use__info
 	Sa	1, PAREN_OR_COMMA__u			; array info ptr at __u
 STR PAREN_OR_COMMA, "("			; constante string="("
 	LCA	PAREN_OR_COMMA.data_ptr
@@ -4329,8 +4331,8 @@ PRMS					;    debut parametrage
 	PRM result__ofs				; resultat de fonction
 endPRMS					;    fin parametrage
 ELB 2					;    BODY ELAB
-_STRING = '_STRING'
-namespace _STRING				; array var constrained array type info
+_A_WORK__type = '_A_WORK__type'
+namespace _A_WORK__type			; array var constrained array type info
 VAR use__info, q
 VAR SIZ, d
 	LVA	2, SIZ
@@ -4370,17 +4372,17 @@ LST_1 = $
 end namespace
 VAR A_WORK_disp, q				; variable array : pointeur aux data
 VAR A_WORK__u, q				; variable array : useinfo pointeur au rec info
-	La 2, _STRING.use__info
+	La 2, _A_WORK__type.use__info
 	Sa	2, A_WORK__u				; array info ptr at __u
 ; COMPILE_ARRAY_VAR ASSOC.TY non gere DN_USED_OBJECT_ID
 
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 VAR	IL227_disp, d				; compteur boucle LOOP__21
-	LId	2, A_WORK__u, _STRING.FST_1
+	LId	2, A_WORK__u, STANDARD._STRING.FST_1
 	Sd  2,	IL227_disp
 VAR	LMT_IL227_disp, d			; limite boucle LOOP__21
-	LId	2, A_WORK__u, _STRING.LST_1
+	LId	2, A_WORK__u, STANDARD._STRING.LST_1
 	Sd  2,	LMT_IL227_disp
 	Ld  2,	IL227_disp				; test null range LOOP__21
 	Ld  2,	LMT_IL227_disp
@@ -4622,7 +4624,7 @@ VAR TYPE_SPEC__dat, STANDARD.IDL._TREE.size
 begin:					;---------- BDY INSTRUCTIONS
 LOOP__22:
 	LI	0					; lieu resultat sur pile
-	LIq  1,	-DEFSET_ofs
+	La  1,	-DEFSET_ofs
 	CALL	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL. ,IS_EMPTY_L74
 	LI	1
 	OUX

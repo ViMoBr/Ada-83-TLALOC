@@ -9,7 +9,7 @@ include 'MACHINE_CODE.FINC'
 end if
 SEQUENTIAL_IO = 'SEQUENTIAL_IO'
 namespace SEQUENTIAL_IO
-					;---------- GENERIC PACKAGE BODY ----------
+					;---------- GENERIC PACKAGE ----------
 
 PRMS
 	PRM ELEMENT_TYPE__u_ofs
@@ -18,6 +18,10 @@ PRMS
 	PRM ELEMENT_TYPE__inadr_ofs
 	PRM ELEMENT_TYPE__outadr_ofs
 endPRMS
+
+					;---------- GENERIC PACKAGE SPEC OF BODY ----------
+
+					; CODE_PACKAGE_SPEC
 ; EXPANDER.DECLARATIONS.CODE_TYPE_DECL : skip PRIVATE FILE_TYPE (deferred to full type)
 
 					; _FILE_MODE ENUMERATION TYPE INFO
@@ -38,6 +42,19 @@ end postpone
 	LCA	SIZ
 	Sa	0, use__info
 end namespace
+					; sub program entry decl (in instantiation FALSE )
+					; sub program entry decl (in instantiation FALSE )
+					; sub program entry decl (in instantiation FALSE )
+					; sub program entry decl (in instantiation FALSE )
+					; sub program entry decl (in instantiation FALSE )
+					; sub program entry decl (in instantiation FALSE )
+					; sub program entry decl (in instantiation FALSE )
+					; sub program entry decl (in instantiation FALSE )
+					; sub program entry decl (in instantiation FALSE )
+					; sub program entry decl (in instantiation FALSE )
+					; sub program entry decl (in instantiation FALSE )
+					; sub program entry decl (in instantiation FALSE )
+					; sub program entry decl (in instantiation FALSE )
 _FILE_NAME_BUFFER = '_FILE_NAME_BUFFER'
 namespace _FILE_NAME_BUFFER			; _FILE_NAME_BUFFER CONSTRAINED ARRAY SUBTYPE INFO
 VAR use__info, q
@@ -81,13 +98,15 @@ VAR SIZ, d
 	Sa	0, use__info
 USEINFO 0, ID, 	La 0, STANDARD._INTEGER.use__info
 USEINFO 0, NAME, 	La 0, STANDARD.SEQUENTIAL_IO._FILE_NAME_BUFFER.use__info
+; STSB
 USEINFO 0, NAME_LEN, 	La 0, STANDARD._POSITIVE.use__info
 USEINFO 0, IS_OPENED, 	La 0, STANDARD._BOOLEAN.use__info
 USEINFO 0, MODE, 	La 0, STANDARD.SEQUENTIAL_IO._FILE_MODE.use__info
 USEINFO 0, AT_END_OF_FILE, 	La 0, STANDARD._BOOLEAN.use__info
 virtual at 0				; calcul des offsets statiques
 STATOFS ID, 4
-STATOFS NAME, 1
+; STSB
+STATOFS NAME, 256
 STATOFS NAME_LEN, 4
 STATOFS IS_OPENED, 1
 STATOFS MODE, 1
@@ -97,6 +116,9 @@ end virtual
 	LI	 size*8
 	Sd	0, SIZ
 end namespace
+
+					;---------- GENERIC PACKAGE BODY ----------
+
 					;    BODY ELAB
 
 if defined CREATE_L1_

@@ -143,10 +143,12 @@ is
     PUT_LINE( TYPE_STR & " = '" & TYPE_STR & "'" );
     PUT_LINE( "namespace " & TYPE_STR );
     PUT_LINE( "VAR use__info, q" );
+
     PUT_LINE( "BEGIN_BLOC_DEF" );
     CODE_ENUM_LITERAL_S( D( SM_LITERAL_S, TYPE_SPEC ) );
     PUT_LINE( "END_BLOC_DEF" );
     PUT_LINE( "IMAGES" & ASCII.HT & "BYTES_BLOC" );
+
     PUT_LINE( "CST " & "LST, d," & INTEGER'IMAGE(	MAX_REP )	);
     PUT_LINE( "CST " & "FST, d," & INTEGER'IMAGE(	MIN_REP )	);
     PUT	  ( "CST " & "SIZ, d," & INTEGER'IMAGE(	DI( CD_IMPL_SIZE, TYPE_SPEC )	) );
@@ -456,6 +458,63 @@ is
       end	COMP_SIZE_BITS;
 	--------------
 
+
+      -- Staticite d'une borne discrete pour le calcul de CD_IMPL_SIZE.
+      -- Deliberement conservateur : on ne reconnait d'abord que les bornes
+      -- que le code existant savait deja exploiter dans le chemin sans
+      -- CONSTRAINT, c'est-a-dire les DN_NUMERIC_LITERAL avec SM_VALUE.
+      -- Le code d'initialisation du descripteur reste dynamique et continue
+      -- d'utiliser CODE_DISCRETE_RANGE_BOUND ; seule la decision de poser
+      -- CD_IMPL_SIZE est modifiee.
+      function IS_STATIC_INTEGER_BOUND ( EXP : TREE ) return BOOLEAN
+      is
+      begin
+        return EXP /= TREE_VOID and then EXP.TY = DN_NUMERIC_LITERAL;
+      end IS_STATIC_INTEGER_BOUND;
+
+      procedure STATIC_RANGE_BOUNDS
+        ( RNG       : in  TREE;
+          IS_STATIC : out BOOLEAN;
+          LO        : out INTEGER;
+          HI        : out INTEGER )
+      is
+        EXP1 : TREE := TREE_VOID;
+        EXP2 : TREE := TREE_VOID;
+      begin
+        IS_STATIC := FALSE;
+        LO := 0;
+        HI := -1;
+
+        if RNG /= TREE_VOID and then RNG.TY = DN_RANGE then
+          EXP1 := D( AS_EXP1, RNG );
+          EXP2 := D( AS_EXP2, RNG );
+
+          if IS_STATIC_INTEGER_BOUND( EXP1 )
+            and then IS_STATIC_INTEGER_BOUND( EXP2 )
+          then
+            LO := DI( SM_VALUE, EXP1 );
+            HI := DI( SM_VALUE, EXP2 );
+            IS_STATIC := TRUE;
+          end if;
+        end if;
+      end STATIC_RANGE_BOUNDS;
+
+      procedure MULTIPLY_STATIC_DIMENSION
+        ( LO : in INTEGER;
+          HI : in INTEGER )
+      is
+        LEN : NATURAL;
+      begin
+        if HI < LO then
+          LEN := 0;
+        else
+          LEN := NATURAL( HI - LO + 1 );
+        end if;
+
+        ARRAY_STATIC_SIZE := LEN * ARRAY_STATIC_SIZE;
+      end MULTIPLY_STATIC_DIMENSION;
+
+
 		----------------------------
     procedure	COMPILE_ARRAY_TYPE_DIMENSION		( IDX_TYPE_LIST, RANGE_LIST :in out SEQ_TYPE;
 						  HAS_RANGES :BOOLEAN )
@@ -498,7 +557,20 @@ is
       end	if;
 
       if  HAS_RANGES  and then  SRC_RANGE /= TREE_VOID  then
-        IS_STATIC := FALSE;
+
+        declare
+          RNG_STATIC : BOOLEAN;
+          RNG_LO     : INTEGER;
+          RNG_HI     : INTEGER;
+        begin
+          STATIC_RANGE_BOUNDS( SRC_RANGE, RNG_STATIC, RNG_LO, RNG_HI );
+
+          if RNG_STATIC and then IS_STATIC then
+            MULTIPLY_STATIC_DIMENSION( RNG_LO, RNG_HI );
+          else
+            IS_STATIC := FALSE;
+          end if;
+        end;
 
         EXPRESSIONS.CODE_DISCRETE_RANGE_BOUND( SRC_RANGE, IS_LAST => FALSE );
         PUT_LINE( tab & "Sd" & tab & LVL_STR & ", _FST_" & DIM_NBR_STR );
@@ -523,7 +595,6 @@ is
 	EXPRESSIONS.CODE_EXP( RANGE_LAST );
 	PUT_LINE(	tab & "Sd" & tab & LVL_STR & ", _LST_" & DIM_NBR_STR );
 
-
 	if  IS_STATIC  then
 	  ARRAY_STATIC_SIZE	:= ( DI( SM_VALUE, RANGE_LAST	) + 1 - DI( SM_VALUE, RANGE_FIRST ) ) *	ARRAY_STATIC_SIZE;
 	end if;
@@ -542,7 +613,6 @@ is
 
     end	COMPILE_ARRAY_TYPE_DIMENSION;
 	----------------------------
-
 
 
 		--------------------
@@ -576,7 +646,8 @@ is
 	--------------------
 
   begin
-    if  COMP_TYPE.TY = DN_ACCESS  or else  COMP_TYPE.TY = DN_FLOAT  then
+--    if  COMP_TYPE.TY = DN_ACCESS  or else  COMP_TYPE.TY = DN_FLOAT  then
+    if  COMP_TYPE.TY = DN_ACCESS  or else  COMP_TYPE.TY in CLASS_SCALAR  then
       IS_STATIC := TRUE;
     else
       COMP_SIZE_TREE := D( CD_IMPL_SIZE, COMP_TYPE );
@@ -612,8 +683,8 @@ is
       PUT_LINE( tab	& "MUL" );
       PUT_LINE( tab	& "Sd" & tab & LVL_STR & ", SIZ" );
 
-      if	IS_STATIC
-      then  DI( CD_IMPL_SIZE,	TYPE_SPEC,  ARRAY_STATIC_SIZE	);
+      if	IS_STATIC  then
+        DI( CD_IMPL_SIZE,	TYPE_SPEC,  ARRAY_STATIC_SIZE	);
       end	if;
 
       PUT_LINE( "  virtual at 4" );									-- Commence apres SIZ
@@ -630,7 +701,7 @@ is
     end	DESCRIPTOR_ON_STACK;
 	-------------------
 
-    DB( CD_COMPILED,	TYPE_SPEC, TRUE );
+    DB( CD_COMPILED, TYPE_SPEC, TRUE );
     end;
 
   end	  PROCESS_CONSTRAINED_ARRAY_TYPE_SPEC;
@@ -662,6 +733,26 @@ is
 	---------------------------
 
 
+		--------------
+  function	FULL_TYPE_VIEW		( T :TREE )	return TREE
+  is		--------------
+    R	: TREE	:= T;
+  begin
+    loop
+      if  R.TY = DN_PRIVATE  or else  R.TY = DN_L_PRIVATE  then
+        R := D( SM_TYPE_SPEC, R );
+
+      elsif  R.TY = DN_INCOMPLETE  then
+        R := D( XD_FULL_TYPE_SPEC, R );
+
+      else
+        return  R;
+      end if;
+    end loop;
+
+  end	FULL_TYPE_VIEW;
+	--------------
+
 
 			----------------
   procedure		CODE_RECORD_DECL		( TYPE_DECL :TREE )
@@ -674,6 +765,295 @@ is
     LVL_STR		:constant	STRING		:= IMAGE(	LVL );
     IS_STATIC		: BOOLEAN			:= TRUE;
     STATIC_SIZE		: NATURAL			:= 0;
+
+
+    function  STATIC_TYPE_SIZE_BITS	( T :TREE )	return NATURAL;
+    function  STATIC_RECORD_SIZE_BITS	( REC :TREE )	return NATURAL;
+
+			------------------
+    function		ROUND_STORAGE_BITS		( SIZE_BITS :NATURAL )	return NATURAL
+    is			------------------
+      RESULT	: NATURAL		:= SIZE_BITS;
+    begin
+      if  RESULT < CODI.STORAGE_UNIT  then
+	RESULT := CODI.STORAGE_UNIT;
+      end if;
+
+      return  CODI.STORAGE_UNIT * ( ( RESULT + CODI.STORAGE_UNIT - 1 ) / CODI.STORAGE_UNIT );
+
+    end	ROUND_STORAGE_BITS;
+	------------------
+
+
+			-----------------------
+    function		STATIC_RECORD_SIZE_BITS	( REC :TREE ) return NATURAL
+    is			-----------------------
+      REC_SPEC	: TREE		:= FULL_TYPE_VIEW( REC );
+      SIZE	: NATURAL		:= 0;
+      UNKNOWN	: BOOLEAN		:= FALSE;
+		-----------------
+      procedure	ADD_DISCRIMINANTS	( DS : TREE )
+      is		-----------------
+        DSCRMT_DECL_S	: SEQ_TYPE;
+        DSCRMT_DECL		: TREE;
+
+      begin
+        if  DS = TREE_VOID  or else  DS = TREE_NIL  then
+	  return;
+        end if;
+
+        DSCRMT_DECL_S := LIST( DS );
+
+        while  not IS_EMPTY( DSCRMT_DECL_S )  loop
+	POP( DSCRMT_DECL_S, DSCRMT_DECL );
+
+	declare
+	  DISCR_ID_S	: SEQ_TYPE	:= LIST( D( AS_SOURCE_NAME_S, DSCRMT_DECL ) );
+	  DISCR_ID	: TREE;
+	begin
+	  while  not IS_EMPTY( DISCR_ID_S )  loop
+	    POP( DISCR_ID_S, DISCR_ID );
+
+	    declare
+	      DISCR_TYPE	: TREE	:= FULL_TYPE_VIEW( D( SM_OBJ_TYPE, DISCR_ID ) );
+	      DISCR_SIZE	: NATURAL	:= STATIC_TYPE_SIZE_BITS( DISCR_TYPE );
+	    begin
+	      if  DISCR_SIZE = 0  then
+	        UNKNOWN := TRUE;
+	        return;
+	      end if;
+
+	      SIZE := SIZE + ROUND_STORAGE_BITS( DISCR_SIZE );
+	    end;
+	  end loop;
+	end;
+        end loop;
+
+      end	ADD_DISCRIMINANTS;
+	-----------------
+
+		-------------
+      procedure	ADD_COMP_LIST	( CL : TREE )
+      is		-------------
+        V_DECL_S	: SEQ_TYPE;
+        V_DECL	: TREE;
+      begin
+        if  CL = TREE_VOID  or else  CL = TREE_NIL  then
+	return;
+        end if;
+
+        V_DECL_S := LIST( D( AS_DECL_S, CL ) );
+
+        while  not IS_EMPTY( V_DECL_S )  loop
+	POP( V_DECL_S, V_DECL );
+
+	if  V_DECL.TY /= DN_NULL_COMP_DECL  then
+	  declare
+	    COMP_ID_S	: SEQ_TYPE	:= LIST( D( AS_SOURCE_NAME_S, V_DECL ) );
+	    COMP_ID	: TREE;
+	  begin
+	    while  not IS_EMPTY( COMP_ID_S )  loop
+	      POP( COMP_ID_S, COMP_ID );
+
+	      declare
+	        COMP_TYPE	: TREE	:= FULL_TYPE_VIEW( D( SM_OBJ_TYPE, COMP_ID ) );
+	        COMP_SIZE	: NATURAL	:= STATIC_TYPE_SIZE_BITS( COMP_TYPE );
+	      begin
+	        if  COMP_SIZE = 0  then
+		UNKNOWN := TRUE;
+		return;
+	        end if;
+
+	        SIZE := SIZE + ROUND_STORAGE_BITS( COMP_SIZE );
+	      end;
+	    end loop;
+	  end;
+	end if;
+        end loop;
+
+	--  Premier perimetre : si une partie variante est presente et que la
+	--  taille n'a pas deja ete fournie par SM_SIZE/representation, on ne
+	--  tente pas encore de calculer des offsets statiques.
+        declare
+	VP	: TREE	:= D( AS_VARIANT_PART, CL );
+        begin
+	if  VP /= TREE_VOID  and then  VP /= TREE_NIL  then
+	  UNKNOWN := TRUE;
+	end if;
+        end;
+
+      end	ADD_COMP_LIST;
+	-------------
+
+    begin
+      if  REC_SPEC.TY /= DN_RECORD  then
+	return 0;
+      end if;
+
+      if  REPRESENTED_ITEMS.HAS_RECORD_REP( REC_SPEC )  then
+	return NATURAL( REPRESENTED_ITEMS.REPRESENTED_RECORD_SIZE_BITS( REC_SPEC ) );
+      end if;
+
+      if  D( SM_SIZE, REC_SPEC ) /= TREE_VOID  then
+	return NATURAL( DI( SM_SIZE, REC_SPEC ) );
+      end if;
+
+      ADD_DISCRIMINANTS( D( SM_DISCRIMINANT_S, REC_SPEC ) );
+      if  UNKNOWN  then
+	return 0;
+      end if;
+
+      ADD_COMP_LIST( D( SM_COMP_LIST, REC_SPEC ) );
+
+      if  UNKNOWN  then
+	return 0;
+      end if;
+
+      if  SIZE /= 0  then
+	DI( CD_IMPL_SIZE, REC_SPEC, INTEGER( SIZE ) );
+      end if;
+
+      return SIZE;
+
+    end	STATIC_RECORD_SIZE_BITS;
+	-----------------------
+
+
+ 			-----------------------
+    function		STATIC_INDEX_LENGTH		( IDX_TYPE : TREE ) return NATURAL
+    is			-----------------------
+      IDX_SPEC : TREE := FULL_TYPE_VIEW( IDX_TYPE );
+      IDX_RANGE : TREE;
+      FST       : TREE;
+      LST       : TREE;
+    begin
+      if  IDX_SPEC = TREE_VOID  or else  IDX_SPEC = TREE_NIL  then
+	return 0;
+      end if;
+
+      if  IDX_SPEC.TY = DN_INTEGER  or else  IDX_SPEC.TY = DN_ENUMERATION  then
+	IDX_RANGE := D( SM_RANGE, IDX_SPEC );
+
+	if  IDX_RANGE = TREE_VOID  or else  IDX_RANGE = TREE_NIL  then
+	  return 0;
+	end if;
+
+	FST := D( AS_EXP1, IDX_RANGE );
+	LST := D( AS_EXP2, IDX_RANGE );
+
+	--  Meme perimetre que PROCESS_CONSTRAINED_ARRAY_TYPE_SPEC : bornes
+	--  litterales simples.  C'est suffisant pour les sous-types statiques
+	--  comme FILE_NAME_BUFFER et pour le cas ACVC A83041D.  Les bornes
+	--  dynamiques doivent continuer a rendre le record non statique.
+	if  FST.TY = DN_NUMERIC_LITERAL  and then  LST.TY = DN_NUMERIC_LITERAL  then
+	  declare
+	    LO : INTEGER := DI( SM_VALUE, FST );
+	    HI : INTEGER := DI( SM_VALUE, LST );
+	  begin
+	    if  HI < LO  then
+	      return 0;
+	    else
+	      return NATURAL( HI + 1 - LO );
+	    end if;
+	  end;
+	else
+	  return 0;
+	end if;
+      else
+	return 0;
+      end if;
+    end	STATIC_INDEX_LENGTH;
+	-------------------
+
+
+			----------------------------------
+    function		STATIC_CONSTRAINED_ARRAY_SIZE_BITS	( ARR : TREE ) return NATURAL
+    is			----------------------------------
+      ARR_SPEC  : TREE := FULL_TYPE_VIEW( ARR );
+      BASE_TYPE : TREE;
+      COMP_TYPE : TREE;
+      COMP_SIZE : NATURAL;
+      IDX_S     : SEQ_TYPE;
+      IDX_TYPE  : TREE;
+      LEN       : NATURAL;
+      TOTAL     : NATURAL;
+    begin
+      if  ARR_SPEC = TREE_VOID  or else  ARR_SPEC = TREE_NIL
+      or else  ARR_SPEC.TY /= DN_CONSTRAINED_ARRAY
+      then
+	return 0;
+      end if;
+
+      if  D( CD_IMPL_SIZE, ARR_SPEC ) /= TREE_VOID  then
+	return NATURAL( DI( CD_IMPL_SIZE, ARR_SPEC ) );
+      end if;
+
+      BASE_TYPE := D( SM_BASE_TYPE, ARR_SPEC );
+      COMP_TYPE := FULL_TYPE_VIEW( D( SM_COMP_TYPE, BASE_TYPE ) );
+      COMP_SIZE := STATIC_TYPE_SIZE_BITS( COMP_TYPE );
+
+      if  COMP_SIZE = 0  then
+	return 0;
+      end if;
+
+      TOTAL := COMP_SIZE;
+      IDX_S := LIST( D( SM_INDEX_SUBTYPE_S, ARR_SPEC ) );
+
+      while  not IS_EMPTY( IDX_S )  loop
+	POP( IDX_S, IDX_TYPE );
+	LEN := STATIC_INDEX_LENGTH( IDX_TYPE );
+
+	if  LEN = 0  then
+	  return 0;
+	end if;
+
+	TOTAL := TOTAL * LEN;
+      end loop;
+
+      DI( CD_IMPL_SIZE, ARR_SPEC, INTEGER( TOTAL ) );
+      return TOTAL;
+
+    end	STATIC_CONSTRAINED_ARRAY_SIZE_BITS;
+	----------------------------------
+
+
+			---------------------
+    function		STATIC_TYPE_SIZE_BITS	( T : TREE )	return NATURAL
+    is			---------------------
+      TS : TREE := FULL_TYPE_VIEW( T );
+    begin
+      if  TS = TREE_VOID  or else  TS = TREE_NIL  then
+        return  0;
+      end if;
+
+      if  TS.TY = DN_ACCESS  then
+        return  CODI.ADDR_SIZE * CODI.STORAGE_UNIT;
+
+      elsif  TS.TY = DN_RECORD  then
+        return  STATIC_RECORD_SIZE_BITS( TS );
+
+      elsif  TS.TY = DN_CONSTRAINED_ARRAY  then
+
+put_line( "; STSB" );
+
+        return  STATIC_CONSTRAINED_ARRAY_SIZE_BITS( TS );
+
+      elsif  TS.TY = DN_ARRAY  then
+        return  0;
+
+      elsif  TS.TY in CLASS_SCALAR  or else  TS.TY in CLASS_CONSTRAINED  then
+        if  D( CD_IMPL_SIZE, TS ) /= TREE_VOID  then
+	return  NATURAL( DI( CD_IMPL_SIZE, TS ) );
+        else
+	return  0;
+        end if;
+
+      else
+        return 0;
+      end if;
+
+    end	STATIC_TYPE_SIZE_BITS;
+	-----------------------
 
   begin
 				-- Resolve private/incomplete	to full type
@@ -796,24 +1176,32 @@ is
 		PUT_LINE( COMP_TYPE_STR & ".use__info" );
 	        end if;
 
+
+
                   -- calcul IS_STATIC
-	        if  COMP_TYPE.TY in CLASS_SCALAR  or else  COMP_TYPE.TY in CLASS_CONSTRAINED  then
-		if  D( CD_IMPL_SIZE, COMP_TYPE ) = TREE_VOID  then
-		  IS_STATIC := FALSE;
-		end if;
+--	        if  COMP_TYPE.TY in CLASS_SCALAR  or else  COMP_TYPE.TY in CLASS_CONSTRAINED  then
+--		if  D( CD_IMPL_SIZE, COMP_TYPE ) = TREE_VOID  then
+--		  IS_STATIC := FALSE;
+--		end if;
 
-	        elsif  COMP_TYPE.TY = DN_RECORD  then
-		if  not IS_EMPTY( LIST( D( SM_DISCRIMINANT_S, COMP_TYPE ) ) )
-		  and then  D( SM_SIZE, COMP_TYPE ) = TREE_VOID
-		then
-		  IS_STATIC := FALSE;
-		end if;
-	        elsif  COMP_TYPE.TY = DN_ACCESS  then
-		null;
+--	        elsif  COMP_TYPE.TY = DN_RECORD  then
+--		if  not IS_EMPTY( LIST( D( SM_DISCRIMINANT_S, COMP_TYPE ) ) )
+--		  and then  D( SM_SIZE, COMP_TYPE ) = TREE_VOID
+--		then
+--		  IS_STATIC := FALSE;
+--		end if;
+--	        elsif  COMP_TYPE.TY = DN_ACCESS  then
+--		null;
 
-	        else
+--	        else
+--		IS_STATIC := FALSE;
+--	        end if;
+
+	        if  STATIC_TYPE_SIZE_BITS( COMP_TYPE ) = 0  then
+put_line( "; NON STATIQUE " & NODE_NAME'IMAGE( COMP_TYPE.TY ) );
 		IS_STATIC := FALSE;
 	        end if;
+
 
 	      end		PROCESS_INSERT_ONE_COMPONENT;
 			----------------------------
@@ -850,7 +1238,7 @@ is
     end	INSERE_LES_CHAMPS;
 	-----------------
 
-    if	IS_STATIC	 then
+    if  IS_STATIC  then
       PUT( "virtual at 0" );
       if  CODI.DEBUG  then  PUT( tab50 & "; calcul des offsets statiques" ); end if;
       NEW_LINE;
@@ -943,11 +1331,19 @@ is
 
 	      begin
 	        if  IS_STATIC  then
-	          if  COMP_TYPE.TY = DN_ACCESS  then
-		  COMP_SIZE := CODI.ADDR_SIZE * CODI.STORAGE_UNIT;  -- bits : 8 octets sur x86_64
-	          else
-		  COMP_SIZE := DI( CD_IMPL_SIZE, COMP_TYPE );
-	          end if;
+--	          if  COMP_TYPE.TY = DN_ACCESS  then
+--		  COMP_SIZE := CODI.ADDR_SIZE * CODI.STORAGE_UNIT;  -- bits : 8 octets sur x86_64
+--	          else
+--		  COMP_SIZE := DI( CD_IMPL_SIZE, COMP_TYPE );
+--	          end if;
+
+		COMP_SIZE := STATIC_TYPE_SIZE_BITS( COMP_TYPE );
+		if  COMP_SIZE = 0  then
+		  PUT_LINE( "; OFFSET NON STATIQUE A FAIRE ; taille inconnue pour " & COMP_ID_STR );
+		  raise  PROGRAM_ERROR;
+		end if;
+
+
 	          if  COMP_SIZE < CODI.STORAGE_UNIT  then
 		  COMP_SIZE := CODI.STORAGE_UNIT;
 	          end if;
@@ -1014,27 +1410,11 @@ is
 	----------------
 
 
-  function FULL_VIEW ( T : TREE ) return TREE is
-    R : TREE := T;
-  begin
-    loop
-      if R.TY = DN_PRIVATE or else R.TY = DN_L_PRIVATE then
-        R := D( SM_TYPE_SPEC, R );
-
-      elsif R.TY = DN_INCOMPLETE then
-        R := D( XD_FULL_TYPE_SPEC, R );
-
-      else
-        return R;
-      end if;
-    end loop;
-  end FULL_VIEW;
-
   function ROOT_RECORD ( T : TREE ) return TREE is
-    R : TREE := FULL_VIEW( T );
+    R : TREE := FULL_TYPE_VIEW( T );
   begin
     while R.TY = DN_CONSTRAINED_RECORD loop
-      R := FULL_VIEW( D( SM_BASE_TYPE, R ) );
+      R := FULL_TYPE_VIEW( D( SM_BASE_TYPE, R ) );
     end loop;
 
     return R;

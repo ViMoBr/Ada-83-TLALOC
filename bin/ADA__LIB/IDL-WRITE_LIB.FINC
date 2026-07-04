@@ -3,8 +3,8 @@ include 'SEQUENTIAL_IO.FINC'
 end if
 PRO	WRITE_LIB_L13				;---------- PRO WRITE_LIB
 ELB 1					;    BODY ELAB
-_DONT_MOVE = '_DONT_MOVE'
-namespace _DONT_MOVE			; array var constrained array type info
+_DONT_MOVE__type = '_DONT_MOVE__type'
+namespace _DONT_MOVE__type			; array var constrained array type info
 VAR use__info, q
 VAR SIZ, d
 	LVA	1, SIZ
@@ -37,9 +37,9 @@ LST_1 = $
 end namespace
 VAR DONT_MOVE_disp, q			; variable array : pointeur aux data
 VAR DONT_MOVE__u, q				; variable array : useinfo pointeur au rec info
-	La 1, _DONT_MOVE.use__info
+	La 1, _DONT_MOVE__type.use__info
 	Sa	1, DONT_MOVE__u				; array info ptr at __u
-	Ld	1, _DONT_MOVE.SIZ
+	Ld	1, _DONT_MOVE__type.SIZ
 	LI	8
 	DIV
 	CO_VAR
@@ -357,42 +357,43 @@ SEQ_IO = 'SEQ_IO'
 namespace SEQ_IO				;---------- GENERIC PACKAGE INSTANTIATION
 elab_spec:				;    SPEC ELAB
 
-BRA post_LD_SECTOR
-LD_SECTOR.elab:
+BRA post_LD_ELEMENT_TYPE
+LD_ELEMENT_TYPE.elab:
 	LI 0
 	RTD 0
-post_LD_SECTOR:
-BRA post_ST_SECTOR
-ST_SECTOR.elab:
+post_LD_ELEMENT_TYPE:
+BRA post_ST_ELEMENT_TYPE
+ST_ELEMENT_TYPE.elab:
 	DROP
 	RTD 0
-post_ST_SECTOR:
-BRA post_INADR_SECTOR
-INADR_SECTOR.elab:
+post_ST_ELEMENT_TYPE:
+BRA post_INADR_ELEMENT_TYPE
+INADR_ELEMENT_TYPE.elab:
 	LIa
 	RTD 0
-post_INADR_SECTOR:
-BRA post_OUTADR_SECTOR
-OUTADR_SECTOR.elab:
+post_INADR_ELEMENT_TYPE:
+BRA post_OUTADR_ELEMENT_TYPE
+OUTADR_ELEMENT_TYPE.elab:
 	LIa
 	RTD 0
-post_OUTADR_SECTOR:
-VAR SECTOR__outadr_ofs, q
-	LCA OUTADR_SECTOR.elab
-	Sa	 2, SECTOR__outadr_ofs
-VAR SECTOR__inadr_ofs, q
-	LCA INADR_SECTOR.elab
-	Sa	 2, SECTOR__inadr_ofs
-VAR SECTOR__st_ofs, q
-	LCA ST_SECTOR.elab
-	Sa	 2, SECTOR__st_ofs
-VAR SECTOR__ld_ofs, q
-	LCA LD_SECTOR.elab
-	Sa	 2, SECTOR__ld_ofs
-VAR SECTOR__u_ofs, q
+post_OUTADR_ELEMENT_TYPE:
+VAR ELEMENT_TYPE__outadr_ofs, q
+	LCA OUTADR_ELEMENT_TYPE.elab
+	Sa	 2, ELEMENT_TYPE__outadr_ofs
+VAR ELEMENT_TYPE__inadr_ofs, q
+	LCA INADR_ELEMENT_TYPE.elab
+	Sa	 2, ELEMENT_TYPE__inadr_ofs
+VAR ELEMENT_TYPE__st_ofs, q
+	LCA ST_ELEMENT_TYPE.elab
+	Sa	 2, ELEMENT_TYPE__st_ofs
+VAR ELEMENT_TYPE__ld_ofs, q
+	LCA LD_ELEMENT_TYPE.elab
+	Sa	 2, ELEMENT_TYPE__ld_ofs
+VAR ELEMENT_TYPE__u_ofs, q
 	La	 0, STANDARD.IDL.PAGE_MAN._SECTOR.use__info
-	Sa	 2, SECTOR__u_ofs
+	Sa	 2, ELEMENT_TYPE__u_ofs
 VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
+					; CODE_PACKAGE_SPEC
 ; EXPANDER.DECLARATIONS.CODE_TYPE_DECL : skip PRIVATE FILE_TYPE (deferred to full type)
 
 					; _FILE_MODE ENUMERATION TYPE INFO
@@ -413,6 +414,7 @@ end postpone
 	LCA	SIZ
 	Sa	2, use__info
 end namespace
+					; sub program entry decl (in instantiation TRUE )
 if defined CREATE_L10_
 PRO	CREATE_L10				;---------- PRO CREATE
 PRMS					;    debut parametrage
@@ -433,6 +435,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO CREATE
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined OPEN_L11_
 PRO	OPEN_L11				;---------- PRO OPEN
 PRMS					;    debut parametrage
@@ -453,6 +456,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO OPEN
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined CLOSE_L12_
 PRO	CLOSE_L12				;---------- PRO CLOSE
 PRMS					;    debut parametrage
@@ -467,6 +471,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO CLOSE
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined DELETE_L13_
 PRO	DELETE_L13				;---------- PRO DELETE
 PRMS					;    debut parametrage
@@ -481,6 +486,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO DELETE
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined RESET_L14_
 PRO	RESET_L14				;---------- PRO RESET
 PRMS					;    debut parametrage
@@ -497,6 +503,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO RESET
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined RESET_L15_
 PRO	RESET_L15				;---------- PRO RESET
 PRMS					;    debut parametrage
@@ -511,6 +518,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO RESET
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined MODE_L16_
 PRO	MODE_L16				;---------- PRO MODE
 PRMS					;    debut parametrage
@@ -528,6 +536,7 @@ begin:
 	RTD	prm_siz-8
 endPRO					;---------- end PRO MODE
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined NAME_L17_
 PRO	NAME_L17				;---------- PRO NAME
 PRMS					;    debut parametrage
@@ -545,6 +554,7 @@ begin:
 	RTD	prm_siz-8
 endPRO					;---------- end PRO NAME
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined FORM_L18_
 PRO	FORM_L18				;---------- PRO FORM
 PRMS					;    debut parametrage
@@ -562,6 +572,7 @@ begin:
 	RTD	prm_siz-8
 endPRO					;---------- end PRO FORM
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined IS_OPEN_L19_
 PRO	IS_OPEN_L19				;---------- PRO IS_OPEN
 PRMS					;    debut parametrage
@@ -579,6 +590,7 @@ begin:
 	RTD	prm_siz-8
 endPRO					;---------- end PRO IS_OPEN
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined READ_L20_
 PRO	READ_L20				;---------- PRO READ
 PRMS					;    debut parametrage
@@ -595,6 +607,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO READ
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined WRITE_L21_
 PRO	WRITE_L21				;---------- PRO WRITE
 PRMS					;    debut parametrage
@@ -611,6 +624,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO WRITE
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined END_OF_FILE_L22_
 PRO	END_OF_FILE_L22				;---------- PRO END_OF_FILE
 PRMS					;    debut parametrage
@@ -671,13 +685,15 @@ VAR SIZ, d
 	Sa	2, use__info
 USEINFO 2, ID, 	La 0, STANDARD._INTEGER.use__info
 USEINFO 2, NAME, 	La 2, STANDARD.IDL.WRITE_LIB_L13.WRITE_UNIT_L9.SEQ_IO._FILE_NAME_BUFFER.use__info
+; STSB
 USEINFO 2, NAME_LEN, 	La 0, STANDARD._POSITIVE.use__info
 USEINFO 2, IS_OPENED, 	La 0, STANDARD._BOOLEAN.use__info
 USEINFO 2, MODE, 	La 2, STANDARD.IDL.WRITE_LIB_L13.WRITE_UNIT_L9.SEQ_IO._FILE_MODE.use__info
 USEINFO 2, AT_END_OF_FILE, 	La 0, STANDARD._BOOLEAN.use__info
 virtual at 0				; calcul des offsets statiques
 STATOFS ID, 4
-STATOFS NAME, 1
+; STSB
+STATOFS NAME, 256
 STATOFS NAME_LEN, 4
 STATOFS IS_OPENED, 1
 STATOFS MODE, 1
@@ -1345,7 +1361,7 @@ VAR	ANON_199_30__dat, STANDARD.IDL._TREE.size
 
 VAR FILE_NAM_disp, q			; variable array : pointeur aux data
 VAR FILE_NAM__u, q				; variable array : useinfo pointeur au rec info
-	La 0, _STRING.use__info
+	La 0, STANDARD._STRING.use__info
 	Sa	3, FILE_NAM__u				; array info ptr at __u
 ; CODE & concat _STRING
 VAR	ANON_200_36_L47_G_data, q

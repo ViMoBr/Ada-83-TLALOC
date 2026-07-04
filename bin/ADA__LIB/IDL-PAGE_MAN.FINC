@@ -8,42 +8,43 @@ PAGE_IO = 'PAGE_IO'
 namespace PAGE_IO				;---------- GENERIC PACKAGE INSTANTIATION
 elab_spec:				;    SPEC ELAB
 
-BRA post_LD_SECTOR
-LD_SECTOR.elab:
+BRA post_LD_ELEMENT_TYPE
+LD_ELEMENT_TYPE.elab:
 	LI 0
 	RTD 0
-post_LD_SECTOR:
-BRA post_ST_SECTOR
-ST_SECTOR.elab:
+post_LD_ELEMENT_TYPE:
+BRA post_ST_ELEMENT_TYPE
+ST_ELEMENT_TYPE.elab:
 	DROP
 	RTD 0
-post_ST_SECTOR:
-BRA post_INADR_SECTOR
-INADR_SECTOR.elab:
+post_ST_ELEMENT_TYPE:
+BRA post_INADR_ELEMENT_TYPE
+INADR_ELEMENT_TYPE.elab:
 	LIa
 	RTD 0
-post_INADR_SECTOR:
-BRA post_OUTADR_SECTOR
-OUTADR_SECTOR.elab:
+post_INADR_ELEMENT_TYPE:
+BRA post_OUTADR_ELEMENT_TYPE
+OUTADR_ELEMENT_TYPE.elab:
 	LIa
 	RTD 0
-post_OUTADR_SECTOR:
-VAR SECTOR__outadr_ofs, q
-	LCA OUTADR_SECTOR.elab
-	Sa	 0, SECTOR__outadr_ofs
-VAR SECTOR__inadr_ofs, q
-	LCA INADR_SECTOR.elab
-	Sa	 0, SECTOR__inadr_ofs
-VAR SECTOR__st_ofs, q
-	LCA ST_SECTOR.elab
-	Sa	 0, SECTOR__st_ofs
-VAR SECTOR__ld_ofs, q
-	LCA LD_SECTOR.elab
-	Sa	 0, SECTOR__ld_ofs
-VAR SECTOR__u_ofs, q
+post_OUTADR_ELEMENT_TYPE:
+VAR ELEMENT_TYPE__outadr_ofs, q
+	LCA OUTADR_ELEMENT_TYPE.elab
+	Sa	 0, ELEMENT_TYPE__outadr_ofs
+VAR ELEMENT_TYPE__inadr_ofs, q
+	LCA INADR_ELEMENT_TYPE.elab
+	Sa	 0, ELEMENT_TYPE__inadr_ofs
+VAR ELEMENT_TYPE__st_ofs, q
+	LCA ST_ELEMENT_TYPE.elab
+	Sa	 0, ELEMENT_TYPE__st_ofs
+VAR ELEMENT_TYPE__ld_ofs, q
+	LCA LD_ELEMENT_TYPE.elab
+	Sa	 0, ELEMENT_TYPE__ld_ofs
+VAR ELEMENT_TYPE__u_ofs, q
 	La	 0, STANDARD.IDL.PAGE_MAN._SECTOR.use__info
-	Sa	 0, SECTOR__u_ofs
+	Sa	 0, ELEMENT_TYPE__u_ofs
 VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
+					; CODE_PACKAGE_SPEC
 ; EXPANDER.DECLARATIONS.CODE_TYPE_DECL : skip PRIVATE FILE_TYPE (deferred to full type)
 
 					; _FILE_MODE ENUMERATION TYPE INFO
@@ -104,6 +105,7 @@ VAR PARENT__u, q
 	La	0, STANDARD.IDL.PAGE_MAN.PAGE_IO._COUNT.use__info
 	Sa	0, PARENT__u
 end namespace
+					; sub program entry decl (in instantiation TRUE )
 if defined CREATE_L1_
 PRO	CREATE_L1				;---------- PRO CREATE
 PRMS					;    debut parametrage
@@ -124,6 +126,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO CREATE
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined OPEN_L2_
 PRO	OPEN_L2				;---------- PRO OPEN
 PRMS					;    debut parametrage
@@ -144,6 +147,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO OPEN
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined CLOSE_L3_
 PRO	CLOSE_L3				;---------- PRO CLOSE
 PRMS					;    debut parametrage
@@ -158,6 +162,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO CLOSE
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined DELETE_L4_
 PRO	DELETE_L4				;---------- PRO DELETE
 PRMS					;    debut parametrage
@@ -172,6 +177,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO DELETE
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined RESET_L5_
 PRO	RESET_L5				;---------- PRO RESET
 PRMS					;    debut parametrage
@@ -188,6 +194,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO RESET
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined RESET_L6_
 PRO	RESET_L6				;---------- PRO RESET
 PRMS					;    debut parametrage
@@ -202,6 +209,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO RESET
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined MODE_L7_
 PRO	MODE_L7				;---------- PRO MODE
 PRMS					;    debut parametrage
@@ -219,6 +227,7 @@ begin:
 	RTD	prm_siz-8
 endPRO					;---------- end PRO MODE
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined NAME_L8_
 PRO	NAME_L8				;---------- PRO NAME
 PRMS					;    debut parametrage
@@ -236,6 +245,7 @@ begin:
 	RTD	prm_siz-8
 endPRO					;---------- end PRO NAME
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined FORM_L9_
 PRO	FORM_L9				;---------- PRO FORM
 PRMS					;    debut parametrage
@@ -253,6 +263,7 @@ begin:
 	RTD	prm_siz-8
 endPRO					;---------- end PRO FORM
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined IS_OPEN_L10_
 PRO	IS_OPEN_L10				;---------- PRO IS_OPEN
 PRMS					;    debut parametrage
@@ -270,6 +281,7 @@ begin:
 	RTD	prm_siz-8
 endPRO					;---------- end PRO IS_OPEN
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined READ_L11_
 PRO	READ_L11				;---------- PRO READ
 PRMS					;    debut parametrage
@@ -288,6 +300,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO READ
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined READ_L12_
 PRO	READ_L12				;---------- PRO READ
 PRMS					;    debut parametrage
@@ -304,6 +317,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO READ
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined WRITE_L13_
 PRO	WRITE_L13				;---------- PRO WRITE
 PRMS					;    debut parametrage
@@ -322,6 +336,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO WRITE
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined WRITE_L14_
 PRO	WRITE_L14				;---------- PRO WRITE
 PRMS					;    debut parametrage
@@ -338,6 +353,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO WRITE
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined SET_INDEX_L15_
 PRO	SET_INDEX_L15				;---------- PRO SET_INDEX
 PRMS					;    debut parametrage
@@ -354,6 +370,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO SET_INDEX
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined INDEX_L16_
 PRO	INDEX_L16				;---------- PRO INDEX
 PRMS					;    debut parametrage
@@ -371,6 +388,7 @@ begin:
 	RTD	prm_siz-8
 endPRO					;---------- end PRO INDEX
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined SIZE_L17_
 PRO	SIZE_L17				;---------- PRO SIZE
 PRMS					;    debut parametrage
@@ -388,6 +406,7 @@ begin:
 	RTD	prm_siz-8
 endPRO					;---------- end PRO SIZE
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined END_OF_FILE_L18_
 PRO	END_OF_FILE_L18				;---------- PRO END_OF_FILE
 PRMS					;    debut parametrage
@@ -448,6 +467,7 @@ VAR SIZ, d
 	Sa	0, use__info
 USEINFO 0, ID, 	La 0, STANDARD._INTEGER.use__info
 USEINFO 0, NAME, 	La 0, STANDARD.IDL.PAGE_MAN.PAGE_IO._FILE_NAME_BUFFER.use__info
+; STSB
 USEINFO 0, NAME_LEN, 	La 0, STANDARD._POSITIVE.use__info
 USEINFO 0, IS_OPENED, 	La 0, STANDARD._BOOLEAN.use__info
 USEINFO 0, MODE, 	La 0, STANDARD.IDL.PAGE_MAN.PAGE_IO._FILE_MODE.use__info
@@ -455,7 +475,8 @@ USEINFO 0, INDEX, 	La 0, STANDARD.IDL.PAGE_MAN._POSITIVE_COUNT.use__info
 USEINFO 0, AT_END_OF_FILE, 	La 0, STANDARD._BOOLEAN.use__info
 virtual at 0				; calcul des offsets statiques
 STATOFS ID, 4
-STATOFS NAME, 1
+; STSB
+STATOFS NAME, 256
 STATOFS NAME_LEN, 4
 STATOFS IS_OPENED, 1
 STATOFS MODE, 1

@@ -224,6 +224,7 @@ namespace	BLOCK__1
 ELB 2					;    BODY ELAB
 P = 'P'
 namespace P				;---------- PACKAGE DECLARATION
+					; CODE_PACKAGE_SPEC
 
 					; array decl constrained array type info
 _A = '_A'
@@ -287,10 +288,15 @@ USEINFO 2, NUM, 	La 0, STANDARD._POSITIVE.use__info
 USEINFO 2, S, 	La 0, STANDARD._INTEGER.use__info
 USEINFO 2, T, 	La 2, STANDARD.A83041D_L1.BLOCK__1.P._B.use__info
 USEINFO 2, U, 	La 2, STANDARD.A83041D_L1.BLOCK__1.P._C.use__info
+virtual at 0				; calcul des offsets statiques
 STATOFS NUM, 4
-; OFFSET NON STATIQUE A FAIRE
-; OFFSET NON STATIQUE A FAIRE
-; OFFSET NON STATIQUE A FAIRE
+STATOFS S, 4
+STATOFS T, 8
+STATOFS U, 16
+size = $
+end virtual
+	LI	 size*8
+	Sd	2, SIZ
 end namespace
 
 					; _C RECORD TYPE INFO
@@ -332,9 +338,9 @@ VAR REC_L__dat, STANDARD.A83041D_L1.BLOCK__1.P._R.size
 
 VAR ARR_L_disp, q				; variable array : pointeur aux data
 VAR ARR_L__u, q				; variable array : useinfo pointeur au rec info
-	La 2, _A.use__info
+	La 2, STANDARD.A83041D_L1.BLOCK__1.P._A.use__info
 	Sa	2, ARR_L__u				; array info ptr at __u
-	Ld	2, _A.SIZ
+	Ld	2, STANDARD.A83041D_L1.BLOCK__1.P._A.SIZ
 	LI	8
 	DIV
 	CO_VAR
@@ -360,9 +366,9 @@ VAR ADD_disp, q				; variable entiere
 
 VAR ARR_disp, q				; variable array : pointeur aux data
 VAR ARR__u, q				; variable array : useinfo pointeur au rec info
-	La 2, _A.use__info
+	La 2, STANDARD.A83041D_L1.BLOCK__1.P._A.use__info
 	Sa	2, ARR__u				; array info ptr at __u
-	Ld	2, _A.SIZ
+	Ld	2, STANDARD.A83041D_L1.BLOCK__1.P._A.SIZ
 	LI	8
 	DIV
 	CO_VAR
@@ -413,7 +419,7 @@ begin:					;---------- package BDY INSTRUCTIONS
 	DIV
 	MUL
 	ADD					; add offset to start address
-	LId	2, ARR__u, _A.FST_1
+	LId	2, STANDARD.A83041D_L1.BLOCK__1.P.ARR__u, STANDARD.A83041D_L1.BLOCK__1.P._A.FST_1
 	Sd
 	La	 2, ARR_disp				; array data start address on stack
 ; CODE_NUMERIC_LITERAL DN_INTEGER
@@ -425,7 +431,7 @@ begin:					;---------- package BDY INSTRUCTIONS
 	DIV
 	MUL
 	ADD					; add offset to start address
-	LId	2, ARR__u, _A.LST_1
+	LId	2, STANDARD.A83041D_L1.BLOCK__1.P.ARR__u, STANDARD.A83041D_L1.BLOCK__1.P._A.LST_1
 	Sd
 	La	 2, ARR_disp				; array data start address on stack
 ; CODE_NUMERIC_LITERAL DN_INTEGER
@@ -437,7 +443,7 @@ begin:					;---------- package BDY INSTRUCTIONS
 	DIV
 	MUL
 	ADD					; add offset to start address
-	LId	2, ARR__u, _A.FST_1
+	LId	2, STANDARD.A83041D_L1.BLOCK__1.P.ARR__u, STANDARD.A83041D_L1.BLOCK__1.P._A.FST_1
 	Sd
 	La	 2, ARR_disp				; array data start address on stack
 ; CODE_NUMERIC_LITERAL DN_INTEGER
@@ -449,7 +455,7 @@ begin:					;---------- package BDY INSTRUCTIONS
 	DIV
 	MUL
 	ADD					; add offset to start address
-	LId	2, ARR__u, _A.LST_1
+	LId	2, STANDARD.A83041D_L1.BLOCK__1.P.ARR__u, STANDARD.A83041D_L1.BLOCK__1.P._A.LST_1
 	Sd
 	La	 2, ARR_disp				; array data start address on stack
 ; CODE_NUMERIC_LITERAL DN_INTEGER
@@ -461,8 +467,8 @@ begin:					;---------- package BDY INSTRUCTIONS
 	DIV
 	MUL
 	ADD					; add offset to start address
-	LId	2, ARR__u, _A.LST_1
-	LId	2, ARR__u, _A.FST_1
+	LId	2, STANDARD.A83041D_L1.BLOCK__1.P.ARR__u, STANDARD.A83041D_L1.BLOCK__1.P._A.LST_1
+	LId	2, STANDARD.A83041D_L1.BLOCK__1.P.ARR__u, STANDARD.A83041D_L1.BLOCK__1.P._A.FST_1
 	SUB
 	INC
 	Sd
@@ -476,16 +482,16 @@ begin:					;---------- package BDY INSTRUCTIONS
 	DIV
 	MUL
 	ADD					; add offset to start address
-	LId	2, ARR__u, _A.LST_1
-	LId	2, ARR__u, _A.FST_1
+	LId	2, STANDARD.A83041D_L1.BLOCK__1.P.ARR__u, STANDARD.A83041D_L1.BLOCK__1.P._A.LST_1
+	LId	2, STANDARD.A83041D_L1.BLOCK__1.P.ARR__u, STANDARD.A83041D_L1.BLOCK__1.P._A.FST_1
 	SUB
 	INC
 	Sd
 VAR	IL8_disp, d				; compteur boucle LOOP__2
-	LId	2, ARR__u, _A.FST_1
+	LId	2, ARR__u, STANDARD.A83041D_L1.BLOCK__1.P._A.FST_1
 	Sd  2,	IL8_disp
 VAR	LMT_IL8_disp, d				; limite boucle LOOP__2
-	LId	2, ARR__u, _A.LST_1
+	LId	2, ARR__u, STANDARD.A83041D_L1.BLOCK__1.P._A.LST_1
 	Sd  2,	LMT_IL8_disp
 	Ld  2,	IL8_disp				; test null range LOOP__2
 	Ld  2,	LMT_IL8_disp
@@ -502,10 +508,10 @@ LOOP__2:					; corps boucle LOOP__2
 	BRA	LOOP__2				; iteration suivante LOOP__2
 L7:					; post loop LOOP__2
 VAR	IL10_disp, d				; compteur boucle LOOP__3
-	LId	2, ARR__u, _A.FST_1
+	LId	2, ARR__u, STANDARD.A83041D_L1.BLOCK__1.P._A.FST_1
 	Sd  2,	IL10_disp
 VAR	LMT_IL10_disp, d			; limite boucle LOOP__3
-	LId	2, ARR__u, _A.LST_1
+	LId	2, ARR__u, STANDARD.A83041D_L1.BLOCK__1.P._A.LST_1
 	Sd  2,	LMT_IL10_disp
 	Ld  2,	IL10_disp				; test null range LOOP__3
 	Ld  2,	LMT_IL10_disp
@@ -572,7 +578,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	DIV
 	MUL
 	ADD					; add offset to start address
-	LId	2, ARR_L__u, _A.FST_1
+	LId	2, STANDARD.A83041D_L1.BLOCK__1.ARR_L__u, STANDARD.A83041D_L1.BLOCK__1.P._A.FST_1
 	Sd
 	La	 2, ARR_L_disp				; array data start address on stack
 ; CODE_NUMERIC_LITERAL DN_INTEGER
@@ -584,7 +590,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	DIV
 	MUL
 	ADD					; add offset to start address
-	LId	2, ARR_L__u, _A.LST_1
+	LId	2, STANDARD.A83041D_L1.BLOCK__1.ARR_L__u, STANDARD.A83041D_L1.BLOCK__1.P._A.LST_1
 	Sd
 	La	 2, ARR_L_disp				; array data start address on stack
 ; CODE_NUMERIC_LITERAL DN_INTEGER
@@ -596,7 +602,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	DIV
 	MUL
 	ADD					; add offset to start address
-	LId	2, ARR_L__u, _A.FST_1
+	LId	2, STANDARD.A83041D_L1.BLOCK__1.ARR_L__u, STANDARD.A83041D_L1.BLOCK__1.P._A.FST_1
 	Sd
 	La	 2, ARR_L_disp				; array data start address on stack
 ; CODE_NUMERIC_LITERAL DN_INTEGER
@@ -608,7 +614,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	DIV
 	MUL
 	ADD					; add offset to start address
-	LId	2, ARR_L__u, _A.LST_1
+	LId	2, STANDARD.A83041D_L1.BLOCK__1.ARR_L__u, STANDARD.A83041D_L1.BLOCK__1.P._A.LST_1
 	Sd
 	La	 2, ARR_L_disp				; array data start address on stack
 ; CODE_NUMERIC_LITERAL DN_INTEGER
@@ -620,8 +626,8 @@ begin:					;---------- BDY INSTRUCTIONS
 	DIV
 	MUL
 	ADD					; add offset to start address
-	LId	2, ARR_L__u, _A.LST_1
-	LId	2, ARR_L__u, _A.FST_1
+	LId	2, STANDARD.A83041D_L1.BLOCK__1.ARR_L__u, STANDARD.A83041D_L1.BLOCK__1.P._A.LST_1
+	LId	2, STANDARD.A83041D_L1.BLOCK__1.ARR_L__u, STANDARD.A83041D_L1.BLOCK__1.P._A.FST_1
 	SUB
 	INC
 	Sd
@@ -635,16 +641,16 @@ begin:					;---------- BDY INSTRUCTIONS
 	DIV
 	MUL
 	ADD					; add offset to start address
-	LId	2, ARR_L__u, _A.LST_1
-	LId	2, ARR_L__u, _A.FST_1
+	LId	2, STANDARD.A83041D_L1.BLOCK__1.ARR_L__u, STANDARD.A83041D_L1.BLOCK__1.P._A.LST_1
+	LId	2, STANDARD.A83041D_L1.BLOCK__1.ARR_L__u, STANDARD.A83041D_L1.BLOCK__1.P._A.FST_1
 	SUB
 	INC
 	Sd
 VAR	IL12_disp, d				; compteur boucle LOOP__4
-	LId	2, ARR_L__u, _A.FST_1
+	LId	2, ARR_L__u, STANDARD.A83041D_L1.BLOCK__1.P._A.FST_1
 	Sd  2,	IL12_disp
 VAR	LMT_IL12_disp, d			; limite boucle LOOP__4
-	LId	2, ARR_L__u, _A.LST_1
+	LId	2, ARR_L__u, STANDARD.A83041D_L1.BLOCK__1.P._A.LST_1
 	Sd  2,	LMT_IL12_disp
 	Ld  2,	IL12_disp				; test null range LOOP__4
 	Ld  2,	LMT_IL12_disp
@@ -661,10 +667,10 @@ LOOP__4:					; corps boucle LOOP__4
 	BRA	LOOP__4				; iteration suivante LOOP__4
 L11:					; post loop LOOP__4
 VAR	IL14_disp, d				; compteur boucle LOOP__5
-	LId	2, ARR_L__u, _A.FST_1
+	LId	2, ARR_L__u, STANDARD.A83041D_L1.BLOCK__1.P._A.FST_1
 	Sd  2,	IL14_disp
 VAR	LMT_IL14_disp, d			; limite boucle LOOP__5
-	LId	2, ARR_L__u, _A.LST_1
+	LId	2, ARR_L__u, STANDARD.A83041D_L1.BLOCK__1.P._A.LST_1
 	Sd  2,	LMT_IL14_disp
 	Ld  2,	IL14_disp				; test null range LOOP__5
 	Ld  2,	LMT_IL14_disp

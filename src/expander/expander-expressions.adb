@@ -1269,6 +1269,31 @@ end if;
   end	IS_GENERIC_FORMAL_OBJECT;
 	------------------------
 
+		----------------------------
+  function	IS_GENERIC_FORMAL_SUBPROGRAM		( ID : TREE )	return BOOLEAN
+  is		----------------------------
+     GSEQ		: SEQ_TYPE;
+     FORMAL	: TREE;
+  begin
+    if  not CODI.IN_GENERIC_BODY  or else  CODI.ENCLOSING_GENERIC = TREE_VOID  then
+      return  FALSE;
+    end if;
+
+    GSEQ := LIST( D( SM_GENERIC_PARAM_S, CODI.ENCLOSING_GENERIC ) );
+
+    while  not IS_EMPTY( GSEQ )  loop
+      POP( GSEQ, FORMAL );
+
+      if  FORMAL.TY = DN_SUBPROG_ENTRY_DECL  and then  D( AS_SOURCE_NAME, FORMAL ) = ID  then
+        return  TRUE;
+      end if;
+    end loop;
+
+    return  FALSE;
+
+  end	IS_GENERIC_FORMAL_SUBPROGRAM;
+	----------------------------
+
 
 		-----------------
     function	IS_BASE_ATTRIBUTE		( A : TREE )	return BOOLEAN
@@ -1683,20 +1708,26 @@ end;
 	declare
 	  ARRAY_LVL	: INTEGER		:= PREFIX_LVL;
 	  PREFIX_TYPE	: TREE		:= D( SM_EXP_TYPE, PREFIX_NAME );
-	  TYPE_STR	:constant	STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, PREFIX_TYPE	) ) );
+	  TYPE_STR	:constant	STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, PREFIX_TYPE ) ) );
 	  DIM_EXP		: TREE		:= D( AS_EXP, ATTRIBUTE );
 	  NUM_DIM		: INTEGER		:= 1;
 	begin
 	  if DIM_EXP /= TREE_VOID then
 	    NUM_DIM := DI( SM_VALUE, DIM_EXP );
 	  end if;
-	  PUT( tab & "LId" & tab & IMAGE( ARRAY_LVL ) & ", " & CHN_PREFIX & "__u" & ", " & TYPE_STR );
+
+	  PUT( tab & "LId" & tab & IMAGE( ARRAY_LVL ) & ", " );
+	  REGIONS_PATH( D( SM_DEFN, PREFIX_NAME ) );
+	  PUT( CHN_PREFIX & "__u" & ", " );
+	  REGIONS_PATH( D( XD_SOURCE_NAME, PREFIX_TYPE ) );
+	  PUT( TYPE_STR );
 	  if  IS_LAST  then
 	    PUT( ".LST_"  );
 	  else
 	    PUT( ".FST_" );
 	  end if;
 	  PUT_LINE( IMAGE( NUM_DIM ) );
+
 	end;
 
         elsif  ( D( SM_EXP_TYPE, PREFIX_NAME ).TY = DN_ARRAY
@@ -1908,7 +1939,7 @@ end;
 
       declare
         ARRAY_LVL		: INTEGER		:= DI( CD_LEVEL, PREFIX_DEFN );
-        PREFIX_TYPE_STR	:constant	STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, PREFIX_TYPE	) ) );
+        PREFIX_TYPE_STR	:constant	STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, PREFIX_TYPE ) ) );
       begin
         if  PREFIX_DEFN.TY in CLASS_PARAM_NAME  then							-- On a juste l'adresse de la	VAR disp
 
@@ -1922,15 +1953,20 @@ end;
 	PUT_LINE( tab & "INC" );
 
         else
-	declare
-	  CHN_LID		:constant	STRING	:= tab & "LId" & tab & IMAGE(	ARRAY_LVL	) & ", "
-					   & CHN_PREFIX & "__u" & ", " & PREFIX_TYPE_STR;
-	begin
-	  PUT_LINE( CHN_LID & ".LST_1" );
-	  PUT_LINE( CHN_LID & ".FST_1" );
-	  PUT_LINE( tab & "SUB" );
-	  PUT_LINE( tab & "INC" );
-          end;
+	PUT( tab & "LId" & tab & IMAGE( ARRAY_LVL ) & ", " );
+	REGIONS_PATH( D( SM_DEFN, PREFIX_NAME ) );
+	PUT( CHN_PREFIX & "__u" & ", " );
+	REGIONS_PATH( D( XD_SOURCE_NAME, PREFIX_TYPE ) );
+	PUT_LINE( PREFIX_TYPE_STR & ".LST_1" );
+
+	PUT( tab & "LId" & tab & IMAGE( ARRAY_LVL ) & ", " );
+	REGIONS_PATH( D( SM_DEFN, PREFIX_NAME ) );
+	PUT(  CHN_PREFIX & "__u" & ", " );
+	REGIONS_PATH( D( XD_SOURCE_NAME, PREFIX_TYPE ) );
+	PUT_LINE( PREFIX_TYPE_STR & ".FST_1" );
+
+	PUT_LINE( tab & "SUB" );
+	PUT_LINE( tab & "INC" );
         end if;
       end;
 
@@ -4830,7 +4866,9 @@ put_line( "; CODE_QUALIFIED : DN_QUALIFIED" & NODE_NAME'IMAGE( SRC_EXP.TY ) );
 	    PUT( tab & "Ld"  & tab & ", " & TYPE_STR & "." );
 
 	  elsif  PREFIX_DEFN.TY in CLASS_VC_NAME  then
-	    PUT( tab & "LId" & tab & IMAGE( ARRAY_LVL ) & ", " & PREFIX_STR & "__u, " & TYPE_STR & "." );
+	    PUT( tab & "LId" & tab & IMAGE( ARRAY_LVL ) & ", " & PREFIX_STR & "__u, " );
+	    REGIONS_PATH( TYPE_NAME );
+	    PUT(  TYPE_STR & "." );
 
 	  else
 	    PUT_LINE( "; RANGE_ATTRIBUTE: prefix object non traite " & NODE_NAME'IMAGE( PREFIX_DEFN.TY ) );

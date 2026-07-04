@@ -87,41 +87,42 @@ INT_IO = 'INT_IO'
 namespace INT_IO				;---------- GENERIC PACKAGE INSTANTIATION
 elab_spec:				;    SPEC ELAB
 
-BRA post_LD_INTEGER
-LD_INTEGER.elab:
+BRA post_LD_NUM
+LD_NUM.elab:
 	Ld -1, 0
 	RTD 0
-post_LD_INTEGER:
-BRA post_ST_INTEGER
-ST_INTEGER.elab:
+post_LD_NUM:
+BRA post_ST_NUM
+ST_NUM.elab:
 	Sd -1, 0
 	RTD 0
-post_ST_INTEGER:
-BRA post_INADR_INTEGER
-INADR_INTEGER.elab:
+post_ST_NUM:
+BRA post_INADR_NUM
+INADR_NUM.elab:
 	RTD 0
-post_INADR_INTEGER:
-BRA post_OUTADR_INTEGER
-OUTADR_INTEGER.elab:
+post_INADR_NUM:
+BRA post_OUTADR_NUM
+OUTADR_NUM.elab:
 	La
 	RTD 0
-post_OUTADR_INTEGER:
-VAR INTEGER__outadr_ofs, q
-	LCA OUTADR_INTEGER.elab
-	Sa	 1, INTEGER__outadr_ofs
-VAR INTEGER__inadr_ofs, q
-	LCA INADR_INTEGER.elab
-	Sa	 1, INTEGER__inadr_ofs
-VAR INTEGER__st_ofs, q
-	LCA ST_INTEGER.elab
-	Sa	 1, INTEGER__st_ofs
-VAR INTEGER__ld_ofs, q
-	LCA LD_INTEGER.elab
-	Sa	 1, INTEGER__ld_ofs
-VAR INTEGER__u_ofs, q
+post_OUTADR_NUM:
+VAR NUM__outadr_ofs, q
+	LCA OUTADR_NUM.elab
+	Sa	 1, NUM__outadr_ofs
+VAR NUM__inadr_ofs, q
+	LCA INADR_NUM.elab
+	Sa	 1, NUM__inadr_ofs
+VAR NUM__st_ofs, q
+	LCA ST_NUM.elab
+	Sa	 1, NUM__st_ofs
+VAR NUM__ld_ofs, q
+	LCA LD_NUM.elab
+	Sa	 1, NUM__ld_ofs
+VAR NUM__u_ofs, q
 	La	 0, STANDARD._INTEGER.use__info
-	Sa	 1, INTEGER__u_ofs
+	Sa	 1, NUM__u_ofs
 VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
+					; CODE_PACKAGE_SPEC
 VAR DEFAULT_WIDTH_disp, d			; variable entiere
 	LI	 11
 	Sd  1,	DEFAULT_WIDTH_disp
@@ -131,6 +132,7 @@ VAR DEFAULT_BASE_disp, d			; variable entiere
 	LI	10
 	Sd  1,	DEFAULT_BASE_disp
 
+					; sub program entry decl (in instantiation TRUE )
 if defined GET_L2_
 PRO	GET_L2				;---------- PRO GET
 PRMS					;    debut parametrage
@@ -149,6 +151,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO GET
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined GET_L3_
 PRO	GET_L3				;---------- PRO GET
 PRMS					;    debut parametrage
@@ -165,6 +168,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO GET
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined PUT_L4_
 PRO	PUT_L4				;---------- PRO PUT
 PRMS					;    debut parametrage
@@ -185,6 +189,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO PUT
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined PUT_L5_
 PRO	PUT_L5				;---------- PRO PUT
 PRMS					;    debut parametrage
@@ -203,6 +208,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO PUT
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined GET_L6_
 PRO	GET_L6				;---------- PRO GET
 PRMS					;    debut parametrage
@@ -221,6 +227,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO GET
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined PUT_L7_
 PRO	PUT_L7				;---------- PRO PUT
 PRMS					;    debut parametrage
@@ -246,41 +253,42 @@ LF_IO = 'LF_IO'
 namespace LF_IO				;---------- GENERIC PACKAGE INSTANTIATION
 elab_spec:				;    SPEC ELAB
 
-BRA post_LD_LONG_FLOAT
-LD_LONG_FLOAT.elab:
+BRA post_LD_NUM
+LD_NUM.elab:
 	Lq -1, 0
 	RTD 0
-post_LD_LONG_FLOAT:
-BRA post_ST_LONG_FLOAT
-ST_LONG_FLOAT.elab:
+post_LD_NUM:
+BRA post_ST_NUM
+ST_NUM.elab:
 	Sq -1, 0
 	RTD 0
-post_ST_LONG_FLOAT:
-BRA post_INADR_LONG_FLOAT
-INADR_LONG_FLOAT.elab:
+post_ST_NUM:
+BRA post_INADR_NUM
+INADR_NUM.elab:
 	RTD 0
-post_INADR_LONG_FLOAT:
-BRA post_OUTADR_LONG_FLOAT
-OUTADR_LONG_FLOAT.elab:
+post_INADR_NUM:
+BRA post_OUTADR_NUM
+OUTADR_NUM.elab:
 	La
 	RTD 0
-post_OUTADR_LONG_FLOAT:
-VAR LONG_FLOAT__outadr_ofs, q
-	LCA OUTADR_LONG_FLOAT.elab
-	Sa	 1, LONG_FLOAT__outadr_ofs
-VAR LONG_FLOAT__inadr_ofs, q
-	LCA INADR_LONG_FLOAT.elab
-	Sa	 1, LONG_FLOAT__inadr_ofs
-VAR LONG_FLOAT__st_ofs, q
-	LCA ST_LONG_FLOAT.elab
-	Sa	 1, LONG_FLOAT__st_ofs
-VAR LONG_FLOAT__ld_ofs, q
-	LCA LD_LONG_FLOAT.elab
-	Sa	 1, LONG_FLOAT__ld_ofs
-VAR LONG_FLOAT__u_ofs, q
+post_OUTADR_NUM:
+VAR NUM__outadr_ofs, q
+	LCA OUTADR_NUM.elab
+	Sa	 1, NUM__outadr_ofs
+VAR NUM__inadr_ofs, q
+	LCA INADR_NUM.elab
+	Sa	 1, NUM__inadr_ofs
+VAR NUM__st_ofs, q
+	LCA ST_NUM.elab
+	Sa	 1, NUM__st_ofs
+VAR NUM__ld_ofs, q
+	LCA LD_NUM.elab
+	Sa	 1, NUM__ld_ofs
+VAR NUM__u_ofs, q
 	La	 0, STANDARD._LONG_FLOAT.use__info
-	Sa	 1, LONG_FLOAT__u_ofs
+	Sa	 1, NUM__u_ofs
 VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
+					; CODE_PACKAGE_SPEC
 VAR DEFAULT_FORE_disp, d			; variable entiere
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	2
@@ -288,6 +296,7 @@ VAR DEFAULT_FORE_disp, d			; variable entiere
 
 VAR DEFAULT_AFT_disp, d			; variable entiere
 	LI	15
+	LI	 15
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SUB
@@ -298,6 +307,7 @@ VAR DEFAULT_EXP_disp, d			; variable entiere
 	LI	3
 	Sd  1,	DEFAULT_EXP_disp
 
+					; sub program entry decl (in instantiation TRUE )
 if defined GET_L8_
 PRO	GET_L8				;---------- PRO GET
 PRMS					;    debut parametrage
@@ -316,6 +326,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO GET
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined GET_L9_
 PRO	GET_L9				;---------- PRO GET
 PRMS					;    debut parametrage
@@ -332,6 +343,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO GET
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined PUT_L10_
 PRO	PUT_L10				;---------- PRO PUT
 PRMS					;    debut parametrage
@@ -354,6 +366,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO PUT
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined PUT_L11_
 PRO	PUT_L11				;---------- PRO PUT
 PRMS					;    debut parametrage
@@ -374,6 +387,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO PUT
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined GET_L12_
 PRO	GET_L12				;---------- PRO GET
 PRMS					;    debut parametrage
@@ -392,6 +406,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO GET
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined PUT_L13_
 PRO	PUT_L13				;---------- PRO PUT
 PRMS					;    debut parametrage
@@ -419,42 +434,43 @@ CLR_DIO = 'CLR_DIO'
 namespace CLR_DIO				;---------- GENERIC PACKAGE INSTANTIATION
 elab_spec:				;    SPEC ELAB
 
-BRA post_LD_COULEUR
-LD_COULEUR.elab:
+BRA post_LD_ELEMENT_TYPE
+LD_ELEMENT_TYPE.elab:
 	Lb -1, 0
 	RTD 0
-post_LD_COULEUR:
-BRA post_ST_COULEUR
-ST_COULEUR.elab:
+post_LD_ELEMENT_TYPE:
+BRA post_ST_ELEMENT_TYPE
+ST_ELEMENT_TYPE.elab:
 	Sb -1, 0
 	RTD 0
-post_ST_COULEUR:
-BRA post_INADR_COULEUR
-INADR_COULEUR.elab:
+post_ST_ELEMENT_TYPE:
+BRA post_INADR_ELEMENT_TYPE
+INADR_ELEMENT_TYPE.elab:
 	RTD 0
-post_INADR_COULEUR:
-BRA post_OUTADR_COULEUR
-OUTADR_COULEUR.elab:
+post_INADR_ELEMENT_TYPE:
+BRA post_OUTADR_ELEMENT_TYPE
+OUTADR_ELEMENT_TYPE.elab:
 	La
 	RTD 0
-post_OUTADR_COULEUR:
-VAR COULEUR__outadr_ofs, q
-	LCA OUTADR_COULEUR.elab
-	Sa	 1, COULEUR__outadr_ofs
-VAR COULEUR__inadr_ofs, q
-	LCA INADR_COULEUR.elab
-	Sa	 1, COULEUR__inadr_ofs
-VAR COULEUR__st_ofs, q
-	LCA ST_COULEUR.elab
-	Sa	 1, COULEUR__st_ofs
-VAR COULEUR__ld_ofs, q
-	LCA LD_COULEUR.elab
-	Sa	 1, COULEUR__ld_ofs
-VAR COULEUR__u_ofs, q
+post_OUTADR_ELEMENT_TYPE:
+VAR ELEMENT_TYPE__outadr_ofs, q
+	LCA OUTADR_ELEMENT_TYPE.elab
+	Sa	 1, ELEMENT_TYPE__outadr_ofs
+VAR ELEMENT_TYPE__inadr_ofs, q
+	LCA INADR_ELEMENT_TYPE.elab
+	Sa	 1, ELEMENT_TYPE__inadr_ofs
+VAR ELEMENT_TYPE__st_ofs, q
+	LCA ST_ELEMENT_TYPE.elab
+	Sa	 1, ELEMENT_TYPE__st_ofs
+VAR ELEMENT_TYPE__ld_ofs, q
+	LCA LD_ELEMENT_TYPE.elab
+	Sa	 1, ELEMENT_TYPE__ld_ofs
+VAR ELEMENT_TYPE__u_ofs, q
 	La	 1, STANDARD.DIRECT_IO_TEST_L1._COULEUR.use__info
-	Sa	 1, COULEUR__u_ofs
+	Sa	 1, ELEMENT_TYPE__u_ofs
 VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
-; CODE_TYPE_DECL : skip PRIVATE FILE_TYPE (deferred to full type)
+					; CODE_PACKAGE_SPEC
+; EXPANDER.DECLARATIONS.CODE_TYPE_DECL : skip PRIVATE FILE_TYPE (deferred to full type)
 
 					; _FILE_MODE ENUMERATION TYPE INFO
 _FILE_MODE = '_FILE_MODE'
@@ -514,6 +530,7 @@ VAR PARENT__u, q
 	La	1, STANDARD.DIRECT_IO_TEST_L1.CLR_DIO._COUNT.use__info
 	Sa	1, PARENT__u
 end namespace
+					; sub program entry decl (in instantiation TRUE )
 if defined CREATE_L14_
 PRO	CREATE_L14				;---------- PRO CREATE
 PRMS					;    debut parametrage
@@ -534,6 +551,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO CREATE
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined OPEN_L15_
 PRO	OPEN_L15				;---------- PRO OPEN
 PRMS					;    debut parametrage
@@ -554,6 +572,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO OPEN
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined CLOSE_L16_
 PRO	CLOSE_L16				;---------- PRO CLOSE
 PRMS					;    debut parametrage
@@ -568,6 +587,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO CLOSE
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined DELETE_L17_
 PRO	DELETE_L17				;---------- PRO DELETE
 PRMS					;    debut parametrage
@@ -582,6 +602,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO DELETE
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined RESET_L18_
 PRO	RESET_L18				;---------- PRO RESET
 PRMS					;    debut parametrage
@@ -598,6 +619,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO RESET
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined RESET_L19_
 PRO	RESET_L19				;---------- PRO RESET
 PRMS					;    debut parametrage
@@ -612,6 +634,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO RESET
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined MODE_L20_
 PRO	MODE_L20				;---------- PRO MODE
 PRMS					;    debut parametrage
@@ -629,6 +652,7 @@ begin:
 	RTD	prm_siz-8
 endPRO					;---------- end PRO MODE
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined NAME_L21_
 PRO	NAME_L21				;---------- PRO NAME
 PRMS					;    debut parametrage
@@ -646,6 +670,7 @@ begin:
 	RTD	prm_siz-8
 endPRO					;---------- end PRO NAME
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined FORM_L22_
 PRO	FORM_L22				;---------- PRO FORM
 PRMS					;    debut parametrage
@@ -663,6 +688,7 @@ begin:
 	RTD	prm_siz-8
 endPRO					;---------- end PRO FORM
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined IS_OPEN_L23_
 PRO	IS_OPEN_L23				;---------- PRO IS_OPEN
 PRMS					;    debut parametrage
@@ -680,6 +706,7 @@ begin:
 	RTD	prm_siz-8
 endPRO					;---------- end PRO IS_OPEN
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined READ_L24_
 PRO	READ_L24				;---------- PRO READ
 PRMS					;    debut parametrage
@@ -698,6 +725,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO READ
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined READ_L25_
 PRO	READ_L25				;---------- PRO READ
 PRMS					;    debut parametrage
@@ -714,6 +742,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO READ
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined WRITE_L26_
 PRO	WRITE_L26				;---------- PRO WRITE
 PRMS					;    debut parametrage
@@ -732,6 +761,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO WRITE
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined WRITE_L27_
 PRO	WRITE_L27				;---------- PRO WRITE
 PRMS					;    debut parametrage
@@ -748,6 +778,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO WRITE
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined SET_INDEX_L28_
 PRO	SET_INDEX_L28				;---------- PRO SET_INDEX
 PRMS					;    debut parametrage
@@ -764,6 +795,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO SET_INDEX
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined INDEX_L29_
 PRO	INDEX_L29				;---------- PRO INDEX
 PRMS					;    debut parametrage
@@ -781,6 +813,7 @@ begin:
 	RTD	prm_siz-8
 endPRO					;---------- end PRO INDEX
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined SIZE_L30_
 PRO	SIZE_L30				;---------- PRO SIZE
 PRMS					;    debut parametrage
@@ -798,6 +831,7 @@ begin:
 	RTD	prm_siz-8
 endPRO					;---------- end PRO SIZE
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined END_OF_FILE_L31_
 PRO	END_OF_FILE_L31				;---------- PRO END_OF_FILE
 PRMS					;    debut parametrage
@@ -858,6 +892,7 @@ VAR SIZ, d
 	Sa	1, use__info
 USEINFO 1, ID, 	La 0, STANDARD._INTEGER.use__info
 USEINFO 1, NAME, 	La 1, STANDARD.DIRECT_IO_TEST_L1.CLR_DIO._FILE_NAME_BUFFER.use__info
+; STSB
 USEINFO 1, NAME_LEN, 	La 0, STANDARD._POSITIVE.use__info
 USEINFO 1, IS_OPENED, 	La 0, STANDARD._BOOLEAN.use__info
 USEINFO 1, MODE, 	La 1, STANDARD.DIRECT_IO_TEST_L1.CLR_DIO._FILE_MODE.use__info
@@ -865,7 +900,8 @@ USEINFO 1, INDEX, 	La 1, STANDARD.DIRECT_IO_TEST_L1.CLR_DIO._POSITIVE_COUNT.use_
 USEINFO 1, AT_END_OF_FILE, 	La 0, STANDARD._BOOLEAN.use__info
 virtual at 0				; calcul des offsets statiques
 STATOFS ID, 4
-STATOFS NAME, 1
+; STSB
+STATOFS NAME, 256
 STATOFS NAME_LEN, 4
 STATOFS IS_OPENED, 1
 STATOFS MODE, 1
@@ -883,43 +919,44 @@ POINT_DIO = 'POINT_DIO'
 namespace POINT_DIO				;---------- GENERIC PACKAGE INSTANTIATION
 elab_spec:				;    SPEC ELAB
 
-BRA post_LD_POINT
-LD_POINT.elab:
+BRA post_LD_ELEMENT_TYPE
+LD_ELEMENT_TYPE.elab:
 	LI 0
 	RTD 0
-post_LD_POINT:
-BRA post_ST_POINT
-ST_POINT.elab:
+post_LD_ELEMENT_TYPE:
+BRA post_ST_ELEMENT_TYPE
+ST_ELEMENT_TYPE.elab:
 	DROP
 	RTD 0
-post_ST_POINT:
-BRA post_INADR_POINT
-INADR_POINT.elab:
+post_ST_ELEMENT_TYPE:
+BRA post_INADR_ELEMENT_TYPE
+INADR_ELEMENT_TYPE.elab:
 	LIa
 	RTD 0
-post_INADR_POINT:
-BRA post_OUTADR_POINT
-OUTADR_POINT.elab:
+post_INADR_ELEMENT_TYPE:
+BRA post_OUTADR_ELEMENT_TYPE
+OUTADR_ELEMENT_TYPE.elab:
 	LIa
 	RTD 0
-post_OUTADR_POINT:
-VAR POINT__outadr_ofs, q
-	LCA OUTADR_POINT.elab
-	Sa	 1, POINT__outadr_ofs
-VAR POINT__inadr_ofs, q
-	LCA INADR_POINT.elab
-	Sa	 1, POINT__inadr_ofs
-VAR POINT__st_ofs, q
-	LCA ST_POINT.elab
-	Sa	 1, POINT__st_ofs
-VAR POINT__ld_ofs, q
-	LCA LD_POINT.elab
-	Sa	 1, POINT__ld_ofs
-VAR POINT__u_ofs, q
+post_OUTADR_ELEMENT_TYPE:
+VAR ELEMENT_TYPE__outadr_ofs, q
+	LCA OUTADR_ELEMENT_TYPE.elab
+	Sa	 1, ELEMENT_TYPE__outadr_ofs
+VAR ELEMENT_TYPE__inadr_ofs, q
+	LCA INADR_ELEMENT_TYPE.elab
+	Sa	 1, ELEMENT_TYPE__inadr_ofs
+VAR ELEMENT_TYPE__st_ofs, q
+	LCA ST_ELEMENT_TYPE.elab
+	Sa	 1, ELEMENT_TYPE__st_ofs
+VAR ELEMENT_TYPE__ld_ofs, q
+	LCA LD_ELEMENT_TYPE.elab
+	Sa	 1, ELEMENT_TYPE__ld_ofs
+VAR ELEMENT_TYPE__u_ofs, q
 	La	 1, STANDARD.DIRECT_IO_TEST_L1._POINT.use__info
-	Sa	 1, POINT__u_ofs
+	Sa	 1, ELEMENT_TYPE__u_ofs
 VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
-; CODE_TYPE_DECL : skip PRIVATE FILE_TYPE (deferred to full type)
+					; CODE_PACKAGE_SPEC
+; EXPANDER.DECLARATIONS.CODE_TYPE_DECL : skip PRIVATE FILE_TYPE (deferred to full type)
 
 					; _FILE_MODE ENUMERATION TYPE INFO
 _FILE_MODE = '_FILE_MODE'
@@ -979,6 +1016,7 @@ VAR PARENT__u, q
 	La	1, STANDARD.DIRECT_IO_TEST_L1.POINT_DIO._COUNT.use__info
 	Sa	1, PARENT__u
 end namespace
+					; sub program entry decl (in instantiation TRUE )
 if defined CREATE_L32_
 PRO	CREATE_L32				;---------- PRO CREATE
 PRMS					;    debut parametrage
@@ -999,6 +1037,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO CREATE
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined OPEN_L33_
 PRO	OPEN_L33				;---------- PRO OPEN
 PRMS					;    debut parametrage
@@ -1019,6 +1058,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO OPEN
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined CLOSE_L34_
 PRO	CLOSE_L34				;---------- PRO CLOSE
 PRMS					;    debut parametrage
@@ -1033,6 +1073,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO CLOSE
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined DELETE_L35_
 PRO	DELETE_L35				;---------- PRO DELETE
 PRMS					;    debut parametrage
@@ -1047,6 +1088,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO DELETE
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined RESET_L36_
 PRO	RESET_L36				;---------- PRO RESET
 PRMS					;    debut parametrage
@@ -1063,6 +1105,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO RESET
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined RESET_L37_
 PRO	RESET_L37				;---------- PRO RESET
 PRMS					;    debut parametrage
@@ -1077,6 +1120,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO RESET
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined MODE_L38_
 PRO	MODE_L38				;---------- PRO MODE
 PRMS					;    debut parametrage
@@ -1094,6 +1138,7 @@ begin:
 	RTD	prm_siz-8
 endPRO					;---------- end PRO MODE
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined NAME_L39_
 PRO	NAME_L39				;---------- PRO NAME
 PRMS					;    debut parametrage
@@ -1111,6 +1156,7 @@ begin:
 	RTD	prm_siz-8
 endPRO					;---------- end PRO NAME
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined FORM_L40_
 PRO	FORM_L40				;---------- PRO FORM
 PRMS					;    debut parametrage
@@ -1128,6 +1174,7 @@ begin:
 	RTD	prm_siz-8
 endPRO					;---------- end PRO FORM
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined IS_OPEN_L41_
 PRO	IS_OPEN_L41				;---------- PRO IS_OPEN
 PRMS					;    debut parametrage
@@ -1145,6 +1192,7 @@ begin:
 	RTD	prm_siz-8
 endPRO					;---------- end PRO IS_OPEN
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined READ_L42_
 PRO	READ_L42				;---------- PRO READ
 PRMS					;    debut parametrage
@@ -1163,6 +1211,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO READ
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined READ_L43_
 PRO	READ_L43				;---------- PRO READ
 PRMS					;    debut parametrage
@@ -1179,6 +1228,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO READ
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined WRITE_L44_
 PRO	WRITE_L44				;---------- PRO WRITE
 PRMS					;    debut parametrage
@@ -1197,6 +1247,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO WRITE
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined WRITE_L45_
 PRO	WRITE_L45				;---------- PRO WRITE
 PRMS					;    debut parametrage
@@ -1213,6 +1264,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO WRITE
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined SET_INDEX_L46_
 PRO	SET_INDEX_L46				;---------- PRO SET_INDEX
 PRMS					;    debut parametrage
@@ -1229,6 +1281,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO SET_INDEX
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined INDEX_L47_
 PRO	INDEX_L47				;---------- PRO INDEX
 PRMS					;    debut parametrage
@@ -1246,6 +1299,7 @@ begin:
 	RTD	prm_siz-8
 endPRO					;---------- end PRO INDEX
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined SIZE_L48_
 PRO	SIZE_L48				;---------- PRO SIZE
 PRMS					;    debut parametrage
@@ -1263,6 +1317,7 @@ begin:
 	RTD	prm_siz-8
 endPRO					;---------- end PRO SIZE
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined END_OF_FILE_L49_
 PRO	END_OF_FILE_L49				;---------- PRO END_OF_FILE
 PRMS					;    debut parametrage
@@ -1323,6 +1378,7 @@ VAR SIZ, d
 	Sa	1, use__info
 USEINFO 1, ID, 	La 0, STANDARD._INTEGER.use__info
 USEINFO 1, NAME, 	La 1, STANDARD.DIRECT_IO_TEST_L1.POINT_DIO._FILE_NAME_BUFFER.use__info
+; STSB
 USEINFO 1, NAME_LEN, 	La 0, STANDARD._POSITIVE.use__info
 USEINFO 1, IS_OPENED, 	La 0, STANDARD._BOOLEAN.use__info
 USEINFO 1, MODE, 	La 1, STANDARD.DIRECT_IO_TEST_L1.POINT_DIO._FILE_MODE.use__info
@@ -1330,7 +1386,8 @@ USEINFO 1, INDEX, 	La 1, STANDARD.DIRECT_IO_TEST_L1.POINT_DIO._POSITIVE_COUNT.us
 USEINFO 1, AT_END_OF_FILE, 	La 0, STANDARD._BOOLEAN.use__info
 virtual at 0				; calcul des offsets statiques
 STATOFS ID, 4
-STATOFS NAME, 1
+; STSB
+STATOFS NAME, 256
 STATOFS NAME_LEN, 4
 STATOFS IS_OPENED, 1
 STATOFS MODE, 1
@@ -1348,43 +1405,44 @@ VEC_DIO = 'VEC_DIO'
 namespace VEC_DIO				;---------- GENERIC PACKAGE INSTANTIATION
 elab_spec:				;    SPEC ELAB
 
-BRA post_LD_VECTEUR
-LD_VECTEUR.elab:
+BRA post_LD_ELEMENT_TYPE
+LD_ELEMENT_TYPE.elab:
 	LI 0
 	RTD 0
-post_LD_VECTEUR:
-BRA post_ST_VECTEUR
-ST_VECTEUR.elab:
+post_LD_ELEMENT_TYPE:
+BRA post_ST_ELEMENT_TYPE
+ST_ELEMENT_TYPE.elab:
 	DROP
 	RTD 0
-post_ST_VECTEUR:
-BRA post_INADR_VECTEUR
-INADR_VECTEUR.elab:
+post_ST_ELEMENT_TYPE:
+BRA post_INADR_ELEMENT_TYPE
+INADR_ELEMENT_TYPE.elab:
 	LIa
 	RTD 0
-post_INADR_VECTEUR:
-BRA post_OUTADR_VECTEUR
-OUTADR_VECTEUR.elab:
+post_INADR_ELEMENT_TYPE:
+BRA post_OUTADR_ELEMENT_TYPE
+OUTADR_ELEMENT_TYPE.elab:
 	LIa
 	RTD 0
-post_OUTADR_VECTEUR:
-VAR VECTEUR__outadr_ofs, q
-	LCA OUTADR_VECTEUR.elab
-	Sa	 1, VECTEUR__outadr_ofs
-VAR VECTEUR__inadr_ofs, q
-	LCA INADR_VECTEUR.elab
-	Sa	 1, VECTEUR__inadr_ofs
-VAR VECTEUR__st_ofs, q
-	LCA ST_VECTEUR.elab
-	Sa	 1, VECTEUR__st_ofs
-VAR VECTEUR__ld_ofs, q
-	LCA LD_VECTEUR.elab
-	Sa	 1, VECTEUR__ld_ofs
-VAR VECTEUR__u_ofs, q
+post_OUTADR_ELEMENT_TYPE:
+VAR ELEMENT_TYPE__outadr_ofs, q
+	LCA OUTADR_ELEMENT_TYPE.elab
+	Sa	 1, ELEMENT_TYPE__outadr_ofs
+VAR ELEMENT_TYPE__inadr_ofs, q
+	LCA INADR_ELEMENT_TYPE.elab
+	Sa	 1, ELEMENT_TYPE__inadr_ofs
+VAR ELEMENT_TYPE__st_ofs, q
+	LCA ST_ELEMENT_TYPE.elab
+	Sa	 1, ELEMENT_TYPE__st_ofs
+VAR ELEMENT_TYPE__ld_ofs, q
+	LCA LD_ELEMENT_TYPE.elab
+	Sa	 1, ELEMENT_TYPE__ld_ofs
+VAR ELEMENT_TYPE__u_ofs, q
 	La	 1, STANDARD.DIRECT_IO_TEST_L1._VECTEUR.use__info
-	Sa	 1, VECTEUR__u_ofs
+	Sa	 1, ELEMENT_TYPE__u_ofs
 VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
-; CODE_TYPE_DECL : skip PRIVATE FILE_TYPE (deferred to full type)
+					; CODE_PACKAGE_SPEC
+; EXPANDER.DECLARATIONS.CODE_TYPE_DECL : skip PRIVATE FILE_TYPE (deferred to full type)
 
 					; _FILE_MODE ENUMERATION TYPE INFO
 _FILE_MODE = '_FILE_MODE'
@@ -1444,6 +1502,7 @@ VAR PARENT__u, q
 	La	1, STANDARD.DIRECT_IO_TEST_L1.VEC_DIO._COUNT.use__info
 	Sa	1, PARENT__u
 end namespace
+					; sub program entry decl (in instantiation TRUE )
 if defined CREATE_L50_
 PRO	CREATE_L50				;---------- PRO CREATE
 PRMS					;    debut parametrage
@@ -1464,6 +1523,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO CREATE
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined OPEN_L51_
 PRO	OPEN_L51				;---------- PRO OPEN
 PRMS					;    debut parametrage
@@ -1484,6 +1544,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO OPEN
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined CLOSE_L52_
 PRO	CLOSE_L52				;---------- PRO CLOSE
 PRMS					;    debut parametrage
@@ -1498,6 +1559,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO CLOSE
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined DELETE_L53_
 PRO	DELETE_L53				;---------- PRO DELETE
 PRMS					;    debut parametrage
@@ -1512,6 +1574,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO DELETE
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined RESET_L54_
 PRO	RESET_L54				;---------- PRO RESET
 PRMS					;    debut parametrage
@@ -1528,6 +1591,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO RESET
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined RESET_L55_
 PRO	RESET_L55				;---------- PRO RESET
 PRMS					;    debut parametrage
@@ -1542,6 +1606,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO RESET
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined MODE_L56_
 PRO	MODE_L56				;---------- PRO MODE
 PRMS					;    debut parametrage
@@ -1559,6 +1624,7 @@ begin:
 	RTD	prm_siz-8
 endPRO					;---------- end PRO MODE
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined NAME_L57_
 PRO	NAME_L57				;---------- PRO NAME
 PRMS					;    debut parametrage
@@ -1576,6 +1642,7 @@ begin:
 	RTD	prm_siz-8
 endPRO					;---------- end PRO NAME
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined FORM_L58_
 PRO	FORM_L58				;---------- PRO FORM
 PRMS					;    debut parametrage
@@ -1593,6 +1660,7 @@ begin:
 	RTD	prm_siz-8
 endPRO					;---------- end PRO FORM
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined IS_OPEN_L59_
 PRO	IS_OPEN_L59				;---------- PRO IS_OPEN
 PRMS					;    debut parametrage
@@ -1610,6 +1678,7 @@ begin:
 	RTD	prm_siz-8
 endPRO					;---------- end PRO IS_OPEN
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined READ_L60_
 PRO	READ_L60				;---------- PRO READ
 PRMS					;    debut parametrage
@@ -1628,6 +1697,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO READ
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined READ_L61_
 PRO	READ_L61				;---------- PRO READ
 PRMS					;    debut parametrage
@@ -1644,6 +1714,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO READ
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined WRITE_L62_
 PRO	WRITE_L62				;---------- PRO WRITE
 PRMS					;    debut parametrage
@@ -1662,6 +1733,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO WRITE
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined WRITE_L63_
 PRO	WRITE_L63				;---------- PRO WRITE
 PRMS					;    debut parametrage
@@ -1678,6 +1750,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO WRITE
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined SET_INDEX_L64_
 PRO	SET_INDEX_L64				;---------- PRO SET_INDEX
 PRMS					;    debut parametrage
@@ -1694,6 +1767,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO SET_INDEX
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined INDEX_L65_
 PRO	INDEX_L65				;---------- PRO INDEX
 PRMS					;    debut parametrage
@@ -1711,6 +1785,7 @@ begin:
 	RTD	prm_siz-8
 endPRO					;---------- end PRO INDEX
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined SIZE_L66_
 PRO	SIZE_L66				;---------- PRO SIZE
 PRMS					;    debut parametrage
@@ -1728,6 +1803,7 @@ begin:
 	RTD	prm_siz-8
 endPRO					;---------- end PRO SIZE
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined END_OF_FILE_L67_
 PRO	END_OF_FILE_L67				;---------- PRO END_OF_FILE
 PRMS					;    debut parametrage
@@ -1788,6 +1864,7 @@ VAR SIZ, d
 	Sa	1, use__info
 USEINFO 1, ID, 	La 0, STANDARD._INTEGER.use__info
 USEINFO 1, NAME, 	La 1, STANDARD.DIRECT_IO_TEST_L1.VEC_DIO._FILE_NAME_BUFFER.use__info
+; STSB
 USEINFO 1, NAME_LEN, 	La 0, STANDARD._POSITIVE.use__info
 USEINFO 1, IS_OPENED, 	La 0, STANDARD._BOOLEAN.use__info
 USEINFO 1, MODE, 	La 1, STANDARD.DIRECT_IO_TEST_L1.VEC_DIO._FILE_MODE.use__info
@@ -1795,7 +1872,8 @@ USEINFO 1, INDEX, 	La 1, STANDARD.DIRECT_IO_TEST_L1.VEC_DIO._POSITIVE_COUNT.use_
 USEINFO 1, AT_END_OF_FILE, 	La 0, STANDARD._BOOLEAN.use__info
 virtual at 0				; calcul des offsets statiques
 STATOFS ID, 4
-STATOFS NAME, 1
+; STSB
+STATOFS NAME, 256
 STATOFS NAME_LEN, 4
 STATOFS IS_OPENED, 1
 STATOFS MODE, 1
@@ -2031,9 +2109,9 @@ VAR P_NEG__dat, STANDARD.DIRECT_IO_TEST_L1._POINT.size
 
 VAR V1_disp, q				; variable array : pointeur aux data
 VAR V1__u, q				; variable array : useinfo pointeur au rec info
-	La 1, _VECTEUR.use__info
+	La 1, STANDARD.DIRECT_IO_TEST_L1._VECTEUR.use__info
 	Sa	1, V1__u				; array info ptr at __u
-	Ld	1, _VECTEUR.SIZ
+	Ld	1, STANDARD.DIRECT_IO_TEST_L1._VECTEUR.SIZ
 	LI	8
 	DIV
 	CO_VAR
@@ -2109,9 +2187,9 @@ end namespace
 
 VAR V2_disp, q				; variable array : pointeur aux data
 VAR V2__u, q				; variable array : useinfo pointeur au rec info
-	La 1, _VECTEUR.use__info
+	La 1, STANDARD.DIRECT_IO_TEST_L1._VECTEUR.use__info
 	Sa	1, V2__u				; array info ptr at __u
-	Ld	1, _VECTEUR.SIZ
+	Ld	1, STANDARD.DIRECT_IO_TEST_L1._VECTEUR.SIZ
 	LI	8
 	DIV
 	CO_VAR
@@ -2187,9 +2265,9 @@ end namespace
 
 VAR V3_disp, q				; variable array : pointeur aux data
 VAR V3__u, q				; variable array : useinfo pointeur au rec info
-	La 1, _VECTEUR.use__info
+	La 1, STANDARD.DIRECT_IO_TEST_L1._VECTEUR.use__info
 	Sa	1, V3__u				; array info ptr at __u
-	Ld	1, _VECTEUR.SIZ
+	Ld	1, STANDARD.DIRECT_IO_TEST_L1._VECTEUR.SIZ
 	LI	8
 	DIV
 	CO_VAR
@@ -2300,9 +2378,9 @@ VAR RP__dat, STANDARD.DIRECT_IO_TEST_L1._POINT.size
 
 VAR RV_disp, q				; variable array : pointeur aux data
 VAR RV__u, q				; variable array : useinfo pointeur au rec info
-	La 1, _VECTEUR.use__info
+	La 1, STANDARD.DIRECT_IO_TEST_L1._VECTEUR.use__info
 	Sa	1, RV__u				; array info ptr at __u
-	Ld	1, _VECTEUR.SIZ
+	Ld	1, STANDARD.DIRECT_IO_TEST_L1._VECTEUR.SIZ
 	LI	8
 	DIV
 	CO_VAR

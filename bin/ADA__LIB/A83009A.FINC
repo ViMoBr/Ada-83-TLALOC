@@ -25,7 +25,7 @@ end postpone
 end namespace
 G_PACK = 'G_PACK'
 namespace G_PACK
-					;---------- GENERIC PACKAGE BODY ----------
+					;---------- GENERIC PACKAGE ----------
 
 PRMS
 	PRM T1__u_ofs
@@ -39,6 +39,10 @@ PRMS
 	PRM T2__inadr_ofs
 	PRM T2__outadr_ofs
 endPRMS
+
+					;---------- GENERIC PACKAGE SPEC OF BODY ----------
+
+					; CODE_PACKAGE_SPEC
 
 					; _PARENT ENUMERATION TYPE INFO
 _PARENT = '_PARENT'
@@ -59,7 +63,14 @@ end postpone
 	LCA	SIZ
 	Sa	1, use__info
 end namespace
-ELB 1					;    BODY ELAB
+					; sub program entry decl (in instantiation FALSE )
+					; sub program entry decl (in instantiation FALSE )
+					; sub program entry decl (in instantiation FALSE )
+					; sub program entry decl (in instantiation FALSE )
+
+					;---------- GENERIC PACKAGE BODY ----------
+
+					;    BODY ELAB
 
 if defined HP_L6_
 PRO	HP_L6					;---------- PRO HP
@@ -287,9 +298,11 @@ namespace	BLOCK__1
 ELB 2					;    BODY ELAB
 PACK2 = 'PACK2'
 namespace PACK2				;---------- PACKAGE DECLARATION
+					; CODE_PACKAGE_SPEC
 ; EXPANDER.DECLARATIONS.CODE_TYPE_DECL : skip PRIVATE CHILD1 (deferred to full type)
 IN_PACK2 = 'IN_PACK2'
 namespace IN_PACK2				;---------- PACKAGE DECLARATION
+					; CODE_PACKAGE_SPEC
 
 					; _PARENT ENUMERATION TYPE INFO
 _PARENT = '_PARENT'
@@ -310,6 +323,10 @@ end postpone
 	LCA	SIZ
 	Sa	2, use__info
 end namespace
+					; sub program entry decl (in instantiation FALSE )
+					; sub program entry decl (in instantiation FALSE )
+					; sub program entry decl (in instantiation FALSE )
+					; sub program entry decl (in instantiation FALSE )
 ; EXC_LBL	L17
 end namespace
 
@@ -361,6 +378,7 @@ end postpone
 end namespace
 IN_BODY = 'IN_BODY'
 namespace IN_BODY				;---------- PACKAGE DECLARATION
+					; CODE_PACKAGE_SPEC
 
 					; _CHILD3 ENUMERATION TYPE INFO
 _CHILD3 = '_CHILD3'
@@ -534,75 +552,76 @@ INSTANCE1 = 'INSTANCE1'
 namespace INSTANCE1				;---------- GENERIC PACKAGE INSTANTIATION
 elab_spec:				;    SPEC ELAB
 
-BRA post_LD_BOOLEAN
-LD_BOOLEAN.elab:
+BRA post_LD_T1
+LD_T1.elab:
 	Lb -1, 0
 	RTD 0
-post_LD_BOOLEAN:
-BRA post_ST_BOOLEAN
-ST_BOOLEAN.elab:
+post_LD_T1:
+BRA post_ST_T1
+ST_T1.elab:
 	Sb -1, 0
 	RTD 0
-post_ST_BOOLEAN:
-BRA post_INADR_BOOLEAN
-INADR_BOOLEAN.elab:
+post_ST_T1:
+BRA post_INADR_T1
+INADR_T1.elab:
 	RTD 0
-post_INADR_BOOLEAN:
-BRA post_OUTADR_BOOLEAN
-OUTADR_BOOLEAN.elab:
+post_INADR_T1:
+BRA post_OUTADR_T1
+OUTADR_T1.elab:
 	La
 	RTD 0
-post_OUTADR_BOOLEAN:
-VAR BOOLEAN__outadr_ofs, q
-	LCA OUTADR_BOOLEAN.elab
-	Sa	 2, BOOLEAN__outadr_ofs
-VAR BOOLEAN__inadr_ofs, q
-	LCA INADR_BOOLEAN.elab
-	Sa	 2, BOOLEAN__inadr_ofs
-VAR BOOLEAN__st_ofs, q
-	LCA ST_BOOLEAN.elab
-	Sa	 2, BOOLEAN__st_ofs
-VAR BOOLEAN__ld_ofs, q
-	LCA LD_BOOLEAN.elab
-	Sa	 2, BOOLEAN__ld_ofs
-VAR BOOLEAN__u_ofs, q
+post_OUTADR_T1:
+VAR T1__outadr_ofs, q
+	LCA OUTADR_T1.elab
+	Sa	 2, T1__outadr_ofs
+VAR T1__inadr_ofs, q
+	LCA INADR_T1.elab
+	Sa	 2, T1__inadr_ofs
+VAR T1__st_ofs, q
+	LCA ST_T1.elab
+	Sa	 2, T1__st_ofs
+VAR T1__ld_ofs, q
+	LCA LD_T1.elab
+	Sa	 2, T1__ld_ofs
+VAR T1__u_ofs, q
 	La	 0, STANDARD._BOOLEAN.use__info
-	Sa	 2, BOOLEAN__u_ofs
-BRA post_LD_BOOLEAN
-LD_BOOLEAN.elab:
+	Sa	 2, T1__u_ofs
+BRA post_LD_T2
+LD_T2.elab:
 	Lb -1, 0
 	RTD 0
-post_LD_BOOLEAN:
-BRA post_ST_BOOLEAN
-ST_BOOLEAN.elab:
+post_LD_T2:
+BRA post_ST_T2
+ST_T2.elab:
 	Sb -1, 0
 	RTD 0
-post_ST_BOOLEAN:
-BRA post_INADR_BOOLEAN
-INADR_BOOLEAN.elab:
+post_ST_T2:
+BRA post_INADR_T2
+INADR_T2.elab:
 	RTD 0
-post_INADR_BOOLEAN:
-BRA post_OUTADR_BOOLEAN
-OUTADR_BOOLEAN.elab:
+post_INADR_T2:
+BRA post_OUTADR_T2
+OUTADR_T2.elab:
 	La
 	RTD 0
-post_OUTADR_BOOLEAN:
-VAR BOOLEAN__outadr_ofs, q
-	LCA OUTADR_BOOLEAN.elab
-	Sa	 2, BOOLEAN__outadr_ofs
-VAR BOOLEAN__inadr_ofs, q
-	LCA INADR_BOOLEAN.elab
-	Sa	 2, BOOLEAN__inadr_ofs
-VAR BOOLEAN__st_ofs, q
-	LCA ST_BOOLEAN.elab
-	Sa	 2, BOOLEAN__st_ofs
-VAR BOOLEAN__ld_ofs, q
-	LCA LD_BOOLEAN.elab
-	Sa	 2, BOOLEAN__ld_ofs
-VAR BOOLEAN__u_ofs, q
+post_OUTADR_T2:
+VAR T2__outadr_ofs, q
+	LCA OUTADR_T2.elab
+	Sa	 2, T2__outadr_ofs
+VAR T2__inadr_ofs, q
+	LCA INADR_T2.elab
+	Sa	 2, T2__inadr_ofs
+VAR T2__st_ofs, q
+	LCA ST_T2.elab
+	Sa	 2, T2__st_ofs
+VAR T2__ld_ofs, q
+	LCA LD_T2.elab
+	Sa	 2, T2__ld_ofs
+VAR T2__u_ofs, q
 	La	 0, STANDARD._BOOLEAN.use__info
-	Sa	 2, BOOLEAN__u_ofs
+	Sa	 2, T2__u_ofs
 VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
+					; CODE_PACKAGE_SPEC
 
 					; _PARENT ENUMERATION TYPE INFO
 _PARENT = '_PARENT'
@@ -623,6 +642,7 @@ end postpone
 	LCA	SIZ
 	Sa	2, use__info
 end namespace
+					; sub program entry decl (in instantiation TRUE )
 if defined HP_L21_
 PRO	HP_L21				;---------- PRO HP
 PRMS					;    debut parametrage
@@ -639,6 +659,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO HP
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined HP_L22_
 PRO	HP_L22				;---------- PRO HP
 PRMS					;    debut parametrage
@@ -655,6 +676,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO HP
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined HF_L23_
 PRO	HF_L23				;---------- PRO HF
 PRMS					;    debut parametrage
@@ -672,6 +694,7 @@ begin:
 	RTD	prm_siz-8
 endPRO					;---------- end PRO HF
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined HF_L24_
 PRO	HF_L24				;---------- PRO HF
 PRMS					;    debut parametrage
@@ -714,79 +737,81 @@ end postpone
 end namespace
 PACK1 = 'PACK1'
 namespace PACK1				;---------- PACKAGE DECLARATION
+					; CODE_PACKAGE_SPEC
 INSTANCE2 = 'INSTANCE2'
 namespace INSTANCE2				;---------- GENERIC PACKAGE INSTANTIATION
 elab_spec:				;    SPEC ELAB
 
-BRA post_LD_CHARACTER
-LD_CHARACTER.elab:
+BRA post_LD_T1
+LD_T1.elab:
 	Lb -1, 0
 	RTD 0
-post_LD_CHARACTER:
-BRA post_ST_CHARACTER
-ST_CHARACTER.elab:
+post_LD_T1:
+BRA post_ST_T1
+ST_T1.elab:
 	Sb -1, 0
 	RTD 0
-post_ST_CHARACTER:
-BRA post_INADR_CHARACTER
-INADR_CHARACTER.elab:
+post_ST_T1:
+BRA post_INADR_T1
+INADR_T1.elab:
 	RTD 0
-post_INADR_CHARACTER:
-BRA post_OUTADR_CHARACTER
-OUTADR_CHARACTER.elab:
+post_INADR_T1:
+BRA post_OUTADR_T1
+OUTADR_T1.elab:
 	La
 	RTD 0
-post_OUTADR_CHARACTER:
-VAR CHARACTER__outadr_ofs, q
-	LCA OUTADR_CHARACTER.elab
-	Sa	 2, CHARACTER__outadr_ofs
-VAR CHARACTER__inadr_ofs, q
-	LCA INADR_CHARACTER.elab
-	Sa	 2, CHARACTER__inadr_ofs
-VAR CHARACTER__st_ofs, q
-	LCA ST_CHARACTER.elab
-	Sa	 2, CHARACTER__st_ofs
-VAR CHARACTER__ld_ofs, q
-	LCA LD_CHARACTER.elab
-	Sa	 2, CHARACTER__ld_ofs
-VAR CHARACTER__u_ofs, q
+post_OUTADR_T1:
+VAR T1__outadr_ofs, q
+	LCA OUTADR_T1.elab
+	Sa	 2, T1__outadr_ofs
+VAR T1__inadr_ofs, q
+	LCA INADR_T1.elab
+	Sa	 2, T1__inadr_ofs
+VAR T1__st_ofs, q
+	LCA ST_T1.elab
+	Sa	 2, T1__st_ofs
+VAR T1__ld_ofs, q
+	LCA LD_T1.elab
+	Sa	 2, T1__ld_ofs
+VAR T1__u_ofs, q
 	La	 0, STANDARD._CHARACTER.use__info
-	Sa	 2, CHARACTER__u_ofs
-BRA post_LD_CHARACTER
-LD_CHARACTER.elab:
+	Sa	 2, T1__u_ofs
+BRA post_LD_T2
+LD_T2.elab:
 	Lb -1, 0
 	RTD 0
-post_LD_CHARACTER:
-BRA post_ST_CHARACTER
-ST_CHARACTER.elab:
+post_LD_T2:
+BRA post_ST_T2
+ST_T2.elab:
 	Sb -1, 0
 	RTD 0
-post_ST_CHARACTER:
-BRA post_INADR_CHARACTER
-INADR_CHARACTER.elab:
+post_ST_T2:
+BRA post_INADR_T2
+INADR_T2.elab:
 	RTD 0
-post_INADR_CHARACTER:
-BRA post_OUTADR_CHARACTER
-OUTADR_CHARACTER.elab:
+post_INADR_T2:
+BRA post_OUTADR_T2
+OUTADR_T2.elab:
 	La
 	RTD 0
-post_OUTADR_CHARACTER:
-VAR CHARACTER__outadr_ofs, q
-	LCA OUTADR_CHARACTER.elab
-	Sa	 2, CHARACTER__outadr_ofs
-VAR CHARACTER__inadr_ofs, q
-	LCA INADR_CHARACTER.elab
-	Sa	 2, CHARACTER__inadr_ofs
-VAR CHARACTER__st_ofs, q
-	LCA ST_CHARACTER.elab
-	Sa	 2, CHARACTER__st_ofs
-VAR CHARACTER__ld_ofs, q
-	LCA LD_CHARACTER.elab
-	Sa	 2, CHARACTER__ld_ofs
-VAR CHARACTER__u_ofs, q
+post_OUTADR_T2:
+VAR T2__outadr_ofs, q
+	LCA OUTADR_T2.elab
+	Sa	 2, T2__outadr_ofs
+VAR T2__inadr_ofs, q
+	LCA INADR_T2.elab
+	Sa	 2, T2__inadr_ofs
+VAR T2__st_ofs, q
+	LCA ST_T2.elab
+	Sa	 2, T2__st_ofs
+VAR T2__ld_ofs, q
+	LCA LD_T2.elab
+	Sa	 2, T2__ld_ofs
+VAR T2__u_ofs, q
 	La	 0, STANDARD._CHARACTER.use__info
-	Sa	 2, CHARACTER__u_ofs
+	Sa	 2, T2__u_ofs
 VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
+					; CODE_PACKAGE_SPEC
 
 					; _PARENT ENUMERATION TYPE INFO
 _PARENT = '_PARENT'
@@ -807,6 +832,7 @@ end postpone
 	LCA	SIZ
 	Sa	2, use__info
 end namespace
+					; sub program entry decl (in instantiation TRUE )
 if defined HP_L25_
 PRO	HP_L25				;---------- PRO HP
 PRMS					;    debut parametrage
@@ -823,6 +849,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO HP
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined HP_L26_
 PRO	HP_L26				;---------- PRO HP
 PRMS					;    debut parametrage
@@ -839,6 +866,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO HP
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined HF_L27_
 PRO	HF_L27				;---------- PRO HF
 PRMS					;    debut parametrage
@@ -856,6 +884,7 @@ begin:
 	RTD	prm_siz-8
 endPRO					;---------- end PRO HF
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined HF_L28_
 PRO	HF_L28				;---------- PRO HF
 PRMS					;    debut parametrage
@@ -901,75 +930,76 @@ INSTANCE3 = 'INSTANCE3'
 namespace INSTANCE3				;---------- GENERIC PACKAGE INSTANTIATION
 elab_spec:				;    SPEC ELAB
 
-BRA post_LD_ENUM
-LD_ENUM.elab:
+BRA post_LD_T1
+LD_T1.elab:
 	Lb -1, 0
 	RTD 0
-post_LD_ENUM:
-BRA post_ST_ENUM
-ST_ENUM.elab:
+post_LD_T1:
+BRA post_ST_T1
+ST_T1.elab:
 	Sb -1, 0
 	RTD 0
-post_ST_ENUM:
-BRA post_INADR_ENUM
-INADR_ENUM.elab:
+post_ST_T1:
+BRA post_INADR_T1
+INADR_T1.elab:
 	RTD 0
-post_INADR_ENUM:
-BRA post_OUTADR_ENUM
-OUTADR_ENUM.elab:
+post_INADR_T1:
+BRA post_OUTADR_T1
+OUTADR_T1.elab:
 	La
 	RTD 0
-post_OUTADR_ENUM:
-VAR ENUM__outadr_ofs, q
-	LCA OUTADR_ENUM.elab
-	Sa	 2, ENUM__outadr_ofs
-VAR ENUM__inadr_ofs, q
-	LCA INADR_ENUM.elab
-	Sa	 2, ENUM__inadr_ofs
-VAR ENUM__st_ofs, q
-	LCA ST_ENUM.elab
-	Sa	 2, ENUM__st_ofs
-VAR ENUM__ld_ofs, q
-	LCA LD_ENUM.elab
-	Sa	 2, ENUM__ld_ofs
-VAR ENUM__u_ofs, q
+post_OUTADR_T1:
+VAR T1__outadr_ofs, q
+	LCA OUTADR_T1.elab
+	Sa	 2, T1__outadr_ofs
+VAR T1__inadr_ofs, q
+	LCA INADR_T1.elab
+	Sa	 2, T1__inadr_ofs
+VAR T1__st_ofs, q
+	LCA ST_T1.elab
+	Sa	 2, T1__st_ofs
+VAR T1__ld_ofs, q
+	LCA LD_T1.elab
+	Sa	 2, T1__ld_ofs
+VAR T1__u_ofs, q
 	La	 1, STANDARD.A83009A_L1._ENUM.use__info
-	Sa	 2, ENUM__u_ofs
-BRA post_LD_ENUM
-LD_ENUM.elab:
+	Sa	 2, T1__u_ofs
+BRA post_LD_T2
+LD_T2.elab:
 	Lb -1, 0
 	RTD 0
-post_LD_ENUM:
-BRA post_ST_ENUM
-ST_ENUM.elab:
+post_LD_T2:
+BRA post_ST_T2
+ST_T2.elab:
 	Sb -1, 0
 	RTD 0
-post_ST_ENUM:
-BRA post_INADR_ENUM
-INADR_ENUM.elab:
+post_ST_T2:
+BRA post_INADR_T2
+INADR_T2.elab:
 	RTD 0
-post_INADR_ENUM:
-BRA post_OUTADR_ENUM
-OUTADR_ENUM.elab:
+post_INADR_T2:
+BRA post_OUTADR_T2
+OUTADR_T2.elab:
 	La
 	RTD 0
-post_OUTADR_ENUM:
-VAR ENUM__outadr_ofs, q
-	LCA OUTADR_ENUM.elab
-	Sa	 2, ENUM__outadr_ofs
-VAR ENUM__inadr_ofs, q
-	LCA INADR_ENUM.elab
-	Sa	 2, ENUM__inadr_ofs
-VAR ENUM__st_ofs, q
-	LCA ST_ENUM.elab
-	Sa	 2, ENUM__st_ofs
-VAR ENUM__ld_ofs, q
-	LCA LD_ENUM.elab
-	Sa	 2, ENUM__ld_ofs
-VAR ENUM__u_ofs, q
+post_OUTADR_T2:
+VAR T2__outadr_ofs, q
+	LCA OUTADR_T2.elab
+	Sa	 2, T2__outadr_ofs
+VAR T2__inadr_ofs, q
+	LCA INADR_T2.elab
+	Sa	 2, T2__inadr_ofs
+VAR T2__st_ofs, q
+	LCA ST_T2.elab
+	Sa	 2, T2__st_ofs
+VAR T2__ld_ofs, q
+	LCA LD_T2.elab
+	Sa	 2, T2__ld_ofs
+VAR T2__u_ofs, q
 	La	 1, STANDARD.A83009A_L1._ENUM.use__info
-	Sa	 2, ENUM__u_ofs
+	Sa	 2, T2__u_ofs
 VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
+					; CODE_PACKAGE_SPEC
 
 					; _PARENT ENUMERATION TYPE INFO
 _PARENT = '_PARENT'
@@ -990,6 +1020,7 @@ end postpone
 	LCA	SIZ
 	Sa	2, use__info
 end namespace
+					; sub program entry decl (in instantiation TRUE )
 if defined HP_L29_
 PRO	HP_L29				;---------- PRO HP
 PRMS					;    debut parametrage
@@ -1006,6 +1037,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO HP
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined HP_L30_
 PRO	HP_L30				;---------- PRO HP
 PRMS					;    debut parametrage
@@ -1022,6 +1054,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO HP
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined HF_L31_
 PRO	HF_L31				;---------- PRO HF
 PRMS					;    debut parametrage
@@ -1039,6 +1072,7 @@ begin:
 	RTD	prm_siz-8
 endPRO					;---------- end PRO HF
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined HF_L32_
 PRO	HF_L32				;---------- PRO HF
 PRMS					;    debut parametrage
@@ -1090,75 +1124,76 @@ INSTANCE4 = 'INSTANCE4'
 namespace INSTANCE4				;---------- GENERIC PACKAGE INSTANTIATION
 elab_spec:				;    SPEC ELAB
 
-BRA post_LD_BOOLEAN
-LD_BOOLEAN.elab:
+BRA post_LD_T1
+LD_T1.elab:
 	Lb -1, 0
 	RTD 0
-post_LD_BOOLEAN:
-BRA post_ST_BOOLEAN
-ST_BOOLEAN.elab:
+post_LD_T1:
+BRA post_ST_T1
+ST_T1.elab:
 	Sb -1, 0
 	RTD 0
-post_ST_BOOLEAN:
-BRA post_INADR_BOOLEAN
-INADR_BOOLEAN.elab:
+post_ST_T1:
+BRA post_INADR_T1
+INADR_T1.elab:
 	RTD 0
-post_INADR_BOOLEAN:
-BRA post_OUTADR_BOOLEAN
-OUTADR_BOOLEAN.elab:
+post_INADR_T1:
+BRA post_OUTADR_T1
+OUTADR_T1.elab:
 	La
 	RTD 0
-post_OUTADR_BOOLEAN:
-VAR BOOLEAN__outadr_ofs, q
-	LCA OUTADR_BOOLEAN.elab
-	Sa	 3, BOOLEAN__outadr_ofs
-VAR BOOLEAN__inadr_ofs, q
-	LCA INADR_BOOLEAN.elab
-	Sa	 3, BOOLEAN__inadr_ofs
-VAR BOOLEAN__st_ofs, q
-	LCA ST_BOOLEAN.elab
-	Sa	 3, BOOLEAN__st_ofs
-VAR BOOLEAN__ld_ofs, q
-	LCA LD_BOOLEAN.elab
-	Sa	 3, BOOLEAN__ld_ofs
-VAR BOOLEAN__u_ofs, q
+post_OUTADR_T1:
+VAR T1__outadr_ofs, q
+	LCA OUTADR_T1.elab
+	Sa	 3, T1__outadr_ofs
+VAR T1__inadr_ofs, q
+	LCA INADR_T1.elab
+	Sa	 3, T1__inadr_ofs
+VAR T1__st_ofs, q
+	LCA ST_T1.elab
+	Sa	 3, T1__st_ofs
+VAR T1__ld_ofs, q
+	LCA LD_T1.elab
+	Sa	 3, T1__ld_ofs
+VAR T1__u_ofs, q
 	La	 0, STANDARD._BOOLEAN.use__info
-	Sa	 3, BOOLEAN__u_ofs
-BRA post_LD_BOOLEAN
-LD_BOOLEAN.elab:
+	Sa	 3, T1__u_ofs
+BRA post_LD_T2
+LD_T2.elab:
 	Lb -1, 0
 	RTD 0
-post_LD_BOOLEAN:
-BRA post_ST_BOOLEAN
-ST_BOOLEAN.elab:
+post_LD_T2:
+BRA post_ST_T2
+ST_T2.elab:
 	Sb -1, 0
 	RTD 0
-post_ST_BOOLEAN:
-BRA post_INADR_BOOLEAN
-INADR_BOOLEAN.elab:
+post_ST_T2:
+BRA post_INADR_T2
+INADR_T2.elab:
 	RTD 0
-post_INADR_BOOLEAN:
-BRA post_OUTADR_BOOLEAN
-OUTADR_BOOLEAN.elab:
+post_INADR_T2:
+BRA post_OUTADR_T2
+OUTADR_T2.elab:
 	La
 	RTD 0
-post_OUTADR_BOOLEAN:
-VAR BOOLEAN__outadr_ofs, q
-	LCA OUTADR_BOOLEAN.elab
-	Sa	 3, BOOLEAN__outadr_ofs
-VAR BOOLEAN__inadr_ofs, q
-	LCA INADR_BOOLEAN.elab
-	Sa	 3, BOOLEAN__inadr_ofs
-VAR BOOLEAN__st_ofs, q
-	LCA ST_BOOLEAN.elab
-	Sa	 3, BOOLEAN__st_ofs
-VAR BOOLEAN__ld_ofs, q
-	LCA LD_BOOLEAN.elab
-	Sa	 3, BOOLEAN__ld_ofs
-VAR BOOLEAN__u_ofs, q
+post_OUTADR_T2:
+VAR T2__outadr_ofs, q
+	LCA OUTADR_T2.elab
+	Sa	 3, T2__outadr_ofs
+VAR T2__inadr_ofs, q
+	LCA INADR_T2.elab
+	Sa	 3, T2__inadr_ofs
+VAR T2__st_ofs, q
+	LCA ST_T2.elab
+	Sa	 3, T2__st_ofs
+VAR T2__ld_ofs, q
+	LCA LD_T2.elab
+	Sa	 3, T2__ld_ofs
+VAR T2__u_ofs, q
 	La	 0, STANDARD._BOOLEAN.use__info
-	Sa	 3, BOOLEAN__u_ofs
+	Sa	 3, T2__u_ofs
 VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
+					; CODE_PACKAGE_SPEC
 
 					; _PARENT ENUMERATION TYPE INFO
 _PARENT = '_PARENT'
@@ -1179,6 +1214,7 @@ end postpone
 	LCA	SIZ
 	Sa	3, use__info
 end namespace
+					; sub program entry decl (in instantiation TRUE )
 if defined HP_L35_
 PRO	HP_L35				;---------- PRO HP
 PRMS					;    debut parametrage
@@ -1195,6 +1231,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO HP
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined HP_L36_
 PRO	HP_L36				;---------- PRO HP
 PRMS					;    debut parametrage
@@ -1211,6 +1248,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO HP
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined HF_L37_
 PRO	HF_L37				;---------- PRO HF
 PRMS					;    debut parametrage
@@ -1228,6 +1266,7 @@ begin:
 	RTD	prm_siz-8
 endPRO					;---------- end PRO HF
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined HF_L38_
 PRO	HF_L38				;---------- PRO HF
 PRMS					;    debut parametrage
@@ -1283,75 +1322,76 @@ INSTANCE5 = 'INSTANCE5'
 namespace INSTANCE5				;---------- GENERIC PACKAGE INSTANTIATION
 elab_spec:				;    SPEC ELAB
 
-BRA post_LD_ENUM
-LD_ENUM.elab:
+BRA post_LD_T1
+LD_T1.elab:
 	Lb -1, 0
 	RTD 0
-post_LD_ENUM:
-BRA post_ST_ENUM
-ST_ENUM.elab:
+post_LD_T1:
+BRA post_ST_T1
+ST_T1.elab:
 	Sb -1, 0
 	RTD 0
-post_ST_ENUM:
-BRA post_INADR_ENUM
-INADR_ENUM.elab:
+post_ST_T1:
+BRA post_INADR_T1
+INADR_T1.elab:
 	RTD 0
-post_INADR_ENUM:
-BRA post_OUTADR_ENUM
-OUTADR_ENUM.elab:
+post_INADR_T1:
+BRA post_OUTADR_T1
+OUTADR_T1.elab:
 	La
 	RTD 0
-post_OUTADR_ENUM:
-VAR ENUM__outadr_ofs, q
-	LCA OUTADR_ENUM.elab
-	Sa	 2, ENUM__outadr_ofs
-VAR ENUM__inadr_ofs, q
-	LCA INADR_ENUM.elab
-	Sa	 2, ENUM__inadr_ofs
-VAR ENUM__st_ofs, q
-	LCA ST_ENUM.elab
-	Sa	 2, ENUM__st_ofs
-VAR ENUM__ld_ofs, q
-	LCA LD_ENUM.elab
-	Sa	 2, ENUM__ld_ofs
-VAR ENUM__u_ofs, q
+post_OUTADR_T1:
+VAR T1__outadr_ofs, q
+	LCA OUTADR_T1.elab
+	Sa	 2, T1__outadr_ofs
+VAR T1__inadr_ofs, q
+	LCA INADR_T1.elab
+	Sa	 2, T1__inadr_ofs
+VAR T1__st_ofs, q
+	LCA ST_T1.elab
+	Sa	 2, T1__st_ofs
+VAR T1__ld_ofs, q
+	LCA LD_T1.elab
+	Sa	 2, T1__ld_ofs
+VAR T1__u_ofs, q
 	La	 1, STANDARD.A83009A_L1._ENUM.use__info
-	Sa	 2, ENUM__u_ofs
-BRA post_LD_ENUM
-LD_ENUM.elab:
+	Sa	 2, T1__u_ofs
+BRA post_LD_T2
+LD_T2.elab:
 	Lb -1, 0
 	RTD 0
-post_LD_ENUM:
-BRA post_ST_ENUM
-ST_ENUM.elab:
+post_LD_T2:
+BRA post_ST_T2
+ST_T2.elab:
 	Sb -1, 0
 	RTD 0
-post_ST_ENUM:
-BRA post_INADR_ENUM
-INADR_ENUM.elab:
+post_ST_T2:
+BRA post_INADR_T2
+INADR_T2.elab:
 	RTD 0
-post_INADR_ENUM:
-BRA post_OUTADR_ENUM
-OUTADR_ENUM.elab:
+post_INADR_T2:
+BRA post_OUTADR_T2
+OUTADR_T2.elab:
 	La
 	RTD 0
-post_OUTADR_ENUM:
-VAR ENUM__outadr_ofs, q
-	LCA OUTADR_ENUM.elab
-	Sa	 2, ENUM__outadr_ofs
-VAR ENUM__inadr_ofs, q
-	LCA INADR_ENUM.elab
-	Sa	 2, ENUM__inadr_ofs
-VAR ENUM__st_ofs, q
-	LCA ST_ENUM.elab
-	Sa	 2, ENUM__st_ofs
-VAR ENUM__ld_ofs, q
-	LCA LD_ENUM.elab
-	Sa	 2, ENUM__ld_ofs
-VAR ENUM__u_ofs, q
+post_OUTADR_T2:
+VAR T2__outadr_ofs, q
+	LCA OUTADR_T2.elab
+	Sa	 2, T2__outadr_ofs
+VAR T2__inadr_ofs, q
+	LCA INADR_T2.elab
+	Sa	 2, T2__inadr_ofs
+VAR T2__st_ofs, q
+	LCA ST_T2.elab
+	Sa	 2, T2__st_ofs
+VAR T2__ld_ofs, q
+	LCA LD_T2.elab
+	Sa	 2, T2__ld_ofs
+VAR T2__u_ofs, q
 	La	 1, STANDARD.A83009A_L1._ENUM.use__info
-	Sa	 2, ENUM__u_ofs
+	Sa	 2, T2__u_ofs
 VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
+					; CODE_PACKAGE_SPEC
 
 					; _PARENT ENUMERATION TYPE INFO
 _PARENT = '_PARENT'
@@ -1372,6 +1412,7 @@ end postpone
 	LCA	SIZ
 	Sa	2, use__info
 end namespace
+					; sub program entry decl (in instantiation TRUE )
 if defined HP_L39_
 PRO	HP_L39				;---------- PRO HP
 PRMS					;    debut parametrage
@@ -1388,6 +1429,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO HP
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined HP_L40_
 PRO	HP_L40				;---------- PRO HP
 PRMS					;    debut parametrage
@@ -1404,6 +1446,7 @@ begin:
 	RTD	prm_siz
 endPRO					;---------- end PRO HP
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined HF_L41_
 PRO	HF_L41				;---------- PRO HF
 PRMS					;    debut parametrage
@@ -1421,6 +1464,7 @@ begin:
 	RTD	prm_siz-8
 endPRO					;---------- end PRO HF
 end if
+					; sub program entry decl (in instantiation TRUE )
 if defined HF_L42_
 PRO	HF_L42				;---------- PRO HF
 PRMS					;    debut parametrage

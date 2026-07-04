@@ -129,18 +129,19 @@ is
   procedure	CODE_GENERIC_FRAME_OFFSETS ( GENERIC_ID : TREE )
   is		--------------------------
     GPRM_SEQ : SEQ_TYPE := LIST( D( SM_GENERIC_PARAM_S, GENERIC_ID ) );
-    GPRM     : TREE;
-  begin
-    PUT_LINE( "virtual at 8" );
+		---------------
+    procedure	INVERSE_RECURSE
+    is		---------------
+      GPRM	: TREE;
 
-    while not IS_EMPTY( GPRM_SEQ ) loop
+    begin
       POP( GPRM_SEQ, GPRM );
+      if  not IS_EMPTY( GPRM_SEQ )  then INVERSE_RECURSE; end if;
 
-      if GPRM.TY = DN_TYPE_DECL then
+      if  GPRM.TY = DN_TYPE_DECL  then
         declare
           GTYPE_ID   : TREE := D( AS_SOURCE_NAME, GPRM );
-          GPRM_NAME  : constant STRING :=
-            PRINT_NAME( D( LX_SYMREP, GTYPE_ID ) );
+          GPRM_NAME  : constant STRING := PRINT_NAME( D( LX_SYMREP, GTYPE_ID ) );
         begin
           PUT_LINE( tab & GPRM_NAME & "__u_ofs = $" );
           PUT_LINE( tab & "rq 1" );
@@ -157,9 +158,79 @@ is
           PUT_LINE( tab & GPRM_NAME & "__outadr_ofs = $" );
           PUT_LINE( tab & "rq 1" );
         end;
-      end if;
-    end loop;
 
+      elsif  GPRM.TY = DN_SUBPROG_ENTRY_DECL  then
+        declare
+          SUBP_ID	: TREE		:= D( AS_SOURCE_NAME, GPRM );
+          SUBP_STR	: constant STRING	:= LETTERED_SUBNAME( PRINT_NAME( D( LX_SYMREP, SUBP_ID ) ) );
+
+        begin
+          PUT_LINE( tab & SUBP_STR & "__call_ofs = $" );
+          PUT_LINE( tab & "rq 1" );
+        end;
+
+      elsif  GPRM.TY = DN_IN  or else  GPRM.TY = DN_IN_OUT  or else  GPRM.TY = DN_OUT  then
+        declare
+          GOBJ_SEQ	: SEQ_TYPE	:= LIST( D( AS_SOURCE_NAME_S, GPRM ) );
+          GOBJ_ID	: TREE;
+
+        begin
+          while  not IS_EMPTY( GOBJ_SEQ )  loop
+            POP( GOBJ_SEQ, GOBJ_ID );
+
+            declare
+              GOBJ_NAME	: constant STRING	:= PRINT_NAME( D( LX_SYMREP, GOBJ_ID ) );
+              GOBJ_TYPE	: TREE		:= D( SM_OBJ_TYPE, GOBJ_ID );
+            begin
+              while  GOBJ_TYPE.TY = DN_PRIVATE  or else  GOBJ_TYPE.TY = DN_L_PRIVATE  loop
+                GOBJ_TYPE := D( SM_TYPE_SPEC, GOBJ_TYPE );
+              end loop;
+
+              if  GOBJ_TYPE.TY in CLASS_SCALAR  or else  GOBJ_TYPE.TY = DN_ACCESS  then
+                   -- Objet formel scalaire :
+                   -- slot unique X_ofs, utilisé par LVA , -X_ofs
+                   --
+                   -- Physique attendu côté instance :
+                   --     VAR X_disp, q
+                   --
+                   -- Donc :
+                   --     X_ofs = 8  =>  GFP - 8 = X_disp
+
+                PUT_LINE( tab & GOBJ_NAME & "_ofs = $" );
+                PUT_LINE( tab & "rq 1" );
+
+              else
+                   -- Objet formel composite :
+                   -- doublet X_disp / X__u.
+                   --
+                   -- Physique attendu côté instance :
+                   --     VAR X_disp, q
+                   --     VAR X__u,   q
+                   --     VAR GFP_disp, q
+                   --
+                   -- Donc :
+                   --     X__u_ofs = 8   => GFP - 8  = X__u
+                   --     X_ofs    = 16  => GFP - 16 = X_disp
+                   --
+                   -- LVA , -X_ofs donne bien l'adresse du doublet.
+
+                PUT_LINE( tab & GOBJ_NAME & "__u_ofs = $" );
+                PUT_LINE( tab & "rq 1" );
+
+                PUT_LINE( tab & GOBJ_NAME & "_ofs = $" );
+                PUT_LINE( tab & "rq 1" );
+              end if;
+            end;
+          end loop;
+        end;
+
+      end if;
+
+    end	INVERSE_RECURSE;
+	---------------
+  begin
+    PUT_LINE( "virtual at 8" );
+    INVERSE_RECURSE;
     PUT_LINE( "end virtual" );
 
   end	CODE_GENERIC_FRAME_OFFSETS;
@@ -254,10 +325,6 @@ is
       NEW_LINE;
     end if;
 
---    if  CODI.IN_GENERIC_BODY  and  ENCLOSING_BODY = TREE_VOID  then						-- Cas du sous-programme générique
---      CODI.IN_GENERIC_BODY := FALSE;
---    end if;
-
     DEC_LEVEL;
     ENCLOSING_BODY := SAVE_ENCLOSING;
     if  ENCLOSING_BODY /= TREE_VOID  then
@@ -293,7 +360,7 @@ is
       CODI.ENCLOSING_GENERIC := PACK_DEF;
       PUT_LINE( PACK_NAME & " = " & "'" & PACK_NAME & "'" );
       PUT( "namespace " & PACK_NAME );
-      if  CODI.DEBUG  then NEW_LINE; PUT( tab50 & ";---------- GENERIC PACKAGE BODY ----------" ); NEW_LINE; end if;
+      if  CODI.DEBUG  then NEW_LINE; PUT( tab50 & ";---------- GENERIC PACKAGE ----------" ); NEW_LINE; end if;
       NEW_LINE;
 
       PUT_LINE( "PRMS" );
@@ -317,15 +384,31 @@ is
 	    PUT_LINE( tab & "PRM " & GPRM_NAME & "__inadr_ofs" );
 	    PUT_LINE( tab & "PRM " & GPRM_NAME & "__outadr_ofs" );
 	  end;
+
+	elsif  GPRM.TY = DN_SUBPROG_ENTRY_DECL  then
+	declare
+	  SUBP_ID		: TREE		:= D( AS_SOURCE_NAME, GPRM );
+	  SUBP_STR	: constant STRING	:= LETTERED_SUBNAME( PRINT_NAME( D( LX_SYMREP, SUBP_ID ) ) );
+
+	begin
+	  PUT_LINE( tab & "PRM " & SUBP_STR & "__call_ofs" );
+	end;
+
 	end if;
         end loop;
       end;
 
       PUT_LINE( "endPRMS" );
 
+      if  CODI.DEBUG  then NEW_LINE; PUT( tab50 & ";---------- GENERIC PACKAGE SPEC OF BODY ----------" );
+        NEW_LINE; end if;
+      NEW_LINE;
       DECLARATIONS.CODE_PACKAGE_SPEC( D( SM_SPEC, PACK_ID ) );						-- POUR LES EMPLACEMENTS DES VARS DE SPEC DE GENERIQUE
+
       ENCLOSING_BODY := PACKAGE_BODY;
-      CODE_BLOCK_BODY( PACK_BODY );									-- POUR LES VARS ET LES SUBS DU CORPS DE GENERIQUE
+      if  CODI.DEBUG  then NEW_LINE; PUT( tab50 & ";---------- GENERIC PACKAGE BODY ----------" ); NEW_LINE; end if;
+      NEW_LINE;
+      CODE_BLOCK_BODY( PACK_BODY, IS_PACK_BODY=> TRUE );							-- POUR LES VARS ET LES SUBS DU CORPS DE GENERIQUE
 
       PUT( "end namespace " );
       if  CODI.DEBUG  then

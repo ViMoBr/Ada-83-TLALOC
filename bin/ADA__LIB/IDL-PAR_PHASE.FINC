@@ -171,8 +171,8 @@ end virtual
 	LI	 size*8
 	Sd	1, SIZ
 end namespace
-_SEMSTAK = '_SEMSTAK'
-namespace _SEMSTAK				; array var constrained array type info
+_SEMSTAK__type = '_SEMSTAK__type'
+namespace _SEMSTAK__type			; array var constrained array type info
 VAR use__info, q
 VAR SIZ, d
 	LVA	1, SIZ
@@ -206,9 +206,9 @@ LST_1 = $
 end namespace
 VAR SEMSTAK_disp, q				; variable array : pointeur aux data
 VAR SEMSTAK__u, q				; variable array : useinfo pointeur au rec info
-	La 1, _SEMSTAK.use__info
+	La 1, _SEMSTAK__type.use__info
 	Sa	1, SEMSTAK__u				; array info ptr at __u
-	Ld	1, _SEMSTAK.SIZ
+	Ld	1, _SEMSTAK__type.SIZ
 	LI	8
 	DIV
 	CO_VAR
@@ -2056,7 +2056,7 @@ endPRMS					;    fin parametrage
 ELB 3					;    BODY ELAB
 VAR FIRST_STR_disp, q			; variable array : pointeur aux data
 VAR FIRST_STR__u, q				; variable array : useinfo pointeur au rec info
-	La 0, _STRING.use__info
+	La 0, STANDARD._STRING.use__info
 	Sa	3, FIRST_STR__u				; array info ptr at __u
 VAR	ANON_371_37_disp, q
 VAR	ANON_371_37__u,   q
@@ -2079,7 +2079,7 @@ end namespace
 
 VAR SECND_STR_disp, q			; variable array : pointeur aux data
 VAR SECND_STR__u, q				; variable array : useinfo pointeur au rec info
-	La 0, _STRING.use__info
+	La 0, STANDARD._STRING.use__info
 	Sa	3, SECND_STR__u				; array info ptr at __u
 VAR	ANON_372_37_disp, q
 VAR	ANON_372_37__u,   q
@@ -3588,6 +3588,9 @@ begin:					;---------- BDY INSTRUCTIONS
 	Lb 4,	CHECK_ELMT_TY_disp
 	LI	12
 	CEQ
+	Lb 4,	CHECK_ELMT_TY_disp
+	LI	23
+	CEQ
 	BF	L184
 	LVA 3,	STANDARD.IDL.PAR_PHASE_L9.BUILD_TREE_L90.BLOCK__5.SYM_REP_ORIGINE_disp
 	La
@@ -3927,8 +3930,8 @@ end virtual
 	LI	 size*8
 	Sd	2, SIZ
 end namespace
-_STACK = '_STACK'
-namespace _STACK				; array var constrained array type info
+_STACK__type = '_STACK__type'
+namespace _STACK__type			; array var constrained array type info
 VAR use__info, q
 VAR SIZ, d
 	LVA	2, SIZ
@@ -3962,9 +3965,9 @@ LST_1 = $
 end namespace
 VAR STACK_disp, q				; variable array : pointeur aux data
 VAR STACK__u, q				; variable array : useinfo pointeur au rec info
-	La 2, _STACK.use__info
+	La 2, _STACK__type.use__info
 	Sa	2, STACK__u				; array info ptr at __u
-	Ld	2, _STACK.SIZ
+	Ld	2, _STACK__type.SIZ
 	LI	8
 	DIV
 	CO_VAR

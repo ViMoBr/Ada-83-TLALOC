@@ -125,6 +125,7 @@ is
     procedure CODE_OBJECT_ADDRESS	( NAME : TREE );
     function  IS_GENERIC_FORMAL_TYPE	( TYPE_DEFN	:TREE )		return BOOLEAN;
     function  IS_GENERIC_FORMAL_OBJECT	( DEFN		:TREE )		return BOOLEAN;
+    function  IS_GENERIC_FORMAL_SUBPROGRAM( ID		:TREE )		return BOOLEAN;
     procedure CODE_DISCRETE_RANGE_BOUND	( DISCRETE_RANGE :TREE; IS_LAST :BOOLEAN );
 
   private
@@ -165,6 +166,7 @@ is
 			-----------------
   is
 
+    function  REPRESENTED_RECORD_SIZE_BITS	( TYPE_SPEC :TREE )		return INTEGER;
     function  HAS_RECORD_REP			( TYPE_SPEC :TREE )		return BOOLEAN;
     procedure CODE_REPRESENTED_RECORD_DECL	( TYPE_ID :TREE; TYPE_SPEC :TREE );
     function  HAS_COMPONENT_REP		( COMP_ID :TREE )		return BOOLEAN;

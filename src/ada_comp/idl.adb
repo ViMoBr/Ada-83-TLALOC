@@ -502,7 +502,8 @@ is					---
     end;
     end if;
 
-    return "PAS UN TXTREP/NUM_VAL PAS DE CHAINE ???";							--| CHAINE PAS DE NOM
+    PUT_LINE( "; PAS UN TXTREP/NUM_VAL PAS DE CHAINE ! " & NODE_NAME'IMAGE( TR.TY ) );				--| CHAINE PAS DE NOM
+    raise PROGRAM_ERROR;
 
   end	PRINT_NAME;
 	----------
@@ -621,7 +622,7 @@ is					---
 
 
 			--^^^^^^^^^^^^^--
-  function		ANONYMOUS_NAME_AT	( T :TREE	)		return STRING
+  function		ANONYMOUS_NAME_AT	( T :TREE; CUSTOM_PREFIX :STRING := "" )	return STRING
   is			-----------------
 
     SPOS		: TREE		:= D( LX_SRCPOS, T );
@@ -629,8 +630,11 @@ is					---
     IMC		:constant	STRING	:= SRCCOL_IDX'IMAGE( GET_SOURCE_COL( SPOS ) );
 
   begin
-    return  "ANON_"	& IML( 2 .. IML'LENGTH ) & '_' & IMC( 2	.. IMC'LENGTH );
-
+    if  CUSTOM_PREFIX = ""  then
+      return  "ANON_" & IML( 2 .. IML'LENGTH ) & '_' & IMC( 2 .. IMC'LENGTH );
+    else
+      return  CUSTOM_PREFIX & '_' & IML( 2 .. IML'LENGTH ) & '_' & IMC( 2 .. IMC'LENGTH );
+    end if;
   end	ANONYMOUS_NAME_AT;
 	-----------------
 

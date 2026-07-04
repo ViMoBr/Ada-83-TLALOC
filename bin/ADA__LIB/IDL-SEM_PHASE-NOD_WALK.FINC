@@ -44,8 +44,8 @@ PRMS					;    debut parametrage
 	PRM result__ofs				; resultat de fonction
 endPRMS					;    fin parametrage
 ELB 2					;    BODY ELAB
-_STRING = '_STRING'
-namespace _STRING				; array var constrained array type info
+_A__type = '_A__type'
+namespace _A__type				; array var constrained array type info
 VAR use__info, q
 VAR SIZ, d
 	LVA	2, SIZ
@@ -81,17 +81,17 @@ LST_1 = $
 end namespace
 VAR A_disp, q				; variable array : pointeur aux data
 VAR A__u, q				; variable array : useinfo pointeur au rec info
-	La 2, _STRING.use__info
+	La 2, _A__type.use__info
 	Sa	2, A__u				; array info ptr at __u
 ; COMPILE_ARRAY_VAR ASSOC.TY non gere DN_USED_OBJECT_ID
 
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 VAR	IIL4_disp, d				; compteur boucle LOOP__1
-	LId	2, A__u, _STRING.FST_1
+	LId	2, A__u, STANDARD._STRING.FST_1
 	Sd  2,	IIL4_disp
 VAR	LMT_IIL4_disp, d			; limite boucle LOOP__1
-	LId	2, A__u, _STRING.LST_1
+	LId	2, A__u, STANDARD._STRING.LST_1
 	Sd  2,	LMT_IIL4_disp
 	Ld  2,	IIL4_disp				; test null range LOOP__1
 	Ld  2,	LMT_IIL4_disp

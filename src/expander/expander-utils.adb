@@ -558,6 +558,7 @@ is					-----
       elsif SUB_NAME = """<"""  then return "_LT_";
       elsif SUB_NAME = """+"""  then return "_PLUS_";
       elsif SUB_NAME = """-"""  then return "_MINUS_";
+      elsif SUB_NAME = """&"""  then return "_CONC_";
       end if;
       return  SUB_NAME;
     else

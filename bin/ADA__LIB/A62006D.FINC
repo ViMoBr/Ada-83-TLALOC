@@ -130,9 +130,11 @@ VAR SIZ, d
 USEINFO 2, D, 	La 0, STANDARD._INTEGER.use__info
 USEINFO 2, Y, 	La 0, STANDARD._BOOLEAN.use__info
 USEINFO 2, X, 	La 2, STANDARD.A62006D_L1.BLOCK__1._ARR.use__info
+; STSB
 virtual at 0				; calcul des offsets statiques
 STATOFS D, 4
 STATOFS Y, 1
+; STSB
 STATOFS X, 1
 size = $
 end virtual
@@ -155,10 +157,10 @@ VAR I_disp, d				; variable entiere
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 VAR	IL6_disp, d				; compteur boucle LOOP__2
-	LId	3, C2__u, _ARR.FST_1
+	LId	3, STANDARD.A62006D_L1.BLOCK__1.P_L4.C2__u, STANDARD.A62006D_L1.BLOCK__1._ARR.FST_1
 	Sd  3,	IL6_disp
 VAR	LMT_IL6_disp, d				; limite boucle LOOP__2
-	LId	3, C2__u, _ARR.LST_1
+	LId	3, STANDARD.A62006D_L1.BLOCK__1.P_L4.C2__u, STANDARD.A62006D_L1.BLOCK__1._ARR.LST_1
 	Sd  3,	LMT_IL6_disp
 	Ld  3,	IL6_disp				; test null range LOOP__2
 	Ld  3,	LMT_IL6_disp
@@ -224,8 +226,8 @@ LOOP__3:					; corps boucle LOOP__3
 	Sd  3,	IL10_disp
 	BRA	LOOP__3				; iteration suivante LOOP__3
 L9:					; post loop LOOP__3
-	LId	2, X__u, _ARR.LST_1
-	LId	2, X__u, _ARR.FST_1
+	LId	2, STANDARD.A62006D_L1.BLOCK__1._REC.X__u, STANDARD.A62006D_L1.BLOCK__1._ARR.LST_1
+	LId	2, STANDARD.A62006D_L1.BLOCK__1._REC.X__u, STANDARD.A62006D_L1.BLOCK__1._ARR.FST_1
 	SUB
 	INC
 	Sd  3,	I_disp

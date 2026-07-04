@@ -5,7 +5,7 @@ PRO	A27003A_L1				;---------- PRO A27003A
 ELB 1					;    BODY ELAB
 VAR STR1_disp, q				; variable array : pointeur aux data
 VAR STR1__u, q				; variable array : useinfo pointeur au rec info
-	La 0, _STRING.use__info
+	La 0, STANDARD._STRING.use__info
 	Sa	1, STR1__u				; array info ptr at __u
 STR STR1, "AB--C"				; constante string="AB--C"
 	LCA	STR1.data_ptr
@@ -15,8 +15,8 @@ STR STR1, "AB--C"				; constante string="AB--C"
 	La
 	Sa	1, STR1__u				; array info ptr at __u
 
-_STRING = '_STRING'
-namespace _STRING				; array var constrained array type info
+_STR2__type = '_STR2__type'
+namespace _STR2__type			; array var constrained array type info
 VAR use__info, q
 VAR SIZ, d
 	LVA	1, SIZ
@@ -50,9 +50,9 @@ LST_1 = $
 end namespace
 VAR STR2_disp, q				; variable array : pointeur aux data
 VAR STR2__u, q				; variable array : useinfo pointeur au rec info
-	La 1, _STRING.use__info
+	La 1, _STR2__type.use__info
 	Sa	1, STR2__u				; array info ptr at __u
-	Ld	1, _STRING.SIZ
+	Ld	1, _STR2__type.SIZ
 	LI	8
 	DIV
 	CO_VAR

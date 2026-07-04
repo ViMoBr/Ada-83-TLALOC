@@ -701,18 +701,25 @@ null;
 	        if  OBJ_TYPE.TY = DN_PRIVATE  or  OBJ_TYPE.TY = DN_L_PRIVATE  then
 		OBJ_TYPE := D( SM_TYPE_SPEC, OBJ_TYPE );
 	        end if;
-	      -- out/inout -> in : dereferencement, charger la valeur pointee par le parametre
-	        declare
-		SIZ_CHAR	: CHARACTER	:= CODI.OPER_SIZ_CHAR( OBJ_TYPE );
-	        begin
-		PUT_LINE( tab & "LI" & SIZ_CHAR & ' ' & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' & tab
-			& '-' & DEFN_STR & "_ofs" );							-- load indirect : lire la valeur via l'adresse du param
-	        end;
+
+	        if  OBJ_TYPE.TY in CLASS_SCALAR  or else  OBJ_TYPE.TY = DN_ACCESS  then
+	      -- out/inout -> in scalaire : dereferencement, charger la valeur pointee
+		declare
+		  SIZ_CHAR	: CHARACTER	:= CODI.OPER_SIZ_CHAR( OBJ_TYPE );
+		begin
+		  PUT_LINE( tab & "LI" & SIZ_CHAR & ' ' & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' & tab
+			& '-' & DEFN_STR & "_ofs" );
+		end;
+	        else
+	      -- out/inout -> in composite : le slot contient deja l'adresse, la propager
+		PUT_LINE( tab & "La " & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' & tab
+			& '-' & DEFN_STR & "_ofs" );
+	        end if;
 	      end;
 	    else
 	      -- out/inout -> out/inout : propager l'adresse
 	      PUT_LINE( tab & "La " & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' & tab
-		      & '-' & DEFN_STR & "_ofs" );							-- transmettre l'adresse telle quelle
+		      & '-' & DEFN_STR & "_ofs" );
 	    end if;
 
 	  elsif  DEFN.TY = DN_ITERATION_ID  then                         -- Variable de boucle for
@@ -805,9 +812,16 @@ null;
 
     end if;
 
-    PUT( tab & "CALL" & tab );
-    CODI.REGIONS_PATH( PROC_ID );
-    PUT_LINE( " ," & SUB_NAME & '_' & LABEL_STR( LBL ) );
+    if  EXPRESSIONS.IS_GENERIC_FORMAL_SUBPROGRAM( PROC_ID )  then
+      PUT_LINE( tab & "La " & IMAGE( CODI.GENERIC_BASE_LEVEL + 1 ) & "," & tab & "-GFP_ofs" );
+      PUT_LINE( tab & "La ," & tab & "-" & SUB_NAME & "__call_ofs" );
+      PUT_LINE( tab & "CALLI" );
+
+    else
+      PUT( tab & "CALL" & tab );
+      CODI.REGIONS_PATH( PROC_ID );
+      PUT_LINE( " ," & SUB_NAME & '_' & LABEL_STR( LBL ) );
+    end if;
 
   end	CODE_PROCEDURE_CALL;
 	-------------------

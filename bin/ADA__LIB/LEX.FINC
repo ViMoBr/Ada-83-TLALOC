@@ -5,6 +5,7 @@ LEX = 'LEX'
 namespace LEX				;---------- PACKAGE (BDY)
 elab_spec:				;    SPEC ELAB
 
+					; CODE_PACKAGE_SPEC
 
 					; _LEX_TYPE ENUMERATION TYPE INFO
 _LEX_TYPE = '_LEX_TYPE'
@@ -212,13 +213,10 @@ VAR SIZ, d
 	Sa	0, use__info
 USEINFO 0, LEN, 	La 0, STANDARD._NATURAL.use__info
 USEINFO 0, BDY, 	La 0, STANDARD._STRING.use__info
-virtual at 0				; calcul des offsets statiques
-STATOFS LEN, 4
-STATOFS BDY, 1
-size = $
-end virtual
-	LI	 size*8
-	Sd	0, SIZ
+; STSB
+; NON STATIQUE DN_CONSTRAINED_ARRAY
+; OFFSET NON STATIQUE A FAIRE
+; OFFSET NON STATIQUE A FAIRE
 end namespace
 VAR SLINE_disp, q				; variable record : pointeur aux data record
 VAR SLINE__u, q				; variable record : pointeur aux useinfo
@@ -239,6 +237,9 @@ VAR E_COL_disp, d				; variable entiere
 
 VAR LTYPE_disp, b				; variable entiere
 
+					; sub program entry decl (in instantiation FALSE )
+					; sub program entry decl (in instantiation FALSE )
+					; sub program entry decl (in instantiation FALSE )
 					;    BODY ELAB
 VAR CHAR_CONTEXT_disp, d			; variable bool char enum
 	LI	1
@@ -273,8 +274,8 @@ end postpone
 	LCA	SIZ
 	Sa	0, use__info
 end namespace
-_STRING = '_STRING'
-namespace _STRING				; array var constrained array type info
+_TEXT__type = '_TEXT__type'
+namespace _TEXT__type			; array var constrained array type info
 VAR use__info, q
 VAR SIZ, d
 	LVA	0, SIZ
@@ -308,9 +309,9 @@ LST_1 = $
 end namespace
 VAR TEXT_disp, q				; variable array : pointeur aux data
 VAR TEXT__u, q				; variable array : useinfo pointeur au rec info
-	La 0, _STRING.use__info
+	La 0, _TEXT__type.use__info
 	Sa	0, TEXT__u				; array info ptr at __u
-	Ld	0, _STRING.SIZ
+	Ld	0, _TEXT__type.SIZ
 	LI	8
 	DIV
 	CO_VAR
@@ -323,8 +324,8 @@ VAR HASH_SIZE_disp, d			; variable entiere
 	LI	311
 	Sd  0,	HASH_SIZE_disp
 
-_HASH_TABLE = '_HASH_TABLE'
-namespace _HASH_TABLE			; array var constrained array type info
+_HASH_TABLE__type = '_HASH_TABLE__type'
+namespace _HASH_TABLE__type			; array var constrained array type info
 VAR use__info, q
 VAR SIZ, d
 	LVA	0, SIZ
@@ -360,9 +361,9 @@ LST_1 = $
 end namespace
 VAR HASH_TABLE_disp, q			; variable array : pointeur aux data
 VAR HASH_TABLE__u, q			; variable array : useinfo pointeur au rec info
-	La 0, _HASH_TABLE.use__info
+	La 0, _HASH_TABLE__type.use__info
 	Sa	0, HASH_TABLE__u			; array info ptr at __u
-	Ld	0, _HASH_TABLE.SIZ
+	Ld	0, _HASH_TABLE__type.SIZ
 	LI	8
 	DIV
 	CO_VAR
@@ -2044,8 +2045,8 @@ L107:
 	DROP
 namespace	BLOCK__5
 ELB 2					;    BODY ELAB
-_STRING = '_STRING'
-namespace _STRING				; array var constrained array type info
+_OP_TEXT__type = '_OP_TEXT__type'
+namespace _OP_TEXT__type			; array var constrained array type info
 VAR use__info, q
 VAR SIZ, d
 	LVA	2, SIZ
@@ -2079,7 +2080,7 @@ LST_1 = $
 end namespace
 VAR OP_TEXT_disp, q				; variable array : pointeur aux data
 VAR OP_TEXT__u, q				; variable array : useinfo pointeur au rec info
-	La 2, _STRING.use__info
+	La 2, _OP_TEXT__type.use__info
 	Sa	2, OP_TEXT__u				; array info ptr at __u
 STR OP_TEXT, "& ' ( ) * + , - . / : ; < = > | =>..**:=/=>=<=<<>><>"	; constante string="& ' ( ) * + , - . / : ; < = > | =>..**:=/=>=<=<<>><>"
 	LCA	OP_TEXT.data_ptr
@@ -2104,8 +2105,8 @@ VAR II_disp, d				; variable entiere
 	ADD
 	Sd  2,	II_disp
 
-_STRING = '_STRING'
-namespace _STRING				; array var constrained array type info
+_TEMP_STRING__type = '_TEMP_STRING__type'
+namespace _TEMP_STRING__type			; array var constrained array type info
 VAR use__info, q
 VAR SIZ, d
 	LVA	2, SIZ
@@ -2139,7 +2140,7 @@ LST_1 = $
 end namespace
 VAR TEMP_STRING_disp, q			; variable array : pointeur aux data
 VAR TEMP_STRING__u, q			; variable array : useinfo pointeur au rec info
-	La 2, _STRING.use__info
+	La 2, _TEMP_STRING__type.use__info
 	Sa	2, TEMP_STRING__u			; array info ptr at __u
 ; COMPILE_ARRAY_VAR ASSOC.TY non gere DN_SLICE
 
@@ -2236,7 +2237,7 @@ namespace	BLOCK__6
 ELB 2					;    BODY ELAB
 VAR IMAGE_disp, q				; variable array : pointeur aux data
 VAR IMAGE__u, q				; variable array : useinfo pointeur au rec info
-	La 0, _STRING.use__info
+	La 0, STANDARD._STRING.use__info
 	Sa	2, IMAGE__u				; array info ptr at __u
 VAR	ANON_671_35_disp, q
 VAR	ANON_671_35__u,   q
@@ -2257,8 +2258,8 @@ end namespace
 	La , 8
 	Sa	2, IMAGE__u				; array info ptr from function result
 
-_STRING = '_STRING'
-namespace _STRING				; array var constrained array type info
+_TRONQ__type = '_TRONQ__type'
+namespace _TRONQ__type			; array var constrained array type info
 VAR use__info, q
 VAR SIZ, d
 	LVA	2, SIZ
@@ -2272,8 +2273,8 @@ VAR _LST_1, d
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	Sd	2, _FST_1
-	LId	2, IMAGE__u, _STRING.LST_1
-	LId	2, IMAGE__u, _STRING.FST_1
+	LId	2, STANDARD.LEX.LEX_IMAGE_L3.BLOCK__6.IMAGE__u, STANDARD._STRING.LST_1
+	LId	2, STANDARD.LEX.LEX_IMAGE_L3.BLOCK__6.IMAGE__u, STANDARD._STRING.FST_1
 	SUB
 	INC
 ; CODE_NUMERIC_LITERAL DN_INTEGER
@@ -2297,7 +2298,7 @@ LST_1 = $
 end namespace
 VAR TRONQ_disp, q				; variable array : pointeur aux data
 VAR TRONQ__u, q				; variable array : useinfo pointeur au rec info
-	La 2, _STRING.use__info
+	La 2, _TRONQ__type.use__info
 	Sa	2, TRONQ__u				; array info ptr at __u
 ; COMPILE_ARRAY_VAR ASSOC.TY non gere DN_SLICE
 

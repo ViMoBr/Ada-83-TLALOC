@@ -566,7 +566,7 @@ VAR C6_disp, q				; variable entiere
 
 VAR S1_disp, q				; variable array : pointeur aux data
 VAR S1__u, q				; variable array : useinfo pointeur au rec info
-	La 0, _STRING.use__info
+	La 0, STANDARD._STRING.use__info
 	Sa	3, S1__u				; array info ptr at __u
 VAR	ANON_45_40_disp, q
 VAR	ANON_45_40__u,   q
@@ -598,42 +598,43 @@ ret_lbl:
 excep:
 endPRO					;---------- end PRO P
 end if
-BRA post_LD_COLOR
-LD_COLOR.elab:
+					; sub program entry decl (in instantiation FALSE )
+if defined NP_L10_
+BRA post_LD_NP_L10T
+LD_NP_L10T.elab:
 	Lb -1, 0
 	RTD 0
-post_LD_COLOR:
-BRA post_ST_COLOR
-ST_COLOR.elab:
+post_LD_NP_L10T:
+BRA post_ST_NP_L10T
+ST_NP_L10T.elab:
 	Sb -1, 0
 	RTD 0
-post_ST_COLOR:
-BRA post_INADR_COLOR
-INADR_COLOR.elab:
+post_ST_NP_L10T:
+BRA post_INADR_NP_L10T
+INADR_NP_L10T.elab:
 	RTD 0
-post_INADR_COLOR:
-BRA post_OUTADR_COLOR
-OUTADR_COLOR.elab:
+post_INADR_NP_L10T:
+BRA post_OUTADR_NP_L10T
+OUTADR_NP_L10T.elab:
 	La
 	RTD 0
-post_OUTADR_COLOR:
-VAR COLOR__outadr_ofs, q
-	LCA OUTADR_COLOR.elab
-	Sa	 2, COLOR__outadr_ofs
-VAR COLOR__inadr_ofs, q
-	LCA INADR_COLOR.elab
-	Sa	 2, COLOR__inadr_ofs
-VAR COLOR__st_ofs, q
-	LCA ST_COLOR.elab
-	Sa	 2, COLOR__st_ofs
-VAR COLOR__ld_ofs, q
-	LCA LD_COLOR.elab
-	Sa	 2, COLOR__ld_ofs
-VAR COLOR__u_ofs, q
+post_OUTADR_NP_L10T:
+VAR NP_L10T__outadr_ofs, q
+	LCA OUTADR_NP_L10T.elab
+	Sa	 2, NP_L10T__outadr_ofs
+VAR NP_L10T__inadr_ofs, q
+	LCA INADR_NP_L10T.elab
+	Sa	 2, NP_L10T__inadr_ofs
+VAR NP_L10T__st_ofs, q
+	LCA ST_NP_L10T.elab
+	Sa	 2, NP_L10T__st_ofs
+VAR NP_L10T__ld_ofs, q
+	LCA LD_NP_L10T.elab
+	Sa	 2, NP_L10T__ld_ofs
+VAR NP_L10T__u_ofs, q
 	La	 2, STANDARD.A35502R_L1.BLOCK__1._COLOR.use__info
-	Sa	 2, COLOR__u_ofs
+	Sa	 2, NP_L10T__u_ofs
 VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
-if defined NP_L10_
 PRO	NP_L10				;---------- PRO NP
 PRMS					;    debut parametrage
 	PRM T1_ofs				; in
