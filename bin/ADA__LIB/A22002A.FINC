@@ -25,6 +25,7 @@ VAR _LST_1, d
 	Ld	1, _FST_1
 	SUB
 	INC
+	CLAMP0
 	MUL
 	Sd	1, SIZ
   virtual at 4
@@ -68,6 +69,7 @@ VAR _LST_1, d
 	Ld	1, _FST_1
 	SUB
 	INC
+	CLAMP0
 	MUL
 	Sd	1, SIZ
   virtual at 4
@@ -111,6 +113,7 @@ VAR _LST_1, d
 	Ld	1, _FST_1
 	SUB
 	INC
+	CLAMP0
 	MUL
 	Sd	1, SIZ
   virtual at 4
@@ -164,6 +167,7 @@ VAR _LST_1, d
 	Ld	1, _FST_1
 	SUB
 	INC
+	CLAMP0
 	MUL
 	Sd	1, SIZ
   virtual at 4
@@ -206,6 +210,7 @@ end namespace
 	Ld  1, ANON_24_19_aga._FST_1
 	SUB
 	INC
+	CLAMP0
 	Sd  1, ANON_24_19_aga._LEN_1
 	LI	4
 	Sd  1, ANON_24_19_aga._STR_1
@@ -318,6 +323,7 @@ L9:
 	LI	5
 	SUB
 	INC
+	CLAMP0
 	Sd  1, ANON_24_19_aga._CNT_1
 	Ld  1, ANON_24_19_aga._CNT_1
 	LI	0
@@ -425,11 +431,29 @@ STR STR_L14, "CHECK THAT DELIMITERS ARE ACCEPTED"	; constante string="CHECK THAT
 STR STR_L15, "A22002A"			; constante string="A22002A"
 	LCA	STR_L15.data_ptr
 	CALL	STANDARD.REPORT. ,TEST_L1
-	La  1,	C1_disp
+	LVA 1,	C1_disp
+	La
+	LId	1, STANDARD.A22002A_L1.C1__u, 0
+	LI	8
+	DIV
 STR ANON_39_12, "ABCDEF"			; constante string="ABCDEF"
-	La  1,	C2_disp
+	LCA	ANON_39_12.data_ptr
+	La
+	BLKMOV
+	LVA 1,	C2_disp
+	La
+	LId	1, STANDARD.A22002A_L1.C2__u, 0
+	LI	8
+	DIV
 STR ANON_40_12, "GHIJKL"			; constante string="GHIJKL"
-	La  1,	C3_disp
+	LCA	ANON_40_12.data_ptr
+	La
+	BLKMOV
+	LVA 1,	C3_disp
+	La
+	LId	1, STANDARD.A22002A_L1.C3__u, 0
+	LI	8
+	DIV
 ; CODE & concat _STRING
 VAR	ANON_41_12_L16_G_data, q
 VAR	ANON_41_12_L16_G_info, q
@@ -455,6 +479,7 @@ end namespace
 	LId 1, ANON_41_12_L16_G_info, _STRING.FST_1
 	SUB
 	INC
+	CLAMP0
 	Sa  1, ANON_41_12_L16_G_len
 	LVA 1,	C1_disp
 	DUP
@@ -466,6 +491,7 @@ end namespace
 	LId 1, ANON_41_15_L16_D_info, _STRING.FST_1
 	SUB
 	INC
+	CLAMP0
 	Sa  1, ANON_41_15_L16_D_len
 	La  1, ANON_41_12_L16_G_len
 	La  1, ANON_41_15_L16_D_len
@@ -499,6 +525,8 @@ end namespace
 	La  1, ANON_41_15_L16_D_data
 	BLKMOV
 	LVA 1, ANON_41_12_L16_R_disp
+	La
+	BLKMOV
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	2
 ; CODE_NUMERIC_LITERAL DN_INTEGER

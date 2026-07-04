@@ -12,7 +12,7 @@ VAR SIZ, d
 VAR _COMP_SIZ, d
 VAR _FST_1, d
 VAR _LST_1, d
-	LI	1
+	LI	8
 	Sd	1, _COMP_SIZ
 	Ld	1, _COMP_SIZ
 ; CODE_NUMERIC_LITERAL DN_INTEGER
@@ -24,6 +24,7 @@ VAR _LST_1, d
 	Ld	1, _FST_1
 	SUB
 	INC
+	CLAMP0
 	MUL
 	Sd	1, SIZ
   virtual at 4
@@ -101,10 +102,11 @@ begin:					;---------- BDY INSTRUCTIONS
 	MUL
 	ADD
 	Lw 2,	HIGH_BLOCK_disp
-	INC
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SUB
+	INC
+	CLAMP0
 	LI	0
 	MUL
 	DROP
@@ -127,6 +129,7 @@ end namespace
 	Ld  2, ANON_54_40_aga._FST_1
 	SUB
 	INC
+	CLAMP0
 	Sd  2, ANON_54_40_aga._LEN_1
 	LI	1
 	Sd  2, ANON_54_40_aga._STR_1
@@ -170,12 +173,13 @@ L3:
 	MUL
 	ADD
 	Lw 0,	STANDARD.IDL.PAGE_MAN.MAX_VPG_disp
-	INC
 	Lw 2,	HIGH_BLOCK_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
 	SUB
+	INC
+	CLAMP0
 	LI	0
 	MUL
 	DROP
@@ -198,6 +202,7 @@ end namespace
 	Ld  2, ANON_55_47_aga._FST_1
 	SUB
 	INC
+	CLAMP0
 	Sd  2, ANON_55_47_aga._LEN_1
 	LI	1
 	Sd  2, ANON_55_47_aga._STR_1
@@ -247,8 +252,6 @@ LOOP__1:
 	LI	0					; lieu resultat sur pile
 	LVA 2,	STANDARD.IDL.WRITE_LIB_L13.MARK_DONT_MOVE_PAGES_L1.TRANS_WITH_SEQ_disp
 	CALL	STANDARD.IDL. ,IS_EMPTY_L23
-	LI	1
-	OUX
 	BF	L6
 	LVA  3,	TRANS_WITH_disp
 	LVA  2,	TRANS_WITH_SEQ_disp
@@ -664,6 +667,7 @@ VAR _LST_1, d
 	Ld	2, _FST_1
 	SUB
 	INC
+	CLAMP0
 	MUL
 	Sd	2, SIZ
   virtual at 4
@@ -1166,6 +1170,7 @@ L37:					; post if
 	UBFX
 	LI	2
 	CEQ
+	OU
 	BF	L40
 VAR	IL42_disp, b				; compteur boucle LOOP__4
 ; CODE_NUMERIC_LITERAL DN_INTEGER
@@ -1389,10 +1394,11 @@ namespace ANON_200_36_L47_G_info
   VAR _LST_1,    d
 end namespace
 	Ld 0,	STANDARD.IDL.LIB_PATH_LENGTH_disp
-	INC
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SUB
+	INC
+	CLAMP0
 	LI	1
 	MUL
 	Sa  3, ANON_200_36_L47_G_slice_len
@@ -1421,6 +1427,7 @@ end namespace
 	LId 3, ANON_200_36_L47_G_info, _STRING.FST_1
 	SUB
 	INC
+	CLAMP0
 	Sa  3, ANON_200_36_L47_G_len
 VAR	ANON_200_73_disp, q
 VAR	ANON_200_73__u,   q
@@ -1443,6 +1450,7 @@ end namespace
 	LId 3, ANON_200_73_L47_D_info, _STRING.FST_1
 	SUB
 	INC
+	CLAMP0
 	Sa  3, ANON_200_73_L47_D_len
 	La  3, ANON_200_36_L47_G_len
 	La  3, ANON_200_73_L47_D_len
@@ -1705,10 +1713,11 @@ namespace ANON_234_23_L52_G_info
   VAR _LST_1,    d
 end namespace
 	Ld 0,	STANDARD.IDL.LIB_PATH_LENGTH_disp
-	INC
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SUB
+	INC
+	CLAMP0
 	LI	1
 	MUL
 	Sa  1, ANON_234_23_L52_G_slice_len
@@ -1737,6 +1746,7 @@ end namespace
 	LId 1, ANON_234_23_L52_G_info, _STRING.FST_1
 	SUB
 	INC
+	CLAMP0
 	Sa  1, ANON_234_23_L52_G_len
 STR ANON_234_61_L52_D, "$$$.TMP"		; constante string="$$$.TMP"
 	LCA	ANON_234_61_L52_D.data_ptr
@@ -1749,6 +1759,7 @@ STR ANON_234_61_L52_D, "$$$.TMP"		; constante string="$$$.TMP"
 	LId 1, ANON_234_61_L52_D_info, _STRING.FST_1
 	SUB
 	INC
+	CLAMP0
 	Sa  1, ANON_234_61_L52_D_len
 	La  1, ANON_234_23_L52_G_len
 	La  1, ANON_234_61_L52_D_len
@@ -1913,8 +1924,6 @@ TRAITE_LES_UNITES_DE_COMPILATION:
 	LI	0					; lieu resultat sur pile
 	LVA 2,	COMP_UNIT_SEQ_disp
 	CALL	STANDARD.IDL. ,IS_EMPTY_L23
-	LI	1
-	OUX
 	BF	L55
 	LVA  2,	COMP_UNIT_disp
 	LVA  2,	COMP_UNIT_SEQ_disp

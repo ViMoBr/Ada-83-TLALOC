@@ -93,8 +93,6 @@ LOOP__1:
 	LI	0					; lieu resultat sur pile
 	LVA 1,	LIST_TAIL_disp
 	CALL	STANDARD.IDL. ,IS_EMPTY_L23
-	LI	1
-	OUX
 	BF	L15
 	LVA 1,	LIST_TAIL_disp
 	La
@@ -300,6 +298,7 @@ L16:					; post if
 	UBFX
 	LI	137
 	CEQ
+	OU
 	BF	L19
 	LVA  1,	NAME_DEFSET_disp
 	LVA 1,	NAME_disp
@@ -308,8 +307,6 @@ L16:					; post if
 	LI	0					; lieu resultat sur pile
 	LVA 1,	NAME_DEFSET_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL. ,IS_EMPTY_L74
-	LI	1
-	OUX
 	BF	L21
 					; debut if
 	LI	0					; lieu resultat sur pile
@@ -381,8 +378,6 @@ LOOP__2:
 	LI	0					; lieu resultat sur pile
 	LVA 1,	NAME_DEFSET_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL. ,IS_EMPTY_L74
-	LI	1
-	OUX
 	BF	L24
 	LVA  1,	NAME_DEFINTERP_disp
 	LVA  1,	NAME_DEFSET_disp
@@ -558,8 +553,6 @@ LOOP__4:
 	LI	0					; lieu resultat sur pile
 	LVA 1,	NAME_TYPESET_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL. ,IS_EMPTY_L88
-	LI	1
-	OUX
 	BF	L29
 	LVA  1,	NAME_TYPEINTERP_disp
 	LVA  1,	NAME_TYPESET_disp
@@ -1299,8 +1292,6 @@ VAR	ANON_198_22__dat, STANDARD.IDL._SEQ_TYPE.size
 	LVA 1,	GENERAL_ASSOC_S_disp
 	CALL	STANDARD.IDL. ,LIST_L22
 	CALL	STANDARD.IDL. ,IS_EMPTY_L23
-	LI	1
-	OUX
 	DUP
 	BF	L49
 	DROP
@@ -1357,6 +1348,7 @@ L47:					; post if
 	UBFX
 	LI	137
 	CEQ
+	OU
 	BF	L51
 	LVA 1,	DEFSET_disp
 	La
@@ -1421,8 +1413,6 @@ LOOP__5:
 	LI	0					; lieu resultat sur pile
 	LVA 1,	DEFSET_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL. ,IS_EMPTY_L74
-	LI	1
-	OUX
 	BF	L56
 	LVA  1,	DEFINTERP_disp
 	LVA  1,	DEFSET_disp
@@ -2132,8 +2122,6 @@ LOOP__8:
 	LI	0					; lieu resultat sur pile
 	LVA 2,	NAME_TYPESET_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL. ,IS_EMPTY_L88
-	LI	1
-	OUX
 	BF	L85
 	LVA  2,	NAME_TYPEINTERP_disp
 	LVA  2,	NAME_TYPESET_disp
@@ -2404,8 +2392,6 @@ L92:					; post if
 	LI	0					; lieu resultat sur pile
 	LVA 1,	PARAM_TAIL_disp
 	CALL	STANDARD.IDL. ,IS_EMPTY_L23
-	LI	1
-	OUX
 	BF	L95
 	LVA 1,	SECOND_VALUE_disp
 	La
@@ -2551,6 +2537,7 @@ L99:
 	LI	STANDARD.IDL._TREE.size
 	LVA 1,	FIRST_VALUE_disp
 	LVA 1,	SECOND_VALUE_disp
+	ET
 	La  ,  0
 	BLKMOV
 	BRA ret_lbl
@@ -2563,6 +2550,7 @@ L100:
 	LI	STANDARD.IDL._TREE.size
 	LVA 1,	FIRST_VALUE_disp
 	LVA 1,	SECOND_VALUE_disp
+	OU
 	La  ,  0
 	BLKMOV
 	BRA ret_lbl
@@ -2575,6 +2563,7 @@ L101:
 	LI	STANDARD.IDL._TREE.size
 	LVA 1,	FIRST_VALUE_disp
 	LVA 1,	SECOND_VALUE_disp
+	OUX
 	La  ,  0
 	BLKMOV
 	BRA ret_lbl
@@ -2586,8 +2575,6 @@ L102:
 	La  ,  0
 	LI	STANDARD.IDL._TREE.size
 	LVA 1,	FIRST_VALUE_disp
-	LI	1
-	OUX
 	La  ,  0
 	BLKMOV
 	BRA ret_lbl
@@ -2820,7 +2807,7 @@ L119:
 	LI	STANDARD.IDL._TREE.size
 	LVA 1,	FIRST_VALUE_disp
 	LVA 1,	SECOND_VALUE_disp
-; CODE_DN_BLTN_OPERATOR_ID : EXP ENTIERE GENERALE A FAIRE
+; CODE_DN_BLTN_OPERATOR_ID : EXPONENTIELLE ENTIERE GENERALE A FAIRE
 	La  ,  0
 	BLKMOV
 	BRA ret_lbl
@@ -3133,18 +3120,15 @@ begin:					;---------- BDY INSTRUCTIONS
 	LI	0					; lieu resultat sur pile
 	LVA 2,	NAME_DEFSET_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL. ,IS_EMPTY_L74
-	LI	1
-	OUX
 	LVA 1,	STANDARD.IDL.SEM_PHASE_L11.RED_SUBP.RESOLVE_SLICE_L5.ARRAY_TYPE_disp
 	LVA 0,	STANDARD.IDL.TREE_VOID_disp
 	CNE
+	ET
 	BF	L133
 LOOP__11:
 	LI	0					; lieu resultat sur pile
 	LVA 2,	NAME_DEFSET_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL. ,IS_EMPTY_L74
-	LI	1
-	OUX
 	BF	L134
 	LVA  2,	NAME_DEFINTERP_disp
 	LVA  2,	NAME_DEFSET_disp
@@ -3372,18 +3356,15 @@ begin:					;---------- BDY INSTRUCTIONS
 	LI	0					; lieu resultat sur pile
 	LVA 2,	NAME_TYPESET_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL. ,IS_EMPTY_L88
-	LI	1
-	OUX
 	LVA 1,	STANDARD.IDL.SEM_PHASE_L11.RED_SUBP.RESOLVE_SLICE_L5.ARRAY_TYPE_disp
 	LVA 0,	STANDARD.IDL.TREE_VOID_disp
 	CNE
+	ET
 	BF	L143
 LOOP__12:
 	LI	0					; lieu resultat sur pile
 	LVA 2,	NAME_TYPESET_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL. ,IS_EMPTY_L88
-	LI	1
-	OUX
 	BF	L144
 	LVA  2,	NAME_TYPEINTERP_disp
 	LVA  2,	NAME_TYPESET_disp
@@ -4013,8 +3994,6 @@ L159:					; post if
 	LI	0					; lieu resultat sur pile
 	LVA 1,	PARAM_LIST_disp
 	CALL	STANDARD.IDL. ,IS_EMPTY_L23
-	LI	1
-	OUX
 	BF	L163
 STR STR_L164, "CONVERSION HAS MORE THAN 1 PARAM"	; constante string="CONVERSION HAS MORE THAN 1 PARAM"
 	LCA	STR_L164.data_ptr
@@ -4051,8 +4030,6 @@ L162:					; post if
 	LI	0					; lieu resultat sur pile
 	LVA 1,	PARAM_TYPESET_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL. ,IS_EMPTY_L88
-	LI	1
-	OUX
 	DUP
 	BF	L167
 	DROP
@@ -4088,8 +4065,6 @@ LOOP__13:
 	LI	0					; lieu resultat sur pile
 	LVA 1,	PARAM_TYPESET_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL. ,IS_EMPTY_L88
-	LI	1
-	OUX
 	BF	L173
 	LVA  1,	PARAM_TYPEINTERP_disp
 	LVA  1,	PARAM_TYPESET_disp
@@ -4151,6 +4126,7 @@ VAR	ANON_552_37__dat, STANDARD.IDL._TREE.size
 	UBFX
 	CGE
 	ET
+	OU
 	La	1, PARAM_STRUCT_disp
 	Ld
 	LI	24
@@ -4166,6 +4142,7 @@ VAR	ANON_552_37__dat, STANDARD.IDL._TREE.size
 	UBFX
 	CGE
 	ET
+	OU
 	BF	L175
 VAR	ANON_557_65_disp, q
 VAR	ANON_557_65__u,    q
@@ -4203,8 +4180,6 @@ LOOP__14:
 	LI	0					; lieu resultat sur pile
 	LVA 1,	PARAM_TYPESET_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL. ,IS_EMPTY_L88
-	LI	1
-	OUX
 	BF	L176
 	LVA  1,	PARAM_TYPEINTERP_disp
 	LVA  1,	PARAM_TYPESET_disp
@@ -4575,8 +4550,6 @@ LOOP__16:
 	LI	0					; lieu resultat sur pile
 	LVA 1,	PARAM_TYPESET_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL. ,IS_EMPTY_L88
-	LI	1
-	OUX
 	BF	L193
 	LVA  1,	PARAM_TYPEINTERP_disp
 	LVA  1,	PARAM_TYPESET_disp
@@ -4819,6 +4792,7 @@ VAR _LST_1, d
 	Ld	1, _FST_1
 	SUB
 	INC
+	CLAMP0
 	MUL
 	Sd	1, SIZ
   virtual at 4
@@ -5173,8 +5147,6 @@ L215:
 	BF	L214
 	DROP
 	Lb 1,	NAMED_SEEN_disp
-	LI	1
-	OUX
 L214:
 	BF	L213
 	LVA  1,	IS_SLICE_disp
@@ -5474,15 +5446,11 @@ L233:
 L232:					; post if
 					; debut if
 	Lb 1,	ERROR_SEEN_disp
-	LI	1
-	OUX
 	BF	L235
 LOOP__20:
 	LI	0					; lieu resultat sur pile
 	La  1,	-NAME_DEFSET_ofs
 	CALL	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL. ,IS_EMPTY_L74
-	LI	1
-	OUX
 	BF	L236
 	LVA  1,	DEFINTERP_disp
 	La  1,	-NAME_DEFSET_ofs
@@ -5777,6 +5745,7 @@ VAR _LST_1, d
 	Ld	1, _FST_1
 	SUB
 	INC
+	CLAMP0
 	LI	128
 	MUL
 	Sd	1, SIZ
@@ -5855,8 +5824,7 @@ VAR	ANON_755_14__dat, STANDARD.IDL._TREE.size
 					; debut if
 	Lb 0,	STANDARD.IDL.SEM_PHASE_L11.RED_SUBP.DEBUG_RED_SUBP_disp
 	Lb 1,	ACTUALS_OK_disp
-	LI	1
-	OUX
+	ET
 	BF	L268
 ; CODE & concat _STRING
 VAR	ANON_761_8_L269_G_data, q
@@ -5884,6 +5852,7 @@ STR ANON_761_8_L269_G, "REDUCE_APPLY_NAMES    echec check_actual_list on DN_PROC
 	LId 1, ANON_761_8_L269_G_info, _STRING.FST_1
 	SUB
 	INC
+	CLAMP0
 	Sa  1, ANON_761_8_L269_G_len
 VAR	ANON_762_4_disp, q
 VAR	ANON_762_4__u,   q
@@ -5929,6 +5898,7 @@ VAR	ANON_762_29__dat, STANDARD.IDL._TREE.size
 	LId 1, ANON_762_4_L269_D_info, _STRING.FST_1
 	SUB
 	INC
+	CLAMP0
 	Sa  1, ANON_762_4_L269_D_len
 	La  1, ANON_761_8_L269_G_len
 	La  1, ANON_762_4_L269_D_len
@@ -5973,8 +5943,7 @@ L267:					; post if
 					; debut if
 	Lb 1,	ACTUALS_OK_disp
 	Lb 1,	IS_SLICE_disp
-	LI	1
-	OUX
+	ET
 	BF	L271
 	LVA 1,	EXTRAINFO_disp
 	LVA  1,	DEFINTERP_disp
@@ -6023,8 +5992,7 @@ VAR	ANON_773_28__dat, STANDARD.IDL._TREE.size
 					; debut if
 	Lb 1,	ACTUALS_OK_disp
 	Lb 1,	IS_SLICE_disp
-	LI	1
-	OUX
+	ET
 	BF	L273
 	LVA 1,	EXTRAINFO_disp
 	LVA  1,	DEFINTERP_disp
@@ -6037,8 +6005,6 @@ L273:
 L272:					; post if
 					; debut if
 	Lb 1,	NAMED_SEEN_disp
-	LI	1
-	OUX
 	DUP
 	BF	L276
 	DROP
@@ -6156,6 +6122,7 @@ VAR	ANON_786_60__dat, STANDARD.IDL._TREE.size
 	LId	1, STANDARD.IDL.SEM_PHASE_L11.RED_SUBP.REDUCE_APPLY_NAMES_L8.ACTUAL__u, STANDARD.IDL.SEM_PHASE_L11.RED_SUBP._ACTUAL_ARRAY_TYPE.FST_1
 	SUB
 	INC
+	CLAMP0
 	CEQ
 L281:
 	BF	L280
@@ -6191,6 +6158,7 @@ VAR _LST_1, d
 	Ld	1, _FST_1
 	SUB
 	INC
+	CLAMP0
 	LI	128
 	MUL
 	Sd	1, SIZ
@@ -6320,8 +6288,6 @@ L287:
 L286:					; post if
 					; debut if
 	Lb 1,	NAMED_SEEN_disp
-	LI	1
-	OUX
 	DUP
 	BF	L291
 	DROP
@@ -6364,6 +6330,7 @@ VAR	ANON_805_82__dat, STANDARD.IDL._TREE.size
 	LId	1, STANDARD.IDL.SEM_PHASE_L11.RED_SUBP.REDUCE_APPLY_NAMES_L8.ACTUAL__u, STANDARD.IDL.SEM_PHASE_L11.RED_SUBP._ACTUAL_ARRAY_TYPE.FST_1
 	SUB
 	INC
+	CLAMP0
 	CEQ
 L290:
 	BF	L289
@@ -6417,8 +6384,7 @@ L236:					; post loop LOOP__20
 					; debut if
 	Lb 0,	STANDARD.IDL.SEM_PHASE_L11.RED_SUBP.DEBUG_RED_SUBP_disp
 	Lb 1,	ACTUALS_OK_disp
-	LI	1
-	OUX
+	ET
 	BF	L298
 STR STR_L299, "DESACCORD DE TYPE sur "		; constante string="DESACCORD DE TYPE sur "
 	LCA	STR_L299.data_ptr
@@ -6543,6 +6509,7 @@ STR ANON_832_12_L303_G, " formal "		; constante string=" formal "
 	LId 2, ANON_832_12_L303_G_info, _STRING.FST_1
 	SUB
 	INC
+	CLAMP0
 	Sa  2, ANON_832_12_L303_G_len
 VAR	ANON_832_25_disp, q
 VAR	ANON_832_25__u,   q
@@ -6566,6 +6533,7 @@ end namespace
 	LId 2, ANON_832_25_L303_D_info, _STRING.FST_1
 	SUB
 	INC
+	CLAMP0
 	Sa  2, ANON_832_25_L303_D_len
 	La  2, ANON_832_12_L303_G_len
 	La  2, ANON_832_25_L303_D_len
@@ -6608,6 +6576,7 @@ end namespace
 	LId 2, ANON_832_12_L302_G_info, _STRING.FST_1
 	SUB
 	INC
+	CLAMP0
 	Sa  2, ANON_832_12_L302_G_len
 STR ANON_832_46_L302_D, " type node : "		; constante string=" type node : "
 	LCA	ANON_832_46_L302_D.data_ptr
@@ -6620,6 +6589,7 @@ STR ANON_832_46_L302_D, " type node : "		; constante string=" type node : "
 	LId 2, ANON_832_46_L302_D_info, _STRING.FST_1
 	SUB
 	INC
+	CLAMP0
 	Sa  2, ANON_832_46_L302_D_len
 	La  2, ANON_832_12_L302_G_len
 	La  2, ANON_832_46_L302_D_len
@@ -6954,8 +6924,7 @@ begin:					;---------- BDY INSTRUCTIONS
 					; debut if
 	Lb 0,	STANDARD.IDL.SEM_PHASE_L11.RED_SUBP.DEBUG_RED_SUBP_disp
 	Lb 1,	STANDARD.IDL.SEM_PHASE_L11.RED_SUBP.CHECK_ACTUAL_LIST_L9.NEW_ACTUALS_OK_disp
-	LI	1
-	OUX
+	ET
 	BF	L317
 STR STR_L318, "CHECK_ACTUAL_LIST    not ok on formal base_type node="	; constante string="CHECK_ACTUAL_LIST    not ok on formal base_type node="
 	LCA	STR_L318.data_ptr
@@ -6971,8 +6940,6 @@ L316:					; post if
 endPRO
 					; debut if
 	Lb 1,	NEW_ACTUALS_OK_disp
-	LI	1
-	OUX
 	BF	L320
 	LI	0
 	SIb  1,	-ACTUALS_OK_ofs
@@ -7161,8 +7128,6 @@ L326:					; post if
 L324:					; post loop LOOP__25
 					; debut if
 	Lb 1,	ACTUAL_SEEN_disp
-	LI	1
-	OUX
 	DUP
 	BF	L335
 	DROP
@@ -7212,6 +7177,7 @@ L321:					; post loop LOOP__24
 	Ld	, _ACTUAL_ARRAY_TYPE.FST_1
 	SUB
 	INC
+	CLAMP0
 	CEQ
 	BF	L338
 	LI	1
@@ -7300,6 +7266,7 @@ VAR _LST_1, d
 	Ld	1, _FST_1
 	SUB
 	INC
+	CLAMP0
 	MUL
 	Sd	1, SIZ
   virtual at 4
@@ -7782,8 +7749,6 @@ LOOP__28:
 	LI	0					; lieu resultat sur pile
 	La  1,	-NAME_TYPESET_ofs
 	CALL	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL. ,IS_EMPTY_L88
-	LI	1
-	OUX
 	BF	L365
 	LVA  1,	TYPEINTERP_disp
 	La  1,	-NAME_TYPESET_ofs
@@ -7894,6 +7859,7 @@ VAR	ANON_1003_59__dat, STANDARD.IDL._TREE.size
 	LId	1, STANDARD.IDL.SEM_PHASE_L11.RED_SUBP.REDUCE_ARRAY_PREFIX_TYPES_L11.ACTUAL__u, STANDARD.IDL.SEM_PHASE_L11.RED_SUBP._ACTUAL_ARRAY_TYPE.FST_1
 	SUB
 	INC
+	CLAMP0
 	CEQ
 L370:
 	BF	L369
@@ -8149,8 +8115,6 @@ L376:					; post loop LOOP__29
 	LI	0					; lieu resultat sur pile
 	LVA 1,	INDEX_LIST_disp
 	CALL	STANDARD.IDL. ,IS_EMPTY_L23
-	LI	1
-	OUX
 	BF	L384
 	LI	0
 	SIb  1,	-ACTUALS_OK_ofs
@@ -8243,8 +8207,6 @@ LOOP__30:
 	LI	0					; lieu resultat sur pile
 	LVA 1,	TYPESET_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL. ,IS_EMPTY_L88
-	LI	1
-	OUX
 	BF	L385
 	LVA  1,	TYPEINTERP_disp
 	LVA  1,	TYPESET_disp
@@ -8597,6 +8559,7 @@ VAR _LST_1, d
 	Ld	1, _FST_1
 	SUB
 	INC
+	CLAMP0
 	MUL
 	Sd	1, SIZ
   virtual at 4
@@ -9052,8 +9015,6 @@ L421:					; post loop LOOP__32
 	LI	0					; lieu resultat sur pile
 	LVA 1,	ACTUAL_TAIL_disp
 	CALL	STANDARD.IDL. ,IS_EMPTY_L23
-	LI	1
-	OUX
 	BF	L426
 	LVA 1,	NEW_ASSOC_LIST_disp
 	La
@@ -9471,8 +9432,6 @@ LOOP__35:
 	LI	0					; lieu resultat sur pile
 	LVA 1,	TYPESET_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL. ,IS_EMPTY_L88
-	LI	1
-	OUX
 	BF	L446
 	LVA  1,	TYPEINTERP_disp
 	LVA  1,	TYPESET_disp
@@ -9708,8 +9667,6 @@ LOOP__36:
 	LI	0					; lieu resultat sur pile
 	LVA 1,	ASSOC_LIST_disp
 	CALL	STANDARD.IDL. ,IS_EMPTY_L23
-	LI	1
-	OUX
 	BF	L454
 	LVA  1,	EXP_disp
 	LVA  1,	ASSOC_LIST_disp
@@ -9856,8 +9813,6 @@ LOOP__37:
 	LI	0					; lieu resultat sur pile
 	LVA 1,	PARAM_LIST_disp
 	CALL	STANDARD.IDL. ,IS_EMPTY_L23
-	LI	1
-	OUX
 	BF	L455
 	LVA  1,	PARAM_disp
 	LVA  1,	PARAM_LIST_disp

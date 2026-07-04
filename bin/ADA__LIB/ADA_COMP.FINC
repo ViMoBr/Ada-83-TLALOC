@@ -31,6 +31,7 @@ VAR _LST_1, d
 	Ld	1, _FST_1
 	SUB
 	INC
+	CLAMP0
 	MUL
 	Sd	1, SIZ
   virtual at 4
@@ -76,6 +77,7 @@ VAR _LST_1, d
 	Ld	1, _FST_1
 	SUB
 	INC
+	CLAMP0
 	MUL
 	Sd	1, SIZ
   virtual at 4
@@ -184,10 +186,11 @@ L3:					; post loop FIND_POST_END_1
 	SUB
 	Sd
 	Ld	0, PROJECT_PATH_LENGTH
-	INC
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SUB
+	INC
+	CLAMP0
 	LI	1
 	MUL
 	La 1, CMD_FROM_STDIN_disp
@@ -201,9 +204,10 @@ L3:					; post loop FIND_POST_END_1
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SUB
-	INC
 	Ld 2,	STANDARD.ADA_COMP_L1.BLOCK__1.CHN_START_disp
 	SUB
+	INC
+	CLAMP0
 	LI	1
 	MUL
 	DROP
@@ -216,13 +220,15 @@ endPRO
 	LId	0, STANDARD.IDL.DEFAULT_LIB_PATH__u, STANDARD._STRING.FST_1
 	SUB
 	INC
+	CLAMP0
 	ADD
 	Sd
 	Ld	0, LIB_PATH_LENGTH
-	INC
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SUB
+	INC
+	CLAMP0
 	LI	1
 	MUL
 ; CODE & concat _STRING
@@ -251,10 +257,11 @@ namespace ANON_72_7_L5_G_info
   VAR _LST_1,    d
 end namespace
 	Ld	0, PROJECT_PATH_LENGTH
-	INC
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SUB
+	INC
+	CLAMP0
 	LI	1
 	MUL
 	Sa  2, ANON_72_7_L5_G_slice_len
@@ -283,6 +290,7 @@ end namespace
 	LId 2, ANON_72_7_L5_G_info, _STRING.FST_1
 	SUB
 	INC
+	CLAMP0
 	Sa  2, ANON_72_7_L5_G_len
 	DUP
 	La  ,  0
@@ -293,6 +301,7 @@ end namespace
 	LId 2, ANON_73_9_L5_D_info, _STRING.FST_1
 	SUB
 	INC
+	CLAMP0
 	Sa  2, ANON_73_9_L5_D_len
 	La  2, ANON_72_7_L5_G_len
 	La  2, ANON_73_9_L5_D_len
@@ -404,10 +413,11 @@ L8:					; post loop FIND_POST_END_2
 	MUL
 	ADD
 	Ld 1,	STANDARD.ADA_COMP_L1.ACCES_TEXTE_LENGTH_disp
-	INC
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SUB
+	INC
+	CLAMP0
 	LI	1
 	MUL
 	La 1, CMD_FROM_STDIN_disp
@@ -421,9 +431,10 @@ L8:					; post loop FIND_POST_END_2
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SUB
-	INC
 	Ld 2,	STANDARD.ADA_COMP_L1.BLOCK__1.CHN_START_disp
 	SUB
+	INC
+	CLAMP0
 	LI	1
 	MUL
 	DROP
@@ -487,9 +498,11 @@ endPRO
 	Lb 1,	OPTION_disp
 	LI	80
 	CEQ
+	OU
 	Lb 1,	OPTION_disp
 	LI	65
 	CEQ
+	OU
 	BF	L17
 	Lb 1,	OPTION_disp
 	CALL	STANDARD.IDL. ,PRETTY_DIANA_L14
@@ -563,10 +576,11 @@ namespace ANON_141_40_L20_G_info
   VAR _LST_1,    d
 end namespace
 	Ld	0, PROJECT_PATH_LENGTH
-	INC
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SUB
+	INC
+	CLAMP0
 	LI	1
 	MUL
 	Sa  3, ANON_141_40_L20_G_slice_len
@@ -595,6 +609,7 @@ end namespace
 	LId 3, ANON_141_40_L20_G_info, _STRING.FST_1
 	SUB
 	INC
+	CLAMP0
 	Sa  3, ANON_141_40_L20_G_len
 VAR	ANON_142_13_L20_D_slice_data, q
 VAR	ANON_142_13_L20_D_slice_len,  q
@@ -615,10 +630,11 @@ end namespace
 	MUL
 	ADD
 	Ld 2,	STANDARD.ADA_COMP_L1.SEPARE_PATH_NOM_EXECUTE.POSITION_SEPARATEUR_disp
-	INC
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SUB
+	INC
+	CLAMP0
 	LI	1
 	MUL
 	Sa  3, ANON_142_13_L20_D_slice_len
@@ -647,6 +663,7 @@ end namespace
 	LId 3, ANON_142_13_L20_D_info, _STRING.FST_1
 	SUB
 	INC
+	CLAMP0
 	Sa  3, ANON_142_13_L20_D_len
 	La  3, ANON_141_40_L20_G_len
 	La  3, ANON_142_13_L20_D_len
@@ -701,6 +718,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	Lb 1,	STANDARD.ADA_COMP_L1.OPTION_disp
 	LI	98
 	CEQ
+	OU
 	BF	L22
 	LVA  3,	NOM_TEXTE_disp			; array actual
 	CALL	STANDARD. ,EXPANDER_L1
@@ -729,6 +747,7 @@ L21:					; post if
 	Lb 1,	STANDARD.ADA_COMP_L1.OPTION_disp
 	LI	115
 	CEQ
+	OU
 	BF	L25
 	BRA	L24
 L25:
@@ -741,6 +760,7 @@ L24:					; post if
 	Lb 1,	STANDARD.ADA_COMP_L1.OPTION_disp
 	LI	108
 	CEQ
+	OU
 	BF	L27
 	BRA	L26
 L27:
@@ -753,6 +773,7 @@ L26:					; post if
 	Lb 1,	STANDARD.ADA_COMP_L1.OPTION_disp
 	LI	109
 	CEQ
+	OU
 	BF	L29
 	BRA	L28
 L29:
@@ -764,9 +785,11 @@ L28:					; post if
 	Lb 1,	STANDARD.ADA_COMP_L1.OPTION_disp
 	LI	99
 	CEQ
+	OU
 	Lb 1,	STANDARD.ADA_COMP_L1.OPTION_disp
 	LI	87
 	CEQ
+	OU
 	BF	L31
 STR STR_L32, ""				; constante string=""
 	LCA	STR_L32.data_ptr
@@ -781,6 +804,7 @@ L30:					; post if
 	Lb 1,	STANDARD.ADA_COMP_L1.OPTION_disp
 	LI	119
 	CEQ
+	OU
 	BF	L34
 	CALL	STANDARD.IDL. ,WRITE_LIB_L13
 	BRA	L33
@@ -830,6 +854,7 @@ STR ANON_173_17_L36_G, " ..... Ok"		; constante string=" ..... Ok"
 	LId 3, ANON_173_17_L36_G_info, _STRING.FST_1
 	SUB
 	INC
+	CLAMP0
 	Sa  3, ANON_173_17_L36_G_len
 VAR	ANON_173_31_disp, q
 VAR	ANON_173_31__u,   q
@@ -862,6 +887,7 @@ end namespace
 	LId 3, ANON_173_31_L36_D_info, _STRING.FST_1
 	SUB
 	INC
+	CLAMP0
 	Sa  3, ANON_173_31_L36_D_len
 	La  3, ANON_173_17_L36_G_len
 	La  3, ANON_173_31_L36_D_len
@@ -904,6 +930,7 @@ end namespace
 	LId 3, ANON_173_17_L35_G_info, _STRING.FST_1
 	SUB
 	INC
+	CLAMP0
 	Sa  3, ANON_173_17_L35_G_len
 STR ANON_173_92_L35_D, " msec"		; constante string=" msec"
 	LCA	ANON_173_92_L35_D.data_ptr
@@ -916,6 +943,7 @@ STR ANON_173_92_L35_D, " msec"		; constante string=" msec"
 	LId 3, ANON_173_92_L35_D_info, _STRING.FST_1
 	SUB
 	INC
+	CLAMP0
 	Sa  3, ANON_173_92_L35_D_len
 	La  3, ANON_173_17_L35_G_len
 	La  3, ANON_173_92_L35_D_len

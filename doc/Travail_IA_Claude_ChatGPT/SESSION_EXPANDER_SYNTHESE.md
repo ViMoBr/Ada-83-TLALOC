@@ -1056,3 +1056,147 @@ Plusieurs chemins de l’expander ont été ajustés pour considérer `DN_ACCESS
 
 Le résultat pratique est que `TEST_NEW.adb` génère maintenant un FINC cohérent pour les déclarations et les instructions concernées, et surtout que `IDL.PAGE_MAN.adb`, l’un des deux modules du frontend bloqués par l’allocation dynamique des pages DIANA, passe désormais dans l’expander. Ce jalon complète utilement le support récent des records représentés compacts et prépare la suite du bootstrap, notamment la validation de `IDL.IDL_MAN.adb` et les éventuels cas plus larges d’usage des types access.
 
+## Session 4 juillet 2026 — Passage complet des séries ACVC A2–A7, correction de trois bugs de fond (sous-types anonymes partagés, blocs `declare`, niveau des thunks génériques) et point de méthode
+
+Cette session marque un jalon de couverture : après correction de trois défauts structurels, **toutes les séries ACVC A2, A3, A5, A6 et A7 passent**, ainsi que les anciens `ENUM_TEST` et `DIRECT_IO_TEST`, et l’ensemble des modules du compilateur continue de passer l’expander. Il reste, dans la série A8, quatre tests en erreur sur vingt. Les trois bugs traités ci-dessous ont ceci de commun qu’ils n’étaient pas des cas particuliers isolés mais des **erreurs de modèle** : chacun violait un invariant que l’expander était censé maintenir, et chacun ne se révélait que dans une configuration lexicale précise (typiquement la présence d’un bloc `declare … begin … end` interne), ce qui explique qu’ils soient restés masqués tant que les déclarations testées vivaient au niveau de la procédure englobante.
+
+### 1. Sous-type tableau anonyme partagé entre deux objets — `CD_COMPILED` surchargé (A21001A)
+
+Le test `A21001A` compilait mais produisait une **erreur de segmentation** à l’exécution. Le fault tombait sur un `LId … D_info, _STRING.LST_1` du code de concaténation : ce `LId` déréférence le contenu du champ `__info` d’une des chaînes (`C2`), et ce pointeur `use__info` était invalide. La cause immédiate était que `C2`, déclaré `STRING(1..6)` exactement comme `C1`, avait été alloué avec le descripteur du type **non contraint** `STANDARD._STRING` au lieu d’un sous-type contraint local, contrairement à `C1` (`_C1__type`) et `C3` (`_C3__type`, contrainte `1..12` distincte).
+
+La cause racine a été établie par le dump DIANA (`____TREE.TXT`), et non par supposition : `C1` et `C2`, ayant une contrainte identique `STRING(1..6)`, **partagent physiquement le même nœud** `DN_CONSTRAINED_ARRAY` (`SM_OBJ_TYPE` = `[P233,L64]` pour les deux ; `C3` a son propre nœud `[P233,L110]`). Or, dans `EXPANDER.DECLARATIONS`, la décision d’émettre un descripteur local repose sur le drapeau `CD_COMPILED` porté par le `TYPE_SPEC` (`if DB(CD_COMPILED, TYPE_SPEC) = FALSE then …`), et `PROCESS_CONSTRAINED_ARRAY_TYPE_SPEC` positionne `CD_COMPILED := TRUE` sur ce nœud en fin de traitement. Le déroulé fautif était donc : `C1` trouve le drapeau à faux, génère `_C1__type`, et marque le nœud partagé comme compilé ; `C2`, voyant le même nœud désormais à `TRUE`, saute la génération et retombe sur le chemin `REGIONS_PATH(TYPE_NAME) & TYPE_NAME_STR`, où `TYPE_NAME := D(XD_SOURCE_NAME, TYPE_SPEC)` remonte au type de base `STRING`, d’où `STANDARD._STRING`. Le drapeau `CD_COMPILED`, correct pour un type **nommé** (émis une fois, réutilisé par son nom), est faux pour un sous-type **anonyme d’objet partagé**, car le chemin de réutilisation ne retrouve pas le label local déjà émis.
+
+La correction retenue (option « un descripteur par objet ») matérialise un type-info local dès qu’il existe une contrainte anonyme d’objet, indépendamment de `CD_COMPILED`, en alignant ainsi `A21001A` sur le comportement déjà correct de `A22002A` (qui, lui, ne partageait pas le nœud et générait bien `_C2__type`). Le surcoût — un descripteur `_C2__type` identique à `_C1__type` — est négligeable et sûr. Point de vigilance conservé : ne pas supprimer le marquage `CD_COMPILED` en aval, qui sert légitimement de garde d’unicité pour les types nommés et les composants (lecture en plusieurs points de `types_decls`).
+
+Cette investigation a aussi confirmé un point de vocabulaire utile pour la lecture du FINC : dans `LId …, _STRING.LST_1`, le symbole `_STRING.LST_1` est l’**offset statique** du champ `LST_1` dans le descripteur (une petite constante, ici 12), et non une borne ; ce qui change avec le correctif n’est pas cet offset mais la **base** (le pointeur `use__info` chargé), désormais celui d’un descripteur contraint valide.
+
+### 2. Blocs `declare` imbriqués — labels `post` / `elab` / `loc_siz` partagés par les macros `PRO`/`endPRO`
+
+En marge de A21001A, un second défaut structurel a été identifié dans le traitement des blocs `declare` internes. `CODE_BLOCK` réutilise la mécanique de sous-programme : il émet `namespace BLOCK__n`, un `ELB` (donc un `LINK` de niveau), puis en clôture un `UNLINK` suivi de **`endPRO`**. Or `endPRO` définit le label `post:` et la variable `loc_siz`, tous deux **globaux au namespace fasmg courant**, et fait `end namespace`. Émettre `endPRO` pour un bloc imbriqué dans une procédure produit donc **deux définitions de `post:`** (celle du bloc, celle de la procédure), ce qui casse la résolution du `BRA post` que la macro `PRO` de la procédure englobante émet pour contourner l’élaboration. Selon la résolution, le saut atterrit sur le `post:` du bloc — au milieu du corps, juste avant le `CALL RESULT` — et le programme exécute la sortie de frame sur une pile jamais initialisée, d’où le fault.
+
+La leçon générale, déjà visible dans le code des thunks (qui, eux, nomment explicitement leurs cibles `post_LD_NP_…`, `post_ST_NP_…` et ne posent aucun problème), est que **les labels `post`/`elab` nus des macros `PRO`/`ELB`/`endPRO` sont une source d’ambiguïté dès qu’il y a imbrication**. Le remède de fond consiste à rendre ces labels uniques par routine, soit en les qualifiant par le nom de la routine dans les macros, soit en faisant émettre par l’expander des labels déjà uniques (une macro dédiée de fin de bloc, distincte de `endPRO` et ne définissant pas `post:`). Ce défaut est de même famille que le bug de niveau des thunks génériques ci-dessous : dans les deux cas, une entité lexicalement locale à un niveau donné était traitée avec un symbole ou un niveau partagé.
+
+### 3. Instanciation de sous-programme générique dans un bloc `declare` — niveau des thunks du type formel (A35801B, A35502R)
+
+Les deux seuls segfaults de la série A3 (`A35801B`, attributs `DIGITS/MANTISSA/…` sur un sous-type formel `digits <>` ; `A35502R`, attributs `WIDTH/POS/VAL/…` sur un type formel discret `(<>)`) avaient une **cause racine commune**, isolée grâce au harnais `db 0xCC` / `show` inséré dans le FINC. Le fault tombait sur le premier `Sa 3, NP_…__outadr_ofs` de la mise en place de la table de thunks du type formel, c’est-à-dire **entre la fin du corps de `P` (`UNLINK 3` / `RTD` déjà exécutés) et le `PRO NP`**. À cet instant, le flux exécute l’**élaboration du bloc `declare`, au niveau 2** ; or `Sa 3` indexe le display à `FP(3)`, niveau qui vient précisément d’être refermé. L’écriture se fait donc dans un frame mort — fault immédiat, et non simple incohérence latente.
+
+Le mécanisme sous-jacent est le passage de type formel par **table de thunks** (`__u_ofs`, `__ld_ofs`, `__st_ofs`, `__inadr_ofs`, `__outadr_ofs`) plus une case `GFP_disp` (Generic Frame Pointer) : l’instance prépare cette table à l’élaboration du bloc, avant tout appel, et le corps générique y accède par `La lvl, -GFP_ofs` puis `[GFP − T__*_ofs]` (le layout relatif — `u` à `GFP−8`, `ld` à `−16`, etc. — a été vérifié correct). Le contrat physique exige que la table et `GFP_disp` vivent dans le **frame du bloc où l’instance est déclarée** (niveau 2), et l’unique store déjà correct, `LVA CUR_LEVEL − 1, GFP_disp`, le confirmait. Le défaut : `CODE_GENERIC_ACTUALS` définit `LVL_STR := LEVEL_NUM'IMAGE(CODI.CUR_LEVEL)`, mais `CODE_SUBPROG_ENTRY_DECL` exécute `INC_LEVEL` **avant** d’appeler `CODE_GENERIC_ACTUALS`. Au moment de l’émission, `CUR_LEVEL` désigne déjà le corps de l’instance (3), et toute la table est écrite en `Sa 3` alors qu’elle est relue en `LVA 2`. C’est une confusion classique en génération à display entre le **niveau lexical d’une entité** (le frame où elle vit) et le **niveau courant du générateur** (le `CUR_LEVEL` mouvant du compilateur).
+
+Un point important a évité un correctif trop naïf : `CODE_GENERIC_ACTUALS` possède **deux sites d’appel** de contextes de niveau différents. Le site d’instanciation de **sous-programme** générique (dans `CODE_SUBPROG_ENTRY_DECL`) est appelé après `INC_LEVEL` ; le site d’instanciation de **package** générique (dans `CODE_PACKAGE_DECL`) est appelé **sans** `INC_LEVEL` préalable. Fixer `LVL_STR` à `CUR_LEVEL − 1` en dur aurait décalé le chemin package, que rien ne montre défaillant. La correction retenue passe donc un **niveau cible explicite** en paramètre : `TARGET_LEVEL := CODI.CUR_LEVEL − 1` pour le site sous-programme (aligné sur le `LVA CUR_LEVEL − 1, GFP_disp` existant), et le comportement historique `CUR_LEVEL` pour le site package (valeur par défaut, donc aucun changement de ce chemin). Après correction, la table passe en `Sa 2`, cohérente avec sa relecture, et les deux tests s’exécutent correctement. Le correctif répare de surcroît un bug **latent** au niveau bibliothèque (instanciation sans bloc, où l’ancien code écrivait `Sa 2` pour une relecture `LVA 1`) : il ne pouvait que le rendre cohérent, jamais le casser.
+
+Ce troisième cas rejoint et précise le piège n° 26 (« level du wrapper générique : `CUR_LEVEL − 1` ») déjà consigné : le bon niveau n’est pas seulement affaire de relecture depuis le corps, il conditionne aussi l’**écriture** de la table, et l’émettre au mauvais niveau depuis l’élaboration d’un bloc conduit à un accès à un frame déjà dépilé.
+
+### 4. Point de méthode — de l’ordonnancement par les tests vers un pilotage par les nœuds DIANA
+
+La difficulté croissante ressentie sur la série A8 (quatre échecs restants, portant sur le renommage, `use`, la portée et la visibilité) a motivé une réflexion sur la politique de développement de l’expander. Le constat partagé est que l’ACVC est un **oracle de conformité et de régression**, non une **méthode de conception** : l’ordre lexicographique des numéros de test (A8 avant A9) n’encode aucune dépendance sémantique réelle, et se laisser ordonnancer par lui expose au risque, déjà pressenti, de corriger point par point des fonctionnalités dont les fondations ne sont pas encore posées. La table « fondations à compléter » (§4) le confirme : ce qui reste — unconstrained arrays, records à discriminants, types access complets, gestionnaires d’exceptions, dérivation, renames, tâches — relève de piliers sémantiques, non de rustines.
+
+La hiérarchie de pilotage retenue pour la suite est la suivante. Le **LRM Ada 83** tient lieu de spécification et, par sa structure (types → objets → expressions → sous-programmes → packages → génériques → tâches), d’ordre de dépendances légitime pour choisir le prochain pilier. Le **réseau DIANA** (fichiers `diana_NODES.txt` / `diana_CLASS_.txt`) tient lieu de contrat d’interface énumérable : chaque `DN_*` non traité par un `case … when` de l’expander est une dette explicite. L’**ACVC** reste le filet de régression, exécuté en totalité à chaque changement, mais ses échecs servent désormais à *informer la priorité des piliers* plutôt qu’à *constituer la liste de tâches*. Deux disciplines complètent cette orientation : pour chaque nouveau pilier, rédiger en amont une brève note de **modèle d’exécution** (représentation mémoire, invariants de pile/display, conventions d’appel) afin de décider sciemment entre extension et refonte, en ne refondant que ce qu’un pilier manquant force à refondre ; et pour les échecs ACVC restants (dont les quatre de A8), pratiquer un **tri systématique** entre « défaut local d’un pilier existant » (à corriger immédiatement, comme les trois bugs ci-dessus) et « manifestation d’un pilier absent » (à consigner, sans bricolage ponctuel). L’hypothèse de travail est que les quatre échecs A8 se ramènent, comme A21001A et les deux tests génériques, à une ou deux causes-mères communes plutôt qu’à quatre bugs indépendants.
+
+### Piège ajouté à la liste §8
+
+46. **Sous-type tableau anonyme partagé + `CD_COMPILED`** : deux objets de contrainte identique (p. ex. deux `STRING(1..6)`) peuvent partager le **même** nœud `DN_CONSTRAINED_ARRAY` en DIANA (vérifiable par le dump : `SM_OBJ_TYPE` identique). Le drapeau `CD_COMPILED` posé par `PROCESS_CONSTRAINED_ARRAY_TYPE_SPEC` fait alors sauter la génération du descripteur local pour le second objet, qui retombe sur le type de base non contraint (`STANDARD._STRING`) via `XD_SOURCE_NAME` → `use__info` invalide → segfault au déréférencement. Matérialiser un type-info local par objet dès qu’il existe une contrainte anonyme, sans dépendre de `CD_COMPILED`. (session 4 juillet)
+
+47. **Niveau d’émission de la table de thunks générique** : `CODE_GENERIC_ACTUALS` est appelé **après** `INC_LEVEL` sur le chemin d’instanciation de sous-programme ; émettre les `Sa` des thunks et de `GFP_disp` à `CUR_LEVEL` écrit dans le frame du corps de l’instance (niveau N), alors que la relecture se fait à `CUR_LEVEL − 1` (le bloc, niveau N−1) et que le frame N n’existe pas encore / plus au moment de l’élaboration du bloc → écriture dans un frame mort → segfault. Passer un niveau cible explicite : `CUR_LEVEL − 1` pour l’instanciation de sous-programme, `CUR_LEVEL` (défaut historique) pour l’instanciation de package, dont le site d’appel n’est pas précédé d’`INC_LEVEL`. (session 4 juillet)
+
+48. **`endPRO` pour un bloc `declare`** : réutiliser `endPRO` (qui définit `post:` et `loc_siz`, symboles globaux au namespace) pour clore un bloc imbriqué crée une seconde définition de `post:` et casse la résolution du `BRA post` de la procédure englobante → saut au milieu du corps → sortie de frame sur pile non initialisée. Rendre `post`/`elab`/`loc_siz` uniques par routine, ou utiliser une macro de fin de bloc distincte ne définissant pas `post:`. (session 4 juillet)
+
+# Session du 4 juillet 2026 (suite) — Pilier LRM 3.6, campagne ARRAY_TEST
+
+## Résultat global
+
+ARRAY_TEST1 v2 : vert intégral (à re-passer en clôture, cf. §5).
+ARRAY_TEST2 v2 : déroulé complet sans crash ; toutes sections conformes SAUF la
+dernière ligne de D9 (`VEC3'RANGE`, cf. §3). Le pilier 3.6 a désormais ses
+fondations : affectation complète, égalité, caténation toutes formes, tranches
+et intervalles nuls, retour de tranche, agrégats qualifiés.
+
+## 1. Correctifs appliqués (dans l'ordre de la session)
+
+| # | Quoi | Où | Nature |
+|---|---|---|---|
+| A | 'LENGTH(N) lit la dimension (AS_EXP) | CODE_LENGTH, 2 chemins | défaut local |
+| B | Affectation complète tableau : @DST + LEN([__u].SIZ/8) + @SRC + BLKMOV ; sources littéral (STR+LCA+La), tranche (DROP), doublet (La) | CODE_ASSIGN, branche tableau | branche inachevée terminée |
+| — | Macro CLAMP0 (max(0,·), 11 octets, dérivée d'ABS) + 14 sites (le 14e : CODE_SLICE dest., ordre INC/SUB inversé) | finc + 4 fichiers | D7 clos |
+| — | Macro BLKCMP (miroir BLKMOV, ZF armé par xor pour LEN=0) | finc | D1 |
+| — | CODE_COMPOSITE_OPERATOR : "="/"/=" réels (longueurs puis BLKCMP), stubs équilibrés typés (scalaire LI 0 pour relationnels ; opérande gauche pour AND/OR/XOR/NOT composites) | expressions, avant CODE_FUNCTION_CALL | D1 clos, D2/D3 stubés |
+| — | Hissage CODE_ARRAY_OPERAND / CODE_ARRAY_AGGREGATE_OPERAND avec paramètre CONTEXT_TYPE (COMP_BITS/BYTES recalculés localement ; « 8 » câblés de la branche tranche remplacés) | expressions | refactor prévu note §4.5 |
+| — | Câblage scalaire AND/OR/XOR → macros ET/OU/OUX préexistantes | chaîne d'opérateurs | bug latent indépendant |
+| — | COMP_SIZE_BITS ×2 : arrondi au STORAGE_UNIT (CD_IMPL_SIZE(BOOLEAN)=1 bit → LEN=0 et stride=0 par division entière) | expressions + types_decls | cause racine des « six VRAI » |
+| — | Opérande composant de "&" : tableau temporaire d'1 élément co-pile (SI+OPER_SIZ_CHAR) | CODE_ARRAY_OPERAND | D4 clos |
+| — | Retour de tranche : aiguillage DN_SLICE → CODE_SLICE(IS_DESTINATION=>FALSE) | CODE_RETURN, branche tableau | D8 clos |
+| — | Agrégat qualifié de sous-type CONTRAINT : doublet anonyme, __u → use__info du type, data = CO_VAR(SIZ/8), TYPE_LVL = CD_LEVEL du TYPE_SPEC | CODE_QUALIFIED | D9 débloqué |
+
+## 2. Verdicts ARRAY_TEST2 (état de clôture)
+
+- **D7** intervalles nuls : validé (y compris descripteur dynamique et concat à opérande nul).
+- **D1** égalité/inégalité : validé (littéraux, longueurs inégales → FAUX sans comparaison).
+- **D2** lexicographique : stub honnête (6 FAUX). Lot suivant.
+- **D3** logiques booléens : stub « opérande gauche » (valeurs traçables). Lot suivant.
+- **D4** caténation formes composant : **clos**, cascades comprises.
+- **D5** conversion : **acquis par transparence** (CODE_CONVERSION laisse passer le
+  @doublet ; bornes/longueur viennent du descripteur destination). Restriction
+  consignée : les bornes du RÉSULTAT de conversion sont celles de la source —
+  faux si consommées directement (paramètre non contraint, attributs).
+- **D8** retour de tranche : **clos** (bornes réelles conservées, data chez l'appelant).
+- **D9** : agrégats 2D imbriqués ✓ (acquis, D6 partiellement invalidé comme dette ?
+  à réexaminer), choix multiples ✓, qualifié nommé+others ✓ (RM83 4.3.2(6) : la
+  forme non qualifiée est illégale en affectation — le frontend avait raison).
+  **VEC3'RANGE : échec silencieux** (boucle à zéro itération) — préfixe marque de
+  sous-type non traité dans CODE_RANGE_ATTRIBUTE_BOUND. Correctif esquissé :
+  branche type DN_CONSTRAINED_ARRAY → Ld TYPE_LVL, <path>_T._FST_1 / _LST_1
+  (idiome du patch qualifié). À faire ou consigner.
+
+## 3. Pièges nouveaux (n° 49–58)
+
+49. CODE_LENGTH / attributs dimensionnés : tout chemin d'attribut tableau doit lire AS_EXP.
+50. Affectation composite : LEN depuis le descripteur DESTINATION ([__u].SIZ/8),
+    jamais XD_SOURCE_NAME→_TYPE.size (sous-types anonymes → type de base).
+    `LCA name.data_ptr` d'une constante STR = @doublet, pas @data : `La` requis.
+51. ACVC classe A = oracle compilation+exécution, PAS de valeurs. La sémantique
+    n'est protégée que par les programmes-témoins à sortie attendue et les séries C.
+    (Démontré deux fois : A21001A vs affectation muette ; VEC3'RANGE vs boucle vide.)
+52. Tout compte d'éléments dynamique → CLAMP0. AMENDEMENT : le motif à traquer est
+    « tout calcul de compte », pas la paire textuelle SUB/INC (14e site en ordre
+    inversé) — une règle de revue formulée comme un grep hérite des angles morts du grep.
+53. Opérateur/nœud non reconnu ne doit JAMAIS ne rien émettre (pile déséquilibrée →
+    segfault lointain, symptôme BLKMOV avec pointeur en compteur). Stub équilibré + commentaire.
+54. AND/OR/XOR scalaires : macros ET/OU/OUX existaient, dispatch absent. NOT booléen reste LI 1+OUX.
+55. Un stub doit respecter le CONTRAT DE NATURE du résultat (scalaire vs @doublet),
+    pas seulement l'équilibre de pile — la nature dépend de l'opérateur, pas de l'opérande.
+56. CD_IMPL_SIZE porte des bits MINIMAUX (1 pour BOOLEAN, 3 pour 7 littéraux), pas
+    la taille de stockage : toute consommation composant arrondit au STORAGE_UNIT.
+    (OPER_SIZ_CHAR consomme le brut à bon droit : ≤8 → 'b'.)
+57. Les deux COMP_SIZE_BITS homonymes (expressions / types_decls) doivent évoluer
+    ensemble — candidates à fusion dans UTILS.
+58. CD_LEVEL / CD_COMPILED des types vivent sur le TYPE_SPEC, pas sur le *_ID de
+    XD_SOURCE_NAME (qui sert au chemin REGIONS_PATH et au libellé, rien d'autre).
+
+## 4. Restrictions et dettes consignées (hors lots D2/D3)
+
+- 'RANGE préfixe marque de sous-type tableau (D9, correctif esquissé §2).
+- D10 : attributs à préfixe non nommé (tranche, indexé, appel) — CHN_PREFIX lu à
+  l'entrée de CODE_ATTRIBUTE. Même famille : expressions enveloppées (return (S(2..3))).
+- D6 : bloc info anonyme câblé 1-dim (concat, agrégat dynamique, résultat de
+  fonction) — à réexaminer à la lumière du succès des agrégats 2D.
+- D5 complet : re-étiquetage des bornes au sous-type cible (doublet anonyme sans copie).
+- CODE_QUALIFIED : records qualifiés = même vice (CODE_AGGREGATE sans destination),
+  pour le pilier 3.7 ; branche non contrainte : suppose UNE association nommée à UN
+  choice range (STRING'('a','b','c') positionnel déraillerait).
+- CODE_USED_NAME_ID : retombée silencieuse — aligner sur le style bruyant de
+  CODE_USED_OBJECT_ID (others → message + PROGRAM_ERROR).
+- 'IMAGE/'VALUE d'énuméré hors générique → pilier 3.5.5.
+
+## 5. Prochaine séquence
+
+1. (Option) correctif VEC3'RANGE, re-passer ARRAY_TEST2 → attendu final `1 3`.
+2. **Filet complet** : ARRAY_TEST1 v2 (beaucoup de code partagé a bougé :
+   COMP_SIZE_BITS, CODE_SLICE, CODE_RETURN, chaîne d'opérateurs) + séries ACVC
+   A2–A8 + tests maison + auto-compilation. Tag git de clôture de campagne.
+3. Lot **D2** : macro LEXCMP paramétrée taille × signe (repe cmpsb inutilisable :
+   little-endian multi-octets et signés ; énumérés/CHARACTER non signés, INTEGER
+   signé), règle du préfixe, puis LI 0 + CLT/CLE/CGT/CGE côté expander.
+4. Lot **D3** : BLKAND/BLKOU/BLKOUX + NOT composite (copie + OUX octet), mêmes
+   prologue/épilogue que la concat.
+5. Mise à jour DIANA_COUVERTURE_TRIAGE (D4/D8 sortent de la dette) et de la table
+   « fondations » de la synthèse.
+

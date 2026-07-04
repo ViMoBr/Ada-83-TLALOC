@@ -12,16 +12,97 @@ ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 ; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
+; CODE composite "=" _VECTOR_DIGITS
+VAR	ANON_20_13_L2_G_data, q
+VAR	ANON_20_13_L2_G_info, q
+VAR	ANON_20_13_L2_G_len,  q
+VAR	ANON_20_13_L2_G_slice_data, q
+VAR	ANON_20_13_L2_G_slice_len,  q
+VAR	ANON_20_13_L2_G_disp, q
+VAR	ANON_20_13_L2_G__u,   q
+namespace ANON_20_13_L2_G_info
+  VAR SIZ,      d
+  VAR _COMP_SIZ, d
+  VAR _FST_1,    d
+  VAR _LST_1,    d
+end namespace
 	La 1, -V_ofs
 	LIVA 	, 0, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.D
 	La 1, -V_ofs
 	LId	, 0, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.L
-	INC
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SUB
+	INC
+	CLAMP0
 	LI	2
 	MUL
+	Sa  1, ANON_20_13_L2_G_slice_len
+	Sa  1, ANON_20_13_L2_G_slice_data
+	La  1, ANON_20_13_L2_G_slice_data
+	Sa  1, ANON_20_13_L2_G_disp
+	LVA 1, ANON_20_13_L2_G_info.SIZ
+	Sa  1, ANON_20_13_L2_G__u
+	LI	1
+	Sd  1, ANON_20_13_L2_G_info._FST_1
+	La  1, ANON_20_13_L2_G_slice_len
+	Sd  1, ANON_20_13_L2_G_info._LST_1
+	LI	8
+	Sd  1, ANON_20_13_L2_G_info._COMP_SIZ
+	La  1, ANON_20_13_L2_G_slice_len
+	LI	8
+	MUL
+	Sd  1, ANON_20_13_L2_G_info.SIZ
+	LVA 1, ANON_20_13_L2_G_disp
+	DUP
+	La  ,  0
+	Sa  1, ANON_20_13_L2_G_data
+	La  ,  8
+	Sa  1, ANON_20_13_L2_G_info
+	LId 1, ANON_20_13_L2_G_info, _VECTOR_DIGITS.LST_1
+	LId 1, ANON_20_13_L2_G_info, _VECTOR_DIGITS.FST_1
+	SUB
+	INC
+	CLAMP0
+	LI	2
+	MUL
+	Sa  1, ANON_20_13_L2_G_len
+VAR	ANON_20_31_L2_D_data, q
+VAR	ANON_20_31_L2_D_info, q
+VAR	ANON_20_31_L2_D_len,  q
+VAR	ANON_20_31_L2_D_disp, q
+VAR	ANON_20_31_L2_D__u,   q
+namespace ANON_20_31_L2_D_info
+  VAR SIZ,      d
+  VAR _COMP_SIZ, d
+  VAR _FST_1,    d
+  VAR _LST_1,    d
+end namespace
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd  1, ANON_20_31_L2_D_info._FST_1
+	La 1, -V_ofs
+	LId	, 0, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.L
+	DUP
+	Sd  1, ANON_20_31_L2_D_info._LST_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	SUB
+	INC
+	CLAMP0
+	LI	16
+	Sd  1, ANON_20_31_L2_D_info._COMP_SIZ
+	DUP
+	LI	16
+	MUL
+	Sd  1, ANON_20_31_L2_D_info.SIZ
+	LI	2
+	MUL
+	CO_VAR
+	Sa  1, ANON_20_31_L2_D_disp
+	LVA 1, ANON_20_31_L2_D_info.SIZ
+	Sa  1, ANON_20_31_L2_D__u
+	La  1, ANON_20_31_L2_D_disp
 					; Assign_array_aggregate dynamic type DN_ARRAY
 namespace ANON_20_31_aga
   VAR _FST_1, d
@@ -42,6 +123,7 @@ end namespace
 	Ld  1, ANON_20_31_aga._FST_1
 	SUB
 	INC
+	CLAMP0
 	Sd  1, ANON_20_31_aga._LEN_1
 	LI	2
 	Sd  1, ANON_20_31_aga._STR_1
@@ -54,12 +136,13 @@ end namespace
 	LI	1
 	SUB
 	INC
+	CLAMP0
 	Sd  1, ANON_20_31_aga._CNT_1
 	Ld  1, ANON_20_31_aga._CNT_1
 	LI	0
 	CLE
-	BT  L3
-L2:
+	BT  L5
+L4:
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	SIw  1, ANON_20_31_aga._PTR_1, 0
@@ -76,9 +159,33 @@ L2:
 	Sd  1, ANON_20_31_aga._CNT_1
 	LI	0
 	CGT
-	BT  L2
-L3:
+	BT  L4
+L5:
+	LVA 1, ANON_20_31_L2_D_disp
+	DUP
+	La  ,  0
+	Sa  1, ANON_20_31_L2_D_data
+	La  ,  8
+	Sa  1, ANON_20_31_L2_D_info
+	LId 1, ANON_20_31_L2_D_info, _VECTOR_DIGITS.LST_1
+	LId 1, ANON_20_31_L2_D_info, _VECTOR_DIGITS.FST_1
+	SUB
+	INC
+	CLAMP0
+	LI	2
+	MUL
+	Sa  1, ANON_20_31_L2_D_len
+	La  1, ANON_20_13_L2_G_len
+	La  1, ANON_20_31_L2_D_len
 	CEQ
+	DUP
+	BF	L3
+	DROP
+	La  1, ANON_20_13_L2_G_data
+	La  1, ANON_20_13_L2_G_len
+	La  1, ANON_20_31_L2_D_data
+	BLKCMP
+L3:
 	Sb  1,	-result__ofs
 	BRA ret_lbl
 ret_lbl:
@@ -194,7 +301,8 @@ begin:					;---------- BDY INSTRUCTIONS
 	UBFX
 	LI	2
 	CEQ
-	BF	L5
+	ET
+	BF	L7
 					; debut if
 	La 1, -A_ofs
 	La	-1, 0
@@ -205,7 +313,7 @@ begin:					;---------- BDY INSTRUCTIONS
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	CEQ
-	BF	L7
+	BF	L9
 ; CODE_RETURN : EXPR TYPE = DN_INTEGER
 	La 1, -A_ofs
 	La	-1, 0
@@ -216,8 +324,8 @@ begin:					;---------- BDY INSTRUCTIONS
 ; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
 	Sd  1,	-result__ofs
 	BRA ret_lbl
-	BRA	L6
-L7:
+	BRA	L8
+L9:
 	La 1, -A_ofs
 	La	-1, 0
 	Ld
@@ -227,7 +335,7 @@ L7:
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	CEQ
-	BF	L8
+	BF	L10
 ; CODE_RETURN : EXPR TYPE = DN_INTEGER
 	La 1, -A_ofs
 	La	-1, 0
@@ -242,14 +350,14 @@ L7:
 ; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
 	Sd  1,	-result__ofs
 	BRA ret_lbl
+	BRA	L8
+L10:
+L8:					; post if
 	BRA	L6
-L8:
+L7:
 L6:					; post if
-	BRA	L4
-L5:
-L4:					; post if
-STR STR_L9, "ERR U_POS"			; constante string="ERR U_POS"
-	LCA	STR_L9.data_ptr
+STR STR_L11, "ERR U_POS"			; constante string="ERR U_POS"
+	LCA	STR_L11.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
 ret_lbl:
 	UNLINK 1
@@ -275,7 +383,8 @@ begin:					;---------- BDY INSTRUCTIONS
 	La  1,	-RIGHT_ofs
 	LVA 0,	STANDARD.IDL.TREE_VOID_disp
 	CEQ
-	BF	L11
+	OU
+	BF	L13
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   1,	-result__ofs
 	La  ,  0
@@ -284,8 +393,8 @@ begin:					;---------- BDY INSTRUCTIONS
 	La  ,  0
 	BLKMOV
 	BRA ret_lbl
-	BRA	L10
-L11:
+	BRA	L12
+L13:
 	La 1, -LEFT_ofs
 	La	-1, 0
 	Ld
@@ -295,7 +404,7 @@ L11:
 	LI	3
 	CEQ
 	DUP
-	BF	L14
+	BF	L16
 	DROP
 	La 1, -LEFT_ofs
 	La	-1, 0
@@ -305,9 +414,9 @@ L11:
 	UBFX
 	LI	2
 	CEQ
-L14:
+L16:
 	DUP
-	BT	L13
+	BT	L15
 	DROP
 	La 1, -LEFT_ofs
 	La	-1, 0
@@ -317,8 +426,8 @@ L14:
 	UBFX
 	LI	2
 	CEQ
-L13:
-	BF	L12
+L15:
+	BF	L14
 namespace	BLOCK__1
 ELB 2					;    BODY ELAB
 VAR L_SPREAD_disp, q			; variable record : pointeur aux data record
@@ -352,14 +461,14 @@ begin:					;---------- BDY INSTRUCTIONS
 	LIw	2, R_SPREAD_disp, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.S
 	CEQ
 	DUP
-	BF	L17
+	BF	L19
 	DROP
 	LI	0					; lieu resultat sur pile
 	LVA 2,	R_SPREAD_disp
 	LVA 2,	L_SPREAD_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS. ,V_EQUAL_L18
-L17:
-	BF	L16
+L19:
+	BF	L18
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   2,	-result__ofs
 	La  ,  0
@@ -380,8 +489,8 @@ VAR	ANON_80_10__dat, STANDARD.IDL._TREE.size
 	BLKMOV
 	UNLINK 2
 	BRA ret_lbl
-	BRA	L15
-L16:
+	BRA	L17
+L18:
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   2,	-result__ofs
 	La  ,  0
@@ -402,11 +511,11 @@ VAR	ANON_82_10__dat, STANDARD.IDL._TREE.size
 	BLKMOV
 	UNLINK 2
 	BRA ret_lbl
-L15:					; post if
+L17:					; post if
 	UNLINK 2
 endPRO
-	BRA	L10
-L12:
+	BRA	L12
+L14:
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   1,	-result__ofs
 	La  ,  0
@@ -474,7 +583,7 @@ VAR	ANON_86_45__dat, STANDARD.IDL._TREE.size
 	La  ,  0
 	BLKMOV
 	BRA ret_lbl
-L10:					; post if
+L12:					; post if
 ret_lbl:
 	UNLINK 1
 	RTD	prm_siz-8
@@ -508,8 +617,6 @@ VAR	ANON_97_17__dat, STANDARD.IDL._TREE.size
 	La  1,	-RIGHT_ofs
 	La  1,	-LEFT_ofs
 	CALL	STANDARD.IDL.SEM_PHASE_L11.UARITH. ,U_EQUAL_L24
-	LI	1
-	OUX
 	La  ,  0
 	BLKMOV
 	BRA ret_lbl
@@ -537,7 +644,8 @@ begin:					;---------- BDY INSTRUCTIONS
 	La  1,	-RIGHT_ofs
 	LVA 0,	STANDARD.IDL.TREE_VOID_disp
 	CEQ
-	BF	L19
+	OU
+	BF	L21
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   1,	-result__ofs
 	La  ,  0
@@ -546,44 +654,9 @@ begin:					;---------- BDY INSTRUCTIONS
 	La  ,  0
 	BLKMOV
 	BRA ret_lbl
-	BRA	L18
-L19:
+	BRA	L20
+L21:
 	La 1, -LEFT_ofs
-	La	-1, 0
-	Ld
-	LI	0
-	LI	2
-	UBFX
-	LI	3
-	CEQ
-	DUP
-	BF	L23
-	DROP
-	La 1, -LEFT_ofs
-	La	-1, 0
-	Ld
-	LI	24
-	LI	8
-	UBFX
-	LI	2
-	CEQ
-L23:
-	DUP
-	BT	L22
-	DROP
-	La 1, -LEFT_ofs
-	La	-1, 0
-	Ld
-	LI	24
-	LI	8
-	UBFX
-	LI	2
-	CEQ
-L22:
-	DUP
-	BF	L21
-	DROP
-	La 1, -RIGHT_ofs
 	La	-1, 0
 	Ld
 	LI	0
@@ -594,7 +667,7 @@ L22:
 	DUP
 	BF	L25
 	DROP
-	La 1, -RIGHT_ofs
+	La 1, -LEFT_ofs
 	La	-1, 0
 	Ld
 	LI	24
@@ -606,7 +679,7 @@ L25:
 	DUP
 	BT	L24
 	DROP
-	La 1, -RIGHT_ofs
+	La 1, -LEFT_ofs
 	La	-1, 0
 	Ld
 	LI	24
@@ -615,8 +688,43 @@ L25:
 	LI	2
 	CEQ
 L24:
-L21:
-	BF	L20
+	DUP
+	BF	L23
+	DROP
+	La 1, -RIGHT_ofs
+	La	-1, 0
+	Ld
+	LI	0
+	LI	2
+	UBFX
+	LI	3
+	CEQ
+	DUP
+	BF	L27
+	DROP
+	La 1, -RIGHT_ofs
+	La	-1, 0
+	Ld
+	LI	24
+	LI	8
+	UBFX
+	LI	2
+	CEQ
+L27:
+	DUP
+	BT	L26
+	DROP
+	La 1, -RIGHT_ofs
+	La	-1, 0
+	Ld
+	LI	24
+	LI	8
+	UBFX
+	LI	2
+	CEQ
+L26:
+L23:
+	BF	L22
 namespace	BLOCK__2
 ELB 2					;    BODY ELAB
 VAR L_SPREAD_disp, q			; variable record : pointeur aux data record
@@ -650,21 +758,21 @@ begin:					;---------- BDY INSTRUCTIONS
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	CLT
-	BF	L27
+	BF	L29
 					; debut if
 	LIw	2, R_SPREAD_disp, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.S
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	CGT
 	DUP
-	BT	L30
+	BT	L32
 	DROP
 	LI	0					; lieu resultat sur pile
 	LVA 2,	L_SPREAD_disp
 	LVA 2,	R_SPREAD_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS. ,V_LESS_L19
-L30:
-	BF	L29
+L32:
+	BF	L31
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   2,	-result__ofs
 	La  ,  0
@@ -685,25 +793,25 @@ VAR	ANON_120_12__dat, STANDARD.IDL._TREE.size
 	BLKMOV
 	UNLINK 2
 	BRA ret_lbl
+	BRA	L30
+L31:
+L30:					; post if
 	BRA	L28
 L29:
-L28:					; post if
-	BRA	L26
-L27:
 					; debut if
 	LIw	2, R_SPREAD_disp, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.S
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	CGT
 	DUP
-	BF	L33
+	BF	L35
 	DROP
 	LI	0					; lieu resultat sur pile
 	LVA 2,	R_SPREAD_disp
 	LVA 2,	L_SPREAD_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS. ,V_LESS_L19
-L33:
-	BF	L32
+L35:
+	BF	L34
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   2,	-result__ofs
 	La  ,  0
@@ -724,10 +832,10 @@ VAR	ANON_124_12__dat, STANDARD.IDL._TREE.size
 	BLKMOV
 	UNLINK 2
 	BRA ret_lbl
-	BRA	L31
-L32:
-L31:					; post if
-L26:					; post if
+	BRA	L33
+L34:
+L33:					; post if
+L28:					; post if
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   2,	-result__ofs
 	La  ,  0
@@ -750,8 +858,8 @@ VAR	ANON_127_17__dat, STANDARD.IDL._TREE.size
 	BRA ret_lbl
 	UNLINK 2
 endPRO
-	BRA	L18
-L20:
+	BRA	L20
+L22:
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   1,	-result__ofs
 	La  ,  0
@@ -810,7 +918,7 @@ VAR	ANON_132_26__dat, STANDARD.IDL._TREE.size
 	La  ,  0
 	BLKMOV
 	BRA ret_lbl
-L18:					; post if
+L20:					; post if
 ret_lbl:
 	UNLINK 1
 	RTD	prm_siz
@@ -835,8 +943,6 @@ begin:					;---------- BDY INSTRUCTIONS
 	La  1,	-RIGHT_ofs
 	La  1,	-LEFT_ofs
 	CLT
-	LI	1
-	OUX
 	La  ,  0
 	BLKMOV
 	BRA ret_lbl
@@ -891,8 +997,6 @@ begin:					;---------- BDY INSTRUCTIONS
 	La  1,	-LEFT_ofs
 	La  1,	-RIGHT_ofs
 	CLT
-	LI	1
-	OUX
 	La  ,  0
 	BLKMOV
 	BRA ret_lbl
@@ -917,7 +1021,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	La  1,	-VALUE_ofs
 	LVA 0,	STANDARD.IDL.TREE_VOID_disp
 	CEQ
-	BF	L35
+	BF	L37
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   1,	-result__ofs
 	La  ,  0
@@ -926,9 +1030,9 @@ begin:					;---------- BDY INSTRUCTIONS
 	La  ,  0
 	BLKMOV
 	BRA ret_lbl
-	BRA	L34
-L35:
-L34:					; post if
+	BRA	L36
+L37:
+L36:					; post if
 					; debut if
 	La 1, -DISCRETE_RANGE_ofs
 	La	-1, 0
@@ -938,7 +1042,7 @@ L34:					; post if
 	UBFX
 	LI	154
 	CEQ
-	BF	L37
+	BF	L39
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   1,	-result__ofs
 	La  ,  0
@@ -983,11 +1087,12 @@ VAR	ANON_179_34__dat, STANDARD.IDL._TREE.size
 	CALL	STANDARD.IDL. ,D_L17
 	CALL	STANDARD.IDL.SEM_PHASE_L11.EXPRESO. ,GET_STATIC_VALUE_L157
 	CLE
+	ET
 	La  ,  0
 	BLKMOV
 	BRA ret_lbl
-	BRA	L36
-L37:
+	BRA	L38
+L39:
 	La 1, -DISCRETE_RANGE_ofs
 	La	-1, 0
 	Ld
@@ -996,9 +1101,9 @@ L37:
 	UBFX
 	LI	155
 	CEQ
-	BF	L38
-STR STR_L39, "!! $$$$ RANGE ATTR DISCR SUBT"	; constante string="!! $$$$ RANGE ATTR DISCR SUBT"
-	LCA	STR_L39.data_ptr
+	BF	L40
+STR STR_L41, "!! $$$$ RANGE ATTR DISCR SUBT"	; constante string="!! $$$$ RANGE ATTR DISCR SUBT"
+	LCA	STR_L41.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   1,	-result__ofs
@@ -1008,8 +1113,8 @@ STR STR_L39, "!! $$$$ RANGE ATTR DISCR SUBT"	; constante string="!! $$$$ RANGE A
 	La  ,  0
 	BLKMOV
 	BRA ret_lbl
-	BRA	L36
-L38:
+	BRA	L38
+L40:
 	La 1, -DISCRETE_RANGE_ofs
 	La	-1, 0
 	Ld
@@ -1018,7 +1123,7 @@ L38:
 	UBFX
 	LI	156
 	CEQ
-	BF	L40
+	BF	L42
 namespace	BLOCK__3
 ELB 2					;    BODY ELAB
 VAR SUBTYPE_INDICATION_disp, q		; variable record : pointeur aux data record
@@ -1097,7 +1202,7 @@ VAR	ANON_189_40__dat, STANDARD.IDL._TREE.size
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 					; debut if
-	BF	L42
+	BF	L44
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   2,	-result__ofs
 	La  ,  0
@@ -1117,10 +1222,10 @@ VAR	ANON_192_10__dat, STANDARD.IDL._TREE.size
 	BLKMOV
 	UNLINK 2
 	BRA ret_lbl
-	BRA	L41
-L42:
+	BRA	L43
+L44:
 	DUP
-	BF	L44
+	BF	L46
 	DROP
 VAR	ANON_193_66_disp, q
 VAR	ANON_193_66__u,    q
@@ -1135,8 +1240,8 @@ VAR	ANON_193_66__dat, STANDARD.IDL._TREE.size
 	CALL	STANDARD.IDL. ,D_L17
 	LVA 0,	STANDARD.IDL.TREE_VOID_disp
 	CNE
-L44:
-	BF	L43
+L46:
+	BF	L45
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   2,	-result__ofs
 	La  ,  0
@@ -1167,18 +1272,18 @@ VAR	ANON_194_27__dat, STANDARD.IDL._TREE.size
 	BLKMOV
 	UNLINK 2
 	BRA ret_lbl
-	BRA	L41
-L43:
+	BRA	L43
+L45:
 	LVA 2,	CONSTRAINT_disp
 	LVA 0,	STANDARD.IDL.TREE_VOID_disp
 	CNE
-	BF	L45
-STR STR_L46, "!! $$$$ U_MEMBER: INDEX/DSCRMT CONSTRAINT"	; constante string="!! $$$$ U_MEMBER: INDEX/DSCRMT CONSTRAINT"
-	LCA	STR_L46.data_ptr
+	BF	L47
+STR STR_L48, "!! $$$$ U_MEMBER: INDEX/DSCRMT CONSTRAINT"	; constante string="!! $$$$ U_MEMBER: INDEX/DSCRMT CONSTRAINT"
+	LCA	STR_L48.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-	BRA	L41
-L45:
-L41:					; post if
+	BRA	L43
+L47:
+L43:					; post if
 					; debut if
 VAR	ANON_200_13_disp, q
 VAR	ANON_200_13__u,    q
@@ -1193,7 +1298,7 @@ VAR	ANON_200_13__dat, STANDARD.IDL._TREE.size
 	CALL	STANDARD.IDL. ,D_L17
 	LVA 0,	STANDARD.IDL.TREE_VOID_disp
 	CEQ
-	BF	L48
+	BF	L50
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   2,	-result__ofs
 	La  ,  0
@@ -1203,9 +1308,9 @@ VAR	ANON_200_13__dat, STANDARD.IDL._TREE.size
 	BLKMOV
 	UNLINK 2
 	BRA ret_lbl
-	BRA	L47
-L48:
-L47:					; post if
+	BRA	L49
+L50:
+L49:					; post if
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   2,	-result__ofs
 	La  ,  0
@@ -1260,9 +1365,9 @@ VAR	ANON_204_63__dat, STANDARD.IDL._TREE.size
 	BRA ret_lbl
 	UNLINK 2
 endPRO
-	BRA	L36
-L40:
-L36:					; post if
+	BRA	L38
+L42:
+L38:					; post if
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   1,	-result__ofs
 	La  ,  0
@@ -1457,7 +1562,8 @@ begin:					;---------- BDY INSTRUCTIONS
 	La  1,	-RIGHT_ofs
 	LVA 0,	STANDARD.IDL.TREE_VOID_disp
 	CEQ
-	BF	L50
+	OU
+	BF	L52
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   1,	-result__ofs
 	La  ,  0
@@ -1466,8 +1572,8 @@ begin:					;---------- BDY INSTRUCTIONS
 	La  ,  0
 	BLKMOV
 	BRA ret_lbl
-	BRA	L49
-L50:
+	BRA	L51
+L52:
 	La 1, -LEFT_ofs
 	La	-1, 0
 	Ld
@@ -1486,7 +1592,8 @@ L50:
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	CGT
-	BF	L51
+	ET
+	BF	L53
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   1,	-result__ofs
 	La  ,  0
@@ -1506,8 +1613,8 @@ VAR	ANON_259_15__dat, STANDARD.IDL._TREE.size
 	La  ,  0
 	BLKMOV
 	BRA ret_lbl
-	BRA	L49
-L51:
+	BRA	L51
+L53:
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   1,	-result__ofs
 	La  ,  0
@@ -1527,7 +1634,7 @@ VAR	ANON_261_15__dat, STANDARD.IDL._TREE.size
 	La  ,  0
 	BLKMOV
 	BRA ret_lbl
-L49:					; post if
+L51:					; post if
 ret_lbl:
 	UNLINK 1
 	RTD	prm_siz
@@ -1552,7 +1659,8 @@ begin:					;---------- BDY INSTRUCTIONS
 	La  1,	-RIGHT_ofs
 	LVA 0,	STANDARD.IDL.TREE_VOID_disp
 	CEQ
-	BF	L53
+	OU
+	BF	L55
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   1,	-result__ofs
 	La  ,  0
@@ -1561,8 +1669,8 @@ begin:					;---------- BDY INSTRUCTIONS
 	La  ,  0
 	BLKMOV
 	BRA ret_lbl
-	BRA	L52
-L53:
+	BRA	L54
+L55:
 	La 1, -LEFT_ofs
 	La	-1, 0
 	Ld
@@ -1581,7 +1689,8 @@ L53:
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	CGT
-	BF	L54
+	OU
+	BF	L56
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   1,	-result__ofs
 	La  ,  0
@@ -1601,8 +1710,8 @@ VAR	ANON_275_15__dat, STANDARD.IDL._TREE.size
 	La  ,  0
 	BLKMOV
 	BRA ret_lbl
-	BRA	L52
-L54:
+	BRA	L54
+L56:
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   1,	-result__ofs
 	La  ,  0
@@ -1622,7 +1731,7 @@ VAR	ANON_277_15__dat, STANDARD.IDL._TREE.size
 	La  ,  0
 	BLKMOV
 	BRA ret_lbl
-L52:					; post if
+L54:					; post if
 ret_lbl:
 	UNLINK 1
 	RTD	prm_siz
@@ -1647,7 +1756,8 @@ begin:					;---------- BDY INSTRUCTIONS
 	La  1,	-RIGHT_ofs
 	LVA 0,	STANDARD.IDL.TREE_VOID_disp
 	CEQ
-	BF	L56
+	OU
+	BF	L58
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   1,	-result__ofs
 	La  ,  0
@@ -1656,8 +1766,8 @@ begin:					;---------- BDY INSTRUCTIONS
 	La  ,  0
 	BLKMOV
 	BRA ret_lbl
-	BRA	L55
-L56:
+	BRA	L57
+L58:
 	La 1, -LEFT_ofs
 	La	-1, 0
 	Ld
@@ -1671,7 +1781,7 @@ L56:
 	LI	15
 	UBFX
 	CNE
-	BF	L57
+	BF	L59
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   1,	-result__ofs
 	La  ,  0
@@ -1691,8 +1801,8 @@ VAR	ANON_291_15__dat, STANDARD.IDL._TREE.size
 	La  ,  0
 	BLKMOV
 	BRA ret_lbl
-	BRA	L55
-L57:
+	BRA	L57
+L59:
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   1,	-result__ofs
 	La  ,  0
@@ -1712,7 +1822,7 @@ VAR	ANON_293_15__dat, STANDARD.IDL._TREE.size
 	La  ,  0
 	BLKMOV
 	BRA ret_lbl
-L55:					; post if
+L57:					; post if
 ret_lbl:
 	UNLINK 1
 	RTD	prm_siz
@@ -1733,7 +1843,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	La  1,	-RIGHT_ofs
 	LVA 0,	STANDARD.IDL.TREE_VOID_disp
 	CEQ
-	BF	L59
+	BF	L61
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   1,	-result__ofs
 	La  ,  0
@@ -1742,8 +1852,8 @@ begin:					;---------- BDY INSTRUCTIONS
 	La  ,  0
 	BLKMOV
 	BRA ret_lbl
-	BRA	L58
-L59:
+	BRA	L60
+L61:
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   1,	-result__ofs
 	La  ,  0
@@ -1774,7 +1884,7 @@ VAR	ANON_308_12__dat, STANDARD.IDL._TREE.size
 	La  ,  0
 	BLKMOV
 	BRA ret_lbl
-L58:					; post if
+L60:					; post if
 ret_lbl:
 	UNLINK 1
 	RTD	prm_siz
@@ -1795,7 +1905,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	La  1,	-RIGHT_ofs
 	LVA 0,	STANDARD.IDL.TREE_VOID_disp
 	CEQ
-	BF	L61
+	BF	L63
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   1,	-result__ofs
 	La  ,  0
@@ -1804,8 +1914,8 @@ begin:					;---------- BDY INSTRUCTIONS
 	La  ,  0
 	BLKMOV
 	BRA ret_lbl
-	BRA	L60
-L61:
+	BRA	L62
+L63:
 	La 1, -RIGHT_ofs
 	La	-1, 0
 	Ld
@@ -1815,7 +1925,7 @@ L61:
 	LI	3
 	CEQ
 	DUP
-	BF	L64
+	BF	L66
 	DROP
 	La 1, -RIGHT_ofs
 	La	-1, 0
@@ -1825,9 +1935,9 @@ L61:
 	UBFX
 	LI	2
 	CEQ
-L64:
+L66:
 	DUP
-	BT	L63
+	BT	L65
 	DROP
 	La 1, -RIGHT_ofs
 	La	-1, 0
@@ -1837,8 +1947,8 @@ L64:
 	UBFX
 	LI	2
 	CEQ
-L63:
-	BF	L62
+L65:
+	BF	L64
 namespace	BLOCK__4
 ELB 2					;    BODY ELAB
 VAR R_SPREAD_disp, q			; variable record : pointeur aux data record
@@ -1880,8 +1990,8 @@ VAR	ANON_323_14__dat, STANDARD.IDL._TREE.size
 	BRA ret_lbl
 	UNLINK 2
 endPRO
-	BRA	L60
-L62:
+	BRA	L62
+L64:
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   1,	-result__ofs
 	La  ,  0
@@ -1924,7 +2034,7 @@ VAR	ANON_326_23__dat, STANDARD.IDL._TREE.size
 	La  ,  0
 	BLKMOV
 	BRA ret_lbl
-L60:					; post if
+L62:					; post if
 ret_lbl:
 	UNLINK 1
 	RTD	prm_siz
@@ -1945,7 +2055,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	La  1,	-RIGHT_ofs
 	LVA 0,	STANDARD.IDL.TREE_VOID_disp
 	CEQ
-	BF	L66
+	BF	L68
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   1,	-result__ofs
 	La  ,  0
@@ -1954,8 +2064,8 @@ begin:					;---------- BDY INSTRUCTIONS
 	La  ,  0
 	BLKMOV
 	BRA ret_lbl
-	BRA	L65
-L66:
+	BRA	L67
+L68:
 	La 1, -RIGHT_ofs
 	La	-1, 0
 	Ld
@@ -1965,7 +2075,7 @@ L66:
 	LI	3
 	CEQ
 	DUP
-	BF	L69
+	BF	L71
 	DROP
 	La 1, -RIGHT_ofs
 	La	-1, 0
@@ -1975,9 +2085,9 @@ L66:
 	UBFX
 	LI	2
 	CEQ
-L69:
+L71:
 	DUP
-	BT	L68
+	BT	L70
 	DROP
 	La 1, -RIGHT_ofs
 	La	-1, 0
@@ -1987,8 +2097,8 @@ L69:
 	UBFX
 	LI	2
 	CEQ
-L68:
-	BF	L67
+L70:
+	BF	L69
 namespace	BLOCK__5
 ELB 2					;    BODY ELAB
 VAR R_SPREAD_disp, q			; variable record : pointeur aux data record
@@ -2010,7 +2120,7 @@ begin:					;---------- BDY INSTRUCTIONS
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	CGT
-	BF	L71
+	BF	L73
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   2,	-result__ofs
 	La  ,  0
@@ -2020,8 +2130,8 @@ begin:					;---------- BDY INSTRUCTIONS
 	BLKMOV
 	UNLINK 2
 	BRA ret_lbl
-	BRA	L70
-L71:
+	BRA	L72
+L73:
 	LIVA 	2, R_SPREAD_disp, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.S
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
@@ -2045,11 +2155,11 @@ VAR	ANON_345_16__dat, STANDARD.IDL._TREE.size
 	BLKMOV
 	UNLINK 2
 	BRA ret_lbl
-L70:					; post if
+L72:					; post if
 	UNLINK 2
 endPRO
-	BRA	L65
-L67:
+	BRA	L67
+L69:
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   1,	-result__ofs
 	La  ,  0
@@ -2092,7 +2202,7 @@ VAR	ANON_349_25__dat, STANDARD.IDL._TREE.size
 	La  ,  0
 	BLKMOV
 	BRA ret_lbl
-L65:					; post if
+L67:					; post if
 ret_lbl:
 	UNLINK 1
 	RTD	prm_siz
@@ -2117,7 +2227,8 @@ begin:					;---------- BDY INSTRUCTIONS
 	La  1,	-RIGHT_ofs
 	LVA 0,	STANDARD.IDL.TREE_VOID_disp
 	CEQ
-	BF	L73
+	OU
+	BF	L75
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   1,	-result__ofs
 	La  ,  0
@@ -2126,8 +2237,8 @@ begin:					;---------- BDY INSTRUCTIONS
 	La  ,  0
 	BLKMOV
 	BRA ret_lbl
-	BRA	L72
-L73:
+	BRA	L74
+L75:
 	La 1, -LEFT_ofs
 	La	-1, 0
 	Ld
@@ -2137,7 +2248,7 @@ L73:
 	LI	3
 	CEQ
 	DUP
-	BF	L76
+	BF	L78
 	DROP
 	La 1, -LEFT_ofs
 	La	-1, 0
@@ -2147,9 +2258,9 @@ L73:
 	UBFX
 	LI	2
 	CEQ
-L76:
+L78:
 	DUP
-	BT	L75
+	BT	L77
 	DROP
 	La 1, -LEFT_ofs
 	La	-1, 0
@@ -2159,8 +2270,8 @@ L76:
 	UBFX
 	LI	2
 	CEQ
-L75:
-	BF	L74
+L77:
+	BF	L76
 namespace	BLOCK__6
 ELB 2					;    BODY ELAB
 VAR L_SPREAD_disp, q			; variable record : pointeur aux data record
@@ -2193,7 +2304,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	LIw	2, L_SPREAD_disp, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.S
 	LIw	2, R_SPREAD_disp, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.S
 	CEQ
-	BF	L78
+	BF	L80
 	LVA  2,	R_SPREAD_disp
 	LVA 2,	L_SPREAD_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS. ,V_ADD_L10
@@ -2216,13 +2327,13 @@ VAR	ANON_368_16__dat, STANDARD.IDL._TREE.size
 	BLKMOV
 	UNLINK 2
 	BRA ret_lbl
-	BRA	L77
-L78:
+	BRA	L79
+L80:
 	LI	0					; lieu resultat sur pile
 	LVA 2,	R_SPREAD_disp
 	LVA 2,	L_SPREAD_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS. ,V_EQUAL_L18
-	BF	L79
+	BF	L81
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   2,	-result__ofs
 	La  ,  0
@@ -2243,13 +2354,13 @@ VAR	ANON_371_16__dat, STANDARD.IDL._TREE.size
 	BLKMOV
 	UNLINK 2
 	BRA ret_lbl
-	BRA	L77
-L79:
+	BRA	L79
+L81:
 	LI	0					; lieu resultat sur pile
 	LVA 2,	R_SPREAD_disp
 	LVA 2,	L_SPREAD_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS. ,V_LESS_L19
-	BF	L80
+	BF	L82
 	LVA  2,	R_SPREAD_disp
 	LVA 2,	L_SPREAD_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS. ,V_SUB_L11
@@ -2272,8 +2383,8 @@ VAR	ANON_375_16__dat, STANDARD.IDL._TREE.size
 	BLKMOV
 	UNLINK 2
 	BRA ret_lbl
-	BRA	L77
-L80:
+	BRA	L79
+L82:
 	LVA  2,	L_SPREAD_disp
 	LVA 2,	R_SPREAD_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS. ,V_SUB_L11
@@ -2296,11 +2407,11 @@ VAR	ANON_379_16__dat, STANDARD.IDL._TREE.size
 	BLKMOV
 	UNLINK 2
 	BRA ret_lbl
-L77:					; post if
+L79:					; post if
 	UNLINK 2
 endPRO
-	BRA	L72
-L74:
+	BRA	L74
+L76:
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   1,	-result__ofs
 	La  ,  0
@@ -2394,7 +2505,7 @@ VAR	ANON_384_78__dat, STANDARD.IDL._TREE.size
 	La  ,  0
 	BLKMOV
 	BRA ret_lbl
-L72:					; post if
+L74:					; post if
 ret_lbl:
 	UNLINK 1
 	RTD	prm_siz
@@ -2419,7 +2530,8 @@ begin:					;---------- BDY INSTRUCTIONS
 	La  1,	-RIGHT_ofs
 	LVA 0,	STANDARD.IDL.TREE_VOID_disp
 	CEQ
-	BF	L82
+	OU
+	BF	L84
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   1,	-result__ofs
 	La  ,  0
@@ -2428,8 +2540,8 @@ begin:					;---------- BDY INSTRUCTIONS
 	La  ,  0
 	BLKMOV
 	BRA ret_lbl
-	BRA	L81
-L82:
+	BRA	L83
+L84:
 	La 1, -LEFT_ofs
 	La	-1, 0
 	Ld
@@ -2439,7 +2551,7 @@ L82:
 	LI	3
 	CEQ
 	DUP
-	BF	L85
+	BF	L87
 	DROP
 	La 1, -LEFT_ofs
 	La	-1, 0
@@ -2449,9 +2561,9 @@ L82:
 	UBFX
 	LI	2
 	CEQ
-L85:
+L87:
 	DUP
-	BT	L84
+	BT	L86
 	DROP
 	La 1, -LEFT_ofs
 	La	-1, 0
@@ -2461,8 +2573,8 @@ L85:
 	UBFX
 	LI	2
 	CEQ
-L84:
-	BF	L83
+L86:
+	BF	L85
 namespace	BLOCK__7
 ELB 2					;    BODY ELAB
 VAR L_SPREAD_disp, q			; variable record : pointeur aux data record
@@ -2499,7 +2611,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	LIw	2, L_SPREAD_disp, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.S
 	LIw	2, R_SPREAD_disp, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.S
 	CEQ
-	BF	L87
+	BF	L89
 	LVA  2,	R_SPREAD_disp
 	LVA 2,	L_SPREAD_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS. ,V_ADD_L10
@@ -2522,13 +2634,13 @@ VAR	ANON_406_16__dat, STANDARD.IDL._TREE.size
 	BLKMOV
 	UNLINK 2
 	BRA ret_lbl
-	BRA	L86
-L87:
+	BRA	L88
+L89:
 	LI	0					; lieu resultat sur pile
 	LVA 2,	R_SPREAD_disp
 	LVA 2,	L_SPREAD_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS. ,V_EQUAL_L18
-	BF	L88
+	BF	L90
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   2,	-result__ofs
 	La  ,  0
@@ -2549,13 +2661,13 @@ VAR	ANON_409_16__dat, STANDARD.IDL._TREE.size
 	BLKMOV
 	UNLINK 2
 	BRA ret_lbl
-	BRA	L86
-L88:
+	BRA	L88
+L90:
 	LI	0					; lieu resultat sur pile
 	LVA 2,	R_SPREAD_disp
 	LVA 2,	L_SPREAD_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS. ,V_LESS_L19
-	BF	L89
+	BF	L91
 	LVA  2,	R_SPREAD_disp
 	LVA 2,	L_SPREAD_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS. ,V_SUB_L11
@@ -2578,8 +2690,8 @@ VAR	ANON_413_16__dat, STANDARD.IDL._TREE.size
 	BLKMOV
 	UNLINK 2
 	BRA ret_lbl
-	BRA	L86
-L89:
+	BRA	L88
+L91:
 	LVA  2,	L_SPREAD_disp
 	LVA 2,	R_SPREAD_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS. ,V_SUB_L11
@@ -2602,11 +2714,11 @@ VAR	ANON_416_16__dat, STANDARD.IDL._TREE.size
 	BLKMOV
 	UNLINK 2
 	BRA ret_lbl
-L86:					; post if
+L88:					; post if
 	UNLINK 2
 endPRO
-	BRA	L81
-L83:
+	BRA	L83
+L85:
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   1,	-result__ofs
 	La  ,  0
@@ -2700,7 +2812,7 @@ VAR	ANON_421_78__dat, STANDARD.IDL._TREE.size
 	La  ,  0
 	BLKMOV
 	BRA ret_lbl
-L81:					; post if
+L83:					; post if
 ret_lbl:
 	UNLINK 1
 	RTD	prm_siz
@@ -2726,7 +2838,7 @@ VAR LEFT_IS_INT_disp, d			; variable bool char enum
 	LI	3
 	CEQ
 	DUP
-	BF	L91
+	BF	L93
 	DROP
 	La 1, -LEFT_ofs
 	La	-1, 0
@@ -2736,9 +2848,9 @@ VAR LEFT_IS_INT_disp, d			; variable bool char enum
 	UBFX
 	LI	2
 	CEQ
-L91:
+L93:
 	DUP
-	BT	L90
+	BT	L92
 	DROP
 	La 1, -LEFT_ofs
 	La	-1, 0
@@ -2748,7 +2860,7 @@ L91:
 	UBFX
 	LI	2
 	CEQ
-L90:
+L92:
 	Sb  1,	LEFT_IS_INT_disp
 
 VAR RIGHT_IS_INT_disp, d			; variable bool char enum
@@ -2761,7 +2873,7 @@ VAR RIGHT_IS_INT_disp, d			; variable bool char enum
 	LI	3
 	CEQ
 	DUP
-	BF	L93
+	BF	L95
 	DROP
 	La 1, -RIGHT_ofs
 	La	-1, 0
@@ -2771,9 +2883,9 @@ VAR RIGHT_IS_INT_disp, d			; variable bool char enum
 	UBFX
 	LI	2
 	CEQ
-L93:
+L95:
 	DUP
-	BT	L92
+	BT	L94
 	DROP
 	La 1, -RIGHT_ofs
 	La	-1, 0
@@ -2783,7 +2895,7 @@ L93:
 	UBFX
 	LI	2
 	CEQ
-L92:
+L94:
 	Sb  1,	RIGHT_IS_INT_disp
 
 					;    end elab
@@ -2795,7 +2907,8 @@ begin:					;---------- BDY INSTRUCTIONS
 	La  1,	-RIGHT_ofs
 	LVA 0,	STANDARD.IDL.TREE_VOID_disp
 	CEQ
-	BF	L95
+	OU
+	BF	L97
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   1,	-result__ofs
 	La  ,  0
@@ -2804,11 +2917,12 @@ begin:					;---------- BDY INSTRUCTIONS
 	La  ,  0
 	BLKMOV
 	BRA ret_lbl
-	BRA	L94
-L95:
+	BRA	L96
+L97:
 	Lb 1,	LEFT_IS_INT_disp
 	Lb 1,	RIGHT_IS_INT_disp
-	BF	L96
+	ET
+	BF	L98
 namespace	BLOCK__8
 ELB 2					;    BODY ELAB
 VAR L_SPREAD_disp, q			; variable record : pointeur aux data record
@@ -2876,10 +2990,10 @@ VAR	ANON_445_14__dat, STANDARD.IDL._TREE.size
 	BRA ret_lbl
 	UNLINK 2
 endPRO
-	BRA	L94
-L96:
+	BRA	L96
+L98:
 	Lb 1,	RIGHT_IS_INT_disp
-	BF	L97
+	BF	L99
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   1,	-result__ofs
 	La  ,  0
@@ -2923,10 +3037,10 @@ VAR	ANON_448_20__dat, STANDARD.IDL._TREE.size
 	La  ,  0
 	BLKMOV
 	BRA ret_lbl
-	BRA	L94
-L97:
+	BRA	L96
+L99:
 	Lb 1,	LEFT_IS_INT_disp
-	BF	L98
+	BF	L100
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   1,	-result__ofs
 	La  ,  0
@@ -2937,8 +3051,8 @@ L97:
 	La  ,  0
 	BLKMOV
 	BRA ret_lbl
-	BRA	L94
-L98:
+	BRA	L96
+L100:
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   1,	-result__ofs
 	La  ,  0
@@ -3006,7 +3120,7 @@ VAR	ANON_452_42__dat, STANDARD.IDL._TREE.size
 	La  ,  0
 	BLKMOV
 	BRA ret_lbl
-L94:					; post if
+L96:					; post if
 ret_lbl:
 	UNLINK 1
 	RTD	prm_siz
@@ -3032,7 +3146,7 @@ VAR LEFT_IS_INT_disp, d			; variable bool char enum
 	LI	3
 	CEQ
 	DUP
-	BF	L100
+	BF	L102
 	DROP
 	La 1, -LEFT_ofs
 	La	-1, 0
@@ -3042,9 +3156,9 @@ VAR LEFT_IS_INT_disp, d			; variable bool char enum
 	UBFX
 	LI	2
 	CEQ
-L100:
+L102:
 	DUP
-	BT	L99
+	BT	L101
 	DROP
 	La 1, -LEFT_ofs
 	La	-1, 0
@@ -3054,7 +3168,7 @@ L100:
 	UBFX
 	LI	2
 	CEQ
-L99:
+L101:
 	Sb  1,	LEFT_IS_INT_disp
 
 VAR RIGHT_IS_INT_disp, d			; variable bool char enum
@@ -3067,7 +3181,7 @@ VAR RIGHT_IS_INT_disp, d			; variable bool char enum
 	LI	3
 	CEQ
 	DUP
-	BF	L102
+	BF	L104
 	DROP
 	La 1, -RIGHT_ofs
 	La	-1, 0
@@ -3077,9 +3191,9 @@ VAR RIGHT_IS_INT_disp, d			; variable bool char enum
 	UBFX
 	LI	2
 	CEQ
-L102:
+L104:
 	DUP
-	BT	L101
+	BT	L103
 	DROP
 	La 1, -RIGHT_ofs
 	La	-1, 0
@@ -3089,7 +3203,7 @@ L102:
 	UBFX
 	LI	2
 	CEQ
-L101:
+L103:
 	Sb  1,	RIGHT_IS_INT_disp
 
 					;    end elab
@@ -3101,7 +3215,8 @@ begin:					;---------- BDY INSTRUCTIONS
 	La  1,	-RIGHT_ofs
 	LVA 0,	STANDARD.IDL.TREE_VOID_disp
 	CEQ
-	BF	L104
+	OU
+	BF	L106
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   1,	-result__ofs
 	La  ,  0
@@ -3110,11 +3225,12 @@ begin:					;---------- BDY INSTRUCTIONS
 	La  ,  0
 	BLKMOV
 	BRA ret_lbl
-	BRA	L103
-L104:
+	BRA	L105
+L106:
 	Lb 1,	LEFT_IS_INT_disp
 	Lb 1,	RIGHT_IS_INT_disp
-	BF	L105
+	ET
+	BF	L107
 namespace	BLOCK__9
 ELB 2					;    BODY ELAB
 VAR L_SPREAD_disp, q			; variable record : pointeur aux data record
@@ -3153,7 +3269,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	LI	0					; lieu resultat sur pile
 	LVA 2,	R_SPREAD_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.UARITH. ,IS_ZERO_L1
-	BF	L107
+	BF	L109
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   2,	-result__ofs
 	La  ,  0
@@ -3163,9 +3279,9 @@ begin:					;---------- BDY INSTRUCTIONS
 	BLKMOV
 	UNLINK 2
 	BRA ret_lbl
-	BRA	L106
-L107:
-L106:					; post if
+	BRA	L108
+L109:
+L108:					; post if
 	LVA  2,	L_SPREAD_disp
 	La  1,	-LEFT_ofs
 	CALL	STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS. ,SPREAD_L7
@@ -3199,10 +3315,10 @@ VAR	ANON_477_14__dat, STANDARD.IDL._TREE.size
 	BRA ret_lbl
 	UNLINK 2
 endPRO
-	BRA	L103
-L105:
+	BRA	L105
+L107:
 	Lb 1,	RIGHT_IS_INT_disp
-	BF	L108
+	BF	L110
 					; debut if
 	La  1,	-RIGHT_ofs
 VAR	ANON_480_16_disp, q
@@ -3218,7 +3334,7 @@ VAR	ANON_480_16__dat, STANDARD.IDL._TREE.size
 	LI	0
 	CALL	STANDARD.IDL.SEM_PHASE_L11.UARITH. ,U_VAL_L21
 	CEQ
-	BF	L110
+	BF	L112
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   1,	-result__ofs
 	La  ,  0
@@ -3227,9 +3343,9 @@ VAR	ANON_480_16__dat, STANDARD.IDL._TREE.size
 	La  ,  0
 	BLKMOV
 	BRA ret_lbl
-	BRA	L109
-L110:
-L109:					; post if
+	BRA	L111
+L112:
+L111:					; post if
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   1,	-result__ofs
 	La  ,  0
@@ -3273,8 +3389,8 @@ VAR	ANON_483_20__dat, STANDARD.IDL._TREE.size
 	La  ,  0
 	BLKMOV
 	BRA ret_lbl
-	BRA	L103
-L108:
+	BRA	L105
+L110:
 					; debut if
 VAR	ANON_485_8_disp, q
 VAR	ANON_485_8__u,    q
@@ -3301,7 +3417,7 @@ VAR	ANON_485_31__dat, STANDARD.IDL._TREE.size
 	LI	0
 	CALL	STANDARD.IDL.SEM_PHASE_L11.UARITH. ,U_VAL_L21
 	CEQ
-	BF	L112
+	BF	L114
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   1,	-result__ofs
 	La  ,  0
@@ -3310,9 +3426,9 @@ VAR	ANON_485_31__dat, STANDARD.IDL._TREE.size
 	La  ,  0
 	BLKMOV
 	BRA ret_lbl
-	BRA	L111
-L112:
-L111:					; post if
+	BRA	L113
+L114:
+L113:					; post if
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   1,	-result__ofs
 	La  ,  0
@@ -3380,7 +3496,7 @@ VAR	ANON_488_42__dat, STANDARD.IDL._TREE.size
 	La  ,  0
 	BLKMOV
 	BRA ret_lbl
-L103:					; post if
+L105:					; post if
 ret_lbl:
 	UNLINK 1
 	RTD	prm_siz
@@ -3405,7 +3521,8 @@ begin:					;---------- BDY INSTRUCTIONS
 	La  1,	-RIGHT_ofs
 	LVA 0,	STANDARD.IDL.TREE_VOID_disp
 	CEQ
-	BF	L114
+	OU
+	BF	L116
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   1,	-result__ofs
 	La  ,  0
@@ -3414,8 +3531,8 @@ begin:					;---------- BDY INSTRUCTIONS
 	La  ,  0
 	BLKMOV
 	BRA ret_lbl
-	BRA	L113
-L114:
+	BRA	L115
+L116:
 namespace	BLOCK__10
 ELB 2					;    BODY ELAB
 VAR L_SPREAD_disp, q			; variable record : pointeur aux data record
@@ -3457,7 +3574,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	LI	0					; lieu resultat sur pile
 	LVA 2,	R_SPREAD_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.UARITH. ,IS_ZERO_L1
-	BF	L116
+	BF	L118
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   2,	-result__ofs
 	La  ,  0
@@ -3467,9 +3584,9 @@ begin:					;---------- BDY INSTRUCTIONS
 	BLKMOV
 	UNLINK 2
 	BRA ret_lbl
-	BRA	L115
-L116:
-L115:					; post if
+	BRA	L117
+L118:
+L117:					; post if
 	LVA  2,	TEMP_disp
 	LVA  2,	L_SPREAD_disp
 	LVA 2,	R_SPREAD_disp
@@ -3479,39 +3596,39 @@ L115:					; post if
 	LIw	2, R_SPREAD_disp, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.S
 	CNE
 	DUP
-	BF	L119
+	BF	L121
 	DROP
 	LI	0					; lieu resultat sur pile
 	LVA 2,	L_SPREAD_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.UARITH. ,IS_ZERO_L1
-	LI	1
-	OUX
-L119:
-	BF	L118
+L121:
+	BF	L120
 	LVA  2,	R_SPREAD_disp
 	LVA 2,	L_SPREAD_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS. ,V_SUB_L11
 	LIVA 	2, L_SPREAD_disp, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.D
 	LId	2, R_SPREAD_disp, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.L
-	INC
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SUB
+	INC
+	CLAMP0
 	LI	2
 	MUL
 	LIVA 	2, R_SPREAD_disp, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.D
 	LId	2, R_SPREAD_disp, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.L
-	INC
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SUB
+	INC
+	CLAMP0
 	LI	2
 	MUL
 	DROP
 	BLKMOV
-	BRA	L117
-L118:
-L117:					; post if
+	BRA	L119
+L120:
+L119:					; post if
 	LIVA 	2, L_SPREAD_disp, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.S
 	LIw	2, R_SPREAD_disp, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.S
 	Sw
@@ -3536,7 +3653,7 @@ VAR	ANON_516_14__dat, STANDARD.IDL._TREE.size
 	BRA ret_lbl
 	UNLINK 2
 endPRO
-L113:					; post if
+L115:					; post if
 ret_lbl:
 	UNLINK 1
 	RTD	prm_siz
@@ -3561,7 +3678,8 @@ begin:					;---------- BDY INSTRUCTIONS
 	La  1,	-RIGHT_ofs
 	LVA 0,	STANDARD.IDL.TREE_VOID_disp
 	CEQ
-	BF	L121
+	OU
+	BF	L123
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   1,	-result__ofs
 	La  ,  0
@@ -3570,8 +3688,8 @@ begin:					;---------- BDY INSTRUCTIONS
 	La  ,  0
 	BLKMOV
 	BRA ret_lbl
-	BRA	L120
-L121:
+	BRA	L122
+L123:
 namespace	BLOCK__11
 ELB 2					;    BODY ELAB
 VAR L_SPREAD_disp, q			; variable record : pointeur aux data record
@@ -3613,7 +3731,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	LI	0					; lieu resultat sur pile
 	LVA 2,	R_SPREAD_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.UARITH. ,IS_ZERO_L1
-	BF	L123
+	BF	L125
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   2,	-result__ofs
 	La  ,  0
@@ -3623,9 +3741,9 @@ begin:					;---------- BDY INSTRUCTIONS
 	BLKMOV
 	UNLINK 2
 	BRA ret_lbl
-	BRA	L122
-L123:
-L122:					; post if
+	BRA	L124
+L125:
+L124:					; post if
 	LVA  2,	TEMP_disp
 	LVA  2,	L_SPREAD_disp
 	LVA 2,	R_SPREAD_disp
@@ -3651,7 +3769,7 @@ VAR	ANON_540_14__dat, STANDARD.IDL._TREE.size
 	BRA ret_lbl
 	UNLINK 2
 endPRO
-L120:					; post if
+L122:					; post if
 ret_lbl:
 	UNLINK 1
 	RTD	prm_siz
@@ -3676,7 +3794,8 @@ begin:					;---------- BDY INSTRUCTIONS
 	La  1,	-RIGHT_ofs
 	LVA 0,	STANDARD.IDL.TREE_VOID_disp
 	CEQ
-	BF	L125
+	OU
+	BF	L127
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   1,	-result__ofs
 	La  ,  0
@@ -3685,8 +3804,8 @@ begin:					;---------- BDY INSTRUCTIONS
 	La  ,  0
 	BLKMOV
 	BRA ret_lbl
-	BRA	L124
-L125:
+	BRA	L126
+L127:
 	La 1, -LEFT_ofs
 	La	-1, 0
 	Ld
@@ -3696,7 +3815,7 @@ L125:
 	LI	3
 	CEQ
 	DUP
-	BF	L128
+	BF	L130
 	DROP
 	La 1, -LEFT_ofs
 	La	-1, 0
@@ -3706,9 +3825,9 @@ L125:
 	UBFX
 	LI	2
 	CEQ
-L128:
+L130:
 	DUP
-	BT	L127
+	BT	L129
 	DROP
 	La 1, -LEFT_ofs
 	La	-1, 0
@@ -3718,8 +3837,8 @@ L128:
 	UBFX
 	LI	2
 	CEQ
-L127:
-	BF	L126
+L129:
+	BF	L128
 namespace	BLOCK__12
 ELB 2					;    BODY ELAB
 VAR L_SPREAD_disp, q			; variable record : pointeur aux data record
@@ -3762,7 +3881,7 @@ begin:					;---------- BDY INSTRUCTIONS
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	CLT
-	BF	L130
+	BF	L132
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   2,	-result__ofs
 	La  ,  0
@@ -3772,9 +3891,9 @@ begin:					;---------- BDY INSTRUCTIONS
 	BLKMOV
 	UNLINK 2
 	BRA ret_lbl
-	BRA	L129
-L130:
-L129:					; post if
+	BRA	L131
+L132:
+L131:					; post if
 	LVA  2,	L_SPREAD_disp
 	La  1,	-LEFT_ofs
 	CALL	STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS. ,SPREAD_L7
@@ -3787,7 +3906,7 @@ LOOP__13:
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	CGT
-	BF	L131
+	BF	L133
 	LVA  2,	TEMP_disp
 	LVA 2,	RESULT_disp
 	LVA 2,	L_SPREAD_disp
@@ -3809,7 +3928,7 @@ LOOP__13:
 	SUB
 	Sd  2,	COUNT_disp
 	BRA	LOOP__13
-L131:					; post loop LOOP__13
+L133:					; post loop LOOP__13
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   2,	-result__ofs
 	La  ,  0
@@ -3831,8 +3950,8 @@ VAR	ANON_571_16__dat, STANDARD.IDL._TREE.size
 	BRA ret_lbl
 	UNLINK 2
 endPRO
-	BRA	L124
-L126:
+	BRA	L126
+L128:
 					; debut if
 	LI	0					; lieu resultat sur pile
 	La  1,	-RIGHT_ofs
@@ -3840,7 +3959,7 @@ L126:
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	CGE
-	BF	L133
+	BF	L135
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   1,	-result__ofs
 	La  ,  0
@@ -3867,7 +3986,7 @@ VAR	ANON_576_55__dat, STANDARD.IDL._TREE.size
 	LI  161
 	CALL	STANDARD.IDL. ,D_L17
 	La  1,	-RIGHT_ofs
-; CODE_DN_BLTN_OPERATOR_ID : EXP ENTIERE GENERALE A FAIRE
+; CODE_DN_BLTN_OPERATOR_ID : EXPONENTIELLE ENTIERE GENERALE A FAIRE
 VAR	ANON_576_25_disp, q
 VAR	ANON_576_25__u,    q
 VAR	ANON_576_25__dat, STANDARD.IDL._TREE.size
@@ -3881,13 +4000,13 @@ VAR	ANON_576_25__dat, STANDARD.IDL._TREE.size
 	LI  160
 	CALL	STANDARD.IDL. ,D_L17
 	La  1,	-RIGHT_ofs
-; CODE_DN_BLTN_OPERATOR_ID : EXP ENTIERE GENERALE A FAIRE
+; CODE_DN_BLTN_OPERATOR_ID : EXPONENTIELLE ENTIERE GENERALE A FAIRE
 	CALL	STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS. ,U_REAL_L6
 	La  ,  0
 	BLKMOV
 	BRA ret_lbl
-	BRA	L132
-L133:
+	BRA	L134
+L135:
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   1,	-result__ofs
 	La  ,  0
@@ -3915,7 +4034,7 @@ VAR	ANON_578_59__dat, STANDARD.IDL._TREE.size
 	CALL	STANDARD.IDL. ,D_L17
 	La  1,	-RIGHT_ofs
 	NEG
-; CODE_DN_BLTN_OPERATOR_ID : EXP ENTIERE GENERALE A FAIRE
+; CODE_DN_BLTN_OPERATOR_ID : EXPONENTIELLE ENTIERE GENERALE A FAIRE
 VAR	ANON_578_25_disp, q
 VAR	ANON_578_25__u,    q
 VAR	ANON_578_25__dat, STANDARD.IDL._TREE.size
@@ -3930,13 +4049,13 @@ VAR	ANON_578_25__dat, STANDARD.IDL._TREE.size
 	CALL	STANDARD.IDL. ,D_L17
 	La  1,	-RIGHT_ofs
 	NEG
-; CODE_DN_BLTN_OPERATOR_ID : EXP ENTIERE GENERALE A FAIRE
+; CODE_DN_BLTN_OPERATOR_ID : EXPONENTIELLE ENTIERE GENERALE A FAIRE
 	CALL	STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS. ,U_REAL_L6
 	La  ,  0
 	BLKMOV
 	BRA ret_lbl
-L132:					; post if
-L124:					; post if
+L134:					; post if
+L126:					; post if
 ret_lbl:
 	UNLINK 1
 	RTD	prm_siz

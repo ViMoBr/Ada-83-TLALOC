@@ -39,6 +39,7 @@ VAR _LST_1, d
 	Ld	2, _FST_1
 	SUB
 	INC
+	CLAMP0
 	MUL
 	Sd	2, SIZ
   virtual at 4
@@ -81,6 +82,7 @@ end namespace
 	Ld  2, ANON_22_24_aga._FST_1
 	SUB
 	INC
+	CLAMP0
 	Sd  2, ANON_22_24_aga._LEN_1
 	LI	4
 	Sd  2, ANON_22_24_aga._STR_1
@@ -193,6 +195,7 @@ L11:
 	LI	5
 	SUB
 	INC
+	CLAMP0
 	Sd  2, ANON_22_24_aga._CNT_1
 	Ld  2, ANON_22_24_aga._CNT_1
 	LI	0
@@ -306,6 +309,7 @@ VAR _LST_1, d
 	Ld	2, _FST_1
 	SUB
 	INC
+	CLAMP0
 	MUL
 	Sd	2, SIZ
   virtual at 4
@@ -349,6 +353,7 @@ VAR _LST_1, d
 	Ld	2, _FST_1
 	SUB
 	INC
+	CLAMP0
 	MUL
 	Sd	2, SIZ
   virtual at 4
@@ -392,6 +397,7 @@ VAR _LST_1, d
 	Ld	2, _FST_1
 	SUB
 	INC
+	CLAMP0
 	MUL
 	Sd	2, SIZ
   virtual at 4
@@ -433,12 +439,28 @@ begin:					;---------- BDY INSTRUCTIONS
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	8
 	Sd  2,	I2_disp
-	La  2,	C1_disp
+	LVA 2,	C1_disp
+	La
+	LId	2, STANDARD.A21001A_L1.BLOCK__1.C1__u, 0
+	LI	8
+	DIV
 STR ANON_45_17, "ABCDEF"			; constante string="ABCDEF"
-	La  2,	C2_disp
-	La  2,	C1_disp
-	La  2,	C1_disp
-	La  2,	C3_disp
+	LCA	ANON_45_17.data_ptr
+	La
+	BLKMOV
+	LVA 2,	C2_disp
+	La
+	LId	2, STANDARD.A21001A_L1.BLOCK__1.C2__u, 0
+	LI	8
+	DIV
+	LVA 2,	C1_disp
+	La
+	BLKMOV
+	LVA 2,	C3_disp
+	La
+	LId	2, STANDARD.A21001A_L1.BLOCK__1.C3__u, 0
+	LI	8
+	DIV
 ; CODE & concat _STRING
 VAR	ANON_47_17_L16_G_data, q
 VAR	ANON_47_17_L16_G_info, q
@@ -464,6 +486,7 @@ end namespace
 	LId 2, ANON_47_17_L16_G_info, _STRING.FST_1
 	SUB
 	INC
+	CLAMP0
 	Sa  2, ANON_47_17_L16_G_len
 	LVA 2,	C2_disp
 	DUP
@@ -475,6 +498,7 @@ end namespace
 	LId 2, ANON_47_22_L16_D_info, _STRING.FST_1
 	SUB
 	INC
+	CLAMP0
 	Sa  2, ANON_47_22_L16_D_len
 	La  2, ANON_47_17_L16_G_len
 	La  2, ANON_47_22_L16_D_len
@@ -508,6 +532,8 @@ end namespace
 	La  2, ANON_47_22_L16_D_data
 	BLKMOV
 	LVA 2, ANON_47_17_L16_R_disp
+	La
+	BLKMOV
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	13
 	Sd  2,	I2_disp
@@ -526,10 +552,12 @@ end namespace
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	4
 	CEQ
+	ET
 	Ld 2,	I1_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	8
 	CLT
+	ET
 	BF	L18
 	BRA	L17
 L18:

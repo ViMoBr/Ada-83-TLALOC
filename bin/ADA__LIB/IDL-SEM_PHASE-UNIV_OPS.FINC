@@ -51,6 +51,7 @@ VAR _LST_1, d
 	Ld	0, _FST_1
 	SUB
 	INC
+	CLAMP0
 	MUL
 	Sd	0, SIZ
   virtual at 4
@@ -558,6 +559,7 @@ L11:
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	2768
 	CEQ
+	ET
 L19:
 	BF	L18
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
@@ -647,6 +649,7 @@ L17:					; post if
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	2767
 	CLE
+	ET
 L22:
 	BF	L21
 					; debut if
@@ -1788,6 +1791,7 @@ STR ANON_220_15_L55_G, "!! SPREAD NSIZ NOT 0/1 ="	; constante string="!! SPREAD 
 	LId 1, ANON_220_15_L55_G_info, _STRING.FST_1
 	SUB
 	INC
+	CLAMP0
 	Sa  1, ANON_220_15_L55_G_len
 VAR	ANON_220_44_disp, q
 VAR	ANON_220_44__u,   q
@@ -1816,6 +1820,7 @@ end namespace
 	LId 1, ANON_220_44_L55_D_info, _STRING.FST_1
 	SUB
 	INC
+	CLAMP0
 	Sa  1, ANON_220_44_L55_D_len
 	La  1, ANON_220_15_L55_G_len
 	La  1, ANON_220_44_L55_D_len
@@ -1938,6 +1943,7 @@ STR ANON_231_17_L62_G, "!! CANNOT SPREAD "	; constante string="!! CANNOT SPREAD 
 	LId 2, ANON_231_17_L62_G_info, _STRING.FST_1
 	SUB
 	INC
+	CLAMP0
 	Sa  2, ANON_231_17_L62_G_len
 VAR	ANON_231_39_disp, q
 VAR	ANON_231_39__u,   q
@@ -1961,6 +1967,7 @@ end namespace
 	LId 2, ANON_231_39_L62_D_info, _STRING.FST_1
 	SUB
 	INC
+	CLAMP0
 	Sa  2, ANON_231_39_L62_D_len
 	La  2, ANON_231_17_L62_G_len
 	La  2, ANON_231_39_L62_D_len
@@ -2175,6 +2182,7 @@ ENLEVE_ZEROS_NON_SIGNIF:
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	CEQ
+	ET
 	BF	L70
 	La 1, -V_ofs
 	LIVA 	, 0, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.L
@@ -3330,8 +3338,6 @@ LOOP__17:
 	La  1,	-A_ofs
 	La  1,	-R_ofs
 	CALL	STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS. ,V_LESS_L19
-	LI	1
-	OUX
 	BF	L124
 					; debut if
 	La 1, -R_ofs
@@ -3942,27 +3948,126 @@ begin:					;---------- BDY INSTRUCTIONS
 	BRA	L153
 L154:
 ; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
+; CODE composite "=" _VECTOR_DIGITS
+VAR	ANON_562_12_L155_G_data, q
+VAR	ANON_562_12_L155_G_info, q
+VAR	ANON_562_12_L155_G_len,  q
+VAR	ANON_562_12_L155_G_slice_data, q
+VAR	ANON_562_12_L155_G_slice_len,  q
+VAR	ANON_562_12_L155_G_disp, q
+VAR	ANON_562_12_L155_G__u,   q
+namespace ANON_562_12_L155_G_info
+  VAR SIZ,      d
+  VAR _COMP_SIZ, d
+  VAR _FST_1,    d
+  VAR _LST_1,    d
+end namespace
 	La 1, -A_ofs
 	LIVA 	, 0, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.D
 	La 1, -A_ofs
 	LId	, 0, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.L
-	INC
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SUB
+	INC
+	CLAMP0
 	LI	2
 	MUL
+	Sa  1, ANON_562_12_L155_G_slice_len
+	Sa  1, ANON_562_12_L155_G_slice_data
+	La  1, ANON_562_12_L155_G_slice_data
+	Sa  1, ANON_562_12_L155_G_disp
+	LVA 1, ANON_562_12_L155_G_info.SIZ
+	Sa  1, ANON_562_12_L155_G__u
+	LI	1
+	Sd  1, ANON_562_12_L155_G_info._FST_1
+	La  1, ANON_562_12_L155_G_slice_len
+	Sd  1, ANON_562_12_L155_G_info._LST_1
+	LI	8
+	Sd  1, ANON_562_12_L155_G_info._COMP_SIZ
+	La  1, ANON_562_12_L155_G_slice_len
+	LI	8
+	MUL
+	Sd  1, ANON_562_12_L155_G_info.SIZ
+	LVA 1, ANON_562_12_L155_G_disp
+	DUP
+	La  ,  0
+	Sa  1, ANON_562_12_L155_G_data
+	La  ,  8
+	Sa  1, ANON_562_12_L155_G_info
+	LId 1, ANON_562_12_L155_G_info, _VECTOR_DIGITS.LST_1
+	LId 1, ANON_562_12_L155_G_info, _VECTOR_DIGITS.FST_1
+	SUB
+	INC
+	CLAMP0
+	LI	2
+	MUL
+	Sa  1, ANON_562_12_L155_G_len
+VAR	ANON_562_26_L155_D_data, q
+VAR	ANON_562_26_L155_D_info, q
+VAR	ANON_562_26_L155_D_len,  q
+VAR	ANON_562_26_L155_D_slice_data, q
+VAR	ANON_562_26_L155_D_slice_len,  q
+VAR	ANON_562_26_L155_D_disp, q
+VAR	ANON_562_26_L155_D__u,   q
+namespace ANON_562_26_L155_D_info
+  VAR SIZ,      d
+  VAR _COMP_SIZ, d
+  VAR _FST_1,    d
+  VAR _LST_1,    d
+end namespace
 	La 1, -B_ofs
 	LIVA 	, 0, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.D
 	La 1, -B_ofs
 	LId	, 0, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.L
-	INC
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SUB
+	INC
+	CLAMP0
 	LI	2
 	MUL
+	Sa  1, ANON_562_26_L155_D_slice_len
+	Sa  1, ANON_562_26_L155_D_slice_data
+	La  1, ANON_562_26_L155_D_slice_data
+	Sa  1, ANON_562_26_L155_D_disp
+	LVA 1, ANON_562_26_L155_D_info.SIZ
+	Sa  1, ANON_562_26_L155_D__u
+	LI	1
+	Sd  1, ANON_562_26_L155_D_info._FST_1
+	La  1, ANON_562_26_L155_D_slice_len
+	Sd  1, ANON_562_26_L155_D_info._LST_1
+	LI	8
+	Sd  1, ANON_562_26_L155_D_info._COMP_SIZ
+	La  1, ANON_562_26_L155_D_slice_len
+	LI	8
+	MUL
+	Sd  1, ANON_562_26_L155_D_info.SIZ
+	LVA 1, ANON_562_26_L155_D_disp
+	DUP
+	La  ,  0
+	Sa  1, ANON_562_26_L155_D_data
+	La  ,  8
+	Sa  1, ANON_562_26_L155_D_info
+	LId 1, ANON_562_26_L155_D_info, _VECTOR_DIGITS.LST_1
+	LId 1, ANON_562_26_L155_D_info, _VECTOR_DIGITS.FST_1
+	SUB
+	INC
+	CLAMP0
+	LI	2
+	MUL
+	Sa  1, ANON_562_26_L155_D_len
+	La  1, ANON_562_12_L155_G_len
+	La  1, ANON_562_26_L155_D_len
 	CEQ
+	DUP
+	BF	L156
+	DROP
+	La  1, ANON_562_12_L155_G_data
+	La  1, ANON_562_12_L155_G_len
+	La  1, ANON_562_26_L155_D_data
+	BLKCMP
+L156:
 	Sb  1,	-result__ofs
 	BRA ret_lbl
 L153:					; post if
@@ -3989,7 +4094,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	La 1, -B_ofs
 	LId	, 0, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.L
 	CNE
-	BF	L156
+	BF	L158
 ; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
 	La 1, -A_ofs
 	LId	, 0, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.L
@@ -3998,31 +4103,31 @@ begin:					;---------- BDY INSTRUCTIONS
 	CLT
 	Sb  1,	-result__ofs
 	BRA ret_lbl
-	BRA	L155
-L156:
-L155:					; post if
-VAR	IL158_disp, d				; compteur boucle LOOP__20
+	BRA	L157
+L158:
+L157:					; post if
+VAR	IL160_disp, d				; compteur boucle LOOP__20
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
-	Sd  1,	IL158_disp
-VAR	LMT_IL158_disp, d			; limite boucle LOOP__20
+	Sd  1,	IL160_disp
+VAR	LMT_IL160_disp, d			; limite boucle LOOP__20
 	La 1, -A_ofs
 	LId	, 0, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.L
-	Sd  1,	LMT_IL158_disp
-	Ld  1,	IL158_disp				; test null range LOOP__20
-	Ld  1,	LMT_IL158_disp
+	Sd  1,	LMT_IL160_disp
+	Ld  1,	IL160_disp				; test null range LOOP__20
+	Ld  1,	LMT_IL160_disp
 	CGT
-	BT	L157
-	Ld  1,	IL158_disp				; inversion range LOOP__20
-	Ld  1,	LMT_IL158_disp
-	Sd  1,	IL158_disp
-	Sd  1,	LMT_IL158_disp
+	BT	L159
+	Ld  1,	IL160_disp				; inversion range LOOP__20
+	Ld  1,	LMT_IL160_disp
+	Sd  1,	IL160_disp
+	Sd  1,	LMT_IL160_disp
 LOOP__20:					; corps boucle LOOP__20
 					; debut if
 	La 1, -A_ofs
 	LIVA 	, 0, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.D
 ; EXPRESSIONS.CODE_INDEXED adresse component id
-	Ld	1, IL158_disp
+	Ld	1, IL160_disp
 	Ld	 1, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR_DIGITS._FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	Ld	 1, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR_DIGITS._COMP_SIZ
@@ -4034,7 +4139,7 @@ LOOP__20:					; corps boucle LOOP__20
 	La 1, -B_ofs
 	LIVA 	, 0, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.D
 ; EXPRESSIONS.CODE_INDEXED adresse component id
-	Ld	1, IL158_disp
+	Ld	1, IL160_disp
 	Ld	 1, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR_DIGITS._FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	Ld	 1, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR_DIGITS._COMP_SIZ
@@ -4044,12 +4149,12 @@ LOOP__20:					; corps boucle LOOP__20
 	ADD					; add offset to start address
 	Lw
 	CNE
-	BF	L160
+	BF	L162
 ; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
 	La 1, -A_ofs
 	LIVA 	, 0, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.D
 ; EXPRESSIONS.CODE_INDEXED adresse component id
-	Ld	1, IL158_disp
+	Ld	1, IL160_disp
 	Ld	 1, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR_DIGITS._FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	Ld	 1, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR_DIGITS._COMP_SIZ
@@ -4061,7 +4166,7 @@ LOOP__20:					; corps boucle LOOP__20
 	La 1, -B_ofs
 	LIVA 	, 0, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.D
 ; EXPRESSIONS.CODE_INDEXED adresse component id
-	Ld	1, IL158_disp
+	Ld	1, IL160_disp
 	Ld	 1, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR_DIGITS._FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	Ld	 1, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR_DIGITS._COMP_SIZ
@@ -4073,18 +4178,18 @@ LOOP__20:					; corps boucle LOOP__20
 	CLT
 	Sb  1,	-result__ofs
 	BRA ret_lbl
-	BRA	L159
-L160:
-L159:					; post if
-	Ld  1,	IL158_disp				; test de sortie LOOP__20
-	Ld  1,	LMT_IL158_disp
+	BRA	L161
+L162:
+L161:					; post if
+	Ld  1,	IL160_disp				; test de sortie LOOP__20
+	Ld  1,	LMT_IL160_disp
 	CEQ
-	BT	L157
-	Ld  1,	IL158_disp				; mise a jour compteur LOOP__20
+	BT	L159
+	Ld  1,	IL160_disp				; mise a jour compteur LOOP__20
 	DEC
-	Sd  1,	IL158_disp
+	Sd  1,	IL160_disp
 	BRA	LOOP__20				; iteration suivante LOOP__20
-L157:					; post loop LOOP__20
+L159:					; post loop LOOP__20
 ; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
 	LI	0
 	Sb  1,	-result__ofs

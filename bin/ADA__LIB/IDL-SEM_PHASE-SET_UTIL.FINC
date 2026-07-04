@@ -624,8 +624,6 @@ begin:					;---------- BDY INSTRUCTIONS
 ; CODE CONVERSION SOURCE DN_RECORD TARGET DN_RECORD
 ; EXPRESSIONS.CODE_CONVERSION cible non faite DN_RECORD
 	CALL	STANDARD.IDL. ,IS_EMPTY_L23
-	LI	1
-	OUX
 	BF	L14
 	LVA 1,	DEFTREE_disp
 	La
@@ -794,8 +792,6 @@ begin:					;---------- BDY INSTRUCTIONS
 	LI	0					; lieu resultat sur pile
 	La  2,	-EXTRALIST_ofs
 	CALL	STANDARD.IDL. ,IS_EMPTY_L23
-	LI	1
-	OUX
 	BF	L18
 	LVA 2,	RESULT_disp
 	La
@@ -991,8 +987,6 @@ LOOP__3:
 	LI	0					; lieu resultat sur pile
 	LVA 2,	TEMP_LIST_disp
 	CALL	STANDARD.IDL. ,IS_EMPTY_L23
-	LI	1
-	OUX
 	BF	L24
 	LVA  2,	TEMP_ITEM_disp
 	LVA  2,	TEMP_LIST_disp
@@ -1037,8 +1031,6 @@ L25:					; post if
 L24:					; post loop LOOP__3
 					; debut if
 	Lb 2,	IS_AMBIGUOUS_disp
-	LI	1
-	OUX
 	BF	L29
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   2,	-result__ofs
@@ -1061,8 +1053,6 @@ LOOP__4:
 	LI	0					; lieu resultat sur pile
 	LVA 2,	TEMP_LIST_disp
 	CALL	STANDARD.IDL. ,IS_EMPTY_L23
-	LI	1
-	OUX
 	BF	L30
 	LVA  2,	TEMP_ITEM_disp
 	LVA  2,	TEMP_LIST_disp
@@ -1078,8 +1068,6 @@ LOOP__4:
 	LVA 2,	TEMP_ITEM_disp
 	LVA 2,	NEW_LIST_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL. ,IS_MEMBER_L1
-	LI	1
-	OUX
 L33:
 	BF	L32
 	LVA 2,	NEW_LIST_disp
@@ -1360,6 +1348,8 @@ L39:
 	LI	7
 	UBFX
 	CGT
+	ET
+	OU
 	BF	L42
 	LVA 2,	OLD_TAIL_disp
 	La
@@ -1549,8 +1539,6 @@ L45:					; post if
 	BF	L48
 					; debut if
 	Lb 1,	IS_CONFLICTING_CONVERSION_disp
-	LI	1
-	OUX
 	BF	L50
 ; CODE & concat _STRING
 VAR	ANON_300_36_L51_G_data, q
@@ -1578,6 +1566,7 @@ STR ANON_300_36_L51_G, "AMBIGUOUS NAME - "	; constante string="AMBIGUOUS NAME - 
 	LId 1, ANON_300_36_L51_G_info, _STRING.FST_1
 	SUB
 	INC
+	CLAMP0
 	Sa  1, ANON_300_36_L51_G_len
 VAR	ANON_300_58_disp, q
 VAR	ANON_300_58__u,   q
@@ -1621,6 +1610,7 @@ VAR	ANON_300_84__dat, STANDARD.IDL._TREE.size
 	LId 1, ANON_300_58_L51_D_info, _STRING.FST_1
 	SUB
 	INC
+	CLAMP0
 	Sa  1, ANON_300_58_L51_D_len
 	La  1, ANON_300_36_L51_G_len
 	La  1, ANON_300_58_L51_D_len
@@ -1695,6 +1685,7 @@ STR ANON_302_36_L52_G, "IMPLICIT CONVERSION CONFLICT - "	; constante string="IMP
 	LId 1, ANON_302_36_L52_G_info, _STRING.FST_1
 	SUB
 	INC
+	CLAMP0
 	Sa  1, ANON_302_36_L52_G_len
 VAR	ANON_302_72_disp, q
 VAR	ANON_302_72__u,   q
@@ -1738,6 +1729,7 @@ VAR	ANON_302_98__dat, STANDARD.IDL._TREE.size
 	LId 1, ANON_302_72_L52_D_info, _STRING.FST_1
 	SUB
 	INC
+	CLAMP0
 	Sa  1, ANON_302_72_L52_D_len
 	La  1, ANON_302_36_L52_G_len
 	La  1, ANON_302_72_L52_D_len
@@ -1836,8 +1828,6 @@ L53:					; post if
 	BF	L56
 					; debut if
 	Lb 1,	IS_CONFLICTING_CONVERSION_disp
-	LI	1
-	OUX
 	BF	L58
 STR STR_L59, "AMBIGUOUS EXPRESSION TYPE"	; constante string="AMBIGUOUS EXPRESSION TYPE"
 	LCA	STR_L59.data_ptr
@@ -2353,6 +2343,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	Lb 2,	PARAM_TYPE_KIND_disp
 	LI	217
 	CEQ
+	OU
 	Sb  2,	-result__ofs
 	BRA ret_lbl
 ret_lbl:
@@ -2367,8 +2358,6 @@ LOOP__7:
 	LI	0					; lieu resultat sur pile
 	LVA 1,	TEMP_DEFSET_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL. ,IS_EMPTY_L74
-	LI	1
-	OUX
 	BF	L69
 	LVA  1,	DEFINTERP_disp
 	LVA  1,	TEMP_DEFSET_disp
@@ -2472,8 +2461,6 @@ LOOP__8:
 	LI	0					; lieu resultat sur pile
 	LVA 1,	TEMP_DEFSET_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL. ,IS_EMPTY_L74
-	LI	1
-	OUX
 	BF	L79
 	LVA  1,	DEFINTERP_disp
 	LVA  1,	TEMP_DEFSET_disp
@@ -2975,8 +2962,6 @@ LOOP__9:
 	LI	0					; lieu resultat sur pile
 	LVA 1,	TEMP_LIST_disp
 	CALL	STANDARD.IDL. ,IS_EMPTY_L23
-	LI	1
-	OUX
 	BF	L89
 					; debut if
 VAR	ANON_518_10_disp, q
@@ -3508,8 +3493,6 @@ LOOP__10:
 	LI	0					; lieu resultat sur pile
 	LVA 2,	CONV_LIST_disp
 	CALL	STANDARD.IDL. ,IS_EMPTY_L23
-	LI	1
-	OUX
 	BF	L103
 	LVA  2,	CONV_ITEM_disp
 	LVA  2,	CONV_LIST_disp
@@ -3524,8 +3507,6 @@ LOOP__11:
 	LI	0					; lieu resultat sur pile
 	LVA 2,	TEMP_LIST_disp
 	CALL	STANDARD.IDL. ,IS_EMPTY_L23
-	LI	1
-	OUX
 	BF	L104
 	LVA  2,	TEMP_ITEM_disp
 	LVA  2,	TEMP_LIST_disp
@@ -3567,8 +3548,6 @@ VAR	ANON_606_23__dat, STANDARD.IDL._SEQ_TYPE.size
 	LVA 2,	TEMP_ITEM_disp
 	CALL	STANDARD.IDL. ,LIST_L22
 	CALL	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL. ,IS_MEMBER_L1
-	LI	1
-	OUX
 	BF	L108
 ; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
 	LI	1
@@ -3614,8 +3593,6 @@ LOOP__12:
 	LI	0					; lieu resultat sur pile
 	LVA 1,	TEMP_LIST_disp
 	CALL	STANDARD.IDL. ,IS_EMPTY_L23
-	LI	1
-	OUX
 	BF	L111
 	LVA  1,	TEMP_ITEM_disp
 	LVA  1,	TEMP_LIST_disp
@@ -3670,6 +3647,7 @@ L112:					; post if
 	UBFX
 	LI	217
 	CEQ
+	OU
 	BF	L115
 					; debut if
 	LI	0					; lieu resultat sur pile
@@ -4055,8 +4033,6 @@ LOOP__14:
 	LI	0					; lieu resultat sur pile
 	LVA 2,	LIST_1_disp
 	CALL	STANDARD.IDL. ,IS_EMPTY_L23
-	LI	1
-	OUX
 	BF	L137
 	LVA 2,	RESULT_disp
 	La

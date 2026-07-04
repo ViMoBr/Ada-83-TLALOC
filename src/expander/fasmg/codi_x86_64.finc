@@ -749,6 +749,14 @@ macro			ABS?
   db 0x48, 0x31, 0x45, 0x00						; xor QWORD PTR [rbp], rax		(X xor allsign)
   db 0x48, 0x29, 0x45, 0x00						; sub QWORD PTR [rbp], rax		( (X xor allsign) -	allsign )
 end macro
+;			-------
+macro			CLAMP0?					; sommet := max( 0, sommet )		(compte d'elements : intervalle nul -> 0)
+;			-------
+  db 0x48, 0x8B, 0x45, 0x00						; mov rax, QWORD PTR [rbp]		(lire dans RAX la valeur top X sur le rbp)
+  db 0x48, 0xC1, 0xF8, 0x3F						; sar rax, 63			(RAX = tout bit de signe = allsign)
+  db 0x48, 0xF7, 0xD0						; not rax				(RAX = masque : 0 si X<0, tout-a-un si X>=0)
+  db 0x48, 0x21, 0x45, 0x00						; and QWORD PTR [rbp], rax		(X and masque = max(0, X))
+end macro
 ;			----
 macro			ADD?
 ;			----
@@ -1429,14 +1437,27 @@ macro			BLKMOV					; Copie de bloc sans recouvrement
   POP_RSI								; adresse	source
   POP_RCX								; nombre octets
   POP_RDI								; adresse	destination
-  db 0x48, 0x85, 0xC9				; test rcx, rcx
-  db 0x74, 0x05					; jz +5  (skip la boucle)
+  db 0x48, 0x85, 0xC9						; test rcx, rcx
+  db 0x74, 0x05							; jz +5  (skip la boucle)
   db 0xFC								; cld			(direction flag montant)
   db 0xAC								; lods al, BYTE PTR	ds:[rsi]
   db 0xAA								; stos BYTE PTR es:[rdi], al
   db 0xE2, 0xFC							; loop transfer		(transfere ecx octets
 end macro
-
+;			------
+macro			BLKCMP					; Comparaison de blocs : empile 1 si egaux, 0 sinon (LEN=0 -> 1)
+;			------
+  POP_RSI								; adresse B
+  POP_RCX								; nombre octets
+  POP_RDI								; adresse A
+  db 0x31, 0xC0							; xor eax, eax		(RAX=0 et ZF=1 : blocs vides egaux)
+  db 0x48, 0x85, 0xC9						; test rcx, rcx
+  db 0x74, 0x03							; jz +3			(saute cld + repe cmpsb, ZF=1 conserve)
+  db 0xFC								; cld			(direction flag montant)
+  db 0xF3, 0xA6							; repe cmpsb		(ZF=1 ssi tous octets egaux)
+  db 0x0F, 0x94, 0xC0						; sete al			(AL=1 si ZF)
+  PUSH_RAX
+end macro
 
 
 ;				------------------------------

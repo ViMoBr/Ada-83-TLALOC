@@ -451,8 +451,17 @@ is
         elsif  COMP_TYPE.TY = DN_FLOAT  then
         -- Convention backend TLALOC : les flottants sont stockés en double 64 bits.
 	return CODI.ADDR_SIZE * CODI.STORAGE_UNIT;
+
         else
-	return DI( CD_IMPL_SIZE, COMP_TYPE );
+        -- CD_IMPL_SIZE est la taille minimale en BITS posee par le front-end
+        -- (1 pour BOOLEAN, 3 pour un enumere a 7 valeurs...).  La convention
+        -- de stockage TLALOC est l'octet (piege n 10) : arrondir.
+	declare
+	  RAW : INTEGER := DI( CD_IMPL_SIZE, COMP_TYPE );
+	begin
+	  return ( ( RAW + CODI.STORAGE_UNIT - 1 ) / CODI.STORAGE_UNIT ) * CODI.STORAGE_UNIT;
+	end;
+
         end if;
 
       end	COMP_SIZE_BITS;
@@ -610,6 +619,7 @@ is
       PUT_LINE( tab & "Ld" & tab & LVL_STR & ", _FST_" & DIM_NBR_STR );
       PUT_LINE( tab & "SUB" );
       PUT_LINE( tab & "INC" );
+      PUT_LINE( tab & "CLAMP0" );
 
     end	COMPILE_ARRAY_TYPE_DIMENSION;
 	----------------------------

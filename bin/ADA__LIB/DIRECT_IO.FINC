@@ -119,6 +119,7 @@ VAR _LST_1, d
 	Ld	0, _FST_1
 	SUB
 	INC
+	CLAMP0
 	MUL
 	Sd	0, SIZ
   virtual at 4
@@ -224,10 +225,12 @@ begin:					;---------- BDY INSTRUCTIONS
 	Ld	, _STRING.FST_1
 	SUB
 	INC
-	INC
+	CLAMP0
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SUB
+	INC
+	CLAMP0
 	LI	1
 	MUL
 	La  1,	-NAME_ofs
@@ -243,6 +246,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	Ld	, _STRING.FST_1
 	SUB
 	INC
+	CLAMP0
 	Sd
 	La 1, -FILE_ofs
 	LIVA 	, 0, STANDARD.DIRECT_IO._FILE_TYPE.IS_OPENED
@@ -330,10 +334,12 @@ begin:					;---------- BDY INSTRUCTIONS
 	Ld	, _STRING.FST_1
 	SUB
 	INC
-	INC
+	CLAMP0
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SUB
+	INC
+	CLAMP0
 	LI	1
 	MUL
 	La  1,	-NAME_ofs
@@ -349,6 +355,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	Ld	, _STRING.FST_1
 	SUB
 	INC
+	CLAMP0
 	Sd
 	La 1, -FILE_ofs
 	LIVA 	, 0, STANDARD.DIRECT_IO._FILE_TYPE.IS_OPENED
@@ -488,6 +495,7 @@ VAR _LST_1, d
 	Ld	1, _FST_1
 	SUB
 	INC
+	CLAMP0
 	LI	8
 	MUL
 	Sd	1, SIZ
@@ -657,14 +665,34 @@ L16:					; post if
 ; CODE_RETURN : EXPR TYPE = DN_ARRAY
 	La 1, -FILE_ofs
 	LIVA 	, 0, STANDARD.DIRECT_IO._FILE_TYPE.NAME
-	La 1, -FILE_ofs
-	LId	, 0, STANDARD.DIRECT_IO._FILE_TYPE.NAME_LEN
-	INC
+namespace ANON_191_12			; ensemble doublet @data/@info pour slice anonyme source
+VAR ANON_191_12_disp, q
+VAR ANON_191_12__u, q
+VAR SIZ, d
+VAR COMP_SIZ, d
+VAR _FST_1, d
+VAR _LST_1, d
+	Sa	1, ANON_191_12_disp
+	LVA	1, SIZ
+	Sa	1, ANON_191_12__u
+	LI	8
+	Sd	1, COMP_SIZ
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
+	Sd	1, _FST_1
+	La 1, -FILE_ofs
+	LId	, 0, STANDARD.DIRECT_IO._FILE_TYPE.NAME_LEN
+	Sd	1, _LST_1
+	Ld	1, _LST_1
+	Ld	1, _FST_1
 	SUB
-	LI	1
+	INC
+	CLAMP0
+	LI	8
 	MUL
+	Sd	1, SIZ
+	LVA	1, ANON_191_12_disp
+end namespace
 VAR	RET_INFO_L18, q
 	DUP
 	La  ,  0

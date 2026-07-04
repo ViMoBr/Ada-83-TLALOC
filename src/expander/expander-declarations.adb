@@ -1539,7 +1539,7 @@ end if;
       DI(	CD_LEVEL,	SOURCE_NAME, INTEGER( CODI.CUR_LEVEL ) );
       DB(	CD_COMPILED, SOURCE_NAME, TRUE );
 
-      if	not CODI.IN_GENERIC_INSTANTIATION  then CODI.OUTPUT_CODE := FALSE; end if;					-- ne pas	coder les	parametres (le body	fera ca)
+      if	not CODI.IN_GENERIC_INSTANTIATION  then CODI.OUTPUT_CODE := FALSE; end if;				-- ne pas	coder les	parametres (le body	fera ca)
 
       if	CODI.IN_GENERIC_INSTANTIATION  then
         HEADER := D( SM_SPEC, SOURCE_NAME );

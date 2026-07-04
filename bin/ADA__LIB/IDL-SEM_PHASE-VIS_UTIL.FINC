@@ -265,6 +265,7 @@ VAR _LST_1, d
 	Ld	1, _FST_1
 	SUB
 	INC
+	CLAMP0
 	MUL
 	Sd	1, SIZ
   virtual at 4
@@ -406,7 +407,30 @@ namespace ANON_83_12_L23_R_info
   VAR _FST_1,    d
   VAR _LST_1,    d
 end namespace
+VAR	ANON_83_12_L23_G_disp, q
+VAR	ANON_83_12_L23_G__u,   q
+namespace ANON_83_12_L23_G_info
+  VAR SIZ,      d
+  VAR _COMP_SIZ, d
+  VAR _FST_1,    d
+  VAR _LST_1,    d
+end namespace
 	LI	 9
+	LI	1
+	CO_VAR
+	Sa  1, ANON_83_12_L23_G_disp
+	SIb  1, ANON_83_12_L23_G_disp, 0
+	LI	1
+	Sd  1, ANON_83_12_L23_G_info._FST_1
+	LI	1
+	Sd  1, ANON_83_12_L23_G_info._LST_1
+	LI	8
+	Sd  1, ANON_83_12_L23_G_info._COMP_SIZ
+	LI	8
+	Sd  1, ANON_83_12_L23_G_info.SIZ
+	LVA 1, ANON_83_12_L23_G_info.SIZ
+	Sa  1, ANON_83_12_L23_G__u
+	LVA 1, ANON_83_12_L23_G_disp
 	DUP
 	La  ,  0
 	Sa  1, ANON_83_12_L23_G_data
@@ -416,6 +440,7 @@ end namespace
 	LId 1, ANON_83_12_L23_G_info, _STRING.FST_1
 	SUB
 	INC
+	CLAMP0
 	Sa  1, ANON_83_12_L23_G_len
 STR ANON_83_23_L23_D, "("			; constante string="("
 	LCA	ANON_83_23_L23_D.data_ptr
@@ -428,6 +453,7 @@ STR ANON_83_23_L23_D, "("			; constante string="("
 	LId 1, ANON_83_23_L23_D_info, _STRING.FST_1
 	SUB
 	INC
+	CLAMP0
 	Sa  1, ANON_83_23_L23_D_len
 	La  1, ANON_83_12_L23_G_len
 	La  1, ANON_83_23_L23_D_len
@@ -489,8 +515,15 @@ VAR	ANON_84_46__dat, STANDARD.IDL._TREE.size
 LOOP__1:
 	LVA 1,	PAREN_OR_COMMA_disp
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
-	La  1,	PAREN_OR_COMMA_disp
+	LVA 1,	PAREN_OR_COMMA_disp
+	La
+	LId	1, STANDARD.IDL.SEM_PHASE_L11.VIS_UTIL.DEBUG_PRINT_DEF_L16.PAREN_OR_COMMA__u, 0
+	LI	8
+	DIV
 STR ANON_87_27, ","				; constante string=","
+	LCA	ANON_87_27.data_ptr
+	La
+	BLKMOV
 	LVA  1,	PARAM_CURSOR_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.VIS_UTIL. ,ADVANCE_PARAM_CURSOR_L167
 	LIVA 	1, PARAM_CURSOR_disp, STANDARD.IDL.SEM_PHASE_L11.VIS_UTIL._PARAM_CURSOR_TYPE.ID
@@ -858,8 +891,6 @@ LOOP__2:
 	LI	0					; lieu resultat sur pile
 	LVA 1,	DEFLIST_disp
 	CALL	STANDARD.IDL. ,IS_EMPTY_L23
-	LI	1
-	OUX
 	BF	L37
 	LVA  1,	DEF_disp
 	LVA  1,	DEFLIST_disp
@@ -1086,8 +1117,6 @@ L37:					; post loop LOOP__2
 	LI	0					; lieu resultat sur pile
 	LVA 1,	NEST_OVLOAD_disp
 	CALL	STANDARD.IDL. ,IS_EMPTY_L23
-	LI	1
-	OUX
 L57:
 	BF	L56
 namespace	BLOCK__3
@@ -1131,8 +1160,6 @@ LOOP__10:
 	LI	0					; lieu resultat sur pile
 	LVA 1,	STANDARD.IDL.SEM_PHASE_L11.VIS_UTIL.FIND_DIRECT_VISIBILITY_L170.NEST_OVLOAD_disp
 	CALL	STANDARD.IDL. ,IS_EMPTY_L23
-	LI	1
-	OUX
 	BF	L58
 	LVA  2,	TEMP_OVLOAD_disp
 	LVA  1,	NEST_OVLOAD_disp
@@ -1318,6 +1345,7 @@ STR ANON_239_9_L70_G, "(PT=>"			; constante string="(PT=>"
 	LId 3, ANON_239_9_L70_G_info, _STRING.FST_1
 	SUB
 	INC
+	CLAMP0
 	Sa  3, ANON_239_9_L70_G_len
 VAR	ANON_239_19_disp, q
 VAR	ANON_239_19__u,   q
@@ -1345,6 +1373,7 @@ end namespace
 	LId 3, ANON_239_19_L70_D_info, _STRING.FST_1
 	SUB
 	INC
+	CLAMP0
 	Sa  3, ANON_239_19_L70_D_len
 	La  3, ANON_239_9_L70_G_len
 	La  3, ANON_239_19_L70_D_len
@@ -1387,6 +1416,7 @@ end namespace
 	LId 3, ANON_239_9_L69_G_info, _STRING.FST_1
 	SUB
 	INC
+	CLAMP0
 	Sa  3, ANON_239_9_L69_G_len
 STR ANON_239_50_L69_D, ")"			; constante string=")"
 	LCA	ANON_239_50_L69_D.data_ptr
@@ -1399,6 +1429,7 @@ STR ANON_239_50_L69_D, ")"			; constante string=")"
 	LId 3, ANON_239_50_L69_D_info, _STRING.FST_1
 	SUB
 	INC
+	CLAMP0
 	Sa  3, ANON_239_50_L69_D_len
 	La  3, ANON_239_9_L69_G_len
 	La  3, ANON_239_50_L69_D_len
@@ -1469,6 +1500,7 @@ STR ANON_248_33_L75_G, "PRIOR ERROR IN DECLARATION - "	; constante string="PRIOR
 	LId 2, ANON_248_33_L75_G_info, _STRING.FST_1
 	SUB
 	INC
+	CLAMP0
 	Sa  2, ANON_248_33_L75_G_len
 VAR	ANON_248_67_disp, q
 VAR	ANON_248_67__u,   q
@@ -1503,6 +1535,7 @@ VAR	ANON_248_79__dat, STANDARD.IDL._TREE.size
 	LId 2, ANON_248_67_L75_D_info, _STRING.FST_1
 	SUB
 	INC
+	CLAMP0
 	Sa  2, ANON_248_67_L75_D_len
 	La  2, ANON_248_33_L75_G_len
 	La  2, ANON_248_67_L75_D_len
@@ -1577,6 +1610,7 @@ STR ANON_250_31_L76_G, "NAME NOT YET VISIBLE - "	; constante string="NAME NOT YE
 	LId 2, ANON_250_31_L76_G_info, _STRING.FST_1
 	SUB
 	INC
+	CLAMP0
 	Sa  2, ANON_250_31_L76_G_len
 VAR	ANON_250_59_disp, q
 VAR	ANON_250_59__u,   q
@@ -1611,6 +1645,7 @@ VAR	ANON_250_71__dat, STANDARD.IDL._TREE.size
 	LId 2, ANON_250_59_L76_D_info, _STRING.FST_1
 	SUB
 	INC
+	CLAMP0
 	Sa  2, ANON_250_59_L76_D_len
 	La  2, ANON_250_31_L76_G_len
 	La  2, ANON_250_59_L76_D_len
@@ -1680,8 +1715,6 @@ L62:
 L61:					; post if
 					; debut if
 	Lb 1,	USED_IS_OK_disp
-	LI	1
-	OUX
 	BF	L78
 	LVA 1,	USED_UNIQUE_disp
 	La
@@ -1755,6 +1788,7 @@ STR ANON_285_37_L83_G, "PRIOR ERROR IN (USED) DECLARATION - "	; constante string
 	LId 1, ANON_285_37_L83_G_info, _STRING.FST_1
 	SUB
 	INC
+	CLAMP0
 	Sa  1, ANON_285_37_L83_G_len
 VAR	ANON_285_78_disp, q
 VAR	ANON_285_78__u,   q
@@ -1789,6 +1823,7 @@ VAR	ANON_285_90__dat, STANDARD.IDL._TREE.size
 	LId 1, ANON_285_78_L83_D_info, _STRING.FST_1
 	SUB
 	INC
+	CLAMP0
 	Sa  1, ANON_285_78_L83_D_len
 	La  1, ANON_285_37_L83_G_len
 	La  1, ANON_285_78_L83_D_len
@@ -1904,8 +1939,6 @@ LOOP__5:
 	LI	0					; lieu resultat sur pile
 	LVA 1,	DEFLIST_1_disp
 	CALL	STANDARD.IDL. ,IS_EMPTY_L23
-	LI	1
-	OUX
 	BF	L86
 	LVA  1,	DEF_1_disp
 	LVA  1,	DEFLIST_1_disp
@@ -1920,8 +1953,6 @@ LOOP__6:
 	LI	0					; lieu resultat sur pile
 	LVA 1,	DEFLIST_2_disp
 	CALL	STANDARD.IDL. ,IS_EMPTY_L23
-	LI	1
-	OUX
 	BF	L87
 	LVA 1,	DEF_2_disp
 	La
@@ -2153,8 +2184,6 @@ LOOP__7:
 	LI	0					; lieu resultat sur pile
 	LVA 1,	DEFLIST_1_disp
 	CALL	STANDARD.IDL. ,IS_EMPTY_L23
-	LI	1
-	OUX
 	BF	L112
 	LVA  1,	DEF_1_disp
 	LVA  1,	DEFLIST_1_disp
@@ -2169,8 +2198,6 @@ LOOP__8:
 	LI	0					; lieu resultat sur pile
 	LVA 1,	DEFLIST_2_disp
 	CALL	STANDARD.IDL. ,IS_EMPTY_L23
-	LI	1
-	OUX
 	BF	L113
 	LVA 1,	DEF_2_disp
 	La
@@ -2253,8 +2280,6 @@ LOOP__9:
 	LI	0					; lieu resultat sur pile
 	LVA 1,	DEFLIST_2_disp
 	CALL	STANDARD.IDL. ,IS_EMPTY_L23
-	LI	1
-	OUX
 	BF	L119
 	LVA 1,	DEF_2_disp
 	La
@@ -2469,6 +2494,7 @@ STR ANON_413_33_L144_G, "NO DIRECTLY VISIBLE DECLARATION - "	; constante string=
 	LId 1, ANON_413_33_L144_G_info, _STRING.FST_1
 	SUB
 	INC
+	CLAMP0
 	Sa  1, ANON_413_33_L144_G_len
 VAR	ANON_413_72_disp, q
 VAR	ANON_413_72__u,   q
@@ -2503,6 +2529,7 @@ VAR	ANON_413_84__dat, STANDARD.IDL._TREE.size
 	LId 1, ANON_413_72_L144_D_info, _STRING.FST_1
 	SUB
 	INC
+	CLAMP0
 	Sa  1, ANON_413_72_L144_D_len
 	La  1, ANON_413_33_L144_G_len
 	La  1, ANON_413_72_L144_D_len
@@ -2809,8 +2836,6 @@ L147:
 	LI	0					; lieu resultat sur pile
 	LVA 1,	NAME_DEFSET_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL. ,IS_EMPTY_L74
-	LI	1
-	OUX
 	BF	L153
 	LVA 1,	NAME_DEF_disp
 	La
@@ -2865,8 +2890,6 @@ LOOP__12:
 	LI	0					; lieu resultat sur pile
 	LVA 1,	TEMP_LIST_disp
 	CALL	STANDARD.IDL. ,IS_EMPTY_L23
-	LI	1
-	OUX
 	BF	L156
 	LVA  1,	TEMP_disp
 	LVA  1,	TEMP_LIST_disp
@@ -3008,8 +3031,6 @@ LOOP__13:
 	LI	0					; lieu resultat sur pile
 	LVA 1,	TEMP_LIST_disp
 	CALL	STANDARD.IDL. ,IS_EMPTY_L23
-	LI	1
-	OUX
 	BF	L162
 	LVA  1,	TEMP_disp
 	LVA  1,	TEMP_LIST_disp
@@ -3256,8 +3277,6 @@ LOOP__16:
 	LI	0					; lieu resultat sur pile
 	LVA 2,	OLD_DEFSET_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL. ,IS_EMPTY_L74
-	LI	1
-	OUX
 	BF	L174
 	LVA  2,	OLD_DEFINTERP_disp
 	LVA  2,	OLD_DEFSET_disp
@@ -3322,8 +3341,6 @@ LOOP__17:
 	LI	0					; lieu resultat sur pile
 	LVA 2,	TEMP_DEFSET_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL. ,IS_EMPTY_L74
-	LI	1
-	OUX
 	BF	L180
 	LVA 2,	TEMP_DEFINTERP_disp
 	La
@@ -3497,8 +3514,6 @@ L167:
 	LI	0					; lieu resultat sur pile
 	LVA 1,	NAME_DEFSET_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL. ,IS_EMPTY_L74
-	LI	1
-	OUX
 	BF	L194
 	LVA  1,	NAME_TYPESET_disp
 	LVA  1,	NAME_DEFSET_disp
@@ -3513,8 +3528,6 @@ L166:					; post if
 	LI	0					; lieu resultat sur pile
 	LVA 1,	NAME_TYPESET_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL. ,IS_EMPTY_L88
-	LI	1
-	OUX
 	BF	L196
 	LVA  1,	NEW_DEFSET_disp
 	LVA 1,	DESIGNATOR_disp
@@ -3555,8 +3568,6 @@ L197:					; post if
 	LVA 1,	NAME_TYPESET_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL. ,IS_EMPTY_L88
 L202:
-	LI	1
-	OUX
 L201:
 	BF	L200
 ; CODE & concat _STRING
@@ -3585,6 +3596,7 @@ STR ANON_581_41_L203_G, "NOT VISIBLE BY SELECTION - "	; constante string="NOT VI
 	LId 1, ANON_581_41_L203_G_info, _STRING.FST_1
 	SUB
 	INC
+	CLAMP0
 	Sa  1, ANON_581_41_L203_G_len
 VAR	ANON_581_73_disp, q
 VAR	ANON_581_73__u,   q
@@ -3619,6 +3631,7 @@ VAR	ANON_581_85__dat, STANDARD.IDL._TREE.size
 	LId 1, ANON_581_73_L203_D_info, _STRING.FST_1
 	SUB
 	INC
+	CLAMP0
 	Sa  1, ANON_581_73_L203_D_len
 	La  1, ANON_581_41_L203_G_len
 	La  1, ANON_581_73_L203_D_len
@@ -3698,8 +3711,6 @@ LOOP__18:
 	LI	0					; lieu resultat sur pile
 	LVA 2,	TEMP_DEFSET_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL. ,IS_EMPTY_L74
-	LI	1
-	OUX
 	BF	L204
 	LVA  2,	TEMP_DEFINTERP_disp
 	LVA  2,	TEMP_DEFSET_disp
@@ -3797,6 +3808,7 @@ STR ANON_606_45_L210_G, "PRIOR ERROR IN DECLARATION - "	; constante string="PRIO
 	LId 3, ANON_606_45_L210_G_info, _STRING.FST_1
 	SUB
 	INC
+	CLAMP0
 	Sa  3, ANON_606_45_L210_G_len
 VAR	ANON_606_79_disp, q
 VAR	ANON_606_79__u,   q
@@ -3831,6 +3843,7 @@ VAR	ANON_606_91__dat, STANDARD.IDL._TREE.size
 	LId 3, ANON_606_79_L210_D_info, _STRING.FST_1
 	SUB
 	INC
+	CLAMP0
 	Sa  3, ANON_606_79_L210_D_len
 	La  3, ANON_606_45_L210_G_len
 	La  3, ANON_606_79_L210_D_len
@@ -3905,6 +3918,7 @@ STR ANON_608_43_L211_G, "NAME NOT YET VISIBLE - "	; constante string="NAME NOT Y
 	LId 3, ANON_608_43_L211_G_info, _STRING.FST_1
 	SUB
 	INC
+	CLAMP0
 	Sa  3, ANON_608_43_L211_G_len
 VAR	ANON_608_71_disp, q
 VAR	ANON_608_71__u,   q
@@ -3939,6 +3953,7 @@ VAR	ANON_608_83__dat, STANDARD.IDL._TREE.size
 	LId 3, ANON_608_71_L211_D_info, _STRING.FST_1
 	SUB
 	INC
+	CLAMP0
 	Sa  3, ANON_608_71_L211_D_len
 	La  3, ANON_608_43_L211_G_len
 	La  3, ANON_608_71_L211_D_len
@@ -4073,8 +4088,6 @@ LOOP__20:
 	LI	0					; lieu resultat sur pile
 	LVA 1,	TEMP_DEFSET_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL. ,IS_EMPTY_L74
-	LI	1
-	OUX
 	BF	L212
 	LVA  1,	DEFINTERP_disp
 	LVA  1,	TEMP_DEFSET_disp
@@ -4354,11 +4367,13 @@ VAR _LST_1, d
 	Ld	, _STRING.FST_1
 	SUB
 	INC
+	CLAMP0
 	Sd	2, _LST_1
 	Ld	2, _LST_1
 	Ld	2, _FST_1
 	SUB
 	INC
+	CLAMP0
 	MUL
 	Sd	2, SIZ
   virtual at 4
@@ -4626,8 +4641,6 @@ LOOP__22:
 	LI	0					; lieu resultat sur pile
 	La  1,	-DEFSET_ofs
 	CALL	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL. ,IS_EMPTY_L74
-	LI	1
-	OUX
 	BF	L231
 	LVA  1,	DEFINTERP_disp
 	La  1,	-DEFSET_ofs
@@ -5038,8 +5051,6 @@ LOOP__23:
 	LI	0					; lieu resultat sur pile
 	LVA 1,	PARAM_LIST_disp
 	CALL	STANDARD.IDL. ,IS_EMPTY_L23
-	LI	1
-	OUX
 	BF	L244
 	LVA  1,	PARAM_disp
 	LVA  1,	PARAM_LIST_disp
@@ -5106,6 +5117,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	UBFX
 	LI	2
 	CEQ
+	OU
 	DUP
 	BF	L247
 	DROP
@@ -5125,6 +5137,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	UBFX
 	LI	164
 	CEQ
+	OU
 	La 1, -HEADER_ofs
 	La	-1, 0
 	Ld
@@ -5133,6 +5146,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	UBFX
 	LI	166
 	CEQ
+	OU
 L247:
 	Sb  1,	-result__ofs
 	BRA ret_lbl
@@ -5228,6 +5242,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	UBFX
 	LI	1
 	CEQ
+	OU
 	BF	L249
 ; CODE_RETURN : EXPR TYPE = DN_RECORD
 	La   1,	-result__ofs
@@ -5476,8 +5491,6 @@ LOOP__26:
 	LI	0					; lieu resultat sur pile
 	LVA 1,	TEMP_NAME_TYPESET_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.SET_UTIL. ,IS_EMPTY_L88
-	LI	1
-	OUX
 	BF	L252
 	LVA  1,	NAME_TYPEINTERP_disp
 	LVA  1,	TEMP_NAME_TYPESET_disp
@@ -5562,6 +5575,8 @@ L253:					; post if
 	UBFX
 	LI	201
 	CEQ
+	OU
+	OU
 	BF	L256
 	LVA 1,	NAME_TYPE_ID_disp
 	La
@@ -5635,8 +5650,6 @@ LOOP__27:
 	LI	0					; lieu resultat sur pile
 	LVA 1,	TEMP_DEFLIST_disp
 	CALL	STANDARD.IDL. ,IS_EMPTY_L23
-	LI	1
-	OUX
 	BF	L259
 	LVA  1,	TEMP_DEF_disp
 	LVA  1,	TEMP_DEFLIST_disp

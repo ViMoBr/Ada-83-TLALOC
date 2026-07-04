@@ -214,6 +214,7 @@ VAR _LST_1, d
 	Ld	0, _FST_1
 	SUB
 	INC
+	CLAMP0
 	MUL
 	Sd	0, SIZ
   virtual at 4
@@ -548,10 +549,12 @@ begin:					;---------- BDY INSTRUCTIONS
 	Ld	, _STRING.FST_1
 	SUB
 	INC
-	INC
+	CLAMP0
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SUB
+	INC
+	CLAMP0
 	LI	1
 	MUL
 	La  1,	-NAME_ofs
@@ -567,6 +570,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	Ld	, _STRING.FST_1
 	SUB
 	INC
+	CLAMP0
 	Sd
 	La 1, -FILE_ofs
 	LIVA 	, 0, STANDARD.TEXT_IO._FILE_TYPE.IS_OPENED
@@ -681,10 +685,12 @@ begin:					;---------- BDY INSTRUCTIONS
 	Ld	, _STRING.FST_1
 	SUB
 	INC
-	INC
+	CLAMP0
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SUB
+	INC
+	CLAMP0
 	LI	1
 	MUL
 	La  1,	-NAME_ofs
@@ -700,6 +706,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	Ld	, _STRING.FST_1
 	SUB
 	INC
+	CLAMP0
 	Sd
 	La 1, -FILE_ofs
 	LIVA 	, 0, STANDARD.TEXT_IO._FILE_TYPE.IS_OPENED
@@ -863,6 +870,7 @@ VAR _LST_1, d
 	Ld	1, _FST_1
 	SUB
 	INC
+	CLAMP0
 	LI	8
 	MUL
 	Sd	1, SIZ
@@ -1039,14 +1047,34 @@ L16:					; post if
 ; CODE_RETURN : EXPR TYPE = DN_ARRAY
 	La 1, -FILE_ofs
 	LIVA 	, 0, STANDARD.TEXT_IO._FILE_TYPE.NAME
-	La 1, -FILE_ofs
-	LId	, 0, STANDARD.TEXT_IO._FILE_TYPE.NAME_LEN
-	INC
+namespace ANON_221_12			; ensemble doublet @data/@info pour slice anonyme source
+VAR ANON_221_12_disp, q
+VAR ANON_221_12__u, q
+VAR SIZ, d
+VAR COMP_SIZ, d
+VAR _FST_1, d
+VAR _LST_1, d
+	Sa	1, ANON_221_12_disp
+	LVA	1, SIZ
+	Sa	1, ANON_221_12__u
+	LI	8
+	Sd	1, COMP_SIZ
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
+	Sd	1, _FST_1
+	La 1, -FILE_ofs
+	LId	, 0, STANDARD.TEXT_IO._FILE_TYPE.NAME_LEN
+	Sd	1, _LST_1
+	Ld	1, _LST_1
+	Ld	1, _FST_1
 	SUB
-	LI	1
+	INC
+	CLAMP0
+	LI	8
 	MUL
+	Sd	1, SIZ
+	LVA	1, ANON_221_12_disp
+end namespace
 VAR	RET_INFO_L18, q
 	DUP
 	La  ,  0
@@ -2785,6 +2813,7 @@ L134:
 	Ld	, _STRING.FST_1
 	SUB
 	INC
+	CLAMP0
 	La 1, -FILE_ofs
 	LId	, 0, STANDARD.TEXT_IO._FILE_TYPE.ID
 	CALL	STANDARD.TEXT_IO.GET_L53. ,READ_SYSTEM_CALL_L132
@@ -2869,6 +2898,7 @@ L139:
 	Ld	, _STRING.FST_1
 	SUB
 	INC
+	CLAMP0
 	La 1, -FILE_ofs
 	LId	, 0, STANDARD.TEXT_IO._FILE_TYPE.ID
 	CALL	STANDARD.TEXT_IO.PUT_L55. ,WRITE_SYSTEM_CALL_L137
@@ -3183,8 +3213,6 @@ L149:					; post if
 					; debut if
 	La 1, -FILE_ofs
 	LIb	, 0, STANDARD.TEXT_IO._FILE_TYPE.AT_END_OF_FILE
-	LI	1
-	OUX
 	DUP
 	BF	L160
 	DROP
@@ -3229,8 +3257,6 @@ L161:					; post if
 L159:
 	La 1, -FILE_ofs
 	LIb	, 0, STANDARD.TEXT_IO._FILE_TYPE.AT_END_OF_FILE
-	LI	1
-	OUX
 	DUP
 	BF	L166
 	DROP
@@ -3508,8 +3534,6 @@ L185:
 	BF	L205
 	DROP
 	Lb 1,	IN_BASED_disp
-	LI	1
-	OUX
 L205:
 	BF	L204
 	Lq 1,	VAL_disp
@@ -3689,6 +3713,7 @@ VAR _LST_1, d
 	Ld	1, _FST_1
 	SUB
 	INC
+	CLAMP0
 	MUL
 	Sd	1, SIZ
   virtual at 4
@@ -3966,6 +3991,7 @@ VAR _LST_1, d
 	Ld	1, _FST_1
 	SUB
 	INC
+	CLAMP0
 	LI	8
 	MUL
 	Sd	1, SIZ
@@ -4364,8 +4390,6 @@ L256:
 	BF	L272
 	DROP
 	Lb 1,	IN_BASED_disp
-	LI	1
-	OUX
 L272:
 	BF	L271
 	Ld 1,	VAL_disp
@@ -4474,6 +4498,7 @@ VAR _LST_1, d
 	Ld	1, _FST_1
 	SUB
 	INC
+	CLAMP0
 	MUL
 	Sd	1, SIZ
   virtual at 4
@@ -4656,6 +4681,7 @@ L285:					; post if
 	Ld	, _STRING.FST_1
 	SUB
 	INC
+	CLAMP0
 	CGT
 	BF	L290
 VAR	IL292_disp, d				; compteur boucle LOOP__13
@@ -4715,6 +4741,7 @@ L289:					; post if
 	Ld	, _STRING.FST_1
 	SUB
 	INC
+	CLAMP0
 	Ld 1,	TLEN_disp
 	CGT
 	BF	L294
@@ -4731,6 +4758,7 @@ VAR	LMT_IL296_disp, d			; limite boucle LOOP__14
 	Ld	, _STRING.FST_1
 	SUB
 	INC
+	CLAMP0
 	Ld 1,	TLEN_disp
 	SUB
 	Sd  1,	LMT_IL296_disp
@@ -5121,8 +5149,6 @@ L307:					; post if
 					; debut if
 	La 1, -FILE_ofs
 	LIb	, 0, STANDARD.TEXT_IO._FILE_TYPE.AT_END_OF_FILE
-	LI	1
-	OUX
 	DUP
 	BF	L318
 	DROP
@@ -5167,8 +5193,6 @@ L319:					; post if
 L317:
 	La 1, -FILE_ofs
 	LIb	, 0, STANDARD.TEXT_IO._FILE_TYPE.AT_END_OF_FILE
-	LI	1
-	OUX
 	DUP
 	BF	L324
 	DROP
@@ -5318,15 +5342,11 @@ L345:
 L344:					; post if
 					; debut if
 	Lb 1,	DONE_disp
-	LI	1
-	OUX
 	DUP
 	BF	L350
 	DROP
 	La 1, -FILE_ofs
 	LIb	, 0, STANDARD.TEXT_IO._FILE_TYPE.AT_END_OF_FILE
-	LI	1
-	OUX
 L350:
 	BF	L349
 					; debut if
@@ -5479,8 +5499,6 @@ L362:					; post loop LOOP__18
 	DROP
 	La 1, -FILE_ofs
 	LIb	, 0, STANDARD.TEXT_IO._FILE_TYPE.AT_END_OF_FILE
-	LI	1
-	OUX
 L374:
 	DUP
 	BF	L373
@@ -6163,6 +6181,7 @@ VAR _LST_1, d
 	Ld	2, _FST_1
 	SUB
 	INC
+	CLAMP0
 	MUL
 	Sd	2, SIZ
   virtual at 4
@@ -6830,6 +6849,7 @@ VAR _LST_1, d
 	Ld	1, _FST_1
 	SUB
 	INC
+	CLAMP0
 	MUL
 	Sd	1, SIZ
   virtual at 4
@@ -6914,6 +6934,7 @@ VAR _LST_1, d
 	Ld	1, _FST_1
 	SUB
 	INC
+	CLAMP0
 	MUL
 	Sd	1, SIZ
   virtual at 4
@@ -7498,6 +7519,7 @@ VAR _LST_1, d
 	Ld	2, _FST_1
 	SUB
 	INC
+	CLAMP0
 	MUL
 	Sd	2, SIZ
   virtual at 4
@@ -7662,6 +7684,7 @@ L480:					; post if
 	Ld	, _STRING.FST_1
 	SUB
 	INC
+	CLAMP0
 	CGT
 L516:
 	BF	L515
@@ -7715,6 +7738,7 @@ L515:
 	Ld	, _STRING.FST_1
 	SUB
 	INC
+	CLAMP0
 	Ld 1,	LEN_disp
 	SUB
 	Sd  1,	PAD_disp
@@ -7954,8 +7978,6 @@ L523:					; post if
 					; debut if
 	La 1, -FILE_ofs
 	LIb	, 0, STANDARD.TEXT_IO._FILE_TYPE.AT_END_OF_FILE
-	LI	1
-	OUX
 	DUP
 	BF	L534
 	DROP
@@ -8000,8 +8022,6 @@ L535:					; post if
 L533:
 	La 1, -FILE_ofs
 	LIb	, 0, STANDARD.TEXT_IO._FILE_TYPE.AT_END_OF_FILE
-	LI	1
-	OUX
 	DUP
 	BF	L540
 	DROP
@@ -8151,15 +8171,11 @@ L561:
 L560:					; post if
 					; debut if
 	Lb 1,	DONE_disp
-	LI	1
-	OUX
 	DUP
 	BF	L566
 	DROP
 	La 1, -FILE_ofs
 	LIb	, 0, STANDARD.TEXT_IO._FILE_TYPE.AT_END_OF_FILE
-	LI	1
-	OUX
 L566:
 	BF	L565
 					; debut if
@@ -8312,8 +8328,6 @@ L578:					; post loop LOOP__50
 	DROP
 	La 1, -FILE_ofs
 	LIb	, 0, STANDARD.TEXT_IO._FILE_TYPE.AT_END_OF_FILE
-	LI	1
-	OUX
 L590:
 	DUP
 	BF	L589
@@ -8657,6 +8671,7 @@ VAR _LST_1, d
 	Ld	1, _FST_1
 	SUB
 	INC
+	CLAMP0
 	MUL
 	Sd	1, SIZ
   virtual at 4
@@ -8899,6 +8914,7 @@ VAR _LST_1, d
 	Ld	2, _FST_1
 	SUB
 	INC
+	CLAMP0
 	MUL
 	Sd	2, SIZ
   virtual at 4
@@ -9355,6 +9371,7 @@ VAR _LST_1, d
 	Ld	2, _FST_1
 	SUB
 	INC
+	CLAMP0
 	MUL
 	Sd	2, SIZ
   virtual at 4
@@ -9872,8 +9889,6 @@ L677:
 	BF	L682
 	DROP
 	Lb 1,	IN_FRAC_disp
-	LI	1
-	OUX
 L682:
 	BF	L681
 	LI	1
@@ -10097,8 +10112,6 @@ L676:					; post if
 	BRA	LOOP__68
 L675:					; post loop LOOP__68
 	Lb 1,	HAVE_DIGIT_disp
-	LI	1
-	OUX
 	DUP
 	BT	L697
 	DROP
@@ -10107,8 +10120,6 @@ L675:					; post loop LOOP__68
 	BF	L698
 	DROP
 	Lb 1,	HAVE_FRAC_DIGIT_disp
-	LI	1
-	OUX
 L698:
 L697:
 	DUP
@@ -10119,8 +10130,6 @@ L697:
 	BF	L699
 	DROP
 	Lb 1,	HAVE_EXP_DIGIT_disp
-	LI	1
-	OUX
 L699:
 L696:
 	Sb  1,	BAD_IMAGE_disp
@@ -10315,6 +10324,7 @@ VAR _LST_1, d
 	Ld	1, _FST_1
 	SUB
 	INC
+	CLAMP0
 	MUL
 	Sd	1, SIZ
   virtual at 4
@@ -10408,6 +10418,7 @@ VAR _LST_1, d
 	Ld	1, _FST_1
 	SUB
 	INC
+	CLAMP0
 	MUL
 	Sd	1, SIZ
   virtual at 4
@@ -10992,6 +11003,7 @@ VAR _LST_1, d
 	Ld	2, _FST_1
 	SUB
 	INC
+	CLAMP0
 	MUL
 	Sd	2, SIZ
   virtual at 4
@@ -11156,6 +11168,7 @@ L728:					; post if
 	Ld	, _STRING.FST_1
 	SUB
 	INC
+	CLAMP0
 	CGT
 L764:
 	BF	L763
@@ -11209,6 +11222,7 @@ L763:
 	Ld	, _STRING.FST_1
 	SUB
 	INC
+	CLAMP0
 	Ld 1,	LEN_disp
 	SUB
 	Sd  1,	PAD_disp
@@ -11668,6 +11682,7 @@ VAR _LST_1, d
 	Ld	1, _FST_1
 	SUB
 	INC
+	CLAMP0
 	MUL
 	Sd	1, SIZ
   virtual at 4
@@ -11963,8 +11978,6 @@ SKIP_BLANKS:
 	La  1,	-GFP_ofs				; propagation GFP generique
 	Lb 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L79.CH_disp
 	CALL	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L79. ,IS_SEPARATOR_L791
-	LI	1
-	OUX
 	BT	L804
 	BRA	SKIP_BLANKS
 L804:					; post loop SKIP_BLANKS
@@ -12691,8 +12704,6 @@ LOOP__99:					; corps boucle LOOP__99
 	ADD					; add offset to start address
 	Lb
 	CALL	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L83. ,SAME_CHAR_L843
-	LI	1
-	OUX
 	BF	L855
 	LI	0
 	Sb  1,	OK_disp
@@ -12713,8 +12724,6 @@ L852:					; post loop LOOP__99
 	BF	L857
 					; debut if
 	Lb 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L83.MATCH_FOUND_disp
-	LI	1
-	OUX
 	DUP
 	BT	L860
 	DROP
@@ -12978,6 +12987,7 @@ LOOP__102:
 	Ld	, _STRING.FST_1
 	SUB
 	INC
+	CLAMP0
 	CGT
 	BF	L872
 VAR	KL874_disp, d				; compteur boucle LOOP__103
@@ -13033,6 +13043,7 @@ L871:					; post if
 	Ld	, _STRING.FST_1
 	SUB
 	INC
+	CLAMP0
 	Ld 2,	LEN_disp
 	SUB
 	Sd  2,	PAD_disp

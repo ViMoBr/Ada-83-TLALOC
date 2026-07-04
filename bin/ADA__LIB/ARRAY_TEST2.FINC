@@ -1,0 +1,3224 @@
+if ~ definite TEXT_IO
+include 'TEXT_IO.FINC'
+end if
+PRO	ARRAY_TEST2_L1				;---------- PRO ARRAY_TEST2
+ELB 1					;    BODY ELAB
+INT_IO = 'INT_IO'
+namespace INT_IO				;---------- GENERIC PACKAGE INSTANTIATION
+elab_spec:				;    SPEC ELAB
+
+BRA post_LD_NUM
+LD_NUM.elab:
+	Ld -1, 0
+	RTD 0
+post_LD_NUM:
+BRA post_ST_NUM
+ST_NUM.elab:
+	Sd -1, 0
+	RTD 0
+post_ST_NUM:
+BRA post_INADR_NUM
+INADR_NUM.elab:
+	RTD 0
+post_INADR_NUM:
+BRA post_OUTADR_NUM
+OUTADR_NUM.elab:
+	La
+	RTD 0
+post_OUTADR_NUM:
+VAR NUM__outadr_ofs, q
+	LCA OUTADR_NUM.elab
+	Sa	 1, NUM__outadr_ofs
+VAR NUM__inadr_ofs, q
+	LCA INADR_NUM.elab
+	Sa	 1, NUM__inadr_ofs
+VAR NUM__st_ofs, q
+	LCA ST_NUM.elab
+	Sa	 1, NUM__st_ofs
+VAR NUM__ld_ofs, q
+	LCA LD_NUM.elab
+	Sa	 1, NUM__ld_ofs
+VAR NUM__u_ofs, q
+	La	 0, STANDARD._INTEGER.use__info
+	Sa	 1, NUM__u_ofs
+VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
+					; CODE_PACKAGE_SPEC
+VAR DEFAULT_WIDTH_disp, d			; variable entiere
+	LI	 11
+	Sd  1,	DEFAULT_WIDTH_disp
+
+VAR DEFAULT_BASE_disp, d			; variable entiere
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	10
+	Sd  1,	DEFAULT_BASE_disp
+
+					; sub program entry decl (in instantiation TRUE )
+if defined GET_L2_
+PRO	GET_L2				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM ITEM_ofs				; out
+	PRM WIDTH_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Ld	 2, -WIDTH_ofs
+	La 	 2, -ITEM_ofs
+	La 	 2, -FILE_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,GET_L61
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO GET
+end if
+					; sub program entry decl (in instantiation TRUE )
+if defined GET_L3_
+PRO	GET_L3				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM ITEM_ofs				; out
+	PRM WIDTH_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Ld	 2, -WIDTH_ofs
+	La 	 2, -ITEM_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,GET_L62
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO GET
+end if
+					; sub program entry decl (in instantiation TRUE )
+if defined PUT_L4_
+PRO	PUT_L4				;---------- PRO PUT
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM ITEM_ofs				; in
+	PRM WIDTH_ofs				; in
+	PRM BASE_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Ld	 2, -BASE_ofs
+	Ld	 2, -WIDTH_ofs
+	Ld	 2, -ITEM_ofs
+	La 	 2, -FILE_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,PUT_L63
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO PUT
+end if
+					; sub program entry decl (in instantiation TRUE )
+if defined PUT_L5_
+PRO	PUT_L5				;---------- PRO PUT
+PRMS					;    debut parametrage
+	PRM ITEM_ofs				; in
+	PRM WIDTH_ofs				; in
+	PRM BASE_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Ld	 2, -BASE_ofs
+	Ld	 2, -WIDTH_ofs
+	Ld	 2, -ITEM_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,PUT_L64
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO PUT
+end if
+					; sub program entry decl (in instantiation TRUE )
+if defined GET_L6_
+PRO	GET_L6				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM FROM_ofs				; in
+	PRM ITEM_ofs				; out
+	PRM LAST_ofs				; out
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	La 	 2, -LAST_ofs
+	La 	 2, -ITEM_ofs
+	La 	 2, -FROM_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,GET_L65
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO GET
+end if
+					; sub program entry decl (in instantiation TRUE )
+if defined PUT_L7_
+PRO	PUT_L7				;---------- PRO PUT
+PRMS					;    debut parametrage
+	PRM TO_ofs				; out
+	PRM ITEM_ofs				; in
+	PRM BASE_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Ld	 2, -BASE_ofs
+	Ld	 2, -ITEM_ofs
+	La 	 2, -TO_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,PUT_L66
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO PUT
+end if
+					;---------- end generic package instantiation INT_IO
+end namespace
+
+
+					; _VECTEUR UNCONSTRAINED ARRAY SUBTYPE INFO
+_VECTEUR = '_VECTEUR'
+namespace _VECTEUR
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+	LI	1
+	NEG
+	Sd	1, SIZ
+  virtual at 4				; use info offsets pour acces sur array contraint
+
+COMP_SIZ = $
+	rd 1 
+FST_1 = $
+	rd 1 
+LST_1 = $
+	rd 1 
+  end virtual
+end namespace
+_VEC3 = '_VEC3'
+namespace _VEC3				; _VEC3 CONSTRAINED ARRAY SUBTYPE INFO
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+VAR _COMP_SIZ, d
+VAR _FST_1, d
+VAR _LST_1, d
+	LI	32
+	Sd	1, _COMP_SIZ
+	Ld	1, _COMP_SIZ
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd	1, _FST_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	3
+	Sd	1, _LST_1
+	Ld	1, _LST_1
+	Ld	1, _FST_1
+	SUB
+	INC
+	CLAMP0
+	MUL
+	Sd	1, SIZ
+  virtual at 4
+COMP_SIZ = $
+	rd 1 
+FST_1 = $
+	rd 1 
+LST_1 = $
+	rd 1 
+  end virtual
+end namespace
+
+					; array decl constrained array type info
+_LIGNE = '_LIGNE'
+namespace _LIGNE
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+VAR _COMP_SIZ, d
+VAR _FST_1, d
+VAR _LST_1, d
+	LI	32
+	Sd	1, _COMP_SIZ
+	Ld	1, _COMP_SIZ
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd	1, _FST_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	3
+	Sd	1, _LST_1
+	Ld	1, _LST_1
+	Ld	1, _FST_1
+	SUB
+	INC
+	CLAMP0
+	MUL
+	Sd	1, SIZ
+  virtual at 4
+COMP_SIZ = $
+	rd 1 
+FST_1 = $
+	rd 1 
+LST_1 = $
+	rd 1 
+  end virtual
+end namespace
+
+					; array decl constrained array type info
+_COLONNE = '_COLONNE'
+namespace _COLONNE
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+VAR _COMP_SIZ, d
+VAR _FST_1, d
+VAR _LST_1, d
+	LI	32
+	Sd	1, _COMP_SIZ
+	Ld	1, _COMP_SIZ
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	11
+	Sd	1, _FST_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	13
+	Sd	1, _LST_1
+	Ld	1, _LST_1
+	Ld	1, _FST_1
+	SUB
+	INC
+	CLAMP0
+	MUL
+	Sd	1, SIZ
+  virtual at 4
+COMP_SIZ = $
+	rd 1 
+FST_1 = $
+	rd 1 
+LST_1 = $
+	rd 1 
+  end virtual
+end namespace
+
+					; array decl constrained array type info
+_BVEC = '_BVEC'
+namespace _BVEC
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+VAR _COMP_SIZ, d
+VAR _FST_1, d
+VAR _LST_1, d
+	LI	8
+	Sd	1, _COMP_SIZ
+	Ld	1, _COMP_SIZ
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd	1, _FST_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	4
+	Sd	1, _LST_1
+	Ld	1, _LST_1
+	Ld	1, _FST_1
+	SUB
+	INC
+	CLAMP0
+	MUL
+	Sd	1, SIZ
+  virtual at 4
+COMP_SIZ = $
+	rd 1 
+FST_1 = $
+	rd 1 
+LST_1 = $
+	rd 1 
+  end virtual
+end namespace
+
+					; array decl constrained array type info
+_MAT2 = '_MAT2'
+namespace _MAT2
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+VAR _COMP_SIZ, d
+VAR _FST_2, d
+VAR _LST_2, d
+	LI	32
+	Sd	1, _COMP_SIZ
+	Ld	1, _COMP_SIZ
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd	1, _FST_2
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	3
+	Sd	1, _LST_2
+	Ld	1, _LST_2
+	Ld	1, _FST_2
+	SUB
+	INC
+	CLAMP0
+VAR _SIZ_1, d
+VAR _FST_1, d
+VAR _LST_1, d
+	MUL
+	Sd	1, _SIZ_1
+	Ld	1, _SIZ_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd	1, _FST_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	2
+	Sd	1, _LST_1
+	Ld	1, _LST_1
+	Ld	1, _FST_1
+	SUB
+	INC
+	CLAMP0
+	MUL
+	Sd	1, SIZ
+  virtual at 4
+COMP_SIZ = $
+	rd 1 
+FST_2 = $
+	rd 1 
+LST_2 = $
+	rd 1 
+SIZ_1 = $
+	rd 1 
+FST_1 = $
+	rd 1 
+LST_1 = $
+	rd 1 
+  end virtual
+end namespace
+VAR N_disp, d				; variable entiere
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	3
+	Sd  1,	N_disp
+
+_C1__type = '_C1__type'
+namespace _C1__type				; array var constrained array type info
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+VAR _COMP_SIZ, d
+VAR _FST_1, d
+VAR _LST_1, d
+	LI	8
+	Sd	1, _COMP_SIZ
+	Ld	1, _COMP_SIZ
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd	1, _FST_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	6
+	Sd	1, _LST_1
+	Ld	1, _LST_1
+	Ld	1, _FST_1
+	SUB
+	INC
+	CLAMP0
+	MUL
+	Sd	1, SIZ
+  virtual at 4
+COMP_SIZ = $
+	rd 1 
+FST_1 = $
+	rd 1 
+LST_1 = $
+	rd 1 
+  end virtual
+end namespace
+VAR C1_disp, q				; variable array : pointeur aux data
+VAR C1__u, q				; variable array : useinfo pointeur au rec info
+	La 1, _C1__type.use__info
+	Sa	1, C1__u				; array info ptr at __u
+STR C1, "ABCDEF"				; constante string="ABCDEF"
+	LCA	C1.data_ptr
+	La
+	Sa	1, C1_disp				; array data ptr at _disp
+	LCA	C1.info_ptr
+	La
+	Sa	1, C1__u				; array info ptr at __u
+
+_C2__type = '_C2__type'
+namespace _C2__type				; array var constrained array type info
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+VAR _COMP_SIZ, d
+VAR _FST_1, d
+VAR _LST_1, d
+	LI	8
+	Sd	1, _COMP_SIZ
+	Ld	1, _COMP_SIZ
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd	1, _FST_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	6
+	Sd	1, _LST_1
+	Ld	1, _LST_1
+	Ld	1, _FST_1
+	SUB
+	INC
+	CLAMP0
+	MUL
+	Sd	1, SIZ
+  virtual at 4
+COMP_SIZ = $
+	rd 1 
+FST_1 = $
+	rd 1 
+LST_1 = $
+	rd 1 
+  end virtual
+end namespace
+VAR C2_disp, q				; variable array : pointeur aux data
+VAR C2__u, q				; variable array : useinfo pointeur au rec info
+	La 1, _C2__type.use__info
+	Sa	1, C2__u				; array info ptr at __u
+STR C2, "ABCDEZ"				; constante string="ABCDEZ"
+	LCA	C2.data_ptr
+	La
+	Sa	1, C2_disp				; array data ptr at _disp
+	LCA	C2.info_ptr
+	La
+	Sa	1, C2__u				; array info ptr at __u
+
+_C3__type = '_C3__type'
+namespace _C3__type				; array var constrained array type info
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+VAR _COMP_SIZ, d
+VAR _FST_1, d
+VAR _LST_1, d
+	LI	8
+	Sd	1, _COMP_SIZ
+	Ld	1, _COMP_SIZ
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd	1, _FST_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	12
+	Sd	1, _LST_1
+	Ld	1, _LST_1
+	Ld	1, _FST_1
+	SUB
+	INC
+	CLAMP0
+	MUL
+	Sd	1, SIZ
+  virtual at 4
+COMP_SIZ = $
+	rd 1 
+FST_1 = $
+	rd 1 
+LST_1 = $
+	rd 1 
+  end virtual
+end namespace
+VAR C3_disp, q				; variable array : pointeur aux data
+VAR C3__u, q				; variable array : useinfo pointeur au rec info
+	La 1, _C3__type.use__info
+	Sa	1, C3__u				; array info ptr at __u
+	Ld	1, _C3__type.SIZ
+	LI	8
+	DIV
+	CO_VAR
+	Sa	1, C3_disp				; array data ptr at _disp
+
+_P2__type = '_P2__type'
+namespace _P2__type				; array var constrained array type info
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+VAR _COMP_SIZ, d
+VAR _FST_1, d
+VAR _LST_1, d
+	LI	8
+	Sd	1, _COMP_SIZ
+	Ld	1, _COMP_SIZ
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd	1, _FST_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	2
+	Sd	1, _LST_1
+	Ld	1, _LST_1
+	Ld	1, _FST_1
+	SUB
+	INC
+	CLAMP0
+	MUL
+	Sd	1, SIZ
+  virtual at 4
+COMP_SIZ = $
+	rd 1 
+FST_1 = $
+	rd 1 
+LST_1 = $
+	rd 1 
+  end virtual
+end namespace
+VAR P2_disp, q				; variable array : pointeur aux data
+VAR P2__u, q				; variable array : useinfo pointeur au rec info
+	La 1, _P2__type.use__info
+	Sa	1, P2__u				; array info ptr at __u
+STR P2, "AB"				; constante string="AB"
+	LCA	P2.data_ptr
+	La
+	Sa	1, P2_disp				; array data ptr at _disp
+	LCA	P2.info_ptr
+	La
+	Sa	1, P2__u				; array info ptr at __u
+
+_P3__type = '_P3__type'
+namespace _P3__type				; array var constrained array type info
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+VAR _COMP_SIZ, d
+VAR _FST_1, d
+VAR _LST_1, d
+	LI	8
+	Sd	1, _COMP_SIZ
+	Ld	1, _COMP_SIZ
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd	1, _FST_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	3
+	Sd	1, _LST_1
+	Ld	1, _LST_1
+	Ld	1, _FST_1
+	SUB
+	INC
+	CLAMP0
+	MUL
+	Sd	1, SIZ
+  virtual at 4
+COMP_SIZ = $
+	rd 1 
+FST_1 = $
+	rd 1 
+LST_1 = $
+	rd 1 
+  end virtual
+end namespace
+VAR P3_disp, q				; variable array : pointeur aux data
+VAR P3__u, q				; variable array : useinfo pointeur au rec info
+	La 1, _P3__type.use__info
+	Sa	1, P3__u				; array info ptr at __u
+STR P3, "ABC"				; constante string="ABC"
+	LCA	P3.data_ptr
+	La
+	Sa	1, P3_disp				; array data ptr at _disp
+	LCA	P3.info_ptr
+	La
+	Sa	1, P3__u				; array info ptr at __u
+
+_S0__type = '_S0__type'
+namespace _S0__type				; array var constrained array type info
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+VAR _COMP_SIZ, d
+VAR _FST_1, d
+VAR _LST_1, d
+	LI	8
+	Sd	1, _COMP_SIZ
+	Ld	1, _COMP_SIZ
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	3
+	Sd	1, _FST_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	2
+	Sd	1, _LST_1
+	Ld	1, _LST_1
+	Ld	1, _FST_1
+	SUB
+	INC
+	CLAMP0
+	MUL
+	Sd	1, SIZ
+  virtual at 4
+COMP_SIZ = $
+	rd 1 
+FST_1 = $
+	rd 1 
+LST_1 = $
+	rd 1 
+  end virtual
+end namespace
+VAR S0_disp, q				; variable array : pointeur aux data
+VAR S0__u, q				; variable array : useinfo pointeur au rec info
+	La 1, _S0__type.use__info
+	Sa	1, S0__u				; array info ptr at __u
+	Ld	1, _S0__type.SIZ
+	LI	8
+	DIV
+	CO_VAR
+	Sa	1, S0_disp				; array data ptr at _disp
+
+_SD__type = '_SD__type'
+namespace _SD__type				; array var constrained array type info
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+VAR _COMP_SIZ, d
+VAR _FST_1, d
+VAR _LST_1, d
+	LI	8
+	Sd	1, _COMP_SIZ
+	Ld	1, _COMP_SIZ
+	Ld 1,	N_disp
+	Sd	1, _FST_1
+	Ld 1,	N_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	SUB
+	Sd	1, _LST_1
+	Ld	1, _LST_1
+	Ld	1, _FST_1
+	SUB
+	INC
+	CLAMP0
+	MUL
+	Sd	1, SIZ
+  virtual at 4
+COMP_SIZ = $
+	rd 1 
+FST_1 = $
+	rd 1 
+LST_1 = $
+	rd 1 
+  end virtual
+end namespace
+VAR SD_disp, q				; variable array : pointeur aux data
+VAR SD__u, q				; variable array : useinfo pointeur au rec info
+	La 1, _SD__type.use__info
+	Sa	1, SD__u				; array info ptr at __u
+	Ld	1, _SD__type.SIZ
+	LI	8
+	DIV
+	CO_VAR
+	Sa	1, SD_disp				; array data ptr at _disp
+
+VAR U_disp, q				; variable array : pointeur aux data
+VAR U__u, q				; variable array : useinfo pointeur au rec info
+	La 1, STANDARD.ARRAY_TEST2_L1._VEC3.use__info
+	Sa	1, U__u				; array info ptr at __u
+	Ld	1, STANDARD.ARRAY_TEST2_L1._VEC3.SIZ
+	LI	8
+	DIV
+	CO_VAR
+	Sa	1, U_disp				; array data ptr at _disp
+
+VAR X_disp, q				; variable array : pointeur aux data
+VAR X__u, q				; variable array : useinfo pointeur au rec info
+	La 1, STANDARD.ARRAY_TEST2_L1._VEC3.use__info
+	Sa	1, X__u				; array info ptr at __u
+	Ld	1, STANDARD.ARRAY_TEST2_L1._VEC3.SIZ
+	LI	8
+	DIV
+	CO_VAR
+	Sa	1, X_disp				; array data ptr at _disp
+
+VAR L_disp, q				; variable array : pointeur aux data
+VAR L__u, q				; variable array : useinfo pointeur au rec info
+	La 1, STANDARD.ARRAY_TEST2_L1._LIGNE.use__info
+	Sa	1, L__u				; array info ptr at __u
+	Ld	1, STANDARD.ARRAY_TEST2_L1._LIGNE.SIZ
+	LI	8
+	DIV
+	CO_VAR
+	Sa	1, L_disp				; array data ptr at _disp
+
+VAR CO_disp, q				; variable array : pointeur aux data
+VAR CO__u, q				; variable array : useinfo pointeur au rec info
+	La 1, STANDARD.ARRAY_TEST2_L1._COLONNE.use__info
+	Sa	1, CO__u				; array info ptr at __u
+	Ld	1, STANDARD.ARRAY_TEST2_L1._COLONNE.SIZ
+	LI	8
+	DIV
+	CO_VAR
+	Sa	1, CO_disp				; array data ptr at _disp
+
+VAR B1_disp, q				; variable array : pointeur aux data
+VAR B1__u, q				; variable array : useinfo pointeur au rec info
+	La 1, STANDARD.ARRAY_TEST2_L1._BVEC.use__info
+	Sa	1, B1__u				; array info ptr at __u
+	Ld	1, STANDARD.ARRAY_TEST2_L1._BVEC.SIZ
+	LI	8
+	DIV
+	CO_VAR
+	Sa	1, B1_disp				; array data ptr at _disp
+
+VAR B2_disp, q				; variable array : pointeur aux data
+VAR B2__u, q				; variable array : useinfo pointeur au rec info
+	La 1, STANDARD.ARRAY_TEST2_L1._BVEC.use__info
+	Sa	1, B2__u				; array info ptr at __u
+	Ld	1, STANDARD.ARRAY_TEST2_L1._BVEC.SIZ
+	LI	8
+	DIV
+	CO_VAR
+	Sa	1, B2_disp				; array data ptr at _disp
+
+VAR B3_disp, q				; variable array : pointeur aux data
+VAR B3__u, q				; variable array : useinfo pointeur au rec info
+	La 1, STANDARD.ARRAY_TEST2_L1._BVEC.use__info
+	Sa	1, B3__u				; array info ptr at __u
+	Ld	1, STANDARD.ARRAY_TEST2_L1._BVEC.SIZ
+	LI	8
+	DIV
+	CO_VAR
+	Sa	1, B3_disp				; array data ptr at _disp
+
+VAR M_disp, q				; variable array : pointeur aux data
+VAR M__u, q				; variable array : useinfo pointeur au rec info
+	La 1, STANDARD.ARRAY_TEST2_L1._MAT2.use__info
+	Sa	1, M__u				; array info ptr at __u
+	Ld	1, STANDARD.ARRAY_TEST2_L1._MAT2.SIZ
+	LI	8
+	DIV
+	CO_VAR
+	Sa	1, M_disp				; array data ptr at _disp
+
+
+if defined AFFICHE_L8_
+PRO	AFFICHE_L8				;---------- PRO AFFICHE
+PRMS					;    debut parametrage
+	PRM Y_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	Ld 1,	STANDARD.ARRAY_TEST2_L1.INT_IO.DEFAULT_BASE_disp
+	Ld 1,	STANDARD.ARRAY_TEST2_L1.INT_IO.DEFAULT_WIDTH_disp
+	LVA	2, -Y_ofs
+	LIa	, , 8
+	Ld	, _STRING.FST_1
+	CALL	STANDARD.ARRAY_TEST2_L1.INT_IO. ,PUT_L5
+	Ld 1,	STANDARD.ARRAY_TEST2_L1.INT_IO.DEFAULT_BASE_disp
+	Ld 1,	STANDARD.ARRAY_TEST2_L1.INT_IO.DEFAULT_WIDTH_disp
+	LVA	2, -Y_ofs
+	LIa	, , 8
+	Ld	, _STRING.LST_1
+	CALL	STANDARD.ARRAY_TEST2_L1.INT_IO. ,PUT_L5
+	Ld 1,	STANDARD.ARRAY_TEST2_L1.INT_IO.DEFAULT_BASE_disp
+	Ld 1,	STANDARD.ARRAY_TEST2_L1.INT_IO.DEFAULT_WIDTH_disp
+	LVA	2, -Y_ofs
+	LIa	, , 8
+	Ld	, _STRING.LST_1
+	LVA	2, -Y_ofs
+	LIa	, , 8
+	Ld	, _STRING.FST_1
+	SUB
+	INC
+	CLAMP0
+	CALL	STANDARD.ARRAY_TEST2_L1.INT_IO. ,PUT_L5
+STR STR_L9, " ["				; constante string=" ["
+	LCA	STR_L9.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	La  2,	-Y_ofs
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+STR STR_L10, "]"				; constante string="]"
+	LCA	STR_L10.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+ret_lbl:
+	UNLINK 2
+	RTD	prm_siz
+excep:
+endPRO					;---------- end PRO AFFICHE
+end if
+
+if defined VRAI_FAUX_L11_
+PRO	VRAI_FAUX_L11				;---------- PRO VRAI_FAUX
+PRMS					;    debut parametrage
+	PRM B_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+					; debut if
+	Lb  2,	-B_ofs
+	BF	L13
+STR STR_L14, "VRAI"				; constante string="VRAI"
+	LCA	STR_L14.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	BRA	L12
+L13:
+STR STR_L15, "FAUX"				; constante string="FAUX"
+	LCA	STR_L15.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+L12:					; post if
+ret_lbl:
+	UNLINK 2
+	RTD	prm_siz
+excep:
+endPRO					;---------- end PRO VRAI_FAUX
+end if
+
+if defined MILIEU_L16_
+PRO	MILIEU_L16				;---------- PRO MILIEU
+PRMS					;    debut parametrage
+	PRM S_ofs				; in
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 2					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+; CODE_RETURN : EXPR TYPE = DN_ARRAY
+	LVA	2, -S_ofs
+	LIa	, , 0
+	LVA	2, -S_ofs
+	LIa	, , 8
+	Ld	, _STRING.FST_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	LVA	2, -S_ofs
+	LIa	, , 8
+	Ld	, STANDARD._STRING.FST_1
+	SUB
+	LI	1
+	MUL
+	ADD
+namespace ANON_55_12			; ensemble doublet @data/@info pour slice anonyme source
+VAR ANON_55_12_disp, q
+VAR ANON_55_12__u, q
+VAR SIZ, d
+VAR COMP_SIZ, d
+VAR _FST_1, d
+VAR _LST_1, d
+	Sa	2, ANON_55_12_disp
+	LVA	2, SIZ
+	Sa	2, ANON_55_12__u
+	LI	8
+	Sd	2, COMP_SIZ
+	LVA	2, -S_ofs
+	LIa	, , 8
+	Ld	, _STRING.FST_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd	2, _FST_1
+	LVA	2, -S_ofs
+	LIa	, , 8
+	Ld	, _STRING.LST_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	SUB
+	Sd	2, _LST_1
+	Ld	2, _LST_1
+	Ld	2, _FST_1
+	SUB
+	INC
+	CLAMP0
+	LI	8
+	MUL
+	Sd	2, SIZ
+	LVA	2, ANON_55_12_disp
+end namespace
+VAR	RET_INFO_L17, q
+	DUP
+	La  ,  0
+	SIq   2, -result__ofs,  0
+	DUP
+	La  ,  8
+	Sa   2, RET_INFO_L17
+	DROP
+	La   2, -result__ofs
+	La  ,  8
+	LI	16
+	La   2, RET_INFO_L17
+	BLKMOV
+	BRA ret_lbl
+ret_lbl:
+	UNLINK 2
+	RTD	prm_siz-8
+excep:
+endPRO					;---------- end PRO MILIEU
+end if
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+STR STR_L18, "=== D7. Tableaux et tranches nuls (longueur bornee a 0) ==="	; constante string="=== D7. Tableaux et tranches nuls (longueur bornee a 0) ==="
+	LCA	STR_L18.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	Ld 1,	STANDARD.ARRAY_TEST2_L1.INT_IO.DEFAULT_BASE_disp
+	Ld 1,	STANDARD.ARRAY_TEST2_L1.INT_IO.DEFAULT_WIDTH_disp
+	LId	1, STANDARD.ARRAY_TEST2_L1.S0__u, STANDARD._STRING.LST_1
+	LId	1, STANDARD.ARRAY_TEST2_L1.S0__u, STANDARD._STRING.FST_1
+	SUB
+	INC
+	CLAMP0
+	CALL	STANDARD.ARRAY_TEST2_L1.INT_IO. ,PUT_L5
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
+	Ld 1,	STANDARD.ARRAY_TEST2_L1.INT_IO.DEFAULT_BASE_disp
+	Ld 1,	STANDARD.ARRAY_TEST2_L1.INT_IO.DEFAULT_WIDTH_disp
+	LId	1, STANDARD.ARRAY_TEST2_L1.SD__u, STANDARD._STRING.LST_1
+	LId	1, STANDARD.ARRAY_TEST2_L1.SD__u, STANDARD._STRING.FST_1
+	SUB
+	INC
+	CLAMP0
+	CALL	STANDARD.ARRAY_TEST2_L1.INT_IO. ,PUT_L5
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
+	LVA 1,	SD_disp
+	CALL	STANDARD.ARRAY_TEST2_L1. ,AFFICHE_L8
+	LVA 1,	C3_disp
+	La
+	LId	1, STANDARD.ARRAY_TEST2_L1.C3__u, 0
+	LI	8
+	DIV
+; CODE & concat _STRING
+VAR	ANON_63_9_L19_G_data, q
+VAR	ANON_63_9_L19_G_info, q
+VAR	ANON_63_14_L19_D_data, q
+VAR	ANON_63_14_L19_D_info, q
+VAR	ANON_63_9_L19_G_len,  q
+VAR	ANON_63_14_L19_D_len,  q
+VAR	ANON_63_9_L19_R_disp, q
+VAR	ANON_63_9_L19_R__u,   q
+namespace ANON_63_9_L19_R_info
+  VAR SIZ,      d
+  VAR _COMP_SIZ, d
+  VAR _FST_1,    d
+  VAR _LST_1,    d
+end namespace
+	LVA 1,	SD_disp
+	DUP
+	La  ,  0
+	Sa  1, ANON_63_9_L19_G_data
+	La  ,  8
+	Sa  1, ANON_63_9_L19_G_info
+	LId 1, ANON_63_9_L19_G_info, _STRING.LST_1
+	LId 1, ANON_63_9_L19_G_info, _STRING.FST_1
+	SUB
+	INC
+	CLAMP0
+	Sa  1, ANON_63_9_L19_G_len
+STR ANON_63_14_L19_D, "ABCDEFGHIJKL"		; constante string="ABCDEFGHIJKL"
+	LCA	ANON_63_14_L19_D.data_ptr
+	DUP
+	La  ,  0
+	Sa  1, ANON_63_14_L19_D_data
+	La  ,  8
+	Sa  1, ANON_63_14_L19_D_info
+	LId 1, ANON_63_14_L19_D_info, _STRING.LST_1
+	LId 1, ANON_63_14_L19_D_info, _STRING.FST_1
+	SUB
+	INC
+	CLAMP0
+	Sa  1, ANON_63_14_L19_D_len
+	La  1, ANON_63_9_L19_G_len
+	La  1, ANON_63_14_L19_D_len
+	ADD
+	CO_VAR
+	Sa  1, ANON_63_9_L19_R_disp
+	LI	1
+	Sd  1, ANON_63_9_L19_R_info._FST_1
+	La  1, ANON_63_9_L19_G_len
+	La  1, ANON_63_14_L19_D_len
+	ADD
+	Sd  1, ANON_63_9_L19_R_info._LST_1
+	LI	8
+	Sd  1, ANON_63_9_L19_R_info._COMP_SIZ
+	La  1, ANON_63_9_L19_G_len
+	La  1, ANON_63_14_L19_D_len
+	ADD
+	LI	8
+	MUL
+	Sd  1, ANON_63_9_L19_R_info.SIZ
+	LVA 1, ANON_63_9_L19_R_info.SIZ
+	Sa  1, ANON_63_9_L19_R__u
+	La  1, ANON_63_9_L19_R_disp
+	La  1, ANON_63_9_L19_G_len
+	La  1, ANON_63_9_L19_G_data
+	BLKMOV
+	La  1, ANON_63_9_L19_R_disp
+	La  1, ANON_63_9_L19_G_len
+	ADD
+	La  1, ANON_63_14_L19_D_len
+	La  1, ANON_63_14_L19_D_data
+	BLKMOV
+	LVA 1, ANON_63_9_L19_R_disp
+	La
+	BLKMOV
+	LVA 1,	C3_disp
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	LVA 1,	C3_disp
+	La
+	LId	1, STANDARD.ARRAY_TEST2_L1.C3__u, 0
+	LI	8
+	DIV
+; CODE & concat _STRING
+VAR	ANON_65_9_L20_G_data, q
+VAR	ANON_65_9_L20_G_info, q
+VAR	ANON_65_28_L20_D_data, q
+VAR	ANON_65_28_L20_D_info, q
+VAR	ANON_65_9_L20_G_len,  q
+VAR	ANON_65_28_L20_D_len,  q
+VAR	ANON_65_9_L20_R_disp, q
+VAR	ANON_65_9_L20_R__u,   q
+namespace ANON_65_9_L20_R_info
+  VAR SIZ,      d
+  VAR _COMP_SIZ, d
+  VAR _FST_1,    d
+  VAR _LST_1,    d
+end namespace
+VAR	ANON_65_9_L20_G_slice_data, q
+VAR	ANON_65_9_L20_G_slice_len,  q
+VAR	ANON_65_9_L20_G_disp, q
+VAR	ANON_65_9_L20_G__u,   q
+namespace ANON_65_9_L20_G_info
+  VAR SIZ,      d
+  VAR _COMP_SIZ, d
+  VAR _FST_1,    d
+  VAR _LST_1,    d
+end namespace
+	La 1, C1_disp
+	Ld 1,	N_disp
+	LId 1, C1__u, STANDARD._STRING.FST_1
+	SUB
+	LI	1
+	MUL
+	ADD
+	Ld 1,	N_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	SUB
+	Ld 1,	N_disp
+	SUB
+	INC
+	CLAMP0
+	LI	1
+	MUL
+	Sa  1, ANON_65_9_L20_G_slice_len
+	Sa  1, ANON_65_9_L20_G_slice_data
+	La  1, ANON_65_9_L20_G_slice_data
+	Sa  1, ANON_65_9_L20_G_disp
+	LVA 1, ANON_65_9_L20_G_info.SIZ
+	Sa  1, ANON_65_9_L20_G__u
+	LI	1
+	Sd  1, ANON_65_9_L20_G_info._FST_1
+	La  1, ANON_65_9_L20_G_slice_len
+	Sd  1, ANON_65_9_L20_G_info._LST_1
+	LI	8
+	Sd  1, ANON_65_9_L20_G_info._COMP_SIZ
+	La  1, ANON_65_9_L20_G_slice_len
+	LI	8
+	MUL
+	Sd  1, ANON_65_9_L20_G_info.SIZ
+	LVA 1, ANON_65_9_L20_G_disp
+	DUP
+	La  ,  0
+	Sa  1, ANON_65_9_L20_G_data
+	La  ,  8
+	Sa  1, ANON_65_9_L20_G_info
+	LId 1, ANON_65_9_L20_G_info, _STRING.LST_1
+	LId 1, ANON_65_9_L20_G_info, _STRING.FST_1
+	SUB
+	INC
+	CLAMP0
+	Sa  1, ANON_65_9_L20_G_len
+STR ANON_65_28_L20_D, "ABCDEFGHIJKL"		; constante string="ABCDEFGHIJKL"
+	LCA	ANON_65_28_L20_D.data_ptr
+	DUP
+	La  ,  0
+	Sa  1, ANON_65_28_L20_D_data
+	La  ,  8
+	Sa  1, ANON_65_28_L20_D_info
+	LId 1, ANON_65_28_L20_D_info, _STRING.LST_1
+	LId 1, ANON_65_28_L20_D_info, _STRING.FST_1
+	SUB
+	INC
+	CLAMP0
+	Sa  1, ANON_65_28_L20_D_len
+	La  1, ANON_65_9_L20_G_len
+	La  1, ANON_65_28_L20_D_len
+	ADD
+	CO_VAR
+	Sa  1, ANON_65_9_L20_R_disp
+	LI	1
+	Sd  1, ANON_65_9_L20_R_info._FST_1
+	La  1, ANON_65_9_L20_G_len
+	La  1, ANON_65_28_L20_D_len
+	ADD
+	Sd  1, ANON_65_9_L20_R_info._LST_1
+	LI	8
+	Sd  1, ANON_65_9_L20_R_info._COMP_SIZ
+	La  1, ANON_65_9_L20_G_len
+	La  1, ANON_65_28_L20_D_len
+	ADD
+	LI	8
+	MUL
+	Sd  1, ANON_65_9_L20_R_info.SIZ
+	LVA 1, ANON_65_9_L20_R_info.SIZ
+	Sa  1, ANON_65_9_L20_R__u
+	La  1, ANON_65_9_L20_R_disp
+	La  1, ANON_65_9_L20_G_len
+	La  1, ANON_65_9_L20_G_data
+	BLKMOV
+	La  1, ANON_65_9_L20_R_disp
+	La  1, ANON_65_9_L20_G_len
+	ADD
+	La  1, ANON_65_28_L20_D_len
+	La  1, ANON_65_28_L20_D_data
+	BLKMOV
+	LVA 1, ANON_65_9_L20_R_disp
+	La
+	BLKMOV
+	LVA 1,	C3_disp
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	La 1, C1_disp
+	Ld 1,	N_disp
+	LId 1, C1__u, STANDARD._STRING.FST_1
+	SUB
+	LI	1
+	MUL
+	ADD
+	Ld 1,	N_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	SUB
+	Ld 1,	N_disp
+	SUB
+	INC
+	CLAMP0
+	LI	1
+	MUL
+	La 1, C2_disp
+	Ld 1,	N_disp
+	LId 1, C2__u, STANDARD._STRING.FST_1
+	SUB
+	LI	1
+	MUL
+	ADD
+	Ld 1,	N_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	SUB
+	Ld 1,	N_disp
+	SUB
+	INC
+	CLAMP0
+	LI	1
+	MUL
+	DROP
+	BLKMOV
+	LVA 1,	C1_disp
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+STR STR_L21, "=== D1. Egalite et inegalite de tableaux ==="	; constante string="=== D1. Egalite et inegalite de tableaux ==="
+	LCA	STR_L21.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+; CODE composite "=" _STRING
+VAR	ANON_71_14_L22_G_data, q
+VAR	ANON_71_14_L22_G_info, q
+VAR	ANON_71_14_L22_G_len,  q
+	LVA 1,	C1_disp
+	DUP
+	La  ,  0
+	Sa  1, ANON_71_14_L22_G_data
+	La  ,  8
+	Sa  1, ANON_71_14_L22_G_info
+	LId 1, ANON_71_14_L22_G_info, _STRING.LST_1
+	LId 1, ANON_71_14_L22_G_info, _STRING.FST_1
+	SUB
+	INC
+	CLAMP0
+	Sa  1, ANON_71_14_L22_G_len
+VAR	ANON_71_19_L22_D_data, q
+VAR	ANON_71_19_L22_D_info, q
+VAR	ANON_71_19_L22_D_len,  q
+STR ANON_71_19_L22_D, "ABCDEF"		; constante string="ABCDEF"
+	LCA	ANON_71_19_L22_D.data_ptr
+	DUP
+	La  ,  0
+	Sa  1, ANON_71_19_L22_D_data
+	La  ,  8
+	Sa  1, ANON_71_19_L22_D_info
+	LId 1, ANON_71_19_L22_D_info, _STRING.LST_1
+	LId 1, ANON_71_19_L22_D_info, _STRING.FST_1
+	SUB
+	INC
+	CLAMP0
+	Sa  1, ANON_71_19_L22_D_len
+	La  1, ANON_71_14_L22_G_len
+	La  1, ANON_71_19_L22_D_len
+	CEQ
+	DUP
+	BF	L23
+	DROP
+	La  1, ANON_71_14_L22_G_data
+	La  1, ANON_71_14_L22_G_len
+	La  1, ANON_71_19_L22_D_data
+	BLKCMP
+L23:
+	CALL	STANDARD.ARRAY_TEST2_L1. ,VRAI_FAUX_L11
+; CODE composite "=" _STRING
+VAR	ANON_72_14_L24_G_data, q
+VAR	ANON_72_14_L24_G_info, q
+VAR	ANON_72_14_L24_G_len,  q
+	LVA 1,	C1_disp
+	DUP
+	La  ,  0
+	Sa  1, ANON_72_14_L24_G_data
+	La  ,  8
+	Sa  1, ANON_72_14_L24_G_info
+	LId 1, ANON_72_14_L24_G_info, _STRING.LST_1
+	LId 1, ANON_72_14_L24_G_info, _STRING.FST_1
+	SUB
+	INC
+	CLAMP0
+	Sa  1, ANON_72_14_L24_G_len
+VAR	ANON_72_19_L24_D_data, q
+VAR	ANON_72_19_L24_D_info, q
+VAR	ANON_72_19_L24_D_len,  q
+	LVA 1,	C2_disp
+	DUP
+	La  ,  0
+	Sa  1, ANON_72_19_L24_D_data
+	La  ,  8
+	Sa  1, ANON_72_19_L24_D_info
+	LId 1, ANON_72_19_L24_D_info, _STRING.LST_1
+	LId 1, ANON_72_19_L24_D_info, _STRING.FST_1
+	SUB
+	INC
+	CLAMP0
+	Sa  1, ANON_72_19_L24_D_len
+	La  1, ANON_72_14_L24_G_len
+	La  1, ANON_72_19_L24_D_len
+	CEQ
+	DUP
+	BF	L25
+	DROP
+	La  1, ANON_72_14_L24_G_data
+	La  1, ANON_72_14_L24_G_len
+	La  1, ANON_72_19_L24_D_data
+	BLKCMP
+L25:
+	CALL	STANDARD.ARRAY_TEST2_L1. ,VRAI_FAUX_L11
+; CODE composite "/=" _STRING
+VAR	ANON_73_14_L26_G_data, q
+VAR	ANON_73_14_L26_G_info, q
+VAR	ANON_73_14_L26_G_len,  q
+	LVA 1,	C1_disp
+	DUP
+	La  ,  0
+	Sa  1, ANON_73_14_L26_G_data
+	La  ,  8
+	Sa  1, ANON_73_14_L26_G_info
+	LId 1, ANON_73_14_L26_G_info, _STRING.LST_1
+	LId 1, ANON_73_14_L26_G_info, _STRING.FST_1
+	SUB
+	INC
+	CLAMP0
+	Sa  1, ANON_73_14_L26_G_len
+VAR	ANON_73_20_L26_D_data, q
+VAR	ANON_73_20_L26_D_info, q
+VAR	ANON_73_20_L26_D_len,  q
+	LVA 1,	C2_disp
+	DUP
+	La  ,  0
+	Sa  1, ANON_73_20_L26_D_data
+	La  ,  8
+	Sa  1, ANON_73_20_L26_D_info
+	LId 1, ANON_73_20_L26_D_info, _STRING.LST_1
+	LId 1, ANON_73_20_L26_D_info, _STRING.FST_1
+	SUB
+	INC
+	CLAMP0
+	Sa  1, ANON_73_20_L26_D_len
+	La  1, ANON_73_14_L26_G_len
+	La  1, ANON_73_20_L26_D_len
+	CEQ
+	DUP
+	BF	L27
+	DROP
+	La  1, ANON_73_14_L26_G_data
+	La  1, ANON_73_14_L26_G_len
+	La  1, ANON_73_20_L26_D_data
+	BLKCMP
+L27:
+	LI	1
+	OUX
+	CALL	STANDARD.ARRAY_TEST2_L1. ,VRAI_FAUX_L11
+; CODE composite "=" _STRING
+VAR	ANON_74_14_L28_G_data, q
+VAR	ANON_74_14_L28_G_info, q
+VAR	ANON_74_14_L28_G_len,  q
+	LVA 1,	P2_disp
+	DUP
+	La  ,  0
+	Sa  1, ANON_74_14_L28_G_data
+	La  ,  8
+	Sa  1, ANON_74_14_L28_G_info
+	LId 1, ANON_74_14_L28_G_info, _STRING.LST_1
+	LId 1, ANON_74_14_L28_G_info, _STRING.FST_1
+	SUB
+	INC
+	CLAMP0
+	Sa  1, ANON_74_14_L28_G_len
+VAR	ANON_74_19_L28_D_data, q
+VAR	ANON_74_19_L28_D_info, q
+VAR	ANON_74_19_L28_D_len,  q
+	LVA 1,	P3_disp
+	DUP
+	La  ,  0
+	Sa  1, ANON_74_19_L28_D_data
+	La  ,  8
+	Sa  1, ANON_74_19_L28_D_info
+	LId 1, ANON_74_19_L28_D_info, _STRING.LST_1
+	LId 1, ANON_74_19_L28_D_info, _STRING.FST_1
+	SUB
+	INC
+	CLAMP0
+	Sa  1, ANON_74_19_L28_D_len
+	La  1, ANON_74_14_L28_G_len
+	La  1, ANON_74_19_L28_D_len
+	CEQ
+	DUP
+	BF	L29
+	DROP
+	La  1, ANON_74_14_L28_G_data
+	La  1, ANON_74_14_L28_G_len
+	La  1, ANON_74_19_L28_D_data
+	BLKCMP
+L29:
+	CALL	STANDARD.ARRAY_TEST2_L1. ,VRAI_FAUX_L11
+	La  1,	U_disp
+					; Assign_array_aggregate dynamic type DN_CONSTRAINED_ARRAY
+namespace ANON_76_8_aga
+  VAR _FST_1, d
+  VAR _LST_1, d
+  VAR _LEN_1, d
+  VAR _STR_1, d
+  VAR _PTR_1, q
+  VAR _CNT_1, d
+  VAR _EMIS_1, d
+end namespace
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd  1, ANON_76_8_aga._FST_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	3
+	Sd  1, ANON_76_8_aga._LST_1
+	Ld  1, ANON_76_8_aga._LST_1
+	Ld  1, ANON_76_8_aga._FST_1
+	SUB
+	INC
+	CLAMP0
+	Sd  1, ANON_76_8_aga._LEN_1
+	LI	4
+	Sd  1, ANON_76_8_aga._STR_1
+	Sa  1, ANON_76_8_aga._PTR_1
+	LI	0
+	Sd  1, ANON_76_8_aga._EMIS_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	SId  1, ANON_76_8_aga._PTR_1, 0
+	La  1, ANON_76_8_aga._PTR_1
+	Ld  1, ANON_76_8_aga._STR_1
+	ADD
+	Sa  1, ANON_76_8_aga._PTR_1
+	Ld  1, ANON_76_8_aga._EMIS_1
+	INC
+	Sd  1, ANON_76_8_aga._EMIS_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	2
+	SId  1, ANON_76_8_aga._PTR_1, 0
+	La  1, ANON_76_8_aga._PTR_1
+	Ld  1, ANON_76_8_aga._STR_1
+	ADD
+	Sa  1, ANON_76_8_aga._PTR_1
+	Ld  1, ANON_76_8_aga._EMIS_1
+	INC
+	Sd  1, ANON_76_8_aga._EMIS_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	3
+	SId  1, ANON_76_8_aga._PTR_1, 0
+	La  1, ANON_76_8_aga._PTR_1
+	Ld  1, ANON_76_8_aga._STR_1
+	ADD
+	Sa  1, ANON_76_8_aga._PTR_1
+	Ld  1, ANON_76_8_aga._EMIS_1
+	INC
+	Sd  1, ANON_76_8_aga._EMIS_1
+	La  1,	X_disp
+					; Assign_array_aggregate dynamic type DN_CONSTRAINED_ARRAY
+namespace ANON_77_8_aga
+  VAR _FST_1, d
+  VAR _LST_1, d
+  VAR _LEN_1, d
+  VAR _STR_1, d
+  VAR _PTR_1, q
+  VAR _CNT_1, d
+  VAR _EMIS_1, d
+end namespace
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd  1, ANON_77_8_aga._FST_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	3
+	Sd  1, ANON_77_8_aga._LST_1
+	Ld  1, ANON_77_8_aga._LST_1
+	Ld  1, ANON_77_8_aga._FST_1
+	SUB
+	INC
+	CLAMP0
+	Sd  1, ANON_77_8_aga._LEN_1
+	LI	4
+	Sd  1, ANON_77_8_aga._STR_1
+	Sa  1, ANON_77_8_aga._PTR_1
+	LI	0
+	Sd  1, ANON_77_8_aga._EMIS_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	SId  1, ANON_77_8_aga._PTR_1, 0
+	La  1, ANON_77_8_aga._PTR_1
+	Ld  1, ANON_77_8_aga._STR_1
+	ADD
+	Sa  1, ANON_77_8_aga._PTR_1
+	Ld  1, ANON_77_8_aga._EMIS_1
+	INC
+	Sd  1, ANON_77_8_aga._EMIS_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	2
+	SId  1, ANON_77_8_aga._PTR_1, 0
+	La  1, ANON_77_8_aga._PTR_1
+	Ld  1, ANON_77_8_aga._STR_1
+	ADD
+	Sa  1, ANON_77_8_aga._PTR_1
+	Ld  1, ANON_77_8_aga._EMIS_1
+	INC
+	Sd  1, ANON_77_8_aga._EMIS_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	3
+	SId  1, ANON_77_8_aga._PTR_1, 0
+	La  1, ANON_77_8_aga._PTR_1
+	Ld  1, ANON_77_8_aga._STR_1
+	ADD
+	Sa  1, ANON_77_8_aga._PTR_1
+	Ld  1, ANON_77_8_aga._EMIS_1
+	INC
+	Sd  1, ANON_77_8_aga._EMIS_1
+; CODE composite "=" _VEC3
+VAR	ANON_78_14_L30_G_data, q
+VAR	ANON_78_14_L30_G_info, q
+VAR	ANON_78_14_L30_G_len,  q
+	LVA 1,	U_disp
+	DUP
+	La  ,  0
+	Sa  1, ANON_78_14_L30_G_data
+	La  ,  8
+	Sa  1, ANON_78_14_L30_G_info
+	LId 1, ANON_78_14_L30_G_info, _VEC3.LST_1
+	LId 1, ANON_78_14_L30_G_info, _VEC3.FST_1
+	SUB
+	INC
+	CLAMP0
+	LI	4
+	MUL
+	Sa  1, ANON_78_14_L30_G_len
+VAR	ANON_78_18_L30_D_data, q
+VAR	ANON_78_18_L30_D_info, q
+VAR	ANON_78_18_L30_D_len,  q
+	LVA 1,	X_disp
+	DUP
+	La  ,  0
+	Sa  1, ANON_78_18_L30_D_data
+	La  ,  8
+	Sa  1, ANON_78_18_L30_D_info
+	LId 1, ANON_78_18_L30_D_info, _VEC3.LST_1
+	LId 1, ANON_78_18_L30_D_info, _VEC3.FST_1
+	SUB
+	INC
+	CLAMP0
+	LI	4
+	MUL
+	Sa  1, ANON_78_18_L30_D_len
+	La  1, ANON_78_14_L30_G_len
+	La  1, ANON_78_18_L30_D_len
+	CEQ
+	DUP
+	BF	L31
+	DROP
+	La  1, ANON_78_14_L30_G_data
+	La  1, ANON_78_14_L30_G_len
+	La  1, ANON_78_18_L30_D_data
+	BLKCMP
+L31:
+	CALL	STANDARD.ARRAY_TEST2_L1. ,VRAI_FAUX_L11
+	La	 1, X_disp				; array data start address on stack
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	3
+	LId	1, X__u, STANDARD.ARRAY_TEST2_L1._VEC3.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, X__u, STANDARD.ARRAY_TEST2_L1._VEC3.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	4
+	Sd
+; CODE composite "=" _VEC3
+VAR	ANON_80_14_L32_G_data, q
+VAR	ANON_80_14_L32_G_info, q
+VAR	ANON_80_14_L32_G_len,  q
+	LVA 1,	U_disp
+	DUP
+	La  ,  0
+	Sa  1, ANON_80_14_L32_G_data
+	La  ,  8
+	Sa  1, ANON_80_14_L32_G_info
+	LId 1, ANON_80_14_L32_G_info, _VEC3.LST_1
+	LId 1, ANON_80_14_L32_G_info, _VEC3.FST_1
+	SUB
+	INC
+	CLAMP0
+	LI	4
+	MUL
+	Sa  1, ANON_80_14_L32_G_len
+VAR	ANON_80_18_L32_D_data, q
+VAR	ANON_80_18_L32_D_info, q
+VAR	ANON_80_18_L32_D_len,  q
+	LVA 1,	X_disp
+	DUP
+	La  ,  0
+	Sa  1, ANON_80_18_L32_D_data
+	La  ,  8
+	Sa  1, ANON_80_18_L32_D_info
+	LId 1, ANON_80_18_L32_D_info, _VEC3.LST_1
+	LId 1, ANON_80_18_L32_D_info, _VEC3.FST_1
+	SUB
+	INC
+	CLAMP0
+	LI	4
+	MUL
+	Sa  1, ANON_80_18_L32_D_len
+	La  1, ANON_80_14_L32_G_len
+	La  1, ANON_80_18_L32_D_len
+	CEQ
+	DUP
+	BF	L33
+	DROP
+	La  1, ANON_80_14_L32_G_data
+	La  1, ANON_80_14_L32_G_len
+	La  1, ANON_80_18_L32_D_data
+	BLKCMP
+L33:
+	CALL	STANDARD.ARRAY_TEST2_L1. ,VRAI_FAUX_L11
+STR STR_L34, "=== D2. Ordre lexicographique (composants discrets) ==="	; constante string="=== D2. Ordre lexicographique (composants discrets) ==="
+	LCA	STR_L34.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+; COMPOSITE "<" NON IMPLEMENTE (lot D2) -- resultat force
+	LI	0
+	CALL	STANDARD.ARRAY_TEST2_L1. ,VRAI_FAUX_L11
+; COMPOSITE "<" NON IMPLEMENTE (lot D2) -- resultat force
+	LI	0
+	CALL	STANDARD.ARRAY_TEST2_L1. ,VRAI_FAUX_L11
+; COMPOSITE "<=" NON IMPLEMENTE (lot D2) -- resultat force
+	LI	0
+	CALL	STANDARD.ARRAY_TEST2_L1. ,VRAI_FAUX_L11
+; COMPOSITE ">" NON IMPLEMENTE (lot D2) -- resultat force
+	LI	0
+	CALL	STANDARD.ARRAY_TEST2_L1. ,VRAI_FAUX_L11
+; COMPOSITE "<" NON IMPLEMENTE (lot D2) -- resultat force
+	LI	0
+	CALL	STANDARD.ARRAY_TEST2_L1. ,VRAI_FAUX_L11
+; COMPOSITE "<" NON IMPLEMENTE (lot D2) -- resultat force
+	LI	0
+	CALL	STANDARD.ARRAY_TEST2_L1. ,VRAI_FAUX_L11
+STR STR_L47, "=== D3. Operateurs logiques sur tableaux booleens ==="	; constante string="=== D3. Operateurs logiques sur tableaux booleens ==="
+	LCA	STR_L47.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	La  1,	B1_disp
+					; Assign_array_aggregate dynamic type DN_CONSTRAINED_ARRAY
+namespace ANON_91_9_aga
+  VAR _FST_1, d
+  VAR _LST_1, d
+  VAR _LEN_1, d
+  VAR _STR_1, d
+  VAR _PTR_1, q
+  VAR _CNT_1, d
+  VAR _EMIS_1, d
+end namespace
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd  1, ANON_91_9_aga._FST_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	4
+	Sd  1, ANON_91_9_aga._LST_1
+	Ld  1, ANON_91_9_aga._LST_1
+	Ld  1, ANON_91_9_aga._FST_1
+	SUB
+	INC
+	CLAMP0
+	Sd  1, ANON_91_9_aga._LEN_1
+	LI	1
+	Sd  1, ANON_91_9_aga._STR_1
+	Sa  1, ANON_91_9_aga._PTR_1
+	LI	0
+	Sd  1, ANON_91_9_aga._EMIS_1
+	LI	1
+	SIb  1, ANON_91_9_aga._PTR_1, 0
+	La  1, ANON_91_9_aga._PTR_1
+	Ld  1, ANON_91_9_aga._STR_1
+	ADD
+	Sa  1, ANON_91_9_aga._PTR_1
+	Ld  1, ANON_91_9_aga._EMIS_1
+	INC
+	Sd  1, ANON_91_9_aga._EMIS_1
+	LI	1
+	SIb  1, ANON_91_9_aga._PTR_1, 0
+	La  1, ANON_91_9_aga._PTR_1
+	Ld  1, ANON_91_9_aga._STR_1
+	ADD
+	Sa  1, ANON_91_9_aga._PTR_1
+	Ld  1, ANON_91_9_aga._EMIS_1
+	INC
+	Sd  1, ANON_91_9_aga._EMIS_1
+	LI	0
+	SIb  1, ANON_91_9_aga._PTR_1, 0
+	La  1, ANON_91_9_aga._PTR_1
+	Ld  1, ANON_91_9_aga._STR_1
+	ADD
+	Sa  1, ANON_91_9_aga._PTR_1
+	Ld  1, ANON_91_9_aga._EMIS_1
+	INC
+	Sd  1, ANON_91_9_aga._EMIS_1
+	LI	0
+	SIb  1, ANON_91_9_aga._PTR_1, 0
+	La  1, ANON_91_9_aga._PTR_1
+	Ld  1, ANON_91_9_aga._STR_1
+	ADD
+	Sa  1, ANON_91_9_aga._PTR_1
+	Ld  1, ANON_91_9_aga._EMIS_1
+	INC
+	Sd  1, ANON_91_9_aga._EMIS_1
+	La  1,	B2_disp
+					; Assign_array_aggregate dynamic type DN_CONSTRAINED_ARRAY
+namespace ANON_92_9_aga
+  VAR _FST_1, d
+  VAR _LST_1, d
+  VAR _LEN_1, d
+  VAR _STR_1, d
+  VAR _PTR_1, q
+  VAR _CNT_1, d
+  VAR _EMIS_1, d
+end namespace
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd  1, ANON_92_9_aga._FST_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	4
+	Sd  1, ANON_92_9_aga._LST_1
+	Ld  1, ANON_92_9_aga._LST_1
+	Ld  1, ANON_92_9_aga._FST_1
+	SUB
+	INC
+	CLAMP0
+	Sd  1, ANON_92_9_aga._LEN_1
+	LI	1
+	Sd  1, ANON_92_9_aga._STR_1
+	Sa  1, ANON_92_9_aga._PTR_1
+	LI	0
+	Sd  1, ANON_92_9_aga._EMIS_1
+	LI	1
+	SIb  1, ANON_92_9_aga._PTR_1, 0
+	La  1, ANON_92_9_aga._PTR_1
+	Ld  1, ANON_92_9_aga._STR_1
+	ADD
+	Sa  1, ANON_92_9_aga._PTR_1
+	Ld  1, ANON_92_9_aga._EMIS_1
+	INC
+	Sd  1, ANON_92_9_aga._EMIS_1
+	LI	0
+	SIb  1, ANON_92_9_aga._PTR_1, 0
+	La  1, ANON_92_9_aga._PTR_1
+	Ld  1, ANON_92_9_aga._STR_1
+	ADD
+	Sa  1, ANON_92_9_aga._PTR_1
+	Ld  1, ANON_92_9_aga._EMIS_1
+	INC
+	Sd  1, ANON_92_9_aga._EMIS_1
+	LI	1
+	SIb  1, ANON_92_9_aga._PTR_1, 0
+	La  1, ANON_92_9_aga._PTR_1
+	Ld  1, ANON_92_9_aga._STR_1
+	ADD
+	Sa  1, ANON_92_9_aga._PTR_1
+	Ld  1, ANON_92_9_aga._EMIS_1
+	INC
+	Sd  1, ANON_92_9_aga._EMIS_1
+	LI	0
+	SIb  1, ANON_92_9_aga._PTR_1, 0
+	La  1, ANON_92_9_aga._PTR_1
+	Ld  1, ANON_92_9_aga._STR_1
+	ADD
+	Sa  1, ANON_92_9_aga._PTR_1
+	Ld  1, ANON_92_9_aga._EMIS_1
+	INC
+	Sd  1, ANON_92_9_aga._EMIS_1
+	LVA 1,	B3_disp
+	La
+	LId	1, STANDARD.ARRAY_TEST2_L1.B3__u, 0
+	LI	8
+	DIV
+; COMPOSITE "AND" NON IMPLEMENTE (lot D3) -- resultat force = operande gauche
+	LVA 1,	B1_disp
+	La
+	BLKMOV
+	La	 1, B3_disp				; array data start address on stack
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	LId	1, B3__u, STANDARD.ARRAY_TEST2_L1._BVEC.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, B3__u, STANDARD.ARRAY_TEST2_L1._BVEC.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb
+	CALL	STANDARD.ARRAY_TEST2_L1. ,VRAI_FAUX_L11
+	La	 1, B3_disp				; array data start address on stack
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	2
+	LId	1, B3__u, STANDARD.ARRAY_TEST2_L1._BVEC.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, B3__u, STANDARD.ARRAY_TEST2_L1._BVEC.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb
+	CALL	STANDARD.ARRAY_TEST2_L1. ,VRAI_FAUX_L11
+	LVA 1,	B3_disp
+	La
+	LId	1, STANDARD.ARRAY_TEST2_L1.B3__u, 0
+	LI	8
+	DIV
+; COMPOSITE "OR" NON IMPLEMENTE (lot D3) -- resultat force = operande gauche
+	LVA 1,	B1_disp
+	La
+	BLKMOV
+	La	 1, B3_disp				; array data start address on stack
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	3
+	LId	1, B3__u, STANDARD.ARRAY_TEST2_L1._BVEC.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, B3__u, STANDARD.ARRAY_TEST2_L1._BVEC.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb
+	CALL	STANDARD.ARRAY_TEST2_L1. ,VRAI_FAUX_L11
+	La	 1, B3_disp				; array data start address on stack
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	4
+	LId	1, B3__u, STANDARD.ARRAY_TEST2_L1._BVEC.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, B3__u, STANDARD.ARRAY_TEST2_L1._BVEC.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb
+	CALL	STANDARD.ARRAY_TEST2_L1. ,VRAI_FAUX_L11
+	LVA 1,	B3_disp
+	La
+	LId	1, STANDARD.ARRAY_TEST2_L1.B3__u, 0
+	LI	8
+	DIV
+; COMPOSITE "XOR" NON IMPLEMENTE (lot D3) -- resultat force = operande gauche
+	LVA 1,	B1_disp
+	La
+	BLKMOV
+	La	 1, B3_disp				; array data start address on stack
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	2
+	LId	1, B3__u, STANDARD.ARRAY_TEST2_L1._BVEC.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, B3__u, STANDARD.ARRAY_TEST2_L1._BVEC.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb
+	CALL	STANDARD.ARRAY_TEST2_L1. ,VRAI_FAUX_L11
+	La	 1, B3_disp				; array data start address on stack
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	LId	1, B3__u, STANDARD.ARRAY_TEST2_L1._BVEC.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, B3__u, STANDARD.ARRAY_TEST2_L1._BVEC.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb
+	CALL	STANDARD.ARRAY_TEST2_L1. ,VRAI_FAUX_L11
+	LVA 1,	B3_disp
+	La
+	LId	1, STANDARD.ARRAY_TEST2_L1.B3__u, 0
+	LI	8
+	DIV
+	LVA 1,	B1_disp
+; COMPOSITE "NOT" NON IMPLEMENTE (lot D3) -- resultat force
+	La
+	BLKMOV
+	La	 1, B3_disp				; array data start address on stack
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	LId	1, B3__u, STANDARD.ARRAY_TEST2_L1._BVEC.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, B3__u, STANDARD.ARRAY_TEST2_L1._BVEC.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb
+	CALL	STANDARD.ARRAY_TEST2_L1. ,VRAI_FAUX_L11
+	La	 1, B3_disp				; array data start address on stack
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	4
+	LId	1, B3__u, STANDARD.ARRAY_TEST2_L1._BVEC.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, B3__u, STANDARD.ARRAY_TEST2_L1._BVEC.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb
+	CALL	STANDARD.ARRAY_TEST2_L1. ,VRAI_FAUX_L11
+STR STR_L54, "=== D4. Catenation, formes composant (4.5.3) ==="	; constante string="=== D4. Catenation, formes composant (4.5.3) ==="
+	LCA	STR_L54.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+; CODE & concat _STRING
+VAR	ANON_103_13_L55_G_data, q
+VAR	ANON_103_13_L55_G_info, q
+VAR	ANON_103_19_L55_D_data, q
+VAR	ANON_103_19_L55_D_info, q
+VAR	ANON_103_13_L55_G_len,  q
+VAR	ANON_103_19_L55_D_len,  q
+VAR	ANON_103_13_L55_R_disp, q
+VAR	ANON_103_13_L55_R__u,   q
+namespace ANON_103_13_L55_R_info
+  VAR SIZ,      d
+  VAR _COMP_SIZ, d
+  VAR _FST_1,    d
+  VAR _LST_1,    d
+end namespace
+VAR	ANON_103_13_L55_G_disp, q
+VAR	ANON_103_13_L55_G__u,   q
+namespace ANON_103_13_L55_G_info
+  VAR SIZ,      d
+  VAR _COMP_SIZ, d
+  VAR _FST_1,    d
+  VAR _LST_1,    d
+end namespace
+	LI	88
+	LI	1
+	CO_VAR
+	Sa  1, ANON_103_13_L55_G_disp
+	SIb  1, ANON_103_13_L55_G_disp, 0
+	LI	1
+	Sd  1, ANON_103_13_L55_G_info._FST_1
+	LI	1
+	Sd  1, ANON_103_13_L55_G_info._LST_1
+	LI	8
+	Sd  1, ANON_103_13_L55_G_info._COMP_SIZ
+	LI	8
+	Sd  1, ANON_103_13_L55_G_info.SIZ
+	LVA 1, ANON_103_13_L55_G_info.SIZ
+	Sa  1, ANON_103_13_L55_G__u
+	LVA 1, ANON_103_13_L55_G_disp
+	DUP
+	La  ,  0
+	Sa  1, ANON_103_13_L55_G_data
+	La  ,  8
+	Sa  1, ANON_103_13_L55_G_info
+	LId 1, ANON_103_13_L55_G_info, _STRING.LST_1
+	LId 1, ANON_103_13_L55_G_info, _STRING.FST_1
+	SUB
+	INC
+	CLAMP0
+	Sa  1, ANON_103_13_L55_G_len
+	LVA 1,	P2_disp
+	DUP
+	La  ,  0
+	Sa  1, ANON_103_19_L55_D_data
+	La  ,  8
+	Sa  1, ANON_103_19_L55_D_info
+	LId 1, ANON_103_19_L55_D_info, _STRING.LST_1
+	LId 1, ANON_103_19_L55_D_info, _STRING.FST_1
+	SUB
+	INC
+	CLAMP0
+	Sa  1, ANON_103_19_L55_D_len
+	La  1, ANON_103_13_L55_G_len
+	La  1, ANON_103_19_L55_D_len
+	ADD
+	CO_VAR
+	Sa  1, ANON_103_13_L55_R_disp
+	LI	1
+	Sd  1, ANON_103_13_L55_R_info._FST_1
+	La  1, ANON_103_13_L55_G_len
+	La  1, ANON_103_19_L55_D_len
+	ADD
+	Sd  1, ANON_103_13_L55_R_info._LST_1
+	LI	8
+	Sd  1, ANON_103_13_L55_R_info._COMP_SIZ
+	La  1, ANON_103_13_L55_G_len
+	La  1, ANON_103_19_L55_D_len
+	ADD
+	LI	8
+	MUL
+	Sd  1, ANON_103_13_L55_R_info.SIZ
+	LVA 1, ANON_103_13_L55_R_info.SIZ
+	Sa  1, ANON_103_13_L55_R__u
+	La  1, ANON_103_13_L55_R_disp
+	La  1, ANON_103_13_L55_G_len
+	La  1, ANON_103_13_L55_G_data
+	BLKMOV
+	La  1, ANON_103_13_L55_R_disp
+	La  1, ANON_103_13_L55_G_len
+	ADD
+	La  1, ANON_103_19_L55_D_len
+	La  1, ANON_103_19_L55_D_data
+	BLKMOV
+	LVA 1, ANON_103_13_L55_R_disp
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+; CODE & concat _STRING
+VAR	ANON_104_13_L56_G_data, q
+VAR	ANON_104_13_L56_G_info, q
+VAR	ANON_104_18_L56_D_data, q
+VAR	ANON_104_18_L56_D_info, q
+VAR	ANON_104_13_L56_G_len,  q
+VAR	ANON_104_18_L56_D_len,  q
+VAR	ANON_104_13_L56_R_disp, q
+VAR	ANON_104_13_L56_R__u,   q
+namespace ANON_104_13_L56_R_info
+  VAR SIZ,      d
+  VAR _COMP_SIZ, d
+  VAR _FST_1,    d
+  VAR _LST_1,    d
+end namespace
+	LVA 1,	P2_disp
+	DUP
+	La  ,  0
+	Sa  1, ANON_104_13_L56_G_data
+	La  ,  8
+	Sa  1, ANON_104_13_L56_G_info
+	LId 1, ANON_104_13_L56_G_info, _STRING.LST_1
+	LId 1, ANON_104_13_L56_G_info, _STRING.FST_1
+	SUB
+	INC
+	CLAMP0
+	Sa  1, ANON_104_13_L56_G_len
+VAR	ANON_104_18_L56_D_disp, q
+VAR	ANON_104_18_L56_D__u,   q
+namespace ANON_104_18_L56_D_info
+  VAR SIZ,      d
+  VAR _COMP_SIZ, d
+  VAR _FST_1,    d
+  VAR _LST_1,    d
+end namespace
+	LI	89
+	LI	1
+	CO_VAR
+	Sa  1, ANON_104_18_L56_D_disp
+	SIb  1, ANON_104_18_L56_D_disp, 0
+	LI	1
+	Sd  1, ANON_104_18_L56_D_info._FST_1
+	LI	1
+	Sd  1, ANON_104_18_L56_D_info._LST_1
+	LI	8
+	Sd  1, ANON_104_18_L56_D_info._COMP_SIZ
+	LI	8
+	Sd  1, ANON_104_18_L56_D_info.SIZ
+	LVA 1, ANON_104_18_L56_D_info.SIZ
+	Sa  1, ANON_104_18_L56_D__u
+	LVA 1, ANON_104_18_L56_D_disp
+	DUP
+	La  ,  0
+	Sa  1, ANON_104_18_L56_D_data
+	La  ,  8
+	Sa  1, ANON_104_18_L56_D_info
+	LId 1, ANON_104_18_L56_D_info, _STRING.LST_1
+	LId 1, ANON_104_18_L56_D_info, _STRING.FST_1
+	SUB
+	INC
+	CLAMP0
+	Sa  1, ANON_104_18_L56_D_len
+	La  1, ANON_104_13_L56_G_len
+	La  1, ANON_104_18_L56_D_len
+	ADD
+	CO_VAR
+	Sa  1, ANON_104_13_L56_R_disp
+	LI	1
+	Sd  1, ANON_104_13_L56_R_info._FST_1
+	La  1, ANON_104_13_L56_G_len
+	La  1, ANON_104_18_L56_D_len
+	ADD
+	Sd  1, ANON_104_13_L56_R_info._LST_1
+	LI	8
+	Sd  1, ANON_104_13_L56_R_info._COMP_SIZ
+	La  1, ANON_104_13_L56_G_len
+	La  1, ANON_104_18_L56_D_len
+	ADD
+	LI	8
+	MUL
+	Sd  1, ANON_104_13_L56_R_info.SIZ
+	LVA 1, ANON_104_13_L56_R_info.SIZ
+	Sa  1, ANON_104_13_L56_R__u
+	La  1, ANON_104_13_L56_R_disp
+	La  1, ANON_104_13_L56_G_len
+	La  1, ANON_104_13_L56_G_data
+	BLKMOV
+	La  1, ANON_104_13_L56_R_disp
+	La  1, ANON_104_13_L56_G_len
+	ADD
+	La  1, ANON_104_18_L56_D_len
+	La  1, ANON_104_18_L56_D_data
+	BLKMOV
+	LVA 1, ANON_104_13_L56_R_disp
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+; CODE & concat _STRING
+VAR	ANON_105_13_L57_G_data, q
+VAR	ANON_105_13_L57_G_info, q
+VAR	ANON_105_19_L57_D_data, q
+VAR	ANON_105_19_L57_D_info, q
+VAR	ANON_105_13_L57_G_len,  q
+VAR	ANON_105_19_L57_D_len,  q
+VAR	ANON_105_13_L57_R_disp, q
+VAR	ANON_105_13_L57_R__u,   q
+namespace ANON_105_13_L57_R_info
+  VAR SIZ,      d
+  VAR _COMP_SIZ, d
+  VAR _FST_1,    d
+  VAR _LST_1,    d
+end namespace
+VAR	ANON_105_13_L57_G_disp, q
+VAR	ANON_105_13_L57_G__u,   q
+namespace ANON_105_13_L57_G_info
+  VAR SIZ,      d
+  VAR _COMP_SIZ, d
+  VAR _FST_1,    d
+  VAR _LST_1,    d
+end namespace
+	LI	88
+	LI	1
+	CO_VAR
+	Sa  1, ANON_105_13_L57_G_disp
+	SIb  1, ANON_105_13_L57_G_disp, 0
+	LI	1
+	Sd  1, ANON_105_13_L57_G_info._FST_1
+	LI	1
+	Sd  1, ANON_105_13_L57_G_info._LST_1
+	LI	8
+	Sd  1, ANON_105_13_L57_G_info._COMP_SIZ
+	LI	8
+	Sd  1, ANON_105_13_L57_G_info.SIZ
+	LVA 1, ANON_105_13_L57_G_info.SIZ
+	Sa  1, ANON_105_13_L57_G__u
+	LVA 1, ANON_105_13_L57_G_disp
+	DUP
+	La  ,  0
+	Sa  1, ANON_105_13_L57_G_data
+	La  ,  8
+	Sa  1, ANON_105_13_L57_G_info
+	LId 1, ANON_105_13_L57_G_info, _STRING.LST_1
+	LId 1, ANON_105_13_L57_G_info, _STRING.FST_1
+	SUB
+	INC
+	CLAMP0
+	Sa  1, ANON_105_13_L57_G_len
+VAR	ANON_105_19_L57_D_disp, q
+VAR	ANON_105_19_L57_D__u,   q
+namespace ANON_105_19_L57_D_info
+  VAR SIZ,      d
+  VAR _COMP_SIZ, d
+  VAR _FST_1,    d
+  VAR _LST_1,    d
+end namespace
+	LI	89
+	LI	1
+	CO_VAR
+	Sa  1, ANON_105_19_L57_D_disp
+	SIb  1, ANON_105_19_L57_D_disp, 0
+	LI	1
+	Sd  1, ANON_105_19_L57_D_info._FST_1
+	LI	1
+	Sd  1, ANON_105_19_L57_D_info._LST_1
+	LI	8
+	Sd  1, ANON_105_19_L57_D_info._COMP_SIZ
+	LI	8
+	Sd  1, ANON_105_19_L57_D_info.SIZ
+	LVA 1, ANON_105_19_L57_D_info.SIZ
+	Sa  1, ANON_105_19_L57_D__u
+	LVA 1, ANON_105_19_L57_D_disp
+	DUP
+	La  ,  0
+	Sa  1, ANON_105_19_L57_D_data
+	La  ,  8
+	Sa  1, ANON_105_19_L57_D_info
+	LId 1, ANON_105_19_L57_D_info, _STRING.LST_1
+	LId 1, ANON_105_19_L57_D_info, _STRING.FST_1
+	SUB
+	INC
+	CLAMP0
+	Sa  1, ANON_105_19_L57_D_len
+	La  1, ANON_105_13_L57_G_len
+	La  1, ANON_105_19_L57_D_len
+	ADD
+	CO_VAR
+	Sa  1, ANON_105_13_L57_R_disp
+	LI	1
+	Sd  1, ANON_105_13_L57_R_info._FST_1
+	La  1, ANON_105_13_L57_G_len
+	La  1, ANON_105_19_L57_D_len
+	ADD
+	Sd  1, ANON_105_13_L57_R_info._LST_1
+	LI	8
+	Sd  1, ANON_105_13_L57_R_info._COMP_SIZ
+	La  1, ANON_105_13_L57_G_len
+	La  1, ANON_105_19_L57_D_len
+	ADD
+	LI	8
+	MUL
+	Sd  1, ANON_105_13_L57_R_info.SIZ
+	LVA 1, ANON_105_13_L57_R_info.SIZ
+	Sa  1, ANON_105_13_L57_R__u
+	La  1, ANON_105_13_L57_R_disp
+	La  1, ANON_105_13_L57_G_len
+	La  1, ANON_105_13_L57_G_data
+	BLKMOV
+	La  1, ANON_105_13_L57_R_disp
+	La  1, ANON_105_13_L57_G_len
+	ADD
+	La  1, ANON_105_19_L57_D_len
+	La  1, ANON_105_19_L57_D_data
+	BLKMOV
+	LVA 1, ANON_105_13_L57_R_disp
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+; CODE & concat _STRING
+VAR	ANON_106_13_L58_G_data, q
+VAR	ANON_106_13_L58_G_info, q
+VAR	ANON_106_30_L58_D_data, q
+VAR	ANON_106_30_L58_D_info, q
+VAR	ANON_106_13_L58_G_len,  q
+VAR	ANON_106_30_L58_D_len,  q
+VAR	ANON_106_13_L58_R_disp, q
+VAR	ANON_106_13_L58_R__u,   q
+namespace ANON_106_13_L58_R_info
+  VAR SIZ,      d
+  VAR _COMP_SIZ, d
+  VAR _FST_1,    d
+  VAR _LST_1,    d
+end namespace
+; CODE & concat _STRING
+VAR	ANON_106_13_L59_G_data, q
+VAR	ANON_106_13_L59_G_info, q
+VAR	ANON_106_24_L59_D_data, q
+VAR	ANON_106_24_L59_D_info, q
+VAR	ANON_106_13_L59_G_len,  q
+VAR	ANON_106_24_L59_D_len,  q
+VAR	ANON_106_13_L59_R_disp, q
+VAR	ANON_106_13_L59_R__u,   q
+namespace ANON_106_13_L59_R_info
+  VAR SIZ,      d
+  VAR _COMP_SIZ, d
+  VAR _FST_1,    d
+  VAR _LST_1,    d
+end namespace
+; CODE & concat _STRING
+VAR	ANON_106_13_L60_G_data, q
+VAR	ANON_106_13_L60_G_info, q
+VAR	ANON_106_19_L60_D_data, q
+VAR	ANON_106_19_L60_D_info, q
+VAR	ANON_106_13_L60_G_len,  q
+VAR	ANON_106_19_L60_D_len,  q
+VAR	ANON_106_13_L60_R_disp, q
+VAR	ANON_106_13_L60_R__u,   q
+namespace ANON_106_13_L60_R_info
+  VAR SIZ,      d
+  VAR _COMP_SIZ, d
+  VAR _FST_1,    d
+  VAR _LST_1,    d
+end namespace
+VAR	ANON_106_13_L60_G_disp, q
+VAR	ANON_106_13_L60_G__u,   q
+namespace ANON_106_13_L60_G_info
+  VAR SIZ,      d
+  VAR _COMP_SIZ, d
+  VAR _FST_1,    d
+  VAR _LST_1,    d
+end namespace
+	LI	88
+	LI	1
+	CO_VAR
+	Sa  1, ANON_106_13_L60_G_disp
+	SIb  1, ANON_106_13_L60_G_disp, 0
+	LI	1
+	Sd  1, ANON_106_13_L60_G_info._FST_1
+	LI	1
+	Sd  1, ANON_106_13_L60_G_info._LST_1
+	LI	8
+	Sd  1, ANON_106_13_L60_G_info._COMP_SIZ
+	LI	8
+	Sd  1, ANON_106_13_L60_G_info.SIZ
+	LVA 1, ANON_106_13_L60_G_info.SIZ
+	Sa  1, ANON_106_13_L60_G__u
+	LVA 1, ANON_106_13_L60_G_disp
+	DUP
+	La  ,  0
+	Sa  1, ANON_106_13_L60_G_data
+	La  ,  8
+	Sa  1, ANON_106_13_L60_G_info
+	LId 1, ANON_106_13_L60_G_info, _STRING.LST_1
+	LId 1, ANON_106_13_L60_G_info, _STRING.FST_1
+	SUB
+	INC
+	CLAMP0
+	Sa  1, ANON_106_13_L60_G_len
+	LVA 1,	P2_disp
+	DUP
+	La  ,  0
+	Sa  1, ANON_106_19_L60_D_data
+	La  ,  8
+	Sa  1, ANON_106_19_L60_D_info
+	LId 1, ANON_106_19_L60_D_info, _STRING.LST_1
+	LId 1, ANON_106_19_L60_D_info, _STRING.FST_1
+	SUB
+	INC
+	CLAMP0
+	Sa  1, ANON_106_19_L60_D_len
+	La  1, ANON_106_13_L60_G_len
+	La  1, ANON_106_19_L60_D_len
+	ADD
+	CO_VAR
+	Sa  1, ANON_106_13_L60_R_disp
+	LI	1
+	Sd  1, ANON_106_13_L60_R_info._FST_1
+	La  1, ANON_106_13_L60_G_len
+	La  1, ANON_106_19_L60_D_len
+	ADD
+	Sd  1, ANON_106_13_L60_R_info._LST_1
+	LI	8
+	Sd  1, ANON_106_13_L60_R_info._COMP_SIZ
+	La  1, ANON_106_13_L60_G_len
+	La  1, ANON_106_19_L60_D_len
+	ADD
+	LI	8
+	MUL
+	Sd  1, ANON_106_13_L60_R_info.SIZ
+	LVA 1, ANON_106_13_L60_R_info.SIZ
+	Sa  1, ANON_106_13_L60_R__u
+	La  1, ANON_106_13_L60_R_disp
+	La  1, ANON_106_13_L60_G_len
+	La  1, ANON_106_13_L60_G_data
+	BLKMOV
+	La  1, ANON_106_13_L60_R_disp
+	La  1, ANON_106_13_L60_G_len
+	ADD
+	La  1, ANON_106_19_L60_D_len
+	La  1, ANON_106_19_L60_D_data
+	BLKMOV
+	LVA 1, ANON_106_13_L60_R_disp
+	DUP
+	La  ,  0
+	Sa  1, ANON_106_13_L59_G_data
+	La  ,  8
+	Sa  1, ANON_106_13_L59_G_info
+	LId 1, ANON_106_13_L59_G_info, _STRING.LST_1
+	LId 1, ANON_106_13_L59_G_info, _STRING.FST_1
+	SUB
+	INC
+	CLAMP0
+	Sa  1, ANON_106_13_L59_G_len
+VAR	ANON_106_24_L59_D_disp, q
+VAR	ANON_106_24_L59_D__u,   q
+namespace ANON_106_24_L59_D_info
+  VAR SIZ,      d
+  VAR _COMP_SIZ, d
+  VAR _FST_1,    d
+  VAR _LST_1,    d
+end namespace
+	LI	89
+	LI	1
+	CO_VAR
+	Sa  1, ANON_106_24_L59_D_disp
+	SIb  1, ANON_106_24_L59_D_disp, 0
+	LI	1
+	Sd  1, ANON_106_24_L59_D_info._FST_1
+	LI	1
+	Sd  1, ANON_106_24_L59_D_info._LST_1
+	LI	8
+	Sd  1, ANON_106_24_L59_D_info._COMP_SIZ
+	LI	8
+	Sd  1, ANON_106_24_L59_D_info.SIZ
+	LVA 1, ANON_106_24_L59_D_info.SIZ
+	Sa  1, ANON_106_24_L59_D__u
+	LVA 1, ANON_106_24_L59_D_disp
+	DUP
+	La  ,  0
+	Sa  1, ANON_106_24_L59_D_data
+	La  ,  8
+	Sa  1, ANON_106_24_L59_D_info
+	LId 1, ANON_106_24_L59_D_info, _STRING.LST_1
+	LId 1, ANON_106_24_L59_D_info, _STRING.FST_1
+	SUB
+	INC
+	CLAMP0
+	Sa  1, ANON_106_24_L59_D_len
+	La  1, ANON_106_13_L59_G_len
+	La  1, ANON_106_24_L59_D_len
+	ADD
+	CO_VAR
+	Sa  1, ANON_106_13_L59_R_disp
+	LI	1
+	Sd  1, ANON_106_13_L59_R_info._FST_1
+	La  1, ANON_106_13_L59_G_len
+	La  1, ANON_106_24_L59_D_len
+	ADD
+	Sd  1, ANON_106_13_L59_R_info._LST_1
+	LI	8
+	Sd  1, ANON_106_13_L59_R_info._COMP_SIZ
+	La  1, ANON_106_13_L59_G_len
+	La  1, ANON_106_24_L59_D_len
+	ADD
+	LI	8
+	MUL
+	Sd  1, ANON_106_13_L59_R_info.SIZ
+	LVA 1, ANON_106_13_L59_R_info.SIZ
+	Sa  1, ANON_106_13_L59_R__u
+	La  1, ANON_106_13_L59_R_disp
+	La  1, ANON_106_13_L59_G_len
+	La  1, ANON_106_13_L59_G_data
+	BLKMOV
+	La  1, ANON_106_13_L59_R_disp
+	La  1, ANON_106_13_L59_G_len
+	ADD
+	La  1, ANON_106_24_L59_D_len
+	La  1, ANON_106_24_L59_D_data
+	BLKMOV
+	LVA 1, ANON_106_13_L59_R_disp
+	DUP
+	La  ,  0
+	Sa  1, ANON_106_13_L58_G_data
+	La  ,  8
+	Sa  1, ANON_106_13_L58_G_info
+	LId 1, ANON_106_13_L58_G_info, _STRING.LST_1
+	LId 1, ANON_106_13_L58_G_info, _STRING.FST_1
+	SUB
+	INC
+	CLAMP0
+	Sa  1, ANON_106_13_L58_G_len
+VAR	ANON_106_30_L58_D_slice_data, q
+VAR	ANON_106_30_L58_D_slice_len,  q
+VAR	ANON_106_30_L58_D_disp, q
+VAR	ANON_106_30_L58_D__u,   q
+namespace ANON_106_30_L58_D_info
+  VAR SIZ,      d
+  VAR _COMP_SIZ, d
+  VAR _FST_1,    d
+  VAR _LST_1,    d
+end namespace
+	La 1, C1_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	LId 1, C1__u, STANDARD._STRING.FST_1
+	SUB
+	LI	1
+	MUL
+	ADD
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	2
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	SUB
+	INC
+	CLAMP0
+	LI	1
+	MUL
+	Sa  1, ANON_106_30_L58_D_slice_len
+	Sa  1, ANON_106_30_L58_D_slice_data
+	La  1, ANON_106_30_L58_D_slice_data
+	Sa  1, ANON_106_30_L58_D_disp
+	LVA 1, ANON_106_30_L58_D_info.SIZ
+	Sa  1, ANON_106_30_L58_D__u
+	LI	1
+	Sd  1, ANON_106_30_L58_D_info._FST_1
+	La  1, ANON_106_30_L58_D_slice_len
+	Sd  1, ANON_106_30_L58_D_info._LST_1
+	LI	8
+	Sd  1, ANON_106_30_L58_D_info._COMP_SIZ
+	La  1, ANON_106_30_L58_D_slice_len
+	LI	8
+	MUL
+	Sd  1, ANON_106_30_L58_D_info.SIZ
+	LVA 1, ANON_106_30_L58_D_disp
+	DUP
+	La  ,  0
+	Sa  1, ANON_106_30_L58_D_data
+	La  ,  8
+	Sa  1, ANON_106_30_L58_D_info
+	LId 1, ANON_106_30_L58_D_info, _STRING.LST_1
+	LId 1, ANON_106_30_L58_D_info, _STRING.FST_1
+	SUB
+	INC
+	CLAMP0
+	Sa  1, ANON_106_30_L58_D_len
+	La  1, ANON_106_13_L58_G_len
+	La  1, ANON_106_30_L58_D_len
+	ADD
+	CO_VAR
+	Sa  1, ANON_106_13_L58_R_disp
+	LI	1
+	Sd  1, ANON_106_13_L58_R_info._FST_1
+	La  1, ANON_106_13_L58_G_len
+	La  1, ANON_106_30_L58_D_len
+	ADD
+	Sd  1, ANON_106_13_L58_R_info._LST_1
+	LI	8
+	Sd  1, ANON_106_13_L58_R_info._COMP_SIZ
+	La  1, ANON_106_13_L58_G_len
+	La  1, ANON_106_30_L58_D_len
+	ADD
+	LI	8
+	MUL
+	Sd  1, ANON_106_13_L58_R_info.SIZ
+	LVA 1, ANON_106_13_L58_R_info.SIZ
+	Sa  1, ANON_106_13_L58_R__u
+	La  1, ANON_106_13_L58_R_disp
+	La  1, ANON_106_13_L58_G_len
+	La  1, ANON_106_13_L58_G_data
+	BLKMOV
+	La  1, ANON_106_13_L58_R_disp
+	La  1, ANON_106_13_L58_G_len
+	ADD
+	La  1, ANON_106_30_L58_D_len
+	La  1, ANON_106_30_L58_D_data
+	BLKMOV
+	LVA 1, ANON_106_13_L58_R_disp
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+STR STR_L61, "=== D5. Conversion entre types tableaux (glissement) ==="	; constante string="=== D5. Conversion entre types tableaux (glissement) ==="
+	LCA	STR_L61.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	La  1,	L_disp
+					; Assign_array_aggregate dynamic type DN_CONSTRAINED_ARRAY
+namespace ANON_109_9_aga
+  VAR _FST_1, d
+  VAR _LST_1, d
+  VAR _LEN_1, d
+  VAR _STR_1, d
+  VAR _PTR_1, q
+  VAR _CNT_1, d
+  VAR _EMIS_1, d
+end namespace
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd  1, ANON_109_9_aga._FST_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	3
+	Sd  1, ANON_109_9_aga._LST_1
+	Ld  1, ANON_109_9_aga._LST_1
+	Ld  1, ANON_109_9_aga._FST_1
+	SUB
+	INC
+	CLAMP0
+	Sd  1, ANON_109_9_aga._LEN_1
+	LI	4
+	Sd  1, ANON_109_9_aga._STR_1
+	Sa  1, ANON_109_9_aga._PTR_1
+	LI	0
+	Sd  1, ANON_109_9_aga._EMIS_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	100
+	SId  1, ANON_109_9_aga._PTR_1, 0
+	La  1, ANON_109_9_aga._PTR_1
+	Ld  1, ANON_109_9_aga._STR_1
+	ADD
+	Sa  1, ANON_109_9_aga._PTR_1
+	Ld  1, ANON_109_9_aga._EMIS_1
+	INC
+	Sd  1, ANON_109_9_aga._EMIS_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	200
+	SId  1, ANON_109_9_aga._PTR_1, 0
+	La  1, ANON_109_9_aga._PTR_1
+	Ld  1, ANON_109_9_aga._STR_1
+	ADD
+	Sa  1, ANON_109_9_aga._PTR_1
+	Ld  1, ANON_109_9_aga._EMIS_1
+	INC
+	Sd  1, ANON_109_9_aga._EMIS_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	300
+	SId  1, ANON_109_9_aga._PTR_1, 0
+	La  1, ANON_109_9_aga._PTR_1
+	Ld  1, ANON_109_9_aga._STR_1
+	ADD
+	Sa  1, ANON_109_9_aga._PTR_1
+	Ld  1, ANON_109_9_aga._EMIS_1
+	INC
+	Sd  1, ANON_109_9_aga._EMIS_1
+	LVA 1,	CO_disp
+	La
+	LId	1, STANDARD.ARRAY_TEST2_L1.CO__u, 0
+	LI	8
+	DIV
+	LVA 1,	L_disp
+; CODE CONVERSION SOURCE DN_CONSTRAINED_ARRAY TARGET DN_CONSTRAINED_ARRAY
+; EXPRESSIONS.CODE_CONVERSION cible non faite DN_CONSTRAINED_ARRAY
+	La
+	BLKMOV
+	Ld 1,	STANDARD.ARRAY_TEST2_L1.INT_IO.DEFAULT_BASE_disp
+	Ld 1,	STANDARD.ARRAY_TEST2_L1.INT_IO.DEFAULT_WIDTH_disp
+	La	 1, CO_disp				; array data start address on stack
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	11
+	LId	1, CO__u, STANDARD.ARRAY_TEST2_L1._COLONNE.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, CO__u, STANDARD.ARRAY_TEST2_L1._COLONNE.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Ld
+	CALL	STANDARD.ARRAY_TEST2_L1.INT_IO. ,PUT_L5
+	Ld 1,	STANDARD.ARRAY_TEST2_L1.INT_IO.DEFAULT_BASE_disp
+	Ld 1,	STANDARD.ARRAY_TEST2_L1.INT_IO.DEFAULT_WIDTH_disp
+	La	 1, CO_disp				; array data start address on stack
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	13
+	LId	1, CO__u, STANDARD.ARRAY_TEST2_L1._COLONNE.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, CO__u, STANDARD.ARRAY_TEST2_L1._COLONNE.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Ld
+	CALL	STANDARD.ARRAY_TEST2_L1.INT_IO. ,PUT_L5
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
+	Ld 1,	STANDARD.ARRAY_TEST2_L1.INT_IO.DEFAULT_BASE_disp
+	Ld 1,	STANDARD.ARRAY_TEST2_L1.INT_IO.DEFAULT_WIDTH_disp
+	LId	1, STANDARD.ARRAY_TEST2_L1.CO__u, STANDARD.ARRAY_TEST2_L1._COLONNE.FST_1
+	CALL	STANDARD.ARRAY_TEST2_L1.INT_IO. ,PUT_L5
+	Ld 1,	STANDARD.ARRAY_TEST2_L1.INT_IO.DEFAULT_BASE_disp
+	Ld 1,	STANDARD.ARRAY_TEST2_L1.INT_IO.DEFAULT_WIDTH_disp
+	LId	1, STANDARD.ARRAY_TEST2_L1.CO__u, STANDARD.ARRAY_TEST2_L1._COLONNE.LST_1
+	CALL	STANDARD.ARRAY_TEST2_L1.INT_IO. ,PUT_L5
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
+	LVA 1,	L_disp
+	La
+	LId	1, STANDARD.ARRAY_TEST2_L1.L__u, 0
+	LI	8
+	DIV
+	LVA 1,	CO_disp
+; CODE CONVERSION SOURCE DN_CONSTRAINED_ARRAY TARGET DN_CONSTRAINED_ARRAY
+; EXPRESSIONS.CODE_CONVERSION cible non faite DN_CONSTRAINED_ARRAY
+	La
+	BLKMOV
+	Ld 1,	STANDARD.ARRAY_TEST2_L1.INT_IO.DEFAULT_BASE_disp
+	Ld 1,	STANDARD.ARRAY_TEST2_L1.INT_IO.DEFAULT_WIDTH_disp
+	La	 1, L_disp				; array data start address on stack
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	LId	1, L__u, STANDARD.ARRAY_TEST2_L1._LIGNE.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, L__u, STANDARD.ARRAY_TEST2_L1._LIGNE.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Ld
+	CALL	STANDARD.ARRAY_TEST2_L1.INT_IO. ,PUT_L5
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
+STR STR_L62, "=== D8. Retour de tranche depuis une fonction ==="	; constante string="=== D8. Retour de tranche depuis une fonction ==="
+	LCA	STR_L62.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+VAR	ANON_117_13_disp, q
+VAR	ANON_117_13__u,   q
+namespace ANON_117_13_info
+  VAR SIZ, d
+  VAR _COMP_SIZ, d
+  VAR _FST_1, d
+  VAR _LST_1, d
+end namespace
+	LVA 1, ANON_117_13_info.SIZ
+	Sa  1, ANON_117_13__u
+	LVA 1, ANON_117_13_disp
+STR STR_L63, "PONTS"			; constante string="PONTS"
+	LCA	STR_L63.data_ptr
+	CALL	STANDARD.ARRAY_TEST2_L1. ,MILIEU_L16
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+VAR	ANON_118_13_disp, q
+VAR	ANON_118_13__u,   q
+namespace ANON_118_13_info
+  VAR SIZ, d
+  VAR _COMP_SIZ, d
+  VAR _FST_1, d
+  VAR _LST_1, d
+end namespace
+	LVA 1, ANON_118_13_info.SIZ
+	Sa  1, ANON_118_13__u
+	LVA 1, ANON_118_13_disp
+	LVA 1,	C1_disp
+	CALL	STANDARD.ARRAY_TEST2_L1. ,MILIEU_L16
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+STR STR_L64, "=== D9. Confirmations (peuvent se reveler acquises) ==="	; constante string="=== D9. Confirmations (peuvent se reveler acquises) ==="
+	LCA	STR_L64.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	La  1,	M_disp
+					; Assign_array_aggregate dynamic type DN_CONSTRAINED_ARRAY
+namespace ANON_121_8_aga
+  VAR _FST_1, d
+  VAR _LST_1, d
+  VAR _LEN_1, d
+  VAR _STR_1, d
+  VAR _PTR_1, q
+  VAR _CNT_1, d
+  VAR _EMIS_1, d
+  VAR _FST_2, d
+  VAR _LST_2, d
+  VAR _LEN_2, d
+  VAR _STR_2, d
+  VAR _PTR_2, q
+  VAR _CNT_2, d
+  VAR _EMIS_2, d
+end namespace
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd  1, ANON_121_8_aga._FST_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	2
+	Sd  1, ANON_121_8_aga._LST_1
+	Ld  1, ANON_121_8_aga._LST_1
+	Ld  1, ANON_121_8_aga._FST_1
+	SUB
+	INC
+	CLAMP0
+	Sd  1, ANON_121_8_aga._LEN_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd  1, ANON_121_8_aga._FST_2
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	3
+	Sd  1, ANON_121_8_aga._LST_2
+	Ld  1, ANON_121_8_aga._LST_2
+	Ld  1, ANON_121_8_aga._FST_2
+	SUB
+	INC
+	CLAMP0
+	Sd  1, ANON_121_8_aga._LEN_2
+	LI	4
+	Sd  1, ANON_121_8_aga._STR_2
+	Ld  1, ANON_121_8_aga._STR_2
+	Ld  1, ANON_121_8_aga._LEN_2
+	MUL
+	Sd  1, ANON_121_8_aga._STR_1
+	Sa  1, ANON_121_8_aga._PTR_1
+	LI	0
+	Sd  1, ANON_121_8_aga._EMIS_1
+	La  1, ANON_121_8_aga._PTR_1
+	Sa  1, ANON_121_8_aga._PTR_2
+	LI	0
+	Sd  1, ANON_121_8_aga._EMIS_2
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	SId  1, ANON_121_8_aga._PTR_2, 0
+	La  1, ANON_121_8_aga._PTR_2
+	Ld  1, ANON_121_8_aga._STR_2
+	ADD
+	Sa  1, ANON_121_8_aga._PTR_2
+	Ld  1, ANON_121_8_aga._EMIS_2
+	INC
+	Sd  1, ANON_121_8_aga._EMIS_2
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	2
+	SId  1, ANON_121_8_aga._PTR_2, 0
+	La  1, ANON_121_8_aga._PTR_2
+	Ld  1, ANON_121_8_aga._STR_2
+	ADD
+	Sa  1, ANON_121_8_aga._PTR_2
+	Ld  1, ANON_121_8_aga._EMIS_2
+	INC
+	Sd  1, ANON_121_8_aga._EMIS_2
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	3
+	SId  1, ANON_121_8_aga._PTR_2, 0
+	La  1, ANON_121_8_aga._PTR_2
+	Ld  1, ANON_121_8_aga._STR_2
+	ADD
+	Sa  1, ANON_121_8_aga._PTR_2
+	Ld  1, ANON_121_8_aga._EMIS_2
+	INC
+	Sd  1, ANON_121_8_aga._EMIS_2
+	La  1, ANON_121_8_aga._PTR_1
+	Ld  1, ANON_121_8_aga._STR_1
+	ADD
+	Sa  1, ANON_121_8_aga._PTR_1
+	Ld  1, ANON_121_8_aga._EMIS_1
+	INC
+	Sd  1, ANON_121_8_aga._EMIS_1
+	La  1, ANON_121_8_aga._PTR_1
+	Sa  1, ANON_121_8_aga._PTR_2
+	LI	0
+	Sd  1, ANON_121_8_aga._EMIS_2
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	4
+	SId  1, ANON_121_8_aga._PTR_2, 0
+	La  1, ANON_121_8_aga._PTR_2
+	Ld  1, ANON_121_8_aga._STR_2
+	ADD
+	Sa  1, ANON_121_8_aga._PTR_2
+	Ld  1, ANON_121_8_aga._EMIS_2
+	INC
+	Sd  1, ANON_121_8_aga._EMIS_2
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	5
+	SId  1, ANON_121_8_aga._PTR_2, 0
+	La  1, ANON_121_8_aga._PTR_2
+	Ld  1, ANON_121_8_aga._STR_2
+	ADD
+	Sa  1, ANON_121_8_aga._PTR_2
+	Ld  1, ANON_121_8_aga._EMIS_2
+	INC
+	Sd  1, ANON_121_8_aga._EMIS_2
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	6
+	SId  1, ANON_121_8_aga._PTR_2, 0
+	La  1, ANON_121_8_aga._PTR_2
+	Ld  1, ANON_121_8_aga._STR_2
+	ADD
+	Sa  1, ANON_121_8_aga._PTR_2
+	Ld  1, ANON_121_8_aga._EMIS_2
+	INC
+	Sd  1, ANON_121_8_aga._EMIS_2
+	La  1, ANON_121_8_aga._PTR_1
+	Ld  1, ANON_121_8_aga._STR_1
+	ADD
+	Sa  1, ANON_121_8_aga._PTR_1
+	Ld  1, ANON_121_8_aga._EMIS_1
+	INC
+	Sd  1, ANON_121_8_aga._EMIS_1
+	Ld 1,	STANDARD.ARRAY_TEST2_L1.INT_IO.DEFAULT_BASE_disp
+	Ld 1,	STANDARD.ARRAY_TEST2_L1.INT_IO.DEFAULT_WIDTH_disp
+	La	 1, M_disp				; array data start address on stack
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	LId	1, M__u, STANDARD.ARRAY_TEST2_L1._MAT2.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, M__u, STANDARD.ARRAY_TEST2_L1._MAT2.SIZ_1
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	3
+	LId	1, M__u, STANDARD.ARRAY_TEST2_L1._MAT2.FST_2	; (index - FST_2) * SIZ_2
+	SUB
+	LId	1, M__u, STANDARD.ARRAY_TEST2_L1._MAT2.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Ld
+	CALL	STANDARD.ARRAY_TEST2_L1.INT_IO. ,PUT_L5
+	Ld 1,	STANDARD.ARRAY_TEST2_L1.INT_IO.DEFAULT_BASE_disp
+	Ld 1,	STANDARD.ARRAY_TEST2_L1.INT_IO.DEFAULT_WIDTH_disp
+	La	 1, M_disp				; array data start address on stack
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	2
+	LId	1, M__u, STANDARD.ARRAY_TEST2_L1._MAT2.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, M__u, STANDARD.ARRAY_TEST2_L1._MAT2.SIZ_1
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	LId	1, M__u, STANDARD.ARRAY_TEST2_L1._MAT2.FST_2	; (index - FST_2) * SIZ_2
+	SUB
+	LId	1, M__u, STANDARD.ARRAY_TEST2_L1._MAT2.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Ld
+	CALL	STANDARD.ARRAY_TEST2_L1.INT_IO. ,PUT_L5
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
+	La  1,	U_disp
+					; Assign_array_aggregate dynamic type DN_CONSTRAINED_ARRAY
+namespace ANON_123_8_aga
+  VAR _FST_1, d
+  VAR _LST_1, d
+  VAR _LEN_1, d
+  VAR _STR_1, d
+  VAR _PTR_1, q
+  VAR _CNT_1, d
+  VAR _EMIS_1, d
+end namespace
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd  1, ANON_123_8_aga._FST_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	3
+	Sd  1, ANON_123_8_aga._LST_1
+	Ld  1, ANON_123_8_aga._LST_1
+	Ld  1, ANON_123_8_aga._FST_1
+	SUB
+	INC
+	CLAMP0
+	Sd  1, ANON_123_8_aga._LEN_1
+	LI	4
+	Sd  1, ANON_123_8_aga._STR_1
+	Sa  1, ANON_123_8_aga._PTR_1
+	LI	0
+	Sd  1, ANON_123_8_aga._EMIS_1
+	LI	1
+	Sd  1, ANON_123_8_aga._CNT_1
+	Ld  1, ANON_123_8_aga._CNT_1
+	LI	0
+	CLE
+	BT  L66
+L65:
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	9
+	SId  1, ANON_123_8_aga._PTR_1, 0
+	La  1, ANON_123_8_aga._PTR_1
+	Ld  1, ANON_123_8_aga._STR_1
+	ADD
+	Sa  1, ANON_123_8_aga._PTR_1
+	Ld  1, ANON_123_8_aga._EMIS_1
+	INC
+	Sd  1, ANON_123_8_aga._EMIS_1
+	Ld  1, ANON_123_8_aga._CNT_1
+	DEC
+	DUP
+	Sd  1, ANON_123_8_aga._CNT_1
+	LI	0
+	CGT
+	BT  L65
+L66:
+	LI	1
+	Sd  1, ANON_123_8_aga._CNT_1
+	Ld  1, ANON_123_8_aga._CNT_1
+	LI	0
+	CLE
+	BT  L68
+L67:
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	SId  1, ANON_123_8_aga._PTR_1, 0
+	La  1, ANON_123_8_aga._PTR_1
+	Ld  1, ANON_123_8_aga._STR_1
+	ADD
+	Sa  1, ANON_123_8_aga._PTR_1
+	Ld  1, ANON_123_8_aga._EMIS_1
+	INC
+	Sd  1, ANON_123_8_aga._EMIS_1
+	Ld  1, ANON_123_8_aga._CNT_1
+	DEC
+	DUP
+	Sd  1, ANON_123_8_aga._CNT_1
+	LI	0
+	CGT
+	BT  L67
+L68:
+	LI	1
+	Sd  1, ANON_123_8_aga._CNT_1
+	Ld  1, ANON_123_8_aga._CNT_1
+	LI	0
+	CLE
+	BT  L70
+L69:
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	9
+	SId  1, ANON_123_8_aga._PTR_1, 0
+	La  1, ANON_123_8_aga._PTR_1
+	Ld  1, ANON_123_8_aga._STR_1
+	ADD
+	Sa  1, ANON_123_8_aga._PTR_1
+	Ld  1, ANON_123_8_aga._EMIS_1
+	INC
+	Sd  1, ANON_123_8_aga._EMIS_1
+	Ld  1, ANON_123_8_aga._CNT_1
+	DEC
+	DUP
+	Sd  1, ANON_123_8_aga._CNT_1
+	LI	0
+	CGT
+	BT  L69
+L70:
+	Ld 1,	STANDARD.ARRAY_TEST2_L1.INT_IO.DEFAULT_BASE_disp
+	Ld 1,	STANDARD.ARRAY_TEST2_L1.INT_IO.DEFAULT_WIDTH_disp
+	La	 1, U_disp				; array data start address on stack
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	LId	1, U__u, STANDARD.ARRAY_TEST2_L1._VEC3.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, U__u, STANDARD.ARRAY_TEST2_L1._VEC3.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Ld
+	CALL	STANDARD.ARRAY_TEST2_L1.INT_IO. ,PUT_L5
+	Ld 1,	STANDARD.ARRAY_TEST2_L1.INT_IO.DEFAULT_BASE_disp
+	Ld 1,	STANDARD.ARRAY_TEST2_L1.INT_IO.DEFAULT_WIDTH_disp
+	La	 1, U_disp				; array data start address on stack
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	2
+	LId	1, U__u, STANDARD.ARRAY_TEST2_L1._VEC3.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, U__u, STANDARD.ARRAY_TEST2_L1._VEC3.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Ld
+	CALL	STANDARD.ARRAY_TEST2_L1.INT_IO. ,PUT_L5
+	Ld 1,	STANDARD.ARRAY_TEST2_L1.INT_IO.DEFAULT_BASE_disp
+	Ld 1,	STANDARD.ARRAY_TEST2_L1.INT_IO.DEFAULT_WIDTH_disp
+	La	 1, U_disp				; array data start address on stack
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	3
+	LId	1, U__u, STANDARD.ARRAY_TEST2_L1._VEC3.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, U__u, STANDARD.ARRAY_TEST2_L1._VEC3.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Ld
+	CALL	STANDARD.ARRAY_TEST2_L1.INT_IO. ,PUT_L5
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
+	LVA 1,	U_disp
+	La
+	LId	1, STANDARD.ARRAY_TEST2_L1.U__u, 0
+	LI	8
+	DIV
+; CODE_QUALIFIED : DN_QUALIFIEDDN_AGGREGATE
+VAR	ANON_125_13_disp, q
+VAR	ANON_125_13__u,   q
+	La  1, STANDARD.ARRAY_TEST2_L1._VEC3.use__info
+	Sa  1, ANON_125_13__u
+	Ld  1, STANDARD.ARRAY_TEST2_L1._VEC3.SIZ
+	LI	8
+	DIV
+	CO_VAR
+	Sa  1, ANON_125_13_disp
+	La  1, ANON_125_13_disp
+					; Assign_array_aggregate dynamic type DN_CONSTRAINED_ARRAY
+namespace ANON_125_13_aga
+  VAR _FST_1, d
+  VAR _LST_1, d
+  VAR _LEN_1, d
+  VAR _STR_1, d
+  VAR _PTR_1, q
+  VAR _CNT_1, d
+  VAR _EMIS_1, d
+end namespace
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd  1, ANON_125_13_aga._FST_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	3
+	Sd  1, ANON_125_13_aga._LST_1
+	Ld  1, ANON_125_13_aga._LST_1
+	Ld  1, ANON_125_13_aga._FST_1
+	SUB
+	INC
+	CLAMP0
+	Sd  1, ANON_125_13_aga._LEN_1
+	LI	4
+	Sd  1, ANON_125_13_aga._STR_1
+	Sa  1, ANON_125_13_aga._PTR_1
+	LI	0
+	Sd  1, ANON_125_13_aga._EMIS_1
+	LI	1
+	Sd  1, ANON_125_13_aga._CNT_1
+	Ld  1, ANON_125_13_aga._CNT_1
+	LI	0
+	CLE
+	BT  L72
+L71:
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	5
+	SId  1, ANON_125_13_aga._PTR_1, 0
+	La  1, ANON_125_13_aga._PTR_1
+	Ld  1, ANON_125_13_aga._STR_1
+	ADD
+	Sa  1, ANON_125_13_aga._PTR_1
+	Ld  1, ANON_125_13_aga._EMIS_1
+	INC
+	Sd  1, ANON_125_13_aga._EMIS_1
+	Ld  1, ANON_125_13_aga._CNT_1
+	DEC
+	DUP
+	Sd  1, ANON_125_13_aga._CNT_1
+	LI	0
+	CGT
+	BT  L71
+L72:
+	Ld  1, ANON_125_13_aga._LEN_1
+	Ld  1, ANON_125_13_aga._EMIS_1
+	SUB
+	Sd  1, ANON_125_13_aga._CNT_1
+	Ld  1, ANON_125_13_aga._CNT_1
+	LI	0
+	CLE
+	BT  L74
+L73:
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	8
+	SId  1, ANON_125_13_aga._PTR_1, 0
+	La  1, ANON_125_13_aga._PTR_1
+	Ld  1, ANON_125_13_aga._STR_1
+	ADD
+	Sa  1, ANON_125_13_aga._PTR_1
+	Ld  1, ANON_125_13_aga._EMIS_1
+	INC
+	Sd  1, ANON_125_13_aga._EMIS_1
+	Ld  1, ANON_125_13_aga._CNT_1
+	DEC
+	DUP
+	Sd  1, ANON_125_13_aga._CNT_1
+	LI	0
+	CGT
+	BT  L73
+L74:
+	LVA 1, ANON_125_13_disp
+	La
+	BLKMOV
+	Ld 1,	STANDARD.ARRAY_TEST2_L1.INT_IO.DEFAULT_BASE_disp
+	Ld 1,	STANDARD.ARRAY_TEST2_L1.INT_IO.DEFAULT_WIDTH_disp
+	La	 1, U_disp				; array data start address on stack
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	LId	1, U__u, STANDARD.ARRAY_TEST2_L1._VEC3.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, U__u, STANDARD.ARRAY_TEST2_L1._VEC3.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Ld
+	CALL	STANDARD.ARRAY_TEST2_L1.INT_IO. ,PUT_L5
+	Ld 1,	STANDARD.ARRAY_TEST2_L1.INT_IO.DEFAULT_BASE_disp
+	Ld 1,	STANDARD.ARRAY_TEST2_L1.INT_IO.DEFAULT_WIDTH_disp
+	La	 1, U_disp				; array data start address on stack
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	3
+	LId	1, U__u, STANDARD.ARRAY_TEST2_L1._VEC3.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, U__u, STANDARD.ARRAY_TEST2_L1._VEC3.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Ld
+	CALL	STANDARD.ARRAY_TEST2_L1.INT_IO. ,PUT_L5
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
+VAR	IL76_disp, d				; compteur boucle LOOP__1
+	Ld	1, _VEC3._FST_1
+	Sd  1,	IL76_disp
+VAR	LMT_IL76_disp, d			; limite boucle LOOP__1
+	Ld	1, _VEC3._LST_1
+	Sd  1,	LMT_IL76_disp
+	Ld  1,	IL76_disp				; test null range LOOP__1
+	Ld  1,	LMT_IL76_disp
+	CGT
+	BT	L75
+LOOP__1:					; corps boucle LOOP__1
+	La	 1, U_disp				; array data start address on stack
+	Ld	1, IL76_disp
+	LId	1, U__u, STANDARD.ARRAY_TEST2_L1._VEC3.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, U__u, STANDARD.ARRAY_TEST2_L1._VEC3.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Ld	1, IL76_disp
+	Sd
+	Ld  1,	IL76_disp				; test de sortie LOOP__1
+	Ld  1,	LMT_IL76_disp
+	CEQ
+	BT	L75
+	Ld  1,	IL76_disp				; mise a jour compteur LOOP__1
+	INC
+	Sd  1,	IL76_disp
+	BRA	LOOP__1				; iteration suivante LOOP__1
+L75:					; post loop LOOP__1
+	Ld 1,	STANDARD.ARRAY_TEST2_L1.INT_IO.DEFAULT_BASE_disp
+	Ld 1,	STANDARD.ARRAY_TEST2_L1.INT_IO.DEFAULT_WIDTH_disp
+	La	 1, U_disp				; array data start address on stack
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	LId	1, U__u, STANDARD.ARRAY_TEST2_L1._VEC3.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, U__u, STANDARD.ARRAY_TEST2_L1._VEC3.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Ld
+	CALL	STANDARD.ARRAY_TEST2_L1.INT_IO. ,PUT_L5
+	Ld 1,	STANDARD.ARRAY_TEST2_L1.INT_IO.DEFAULT_BASE_disp
+	Ld 1,	STANDARD.ARRAY_TEST2_L1.INT_IO.DEFAULT_WIDTH_disp
+	La	 1, U_disp				; array data start address on stack
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	3
+	LId	1, U__u, STANDARD.ARRAY_TEST2_L1._VEC3.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, U__u, STANDARD.ARRAY_TEST2_L1._VEC3.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Ld
+	CALL	STANDARD.ARRAY_TEST2_L1.INT_IO. ,PUT_L5
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
+STR STR_L77, "=== FIN ARRAY_TEST2 v2 ==="	; constante string="=== FIN ARRAY_TEST2 v2 ==="
+	LCA	STR_L77.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+ret_lbl:
+	UNLINK 1
+	RTD
+excep:
+endPRO					;---------- end PRO ARRAY_TEST2

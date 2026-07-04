@@ -869,53 +869,61 @@ null;
           EXPR_TYPE		: TREE		:= D ( SM_EXP_TYPE, EXP );
         begin
 
-put_line( "; CODE_RETURN : EXPR TYPE = " & NODE_NAME'IMAGE( EXPR_TYPE.TY ) );
+	if  CODI.DEBUG  then PUT_LINE( "; CODE_RETURN : EXPR TYPE = " & NODE_NAME'IMAGE( EXPR_TYPE.TY ) ); end if;
 
 	if  EXPR_TYPE.TY in CLASS_SCALAR  then
 	  EXPRESSIONS.CODE_EXP( EXP );
 	  PUT_LINE( tab & "S" & CODI.EXP_TYPE_CHAR( EXP ) & ' ' & INTEGER'IMAGE( CODI.CUR_LEVEL ) & ',' & tab & "-result__ofs" );
 
-elsif  EXPR_TYPE.TY = DN_ARRAY  or  EXPR_TYPE.TY = DN_CONSTRAINED_ARRAY  then
-  declare
-    SRC_LVL_STR : constant STRING := INTEGER'IMAGE( CODI.CUR_LEVEL );
-    RES_LVL_STR : constant STRING := INTEGER'IMAGE( ENCLOSING_LEVEL );
---    LVL_STR : constant STRING := INTEGER'IMAGE( CODI.CUR_LEVEL );
-  begin
-    EXPRESSIONS.CODE_EXP( EXP );
-    -- Pile : @doublet_src
+	elsif  EXPR_TYPE.TY = DN_ARRAY  or  EXPR_TYPE.TY = DN_CONSTRAINED_ARRAY  then
+	  declare
+	    SRC_LVL_STR : constant STRING := INTEGER'IMAGE( CODI.CUR_LEVEL );
+	    RES_LVL_STR : constant STRING := INTEGER'IMAGE( ENCLOSING_LEVEL );
+	  begin
+	    if  EXP.TY = DN_SLICE  then
+		-- return S( A .. B ) : le chemin par defaut (CODE_EXP -> CODE_NAME ->
+		-- CODE_SLICE en mode destination) laisserait @data, len ; la mecanique
+		-- ci-dessous attend un @doublet.  Le mode source de CODE_SLICE construit
+		-- le doublet anonyme (info aux offsets standard, bornes REELLES de la
+		-- tranche conservees -- semantique Ada d'une tranche).
+	      EXPRESSIONS.CODE_SLICE( EXP, IS_DESTINATION => FALSE );
+	    else
+	      EXPRESSIONS.CODE_EXP( EXP );
+	    end if;    -- Pile : @doublet_src
+
     -- doublet_src = [data_ptr_src : q, info_ptr_src : q]
     -- result__ofs contient @doublet_dest, initialisé par l'appelant.
     -- Convention BLKMOV : pile = ... @DST, LEN, @SRC.
 
-    declare
-      INFO_SRC : constant STRING := "RET_INFO_" & NEW_LABEL;
-    begin
-      PUT_LINE( "VAR" & tab & INFO_SRC & ", q" );
+	    declare
+	      INFO_SRC : constant STRING := "RET_INFO_" & NEW_LABEL;
+	    begin
+	      PUT_LINE( "VAR" & tab & INFO_SRC & ", q" );
 
-      -- Copier data_ptr : data_ptr_dest <- data_ptr_src
-      -- EXP laisse @doublet_src sur pile ; on en garde une copie.
-      PUT_LINE( tab & "DUP" );
-      PUT_LINE( tab & "La  ,  0" );
-      PUT_LINE( tab & "SIq  " & RES_LVL_STR & ", -result__ofs,  0" );
+		-- Copier data_ptr : data_ptr_dest <- data_ptr_src
+		-- EXP laisse @doublet_src sur pile ; on en garde une copie.
+	      PUT_LINE( tab & "DUP" );
+	      PUT_LINE( tab & "La  ,  0" );
+	      PUT_LINE( tab & "SIq  " & RES_LVL_STR & ", -result__ofs,  0" );
 
       -- Sauver info_ptr_src = [@doublet_src + 8].
-      PUT_LINE( tab & "DUP" );
-      PUT_LINE( tab & "La  ,  8" );
-      PUT_LINE( tab & "Sa  " & SRC_LVL_STR & ", " & INFO_SRC );
-      PUT_LINE( tab & "DROP" );
+	      PUT_LINE( tab & "DUP" );
+	      PUT_LINE( tab & "La  ,  8" );
+	      PUT_LINE( tab & "Sa  " & SRC_LVL_STR & ", " & INFO_SRC );
+	      PUT_LINE( tab & "DROP" );
 
       -- Copier 16 octets d'info vers info_ptr_dest = [@doublet_dest + 8].
-      PUT_LINE( tab & "La  " & RES_LVL_STR & ", -result__ofs" );
-      PUT_LINE( tab & "La  ,  8" );
-      PUT_LINE( tab & "LI" & tab & "16" );
-      PUT_LINE( tab & "La  " & SRC_LVL_STR & ", " & INFO_SRC );
-      PUT_LINE( tab & "BLKMOV" );
-    end;
-  end;
+	      PUT_LINE( tab & "La  " & RES_LVL_STR & ", -result__ofs" );
+	      PUT_LINE( tab & "La  ,  8" );
+	      PUT_LINE( tab & "LI" & tab & "16" );
+	      PUT_LINE( tab & "La  " & SRC_LVL_STR & ", " & INFO_SRC );
+	      PUT_LINE( tab & "BLKMOV" );
+	    end;
+	  end;
 
           elsif  EXPR_TYPE.TY = DN_ENUM_LITERAL_S  then
             EXPRESSIONS.CODE_EXP( EXP );
-raise PROGRAM_ERROR;
+	  raise PROGRAM_ERROR;
 
 	elsif  EXPR_TYPE.TY = DN_RECORD
 	or     EXPR_TYPE.TY = DN_L_PRIVATE
@@ -1575,22 +1583,73 @@ raise PROGRAM_ERROR;
 		--------------
           end if;
 
-          if  NAME_TYPE.TY = DN_ACCESS  then								-- OBJET ASSIGNE DE TYPE ACCES
+	if  NAME_TYPE.TY = DN_ACCESS  then								-- OBJET ASSIGNE DE TYPE ACCES
 	  EXPRESSIONS.CODE_EXP( SRC_EXP );
 	  CODI.STORE( DEFN );
 
-	elsif  NAME_TYPE.TY = DN_ARRAY  or  NAME_TYPE.TY = DN_CONSTRAINED_ARRAY  then								-- OBJET ASSIGNE TABLEAU
-	  CODE_OBJECT( DEFN );
-	  if  SRC_EXP.TY = DN_USED_OBJECT_ID  then
-	    CODE_OBJECT( D( SM_DEFN, SRC_EXP ) );
-	    CODE_OBJECT( SRC_EXP );
 
-	  elsif  SRC_EXP.TY = DN_AGGREGATE  then
+
+
+--	elsif  NAME_TYPE.TY = DN_ARRAY  or  NAME_TYPE.TY = DN_CONSTRAINED_ARRAY  then								-- OBJET ASSIGNE TABLEAU
+--	  CODE_OBJECT( DEFN );
+--	  if  SRC_EXP.TY = DN_USED_OBJECT_ID  then
+--	    CODE_OBJECT( D( SM_DEFN, SRC_EXP ) );
+--	    CODE_OBJECT( SRC_EXP );
+
+--	  elsif  SRC_EXP.TY = DN_AGGREGATE  then
+--	    EXPRESSIONS.CODE_AGGREGATE( SRC_EXP, NAME_TYPE );
+
+--	  else
+--	    EXPRESSIONS.CODE_EXP( SRC_EXP );
+--          end if;
+
+	elsif  NAME_TYPE.TY = DN_ARRAY  or  NAME_TYPE.TY = DN_CONSTRAINED_ARRAY  then				-- OBJET ASSIGNE TABLEAU
+
+	  if  SRC_EXP.TY = DN_AGGREGATE  then
+	    CODE_OBJECT( DEFN );									-- @DST (data) — chemin valide, inchange
 	    EXPRESSIONS.CODE_AGGREGATE( SRC_EXP, NAME_TYPE );
 
 	  else
-	    EXPRESSIONS.CODE_EXP( SRC_EXP );
-            end if;
+			-- Convention BLKMOV : pile = @DST, LEN, @SRC.
+	    CODI.LOAD_MEM( DEFN );									-- @doublet destination (variable ou parametre)
+	    PUT_LINE( tab & "La" );									-- @DST = data_ptr (offset 0 du doublet)
+
+        -- LEN (octets) lu dynamiquement dans le descripteur de la DESTINATION :
+        -- SIZ (bits, dword a l'offset 0 du bloc info) / STORAGE_UNIT.
+        -- Robuste pour les sous-types anonymes (STRING(1..6)) et les parametres,
+        -- la ou un `_TYPE.size` statique remonterait au type de base non contraint
+        -- via XD_SOURCE_NAME (meme famille que le piege n° 46).
+        -- ; CHK: egalite des longueurs source/destination (pilier exceptions)
+	    if  DEFN.TY in CLASS_PARAM_NAME  then							-- idiome CODE_LENGTH, chemin parametre
+	      PUT_LINE( tab & "LVA" & tab & IMAGE( DI( CD_LEVEL, DEFN ) )
+			& ", -" & PRINT_NAME( D( LX_SYMREP, DEFN ) ) & "_ofs" );
+	      PUT_LINE( tab & "LIa" & tab & ", ," & INTEGER'IMAGE( CODI.ADDR_SIZE ) );				-- @info
+	      PUT_LINE( tab & "Ld" & tab & ", 0" );							-- SIZ (bits)
+	    else											-- idiome CODE_LENGTH, chemin variable
+	      PUT( tab & "LId" & tab & IMAGE( DI( CD_LEVEL, DEFN ) ) & ", " );
+	      CODI.REGIONS_PATH( DEFN );
+	      PUT_LINE( PRINT_NAME( D( LX_SYMREP, DEFN ) ) & "__u, 0" );					-- SIZ (bits)
+	    end if;
+	    PUT_LINE( tab & "LI" & tab & IMAGE( CODI.STORAGE_UNIT ) );
+	    PUT_LINE( tab & "DIV" );									-- LEN en octets
+
+	    if  SRC_EXP.TY = DN_STRING_LITERAL  then
+	      EXPRESSIONS.CODE_STRING_LITERAL( SRC_EXP, IDL.ANONYMOUS_NAME_AT( SRC_EXP ) );
+	      PUT_LINE( tab & "LCA" & tab & IDL.ANONYMOUS_NAME_AT( SRC_EXP ) & ".data_ptr" );			-- @SRC (idiome concat, l. 2550)
+	      PUT_LINE( tab & "La" );									-- @SRC = data_ptr  <<< LIGNE AJOUTEE
+
+	    elsif  SRC_EXP.TY = DN_SLICE  then
+	      EXPRESSIONS.CODE_SLICE( SRC_EXP, IS_DESTINATION => TRUE );					-- @src, len_src
+	      PUT_LINE( tab & "DROP" );								-- longueur = celle de la destination
+
+	    else
+	      EXPRESSIONS.CODE_EXP( SRC_EXP );								-- @doublet (variable, concat, appel de fonction, qualifie)
+	      PUT_LINE( tab & "La" );									-- @SRC = data_ptr
+	    end if;
+
+	    PUT_LINE( tab & "BLKMOV" );
+	  end if;
+
 
 	elsif  NAME_TYPE.TY = DN_ENUMERATION  then							-- OBJET ASSIGNE ENUMERATION (DONT BOOLEAN, CHARACTER)
 	  if  CODI.IN_GENERIC_BODY  and then  ( DEFN.TY = DN_OUT_ID  or  DEFN.TY = DN_IN_OUT_ID )  then
