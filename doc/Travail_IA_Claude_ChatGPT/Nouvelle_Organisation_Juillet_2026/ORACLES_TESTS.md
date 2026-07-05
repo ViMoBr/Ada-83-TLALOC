@@ -134,3 +134,14 @@ en totalité**. Série **A8 : 17 tests verts**, échecs restants consignés
 (renommage, use, portée, visibilité — hypothèse causes-mères communes,
 cf. point de méthode du 4 juillet). Auto-compilation : verte après lot D2
 (les comparaisons STRING du compilateur passaient auparavant par le stub).
+
+### RECORD_TEST1 (pilier 3.7, lot R-A) 
+— sortie attendue intégrale :
+R1 `5 30 9` ; R2 `3 7` ; R3 `42 43 0 2` ; R4 `200 VRAI FAUX` ;
+R5 `17 3 6 2` ; R6 `6 40 41 5` ; R7 `2 15` ; bannières comprises.
+Couvre : élaboration des discriminants (contrainte normalisée), agrégats
+positionnels/nommés avec discriminants et variantes (marcheur canonique
+SM_NORMALIZED_COMP_S), affectation complète et égalité BLKCMP (sans
+variantes), composant record de record (W.P) et de tableau (ARR de BUF(2)),
+paramètres in/in out et retour de fonction record contraint, discriminant
+en borne de boucle.

@@ -2817,6 +2817,294 @@ end;
 	-----------------------
 
 
+			--------------------
+  procedure		CODE_RECORD_EQUALITY	( OP_STR :STRING; PRM_1, PRM_2 :TREE; CONTEXT_TYPE :TREE )
+  is			--------------------
+
+-- Pilier 3.7 (RM83 4.5.2) : "=" / "/=" de records.
+-- SANS variantes : BLKCMP total (champs arrondis au STORAGE_UNIT, contigus).
+-- A VARIANTES : le layout ADDITIF laisse des zones mortes -> BLKCMP total
+-- serait faux ; generation champ par champ (ET cumules) avec cascade
+-- statique sur la valeur du discriminant gouvernant (variante ACTIVE seule
+-- comparee).  Indispensable au bootstrap : idl.adb compare des TREE.
+-- Convention BLKCMP (miroir BLKMOV) : pile = @A, LEN, @B  ->  0/1.
+
+    BASE	: TREE	:= CONTEXT_TYPE;
+
+		--------------------
+    procedure	OPERAND_DATA_ADDRESS	( E : TREE )
+    is		--------------------
+    begin
+      if  E.TY = DN_AGGREGATE  then
+        PUT_LINE( "; CODE_RECORD_EQUALITY : operande agregat non supporte" );
+        raise PROGRAM_ERROR;
+      end if;
+
+      CODE_EXP( E );
+
+      if  E.TY = DN_USED_OBJECT_ID  or else  E.TY = DN_FUNCTION_CALL  then
+        PUT_LINE( tab & "La  ,  0" );							-- @doublet -> data_ptr
+      end if;
+    end	OPERAND_DATA_ADDRESS;
+	--------------------
+
+  begin
+    if  BASE.TY = DN_CONSTRAINED_RECORD  then
+      BASE := D( SM_BASE_TYPE, BASE );
+    end if;
+
+    declare
+      BASE_NAME	: TREE		:= D( XD_SOURCE_NAME, BASE );
+      BASE_STR	:constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, BASE_NAME ) );
+      LVL	:constant STRING	:= IMAGE( CODI.CUR_LEVEL );
+      VP_ROOT	: TREE		:= D( AS_VARIANT_PART, D( SM_COMP_LIST, BASE ) );
+
+		----------
+      procedure	PATH_FIELD	( F_STR : STRING )
+      is		----------
+      begin
+        CODI.REGIONS_PATH( BASE_NAME );
+        PUT( BASE_STR & "." & F_STR );
+      end	PATH_FIELD;
+	----------
+
+    begin
+      if CODI.DEBUG then PUT_LINE( "; CODE record equality " & OP_STR & ' ' & BASE_STR ); end if;
+
+      if  VP_ROOT = TREE_VOID  or else  VP_ROOT = TREE_NIL  then
+
+		-- Record SANS variantes : BLKCMP total (champs arrondis au
+		-- STORAGE_UNIT et contigus : comparaison memoire sure).
+        OPERAND_DATA_ADDRESS( PRM_1 );							-- @A
+
+        PUT( tab & "LI" & tab );							-- LEN (statique)
+        CODI.REGIONS_PATH( BASE_NAME );
+        PUT_LINE( BASE_STR & ".size" );
+
+        OPERAND_DATA_ADDRESS( PRM_2 );							-- @B
+
+        PUT_LINE( tab & "BLKCMP" );							-- empile 0/1
+
+      else
+		-- Record A VARIANTES (RM83 4.5.2) : discriminants, champs fixes,
+		-- puis champs de la variante ACTIVE seulement -- le layout additif
+		-- laisse des zones mortes, BLKCMP total serait faux.  Generation
+		-- statique : comparaisons champ par champ cumulees par ET (pas de
+		-- court-circuit : ET d'un accumulateur deja a 0 reste 0 ; lire la
+		-- zone morte de l'autre operande est sur, memoire allouee), et
+		-- cascade de tests sur la valeur du discriminant gouvernant.
+        declare
+	EQ_UID	:constant STRING	:= NEW_LABEL;
+	A_VAR	:constant STRING	:= "EQA_" & EQ_UID;
+	B_VAR	:constant STRING	:= "EQB_" & EQ_UID;
+
+		--------------
+	procedure	EMIT_FIELD_CMP	( COMP_ID : TREE )
+	is		--------------
+	  F_STR	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, COMP_ID ) );
+	  F_TYPE	: TREE		:= D( SM_OBJ_TYPE, COMP_ID );
+	begin
+	  while  F_TYPE.TY = DN_PRIVATE  or else  F_TYPE.TY = DN_L_PRIVATE  loop
+	    F_TYPE := D( SM_TYPE_SPEC, F_TYPE );
+	  end loop;
+
+	  if  F_TYPE.TY = DN_CONSTRAINED_RECORD  then
+	    F_TYPE := D( SM_BASE_TYPE, F_TYPE );
+	  end if;
+
+	  if  F_TYPE.TY = DN_RECORD  then
+	    declare
+	      SUB_VP	: TREE		:= D( AS_VARIANT_PART, D( SM_COMP_LIST, F_TYPE ) );
+	      SUB_NAME	: TREE		:= D( XD_SOURCE_NAME, F_TYPE );
+	      SUB_STR	:constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, SUB_NAME ) );
+	    begin
+	      if  SUB_VP /= TREE_VOID  and then  SUB_VP /= TREE_NIL  then
+	        PUT_LINE( "; CODE_RECORD_EQUALITY : champ record a variantes imbrique non supporte" );
+	        raise PROGRAM_ERROR;
+	      end if;
+
+	      PUT_LINE( tab & "La  " & LVL & ", " & A_VAR );
+	      PUT( tab & "LVA" & tab & ", " );	PATH_FIELD( F_STR );	NEW_LINE;	-- @A.F
+
+	      PUT( tab & "LI" & tab );
+	      CODI.REGIONS_PATH( SUB_NAME );
+	      PUT_LINE( SUB_STR & ".size" );						-- LEN
+
+	      PUT_LINE( tab & "La  " & LVL & ", " & B_VAR );
+	      PUT( tab & "LVA" & tab & ", " );	PATH_FIELD( F_STR );	NEW_LINE;	-- @B.F
+
+	      PUT_LINE( tab & "BLKCMP" );
+	      PUT_LINE( tab & "ET" );
+	    end;
+
+	  elsif  F_TYPE.TY = DN_ARRAY  or else  F_TYPE.TY = DN_CONSTRAINED_ARRAY  then
+	    PUT_LINE( "; CODE_RECORD_EQUALITY : champ tableau de record a variantes non supporte" );
+	    raise PROGRAM_ERROR;
+
+	  else		-- scalaire, enumere, access ; float compare bit a bit (comme BLKCMP)
+	    declare
+	      C : CHARACTER := CODI.OPER_SIZ_CHAR( F_TYPE );
+	    begin
+	      PUT( tab & "LI" & C & tab & LVL & ", " & A_VAR & ", " );
+	      PATH_FIELD( F_STR );	NEW_LINE;
+
+	      PUT( tab & "LI" & C & tab & LVL & ", " & B_VAR & ", " );
+	      PATH_FIELD( F_STR );	NEW_LINE;
+
+	      PUT_LINE( tab & "CEQ" );
+	      PUT_LINE( tab & "ET" );
+	    end;
+	  end if;
+
+	end	EMIT_FIELD_CMP;
+		--------------
+
+		-------
+	procedure	WALK_EQ	( CL : TREE )
+	is		-------
+	  V_DECL_S	: SEQ_TYPE;
+	  V_DECL	: TREE;
+	begin
+	  if  CL = TREE_VOID  or else  CL = TREE_NIL  then
+	    return;
+	  end if;
+
+	  V_DECL_S := LIST( D( AS_DECL_S, CL ) );
+
+	  while  not IS_EMPTY( V_DECL_S )  loop
+	    POP( V_DECL_S, V_DECL );
+
+	    if  V_DECL.TY /= DN_NULL_COMP_DECL  then
+	      declare
+	        COMP_ID_S	: SEQ_TYPE	:= LIST( D( AS_SOURCE_NAME_S, V_DECL ) );
+	        COMP_ID	: TREE;
+	      begin
+	        while  not IS_EMPTY( COMP_ID_S )  loop
+	          POP( COMP_ID_S, COMP_ID );
+	          EMIT_FIELD_CMP( COMP_ID );
+	        end loop;
+	      end;
+	    end if;
+	  end loop;
+
+	  declare
+	    VP	: TREE	:= D( AS_VARIANT_PART, CL );
+	  begin
+	    if  VP /= TREE_VOID  and then  VP /= TREE_NIL  then
+	      declare
+	        GOV_ID	: TREE		:= D( SM_DEFN, D( AS_NAME, VP ) );
+	        GOV_STR	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, GOV_ID ) );
+	        GOV_CHAR	: CHARACTER	:= CODI.OPER_SIZ_CHAR( D( SM_OBJ_TYPE, GOV_ID ) );
+	        LBL_DONE	:constant STRING	:= NEW_LABEL;
+	        VAR_S	: SEQ_TYPE	:= LIST( D( AS_VARIANT_S, VP ) );
+	        VAR_E	: TREE;
+	      begin
+	        while  not IS_EMPTY( VAR_S )  loop
+	          POP( VAR_S, VAR_E );
+
+	          if  VAR_E.TY = DN_VARIANT  then
+	            declare
+	              LBL_NEXT	:constant STRING	:= NEW_LABEL;
+	              CHOICES	: SEQ_TYPE	:= LIST( D( AS_CHOICE_S, VAR_E ) );
+	              CH	: TREE;
+	              IS_OTHERS	: BOOLEAN	:= FALSE;
+	              N_TESTS	: NATURAL	:= 0;
+	            begin
+	              while  not IS_EMPTY( CHOICES )  loop
+	                POP( CHOICES, CH );
+
+	                if  CH.TY = DN_CHOICE_OTHERS  then
+	                  IS_OTHERS := TRUE;						-- seul et dernier (RM83 3.7.3)
+
+	                elsif  CH.TY = DN_CHOICE_EXP  then
+	                  PUT( tab & "LI" & GOV_CHAR & tab & LVL & ", " & A_VAR & ", " );
+	                  PATH_FIELD( GOV_STR );	NEW_LINE;			-- discriminant (deja verifie egal)
+
+	                  PUT_LINE( tab & "LI" & tab & IMAGE( DI( SM_VALUE, D( AS_EXP, CH ) ) ) );
+	                  PUT_LINE( tab & "CEQ" );
+
+	                  N_TESTS := N_TESTS + 1;
+	                  if  N_TESTS >= 2  then
+	                    PUT_LINE( tab & "OU" );					-- choix multiples : A | B
+	                  end if;
+
+	                else
+	                  PUT_LINE( "; CODE_RECORD_EQUALITY : choix de variante non gere "
+			& NODE_NAME'IMAGE( CH.TY ) );
+	                  raise PROGRAM_ERROR;
+	                end if;
+	              end loop;
+
+	              if  not IS_OTHERS  then
+	                PUT_LINE( tab & "BF" & tab & LBL_NEXT );
+	              end if;
+
+	              WALK_EQ( D( AS_COMP_LIST, VAR_E ) );				-- variantes imbriquees : recursion
+
+	              PUT_LINE( tab & "BRA" & tab & LBL_DONE );
+
+	              if  not IS_OTHERS  then
+	                PUT_LINE( LBL_NEXT & ':' );
+	              end if;
+	            end;
+	          end if;
+	        end loop;
+
+	        PUT_LINE( LBL_DONE & ':' );
+	      end;
+	    end if;
+	  end;
+
+	end	WALK_EQ;
+		-------
+
+        begin
+	PUT_LINE( "VAR" & tab & A_VAR & ", q" );
+	PUT_LINE( "VAR" & tab & B_VAR & ", q" );
+
+	OPERAND_DATA_ADDRESS( PRM_1 );
+	PUT_LINE( tab & "Sa  " & LVL & ", " & A_VAR );					-- @dataA
+
+	OPERAND_DATA_ADDRESS( PRM_2 );
+	PUT_LINE( tab & "Sa  " & LVL & ", " & B_VAR );					-- @dataB
+
+	PUT_LINE( tab & "LI" & tab & "1" );						-- accumulateur
+
+			-- 1. Discriminants
+	declare
+	  DSCRMT_DECL_S	: SEQ_TYPE	:= LIST( D( SM_DISCRIMINANT_S, BASE ) );
+	  DSCRMT_DECL	: TREE;
+	begin
+	  while  not IS_EMPTY( DSCRMT_DECL_S )  loop
+	    POP( DSCRMT_DECL_S, DSCRMT_DECL );
+
+	    declare
+	      DISCR_ID_S	: SEQ_TYPE	:= LIST( D( AS_SOURCE_NAME_S, DSCRMT_DECL ) );
+	      DISCR_ID	: TREE;
+	    begin
+	      while  not IS_EMPTY( DISCR_ID_S )  loop
+	        POP( DISCR_ID_S, DISCR_ID );
+	        EMIT_FIELD_CMP( DISCR_ID );
+	      end loop;
+	    end;
+	  end loop;
+	end;
+
+			-- 2. Champs fixes puis cascade de la variante active
+	WALK_EQ( D( SM_COMP_LIST, BASE ) );
+        end;
+      end if;
+
+      if  OP_STR = """/="""  then
+        PUT_LINE( tab & "LI"  & tab & "1" );
+        PUT_LINE( tab & "OUX" );							-- NOT booleen (piege n 5)
+      end if;
+    end;
+
+  end	CODE_RECORD_EQUALITY;
+	--------------------
+
+
 				------------------
   procedure			CODE_FUNCTION_CALL		( FUNCTION_CALL :TREE )
   is				------------------
@@ -3029,6 +3317,14 @@ end;
             CODE_COMPOSITE_OPERATOR( OP_STR, PRM_1, PRM_2, PRM1_TYPE );
             return;
           end if;
+
+          if  PRM1_TYPE /= TREE_VOID							-- pilier 3.7 : egalite de records
+            and then ( PRM1_TYPE.TY = DN_RECORD  or  PRM1_TYPE.TY = DN_CONSTRAINED_RECORD )
+            and then ( OP_STR = """="""  or  OP_STR = """/=""" )
+          then
+            CODE_RECORD_EQUALITY( OP_STR, PRM_1, PRM_2, PRM1_TYPE );
+            return;
+          end if;
         end		COMPOSITE_OPERATORS;
 			-------------------
 
@@ -3180,6 +3476,10 @@ end;
           while  RET_TS.TY = DN_L_PRIVATE  or  RET_TS.TY = DN_PRIVATE  loop
             RET_TS := D( SM_TYPE_SPEC, RET_TS );
           end loop;
+
+          if  RET_TS.TY = DN_CONSTRAINED_RECORD  then						-- pilier 3.7 : vue contrainte -> base
+            RET_TS := D( SM_BASE_TYPE, RET_TS );						-- (meme taille : layout additif ;
+          end if;										--  symboles .size/.use__info de la base)
         end if;
 
         if  RET_TS /= TREE_VOID  and then  RET_TS.TY = DN_RECORD  then
@@ -4133,6 +4433,222 @@ end;
         if  CODI.DEBUG  then PUT_LINE( tab50 & "; Assign_record_aggregate type " & NODE_NAME'IMAGE( EFFECTIVE_TYPE.TY ) );
         end if;
 
+			-- Pilier 3.7 : chemin canonique.  SM_NORMALIZED_COMP_S est la liste
+			-- PLATE des valeurs dans l'ordre [discriminants] ++ [comp_list racine]
+			-- ++ [variante active, recursivement] -- le front-end a deja normalise
+			-- les formes positionnelle, nommee et mixte.  La variante active est
+			-- choisie par la valeur STATIQUE du discriminant gouvernant (garantie
+			-- RM83 4.3.1 des qu'une partie variante existe).
+				---------------------------
+				CANONICAL_RECORD_AGGREGATE:
+        declare
+	MAX_DISCR	:constant		:= 15;
+	DISCR_IDS	: array ( 1 .. MAX_DISCR ) of TREE;
+	DISCR_VALS	: array ( 1 .. MAX_DISCR ) of INTEGER;
+	DISCR_CNT	: NATURAL		:= 0;
+	COMP_EXP	: TREE;
+
+		------------------
+	procedure	EMIT_ONE_COMPONENT	( COMP_ID : TREE; COMP_EXP : TREE )
+	is		------------------
+	  COMP_TYPE	: TREE		:= D( SM_OBJ_TYPE, COMP_ID );
+	  COMP_STR	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, COMP_ID ) );
+	begin
+	  while  COMP_TYPE.TY = DN_PRIVATE  or else  COMP_TYPE.TY = DN_L_PRIVATE  loop
+	    COMP_TYPE := D( SM_TYPE_SPEC, COMP_TYPE );
+	  end loop;
+
+	  if  COMP_TYPE.TY = DN_CONSTRAINED_RECORD  then
+	    COMP_TYPE := D( SM_BASE_TYPE, COMP_TYPE );
+	  end if;
+
+	  PUT_LINE( tab & "DUP" );
+	  PUT( tab & "LVA" & tab & ", " );
+	  CODI.REGIONS_PATH( TYPE_NAME );
+	  PUT_LINE( TYPE_NAME_STR & "." & COMP_STR );
+
+	  if  COMP_EXP.TY = DN_AGGREGATE  then
+	    CODE_AGGREGATE( COMP_EXP, COMP_TYPE );
+
+	  elsif  COMP_TYPE.TY = DN_RECORD  then
+	    PUT( tab & "LI" & tab );
+	    CODI.REGIONS_PATH( D( XD_SOURCE_NAME, COMP_TYPE ) );
+	    PUT_LINE( '_' & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, COMP_TYPE ) ) ) & ".size" );
+
+	    CODE_EXP( COMP_EXP );
+	    PUT_LINE( tab & "La  ,  0" );
+	    PUT_LINE( tab & "BLKMOV" );
+
+	  else
+	    CODE_EXP( COMP_EXP );
+	    PUT_LINE( tab & "S" & CODI.OPER_SIZ_CHAR( COMP_TYPE ) );
+	  end if;
+
+	end	EMIT_ONE_COMPONENT;
+		------------------
+
+		------------------
+	function	LOOKUP_DISCR_VALUE	( DISCR_DEFN : TREE ) return INTEGER
+	is		------------------
+	begin
+	  for I in 1 .. DISCR_CNT loop
+	    if  DISCR_IDS( I ) = DISCR_DEFN  then
+	      return DISCR_VALS( I );
+	    end if;
+	  end loop;
+
+	  PUT_LINE( "; CODE_AGGREGATE record : discriminant de variante sans valeur statique" );
+	  raise PROGRAM_ERROR;
+	end	LOOKUP_DISCR_VALUE;
+		------------------
+
+		---------------
+	function	VARIANT_MATCHES	( VAR_E : TREE; VAL : INTEGER ) return BOOLEAN
+	is		---------------
+	  CHOICES	: SEQ_TYPE	:= LIST( D( AS_CHOICE_S, VAR_E ) );
+	  CH		: TREE;
+	begin
+	  while  not IS_EMPTY( CHOICES )  loop
+	    POP( CHOICES, CH );
+
+	    if  CH.TY = DN_CHOICE_EXP  then
+	      if  DI( SM_VALUE, D( AS_EXP, CH ) ) = VAL  then
+	        return TRUE;
+	      end if;
+
+	    elsif  CH.TY = DN_CHOICE_OTHERS  then
+	      return TRUE;								-- toujours en derniere position (RM83 3.7.3)
+
+	    else
+	      PUT_LINE( "; CODE_AGGREGATE record : choix de variante non gere "
+			& NODE_NAME'IMAGE( CH.TY ) );
+	      raise PROGRAM_ERROR;
+	    end if;
+	  end loop;
+
+	  return FALSE;
+	end	VARIANT_MATCHES;
+		---------------
+
+		--------------
+	procedure	WALK_COMP_LIST	( CL : TREE )
+	is		--------------
+	  V_DECL_S	: SEQ_TYPE;
+	  V_DECL	: TREE;
+	begin
+	  if  CL = TREE_VOID  or else  CL = TREE_NIL  then
+	    return;
+	  end if;
+
+	  V_DECL_S := LIST( D( AS_DECL_S, CL ) );
+
+	  while  not IS_EMPTY( V_DECL_S )  loop
+	    POP( V_DECL_S, V_DECL );
+
+	    if  V_DECL.TY /= DN_NULL_COMP_DECL  then
+	      declare
+	        COMP_ID_S	: SEQ_TYPE	:= LIST( D( AS_SOURCE_NAME_S, V_DECL ) );
+	        COMP_ID	: TREE;
+	      begin
+	        while  not IS_EMPTY( COMP_ID_S )  loop
+	          POP( COMP_ID_S, COMP_ID );
+
+	          if  IS_EMPTY( NORM_SEQ )  then
+	            PUT_LINE( "; CODE_AGGREGATE record : forme normalisee incomplete" );
+	            raise PROGRAM_ERROR;
+	          end if;
+
+	          POP( NORM_SEQ, COMP_EXP );
+	          EMIT_ONE_COMPONENT( COMP_ID, COMP_EXP );
+	        end loop;
+	      end;
+	    end if;
+	  end loop;
+
+	  declare
+	    VP	: TREE	:= D( AS_VARIANT_PART, CL );
+	  begin
+	    if  VP /= TREE_VOID  and then  VP /= TREE_NIL  then
+	      declare
+	        GOV_DEFN	: TREE		:= D( SM_DEFN, D( AS_NAME, VP ) );
+	        VAL	: INTEGER	:= LOOKUP_DISCR_VALUE( GOV_DEFN );
+	        VAR_S	: SEQ_TYPE	:= LIST( D( AS_VARIANT_S, VP ) );
+	        VAR_E	: TREE;
+	      begin
+	        while  not IS_EMPTY( VAR_S )  loop
+	          POP( VAR_S, VAR_E );
+
+	          if  VAR_E.TY = DN_VARIANT  and then  VARIANT_MATCHES( VAR_E, VAL )  then
+	            WALK_COMP_LIST( D( AS_COMP_LIST, VAR_E ) );
+	            return;
+	          end if;
+	        end loop;
+
+	        PUT_LINE( "; CODE_AGGREGATE record : aucune variante pour la valeur"
+			& INTEGER'IMAGE( VAL ) );
+	        raise PROGRAM_ERROR;
+	      end;
+	    end if;
+	  end;
+
+	end	WALK_COMP_LIST;
+		--------------
+
+        begin
+	if  not IS_EMPTY( NORM_SEQ )  then
+
+				-- 1. Discriminants, dans l'ordre de declaration ; leur valeur
+				-- statique (SM_VALUE) est retenue pour choisir les variantes.
+	  declare
+	    DSCRMT_DECL_S	: SEQ_TYPE	:= LIST( D( SM_DISCRIMINANT_S, EFFECTIVE_TYPE ) );
+	    DSCRMT_DECL	: TREE;
+	  begin
+	    while  not IS_EMPTY( DSCRMT_DECL_S )  loop
+	      POP( DSCRMT_DECL_S, DSCRMT_DECL );
+
+	      declare
+	        DISCR_ID_S	: SEQ_TYPE	:= LIST( D( AS_SOURCE_NAME_S, DSCRMT_DECL ) );
+	        DISCR_ID	: TREE;
+	      begin
+	        while  not IS_EMPTY( DISCR_ID_S )  loop
+	          POP( DISCR_ID_S, DISCR_ID );
+
+	          if  IS_EMPTY( NORM_SEQ )  then
+	            PUT_LINE( "; CODE_AGGREGATE record : discriminant absent de la forme normalisee" );
+	            raise PROGRAM_ERROR;
+	          end if;
+
+	          POP( NORM_SEQ, COMP_EXP );
+
+	          declare
+	            SV	: TREE	:= D( SM_VALUE, COMP_EXP );
+	          begin
+	            if  ( ( SV.PT  = HI  and then  SV.NOTY = DN_NUM_VAL )
+	         or else ( SV.PT /= HI  and then  SV.TY   = DN_NUM_VAL ) )
+	              and then  DISCR_CNT < MAX_DISCR
+	            then
+	              DISCR_CNT := DISCR_CNT + 1;
+	              DISCR_IDS ( DISCR_CNT ) := DISCR_ID;
+	              DISCR_VALS( DISCR_CNT ) := DI( SM_VALUE, COMP_EXP );
+	            end if;
+	          end;
+
+	          EMIT_ONE_COMPONENT( DISCR_ID, COMP_EXP );
+	        end loop;
+	      end;
+	    end loop;
+	  end;
+
+				-- 2. Comp_list racine puis variante active, recursivement.
+	  WALK_COMP_LIST( D( SM_COMP_LIST, EFFECTIVE_TYPE ) );
+
+	  PUT_LINE( tab & "DROP" );							-- enlever @data record
+	  return;
+	end if;
+        end	CANONICAL_RECORD_AGGREGATE;
+		---------------------------
+
+			-- Repli (agregat sans forme normalisee) : chemins historiques.
 				-----------------------------
 				NAMED_ASSIGN_RECORD_AGGREGATE:
 

@@ -675,6 +675,21 @@ begin:					;---------- BDY INSTRUCTIONS
 L20:
 L19:					; post if
 ; CODE_RETURN : EXPR TYPE = DN_VOID
+STR RET_STR_L21, ""				; constante string=""
+	LCA	RET_STR_L21.data_ptr
+VAR	RET_INFO_L22, q
+	DUP
+	La  ,  0
+	SIq   1, -result__ofs,  0
+	DUP
+	La  ,  8
+	Sa   1, RET_INFO_L22
+	DROP
+	La   1, -result__ofs
+	La  ,  8
+	LI	16
+	La   1, RET_INFO_L22
+	BLKMOV
 	BRA ret_lbl
 ret_lbl:
 	UNLINK 1
@@ -723,8 +738,8 @@ VAR SIZE_BYTES_disp, d			; variable entiere
 	Sd  1,	SIZE_BYTES_disp
 
 
-if defined READ_SYSTEM_CALL_L21_
-PRO	READ_SYSTEM_CALL_L21			;---------- PRO READ_SYSTEM_CALL
+if defined READ_SYSTEM_CALL_L23_
+PRO	READ_SYSTEM_CALL_L23			;---------- PRO READ_SYSTEM_CALL
 PRMS					;    debut parametrage
 	PRM FILE_ID_ofs				; in
 	PRM LENGTH_ofs				; in
@@ -753,26 +768,26 @@ begin:					;---------- BDY INSTRUCTIONS
 	LIb	, 0, STANDARD.SEQUENTIAL_IO._FILE_TYPE.IS_OPENED
 	LI	0
 	CEQ
-	BF	L23
-	BRA	L22
-L23:
-L22:					; post if
-					; debut if
-	La 1, -FILE_ofs
-	LIb	, 0, STANDARD.SEQUENTIAL_IO._FILE_TYPE.MODE
-	LI	1
-	CEQ
 	BF	L25
 	BRA	L24
 L25:
 L24:					; post if
 					; debut if
 	La 1, -FILE_ofs
-	LIb	, 0, STANDARD.SEQUENTIAL_IO._FILE_TYPE.AT_END_OF_FILE
+	LIb	, 0, STANDARD.SEQUENTIAL_IO._FILE_TYPE.MODE
+	LI	1
+	CEQ
 	BF	L27
 	BRA	L26
 L27:
 L26:					; post if
+					; debut if
+	La 1, -FILE_ofs
+	LIb	, 0, STANDARD.SEQUENTIAL_IO._FILE_TYPE.AT_END_OF_FILE
+	BF	L29
+	BRA	L28
+L29:
+L28:					; post if
 	LI	0					; lieu resultat sur pile
 	La  1,	-GFP_ofs				; propagation GFP generique
 	LVA	1, -ITEM_ofs
@@ -782,16 +797,16 @@ L26:					; post if
 	Ld 1,	SIZE_BYTES_disp
 	La 1, -FILE_ofs
 	LId	, 0, STANDARD.SEQUENTIAL_IO._FILE_TYPE.ID
-	CALL	STANDARD.SEQUENTIAL_IO.READ_L11. ,READ_SYSTEM_CALL_L21
+	CALL	STANDARD.SEQUENTIAL_IO.READ_L11. ,READ_SYSTEM_CALL_L23
 	Sd  1,	BYTES_READ_disp
 					; debut if
 	Ld 1,	BYTES_READ_disp
 	Ld 1,	SIZE_BYTES_disp
 	CLT
-	BF	L29
-	BRA	L28
-L29:
-L28:					; post if
+	BF	L31
+	BRA	L30
+L31:
+L30:					; post if
 ret_lbl:
 	UNLINK 1
 	RTD	prm_siz
@@ -817,8 +832,8 @@ VAR SIZE_BYTES_disp, d			; variable entiere
 	Sd  1,	SIZE_BYTES_disp
 
 
-if defined WRITE_SYSTEM_CALL_L30_
-PRO	WRITE_SYSTEM_CALL_L30			;---------- PRO WRITE_SYSTEM_CALL
+if defined WRITE_SYSTEM_CALL_L32_
+PRO	WRITE_SYSTEM_CALL_L32			;---------- PRO WRITE_SYSTEM_CALL
 PRMS					;    debut parametrage
 	PRM FILE_ID_ofs				; in
 	PRM LENGTH_ofs				; in
@@ -847,19 +862,19 @@ begin:					;---------- BDY INSTRUCTIONS
 	LIb	, 0, STANDARD.SEQUENTIAL_IO._FILE_TYPE.IS_OPENED
 	LI	0
 	CEQ
-	BF	L32
-	BRA	L31
-L32:
-L31:					; post if
+	BF	L34
+	BRA	L33
+L34:
+L33:					; post if
 					; debut if
 	La 1, -FILE_ofs
 	LIb	, 0, STANDARD.SEQUENTIAL_IO._FILE_TYPE.MODE
 	LI	0
 	CEQ
-	BF	L34
-	BRA	L33
-L34:
-L33:					; post if
+	BF	L36
+	BRA	L35
+L36:
+L35:					; post if
 	LI	0					; lieu resultat sur pile
 	La  1,	-GFP_ofs				; propagation GFP generique
 	LVA	1, -ITEM_ofs
@@ -869,7 +884,7 @@ L33:					; post if
 	Ld 1,	SIZE_BYTES_disp
 	La 1, -FILE_ofs
 	LId	, 0, STANDARD.SEQUENTIAL_IO._FILE_TYPE.ID
-	CALL	STANDARD.SEQUENTIAL_IO.WRITE_L12. ,WRITE_SYSTEM_CALL_L30
+	CALL	STANDARD.SEQUENTIAL_IO.WRITE_L12. ,WRITE_SYSTEM_CALL_L32
 	Sd  1,	ERR_CODE_disp
 ret_lbl:
 	UNLINK 1
@@ -891,8 +906,8 @@ VAR POS_BYTES_disp, d			; variable entiere
 VAR SIZ_BYTES_disp, d			; variable entiere
 
 
-if defined GET_POS_SYSTEM_CALL_L35_
-PRO	GET_POS_SYSTEM_CALL_L35			;---------- PRO GET_POS_SYSTEM_CALL
+if defined GET_POS_SYSTEM_CALL_L37_
+PRO	GET_POS_SYSTEM_CALL_L37			;---------- PRO GET_POS_SYSTEM_CALL
 PRMS					;    debut parametrage
 	PRM FILE_ID_ofs				; in
 	PRM GFP_ofs
@@ -911,8 +926,8 @@ excep:
 endPRO					;---------- end PRO GET_POS_SYSTEM_CALL
 end if
 
-if defined GET_SIZE_SYSTEM_CALL_L36_
-PRO	GET_SIZE_SYSTEM_CALL_L36			;---------- PRO GET_SIZE_SYSTEM_CALL
+if defined GET_SIZE_SYSTEM_CALL_L38_
+PRO	GET_SIZE_SYSTEM_CALL_L38			;---------- PRO GET_SIZE_SYSTEM_CALL
 PRMS					;    debut parametrage
 	PRM FILE_ID_ofs				; in
 	PRM GFP_ofs
@@ -937,30 +952,30 @@ begin:					;---------- BDY INSTRUCTIONS
 	LIb	, 0, STANDARD.SEQUENTIAL_IO._FILE_TYPE.IS_OPENED
 	LI	0
 	CEQ
-	BF	L38
-	BRA	L37
-L38:
-L37:					; post if
+	BF	L40
+	BRA	L39
+L40:
+L39:					; post if
 					; debut if
 	La 1, -FILE_ofs
 	LIb	, 0, STANDARD.SEQUENTIAL_IO._FILE_TYPE.MODE
 	LI	1
 	CEQ
-	BF	L40
-	BRA	L39
-L40:
-L39:					; post if
+	BF	L42
+	BRA	L41
+L42:
+L41:					; post if
 	LI	0					; lieu resultat sur pile
 	La  1,	-GFP_ofs				; propagation GFP generique
 	La 1, -FILE_ofs
 	LId	, 0, STANDARD.SEQUENTIAL_IO._FILE_TYPE.ID
-	CALL	STANDARD.SEQUENTIAL_IO.END_OF_FILE_L13. ,GET_POS_SYSTEM_CALL_L35
+	CALL	STANDARD.SEQUENTIAL_IO.END_OF_FILE_L13. ,GET_POS_SYSTEM_CALL_L37
 	Sd  1,	POS_BYTES_disp
 	LI	0					; lieu resultat sur pile
 	La  1,	-GFP_ofs				; propagation GFP generique
 	La 1, -FILE_ofs
 	LId	, 0, STANDARD.SEQUENTIAL_IO._FILE_TYPE.ID
-	CALL	STANDARD.SEQUENTIAL_IO.END_OF_FILE_L13. ,GET_SIZE_SYSTEM_CALL_L36
+	CALL	STANDARD.SEQUENTIAL_IO.END_OF_FILE_L13. ,GET_SIZE_SYSTEM_CALL_L38
 	Sd  1,	SIZ_BYTES_disp
 ; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
 	Ld 1,	POS_BYTES_disp

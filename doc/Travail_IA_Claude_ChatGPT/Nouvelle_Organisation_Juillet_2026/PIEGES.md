@@ -164,3 +164,8 @@ Dernière entrée : n° 59 (5 juillet 2026).
     dans le .FASM généré — s'il apparaît encore, le stub est vivant. Corollaire :
     tout stub désormais inatteignable (p. ex. après re-routage amont) se SUPPRIME,
     il ne se commente pas. (session 5 juillet)
+
+60. **Vue contrainte ≠ type de base. Tout test X.TY = DN_RECORD (ou DN_ARRAY) dans l’expander doit se demander où passe la vue DN_CONSTRAINED_RECORD : quatre exemplaires du motif dans ce seul lot (CODE_ASSIGN ×3 branches, CODE_RETURN, CODE_FUNCTION_CALL, tailles statiques). Normaliser vers SM_BASE_TYPE dès l’entrée ; les symboles .size/.SIZ/offsets de la vue anonyme N’EXISTENT PAS, ceux de la base oui.
+61. SM_VALUE : deux encodages. Valeur courte : PT = HI et le genre est dans le champ NOTY (= DN_NUM_VAL) ; valeur longue : PT /= HI et le genre est dans TY. Confondre NOTY et TY fait rater la staticité (idiome de référence : expander-expressions lignes ~4563/4689).
+62. return "littéral" : SM_EXP_TYPE = DN_VOID. Le type ne vient pas de l’expression ; router sur EXP.TY. La macro STR pose une constante dont le champ data_ptr ouvre un doublet complet : LCA nom.data_ptr = @doublet.
+63. Convention résultat composite. L’APPELANT fabrique le doublet anonyme (data+use__info) et empile son adresse comme slot résultat ; la fonction BLKMOV à travers [result__ofs].data_ptr. Un LI 0 de placeholder pour un retour composite = écriture à l’adresse nulle chez l’appelé.

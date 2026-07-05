@@ -1,0 +1,504 @@
+if ~ definite TEXT_IO
+include 'TEXT_IO.FINC'
+end if
+PRO	RECORD_TEST2_L1				;---------- PRO RECORD_TEST2
+ELB 1					;    BODY ELAB
+
+					; _KIND ENUMERATION TYPE INFO
+_KIND = '_KIND'
+namespace _KIND
+VAR use__info, q
+BEGIN_BLOC_DEF
+db 0, 4, "LEAF"
+db 1, 5, "UNARY"
+db 2, 6, "BINARY"
+END_BLOC_DEF
+IMAGES	BYTES_BLOC
+CST LST, d, 2
+CST FST, d, 0
+CST SIZ, d, 8	; SIZ en bits !
+postpone
+  align_q
+end postpone
+	LCA	SIZ
+	Sa	1, use__info
+end namespace
+
+					; _MUT RECORD TYPE INFO
+_MUT = '_MUT'
+namespace _MUT
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+USEINFO 1, PT, 	La 1, STANDARD.RECORD_TEST2_L1._KIND.use__info
+USEINFO 1, COL, 	La 0, STANDARD._INTEGER.use__info
+USEINFO 1, VAL, 	La 0, STANDARD._INTEGER.use__info
+USEINFO 1, OPU, 	La 0, STANDARD._INTEGER.use__info
+USEINFO 1, GAU, 	La 0, STANDARD._INTEGER.use__info
+USEINFO 1, DTE, 	La 0, STANDARD._INTEGER.use__info
+virtual at 0				; calcul des offsets statiques
+STATOFS PT, 1
+STATOFS COL, 4
+STATOFS VAL, 4
+STATOFS OPU, 4
+STATOFS GAU, 4
+STATOFS DTE, 4
+size = $
+end virtual
+	LI	 size*8
+	Sd	1, SIZ
+end namespace
+
+					; _MLEAF CONSTRAINED RECORD VIEW
+_MLEAF = '_MLEAF'
+namespace _MLEAF
+use__info = STANDARD.RECORD_TEST2_L1._MUT.use__info
+SIZ = STANDARD.RECORD_TEST2_L1._MUT.SIZ
+size = STANDARD.RECORD_TEST2_L1._MUT.size
+PT = STANDARD.RECORD_TEST2_L1._MUT.PT
+COL = STANDARD.RECORD_TEST2_L1._MUT.COL
+VAL = STANDARD.RECORD_TEST2_L1._MUT.VAL
+OPU = STANDARD.RECORD_TEST2_L1._MUT.OPU
+GAU = STANDARD.RECORD_TEST2_L1._MUT.GAU
+DTE = STANDARD.RECORD_TEST2_L1._MUT.DTE
+end namespace
+
+					; _BOX RECORD TYPE INFO
+_BOX = '_BOX'
+namespace _BOX
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+USEINFO 1, ID, 	La 0, STANDARD._INTEGER.use__info
+USEINFO 1, N, 	La 1, STANDARD.RECORD_TEST2_L1._MUT.use__info
+virtual at 0				; calcul des offsets statiques
+STATOFS ID, 4
+STATOFS N, 21
+size = $
+end virtual
+	LI	 size*8
+	Sd	1, SIZ
+end namespace
+VAR M_disp, q				; variable record : pointeur aux data record
+VAR M__u, q				; variable record : pointeur aux useinfo
+VAR M__dat, STANDARD.RECORD_TEST2_L1._MUT.size
+	LVA	1, M__dat
+	Sa	1, M_disp				; record fin
+	LVA	1, STANDARD.RECORD_TEST2_L1._MUT.SIZ
+	Sa	1, M__u
+; CODE_VC_NAME DN_VARIABLE_ID
+	LIVA 1, M_disp, STANDARD.RECORD_TEST2_L1._MUT.PT
+	LI	0
+	Sb
+
+VAR K_disp, q				; variable record : pointeur aux data record
+VAR K__u, q				; variable record : pointeur aux useinfo
+VAR K__dat, STANDARD.RECORD_TEST2_L1._MUT.size
+	LVA	1, K__dat
+	Sa	1, K_disp				; record fin
+	LVA	1, STANDARD.RECORD_TEST2_L1._MUT.SIZ
+	Sa	1, K__u
+; CODE_VC_NAME DN_VARIABLE_ID
+	LIVA 1, K_disp, STANDARD.RECORD_TEST2_L1._MUT.PT
+	LI	2
+	Sb
+
+VAR L_disp, q				; variable record : pointeur aux data record
+VAR L__u, q				; variable record : pointeur aux useinfo
+VAR L__dat, STANDARD.RECORD_TEST2_L1._MLEAF.size
+	LVA	1, L__dat
+	Sa	1, L_disp				; record fin
+	LVA	1, STANDARD.RECORD_TEST2_L1._MLEAF.SIZ
+	Sa	1, L__u
+; CODE_VC_NAME DN_VARIABLE_ID
+	LIVA 1, L_disp, STANDARD.RECORD_TEST2_L1._MUT.PT
+	LI	0
+	Sb
+
+VAR BX_disp, q				; variable record : pointeur aux data record
+VAR BX__u, q				; variable record : pointeur aux useinfo
+VAR BX__dat, STANDARD.RECORD_TEST2_L1._BOX.size
+	LVA	1, BX__dat
+	Sa	1, BX_disp				; record fin
+	LVA	1, STANDARD.RECORD_TEST2_L1._BOX.SIZ
+	Sa	1, BX__u
+; CODE_VC_NAME DN_VARIABLE_ID
+
+
+if defined FLIP_L2_
+PRO	FLIP_L2				;---------- PRO FLIP
+PRMS					;    debut parametrage
+	PRM R_ofs				; in out
+endPRMS					;    fin parametrage
+ELB 2					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	La  2,	-R_ofs
+	La
+					; Assign_record_aggregate type DN_RECORD
+	DUP
+	LVA	, STANDARD.RECORD_TEST2_L1._MUT.PT
+	LI	1
+	Sb
+	DUP
+	LVA	, STANDARD.RECORD_TEST2_L1._MUT.COL
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	9
+	Sd
+	DUP
+	LVA	, STANDARD.RECORD_TEST2_L1._MUT.OPU
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	55
+	Sd
+	DROP
+ret_lbl:
+	UNLINK 2
+	RTD	prm_siz
+excep:
+endPRO					;---------- end PRO FLIP
+end if
+
+if defined GEN_L3_
+PRO	GEN_L3				;---------- PRO GEN
+PRMS					;    debut parametrage
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 2					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+; CODE_RETURN : EXPR TYPE = DN_RECORD
+	La   2,	-result__ofs
+	La  ,  0
+					; Assign_record_aggregate type DN_RECORD
+	DUP
+	LVA	, STANDARD.RECORD_TEST2_L1._MUT.PT
+	LI	2
+	Sb
+	DUP
+	LVA	, STANDARD.RECORD_TEST2_L1._MUT.COL
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	2
+	Sd
+	DUP
+	LVA	, STANDARD.RECORD_TEST2_L1._MUT.GAU
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	6
+	Sd
+	DUP
+	LVA	, STANDARD.RECORD_TEST2_L1._MUT.DTE
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	7
+	Sd
+	DROP
+	BRA ret_lbl
+ret_lbl:
+	UNLINK 2
+	RTD
+excep:
+endPRO					;---------- end PRO GEN
+end if
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+STR STR_L4, "=== E1 : defauts et mutation par affectation ==="	; constante string="=== E1 : defauts et mutation par affectation ==="
+	LCA	STR_L4.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+					; debut if
+	LIb	1, M_disp, STANDARD.RECORD_TEST2_L1._MUT.PT
+	LI	0
+	CEQ
+	BF	L6
+STR STR_L7, " 0"				; constante string=" 0"
+	LCA	STR_L7.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	BRA	L5
+L6:
+L5:					; post if
+	LVA 1,	M_disp
+	La
+					; Assign_record_aggregate type DN_RECORD
+	DUP
+	LVA	, STANDARD.RECORD_TEST2_L1._MUT.PT
+	LI	1
+	Sb
+	DUP
+	LVA	, STANDARD.RECORD_TEST2_L1._MUT.COL
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	5
+	Sd
+	DUP
+	LVA	, STANDARD.RECORD_TEST2_L1._MUT.OPU
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	77
+	Sd
+	DROP
+VAR	ANON_50_13_disp, q
+VAR	ANON_50_13__u,   q
+namespace ANON_50_13_info
+  VAR SIZ, d
+  VAR _COMP_SIZ, d
+  VAR _FST_1, d
+  VAR _LST_1, d
+end namespace
+	LVA 1, ANON_50_13_info.SIZ
+	Sa  1, ANON_50_13__u
+	LVA 1, ANON_50_13_disp
+	LId	1, M_disp, STANDARD.RECORD_TEST2_L1._MUT.OPU
+	CALL	STANDARD. ,INTEGER_IMAGE_L9
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+					; debut if
+	LIb	1, M_disp, STANDARD.RECORD_TEST2_L1._MUT.PT
+	LI	1
+	CEQ
+	BF	L9
+STR STR_L10, " 1"				; constante string=" 1"
+	LCA	STR_L10.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	BRA	L8
+L9:
+L8:					; post if
+STR STR_L11, "=== E2 : attribut CONSTRAINED ==="	; constante string="=== E2 : attribut CONSTRAINED ==="
+	LCA	STR_L11.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+					; debut if
+	LI	1
+	BF	L13
+STR STR_L14, "VRAI"				; constante string="VRAI"
+	LCA	STR_L14.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	BRA	L12
+L13:
+STR STR_L15, "FAUX"				; constante string="FAUX"
+	LCA	STR_L15.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+L12:					; post if
+					; debut if
+; ATTRIBUTE CONSTRAINED : TYPE NON TRAITE DN_CONSTRAINED_RECORD
+	LI	0
+	BF	L17
+STR STR_L18, "VRAI"				; constante string="VRAI"
+	LCA	STR_L18.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	BRA	L16
+L17:
+STR STR_L19, "FAUX"				; constante string="FAUX"
+	LCA	STR_L19.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+L16:					; post if
+STR STR_L20, "=== E3 : agregat qualifie ==="	; constante string="=== E3 : agregat qualifie ==="
+	LCA	STR_L20.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	LVA 1,	M_disp
+	La
+	LI	STANDARD.RECORD_TEST2_L1._MUT.size
+; CODE_QUALIFIED : DN_QUALIFIEDDN_AGGREGATE
+					; Assign_record_aggregate type DN_RECORD
+	DUP
+	LVA	, STANDARD.RECORD_TEST2_L1._MUT.PT
+	LI	0
+	Sb
+	DUP
+	LVA	, STANDARD.RECORD_TEST2_L1._MUT.COL
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	3
+	Sd
+	DUP
+	LVA	, STANDARD.RECORD_TEST2_L1._MUT.VAL
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	9
+	Sd
+	DROP
+	La
+	BLKMOV
+VAR	ANON_59_13_disp, q
+VAR	ANON_59_13__u,   q
+namespace ANON_59_13_info
+  VAR SIZ, d
+  VAR _COMP_SIZ, d
+  VAR _FST_1, d
+  VAR _LST_1, d
+end namespace
+	LVA 1, ANON_59_13_info.SIZ
+	Sa  1, ANON_59_13__u
+	LVA 1, ANON_59_13_disp
+	LId	1, M_disp, STANDARD.RECORD_TEST2_L1._MUT.VAL
+	CALL	STANDARD. ,INTEGER_IMAGE_L9
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+STR STR_L21, "=== E4 : sous-type contraint d'un type a defauts ==="	; constante string="=== E4 : sous-type contraint d'un type a defauts ==="
+	LCA	STR_L21.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+					; debut if
+	LIb	1, L_disp, STANDARD.RECORD_TEST2_L1._MUT.PT
+	LI	0
+	CEQ
+	BF	L23
+STR STR_L24, " 0"				; constante string=" 0"
+	LCA	STR_L24.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	BRA	L22
+L23:
+L22:					; post if
+	LVA 1,	L_disp
+	La
+					; Assign_record_aggregate type DN_RECORD
+	DUP
+	LVA	, STANDARD.RECORD_TEST2_L1._MUT.PT
+	LI	0
+	Sb
+	DUP
+	LVA	, STANDARD.RECORD_TEST2_L1._MUT.COL
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	4
+	Sd
+	DUP
+	LVA	, STANDARD.RECORD_TEST2_L1._MUT.VAL
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	13
+	Sd
+	DROP
+VAR	ANON_64_13_disp, q
+VAR	ANON_64_13__u,   q
+namespace ANON_64_13_info
+  VAR SIZ, d
+  VAR _COMP_SIZ, d
+  VAR _FST_1, d
+  VAR _LST_1, d
+end namespace
+	LVA 1, ANON_64_13_info.SIZ
+	Sa  1, ANON_64_13__u
+	LVA 1, ANON_64_13_disp
+	LId	1, L_disp, STANDARD.RECORD_TEST2_L1._MUT.VAL
+	CALL	STANDARD. ,INTEGER_IMAGE_L9
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+STR STR_L25, "=== E5 : mutable composant de record ==="	; constante string="=== E5 : mutable composant de record ==="
+	LCA	STR_L25.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	LIVA 	1, BX_disp, STANDARD.RECORD_TEST2_L1._BOX.ID
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	3
+	Sd
+	LIVA 	1, BX_disp, STANDARD.RECORD_TEST2_L1._BOX.N
+					; Assign_record_aggregate type DN_RECORD
+	DUP
+	LVA	, STANDARD.RECORD_TEST2_L1._MUT.PT
+	LI	2
+	Sb
+	DUP
+	LVA	, STANDARD.RECORD_TEST2_L1._MUT.COL
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd
+	DUP
+	LVA	, STANDARD.RECORD_TEST2_L1._MUT.GAU
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	10
+	Sd
+	DUP
+	LVA	, STANDARD.RECORD_TEST2_L1._MUT.DTE
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	11
+	Sd
+	DROP
+VAR	ANON_69_13_disp, q
+VAR	ANON_69_13__u,   q
+namespace ANON_69_13_info
+  VAR SIZ, d
+  VAR _COMP_SIZ, d
+  VAR _FST_1, d
+  VAR _LST_1, d
+end namespace
+	LVA 1, ANON_69_13_info.SIZ
+	Sa  1, ANON_69_13__u
+	LVA 1, ANON_69_13_disp
+	LIVA 	1, BX_disp, STANDARD.RECORD_TEST2_L1._BOX.N
+	Ld	, STANDARD.RECORD_TEST2_L1._MUT.GAU
+	LIVA 	1, BX_disp, STANDARD.RECORD_TEST2_L1._BOX.N
+	Ld	, STANDARD.RECORD_TEST2_L1._MUT.DTE
+	ADD
+	CALL	STANDARD. ,INTEGER_IMAGE_L9
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+					; debut if
+	LIVA 	1, BX_disp, STANDARD.RECORD_TEST2_L1._BOX.N
+	Lb	, STANDARD.RECORD_TEST2_L1._MUT.PT
+	LI	2
+	CEQ
+	BF	L27
+STR STR_L28, " 2"				; constante string=" 2"
+	LCA	STR_L28.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	BRA	L26
+L27:
+L26:					; post if
+STR STR_L29, "=== E6 : changement de variante via formel in out ==="	; constante string="=== E6 : changement de variante via formel in out ==="
+	LCA	STR_L29.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	LVA  1,	M_disp
+	CALL	STANDARD.RECORD_TEST2_L1. ,FLIP_L2
+VAR	ANON_74_13_disp, q
+VAR	ANON_74_13__u,   q
+namespace ANON_74_13_info
+  VAR SIZ, d
+  VAR _COMP_SIZ, d
+  VAR _FST_1, d
+  VAR _LST_1, d
+end namespace
+	LVA 1, ANON_74_13_info.SIZ
+	Sa  1, ANON_74_13__u
+	LVA 1, ANON_74_13_disp
+	LId	1, M_disp, STANDARD.RECORD_TEST2_L1._MUT.OPU
+	CALL	STANDARD. ,INTEGER_IMAGE_L9
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+					; debut if
+	LIb	1, M_disp, STANDARD.RECORD_TEST2_L1._MUT.PT
+	LI	1
+	CEQ
+	BF	L31
+STR STR_L32, " 1"				; constante string=" 1"
+	LCA	STR_L32.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	BRA	L30
+L31:
+L30:					; post if
+STR STR_L33, "=== E7 : retour de mutable par fonction ==="	; constante string="=== E7 : retour de mutable par fonction ==="
+	LCA	STR_L33.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	LVA 1,	M_disp
+	La
+	LI	STANDARD.RECORD_TEST2_L1._MUT.size
+VAR	ANON_78_8_disp, q
+VAR	ANON_78_8__u,    q
+VAR	ANON_78_8__dat, STANDARD.RECORD_TEST2_L1._MUT.size
+	LVA 1, ANON_78_8__dat
+	Sa  1, ANON_78_8_disp
+	La  1, STANDARD.RECORD_TEST2_L1._MUT.use__info
+	Sa  1, ANON_78_8__u
+	LVA 1, ANON_78_8_disp
+					; doublet resultat record anonyme
+	CALL	STANDARD.RECORD_TEST2_L1. ,GEN_L3
+	La
+	BLKMOV
+VAR	ANON_79_13_disp, q
+VAR	ANON_79_13__u,   q
+namespace ANON_79_13_info
+  VAR SIZ, d
+  VAR _COMP_SIZ, d
+  VAR _FST_1, d
+  VAR _LST_1, d
+end namespace
+	LVA 1, ANON_79_13_info.SIZ
+	Sa  1, ANON_79_13__u
+	LVA 1, ANON_79_13_disp
+	LId	1, M_disp, STANDARD.RECORD_TEST2_L1._MUT.GAU
+	LId	1, M_disp, STANDARD.RECORD_TEST2_L1._MUT.DTE
+	ADD
+	CALL	STANDARD. ,INTEGER_IMAGE_L9
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+STR STR_L34, "=== fin RECORD_TEST2 ==="		; constante string="=== fin RECORD_TEST2 ==="
+	LCA	STR_L34.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+ret_lbl:
+	UNLINK 1
+	RTD
+excep:
+endPRO					;---------- end PRO RECORD_TEST2

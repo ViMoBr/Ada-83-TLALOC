@@ -871,16 +871,29 @@ null;
 
 	if  CODI.DEBUG  then PUT_LINE( "; CODE_RETURN : EXPR TYPE = " & NODE_NAME'IMAGE( EXPR_TYPE.TY ) ); end if;
 
-	if  EXPR_TYPE.TY in CLASS_SCALAR  then
+	if  EXPR_TYPE.TY in CLASS_SCALAR  or else  EXPR_TYPE.TY = DN_ACCESS  then
 	  EXPRESSIONS.CODE_EXP( EXP );
 	  PUT_LINE( tab & "S" & CODI.EXP_TYPE_CHAR( EXP ) & ' ' & INTEGER'IMAGE( CODI.CUR_LEVEL ) & ',' & tab & "-result__ofs" );
 
-	elsif  EXPR_TYPE.TY = DN_ARRAY  or  EXPR_TYPE.TY = DN_CONSTRAINED_ARRAY  then
+	elsif  EXPR_TYPE.TY = DN_ARRAY  or  EXPR_TYPE.TY = DN_CONSTRAINED_ARRAY
+	or     EXP.TY = DN_STRING_LITERAL							-- return "..." : SM_EXP_TYPE est DN_VOID
+	then
 	  declare
 	    SRC_LVL_STR : constant STRING := INTEGER'IMAGE( CODI.CUR_LEVEL );
 	    RES_LVL_STR : constant STRING := INTEGER'IMAGE( ENCLOSING_LEVEL );
 	  begin
-	    if  EXP.TY = DN_SLICE  then
+	    if  EXP.TY = DN_STRING_LITERAL  then
+		-- La macro STR pose une constante dont le champ data_ptr ouvre un
+		-- doublet complet : LCA nom.data_ptr = @doublet (idiome de
+		-- CODE_ARRAY_OPERAND).  La mecanique de copie ci-dessous s'applique.
+	      declare
+	        STR_NAME	:constant STRING	:= "RET_STR_" & NEW_LABEL;
+	      begin
+	        EXPRESSIONS.CODE_STRING_LITERAL( EXP, STR_NAME );
+	        PUT_LINE( tab & "LCA" & tab & STR_NAME & ".data_ptr" );
+	      end;
+
+	    elsif  EXP.TY = DN_SLICE  then
 		-- return S( A .. B ) : le chemin par defaut (CODE_EXP -> CODE_NAME ->
 		-- CODE_SLICE en mode destination) laisserait @data, len ; la mecanique
 		-- ci-dessous attend un @doublet.  Le mode source de CODE_SLICE construit
@@ -926,6 +939,7 @@ null;
 	  raise PROGRAM_ERROR;
 
 	elsif  EXPR_TYPE.TY = DN_RECORD
+	or     EXPR_TYPE.TY = DN_CONSTRAINED_RECORD
 	or     EXPR_TYPE.TY = DN_L_PRIVATE
 	or     EXPR_TYPE.TY = DN_PRIVATE
 	then
@@ -936,6 +950,10 @@ null;
 	    while  TYPE_SPEC.TY = DN_L_PRIVATE  or  TYPE_SPEC.TY = DN_PRIVATE  loop
 	      TYPE_SPEC := D( SM_TYPE_SPEC, TYPE_SPEC );
 	    end loop;
+
+	    if  TYPE_SPEC.TY = DN_CONSTRAINED_RECORD  then						-- pilier 3.7 : vue contrainte -> base
+	      TYPE_SPEC := D( SM_BASE_TYPE, TYPE_SPEC );						-- (symbole .size de la vue anonyme inexistant)
+	    end if;
 	    declare
 	      TYPE_NAME	: TREE		:= D( XD_SOURCE_NAME, TYPE_SPEC );
 	      TN_STR	: constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
@@ -966,6 +984,13 @@ null;
 	    end;
 	  end;
 
+	else
+	-- Trou auparavant SILENCIEUX (cause du segfault R6 : result__ofs jamais
+	-- rempli, BLKMOV appelant depuis un pointeur non initialise).
+	-- Refus bruyant (piege n 53).
+	  PUT_LINE( "; CODE_RETURN : type de retour non gere "
+		& NODE_NAME'IMAGE( EXPR_TYPE.TY ) );
+	  raise PROGRAM_ERROR;
           end if;
         end	STORE_FUNCTION_RESULT;
         		---------------------
@@ -1401,6 +1426,10 @@ null;
 	  DST_TYPE := D( SM_TYPE_SPEC, DST_TYPE );
 	end loop;
 
+	if  DST_TYPE.TY = DN_CONSTRAINED_RECORD  then						-- pilier 3.7 : vue contrainte -> base
+	  DST_TYPE := D( SM_BASE_TYPE, DST_TYPE );
+	end if;
+
 	EXPRESSIONS.CODE_OBJECT_ADDRESS( DST_NAME );							-- @objet designe
 
 	if  DST_TYPE.TY = DN_RECORD  then
@@ -1449,6 +1478,10 @@ null;
         declare
 	DST_TYPE : TREE := D( SM_EXP_TYPE, DST_NAME );
         begin
+	if  DST_TYPE.TY = DN_CONSTRAINED_RECORD  then						-- pilier 3.7 : vue contrainte -> base
+	  DST_TYPE := D( SM_BASE_TYPE, DST_TYPE );
+	end if;
+
       -- Calculer l'adresse destination : @R.C, @A(I).C, etc.
 	EXPRESSIONS.CODE_SELECTED( DST_NAME, IS_SOURCE => FALSE );
 
@@ -1496,6 +1529,10 @@ null;
 	while  INDEXED_TYPE.TY = DN_PRIVATE  or else  INDEXED_TYPE.TY = DN_L_PRIVATE  loop
 	  INDEXED_TYPE := D( SM_TYPE_SPEC, INDEXED_TYPE );
 	end loop;
+
+	if  INDEXED_TYPE.TY = DN_CONSTRAINED_RECORD  then						-- pilier 3.7 : vue contrainte -> base
+	  INDEXED_TYPE := D( SM_BASE_TYPE, INDEXED_TYPE );
+	end if;
 
 	EXPRESSIONS.CODE_INDEXED( DST_NAME );								-- @DST
 

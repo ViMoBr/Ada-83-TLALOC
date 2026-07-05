@@ -791,6 +791,68 @@ put_line( "; CODE_VC_NAME " & NODE_NAME'IMAGE( VC_NAME.TY ) );
 
           PUT_LINE( tab & "BLKMOV" );
         else
+				-- Pilier 3.7 : elaboration des VALEURS de discriminants.
+				-- Vue contrainte : SM_NORMALIZED_DSCRMT_S (expressions dans
+				-- l'ordre des discriminants du record de base).
+				-- Type a defauts (3.7.1) : SM_INIT_EXP des DISCRIMINANT_ID.
+				-- Les offsets sont adresses via le namespace du record de BASE
+				-- (les vues contraintes, nommees ou anonymes, n'ont que des alias).
+	declare
+	  BASE_REC	: TREE	:= TYPE_SPEC;
+	  DSCRMT_EXP_S	: SEQ_TYPE;
+	  USE_NORM	: BOOLEAN	:= FALSE;
+	begin
+	  if  TYPE_SPEC.TY = DN_CONSTRAINED_RECORD  then
+	    BASE_REC     := D( SM_BASE_TYPE, TYPE_SPEC );
+	    DSCRMT_EXP_S := LIST( D( SM_NORMALIZED_DSCRMT_S, TYPE_SPEC ) );
+	    USE_NORM     := TRUE;
+	  end if;
+
+	  if  BASE_REC.TY = DN_RECORD  then
+	    declare
+	      BASE_NAME	: TREE		:= D( XD_SOURCE_NAME, BASE_REC );
+	      BASE_STR	:constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, BASE_NAME ) );
+	      DSCRMT_DECL_S	: SEQ_TYPE	:= LIST( D( SM_DISCRIMINANT_S, BASE_REC ) );
+	      DSCRMT_DECL	: TREE;
+	      DSCRMT_EXP	: TREE;
+	    begin
+	      while  not IS_EMPTY( DSCRMT_DECL_S )  loop
+	        POP( DSCRMT_DECL_S, DSCRMT_DECL );
+	        declare
+	          DISCR_ID_S	: SEQ_TYPE	:= LIST( D( AS_SOURCE_NAME_S, DSCRMT_DECL ) );
+	          DISCR_ID	: TREE;
+	        begin
+	          while  not IS_EMPTY( DISCR_ID_S )  loop
+	            POP( DISCR_ID_S, DISCR_ID );
+
+	            if  USE_NORM  then
+	              if  IS_EMPTY( DSCRMT_EXP_S )  then
+	                PUT_LINE( "; COMPILE_RECORD_VAR : contrainte normalisee incomplete" );
+	                raise PROGRAM_ERROR;
+	              end if;
+	              POP( DSCRMT_EXP_S, DSCRMT_EXP );
+	            else
+	              DSCRMT_EXP := D( SM_INIT_EXP, DISCR_ID );		-- defaut eventuel (3.7.1)
+	            end if;
+
+	            if  DSCRMT_EXP /= TREE_VOID  and then  DSCRMT_EXP /= TREE_NIL  then
+	              PUT( tab & "LIVA "
+	                & LVL_STR & ", "
+	                & VC_STR & "_disp, " );
+	              CODI.REGIONS_PATH( BASE_NAME );
+	              PUT_LINE( BASE_STR & "."
+	                & PRINT_NAME( D( LX_SYMREP, DISCR_ID ) ) );
+	              EXPRESSIONS.CODE_EXP( DSCRMT_EXP );
+	              PUT_LINE( tab & "S"
+	                & CODI.OPER_SIZ_CHAR( D( SM_OBJ_TYPE, DISCR_ID ) ) );
+	            end if;
+	          end loop;
+	        end;
+	      end loop;
+	    end;
+	  end if;
+	end;
+
 				-- No explicit aggregate : initialize
 				-- fields	that have	default values
 	declare

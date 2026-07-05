@@ -2505,9 +2505,13 @@ begin:					;---------- BDY INSTRUCTIONS
 	DUP
 	BF	L86
 	DROP
+; CODE record equality "=" _VECTOR
 	La  1,	-A_ofs
+	La  ,  0
+	LI	STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.size
 	La  1,	-R_ofs
-	CEQ
+	La  ,  0
+	BLKCMP
 L86:
 	BF	L85
 	La 1, -R_ofs

@@ -452,6 +452,34 @@ is
         -- Convention backend TLALOC : les flottants sont stockés en double 64 bits.
 	return CODI.ADDR_SIZE * CODI.STORAGE_UNIT;
 
+        elsif  COMP_TYPE.TY = DN_RECORD
+           or  COMP_TYPE.TY = DN_CONSTRAINED_RECORD
+        then
+	-- Pilier 3.7 : composant record (contraint ou non).  La vue contrainte
+	-- anonyme (p. ex. BUF(2)) ne porte pas de CD_IMPL_SIZE : lire celui du
+	-- record de BASE, pose par CODE_RECORD_DECL (layout additif).
+	declare
+	  REC : TREE	:= COMP_TYPE;
+	  RAW : INTEGER;
+	begin
+	  if  REC.TY = DN_CONSTRAINED_RECORD  then
+	    REC := D( SM_BASE_TYPE, REC );
+	  end if;
+
+	  RAW := DI( CD_IMPL_SIZE, REC );
+
+	  if  RAW = 0  then
+	  -- Vue complete pas encore compilee (type prive, ACVC A7xxx) : la
+	  -- taille n'est pas connaissable par l'expander A CE POINT du flux,
+	  -- mais le symbole <rec>.size sera defini plus loin dans le FINC.
+	  -- Retourner 0 : le site d'emission bascule sur le symbole (fasm
+	  -- resout les references avant definition) et IS_STATIC tombe.
+	    return 0;
+	  end if;
+
+	  return ( ( RAW + CODI.STORAGE_UNIT - 1 ) / CODI.STORAGE_UNIT ) * CODI.STORAGE_UNIT;
+	end;
+
         else
         -- CD_IMPL_SIZE est la taille minimale en BITS posee par le front-end
         -- (1 pour BOOLEAN, 3 pour un enumere a 7 valeurs...).  La convention
@@ -548,7 +576,37 @@ is
 	PUT_LINE(	"VAR _FST_" & DIM_NBR_STR & ", d" );
 	PUT_LINE(	"VAR _LST_" & DIM_NBR_STR & ", d" );
 
-	PUT_LINE(	tab & "LI" & tab & ELEMENT_SIZ_STR );							-- TAILLE	D'UN ELEMENT DU TABLEAU
+	if  ELEMENT_SIZ = 0
+	  and then ( COMP_TYPE.TY = DN_RECORD  or else  COMP_TYPE.TY = DN_CONSTRAINED_RECORD )
+	then
+		-- Pilier 3.7 / ACVC A7 : composant record dont la vue complete
+		-- (type prive) n'est pas encore compilee.  Taille inconnue de
+		-- l'EXPANDER mais pas de l'ASSEMBLEUR : emettre le symbole
+		-- <rec>.size*8, defini plus loin dans le meme FINC (fasm est
+		-- multi-passes).  Le tableau suit le chemin dynamique.
+	  IS_STATIC := FALSE;
+
+	  declare
+	    REC	: TREE	:= COMP_TYPE;
+	  begin
+	    if  REC.TY = DN_CONSTRAINED_RECORD  then
+	      REC := D( SM_BASE_TYPE, REC );
+	    end if;
+
+	    declare
+	      REC_NAME	: TREE		:= D( XD_SOURCE_NAME, REC );
+	      REC_STR	:constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, REC_NAME ) );
+	    begin
+	      PUT( tab & "LI" & tab );
+	      CODI.REGIONS_PATH( REC_NAME );
+	      PUT_LINE( REC_STR & ".size*8" );							-- TAILLE SYMBOLIQUE (bits)
+	    end;
+	  end;
+
+	else
+	  PUT_LINE(	tab & "LI" & tab & ELEMENT_SIZ_STR );						-- TAILLE	D'UN ELEMENT DU TABLEAU
+	end if;
+
 	PUT_LINE(	tab & "Sd" & tab & LVL_STR & ", _COMP_SIZ" );						-- DWORD COMP_SIZ
 	PUT_LINE(	tab & "Ld" & tab & LVL_STR & ", _COMP_SIZ" );						-- recharge pour MUL suivant
         end;
@@ -881,14 +939,29 @@ is
 	end if;
         end loop;
 
-	--  Premier perimetre : si une partie variante est presente et que la
-	--  taille n'a pas deja ete fournie par SM_SIZE/representation, on ne
-	--  tente pas encore de calculer des offsets statiques.
+	--  Pilier 3.7, layout ADDITIF : les champs de TOUTES les variantes
+	--  sont poses bout a bout par CODE_RECORD_DECL ; la taille statique
+	--  est donc la somme (coherence avec TRAITER_LES_CHAMPS).
         declare
 	VP	: TREE	:= D( AS_VARIANT_PART, CL );
         begin
 	if  VP /= TREE_VOID  and then  VP /= TREE_NIL  then
-	  UNKNOWN := TRUE;
+	  declare
+	    VAR_S	: SEQ_TYPE	:= LIST( D( AS_VARIANT_S, VP ) );
+	    VAR_E	: TREE;
+	  begin
+	    while  not IS_EMPTY( VAR_S )  loop
+	      POP( VAR_S, VAR_E );
+
+	      if  VAR_E.TY = DN_VARIANT  then
+	        ADD_COMP_LIST( D( AS_COMP_LIST, VAR_E ) );
+
+	        if  UNKNOWN  then
+	          return;
+	        end if;
+	      end if;
+	    end loop;
+	  end;
 	end if;
         end;
 
@@ -1041,6 +1114,11 @@ is
 
       elsif  TS.TY = DN_RECORD  then
         return  STATIC_RECORD_SIZE_BITS( TS );
+
+      elsif  TS.TY = DN_CONSTRAINED_RECORD  then
+	-- Pilier 3.7 : vue contrainte (nommee ou anonyme) -> taille du record
+	-- de base (layout additif : la contrainte ne change pas la taille).
+        return  STATIC_RECORD_SIZE_BITS( D( SM_BASE_TYPE, TS ) );
 
       elsif  TS.TY = DN_CONSTRAINED_ARRAY  then
 

@@ -84,3 +84,18 @@ La sémantique n'est protégée que par les programmes-témoins à sortie attend
 
 Les 8 `expander*.adb`, `codi_x86_64.finc`, les paquetages IO concernés,
 `machine_code.ads`, le programme de test en cours, et ce dossier documentaire.
+
+## restrictions pilier 3.7 (périmètre 1)
+
+- Égalité de records à variantes : champ par champ, variante active seule
+  (RM 4.5.2), générée par cascade statique. Restent BRUYANTS : champ record
+  à variantes imbriqué, champ tableau, choix par intervalle. Flottants
+  comparés bit à bit (comme BLKCMP).
+- Égalité : opérande agrégat non supporté (refus bruyant).
+- Composants dépendant d'un discriminant : hors périmètre (garde
+  SM_DEPENDS_ON_DSCRMT disponible, FALSE partout dans TEST1).
+- Fonctions retournant un TABLEAU CONTRAINT : vigilance jumelle de C10, le
+  slot résultat prend vraisemblablement le placeholder LI 0 — à traiter au
+  pilier des retours de tableaux, pas exercé par le filet actuel.
+- Catégorie E → couvert : dscrmt_decl, dscrmt_decl_s, dscrmt_constraint,
+  variant_part, variant_s, comp_list (à sortir du triage DIANA).

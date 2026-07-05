@@ -471,3 +471,5 @@ Reliquat consigné en fondation : déclaration des types non contraints eux-mêm
 l'ouverture. Documentation réorganisée en cinq fichiers (ETAT_PILIERS, PIEGES,
 CONVENTIONS_ARCHITECTURE, ORACLES_TESTS, JOURNAL_SESSIONS) + triage mis à jour :
 la synthèse monolithique est retirée du projet.
+
+Session pilier 3.7, lot R-A (RECORD_TEST1) : CLOS, 7/7 sections conformes, filet vert (unités compilateur, ACVC, TEXT/DIRECT/SEQUENTIAL_IO, enum_test, direct_io_test). Dix correctifs C1–C10 sur quatre fichiers. Chaîne causale remarquable : le refus bruyant de C5 (égalité) a révélé C9 (idl.adb, bootstrap) ; l’else bruyant de C7 (CODE_RETURN) a révélé C8 (return “” de FORM) ; l’audit FINC post-C7 a innocenté CODE_RETURN et incriminé l’appelant (C10). Trois trous SILENCIEUX préexistants dans le même if de CODE_RETURN (DN_CONSTRAINED_RECORD, DN_ACCESS, DN_STRING_LITERAL) : FORM était compilé cassé depuis toujours, invisible car jamais appelé.
