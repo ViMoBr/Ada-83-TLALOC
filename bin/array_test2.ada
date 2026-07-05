@@ -33,7 +33,7 @@ procedure ARRAY_TEST2 is
   S0  : STRING( 3 .. 2 );                            -- D7 : tableau nul, bornes statiques
   SD  : STRING( N .. N - 1 );                        -- D7 : tableau nul, bornes dynamiques
 
-  U, X : VEC3;
+  U, X, Y : VEC3;
   L    : LIGNE;
   CO   : COLONNE;
   B1, B2, B3 : BVEC;
@@ -86,7 +86,8 @@ begin
   VRAI_FAUX( C2 > C1 );                                           -- VRAI
   VRAI_FAUX( S0 < P2 );                        -- tableau nul < non nul      -- VRAI
   VRAI_FAUX( U < X );                          -- (1,2,3) < (1,2,4)          -- VRAI
-
+  Y := ( -5, 2, 3 );
+  VRAI_FAUX( Y < U );                          -- (-5,..) < (1,..)           -- VRAI
   PUT_LINE( "=== D3. Operateurs logiques sur tableaux booleens ===" );
   B1 := ( TRUE,  TRUE,  FALSE, FALSE );
   B2 := ( TRUE,  FALSE, TRUE,  FALSE );

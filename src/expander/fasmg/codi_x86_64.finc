@@ -1431,6 +1431,68 @@ post:
   end namespace
 end macro
 
+;-----------------------------------------------------------------------------------------------------------------------
+;		O P E R A T I O N S   L O G I Q U E S   D E   B L O C   (LRM 4.5.1) -- lot D3
+;-----------------------------------------------------------------------------------------------------------------------
+; Composants BOOLEAN : un octet par composant (CD_IMPL_SIZE 1 bit arrondi au
+; STORAGE_UNIT, piege n 56), valeurs 0/1 -> l'operation octet a octet est exacte.
+; Convention binaire, miroir de BLKMOV : pile = @DST, LEN, @SRC ; [DST] op= [SRC].
+; La destination a deja recu la copie de l'operande GAUCHE par BLKMOV.
+; LEN en octets, borne a 0 par CLAMP0 en amont (piege n 52) -- garde jz neanmoins.
+; Detruit RAX (al), RCX, RSI, RDI.
+
+;			-----------
+macro			BLK_OP_OCTET opc*				; usine interne : opc = octet d'opcode "op r/m8, r8"
+;			-----------
+  local  boucle, fin
+  POP_RSI								; @SRC (operande droit)
+  POP_RCX								; LEN (octets)
+  POP_RDI								; @DST (copie de l'operande gauche)
+  db 0x48, 0x85, 0xC9						; test rcx, rcx
+  db 0x74, fin - $ - 1						; jz  fin		(LEN = 0 : tableau nul)
+boucle:
+  db 0x8A, 0x06							; mov al, [rsi]
+  db opc,  0x07							; op  [rdi], al		(and=0x20, or=0x08, xor=0x30)
+  db 0x48, 0xFF, 0xC6						; inc rsi
+  db 0x48, 0xFF, 0xC7						; inc rdi
+  db 0xE2, boucle - $ - 1						; loop boucle		(decremente rcx)
+fin:
+end macro
+;			------
+macro			BLKAND?					; [DST] and= [SRC] octet a octet
+;			------
+  BLK_OP_OCTET 0x20
+end macro
+
+;			-----
+macro			BLKOU?					; [DST] or= [SRC] octet a octet
+;			-----
+  BLK_OP_OCTET 0x08
+end macro
+
+;			------
+macro			BLKOUX?					; [DST] xor= [SRC] octet a octet
+;			------
+  BLK_OP_OCTET 0x30
+end macro
+
+;			------
+macro			BLKNOT?					; NOT composite : chaque octet ^= 1
+;			------
+; Pile = @DST, LEN.  xor avec 1 et non 0xFF : c'est le NOT booleen 0/1
+; (piege n 5) applique par octet.  La destination a deja recu la copie
+; de l'operande par BLKMOV.
+  local  boucle, fin
+  POP_RCX					; LEN (octets)
+  POP_RDI					; @DST
+  db 0x48, 0x85, 0xC9				; test rcx, rcx
+  db 0x74, fin - $ - 1				; jz  fin
+boucle:
+  db 0x80, 0x37, 0x01				; xor byte [rdi], 1
+  db 0x48, 0xFF, 0xC7				; inc rdi
+  db 0xE2, boucle - $ - 1			; loop boucle
+fin:
+end macro
 ;			------
 macro			BLKMOV					; Copie de bloc sans recouvrement
 ;			------
@@ -1458,7 +1520,94 @@ macro			BLKCMP					; Comparaison de blocs : empile 1 si egaux, 0 sinon (LEN=0 ->
   db 0x0F, 0x94, 0xC0						; sete al			(AL=1 si ZF)
   PUSH_RAX
 end macro
+;			-----------------
+macro			LEXCMP siz*, sgn*				; Comparaison lexicographique de tableaux (LRM 4.5.2) -- lot D2
+;			-----------------
+; Pile a l'entree : @G, LEN_G, @D, LEN_D	(longueurs en OCTETS, bornees a 0 par CLAMP0 -- piege n 52)
+; Empile : -1 / 0 / +1 (qword signe), a confronter a LI 0 par CLT/CLE/CGT/CGE cote expander.
+; Parametres :	siz = octets par composant (1, 2, 4, 8)
+;		sgn = 1 composant signe (INTEGER), 0 non signe (enumeres, CHARACTER, BOOLEAN)
+;
+; repe cmpsb inutilisable : composants multi-octets little-endian, et signes possibles.
+; NORMALISATION : chaque composant est etendu a 64 bits (movsx si sgn, movzx sinon) ;
+; apres quoi UNE SEULE comparaison signee 64 bits est correcte dans les deux cas.
+; Regle du prefixe (4.5.2) : a l'epuisement sans difference, resultat = sign(reste_G - reste_D)
+; -- couvre aussi les tableaux nuls (0 itération, restes compares directement).
+; Detruit RAX, RBX, RCX, RDX, RSI, RDI (comme BLKMOV/BLKCMP).
 
+  local  boucle, epuise, differe, plus, egal, moins, empile
+
+  POP_RDX								; LEN_D (octets)
+  POP_RSI								; @D
+  POP_RCX								; LEN_G (octets)
+  POP_RDI								; @G
+
+boucle:
+  db 0x48, 0x85, 0xC9						; test rcx, rcx		G epuise ?
+  db 0x74, epuise - $ - 1						; jz  epuise
+  db 0x48, 0x85, 0xD2						; test rdx, rdx		D epuise ?
+  db 0x74, epuise - $ - 1						; jz  epuise
+
+if siz = 1
+  if sgn = 1
+    db 0x48, 0x0F, 0xBE, 0x07						; movsx rax, byte [rdi]
+    db 0x48, 0x0F, 0xBE, 0x1E						; movsx rbx, byte [rsi]
+  else
+    db 0x0F, 0xB6, 0x07						; movzx eax, byte [rdi]
+    db 0x0F, 0xB6, 0x1E						; movzx ebx, byte [rsi]
+  end if
+else if siz = 2
+  if sgn = 1
+    db 0x48, 0x0F, 0xBF, 0x07						; movsx rax, word [rdi]
+    db 0x48, 0x0F, 0xBF, 0x1E						; movsx rbx, word [rsi]
+  else
+    db 0x0F, 0xB7, 0x07						; movzx eax, word [rdi]
+    db 0x0F, 0xB7, 0x1E						; movzx ebx, word [rsi]
+  end if
+else if siz = 4
+  if sgn = 1
+    db 0x48, 0x63, 0x07						; movsxd rax, dword [rdi]
+    db 0x48, 0x63, 0x1E						; movsxd rbx, dword [rsi]
+  else
+    db 0x8B, 0x07							; mov eax, [rdi]	(zero-etend en 64 bits)
+    db 0x8B, 0x1E							; mov ebx, [rsi]
+  end if
+else if siz = 8
+    db 0x48, 0x8B, 0x07						; mov rax, [rdi]	(signe indifferent : pleine largeur)
+    db 0x48, 0x8B, 0x1E						; mov rbx, [rsi]
+else
+  err 'LEXCMP : taille de composant non supportee'
+end if
+
+  db 0x48, 0x39, 0xD8						; cmp rax, rbx		(signee 64 bits, operandes normalises)
+  db 0x75, differe - $ - 1						; jne differe
+
+  db 0x48, 0x83, 0xC7, siz						; add rdi, siz		composant suivant
+  db 0x48, 0x83, 0xC6, siz						; add rsi, siz
+  db 0x48, 0x83, 0xE9, siz						; sub rcx, siz
+  db 0x48, 0x83, 0xEA, siz						; sub rdx, siz
+  db 0xEB, boucle - $ - 1						; jmp boucle
+
+epuise:								; prefixe commun : sign(reste_G - reste_D) tranche
+  db 0x48, 0x29, 0xD1						; sub rcx, rdx
+  db 0x74, egal  - $ - 1						; jz  egal		longueurs egales -> 0
+  db 0x78, moins - $ - 1						; js  moins		G prefixe strict -> -1
+plus:
+  db 0x6A, 0x01							; push 1
+  db 0x58								; pop  rax		rax := +1
+  db 0xEB, empile - $ - 1						; jmp empile
+differe:								; flags encore armes par le cmp rax, rbx
+  db 0x7C, moins - $ - 1						; jl  moins
+  db 0xEB, plus - $ - 1						; jmp plus
+egal:
+  db 0x31, 0xC0							; xor eax, eax		rax := 0
+  db 0xEB, empile - $ - 1						; jmp empile
+moins:
+  db 0x6A, 0xFF							; push -1		(imm8 etendu de signe en qword)
+  db 0x58								; pop  rax		rax := -1
+empile:
+  PUSH_RAX
+end macro
 
 ;				------------------------------
 ;				SPECIFIQUE  L I N U	X   X86-64

@@ -1,0 +1,473 @@
+# JOURNAL DES SESSIONS — récits datés (append-only)
+
+Le « pourquoi » des décisions. L'état courant est dans ETAT_PILIERS.md ;
+les pièges extraits des sessions sont dans PIEGES.md (numéros cités ici).
+
+## 11. CALENDAR, FIXED_IO et reprises TEXT_IO
+
+15 mai à 5 juin 2026. La réalisation du package CALENDAR a requis la mise en place du calcul sur type réel Ada FIXED, particulièrement pour DURATION et TIME. Le package CALENDAR est opérationnel, le sous package générique FIXED_IO de TEXT_IO a été rédigé et testé. Les procédures GET de TEXT_IO qui utilisaient un GET_LINE ont été reprises et sont maintenant conformes aux règles de lecture Ada avec des scanners appropriés. Le calcul sur type FIXED n'est cependant pas tout à fait complet, en particulier pour les multiplications et divisions, et les opérations arithmétiques sur type FIXED sont en place pour que CALENDAR fonctionne avec le type DURATION défini dans STANDARD. On peut considérer que mis à part le traitement des exceptions, TEXT_IO est presque achevé et fonctionne ainsi que CALENDAR dans les cas normaux d'utilisation.
+
+## 12. Expérimentation avec SEQUENTIAL_IO
+
+Session 5 juin 2026 — Validation communication série Arduino
+Communication entre un binaire TLALOC et un Arduino Uno équipé d'un shield afficheur ILI9481 480×320 validée. SEQUENTIAL_IO instancié sur CHARACTER permet un protocole binaire octet par octet via /dev/ttyACM0 (device cdc_acm). Le programme de test serial_test.adb ouvre le port, envoie des commandes de couleur et des chaînes ASCII, ferme proprement — l'afficheur Arduino reçoit et affiche correctement texte et couleurs.
+Contraintes identifiées et résolues : (1) la configuration stty ne persiste pas entre ouvertures sur cdc_acm — contournement par un fd externe maintenu ouvert (tail -f /dev/null > /dev/ttyACM0 &) ; (2) reset automatique de l'Arduino à l'ouverture du port DTR — condensateur 10 µF entre RESET et GND ; (3) buffer UART matériel de l'Uno limité à 64 octets, insuffisant pour un envoi en rafale depuis sys_write — porté à 256 octets dans HardwareSerial.h.
+Côté afficheur, deux corrections au sketch Arduino : inversion de la coordonnée X dans drawPixel (x + (FONT_W - 1 - px) au lieu de x + px) pour le mirroir horizontal, et inversion de la palette RGB565 pour la polarité inversée du bus 8 bits du shield clone.
+Reste à faire : macro SYS_SERIAL_CONFIG (ioctl/tcsetattr) dans codi_x86_64.finc pour rendre la configuration du port autonome sans dépendre du fd externe ; validation de la réception (INOUT_FILE + READ bloquant) ; gestion des timeouts via SYS_SELECT ou SYS_POLL pour éviter un sys_read bloquant indéfiniment.
+
+
+## Session 10 juin 2026 — Retour de record par fonction
+
+Implémentation du retour de valeur composite de type record par les fonctions Ada 83. La convention retenue est symétrique à celle des paramètres out composites : l'appelant alloue un doublet anonyme (_disp, __u, __dat) dans sa VARzone et empile son adresse comme result__ofs supplémentaire (dernier PRM). La fonction remplit les données brutes via La , 0 (extraction du data_ptr depuis le doublet) suivi de CODE_AGGREGATE ou BLKMOV selon que l'expression retournée est un agrégat ou une variable. Côté appelant, après le CALL, le sommet de pile est l'adresse du doublet résultat, utilisable directement comme opérande dans une expression ou affecté par BLKMOV dans COMPILE_RECORD_VAR. Cinq corrections ont été nécessaires : (1) CODE_FUNCTION_CALL pour l'allocation du doublet anonyme au lieu du LI 0 scalaire ; (2) CODE_RETURN pour le La , 0 + agrégat ou BLKMOV ; (3) COMPILE_RECORD_VAR pour l'initialisation par function_call ; (4) CODE_AGGREGATE branche record pour le BLKMOV des composantes de type record (le DUP global supprimé, chaque branche gérant le sien) ; (5) CODE_SELECTED branche else pour la lecture d'un champ scalaire terminal sur adresse directe en pile : L & OPER_SIZ_CHAR avec lvl=-1 (et non LId qui déréférence deux fois, ni LVA qui n'accède pas à la valeur). Validé sur records plats, records imbriqués, fonctions retournant un record utilisé directement comme paramètre sans variable intermédiaire, et lecture de champs de champs (S.A.X).
+
+## Session 14 juin 2026 CODE_ASSIGN — rationalisation des affectations `selected` / `indexed` de records
+
+Une étape importante de consolidation de `EXPANDER.INSTRUCTIONS.CODE_ASSIGN` a été réalisée lors du début de bootstrap du compilateur TLALOC par lui-même. Le problème initial venait d’une simplification dangereuse : lorsqu’une destination d’affectation était un `DN_SELECTED`, `CODE_ASSIGN` remplaçait cette destination par son dernier designator via `LAST_OF_SELECTED`. Cette ruse fonctionnait dans quelques cas simples, mais elle détruisait l’information essentielle de base pour les affectations à des composantes de records. Par exemple, `R.C := X;` ne doit pas être traité comme une affectation au seul `component_id C`, mais comme une affectation à l’adresse effective `adresse de R + offset(C)`. Un `DN_COMPONENT_ID` n’est pas une cellule mémoire autonome ; il n’a de sens qu’en tant qu’offset relatif à un objet record.
+
+La règle désormais retenue est de respecter plus explicitement le modèle LLIR : les scalaires, les access, les fixed et les float transitent directement sur la pile sous forme de valeur, puis sont stockés ; les composites, c’est-à-dire records, arrays, strings et slices, transitent par adresse de données et sont copiés par `BLKMOV` lorsque nécessaire. Pour une destination calculée (`selected`, `indexed`, `slice`, et plus tard `all`), le schéma général devient : calculer `@destination`, évaluer la source, puis stocker indirectement ou copier par `BLKMOV`.
+
+Le traitement dangereux suivant a donc été supprimé :
+
+```
+if DST_NAME.TY = DN_SELECTED then
+   DST_NAME := CODI.LAST_OF_SELECTED( DST_NAME );
+end if;
+```
+Une vraie branche DN_SELECTED a été ajoutée dans CODE_ASSIGN. Elle appelle maintenant :
+
+EXPRESSIONS.CODE_SELECTED( DST_NAME, IS_SOURCE => FALSE );
+
+afin de calculer l’adresse effective de la destination. Cela permet de traiter correctement les affectations à des composantes scalaires et composites, par exemple R.I := 12, R.E := ROUGE, R.C := R2.C ou R.C := (4, 8).
+
+Une correction a aussi été faite sur les copies composites sélectionnées. Pour une affectation du type R1.C := R2.C;, le code généré ne doit pas faire de La après la source R2.C, car CODE_SELECTED fournit déjà l’adresse des données de la composante. Le La ne reste nécessaire que pour les objets composites représentés par un doublet, par exemple une variable record autonome dont CODE_EXP fournit l’adresse du doublet avant extraction de l’adresse des données.
+
+CODE_INDEXED a ensuite été corrigé pour les tableaux composants de records. Le cas R.A(N) := (12,12);, où A est une composante tableau d’un record, ne doit pas utiliser A__u, car A__u n’existe que pour un objet tableau autonome. La règle introduite est donc la suivante : pour A(N), où A est un tableau objet autonome, on utilise le couple A_disp / A__u; pour R.A(N), où A est une composante inline d’un record, l’adresse de base est déjà calculée par CODE_SELECTED, et les informations de bornes et de taille de composant sont chargées directement depuis le type TABLE.
+
+CODE_SELECTED a également été complété pour les sélections dont le préfixe est indexé. Les formes R.A(N).X et A(N).X ont la structure DIANA d’un DN_SELECTED dont le préfixe est un DN_INDEXED. Le schéma ajouté est :
+
+elsif PREFIX.TY = DN_INDEXED then
+   CODE_INDEXED( PREFIX );
+   PROCESS_DESIGNATOR;
+
+Ainsi, CODE_INDEXED produit d’abord l’adresse de l’élément de tableau, puis PROCESS_DESIGNATOR ajoute l’offset du champ sélectionné, ou charge directement la valeur du champ selon que CODE_SELECTED est appelé en contexte source ou destination.
+
+Une protection défensive a enfin été ajoutée dans CODE_ASSIGN contre les destinations dont SM_EXP_TYPE vaut DN_VOID. Ce cas ne devrait normalement jamais parvenir à l’expander ; il révèle plutôt un défaut antérieur de résolution sémantique.
+
+Le programme de test TEST_ASSIGN_1 valide maintenant les cas suivants :
+
+R.I := 12;                  -- composante entière
+R.F := 1.25;                -- composante flottante
+R.E := ROUGE;               -- composante énumération
+
+R1.C := R2.C;               -- affectation composante record par BLKMOV
+R1.C := (4, 8);             -- affectation composante record par agrégat
+
+A(N).X := 12;
+A(N).Y := 13;               -- indexed puis selected
+
+R.A(N) := (12,12);          -- selected puis indexed, élément record
+
+La sortie obtenue est :
+
+cas 1 R.I  12
+cas 2 R.F  1.25000E+000
+cas 3 R.E ROUGE
+cas 4 R1.C [         12,         24]
+cas 5 R1.C [          4,          8]
+cas 6 A(N).X A(N).Y   [         12,         13]
+cas 7 R.A(N) [         12,         12]
+
+Un défaut du frontend a été identifié au passage. Le test erroné A(N).C := 12;, où A(N) est de type SUBREC ne contenant que les champs X et Y, n’est pas rejeté par la phase sémantique. Le champ C n’existe pas dans SUBREC, mais le frontend laisse passer une expression dont SM_EXP_TYPE vaut DN_VOID. Ce cas est maintenant intercepté défensivement par l’expander, mais la vraie correction devra être faite côté SEM_PHASE : la résolution d’un selected dont le préfixe est un DN_INDEXED doit vérifier que le designator appartient bien au type record de l’élément indexé.
+
+Cette étape clarifie proprement la frontière entre objet autonome, composante inline, adresse calculée et copie composite. Elle stabilise CODE_ASSIGN sans remettre en cause les chemins déjà sophistiqués de l’expander, notamment les paramètres, les génériques et les stores indirects par CALLI.
+
+# Session 14 juin 2026 — Traitement des déclarations d’objets renommés (renames)
+
+Une correction importante a été apportée à l’EXPANDER pour traiter les déclarations Ada 83 d’objets renommés, jusque-là incomplètes dans EXPANDER.DECLARATIONS.CODE_RENAMES_OBJ_DECL. Le problème initial apparaissait pendant le début de bootstrap de TLALOC par lui-même, dans IDL.adb, procédure MAKE, sur le motif IDL_TBL.N_SPEC( NN ).NS_SIZE = 0. Le nom introduit par renames était représenté dans DIANA par un DN_VARIABLE_ID ayant SM_RENAMES_OBJ = TRUE, mais l’expander le traitait ensuite comme une variable ordinaire dotée d’un CD_LEVEL et d’un CD_OFFSET normaux. Comme aucune vraie allocation n’avait été faite pour cet objet renommé, l’accès ultérieur pouvait produire une erreur du type : L ATTRIBUT CD_LEVEL DU NOEUD [DN_VARIABLE_ID<...>] N EST PAS UN ENTIER.
+
+La règle retenue est que le renames Ada 83 n’est pas une nouvelle variable, mais un alias vers un objet existant. Il ne faut donc pas recopier naïvement le CD_LEVEL ou le CD_OFFSET de l’objet renommé, car le renommé peut être une adresse calculée complexe : composante de record, élément de tableau, combinaison selected/indexed/selected, etc. La solution mise en place consiste à matérialiser localement le renommage par un petit objet pointeur. Pour un alias scalaire, X_disp contient l’adresse effective de l’objet réel renommé. La lecture de X doit donc être indirecte (LIx lvl, X_disp, 0) et l’écriture également indirecte (SIx lvl, X_disp, 0). Pour un alias composite, le modèle TLALOC habituel est conservé : Y_disp contient l’adresse des données réelles et Y__u contient l’adresse du patron de type ; le couple Y_disp/Y__u forme donc un doublet composite normal utilisable par les chemins existants de BLKMOV, selected, indexed et passage de paramètres.
+
+Une procédure auxiliaire de calcul d’adresse d’objet, du type CODE_OBJECT_ADDRESS, a été introduite côté expressions. Elle laisse sur la pile l’adresse brute des données désignées par un nom adressable. Elle couvre notamment les DN_USED_OBJECT_ID, DN_SELECTED et DN_INDEXED, en s’appuyant sur les corrections récentes de CODE_SELECTED et CODE_INDEXED, capables de produire l’adresse effective d’une destination calculée. Un point important a été identifié dans renames_obj_decl : il ne faut pas utiliser AS_NAME comme source de vérité après la phase sémantique. Dans certains cas comme Y : REC renames T(2);, le parseur conserve dans AS_NAME une forme syntaxique DN_FUNCTION_CALL, tandis que la sémantique a correctement reconstruit dans SM_INIT_EXP du DN_VARIABLE_ID renommant la vraie forme DN_INDEXED. CODE_RENAMES_OBJ_DECL utilise donc désormais SM_INIT_EXP(SOURCE_NAME) pour coder l’adresse du renommé, avec éventuellement AS_NAME seulement comme repli défensif.
+
+CODE_RENAMES_OBJ_DECL déclare maintenant un VAR <nom>_disp, q, calcule l’adresse effective du renommé via CODE_OBJECT_ADDRESS, puis stocke cette adresse dans <nom>_disp. Si le type renommé est composite, il déclare également <nom>__u et y place l’adresse du patron de type correspondant, de façon à présenter l’alias composite comme un doublet TLALOC ordinaire. Le DN_VARIABLE_ID ou DN_CONSTANT_ID introduit par le renommage reçoit alors un CD_LEVEL correspondant au niveau où ce petit pointeur d’alias est déclaré, et CD_COMPILED est positionné à TRUE. Ainsi, l’objet renommant possède bien un support mémoire local, mais ce support n’est qu’un pointeur vers l’objet réel.
+
+Une première correction dans CODE_VC_ID a ajouté une branche spéciale pour SM_RENAMES_OBJ. Pour un renommage scalaire, la lecture génère LI + suffixe de taille (LIb, LIw, LId, LIq) sur <nom>_disp, 0, donc lit la valeur pointée. Pour un renommage composite, la lecture génère LVA lvl, <nom>_disp, afin de fournir l’adresse du doublet alias. Le test initial a montré que l’affectation à un alias scalaire fonctionnait déjà, mais que la lecture produisait une valeur aberrante : X avant = 2118616188. Le FINC montrait alors Ld 1, X_disp, c’est-à-dire un chargement du contenu du slot X_disp lui-même, donc des bits bas de l’adresse, au lieu d’un chargement indirect de la valeur renommée. L’analyse a montré que certains chemins de l’expander appellent directement LOAD_MEM sans passer par CODE_VC_ID. La correction décisive a donc été de traiter également SM_RENAMES_OBJ au début de LOAD_MEM, avec la même convention : LIx lvl, X_disp, 0 pour un scalaire renommé, LVA lvl, Y_disp pour un composite renommé.
+
+Le test TEST_RENAMES_1 a validé les cas essentiels. Pour X : INTEGER renames R.B, la lecture de X donne bien la valeur initiale de R.B, puis X := 99 modifie effectivement R.B. Pour Y : REC renames T(2), les affectations Y.A := 300 et Y.B := 400 modifient l’élément réel T(2). Le test a ensuite été complété par des écritures croisées entre l’objet réel et l’alias composite : R.A := 111, R.B := 222, puis Y.A := 333, Y.B := 444, toutes correctement relues. La sortie validée est :
+
+X avant =          20
+R.B apres X := 99 =          99
+T(2).A =         300
+T(2).B =         400
+R.A =         111
+R.B =         222
+Y.A =         333
+Y.B =         444
+
+Enfin, la compilation de IDL.adb passe désormais dans l’expander. Cela valide le motif réaliste qui avait déclenché l’erreur initiale : un renommage ou usage apparenté sur une chaîne d’adressage selected → indexed → selected, comme IDL_TBL.N_SPEC( NN ).NS_SIZE. La correction stabilise donc le traitement des renames d’objets scalaires et composites sur noms adressables, sans remettre en cause les chemins existants de variables ordinaires, de records, de tableaux, de paramètres, de génériques et de copies composites par BLKMOV.
+
+
+# Session 19 juin 2026 — Réécriture de CODE_ARRAY_AGGREGATE et stabilisation des tableaux composants de records
+
+Une étape importante a été réalisée sur le traitement des agrégats de tableaux dans EXPANDER.EXPRESSIONS.CODE_ARRAY_AGGREGATE. L’ancienne procédure distinguait trop fortement les cas DN_ARRAY et DN_CONSTRAINED_ARRAY : le premier était traité comme dynamique mais de façon limitée, tandis que le second supposait des bornes statiques récupérables par SM_VALUE. Cette hypothèse était fausse pour certains DN_CONSTRAINED_ARRAY dont les bornes peuvent dépendre d’expressions dynamiques. La procédure a donc été reprise avec une règle plus robuste : considérer les bornes comme dynamiques, y compris lorsqu’elles sont statiquement connues, et calculer dynamiquement longueurs, strides et positions d’écriture. Le traitement est ainsi uniformisé pour DN_ARRAY et DN_CONSTRAINED_ARRAY, avec prise en charge de plusieurs dimensions.
+
+La notation des champs de gestion de tableaux a également été clarifiée pour éviter une collision dangereuse entre variables de gestion et offsets de use_info. Les variables réelles du type tableau sont maintenant préfixées par un underscore, par exemple _COMP_SIZ, _FST_1, _LST_1, tandis que les noms sans underscore COMP_SIZ, FST_1, LST_1, etc. restent les offsets statiques dans le bloc use_info. Cette distinction est essentielle : un accès direct à un type statique utilise les variables _FST_n, _COMP_SIZ, alors qu’un accès via un paramètre tableau utilise le pointeur __u et les offsets FST_n, COMP_SIZ.
+
+Plusieurs erreurs successives ont été isolées et corrigées. La première venait de l’écriture des valeurs d’agrégat : l’adresse courante du tableau devait être utilisée comme pointeur indirect, et non comme simple emplacement mémoire. L’usage de SId avec un pointeur de parcours a permis d’écrire correctement les éléments dans les données du tableau. La deuxième difficulté concernait les tableaux multidimensionnels : le calcul des strides devait respecter l’ordre des dimensions et l’indexation Ada en mémoire linéaire. Les tests ont validé les tableaux 2D et 3D, notamment les accès M(2,3) et C1(2,2,3). La troisième difficulté concernait les tableaux composants de records, par exemple H.V, où V est un tableau inline dans un record. L’indexation directe H.V(I) ne doit pas chercher un couple V_disp/V__u, inexistant pour une composante inline, mais partir de l’adresse du composant calculée par CODE_SELECTED, puis ajouter l’offset d’index.
+
+Un dernier défaut plus subtil est apparu lors du passage d’un composant tableau comme paramètre, par exemple CHECK_VECTEUR_PARAM(H.V, ...) ou CHECK_VECTEUR_PARAM(RV.V, ...). La convention TLALOC pour les composites passés en paramètre est de transmettre l’adresse d’un doublet {data_ptr, use_info_ptr}. Une variable tableau autonome possède naturellement ce doublet sous la forme V_disp suivi de V__u. En revanche, un composant tableau inline dans un record ne possède que ses données dans le record ; l’emplacement H.V + 8 est au milieu des données du tableau, pas un pointeur use_info. Le code généré empilait donc seulement l’adresse des données du composant, ce qui provoquait un faux use_info et un segfault dans la procédure appelée.
+
+La correction a été faite dans EXPANDER.INSTRUCTIONS.CODE_PROCEDURE_CALL, dans la gestion des paramètres effectifs de type DN_SELECTED. Lorsqu’un paramètre effectif sélectionné est composite, en particulier tableau ou record, l’expander fabrique désormais un petit doublet temporaire local :
+
+VAR SELARG_x_disp, q
+VAR SELARG_x__u,   q
+
+Il y stocke l’adresse des données calculée par CODE_SELECTED(..., IS_SOURCE => FALSE), puis l’adresse du use_info du type, et transmet enfin LVA SELARG_x_disp à la procédure appelée. Cela rend un composant composite inline équivalent, du point de vue de l’appel, à une variable composite autonome.
+
+Le programme TEST_AGREGATS_2 valide maintenant l’ensemble des cas suivants : agrégats de tableaux 1D positionnels, nommés et avec others, tableaux à borne zéro, passage de tableaux en paramètres, indexation scalaire, tableaux multidimensionnels, tableaux de records, records contenant tableaux, affectation d’éléments de tableaux composants de records, passage de ces composants tableaux en paramètres, et tableaux locaux à bornes dynamiques. La sortie finale obtenue est :
+
+=== bilan ===
+TOUS LES TESTS SONT OK
+
+Cette étape stabilise fortement la frontière entre variable tableau autonome, composant tableau inline, doublet composite {data,use_info}, offsets statiques de use_info, et calcul dynamique des dimensions. Elle prépare aussi les prochains chantiers liés au bootstrap, où les structures DIANA combinent records, tableaux, accès, contraintes dynamiques et représentations compactes.
+
+## Session 21 juin 2026 — Clauses de représentation pour records compacts et type DIANA TREE
+
+Une étape importante a été franchie dans le traitement des clauses de représentation Ada 83, avec pour objectif direct le support du type DIANA `TREE`, record à variantes compacté sur 32 bits. Ce type est central pour le bootstrap de TLALOC, car il sert de représentation compacte des pointeurs DIANA et combine discriminant, variantes superposées et champs numériques dans un seul mot machine.
+
+Un nouveau sous-ensemble de services a été ajouté dans l’EXPANDER sous la forme du package interne `REPRESENTED_ITEMS`, placé dans le corps de `EXPANDER` de façon à être accessible aux déclarations, expressions et instructions. Ce package regroupe désormais les opérations liées aux types possédant une clause de représentation de record : détection d’un record représenté, lecture des `comp_rep`, calcul de taille effective, génération du patron de type, génération d’agrégat compacté, lecture de composant représenté et écriture de composant représenté.
+
+La première difficulté a été de comprendre correctement les informations fournies par DIANA. Pour `TREE`, le champ backend `CD_IMPL_SIZE` du `DN_RECORD` vaut encore zéro au moment où l’expander intervient, alors que la taille sémantique provenant de la clause `for TREE'SIZE use 32` est déjà disponible dans `SM_SIZE`. Le calcul de taille des records représentés a donc été corrigé pour utiliser prioritairement `SM_SIZE`, puis l’occupation maximale calculée à partir des `DN_COMP_REP`, et seulement en dernier recours `CD_IMPL_SIZE`. Cela permet de générer correctement le patron :
+
+```
+TREE = 'TREE'
+namespace TREE
+VAR use__info, q
+VAR SIZ, d
+        LVA     1, SIZ
+        Sa      1, use__info
+        LI      32
+        Sd      1, SIZ
+size = 4
+...
+end namespace
+```
+
+La deuxième difficulté venait du lien retour `SM_COMP_REP`. Dans le dump DIANA de `TREE`, les nœuds `DN_COMP_REP` contiennent bien le nom résolu du composant ou discriminant par `AS_NAME.SM_DEFN`, mais le `DN_DISCRIMINANT_ID` `PT` ne possède pas nécessairement un `SM_COMP_REP` exploitable. Le parcours des clauses de représentation a donc été inversé : au lieu de partir du composant et d’exiger son lien retour `SM_COMP_REP`, l’expander parcourt directement la séquence `AS_COMP_REP_S` du `DN_RECORD_REP` et utilise chaque `DN_COMP_REP` comme source de vérité. Cette correction est essentielle pour les discriminants représentés.
+
+La génération des records représentés a été limitée volontairement à un premier périmètre robuste : records tenant sur au plus 64 bits, avec les champs représentés à `byte_offset = 0`. Ce périmètre couvre le cas visé de `TREE`, où les champs sont superposés selon les variantes :
+
+```
+PT   at 0 range 0  .. 1
+LN   at 0 range 2  .. 8
+SLN  at 0 range 2  .. 8
+NSIZ at 0 range 2  .. 8
+PG   at 0 range 9  .. 23
+SPG  at 0 range 9  .. 23
+ABSS at 0 range 9  .. 23
+COL  at 0 range 24 .. 31
+TY   at 0 range 24 .. 31
+NOTY at 0 range 24 .. 31
+```
+
+La génération des agrégats de record représenté a ensuite été ajoutée par `CODE_REPRESENTED_RECORD_AGGREGATE`. La convention retenue est que l’adresse des données du record est déjà au sommet de pile, comme dans le chemin record ordinaire. L’expander duplique cette adresse, initialise un accumulateur entier à zéro, puis insère chaque composant d’agrégat dans sa plage de bits. Les agrégats utilisés pour les constantes `TREE_NIL`, `TREE_VOID` et `TREE_ROOT` sont ainsi compactés directement dans un mot 32 bits au lieu de passer par les offsets de record ordinaire. Le FINC généré pour `TREE_ROOT` est maintenant de la forme :
+
+```
+La 1, TREE_ROOT_disp
+                        ; Assign_represented_record_aggregate size 32 bits
+DUP
+LI      0
+                        ; pack PT range 0 .. 1 width 2
+LI      0
+LI      0
+LI      2
+BFI
+                        ; pack TY range 24 .. 31 width 8
+LI      2
+LI      24
+LI      8
+BFI
+                        ; pack PG range 9 .. 23 width 15
+LI      1
+LI      9
+LI      15
+BFI
+                        ; pack LN range 2 .. 8 width 7
+LI      0
+LI      2
+LI      7
+BFI
+Sd
+DROP
+```
+
+Pour rendre cette génération lisible et réutilisable, la LLIR x86-64 a été enrichie de primitives de manipulation de champs de bits. `UBFX` et `SBFX` étaient déjà ajoutées pour l’extraction unsigned/signed. Une nouvelle macro `BFI` a été définie comme insertion de champ dans une valeur empilée, avec la convention :
+
+```
+old_quad, inserted_value, lsb, width  -->  new_quad
+```
+
+Son effet est :
+
+```
+new_quad =
+  (old_quad and not (((1 << width) - 1) << lsb))
+  or ((inserted_value and ((1 << width) - 1)) << lsb)
+```
+
+Cette primitive joue le rôle symétrique de `UBFX/SBFX`. Elle sert à la fois au packing des agrégats représentés et à l’affectation ultérieure de champs représentés. Une correction d’encodage a été notée lors de l’optimisation de la macro : après dépilement de `width`, `lsb` et `inserted_value`, la valeur initiale à modifier se trouve en `[rbp]`; l’instruction d’effacement du champ doit donc viser `[rbp]` et non `[rbp+8]`.
+
+La lecture de composant représenté a été intégrée dans `CODE_SELECTED`. Lorsque le designator d’une sélection est un `DN_COMPONENT_ID` ou un `DN_DISCRIMINANT_ID` possédant une représentation, l’expander ne calcule plus un offset `STATOFS` ordinaire. Il charge l’adresse des données du record préfixe, lit le mot compacté, puis extrait la plage de bits par `UBFX` ou `SBFX`. Pour `TREE_ROOT.TY`, le schéma généré est conceptuellement :
+
+```
+La 1, TREE_ROOT_disp
+Ld
+LI 24
+LI 8
+UBFX
+```
+
+et pour `TREE_ROOT.PG` :
+
+```
+La 1, TREE_ROOT_disp
+Ld
+LI 9
+LI 15
+UBFX
+```
+
+L’écriture de composant représenté a ensuite été ajoutée par `CODE_STORE_REP_COMPONENT`. L’intégration se fait dans `CODE_ASSIGN` avant le chemin `DN_SELECTED` ordinaire, car pour un champ représenté l’adresse utile est celle du record entier, non celle d’un composant à offset statique. La procédure reçoit l’adresse des données du record sur la pile, duplique cette adresse pour conserver la destination, charge l’ancien mot compacté, évalue l’expression source, applique `BFI`, puis stocke le mot modifié. Pour une affectation comme :
+
+```
+T.PG := 12;
+```
+
+le schéma LLIR est :
+
+```
+La 1, T_disp
+DUP
+Ld
+LI 12
+LI 9
+LI 15
+BFI
+Sd
+```
+
+Les tests réalisés valident la chaîne complète. Les constantes représentées sont correctement initialisées et relues :
+
+```
+TREE_NIL.TY=> DN_NIL, TREE_NIL.PG=>  0
+T.TY=> DN_NIL, T.PG=>  0
+```
+
+L’affectation répétée d’un même champ montre que `BFI` efface bien l’ancien contenu du champ avant insertion, et ne se contente pas d’un `or` :
+
+```
+T.PG := 12;
+T.PG := 3;
+```
+
+donne :
+
+```
+apres assign 12 et 3 T.PG=>  3
+```
+
+Enfin, l’affectation de plusieurs champs disjoints du même mot compacté vérifie l’indépendance des plages de bits :
+
+```
+T.TY := DN_ROOT;
+T.PG := 24;
+T.LN := 5;
+```
+
+donne :
+
+```
+apres assign DN_ROOT, 24, 5
+T.TY=> DN_ROOT, T.PG=> 24, T.LN=>  5
+```
+
+Cette session valide donc un premier support opérationnel des clauses de représentation de records compacts tenant dans un mot machine : lecture de la clause `T'SIZE`, génération du patron de type, compactage des agrégats, lecture de composants par extraction de bits et écriture de composants par insertion de bits. Le type `TREE` de DIANA est maintenant utilisable en lecture et en écriture dans ce périmètre. Les limites connues restent volontairement simples : champs à `byte_offset = 0`, taille totale inférieure ou égale à 64 bits, et pas encore de généralisation aux clauses plus larges ou aux représentations multi-octets avec offsets non nuls. Pour le bootstrap de TLALOC, ce jalon est néanmoins majeur, car il couvre précisément le modèle compact du nœud DIANA `TREE`.
+
+## Session 22 juin 2026 — Support minimal de `new`, des types access et de `.all` pour le bootstrap
+
+Une étape importante a été franchie dans le support minimal de l’allocation dynamique Ada 83, avec pour objectif immédiat de débloquer les modules du frontend TLALOC qui utilisent des buffers de pages DIANA alloués dynamiquement, en particulier `IDL.PAGE_MAN.adb` et `IDL.IDL_MAN.adb`. Le cas réduit `TEST_NEW.adb` reproduisait le motif réaliste issu du gestionnaire de pages : un tableau `PAG` de records `RPG_DATA`, chaque record contenant un champ access `DATA : A_SECTOR`, où `A_SECTOR` désigne un `SECTOR`, tableau contraint de 128 valeurs `TREE`. L’expression critique était de la forme `PAG(CUR_RP).DATA.all(1).ABSS`, combinant indexation de tableau, sélection de champ record, déréférencement access par `.all`, nouvelle indexation du tableau désigné, puis lecture d’un champ représenté compacté dans le type DIANA `TREE`.
+
+L’erreur initiale était `FUNCTION D : PAS D ATTRIBUT LX_SYMREP DANS [DN_ALL<...>]`. Elle venait du fait que `CODE_INDEXED` rencontrait comme préfixe un nœud `DN_ALL`, mais supposait encore que le préfixe indexé était un nom ordinaire possédant `LX_SYMREP`. La correction a consisté à introduire un vrai traitement de `DN_ALL` dans l’expander : `.all` est désormais considéré comme un préfixe adressable qui fournit l’adresse brute de l’objet désigné par une valeur access. La convention retenue pour ce premier périmètre est simple : une valeur access est un pointeur machine de 64 bits vers les données du désigné ; `null` vaut zéro ; `new T` alloue la taille de `T` sur un tas rudimentaire et retourne l’adresse brute ; `X.all` utilise cette adresse comme base de l’objet désigné.
+
+Côté LLIR, une macro minimale `HEAP_ALLOC` a été ajoutée. Elle implémente volontairement un simple bump allocator descendant basé sur le registre de tas déjà prévu dans le modèle mémoire, sans libération, sans free-list, sans contrôle de collision pile/tas et sans levée de `Storage_Error`. Ce choix est suffisant pour le bootstrap visé, où les allocations attendues sont les secteurs de pages DIANA, typiquement 50 secteurs de 512 octets. Ce n’est donc pas encore une implémentation complète du modèle Ada 83 des types access, mais un support pragmatique du cas `new SECTOR` nécessaire au compilateur.
+
+Côté déclarations de types, `CODE_ACCESS_DECL` a été ajouté. Un type access génère maintenant un namespace de type avec `use__info`, une taille `SIZ` fixée à 64 bits, et un pointeur `DESIG__u` vers le patron de type du désigné. Une erreur importante a été corrigée au passage : les nœuds DIANA `DN_ACCESS` ne possèdent pas l’attribut `CD_IMPL_SIZE`. Il ne faut donc jamais lire ni écrire `CD_IMPL_SIZE` sur un `DN_ACCESS`; la taille backend d’un access est une constante de l’expander, `ADDR_SIZE * STORAGE_UNIT`, soit 64 bits sur les cibles actuelles. Cette correction a aussi permis aux records contenant des champs access d’être considérés comme entièrement statiques du point de vue des offsets.
+
+Le record `RPG_DATA` est maintenant correctement généré. Son champ `DATA : A_SECTOR` apparaît comme un champ scalaire de 8 octets, avec un `USEINFO` pointant vers `A_SECTOR.use__info`, et non comme un composite inline. Le layout obtenu est cohérent : `VP` occupe 2 octets, `AREA` 4 octets, `CHANGED` 1 octet, `RECUPERABLE` 1 octet, et `DATA` 8 octets, soit un total de 16 octets pour `RPG_DATA`. Le tableau `PAG` a donc un `COMP_SIZ` de 128 bits et alloue correctement `50 * 16 = 800` octets sur la co-pile pour ses données.
+
+Côté expressions, l’expander sait maintenant compiler `null_access`, `subtype_allocator`, `qualified_allocator` dans un premier périmètre, et `DN_ALL`. Une première erreur dans le générateur d’allocator a été corrigée : le FINC initial produisait `LI SECTOR.SIZ`, ce qui empilait le symbole ou l’offset associé à `SECTOR.SIZ`, alors qu’il fallait charger le contenu de la variable de type info. Le code correct est maintenant `Ld SECTOR.SIZ`, suivi de `LI 8`, `DIV`, puis `HEAP_ALLOC`, afin d’allouer `SECTOR.SIZ / 8` octets. Pour `SECTOR`, la taille vaut 4096 bits, donc l’allocation demandée est bien de 512 octets.
+
+L’affectation `PAG(CUR_RP).DATA := new SECTOR;` est désormais générée correctement. L’expander calcule d’abord l’adresse de `PAG(CUR_RP)`, ajoute l’offset du champ `DATA`, produit l’adresse de ce champ avec `LVA`, charge la taille du désigné `SECTOR.SIZ`, la convertit en octets, appelle `HEAP_ALLOC`, puis stocke le pointeur obtenu dans le champ `DATA` par `Sa`. Le champ access est donc traité comme un qword ordinaire stocké dans le record, ce qui est exactement la représentation voulue.
+
+La lecture `PAG(CUR_RP).DATA.all(1).ABSS` est également correctement générée. Le code calcule l’adresse de `PAG(CUR_RP)`, charge le qword `DATA`, utilise cette valeur comme adresse de base du `SECTOR` désigné, indexe l’élément `(1)` avec les informations de bornes et de taille de composant de `SECTOR`, charge le mot compacté `TREE`, puis extrait le champ représenté `ABSS` avec `UBFX` sur la plage `9 .. 23`. Le chaînage complet est donc validé : tableau `PAG` → record `RPG_DATA` → champ access `DATA` → `.all` → tableau `SECTOR` → élément `TREE` représenté → champ `ABSS`.
+
+Plusieurs chemins de l’expander ont été ajustés pour considérer `DN_ACCESS` comme une valeur scalaire de taille adresse : déclarations de champs de records, calculs d’offsets statiques, chargements et stores, affectations, et calcul d’adresse d’objet. En revanche, le périmètre reste volontairement minimal. Il ne traite pas encore `Unchecked_Deallocation`, les contrôles de null access, `Storage_Error`, les access-to-unconstrained-array, la libération mémoire, les finalisations éventuelles, ni tous les cas d’affectation composite via `.all`. Pour le besoin immédiat du bootstrap, ce support couvre cependant le motif essentiel : allocation d’un secteur par `new SECTOR`, stockage du pointeur dans un record, déréférencement par `.all`, indexation dans le tableau désigné, puis accès à un composant représenté.
+
+Le résultat pratique est que `TEST_NEW.adb` génère maintenant un FINC cohérent pour les déclarations et les instructions concernées, et surtout que `IDL.PAGE_MAN.adb`, l’un des deux modules du frontend bloqués par l’allocation dynamique des pages DIANA, passe désormais dans l’expander. Ce jalon complète utilement le support récent des records représentés compacts et prépare la suite du bootstrap, notamment la validation de `IDL.IDL_MAN.adb` et les éventuels cas plus larges d’usage des types access.
+
+## Session 4 juillet 2026 — Passage complet des séries ACVC A2–A7, correction de trois bugs de fond (sous-types anonymes partagés, blocs `declare`, niveau des thunks génériques) et point de méthode
+
+Cette session marque un jalon de couverture : après correction de trois défauts structurels, **toutes les séries ACVC A2, A3, A5, A6 et A7 passent**, ainsi que les anciens `ENUM_TEST` et `DIRECT_IO_TEST`, et l’ensemble des modules du compilateur continue de passer l’expander. Il reste, dans la série A8, quatre tests en erreur sur vingt. Les trois bugs traités ci-dessous ont ceci de commun qu’ils n’étaient pas des cas particuliers isolés mais des **erreurs de modèle** : chacun violait un invariant que l’expander était censé maintenir, et chacun ne se révélait que dans une configuration lexicale précise (typiquement la présence d’un bloc `declare … begin … end` interne), ce qui explique qu’ils soient restés masqués tant que les déclarations testées vivaient au niveau de la procédure englobante.
+
+### 1. Sous-type tableau anonyme partagé entre deux objets — `CD_COMPILED` surchargé (A21001A)
+
+Le test `A21001A` compilait mais produisait une **erreur de segmentation** à l’exécution. Le fault tombait sur un `LId … D_info, _STRING.LST_1` du code de concaténation : ce `LId` déréférence le contenu du champ `__info` d’une des chaînes (`C2`), et ce pointeur `use__info` était invalide. La cause immédiate était que `C2`, déclaré `STRING(1..6)` exactement comme `C1`, avait été alloué avec le descripteur du type **non contraint** `STANDARD._STRING` au lieu d’un sous-type contraint local, contrairement à `C1` (`_C1__type`) et `C3` (`_C3__type`, contrainte `1..12` distincte).
+
+La cause racine a été établie par le dump DIANA (`____TREE.TXT`), et non par supposition : `C1` et `C2`, ayant une contrainte identique `STRING(1..6)`, **partagent physiquement le même nœud** `DN_CONSTRAINED_ARRAY` (`SM_OBJ_TYPE` = `[P233,L64]` pour les deux ; `C3` a son propre nœud `[P233,L110]`). Or, dans `EXPANDER.DECLARATIONS`, la décision d’émettre un descripteur local repose sur le drapeau `CD_COMPILED` porté par le `TYPE_SPEC` (`if DB(CD_COMPILED, TYPE_SPEC) = FALSE then …`), et `PROCESS_CONSTRAINED_ARRAY_TYPE_SPEC` positionne `CD_COMPILED := TRUE` sur ce nœud en fin de traitement. Le déroulé fautif était donc : `C1` trouve le drapeau à faux, génère `_C1__type`, et marque le nœud partagé comme compilé ; `C2`, voyant le même nœud désormais à `TRUE`, saute la génération et retombe sur le chemin `REGIONS_PATH(TYPE_NAME) & TYPE_NAME_STR`, où `TYPE_NAME := D(XD_SOURCE_NAME, TYPE_SPEC)` remonte au type de base `STRING`, d’où `STANDARD._STRING`. Le drapeau `CD_COMPILED`, correct pour un type **nommé** (émis une fois, réutilisé par son nom), est faux pour un sous-type **anonyme d’objet partagé**, car le chemin de réutilisation ne retrouve pas le label local déjà émis.
+
+La correction retenue (option « un descripteur par objet ») matérialise un type-info local dès qu’il existe une contrainte anonyme d’objet, indépendamment de `CD_COMPILED`, en alignant ainsi `A21001A` sur le comportement déjà correct de `A22002A` (qui, lui, ne partageait pas le nœud et générait bien `_C2__type`). Le surcoût — un descripteur `_C2__type` identique à `_C1__type` — est négligeable et sûr. Point de vigilance conservé : ne pas supprimer le marquage `CD_COMPILED` en aval, qui sert légitimement de garde d’unicité pour les types nommés et les composants (lecture en plusieurs points de `types_decls`).
+
+Cette investigation a aussi confirmé un point de vocabulaire utile pour la lecture du FINC : dans `LId …, _STRING.LST_1`, le symbole `_STRING.LST_1` est l’**offset statique** du champ `LST_1` dans le descripteur (une petite constante, ici 12), et non une borne ; ce qui change avec le correctif n’est pas cet offset mais la **base** (le pointeur `use__info` chargé), désormais celui d’un descripteur contraint valide.
+
+### 2. Blocs `declare` imbriqués — labels `post` / `elab` / `loc_siz` partagés par les macros `PRO`/`endPRO`
+
+En marge de A21001A, un second défaut structurel a été identifié dans le traitement des blocs `declare` internes. `CODE_BLOCK` réutilise la mécanique de sous-programme : il émet `namespace BLOCK__n`, un `ELB` (donc un `LINK` de niveau), puis en clôture un `UNLINK` suivi de **`endPRO`**. Or `endPRO` définit le label `post:` et la variable `loc_siz`, tous deux **globaux au namespace fasmg courant**, et fait `end namespace`. Émettre `endPRO` pour un bloc imbriqué dans une procédure produit donc **deux définitions de `post:`** (celle du bloc, celle de la procédure), ce qui casse la résolution du `BRA post` que la macro `PRO` de la procédure englobante émet pour contourner l’élaboration. Selon la résolution, le saut atterrit sur le `post:` du bloc — au milieu du corps, juste avant le `CALL RESULT` — et le programme exécute la sortie de frame sur une pile jamais initialisée, d’où le fault.
+
+La leçon générale, déjà visible dans le code des thunks (qui, eux, nomment explicitement leurs cibles `post_LD_NP_…`, `post_ST_NP_…` et ne posent aucun problème), est que **les labels `post`/`elab` nus des macros `PRO`/`ELB`/`endPRO` sont une source d’ambiguïté dès qu’il y a imbrication**. Le remède de fond consiste à rendre ces labels uniques par routine, soit en les qualifiant par le nom de la routine dans les macros, soit en faisant émettre par l’expander des labels déjà uniques (une macro dédiée de fin de bloc, distincte de `endPRO` et ne définissant pas `post:`). Ce défaut est de même famille que le bug de niveau des thunks génériques ci-dessous : dans les deux cas, une entité lexicalement locale à un niveau donné était traitée avec un symbole ou un niveau partagé.
+
+### 3. Instanciation de sous-programme générique dans un bloc `declare` — niveau des thunks du type formel (A35801B, A35502R)
+
+Les deux seuls segfaults de la série A3 (`A35801B`, attributs `DIGITS/MANTISSA/…` sur un sous-type formel `digits <>` ; `A35502R`, attributs `WIDTH/POS/VAL/…` sur un type formel discret `(<>)`) avaient une **cause racine commune**, isolée grâce au harnais `db 0xCC` / `show` inséré dans le FINC. Le fault tombait sur le premier `Sa 3, NP_…__outadr_ofs` de la mise en place de la table de thunks du type formel, c’est-à-dire **entre la fin du corps de `P` (`UNLINK 3` / `RTD` déjà exécutés) et le `PRO NP`**. À cet instant, le flux exécute l’**élaboration du bloc `declare`, au niveau 2** ; or `Sa 3` indexe le display à `FP(3)`, niveau qui vient précisément d’être refermé. L’écriture se fait donc dans un frame mort — fault immédiat, et non simple incohérence latente.
+
+Le mécanisme sous-jacent est le passage de type formel par **table de thunks** (`__u_ofs`, `__ld_ofs`, `__st_ofs`, `__inadr_ofs`, `__outadr_ofs`) plus une case `GFP_disp` (Generic Frame Pointer) : l’instance prépare cette table à l’élaboration du bloc, avant tout appel, et le corps générique y accède par `La lvl, -GFP_ofs` puis `[GFP − T__*_ofs]` (le layout relatif — `u` à `GFP−8`, `ld` à `−16`, etc. — a été vérifié correct). Le contrat physique exige que la table et `GFP_disp` vivent dans le **frame du bloc où l’instance est déclarée** (niveau 2), et l’unique store déjà correct, `LVA CUR_LEVEL − 1, GFP_disp`, le confirmait. Le défaut : `CODE_GENERIC_ACTUALS` définit `LVL_STR := LEVEL_NUM'IMAGE(CODI.CUR_LEVEL)`, mais `CODE_SUBPROG_ENTRY_DECL` exécute `INC_LEVEL` **avant** d’appeler `CODE_GENERIC_ACTUALS`. Au moment de l’émission, `CUR_LEVEL` désigne déjà le corps de l’instance (3), et toute la table est écrite en `Sa 3` alors qu’elle est relue en `LVA 2`. C’est une confusion classique en génération à display entre le **niveau lexical d’une entité** (le frame où elle vit) et le **niveau courant du générateur** (le `CUR_LEVEL` mouvant du compilateur).
+
+Un point important a évité un correctif trop naïf : `CODE_GENERIC_ACTUALS` possède **deux sites d’appel** de contextes de niveau différents. Le site d’instanciation de **sous-programme** générique (dans `CODE_SUBPROG_ENTRY_DECL`) est appelé après `INC_LEVEL` ; le site d’instanciation de **package** générique (dans `CODE_PACKAGE_DECL`) est appelé **sans** `INC_LEVEL` préalable. Fixer `LVL_STR` à `CUR_LEVEL − 1` en dur aurait décalé le chemin package, que rien ne montre défaillant. La correction retenue passe donc un **niveau cible explicite** en paramètre : `TARGET_LEVEL := CODI.CUR_LEVEL − 1` pour le site sous-programme (aligné sur le `LVA CUR_LEVEL − 1, GFP_disp` existant), et le comportement historique `CUR_LEVEL` pour le site package (valeur par défaut, donc aucun changement de ce chemin). Après correction, la table passe en `Sa 2`, cohérente avec sa relecture, et les deux tests s’exécutent correctement. Le correctif répare de surcroît un bug **latent** au niveau bibliothèque (instanciation sans bloc, où l’ancien code écrivait `Sa 2` pour une relecture `LVA 1`) : il ne pouvait que le rendre cohérent, jamais le casser.
+
+Ce troisième cas rejoint et précise le piège n° 26 (« level du wrapper générique : `CUR_LEVEL − 1` ») déjà consigné : le bon niveau n’est pas seulement affaire de relecture depuis le corps, il conditionne aussi l’**écriture** de la table, et l’émettre au mauvais niveau depuis l’élaboration d’un bloc conduit à un accès à un frame déjà dépilé.
+
+### 4. Point de méthode — de l’ordonnancement par les tests vers un pilotage par les nœuds DIANA
+
+La difficulté croissante ressentie sur la série A8 (quatre échecs restants, portant sur le renommage, `use`, la portée et la visibilité) a motivé une réflexion sur la politique de développement de l’expander. Le constat partagé est que l’ACVC est un **oracle de conformité et de régression**, non une **méthode de conception** : l’ordre lexicographique des numéros de test (A8 avant A9) n’encode aucune dépendance sémantique réelle, et se laisser ordonnancer par lui expose au risque, déjà pressenti, de corriger point par point des fonctionnalités dont les fondations ne sont pas encore posées. La table « fondations à compléter » (§4) le confirme : ce qui reste — unconstrained arrays, records à discriminants, types access complets, gestionnaires d’exceptions, dérivation, renames, tâches — relève de piliers sémantiques, non de rustines.
+
+La hiérarchie de pilotage retenue pour la suite est la suivante. Le **LRM Ada 83** tient lieu de spécification et, par sa structure (types → objets → expressions → sous-programmes → packages → génériques → tâches), d’ordre de dépendances légitime pour choisir le prochain pilier. Le **réseau DIANA** (fichiers `diana_NODES.txt` / `diana_CLASS_.txt`) tient lieu de contrat d’interface énumérable : chaque `DN_*` non traité par un `case … when` de l’expander est une dette explicite. L’**ACVC** reste le filet de régression, exécuté en totalité à chaque changement, mais ses échecs servent désormais à *informer la priorité des piliers* plutôt qu’à *constituer la liste de tâches*. Deux disciplines complètent cette orientation : pour chaque nouveau pilier, rédiger en amont une brève note de **modèle d’exécution** (représentation mémoire, invariants de pile/display, conventions d’appel) afin de décider sciemment entre extension et refonte, en ne refondant que ce qu’un pilier manquant force à refondre ; et pour les échecs ACVC restants (dont les quatre de A8), pratiquer un **tri systématique** entre « défaut local d’un pilier existant » (à corriger immédiatement, comme les trois bugs ci-dessus) et « manifestation d’un pilier absent » (à consigner, sans bricolage ponctuel). L’hypothèse de travail est que les quatre échecs A8 se ramènent, comme A21001A et les deux tests génériques, à une ou deux causes-mères communes plutôt qu’à quatre bugs indépendants.
+
+
+# Session du 4 juillet 2026 (suite) — Pilier LRM 3.6, campagne ARRAY_TEST
+
+## Résultat global
+
+ARRAY_TEST1 v2 : vert intégral (à re-passer en clôture, cf. §5).
+ARRAY_TEST2 v2 : déroulé complet sans crash ; toutes sections conformes SAUF la
+dernière ligne de D9 (`VEC3'RANGE`, cf. §3). Le pilier 3.6 a désormais ses
+fondations : affectation complète, égalité, caténation toutes formes, tranches
+et intervalles nuls, retour de tranche, agrégats qualifiés.
+
+## 1. Correctifs appliqués (dans l'ordre de la session)
+
+| # | Quoi | Où | Nature |
+|---|---|---|---|
+| A | 'LENGTH(N) lit la dimension (AS_EXP) | CODE_LENGTH, 2 chemins | défaut local |
+| B | Affectation complète tableau : @DST + LEN([__u].SIZ/8) + @SRC + BLKMOV ; sources littéral (STR+LCA+La), tranche (DROP), doublet (La) | CODE_ASSIGN, branche tableau | branche inachevée terminée |
+| — | Macro CLAMP0 (max(0,·), 11 octets, dérivée d'ABS) + 14 sites (le 14e : CODE_SLICE dest., ordre INC/SUB inversé) | finc + 4 fichiers | D7 clos |
+| — | Macro BLKCMP (miroir BLKMOV, ZF armé par xor pour LEN=0) | finc | D1 |
+| — | CODE_COMPOSITE_OPERATOR : "="/"/=" réels (longueurs puis BLKCMP), stubs équilibrés typés (scalaire LI 0 pour relationnels ; opérande gauche pour AND/OR/XOR/NOT composites) | expressions, avant CODE_FUNCTION_CALL | D1 clos, D2/D3 stubés |
+| — | Hissage CODE_ARRAY_OPERAND / CODE_ARRAY_AGGREGATE_OPERAND avec paramètre CONTEXT_TYPE (COMP_BITS/BYTES recalculés localement ; « 8 » câblés de la branche tranche remplacés) | expressions | refactor prévu note §4.5 |
+| — | Câblage scalaire AND/OR/XOR → macros ET/OU/OUX préexistantes | chaîne d'opérateurs | bug latent indépendant |
+| — | COMP_SIZE_BITS ×2 : arrondi au STORAGE_UNIT (CD_IMPL_SIZE(BOOLEAN)=1 bit → LEN=0 et stride=0 par division entière) | expressions + types_decls | cause racine des « six VRAI » |
+| — | Opérande composant de "&" : tableau temporaire d'1 élément co-pile (SI+OPER_SIZ_CHAR) | CODE_ARRAY_OPERAND | D4 clos |
+| — | Retour de tranche : aiguillage DN_SLICE → CODE_SLICE(IS_DESTINATION=>FALSE) | CODE_RETURN, branche tableau | D8 clos |
+| — | Agrégat qualifié de sous-type CONTRAINT : doublet anonyme, __u → use__info du type, data = CO_VAR(SIZ/8), TYPE_LVL = CD_LEVEL du TYPE_SPEC | CODE_QUALIFIED | D9 débloqué |
+
+## 2. Verdicts ARRAY_TEST2 (état de clôture)
+
+- **D7** intervalles nuls : validé (y compris descripteur dynamique et concat à opérande nul).
+- **D1** égalité/inégalité : validé (littéraux, longueurs inégales → FAUX sans comparaison).
+- **D2** lexicographique : stub honnête (6 FAUX). Lot suivant.
+- **D3** logiques booléens : stub « opérande gauche » (valeurs traçables). Lot suivant.
+- **D4** caténation formes composant : **clos**, cascades comprises.
+- **D5** conversion : **acquis par transparence** (CODE_CONVERSION laisse passer le
+  @doublet ; bornes/longueur viennent du descripteur destination). Restriction
+  consignée : les bornes du RÉSULTAT de conversion sont celles de la source —
+  faux si consommées directement (paramètre non contraint, attributs).
+- **D8** retour de tranche : **clos** (bornes réelles conservées, data chez l'appelant).
+- **D9** : agrégats 2D imbriqués ✓ (acquis, D6 partiellement invalidé comme dette ?
+  à réexaminer), choix multiples ✓, qualifié nommé+others ✓ (RM83 4.3.2(6) : la
+  forme non qualifiée est illégale en affectation — le frontend avait raison).
+  **VEC3'RANGE : échec silencieux** (boucle à zéro itération) — préfixe marque de
+  sous-type non traité dans CODE_RANGE_ATTRIBUTE_BOUND. Correctif esquissé :
+  branche type DN_CONSTRAINED_ARRAY → Ld TYPE_LVL, <path>_T._FST_1 / _LST_1
+  (idiome du patch qualifié). À faire ou consigner.
+
+(Pièges n° 49–58 extraits vers PIEGES.md ; dettes reprises dans ETAT_PILIERS.md.)
+
+## 4. Restrictions et dettes consignées (hors lots D2/D3)
+
+- 'RANGE préfixe marque de sous-type tableau (D9, correctif esquissé §2).
+- D10 : attributs à préfixe non nommé (tranche, indexé, appel) — CHN_PREFIX lu à
+  l'entrée de CODE_ATTRIBUTE. Même famille : expressions enveloppées (return (S(2..3))).
+- D6 : bloc info anonyme câblé 1-dim (concat, agrégat dynamique, résultat de
+  fonction) — à réexaminer à la lumière du succès des agrégats 2D.
+- D5 complet : re-étiquetage des bornes au sous-type cible (doublet anonyme sans copie).
+- CODE_QUALIFIED : records qualifiés = même vice (CODE_AGGREGATE sans destination),
+  pour le pilier 3.7 ; branche non contrainte : suppose UNE association nommée à UN
+  choice range (STRING'('a','b','c') positionnel déraillerait).
+- CODE_USED_NAME_ID : retombée silencieuse — aligner sur le style bruyant de
+  CODE_USED_OBJECT_ID (others → message + PROGRAM_ERROR).
+- 'IMAGE/'VALUE d'énuméré hors générique → pilier 3.5.5.
+
+## 5. Prochaine séquence
+
+1. (Option) correctif VEC3'RANGE, re-passer ARRAY_TEST2 → attendu final `1 3`.
+2. **Filet complet** : ARRAY_TEST1 v2 (beaucoup de code partagé a bougé :
+   COMP_SIZE_BITS, CODE_SLICE, CODE_RETURN, chaîne d'opérateurs) + séries ACVC
+   A2–A8 + tests maison + auto-compilation. Tag git de clôture de campagne.
+3. Lot **D2** : macro LEXCMP paramétrée taille × signe (repe cmpsb inutilisable :
+   little-endian multi-octets et signés ; énumérés/CHARACTER non signés, INTEGER
+   signé), règle du préfixe, puis LI 0 + CLT/CLE/CGT/CGE côté expander.
+4. Lot **D3** : BLKAND/BLKOU/BLKOUX + NOT composite (copie + OUX octet), mêmes
+   prologue/épilogue que la concat.
+5. Mise à jour DIANA_COUVERTURE_TRIAGE (D4/D8 sortent de la dette) et de la table
+   « fondations » de la synthèse.
+
+
+## Session 5 juillet 2026 — Lots D2 et D3, filet complet, CLÔTURE du pilier 3.6
+
+**Lot D2 (LRM 4.5.2)** : macro `LEXCMP siz,sgn` — itération par composant
+(`repe cmpsb` inutilisable : little-endian multi-octets, signes) avec
+NORMALISATION 64 bits au chargement (`movsx` si signé, `movzx` sinon), après
+quoi une unique comparaison signée 64 bits est correcte dans les deux cas ;
+le paramètre de signe ne choisit que l'instruction de chargement. Résultat
+tri-état −1/0/+1 ; règle du préfixe = signe des longueurs restantes à
+l'épuisement (couvre les tableaux nuls). Côté expander : `LI 0` +
+`CLT/CLE/CGT/CGE` — mapping direct des quatre opérateurs, sans macro dédiée.
+Signe déterminé par `COMP_TYPE.TY = DN_INTEGER` (énumérés/CHARACTER/BOOLEAN
+non signés). Incident instructif : le stub laissé collé sous le code réel a
+masqué un LEXCMP correct (sept FAUX) → **piège n° 59**. Témoin signé ajouté
+à ARRAY_TEST2 : `(-5,2,3) < (1,2,3)` (protège movsx vs movzx, que les cas
+positifs ne distinguent pas).
+
+**Lot D3 (LRM 4.5.1)** : composants BOOLEAN un octet 0/1 (piège n° 56) →
+opérations octet à octet exactes. Macros `BLKAND/BLKOU/BLKOUX` (usine interne
+`BLK_OP_OCTET opc`, convention miroir BLKMOV : @DST, LEN, @SRC) et `BLKNOT`
+(xor de chaque octet avec 1 — NOT booléen du piège n° 5, pas 0xFF). Épilogue
+plus simple que la concat : les bornes du résultat étant celles de l'opérande
+GAUCHE (4.5.1), le `__u` du doublet résultat RÉUTILISE le pointeur info de G ;
+seule la data est allouée (CO_VAR de LEN_G, copie G→R par BLKMOV, application
+sur place). Le `not` composite est intercepté AVANT `CODE_EXP` dans
+CODE_DN_BLTN_OPERATOR_ID et routé vers CODE_COMPOSITE_OPERATOR (PRM_2 := PRM_1)
+pour bénéficier de la normalisation CODE_ARRAY_OPERAND ; l'ancien stub à
+<<UNARY>> supprimé (piège n° 59, corollaire). Restriction consignée : pas de
+contrôle d'égalité des longueurs (pilier 11).
+
+**Filet** : modules du compilateur verts, séries A2–A7 vertes, A8 : 17 verts
+(4 échecs consignés inchangés), ARRAY_TEST1 v2 et ARRAY_TEST2 v2 intégralement
+conformes (sorties dans ORACLES_TESTS.md), auto-compilation verte — noter que
+les comparaisons STRING internes du compilateur passaient jusqu'ici par le
+stub LI 0 et empruntent désormais LEXCMP.
+
+**Clôture du pilier 3.6** (formes contraintes, opérateurs complets) prononcée.
+Reliquat consigné en fondation : déclaration des types non contraints eux-mêmes
+(CODE_UNCONSTRAINED_ARRAY_DECL, STRING général) — audit par témoin + dump à
+l'ouverture. Documentation réorganisée en cinq fichiers (ETAT_PILIERS, PIEGES,
+CONVENTIONS_ARCHITECTURE, ORACLES_TESTS, JOURNAL_SESSIONS) + triage mis à jour :
+la synthèse monolithique est retirée du projet.

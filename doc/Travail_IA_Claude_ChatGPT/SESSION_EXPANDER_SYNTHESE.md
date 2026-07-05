@@ -1200,3 +1200,4 @@ et intervalles nuls, retour de tranche, agrégats qualifiés.
 5. Mise à jour DIANA_COUVERTURE_TRIAGE (D4/D8 sortent de la dette) et de la table
    « fondations » de la synthèse.
 
+Note : correctif VEC3'RANGE fait dans code_range_attribute_bound. Test-array2 complet.

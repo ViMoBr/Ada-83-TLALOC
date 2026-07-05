@@ -2631,8 +2631,8 @@ end;
 
 -- Operateurs predefinis dont les operandes sont des TABLEAUX (LRM 3.6.2) :
 --   "="  "/="            : implantes par BLKCMP (lot D1)
---   "<"  "<="  ">"  ">=" : stub equilibre en attendant le lot D2 (LEXCMP)
---   "AND"  "OR"  "XOR"   : stub equilibre en attendant le lot D3
+--   "<"  "<="  ">"  ">=" : implantes par LEXCMP (lot D2)
+--   "AND"  "OR"  "XOR"  "NOT" : implantes par BLKAND/BLKOU/BLKOUX/BLKNOT (lot D3)
 -- Les deux operandes sont du meme type tableau (4.5.2) : CONTEXT_TYPE, qui fournit
 -- la taille de composant et sert de repli aux agregats/litteraux sans SM_EXP_TYPE.
 -- Convention : le resultat (BOOLEAN 0/1) est laisse seul sur la pile.
@@ -2645,6 +2645,7 @@ end;
     CMP_UID	:constant STRING	:= NEW_LABEL;
     ANON_G	:constant STRING	:= ANONYMOUS_NAME_AT( PRM_1 ) & "_" & CMP_UID & "_G";
     ANON_D	:constant STRING	:= ANONYMOUS_NAME_AT( PRM_2 ) & "_" & CMP_UID & "_D";
+    ANON_R	:constant STRING	:= ANONYMOUS_NAME_AT( PRM_1 ) & "_" & CMP_UID & "_R";
     LBL_END	:constant STRING	:= NEW_LABEL;
 
     TYPE_STR	:constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, CONTEXT_TYPE ) ) );
@@ -2710,17 +2711,106 @@ end;
         PUT_LINE( tab & "OUX" );									-- NOT booleen (piege n 5)
       end if;
 
-    elsif  OP_STR = """<"""  or  OP_STR = """<="""
-       or  OP_STR = """>"""  or  OP_STR = """>="""  then
-      -- Relationnels (lot D2) : resultat BOOLEEN -> stub scalaire.
-      PUT_LINE( "; COMPOSITE " & OP_STR & " NON IMPLEMENTE (lot D2) -- resultat force" );
-      PUT_LINE( tab & "LI"  & tab & "0" );
+    elsif  OP_STR = """<"""  or  OP_STR = """<="""  or  OP_STR = """>"""  or  OP_STR = """>="""  then
+
+      -- Relationnels composites (lot D2, LRM 4.5.2) : ordre lexicographique,
+      -- regle du prefixe.  LEXCMP normalise chaque composant a 64 bits (signe
+      -- selon SGN), itere par composant (repe cmpsb inutilisable : little-endian
+      -- multi-octets, signes) et empile -1/0/+1.  La confrontation a 0 par
+      -- CLT/CLE/CGT/CGE rend le BOOLEAN -- contrat de nature scalaire respecte
+      -- (piege n 55).  Les longueurs viennent de SETUP_OPERAND, en octets,
+      -- bornees a 0 par CLAMP0 (piege n 52) : tableaux nuls couverts.
+      -- LRM 4.5.2 : composants necessairement DISCRETS (le front-end rejette
+      -- le reste) -- signe ssi INTEGER, non signe pour enumeres/CHARACTER/BOOLEAN.
+
+      if CODI.DEBUG then PUT_LINE( "; CODE composite " & OP_STR & ' ' & TYPE_STR ); end if;
+
+      SETUP_OPERAND( PRM_1, ANON_G );
+      SETUP_OPERAND( PRM_2, ANON_D );
+
+      declare
+        SGN : STRING( 1 .. 1 ) := "0";									-- enumeres, CHARACTER, BOOLEAN
+      begin
+        if  COMP_TYPE.TY = DN_INTEGER
+        or  COMP_TYPE.TY = DN_UNIVERSAL_INTEGER  then
+          SGN := "1";										-- composants signes
+        end if;
+
+        PUT_LINE( tab & "La  " & LVL & ", " & ANON_G & "_data" );
+        PUT_LINE( tab & "La  " & LVL & ", " & ANON_G & "_len"  );
+        PUT_LINE( tab & "La  " & LVL & ", " & ANON_D & "_data" );
+        PUT_LINE( tab & "La  " & LVL & ", " & ANON_D & "_len"  );
+        PUT_LINE( tab & "LEXCMP" & tab & IMAGE( COMP_BYTES ) & ", " & SGN );
+      end;
+
+      PUT_LINE( tab & "LI"  & tab & "0" );								-- lexcmp ? 0
+      if    OP_STR = """<"""   then  PUT_LINE( tab & "CLT" );
+      elsif OP_STR = """<="""  then  PUT_LINE( tab & "CLE" );
+      elsif OP_STR = """>"""   then  PUT_LINE( tab & "CGT" );
+      else                           PUT_LINE( tab & "CGE" );
+      end if;
+
+    elsif  OP_STR = """AND"""  or  OP_STR = """OR"""  or  OP_STR = """XOR"""  or  OP_STR = """NOT"""  then
+
+      -- Logiques composites (lot D3, LRM 4.5.1) : composants BOOLEAN, un octet
+      -- par composant (piege n 56), valeurs 0/1 -> operations octet a octet.
+      -- Bornes du resultat = celles de l'operande GAUCHE (4.5.1) : le __u du
+      -- resultat REUTILISE l'info de G ; seule la data est allouee (co-pile,
+      -- meme idiome que la concat).  NOT est unaire : PRM_2 = PRM_1, ignore.
+      -- RESTRICTION consignee : pas de controle d'egalite des longueurs
+      -- (CONSTRAINT_ERROR differe au pilier 11) ; l'operation itere LEN_G octets
+      -- -- comportement indefini si LEN_D < LEN_G (lecture au-dela de D).
+
+      if CODI.DEBUG then PUT_LINE( "; CODE composite " & OP_STR & ' ' & TYPE_STR ); end if;
+
+      -- Doublet resultat : les deux VAR doivent rester ADJACENTES
+      -- ([@] = data_ptr, [@+8] = info_ptr).
+      PUT_LINE( "VAR" & tab & ANON_R & "_disp, q" );
+      PUT_LINE( "VAR" & tab & ANON_R & "__u,   q" );
+
+      SETUP_OPERAND( PRM_1, ANON_G );
+      if  OP_STR /= """NOT"""  then
+        SETUP_OPERAND( PRM_2, ANON_D );
+      end if;
+
+      -- ---- data resultat : LEN_G octets sur la co-pile ----
+      PUT_LINE( tab & "La  " & LVL & ", " & ANON_G & "_len" );
+      PUT_LINE( tab & "CO_VAR" );					-- depile taille, empile @data_res
+      PUT_LINE( tab & "Sa  " & LVL & ", " & ANON_R & "_disp" );
+
+      -- ---- descripteur : bornes de l'operande gauche (4.5.1) ----
+      PUT_LINE( tab & "La  " & LVL & ", " & ANON_G & "_info" );
+      PUT_LINE( tab & "Sa  " & LVL & ", " & ANON_R & "__u" );
+
+      -- ---- copie G -> R (convention BLKMOV : @DST, LEN, @SRC) ----
+      PUT_LINE( tab & "La  " & LVL & ", " & ANON_R & "_disp" );
+      PUT_LINE( tab & "La  " & LVL & ", " & ANON_G & "_len"  );
+      PUT_LINE( tab & "La  " & LVL & ", " & ANON_G & "_data" );
+      PUT_LINE( tab & "BLKMOV" );
+
+      -- ---- application de l'operateur sur place ----
+      if  OP_STR = """NOT"""  then
+        PUT_LINE( tab & "La  " & LVL & ", " & ANON_R & "_disp" );
+        PUT_LINE( tab & "La  " & LVL & ", " & ANON_G & "_len"  );
+        PUT_LINE( tab & "BLKNOT" );
+      else
+        PUT_LINE( tab & "La  " & LVL & ", " & ANON_R & "_disp" );	-- @DST
+        PUT_LINE( tab & "La  " & LVL & ", " & ANON_G & "_len"  );	-- LEN
+        PUT_LINE( tab & "La  " & LVL & ", " & ANON_D & "_data" );	-- @SRC
+        if    OP_STR = """AND"""  then  PUT_LINE( tab & "BLKAND" );
+        elsif OP_STR = """OR"""   then  PUT_LINE( tab & "BLKOU"  );
+        else                            PUT_LINE( tab & "BLKOUX" );
+        end if;
+      end if;
+
+      -- ---- @doublet resultat sur la pile ----
+      PUT_LINE( tab & "LVA " & LVL & ", " & ANON_R & "_disp" );
 
     else
-      -- AND, OR, XOR (lot D3) : resultat TABLEAU -> le consommateur attend un
-      -- @doublet et le dereference.  Stub : renvoyer l'operande GAUCHE normalise.
-      PUT_LINE( "; COMPOSITE " & OP_STR & " NON IMPLEMENTE (lot D3) -- resultat force = operande gauche" );
-      CODE_ARRAY_OPERAND( PRM_1, ANON_G, CONTEXT_TYPE );							-- @doublet
+      -- Operateur composite non reconnu : stub BRUYANT equilibre (pieges n 53
+      -- et 55) -- nature @doublet, operande gauche normalise, traceable.
+      PUT_LINE( "; CODE_COMPOSITE_OPERATOR : " & OP_STR & " NON TRAITE -- resultat force = operande gauche" );
+      CODE_ARRAY_OPERAND( PRM_1, ANON_G, CONTEXT_TYPE );		-- @doublet
     end if;
 
   end	CODE_COMPOSITE_OPERATOR;
@@ -2756,11 +2846,34 @@ end;
 	return;
         end if;
 
+--        POP( PRM_S, PRM_1 );
+--        if  IS_EMPTY( PRM_S )  then
+--	CODE_EXP( PRM_1 );
+--	goto UNARY;
+--        end if;
+
         POP( PRM_S, PRM_1 );
         if  IS_EMPTY( PRM_S )  then
-	CODE_EXP( PRM_1 );
-	goto UNARY;
+
+          -- NOT composite (lot D3) : router vers CODE_COMPOSITE_OPERATOR
+          -- AVANT CODE_EXP (PRM_2 := PRM_1, ignore par la branche NOT).
+          if  OP_STR = """NOT"""  then
+            declare
+              PRM1_TYPE : TREE := D( SM_EXP_TYPE, PRM_1 );
+            begin
+              if  PRM1_TYPE /= TREE_VOID
+                and then ( PRM1_TYPE.TY = DN_ARRAY  or  PRM1_TYPE.TY = DN_CONSTRAINED_ARRAY )
+              then
+                CODE_COMPOSITE_OPERATOR( OP_STR, PRM_1, PRM_1, PRM1_TYPE );
+                return;
+              end if;
+            end;
+          end if;
+
+          CODE_EXP( PRM_1 );
+          goto UNARY;
         end if;
+
         POP( PRM_S, PRM_2 );
 
         if  OP_STR = """&"""  then
@@ -2988,19 +3101,19 @@ end;
 	if  IS_FLOAT  then PUT_LINE( tab & "FABS" ); else PUT_LINE( tab & "ABS" ); end if;
 	end if;
 
-	if  OP_STR = """NOT"""  then
-	  declare
-	    PRM1_TYPE	: TREE	:= D( SM_EXP_TYPE, PRM_1 );
-	  begin
-              if  PRM1_TYPE /= TREE_VOID  and then  ( PRM1_TYPE.TY = DN_ARRAY  or  PRM1_TYPE.TY = DN_CONSTRAINED_ARRAY )
-	    then
-	      PUT_LINE( "; COMPOSITE ""NOT"" NON IMPLEMENTE (lot D3) -- resultat force" );
+--	if  OP_STR = """NOT"""  then
+--	  declare
+--	    PRM1_TYPE	: TREE	:= D( SM_EXP_TYPE, PRM_1 );
+--	  begin
+--            if  PRM1_TYPE /= TREE_VOID  and then  ( PRM1_TYPE.TY = DN_ARRAY  or  PRM1_TYPE.TY = DN_CONSTRAINED_ARRAY )
+--	    then
+--	      PUT_LINE( "; COMPOSITE ""NOT"" NON IMPLEMENTE (lot D3) -- resultat force" );
 --	      PUT_LINE( tab & "DROP" );								-- @doublet deja empile
 --	      PUT_LINE( tab & "LI"  & tab & "0" );
-	      return;
-	    end if;
-	  end;
-          end if;
+--	      return;
+--	    end if;
+--	  end;
+--          end if;
 
         end;
 
