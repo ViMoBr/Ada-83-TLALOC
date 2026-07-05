@@ -30,28 +30,26 @@ son témoin. Filet complet = modules du compilateur + ACVC A2..A8 + ces témoins
 === FIN ===                          22 tests validés
 ```
 
-### ENUM_TEST (sessions 15 et 25 avril, 17 sections)
+### ENUM_TEST (pilier 3.7 → refonte auto-jugeante, 5 juillet 2026, 41 assertions)
 
-```
-=== 1. PUT basique ===               BLEU BLANC ROUGE
-=== 2. PUT avec WIDTH ===            [      BLEU] [     ROUGE]
-=== 3. PUT LOWER_CASE ===            bleu blanc rouge
-=== 4. PUT via variable ===          BLANC ROUGE
-=== 5. PUT sans FILE ===             BLEU
-=== 6. Type JOUR ===                 LUNDI MERCREDI DIMANCHE
-=== 7. JOUR WIDTH+LOWER_CASE ===     [      samedi]
-=== 8. FILE_MODE ===                 IN_FILE OUT_FILE
-=== 9. Boucle couleurs ===           BLEU BLANC ROUGE
-=== 10. Boucle jours ===             LUNDI..DIMANCHE (WIDTH=10)
-=== 11. GET fichier ===              Lu 1: ROUGE  Lu 2: BLANC  Lu 3: BLEU
-=== 12. GET casse mixte ===          Rouge→ROUGE  blanc→BLANC  BLEU→BLEU
-=== 13. GET JOUR ===                 LUNDI  vendredi→VENDREDI  Dimanche→DIMANCHE
-=== 14. Roundtrip PUT-GET ===        BLEU BLANC ROUGE
-=== 15. Roundtrip JOUR ===           LUNDI..DIMANCHE (7 jours)
-=== 16. Boucle GET couleurs ===      ROUGE BLEU BLANC
-=== 17. GET console ===              rouge → ROUGE
-```
+Témoin converti au format auto-jugeant : chaque valeur produite est vérifiée
+par CHECK(condition, section, numéro) ; verdict final greppable.
+RESULTAT :  41 OK,   0 ECHECS
+ENUM_TEST PASSE
 
+Oracle du filet = la ligne `ENUM_TEST PASSE` (absence = régression, avec
+`* ECHEC section S test N` pour localiser). La section console (17) suit le
+verdict : `console OK` si l'entrée pipée est « rouge ».
+
+Sections visuelles résiduelles (cadrage console non capturable en chaîne,
+déviation RM 14.3.9 consignée — cadrage à DROITE, blancs de tête) :
+=== V2. PUT avec WIDTH ===     [      BLEU] [     ROUGE]
+=== V7. JOUR WIDTH+LOWER_CASE === [      samedi]
+=== V10. Boucle jours WIDTH=10 ===     LUNDI     MARDI  MERCREDI  …  DIMANCHE
+Couvre : PUT vers chaîne (littéraux, LOWER_CASE, via variable, FILE_MODE,
+cadrage à gauche conforme), GET fichier/casse mixte/JOUR, roundtrips
+couleurs et jours, boucle GET en ordre non déclaratif, GET chaîne (token,
+casse, index de fin L), attributs 'FIRST/'LAST/'POS.
 
 ### DIRECT_IO_TEST (session 10 mai (1), scalaire LONG_FLOAT)
 
@@ -145,3 +143,14 @@ SM_NORMALIZED_COMP_S), affectation complète et égalité BLKCMP (sans
 variantes), composant record de record (W.P) et de tableau (ARR de BUF(2)),
 paramètres in/in out et retour de fonction record contraint, discriminant
 en borne de boucle.
+
+### RECORD_TEST2 (pilier 3.7, lot R-B)
+— sortie attendue intégrale :
+E1 `0 77 1` ; E2 `FAUX VRAI` ; E3 `9` ; E4 `0 13` ; E5 `21 2` ;
+E6 `55 1` ; E7 `13` ; bannières comprises.
+Couvre : défauts de discriminants élaborés (M : MUT → PT = LEAF), mutation
+de variante par affectation complète, 'CONSTRAINED par objet (variable
+mutable → FAUX, objet contraint → VRAI), agrégat qualifié de record
+(doublet anonyme), sous-type contraint d'un type à défauts (MLEAF), mutable
+composant de record (BOX.N, taille max), changement de variante à travers
+un formel in out, retour de mutable par fonction.

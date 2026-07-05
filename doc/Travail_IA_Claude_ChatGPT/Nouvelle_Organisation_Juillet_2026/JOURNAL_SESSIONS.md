@@ -473,3 +473,44 @@ CONVENTIONS_ARCHITECTURE, ORACLES_TESTS, JOURNAL_SESSIONS) + triage mis à jour 
 la synthèse monolithique est retirée du projet.
 
 Session pilier 3.7, lot R-A (RECORD_TEST1) : CLOS, 7/7 sections conformes, filet vert (unités compilateur, ACVC, TEXT/DIRECT/SEQUENTIAL_IO, enum_test, direct_io_test). Dix correctifs C1–C10 sur quatre fichiers. Chaîne causale remarquable : le refus bruyant de C5 (égalité) a révélé C9 (idl.adb, bootstrap) ; l’else bruyant de C7 (CODE_RETURN) a révélé C8 (return “” de FORM) ; l’audit FINC post-C7 a innocenté CODE_RETURN et incriminé l’appelant (C10). Trois trous SILENCIEUX préexistants dans le même if de CODE_RETURN (DN_CONSTRAINED_RECORD, DN_ACCESS, DN_STRING_LITERAL) : FORM était compilé cassé depuis toujours, invisible car jamais appelé.
+
+Complément lot R-A : correctif C11 après régression ACVC série A7 (A71004A,
+A74006A, A74205E). Un tableau à composant record dont la vue complète (type
+privé) n'est pas encore compilée levait le refus bruyant C4b. Ce n'était pas
+une erreur mais un « pas connaissable ICI » : COMP_SIZE_BITS rend 0, le site
+d'émission bascule sur le symbole <rec>.size*8 (fasm multi-passes) et force
+le chemin dynamique. Leçon : distinguer « pas géré » (refus bruyant) de « pas
+connaissable à ce point du flux » (report symbolique à l'assembleur) — même
+partage expander/fasm que STATOFS et size=$.
+
+Session pilier 3.7, lot R-B (RECORD_TEST2) : 7/7 sections conformes AU PREMIER
+PASSAGE. Trois correctifs proactifs C12–C14 appliqués à l'ouverture sur les
+dettes documentées en clôture R-A (C12 agrégat qualifié de record ; C13
+'CONSTRAINED par objet) plus un trou silencieux du pré-audit (C14, déréférence-
+ment doublet→data incohérent entre branches d'affectation). Les sections
+E1/E4/E5/E6/E7 ont passé sur les seuls acquis du lot R-A — validation de la
+stratégie « câbler R-B pendant R-A » (défauts dans C1, retours dans C7/C10,
+égalité dans C9).
+
+Régression enum_test (découverte par le passage au témoin AUTO-JUGEANT) :
+le NOT scalaire (LI 1 / OUX) avait été commenté au lot D3 quand le NOT
+composite est parti vers COMPOSITE_OPERATORS, et la ré-émission scalaire
+n'avait jamais réintégré la copie projet. Cause aggravante : mes livraisons de
+FICHIERS COMPLETS écrasaient à chaque intégration la restauration locale de
+l'utilisateur. La chaîne <<UNARY>> étant une suite de `if` sans else final
+(même anti-motif que CODE_RETURN), `not <booléen>` n'émettait rien → booléen
+inchangé sur la pile → logique inversée dans la recherche de littéral
+d'ENUMERATION_IO (GET fichier = position 0 ; GET chaîne = premier littéral de
+même longueur). Correctifs (utilisateur) : NOT scalaire restauré + cadrage à
+gauche de ENUMERATION_IO.PUT(TO:STRING) ; garde anti-trou-silencieux ajoutée
+en fin de chaîne <<UNARY>> (opérateur unaire non reconnu → PROGRAM_ERROR, "+"
+unaire admis). Conséquence de méthode : passage aux livraisons en INSTRUCTIONS
+ligne par ligne (utilisateur dans la boucle) et aux témoins auto-jugeants.
+
+Clôture pilier 3.7 prononcée (filet complet vert : unités compilateur, A2–A7,
+RECORD_TEST1/2, ENUM_TEST 41/41, auto-compilation). Quatorze correctifs C1–C15
+sur quatre fichiers, trois bugs dormants antérieurs débusqués par les refus
+bruyants (égalité des TREE du bootstrap, return "" de FORM, NOT scalaire). Le
+motif dominant — « la vue contrainte n'est pas le type de base » — a produit
+six correctifs. Pilier suivant décidé : reliquat 3.6 unconstrained arrays,
+puis exceptions.

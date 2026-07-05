@@ -1,3 +1,0 @@
-	---------
-procedure	ENUM_TEST;
-	---------

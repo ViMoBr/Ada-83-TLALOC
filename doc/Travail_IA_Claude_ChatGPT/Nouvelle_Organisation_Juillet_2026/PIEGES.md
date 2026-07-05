@@ -2,7 +2,7 @@
 
 Règle d'usage : tout nouveau piège reçoit le numéro suivant et ne réécrit jamais
 les précédents (les renvois « piège n X » figurent dans le code et le journal).
-Dernière entrée : n° 59 (5 juillet 2026).
+Dernière entrée : n° 66 (5 juillet 2026).
 
 
 1. Double déréférencement paramètre : `LVa` (pas `La`) pour le doublet.
@@ -169,3 +169,38 @@ Dernière entrée : n° 59 (5 juillet 2026).
 61. SM_VALUE : deux encodages. Valeur courte : PT = HI et le genre est dans le champ NOTY (= DN_NUM_VAL) ; valeur longue : PT /= HI et le genre est dans TY. Confondre NOTY et TY fait rater la staticité (idiome de référence : expander-expressions lignes ~4563/4689).
 62. return "littéral" : SM_EXP_TYPE = DN_VOID. Le type ne vient pas de l’expression ; router sur EXP.TY. La macro STR pose une constante dont le champ data_ptr ouvre un doublet complet : LCA nom.data_ptr = @doublet.
 63. Convention résultat composite. L’APPELANT fabrique le doublet anonyme (data+use__info) et empile son adresse comme slot résultat ; la fonction BLKMOV à travers [result__ofs].data_ptr. Un LI 0 de placeholder pour un retour composite = écriture à l’adresse nulle chez l’appelé.
+64. **« Pas géré » ≠ « pas connaissable ICI ».** Le refus bruyant (n° 53)
+    sanctionne un cas non traité ; il ne doit PAS sanctionner une valeur
+    simplement indisponible à ce point du flux mais que l'assembleur, lui,
+    résoudra. Cas vécu (C11, ACVC A7) : un tableau à composant record dont
+    la vue complète (type privé) n'est pas encore compilée n'a pas de
+    CD_IMPL_SIZE — mais le symbole <rec>.size existera plus loin dans le
+    même FINC, et fasm est multi-passes. Sortie correcte : émettre le
+    symbole (report), pas lever. Même partage expander/fasm que STATOFS,
+    size=$, les références avant définition. Test mental : « si je mets ce
+    calcul entre les mains de fasm, sait-il finir ? » Si oui, report ;
+    sinon seulement, refus. (session 5 juillet)
+
+65. **Chaîne de `if` sans `else` final = trou silencieux latent.** Une
+    cascade `if COND_1 … end if; if COND_2 … end if;` qui épuise les cas
+    connus SANS clause terminale attrape un cas nouveau en NE FAISANT RIEN
+    — la variante dégénérée du n° 53, d'autant plus vicieuse qu'aucun stub
+    n'est visible à supprimer. Deux occurrences dans la même campagne :
+    CODE_RETURN (trois types non gérés, C7-C8, cf. n° 62-63) et <<UNARY>>
+    (le NOT, cf. n° 66). Règle : toute cascade de `if` disjoints sur un
+    NODE_NAME ou un OP_STR se termine par une garde `if <aucun des cas>
+    then … PROGRAM_ERROR`. Un `case … when others` est structurellement
+    préférable quand la langue le permet. (session 5 juillet)
+
+66. **Livraison de fichier COMPLET + copie projet en retard = écrasement
+    silencieux des correctifs locaux.** Régression vécue : le NOT scalaire,
+    restauré localement par le mainteneur, réécrasé à CHAQUE intégration
+    d'un fichier entier bâti sur une copie projet datée (elle-même sans
+    C12/C13 en début de session — le décalage était mesurable). Symptôme
+    différé de deux semaines, invisible tant qu'aucun témoin n'exerçait le
+    NOT sous auto-jugement. Parades, par ordre de préférence : (1) livrer
+    des INSTRUCTIONS de patch (emplacement, ancre, bloc, motif) que le
+    mainteneur applique et RELIT — il est l'élément lent qui voit ;
+    (2) à défaut, diff-er tout fichier complet contre la version locale
+    AVANT écrasement ; jamais d'intégration en aveugle. Corollaire :
+    rafraîchir les sources projet juste avant chaque lot. (session 5 juillet)

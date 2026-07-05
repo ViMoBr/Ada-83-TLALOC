@@ -338,3 +338,39 @@ transférer le résultat depuis `[rbp]` vers `result__ofs` :
 | SYS_FILE_WRITE    | LENGTH, @BUFFER, FILE_ID     | -16 ou -24|
 
 
+## 8. Discipline des témoins et des livraisons (5 juillet 2026)
+
+### Témoins auto-jugeants
+
+Un témoin ne DOIT pas se contenter d'imprimer : il compare chaque valeur
+produite à sa valeur attendue et rend un verdict lisible par le filet.
+
+Forme canonique (cf. ENUM_TEST) :
+- un compteur `NB_OK` / `NB_ECHECS` ;
+- une procédure `CHECK(OK : BOOLEAN; SECTION, NUMERO : INTEGER)` qui
+  incrémente et, sur échec, imprime `* ECHEC section S test N` ;
+- en clôture : `RESULTAT : … OK, … ECHECS` puis une ligne verdict
+  greppable `<TEST> PASSE` ou `<TEST> ECHOUE` ;
+- sections interactives (GET console) placées APRÈS le verdict, pour ne
+  pas bloquer un filet automatisé ; alimentables par pipe.
+
+Le filet devient : exécuter, `grep -L "PASSE"`. Justification empirique :
+la régression du NOT scalaire est restée invisible deux semaines parce que
+l'ancien enum_test imprimait sans juger ; le passage au format auto-jugeant
+l'a chiffrée (31/41) au premier lancement. Les valeurs non capturables en
+mémoire (cadrage console avec WIDTH) restent des sections visuelles
+explicitement étiquetées, avec l'attendu dans la bannière.
+
+Conversion progressive des témoins existants (array_test1/2, record_test1/2,
+direct_io_test…) au fil des piliers qui les touchent — pas de refonte de
+masse.
+
+### Livraison des correctifs
+
+Mode par défaut : INSTRUCTIONS de patch (emplacement, ancre, bloc à
+insérer/retirer, motif en une ligne), appliquées et RELUES par le
+mainteneur. Le mainteneur est l'élément lent qui voit ; la relecture forcée
+est une fonctionnalité de sûreté, pas un surcoût. Livraison de fichier
+complet uniquement sur demande explicite, et alors diff-ée contre la version
+locale avant écrasement (cf. piège n° 66). Rafraîchir les sources projet
+juste avant chaque lot.

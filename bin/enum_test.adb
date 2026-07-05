@@ -1,3 +1,10 @@
+-- ENUM_TEST (version auto-jugeante) -- TEXT_IO.ENUMERATION_IO
+-- Chaque section verifie mecaniquement ses resultats via CHECK ; le verdict
+-- final est greppable par le filet : "ENUM_TEST PASSE" / "ENUM_TEST ECHOUE".
+-- Sections purement visuelles conservees (formats WIDTH console) : V2, V7, V10.
+-- La section console interactive (17) est placee APRES le verdict ; le filet
+-- peut l'alimenter par un pipe ("rouge") ou l'ignorer.
+
 with TEXT_IO;
 use  TEXT_IO;
 procedure ENUM_TEST
@@ -7,68 +14,122 @@ is
   type JOUR	is ( LUNDI, MARDI, MERCREDI, JEUDI, VENDREDI, SAMEDI, DIMANCHE );
 
   package IO_COULEUR	is new ENUMERATION_IO( COULEUR );
-  package IO_JOUR		is new ENUMERATION_IO( JOUR );
-  package IO_MODE		is new ENUMERATION_IO( FILE_MODE );
+  package IO_JOUR	is new ENUMERATION_IO( JOUR );
+  package IO_MODE	is new ENUMERATION_IO( FILE_MODE );
+  package IO_ENT	is new INTEGER_IO( INTEGER );
 
   C	: COULEUR;
   J	: JOUR;
 
   G	: FILE_TYPE;
 
+  NB_OK		: INTEGER := 0;
+  NB_ECHECS	: INTEGER := 0;
+
+  procedure CHECK ( OK : in BOOLEAN; SECTION : in INTEGER; NUMERO : in INTEGER )
+  is
+  begin
+    if  OK  then
+      NB_OK := NB_OK + 1;
+    else
+      NB_ECHECS := NB_ECHECS + 1;
+      PUT( "* ECHEC section" );
+      IO_ENT.PUT( SECTION, WIDTH => 3 );
+      PUT( " test" );
+      IO_ENT.PUT( NUMERO, WIDTH => 3 );
+      NEW_LINE;
+    end if;
+  end CHECK;
+
 begin
 
-  -- === 1. PUT basique ===
-  PUT_LINE( "=== 1. PUT basique ===" );
-  IO_COULEUR.PUT( BLEU );	NEW_LINE;
-  IO_COULEUR.PUT( BLANC );	NEW_LINE;
-  IO_COULEUR.PUT( ROUGE );	NEW_LINE;
+  -- === 1. PUT vers chaine : littéraux de base ===
+  PUT_LINE( "=== 1. PUT vers chaine ===" );
+  declare
+    S : STRING( 1 .. 10 );
+  begin
+    IO_COULEUR.PUT( S, BLEU );
+    CHECK( S = "BLEU      ", 1, 1 );
+    IO_COULEUR.PUT( S, BLANC );
+    CHECK( S = "BLANC     ", 1, 2 );
+    IO_COULEUR.PUT( S, ROUGE );
+    CHECK( S = "ROUGE     ", 1, 3 );
+  end;
 
-  -- === 2. PUT avec WIDTH ===
-  PUT_LINE( "=== 2. PUT avec WIDTH ===" );
+  -- === V2. PUT avec WIDTH (visuel) ===
+  PUT_LINE( "=== V2. PUT avec WIDTH (attendu [      BLEU] [     ROUGE]) ===" );
   PUT( "[" );  IO_COULEUR.PUT( BLEU, WIDTH => 10 );   PUT_LINE( "]" );
   PUT( "[" );  IO_COULEUR.PUT( ROUGE, WIDTH => 10 );  PUT_LINE( "]" );
 
-  -- === 3. PUT LOWER_CASE ===
-  PUT_LINE( "=== 3. PUT LOWER_CASE ===" );
-  IO_COULEUR.PUT( BLEU,  SET => LOWER_CASE );	NEW_LINE;
-  IO_COULEUR.PUT( BLANC, SET => LOWER_CASE );	NEW_LINE;
-  IO_COULEUR.PUT( ROUGE, SET => LOWER_CASE );	NEW_LINE;
+  -- === 3. LOWER_CASE vers chaine ===
+  PUT_LINE( "=== 3. LOWER_CASE ===" );
+  declare
+    S : STRING( 1 .. 10 );
+  begin
+    IO_COULEUR.PUT( S, BLEU,  LOWER_CASE );
+    CHECK( S = "bleu      ", 3, 1 );
+    IO_COULEUR.PUT( S, ROUGE, LOWER_CASE );
+    CHECK( S = "rouge     ", 3, 2 );
+  end;
 
   -- === 4. PUT via variable ===
   PUT_LINE( "=== 4. PUT via variable ===" );
-  C := BLANC;  IO_COULEUR.PUT( C );  NEW_LINE;
-  C := ROUGE;  IO_COULEUR.PUT( C );  NEW_LINE;
+  declare
+    S : STRING( 1 .. 8 );
+  begin
+    C := BLANC;
+    IO_COULEUR.PUT( S, C );
+    CHECK( S = "BLANC   ", 4, 1 );
+  end;
 
-  -- === 5. PUT sans FILE ===
-  PUT_LINE( "=== 5. PUT sans FILE ===" );
+  -- === 5. PUT console sans FILE (visuel court, attendu BLEU) ===
+  PUT_LINE( "=== 5. PUT console (attendu BLEU) ===" );
   IO_COULEUR.PUT( BLEU );  NEW_LINE;
 
-  -- === 6. Type JOUR ===
+  -- === 6. Type JOUR vers chaine ===
   PUT_LINE( "=== 6. Type JOUR ===" );
-  IO_JOUR.PUT( LUNDI );     NEW_LINE;
-  IO_JOUR.PUT( MERCREDI );  NEW_LINE;
-  IO_JOUR.PUT( DIMANCHE );  NEW_LINE;
+  declare
+    S : STRING( 1 .. 10 );
+  begin
+    IO_JOUR.PUT( S, LUNDI );
+    CHECK( S = "LUNDI     ", 6, 1 );
+    IO_JOUR.PUT( S, MERCREDI );
+    CHECK( S = "MERCREDI  ", 6, 2 );
+    IO_JOUR.PUT( S, DIMANCHE );
+    CHECK( S = "DIMANCHE  ", 6, 3 );
+  end;
 
-  -- === 7. JOUR WIDTH+LOWER_CASE ===
-  PUT_LINE( "=== 7. JOUR WIDTH+LOWER_CASE ===" );
+  -- === V7. JOUR WIDTH+LOWER_CASE (visuel, attendu [      samedi]) ===
+  PUT_LINE( "=== V7. JOUR WIDTH+LOWER_CASE ===" );
   PUT( "[" );
   IO_JOUR.PUT( SAMEDI, WIDTH => 12, SET => LOWER_CASE );
   PUT_LINE( "]" );
 
-  -- === 8. FILE_MODE ===
+  -- === 8. FILE_MODE vers chaine ===
   PUT_LINE( "=== 8. FILE_MODE ===" );
-  IO_MODE.PUT( IN_FILE );   NEW_LINE;
-  IO_MODE.PUT( OUT_FILE );  NEW_LINE;
+  declare
+    S : STRING( 1 .. 10 );
+  begin
+    IO_MODE.PUT( S, IN_FILE );
+    CHECK( S = "IN_FILE   ", 8, 1 );
+    IO_MODE.PUT( S, OUT_FILE );
+    CHECK( S = "OUT_FILE  ", 8, 2 );
+  end;
 
-  -- === 9. Boucle couleurs ===
+  -- === 9. Boucle couleurs : POS et bornes ===
   PUT_LINE( "=== 9. Boucle couleurs ===" );
-  for  I in COULEUR'FIRST .. COULEUR'LAST  loop
-    IO_COULEUR.PUT( I );  PUT( " " );
-  end loop;
-  NEW_LINE;
+  declare
+    N : INTEGER := 0;
+  begin
+    for  I in COULEUR'FIRST .. COULEUR'LAST  loop
+      N := N + 1;
+    end loop;
+    CHECK( N = 3, 9, 1 );
+    CHECK( COULEUR'FIRST = BLEU  and COULEUR'LAST = ROUGE, 9, 2 );
+  end;
 
-  -- === 10. Boucle jours ===
-  PUT_LINE( "=== 10. Boucle jours ===" );
+  -- === V10. Boucle jours WIDTH (visuel) ===
+  PUT_LINE( "=== V10. Boucle jours WIDTH=10 ===" );
   for  I in JOUR'FIRST .. JOUR'LAST  loop
     IO_JOUR.PUT( I, WIDTH => 10 );
   end loop;
@@ -83,14 +144,13 @@ begin
   CLOSE( G );
 
   OPEN( G, IN_FILE, "enum_data.dat" );
-  PUT( "lecture 1..." ); IO_COULEUR.GET( G, C );
-  PUT( "Lu 1 : " );  IO_COULEUR.PUT( C );  NEW_LINE;
-  PUT( "lecture 2..." ); IO_COULEUR.GET( G, C );
-  PUT( "Lu 2 : " );  IO_COULEUR.PUT( C );  NEW_LINE;
-  PUT( "lecture 3..." ); IO_COULEUR.GET( G, C );
-  PUT( "Lu 3 : " );  IO_COULEUR.PUT( C );  NEW_LINE;
+  IO_COULEUR.GET( G, C );
+  CHECK( C = ROUGE, 11, 1 );
+  IO_COULEUR.GET( G, C );
+  CHECK( C = BLANC, 11, 2 );
+  IO_COULEUR.GET( G, C );
+  CHECK( C = BLEU,  11, 3 );
   CLOSE( G );
-
 
   -- === 12. GET casse mixte ===
   PUT_LINE( "=== 12. GET casse mixte ===" );
@@ -101,12 +161,12 @@ begin
   CLOSE( G );
 
   OPEN( G, IN_FILE, "enum_data2.dat" );
-  PUT( "lecture 1..." ); IO_COULEUR.GET( G, C );
-  PUT( "Lu 1 : " );  IO_COULEUR.PUT( C );  NEW_LINE;
-  PUT( "lecture 2..." ); IO_COULEUR.GET( G, C );
-  PUT( "Lu 2 : " );  IO_COULEUR.PUT( C );  NEW_LINE;
-  PUT( "lecture 3..." ); IO_COULEUR.GET( G, C );
-  PUT( "Lu 3 : " );  IO_COULEUR.PUT( C );  NEW_LINE;
+  IO_COULEUR.GET( G, C );
+  CHECK( C = ROUGE, 12, 1 );
+  IO_COULEUR.GET( G, C );
+  CHECK( C = BLANC, 12, 2 );
+  IO_COULEUR.GET( G, C );
+  CHECK( C = BLEU,  12, 3 );
   CLOSE( G );
 
   -- === 13. GET JOUR ===
@@ -119,14 +179,14 @@ begin
 
   OPEN( G, IN_FILE, "jour_data.dat" );
   IO_JOUR.GET( G, J );
-  PUT( "Lu 1 : " );  IO_JOUR.PUT( J );  NEW_LINE;
+  CHECK( J = LUNDI,    13, 1 );
   IO_JOUR.GET( G, J );
-  PUT( "Lu 2 : " );  IO_JOUR.PUT( J );  NEW_LINE;
+  CHECK( J = VENDREDI, 13, 2 );
   IO_JOUR.GET( G, J );
-  PUT( "Lu 3 : " );  IO_JOUR.PUT( J );  NEW_LINE;
+  CHECK( J = DIMANCHE, 13, 3 );
   CLOSE( G );
 
-  -- === 14. Roundtrip PUT-GET ===
+  -- === 14. Roundtrip PUT-GET couleurs ===
   PUT_LINE( "=== 14. Roundtrip ===" );
   CREATE( G, OUT_FILE, "roundtrip.dat" );
   for  I in COULEUR'FIRST .. COULEUR'LAST  loop
@@ -138,9 +198,8 @@ begin
   OPEN( G, IN_FILE, "roundtrip.dat" );
   for  I in COULEUR'FIRST .. COULEUR'LAST  loop
     IO_COULEUR.GET( G, C );
-    IO_COULEUR.PUT( C );  PUT( " " );
+    CHECK( C = I, 14, COULEUR'POS( I ) + 1 );
   end loop;
-  NEW_LINE;
   CLOSE( G );
 
   -- === 15. Roundtrip JOUR ===
@@ -155,12 +214,11 @@ begin
   OPEN( G, IN_FILE, "jour_rt.dat" );
   for  I in JOUR'FIRST .. JOUR'LAST  loop
     IO_JOUR.GET( G, J );
-    IO_JOUR.PUT( J );  PUT( " " );
+    CHECK( J = I, 15, JOUR'POS( I ) + 1 );
   end loop;
-  NEW_LINE;
   CLOSE( G );
 
-  -- === 16. Boucle couleurs avec GET ===
+  -- === 16. Boucle GET couleurs (ordre different de la declaration) ===
   PUT_LINE( "=== 16. Boucle GET couleurs ===" );
   CREATE( G, OUT_FILE, "enum_data.dat" );
   IO_COULEUR.PUT( G, ROUGE );  NEW_LINE( G );
@@ -169,42 +227,62 @@ begin
   CLOSE( G );
 
   OPEN( G, IN_FILE, "enum_data.dat" );
-  for  I in 1 .. 3  loop
-    IO_COULEUR.GET( G, C );
-    IO_COULEUR.PUT( C );  PUT( " " );
-  end loop;
-  NEW_LINE;
+  IO_COULEUR.GET( G, C );
+  CHECK( C = ROUGE, 16, 1 );
+  IO_COULEUR.GET( G, C );
+  CHECK( C = BLEU,  16, 2 );
+  IO_COULEUR.GET( G, C );
+  CHECK( C = BLANC, 16, 3 );
   CLOSE( G );
 
-  -- === 17. GET sans FILE (console) - commente pour automatiser ===
-   PUT_LINE( "=== 17. GET console ===" );
-   PUT( "Entrez une couleur : " );
-   IO_COULEUR.GET( C );
-   PUT( "Lu : " ); IO_COULEUR.PUT( C ); NEW_LINE;
-
-  -- === 18. PUT (string) ===
+  -- === 18. PUT (string) : cadrage et casse ===
   PUT_LINE( "=== 18. PUT (string) ===" );
   declare
     S1	: STRING( 1 .. 10 );
     S2	: STRING( 1 .. 10 );
   begin
     IO_COULEUR.PUT( S1, BLEU );
-    PUT( '[' ); PUT( S1 ); PUT( ']' ); NEW_LINE;
+    CHECK( S1 = "BLEU      ", 18, 1 );
     IO_COULEUR.PUT( S2, ROUGE, LOWER_CASE );
-    PUT( '[' ); PUT( S2 ); PUT( ']' ); NEW_LINE;
+    CHECK( S2 = "rouge     ", 18, 2 );
   end;
 
-  -- === 19. GET (string) ===
+  -- === 19. GET (string) : token, casse, index de fin ===
   PUT_LINE( "=== 19. GET (string) ===" );
   declare
-    C	: COULEUR;
+    CL	: COULEUR;
     L	: POSITIVE;
   begin
-    IO_COULEUR.GET( "  rouge suite", C, L );
-    IO_COULEUR.PUT( C );
-    NEW_LINE;
+    IO_COULEUR.GET( "  rouge suite", CL, L );
+    CHECK( CL = ROUGE, 19, 1 );
+    CHECK( L = 7,      19, 2 );			-- dernier caractere lu : le 'e' de rouge
+
+    IO_COULEUR.GET( "BLEU", CL, L );
+    CHECK( CL = BLEU, 19, 3 );
+    CHECK( L = 4,     19, 4 );
   end;
 
-  PUT_LINE( "=== FIN ===" );
+  -- === VERDICT ===
+  NEW_LINE;
+  PUT( "RESULTAT :" );
+  IO_ENT.PUT( NB_OK, WIDTH => 4 );
+  PUT( " OK," );
+  IO_ENT.PUT( NB_ECHECS, WIDTH => 4 );
+  PUT_LINE( " ECHECS" );
+
+  if  NB_ECHECS = 0  then
+    PUT_LINE( "ENUM_TEST PASSE" );
+  else
+    PUT_LINE( "ENUM_TEST ECHOUE" );
+  end if;
+
+  -- === 17. GET console (manuel, apres le verdict ; pipe possible) ===
+  PUT_LINE( "=== 17. GET console : tapez rouge ===" );
+  IO_COULEUR.GET( C );
+  if  C = ROUGE  then
+    PUT_LINE( "console OK" );
+  else
+    PUT_LINE( "console ECHEC" );
+  end if;
 
 end	ENUM_TEST;

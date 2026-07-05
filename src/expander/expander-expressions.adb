@@ -1591,12 +1591,64 @@ end if;
         when DN_ARRAY =>
 	  PUT_LINE( tab & "LI" & tab & "0" );
 
+        when DN_CONSTRAINED_RECORD =>							-- pilier 3.7 : objet contraint
+	  PUT_LINE( tab & "LI" & tab & "1" );
+
+        when DN_RECORD =>
+		-- RM83 3.7.4 : X'CONSTRAINED, decidable statiquement par objet.
+		-- Variable NON contrainte d'un type a defauts (mutable) -> FALSE ;
+		-- constante -> TRUE ; type sans discriminants -> TRUE (une variable
+		-- non contrainte d'un type a discriminants SANS defauts est illegale).
+		-- Formels : la valeur exacte suit l'ACTUEL.  Sans defauts, tout
+		-- actuel est necessairement contraint -> TRUE exact.  Avec defauts,
+		-- approximation statique FALSE, commentee dans le FINC (precedent
+		-- des conventions provisoires d'attributs ; exige par les A-tests
+		-- ACVC -- A62006D applique l'attribut dans un corps jamais appele).
+	  declare
+	    HAS_DEFAULTS	: BOOLEAN	:= FALSE;
+	    IS_FORMAL	: BOOLEAN	:= PREFIX_DEFN.TY = DN_IN_ID
+					or PREFIX_DEFN.TY = DN_IN_OUT_ID
+					or PREFIX_DEFN.TY = DN_OUT_ID;
+	    DSCRMT_DECL_S	: SEQ_TYPE	:= LIST( D( SM_DISCRIMINANT_S, TYPE_SPEC ) );
+	    DSCRMT_DECL	: TREE;
+	  begin
+	    while  not IS_EMPTY( DSCRMT_DECL_S )  loop
+	      POP( DSCRMT_DECL_S, DSCRMT_DECL );
+
+	      declare
+	        DISCR_ID_S	: SEQ_TYPE	:= LIST( D( AS_SOURCE_NAME_S, DSCRMT_DECL ) );
+	        DISCR_ID	: TREE;
+	      begin
+	        while  not IS_EMPTY( DISCR_ID_S )  loop
+	          POP( DISCR_ID_S, DISCR_ID );
+
+	          if  D( SM_INIT_EXP, DISCR_ID ) /= TREE_VOID
+	            and then  D( SM_INIT_EXP, DISCR_ID ) /= TREE_NIL
+	          then
+	            HAS_DEFAULTS := TRUE;
+	          end if;
+	        end loop;
+	      end;
+	    end loop;
+
+	    if  not HAS_DEFAULTS  then
+	      PUT_LINE( tab & "LI" & tab & "1" );					-- exact, formel compris
+	    elsif  IS_FORMAL  then
+	      PUT_LINE( "; ATTRIBUTE CONSTRAINED formel mutable : approximation statique FALSE"
+			& " (valeur exacte = celle de l'actuel)" );
+	      PUT_LINE( tab & "LI" & tab & "0" );
+	    elsif  PREFIX_DEFN.TY = DN_VARIABLE_ID  then
+	      PUT_LINE( tab & "LI" & tab & "0" );					-- variable mutable non contrainte
+	    else
+	      PUT_LINE( tab & "LI" & tab & "1" );					-- constante
+	    end if;
+	  end;
+
         when DN_CONSTRAINED_ARRAY
 	   | DN_INTEGER
 	   | DN_FLOAT
 	   | DN_ENUMERATION
-	   | DN_ACCESS
-	   | DN_RECORD =>
+	   | DN_ACCESS =>
 	  PUT_LINE( tab & "LI" & tab & "1" );
 
         when others =>
@@ -3397,19 +3449,27 @@ end;
 	if  IS_FLOAT  then PUT_LINE( tab & "FABS" ); else PUT_LINE( tab & "ABS" ); end if;
 	end if;
 
---	if  OP_STR = """NOT"""  then
---	  declare
---	    PRM1_TYPE	: TREE	:= D( SM_EXP_TYPE, PRM_1 );
---	  begin
---            if  PRM1_TYPE /= TREE_VOID  and then  ( PRM1_TYPE.TY = DN_ARRAY  or  PRM1_TYPE.TY = DN_CONSTRAINED_ARRAY )
---	    then
---	      PUT_LINE( "; COMPOSITE ""NOT"" NON IMPLEMENTE (lot D3) -- resultat force" );
---	      PUT_LINE( tab & "DROP" );								-- @doublet deja empile
---	      PUT_LINE( tab & "LI"  & tab & "0" );
---	      return;
---	    end if;
---	  end;
---          end if;
+	if  OP_STR = """NOT"""  then
+		-- NOT scalaire (booleen 0/1) : le NOT COMPOSITE (tableaux de
+		-- booleens) est route en amont par COMPOSITE_OPERATORS (lot D3)
+		-- et n'atteint jamais ce point.
+		-- Restaure apres regression : ce bloc, commente au lot D3, avait
+		-- ete perdu par ecrasement lors d'une integration de fichier
+		-- complet (voir journal, regression enum_test).
+	  PUT_LINE( tab & "LI" & tab & "1" );
+	  PUT_LINE( tab & "OUX" );							-- NOT booleen 0/1 (piege n 5)
+          end if;
+
+		-- Garde anti-trou-silencieux (piege n 53, meme anti-motif que
+		-- CODE_RETURN / C7-C8) : un operateur unaire non reconnu doit se
+		-- signaler a l'expansion, pas corrompre la pile en silence.
+		-- "+" unaire = identite, legitimement sans emission.
+	if  OP_STR /= """-"""  and then  OP_STR /= """ABS"""
+	  and then  OP_STR /= """NOT"""  and then  OP_STR /= """+"""
+	then
+	  PUT_LINE( "; CODE_DN_BLTN_OPERATOR_ID : operateur unaire non gere " & OP_STR );
+	  raise PROGRAM_ERROR;
+	end if;
 
         end;
 
@@ -5496,10 +5556,51 @@ put_line( "; CODE_QUALIFIED : DN_QUALIFIED" & NODE_NAME'IMAGE( SRC_EXP.TY ) );
               PUT_LINE( tab & "LVA " & LVL_STR & ", " & ANON & "_disp" );	-- @doublet
             end;
 
+          elsif  AGG_TYPE.TY = DN_RECORD  or else  AGG_TYPE.TY = DN_CONSTRAINED_RECORD  then
+            -- Pilier 3.7 lot R-B : agregat qualifie de record -- MUT'(LEAF, 3, 9).
+            -- Meme mecanique que le sous-type contraint de tableau ci-dessus :
+            -- doublet anonyme (data en VAR de taille statique du record de BASE),
+            -- __u := use__info du type, @data pour CODE_AGGREGATE, et @doublet
+            -- laisse sur la pile (convention des expressions record).
+            declare
+              REC_TS	: TREE	:= AGG_TYPE;
+            begin
+              if  REC_TS.TY = DN_CONSTRAINED_RECORD  then			-- vue contrainte -> base
+                REC_TS := D( SM_BASE_TYPE, REC_TS );
+              end if;
+
+              declare
+                LVL_STR	:constant STRING	:= IMAGE( CODI.CUR_LEVEL );
+                ANON	:constant STRING	:= ANONYMOUS_NAME_AT( SRC_EXP );
+                TYPE_NAME	: TREE		:= D( XD_SOURCE_NAME, REC_TS );
+                TYPE_LVL	:constant STRING	:= IMAGE( DI( CD_LEVEL, REC_TS ) );
+                TN_STR	:constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
+              begin
+                PUT_LINE( "VAR" & tab & ANON & "_disp, q" );
+                PUT_LINE( "VAR" & tab & ANON & "__u,   q" );
+                PUT( "VAR" & tab & ANON & "__dat, " );
+                CODI.REGIONS_PATH( TYPE_NAME );
+                PUT_LINE( TN_STR & ".size" );
+
+                PUT_LINE( tab & "LVA " & LVL_STR & ", " & ANON & "__dat" );
+                PUT_LINE( tab & "Sa  " & LVL_STR & ", " & ANON & "_disp" );
+
+                PUT( tab & "La  " & TYPE_LVL & ", " );			-- __u := use__info du type
+                CODI.REGIONS_PATH( TYPE_NAME );
+                PUT_LINE( TN_STR & ".use__info" );
+                PUT_LINE( tab & "Sa  " & LVL_STR & ", " & ANON & "__u" );
+
+                PUT_LINE( tab & "La  " & LVL_STR & ", " & ANON & "_disp" );	-- @data pour CODE_AGGREGATE
+                CODE_AGGREGATE( SRC_EXP, AGG_TYPE );
+
+                PUT_LINE( tab & "LVA " & LVL_STR & ", " & ANON & "_disp" );	-- @doublet
+              end;
+            end;
+
           else
-            -- Records qualifiés : même vice (CODE_AGGREGATE sans destination).
-            -- Consigné pour le pilier 3.7.
-            CODE_AGGREGATE( SRC_EXP, AGG_TYPE );
+            PUT_LINE( "; CODE_QUALIFIED : agregat qualifie de type non gere "
+		& NODE_NAME'IMAGE( AGG_TYPE.TY ) );
+            raise PROGRAM_ERROR;
           end if;
 
         end;

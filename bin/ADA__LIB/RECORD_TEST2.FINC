@@ -262,7 +262,7 @@ STR STR_L11, "=== E2 : attribut CONSTRAINED ==="	; constante string="=== E2 : at
 	LCA	STR_L11.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
 					; debut if
-	LI	1
+	LI	0
 	BF	L13
 STR STR_L14, "VRAI"				; constante string="VRAI"
 	LCA	STR_L14.data_ptr
@@ -274,8 +274,7 @@ STR STR_L15, "FAUX"				; constante string="FAUX"
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
 L12:					; post if
 					; debut if
-; ATTRIBUTE CONSTRAINED : TYPE NON TRAITE DN_CONSTRAINED_RECORD
-	LI	0
+	LI	1
 	BF	L17
 STR STR_L18, "VRAI"				; constante string="VRAI"
 	LCA	STR_L18.data_ptr
@@ -293,6 +292,14 @@ STR STR_L20, "=== E3 : agregat qualifie ==="	; constante string="=== E3 : agrega
 	La
 	LI	STANDARD.RECORD_TEST2_L1._MUT.size
 ; CODE_QUALIFIED : DN_QUALIFIEDDN_AGGREGATE
+VAR	ANON_58_12_disp, q
+VAR	ANON_58_12__u,   q
+VAR	ANON_58_12__dat, STANDARD.RECORD_TEST2_L1._MUT.size
+	LVA 1, ANON_58_12__dat
+	Sa  1, ANON_58_12_disp
+	La  1, STANDARD.RECORD_TEST2_L1._MUT.use__info
+	Sa  1, ANON_58_12__u
+	La  1, ANON_58_12_disp
 					; Assign_record_aggregate type DN_RECORD
 	DUP
 	LVA	, STANDARD.RECORD_TEST2_L1._MUT.PT
@@ -309,6 +316,7 @@ STR STR_L20, "=== E3 : agregat qualifie ==="	; constante string="=== E3 : agrega
 	LI	9
 	Sd
 	DROP
+	LVA 1, ANON_58_12_disp
 	La
 	BLKMOV
 VAR	ANON_59_13_disp, q

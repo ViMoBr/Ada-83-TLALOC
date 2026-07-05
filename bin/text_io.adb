@@ -3479,9 +3479,9 @@ IGNORE_BLANKS:
 
             end if;
 
-            -- Justification a droite dans TO.
-            PAD := TO'LENGTH - LEN;
-            DST := TO'FIRST + PAD;
+--            PAD := TO'LENGTH - LEN;
+--            DST := TO'FIRST + PAD;
+            DST := TO'FIRST;
 
             for  J in 0 .. LEN - 1  loop
               CH := IMAGES_STR( IMG_START + J );

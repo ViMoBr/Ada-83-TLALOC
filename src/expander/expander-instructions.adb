@@ -1494,6 +1494,14 @@ null;
 	    CODI.REGIONS_PATH( D( XD_SOURCE_NAME, DST_TYPE ) );
 	    PUT_LINE( '_' & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, DST_TYPE ) ) ) & ".size" );
 	    EXPRESSIONS.CODE_EXP( SRC_EXP );
+
+	    if  SRC_EXP.TY = DN_USED_OBJECT_ID
+	     or else  SRC_EXP.TY = DN_FUNCTION_CALL
+	     or else  SRC_EXP.TY = DN_QUALIFIED						-- pilier 3.7 : sources laissant @doublet
+	    then
+	      PUT_LINE( tab & "La" );							-- @doublet -> data_ptr
+	    end if;
+
 	    PUT_LINE( tab & "BLKMOV" );
 	  end if;
 
@@ -1549,7 +1557,10 @@ null;
 
 	  EXPRESSIONS.CODE_EXP( SRC_EXP );								-- Pour DN_INDEXED : laisse @SRC
 
-	  if  SRC_EXP.TY = DN_USED_OBJECT_ID  or else  SRC_EXP.TY = DN_FUNCTION_CALL  then
+	  if  SRC_EXP.TY = DN_USED_OBJECT_ID
+	   or else  SRC_EXP.TY = DN_FUNCTION_CALL
+	   or else  SRC_EXP.TY = DN_QUALIFIED							-- pilier 3.7 : sources laissant @doublet
+	  then
 	    PUT_LINE( tab & "La" );									-- @doublet -> data_ptr
 	  end if;
 
