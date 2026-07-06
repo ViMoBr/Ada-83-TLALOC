@@ -28,6 +28,10 @@ La sémantique n'est protégée que par les programmes-témoins à sortie attend
 | 3.5.7 Flottants (IEEE 754 double sur pile, SSE2) | acquis | 11 avril |
 | 3.5.9 Points fixes | partiel : DURATION/CALENDAR OK ; mul/div générales incomplètes | 15 mai–5 juin |
 | **3.6 Tableaux (formes contraintes, opérateurs complets)** | **CLOS** : affectation complète, égalité, ordre lexicographique, logiques booléens composites, caténation toutes formes, tranches (lecture/écriture/paramètre/retour), intervalles nuls, agrégats (positionnel/nommé/others/2D/qualifiés), conversions, attributs dimensionnés, 'RANGE (objet et marque de sous-type) | **5 juillet 2026** — oracles ARRAY_TEST1/2 |
+| 3.6 reliquat non contraint | objets non contraints par agrégat (bornes
+  déduites, trou n°3), attributs sur marque, STRING dynamique, formels/retours,
+  conversion — ARRAY_TEST3 37/37 | clôture à prononcer après filet complet
+  (ARRAY_TEST1/2, RECORD_TEST1/2, A2–A8, auto-compilation) + tag git |
 | **3.7 Records à discriminants et variantes** | **CLOS** : discriminants (déclaration, contrainte, défauts, lecture, contrôle de flux), variantes statiques (layout ADDITIF), agrégats canoniques (positionnel/nommé/mixte/variantes/imbriqués), vues contraintes nommées et anonymes (objets, composants, éléments de tableau, formels, retours, qualifiés), égalité (BLKCMP sans variantes ; cascade statique à variantes), 'CONSTRAINED par objet, mutables, changement de variante | **5 juillet 2026** — oracles RECORD_TEST1/2 |
 | 13 Clauses de représentation (records compacts) | acquis pour le type TREE du bootstrap | 21 juin |
 | 3.8/4.8 Access minimal (`new`, `.all`) | minimal bootstrap | 22 juin |
@@ -42,7 +46,6 @@ La sémantique n'est protégée que par les programmes-témoins à sortie attend
 
 | Pilier (LRM) | Manque | Note |
 |---|---|---|
-| 3.6 (reliquat) Unconstrained arrays | déclaration du type non contraint lui-même (CODE_UNCONSTRAINED_ARRAY_DECL), STRING général | utilisés comme paramètres/base de sous-types : OK. Audit à l'ouverture : témoin + dump `unconstrained_array_def` (protocole triage) |
 | 3.4 Dérivation | derived_def, derived_subprog | — |
 | 11 Exceptions | handlers (squelette présent) | débloque les contrôles différés (CONSTRAINT_ERROR) |
 | 8.x Portée, visibilité, use, renommage complet | causes-mères présumées des 4 échecs A8 | tri à faire avant d'ouvrir |
@@ -70,6 +73,21 @@ La sémantique n'est protégée que par les programmes-témoins à sortie attend
 - Mélange `and then`/`or` non parenthésé mal géré (TODO §5.2 historique).
 - Généralisation LD/ST CALLI aux formels entiers/flottants (TODO §5.1 historique).
 
+- **AGG-NC restrictions** (3.6, UNCONSTRAINED_AGGREGATE_OBJECT) : bornes
+  déduites délibérément conservatrices — positionnel à cardinal statique, ou
+  nommé à choix DN_NUMERIC_LITERAL (min/max calculés dans l'expander) ;
+  multidim, choix dynamiques, mixte, `others` → refus bruyant. À élargir si
+  un test ACVC l'exige.
+- **DN_QUALIFIED à marque non contrainte** (COMPILE_ARRAY_VAR l. ~666) : même
+  vice latent que l'ex-branche agrégat (COVAR_ALLOCATE sur SIZ = -1). Aucun
+  témoin ne l'exerce ; le jour venu, router vers
+  UNCONSTRAINED_AGGREGATE_OBJECT.
+- **Marcheur `_aga`** : la retombée ADD_INDEX_DIMENSION sur index non
+  contraint calcule des _FST/_LST faux (range du sous-type d'index) —
+  INERTES pour l'émission des données (placement séquentiel par _PTR), mais
+  non autoritaires : les bornes d'un agrégat ne font foi QUE publiées dans
+  un descripteur. Ne pas « corriger » sans témoin, code partagé (D9, 2D,
+  qualifiés).
 ## Prochaine séquence (à arbitrer à l'ouverture de la prochaine session)
 
 1. **Pilier retenu : reliquat 3.6 — unconstrained arrays** (déclaration du

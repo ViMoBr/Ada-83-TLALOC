@@ -525,6 +525,8 @@ null;
 	------------------
 
 
+
+
 		-----------------
       procedure	COMPILE_ARRAY_VAR	( VC_NAME, TYPE_SPEC :TREE )
       is		-----------------
@@ -569,6 +571,230 @@ null;
 
         end	COVAR_ALLOCATE;
 		--------------
+
+
+------------------------------
+      procedure	UNCONSTRAINED_AGGREGATE_OBJECT	( AGG :TREE )
+      is		------------------------------
+	-- Objet non contraint initialise par agregat (RM83 4.3.2) :
+	-- bornes deduites, bloc info ANONYME, __u re-pointe dessus.
+	-- Idiome du doublet anonyme (cf. CODE_ARRAY_AGGREGATE_OPERAND).
+	-- Deliberement conservateur : positionnel a cardinal statique,
+	-- ou nomme a choix DN_NUMERIC_LITERAL (precedent
+	-- IS_STATIC_INTEGER_BOUND). Tout le reste : refus BRUYANT.
+
+        BASE_TYPE		: TREE		:= D( SM_BASE_TYPE, TYPE_SPEC );
+        COMP_TYPE		: TREE		:= D( SM_COMP_TYPE, BASE_TYPE );
+        COMP_BITS		: INTEGER	:= DI( CD_IMPL_SIZE, COMP_TYPE );
+        COMP_BYTES		: INTEGER	:= COMP_BITS / CODI.STORAGE_UNIT;
+        INFO_STR		:constant STRING	:= '_' & VC_STR & "__agg_info";
+
+        SEEN_POSITIONAL	: BOOLEAN	:= FALSE;
+        SEEN_NAMED		: BOOLEAN	:= FALSE;
+        ALL_CHOICES_STATIC	: BOOLEAN	:= TRUE;
+        NB_ELEMENTS		: NATURAL	:= 0;
+        MIN_CHOICE		: INTEGER	:= INTEGER'LAST;
+        MAX_CHOICE		: INTEGER	:= INTEGER'FIRST;
+
+			-------
+        procedure	EMIT_LI		( VALUE :INTEGER )
+        is		-------
+        begin
+	if  VALUE < 0  then						-- convention LI 1 / NEG
+	  PUT_LINE( tab & "LI" & tab & IMAGE( -VALUE ) );
+	  PUT_LINE( tab & "NEG" );
+	else
+	  PUT_LINE( tab & "LI" & tab & IMAGE( VALUE ) );
+	end if;
+        end	EMIT_LI;
+	-------
+
+			----------------------
+        function	IS_STATIC_CHOICE_EXP	( EXP :TREE ) return BOOLEAN
+        is		----------------------
+        begin
+	return  EXP /= TREE_VOID  and then  EXP.TY = DN_NUMERIC_LITERAL;
+        end	IS_STATIC_CHOICE_EXP;
+	----------------------
+
+			-----------------
+        procedure	NOTE_CHOICE_VALUE	( VALUE :INTEGER )
+        is		-----------------
+        begin
+	if  VALUE < MIN_CHOICE  then  MIN_CHOICE := VALUE;  end if;
+	if  VALUE > MAX_CHOICE  then  MAX_CHOICE := VALUE;  end if;
+        end	NOTE_CHOICE_VALUE;
+	-----------------
+
+			-----------------
+        procedure	ANALYSE_AGGREGATE
+        is		-----------------
+	NORM_SEQ	: SEQ_TYPE	:= LIST( D( SM_NORMALIZED_COMP_S, AGG ) );
+	ASSOC	: TREE;
+        begin
+	while not  IS_EMPTY( NORM_SEQ )  loop
+	  POP( NORM_SEQ, ASSOC );
+
+	  if  ASSOC.TY = DN_NAMED  then
+	    SEEN_NAMED := TRUE;
+				-------------------
+				ANALYSE_CHOICE_LIST:
+	    declare
+	      CHOICES	: SEQ_TYPE	:= LIST( D( AS_CHOICE_S, ASSOC ) );
+	      CH		: TREE;
+	      EXP1	: TREE;
+	      EXP2	: TREE;
+	    begin
+	      while not  IS_EMPTY( CHOICES )  loop
+	        POP( CHOICES, CH );
+
+	        if  CH.TY = DN_CHOICE_EXP  then
+		EXP1 := D( AS_EXP, CH );
+		if  IS_STATIC_CHOICE_EXP( EXP1 )  then
+		  NOTE_CHOICE_VALUE( DI( SM_VALUE, EXP1 ) );
+		else
+		  ALL_CHOICES_STATIC := FALSE;
+		end if;
+
+	        elsif  CH.TY = DN_CHOICE_RANGE  then
+		EXP1 := D( AS_EXP1, D( AS_DISCRETE_RANGE, CH ) );
+		EXP2 := D( AS_EXP2, D( AS_DISCRETE_RANGE, CH ) );
+		if  IS_STATIC_CHOICE_EXP( EXP1 )
+		  and then  IS_STATIC_CHOICE_EXP( EXP2 )
+		then
+		  NOTE_CHOICE_VALUE( DI( SM_VALUE, EXP1 ) );
+		  NOTE_CHOICE_VALUE( DI( SM_VALUE, EXP2 ) );
+		else
+		  ALL_CHOICES_STATIC := FALSE;
+		end if;
+
+	        else							-- DN_CHOICE_OTHERS...
+				-- others : bornes indeterminables sur objet
+				-- non contraint (RM83 4.3.2), sem aurait du
+				-- refuser -- refus bruyant par prudence.
+		ALL_CHOICES_STATIC := FALSE;
+	        end if;
+	      end loop;
+	    end	ANALYSE_CHOICE_LIST;
+				-------------------
+	  else								-- expression nue
+	    SEEN_POSITIONAL := TRUE;
+	    NB_ELEMENTS := NB_ELEMENTS + 1;
+	  end if;
+	end loop;
+        end	ANALYSE_AGGREGATE;
+	-----------------
+
+			-----------------
+        function	FIRST_INDEX_RANGE	return TREE
+        is		-----------------
+	-- Range du sous-type d'index (idiome ADD_INDEX_DIMENSION) ;
+	-- verifie au passage que le type est MONO-dimensionnel.
+	IDX_S	: SEQ_TYPE	:= LIST( D( SM_INDEX_S, BASE_TYPE ) );
+	IDX	: TREE;
+        begin
+	POP( IDX_S, IDX );
+
+	if not  IS_EMPTY( IDX_S )  then
+	  PUT_LINE( "; COMPILE_ARRAY_VAR : agregat non contraint MULTIDIM non fait" );
+	  raise PROGRAM_ERROR;
+	end if;
+
+	if  IDX.TY = DN_INDEX  then
+	  return D( SM_RANGE, D( SM_TYPE_SPEC, IDX ) );
+	else
+	  return D( SM_RANGE, IDX );
+	end if;
+        end	FIRST_INDEX_RANGE;
+	-----------------
+
+      begin									-- UNCONSTRAINED_AGGREGATE_OBJECT
+
+        ANALYSE_AGGREGATE;
+
+        if  SEEN_POSITIONAL  and  SEEN_NAMED  then				-- melange : illegal RM83 4.3
+	PUT_LINE( "; COMPILE_ARRAY_VAR : agregat mixte positionnel/nomme" );
+	raise PROGRAM_ERROR;
+        end if;
+
+        if  SEEN_NAMED  and then  not ALL_CHOICES_STATIC  then
+	PUT_LINE( "; COMPILE_ARRAY_VAR : agregat non contraint a choix non statiques" );
+	raise PROGRAM_ERROR;
+        end if;
+
+        if  SEEN_POSITIONAL  and then  NB_ELEMENTS = 0  then
+	PUT_LINE( "; COMPILE_ARRAY_VAR : agregat vide" );
+	raise PROGRAM_ERROR;
+        end if;
+
+        -- ---- Bloc info anonyme (layout aligne sur virtual at 4) ----
+        PUT_LINE( "namespace " & INFO_STR );
+        PUT_LINE( "  VAR SIZ,      d" );
+        PUT_LINE( "  VAR _COMP_SIZ, d" );
+        PUT_LINE( "  VAR _FST_1,    d" );
+        PUT_LINE( "  VAR _LST_1,    d" );
+        PUT_LINE( "end namespace" );
+
+        -- ---- Bornes deduites ; laisse COUNT en sommet de pile ----
+        if  SEEN_POSITIONAL  then
+				-- RM83 4.3.2 : FST = INDEX'FIRST,
+				-- LST = FST + n - 1 (n statique).
+				---------------
+				POSITIONAL_BOUNDS:
+	declare
+	  RNG	: TREE	:= FIRST_INDEX_RANGE;
+	begin
+	  EXPRESSIONS.CODE_EXP( D( AS_EXP1, RNG ) );			-- INDEX'FIRST
+	  PUT_LINE( tab & "DUP" );
+	  PUT_LINE( tab & "Sd  " & LVL_STR & ", " & INFO_STR & "._FST_1" );
+	  EMIT_LI( INTEGER( NB_ELEMENTS ) - 1 );
+	  PUT_LINE( tab & "ADD" );
+	  PUT_LINE( tab & "Sd  " & LVL_STR & ", " & INFO_STR & "._LST_1" );
+	  EMIT_LI( INTEGER( NB_ELEMENTS ) );				-- COUNT
+	end	POSITIONAL_BOUNDS;
+				---------------
+        else								-- nomme statique
+				-- RM83 4.3.2 : bornes = min/max des choix
+				-- (couverture contigue garantie par sem).
+	EMIT_LI( MIN_CHOICE );
+	PUT_LINE( tab & "Sd  " & LVL_STR & ", " & INFO_STR & "._FST_1" );
+	EMIT_LI( MAX_CHOICE );
+	PUT_LINE( tab & "Sd  " & LVL_STR & ", " & INFO_STR & "._LST_1" );
+	EMIT_LI( MAX_CHOICE - MIN_CHOICE + 1 );				-- COUNT
+        end if;
+
+        -- ---- COMP_SIZ ; SIZ := COUNT * COMP_BITS ----
+        PUT_LINE( tab & "LI"  & tab & IMAGE( COMP_BITS ) );
+        PUT_LINE( tab & "Sd  " & LVL_STR & ", " & INFO_STR & "._COMP_SIZ" );
+        PUT_LINE( tab & "DUP" );						-- COUNT preserve pour l'allocation
+        if  COMP_BITS /= 1  then
+	PUT_LINE( tab & "LI" & tab & IMAGE( COMP_BITS ) );
+	PUT_LINE( tab & "MUL" );
+        end if;
+        PUT_LINE( tab & "Sd  " & LVL_STR & ", " & INFO_STR & ".SIZ" );
+
+        -- ---- Allocation co-pile : COUNT * COMP_BYTES octets ----
+        if  COMP_BYTES /= 1  then
+	PUT_LINE( tab & "LI" & tab & IMAGE( COMP_BYTES ) );
+	PUT_LINE( tab & "MUL" );
+        end if;
+        PUT_LINE( tab & "CO_VAR" );
+        PUT( tab & "Sa" & tab & LVL_STR & ", " & VC_STR & "_disp" );
+        if  CODI.DEBUG  then PUT( tab50 & "; array data ptr at _disp" ); end if;
+        NEW_LINE;
+
+        -- ---- Re-pointer __u sur le bloc anonyme (ecrase use__info du type) ----
+        PUT_LINE( tab & "LVA " & LVL_STR & ", " & INFO_STR & ".SIZ" );
+        PUT( tab & "Sa" & tab & LVL_STR & ", " & VC_STR & "__u" );
+        if  CODI.DEBUG  then PUT( tab50 & "; array info ptr at __u (agregat, bornes deduites)" ); end if;
+        NEW_LINE;
+
+        -- ---- Donnees : chemin existant inchange ----
+        PUT_LINE( tab & "La" & tab & LVL_STR & ", " & VC_STR & "_disp" );
+        EXPRESSIONS.CODE_AGGREGATE( AGG, TYPE_SPEC );
+
+      end	UNCONSTRAINED_AGGREGATE_OBJECT;
+	------------------------------
 
       begin
 
@@ -656,12 +882,18 @@ null;
 
 
 	  elsif  INIT_EXP.TY = DN_AGGREGATE  then
-	    COVAR_ALLOCATE;
-	    if  CODI.DEBUG	then PUT(	tab50 & "; array data aggregate" ); end	if;
-	    NEW_LINE;
+	    if  TYPE_SPEC.TY = DN_ARRAY  then								-- objet NON contraint : bornes déduites
+	      UNCONSTRAINED_AGGREGATE_OBJECT( INIT_EXP );							-- nouveau, ci-dessous
 
-	    PUT_LINE( tab &	"La" & tab & LVL_STR & ", " &	VC_STR & "_disp" );
-	    EXPRESSIONS.CODE_AGGREGATE( INIT_EXP, TYPE_SPEC );
+	    else
+	      COVAR_ALLOCATE;
+	      if  CODI.DEBUG  then PUT( tab50 & "; array data aggregate" ); end if;
+	      NEW_LINE;
+
+	      PUT_LINE( tab &  "La" & tab & LVL_STR & ", " & VC_STR & "_disp" );
+	      EXPRESSIONS.CODE_AGGREGATE( INIT_EXP, TYPE_SPEC );
+	    end if;
+
 
 	  elsif  INIT_EXP.TY = DN_QUALIFIED  then
   -- Initialiseur tableau qualifie : P.E2'(4 => 8, 5 => 3, OTHERS => 1).

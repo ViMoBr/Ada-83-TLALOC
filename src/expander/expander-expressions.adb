@@ -1757,7 +1757,8 @@ end;
 
 
         if  ( D( SM_EXP_TYPE,	PREFIX_NAME ).TY = DN_CONSTRAINED_ARRAY	)					-- UNE VARIABLE TABLEAU
-         or ( D( SM_EXP_TYPE,	PREFIX_NAME ).TY = DN_ARRAY  and  D( SM_DEFN, PREFIX_NAME ).TY = DN_CONSTANT_ID	)
+	or ( D( SM_EXP_TYPE, PREFIX_NAME ).TY = DN_ARRAY  and  D( SM_DEFN, PREFIX_NAME ).TY = DN_CONSTANT_ID )
+	or ( D( SM_EXP_TYPE, PREFIX_NAME ).TY = DN_ARRAY  and  D( SM_DEFN, PREFIX_NAME ).TY = DN_VARIABLE_ID )	-- variable non contrainte (SC : STRING := "..") : __u -> descripteur local a bornes reelles
         then
 	declare
 	  ARRAY_LVL	: INTEGER		:= PREFIX_LVL;
@@ -1868,8 +1869,34 @@ end;
 
 	    else
 	      declare
-	        TYPE_RANGE	: TREE	:= D( SM_RANGE, D( SM_TYPE_SPEC, PREFIX_DEFN ) );
+	        PREFIX_TS	: TREE	:= D( SM_TYPE_SPEC, PREFIX_DEFN );
+	        TYPE_RANGE	: TREE;
 	      begin
+	        -- Marque de sous-type de tableau CONTRAINT (VEC5'FIRST/'LAST) :
+	        -- le DN_CONSTRAINED_ARRAY ne porte pas SM_RANGE.  Les bornes sont
+	        -- dans les sous-types d'indice (SM_INDEX_SUBTYPE_S), qui portent
+	        -- chacun SM_RANGE (meme idiome que CODE_RANGE_ATTRIBUTE_BOUND, D9,
+	        -- et que les sites 3872/4078).  Dimension voulue = AS_EXP de
+	        -- l'attribut (defaut 1).
+	        if  PREFIX_TS.TY = DN_CONSTRAINED_ARRAY  then
+	          declare
+	            DIM_EXP	: TREE		:= D( AS_EXP, ATTRIBUTE );
+	            NUM_DIM	: INTEGER		:= 1;
+	            IDX_S	: SEQ_TYPE	:= LIST( D( SM_INDEX_SUBTYPE_S, PREFIX_TS ) );
+	            IDX_TYPE	: TREE;
+	          begin
+	            if  DIM_EXP /= TREE_VOID  then
+	              NUM_DIM := DI( SM_VALUE, DIM_EXP );
+	            end if;
+	            for K in 1 .. NUM_DIM  loop			-- avancer jusqu'a la dimension
+	              POP( IDX_S, IDX_TYPE );
+	            end loop;
+	            TYPE_RANGE := D( SM_RANGE, IDX_TYPE );
+	          end;
+	        else
+	          TYPE_RANGE := D( SM_RANGE, PREFIX_TS );	-- scalaires : comportement d'origine
+	        end if;
+
 	        PUT( tab & "LI" & tab );
 	        if  IS_LAST  then
 		PUT_LINE( PRINT_NUM( D( SM_VALUE, D( AS_EXP2, TYPE_RANGE ) ) ) );
@@ -1878,6 +1905,18 @@ end;
 	        end if;
 	      end;
 	    end if;
+--	    else
+--	      declare
+--	        TYPE_RANGE	: TREE	:= D( SM_RANGE, D( SM_TYPE_SPEC, PREFIX_DEFN ) );
+--	      begin
+--	        PUT( tab & "LI" & tab );
+--	        if  IS_LAST  then
+--		PUT_LINE( PRINT_NUM( D( SM_VALUE, D( AS_EXP2, TYPE_RANGE ) ) ) );
+--	        else
+--		PUT_LINE( PRINT_NUM( D( SM_VALUE, D( AS_EXP1, TYPE_RANGE ) ) ) );
+--	        end if;
+--	      end;
+--	    end if;
 
 	  end		NORMAL_FIRST_LAST;
 			-----------------
@@ -1928,10 +1967,56 @@ end;
     procedure	CODE_LENGTH
     is		-----------
 
-      PREFIX_TYPE		: TREE		:= D( SM_EXP_TYPE, PREFIX_NAME );				-- Un tableau
-      PREFIX_DEFN		: TREE		:= D( SM_DEFN, PREFIX_NAME );
+--      PREFIX_TYPE		: TREE		:= D( SM_EXP_TYPE, PREFIX_NAME );				-- Un tableau
+--      PREFIX_DEFN		: TREE		:= D( SM_DEFN, PREFIX_NAME );
+
+--    begin
+
+      PREFIX_DEFN		: TREE		:= D( SM_DEFN, PREFIX_NAME );					-- toujours present
+      PREFIX_TYPE		: TREE		:= TREE_VOID;						-- differe : marque de type -> pas de SM_EXP_TYPE
 
     begin
+      -- 'LENGTH d'une MARQUE de sous-type de tableau CONTRAINT (VEC5'LENGTH).
+      -- Le prefixe designe un type, pas un objet : il ne porte pas SM_EXP_TYPE,
+      -- et la longueur est STATIQUE.  On la calcule ici (LST - FST + 1, borne a 0
+      -- par CLAMP0) depuis les sous-types d'indice, meme idiome que C-U1
+      -- (CODE_FIRST_LAST) et CODE_RANGE_ATTRIBUTE_BOUND.  Sortie anticipee AVANT
+      -- toute lecture de SM_EXP_TYPE.
+      if  PREFIX_DEFN.TY = DN_SUBTYPE_ID  or else  PREFIX_DEFN.TY = DN_TYPE_ID  then
+        declare
+          TS	: TREE	:= D( SM_TYPE_SPEC, PREFIX_DEFN );
+        begin
+          if  TS.TY = DN_CONSTRAINED_ARRAY  then
+            declare
+              DIM_EXP	: TREE		:= D( AS_EXP, ATTRIBUTE );
+              NUM_DIM	: INTEGER		:= 1;
+              IDX_S	: SEQ_TYPE	:= LIST( D( SM_INDEX_SUBTYPE_S, TS ) );
+              IDX_TYPE	: TREE;
+              RNG	: TREE;
+              LO, HI_B	: INTEGER;
+              LEN	: INTEGER;
+            begin
+              if  DIM_EXP /= TREE_VOID  then
+                NUM_DIM := DI( SM_VALUE, DIM_EXP );
+              end if;
+              for K in 1 .. NUM_DIM  loop
+                POP( IDX_S, IDX_TYPE );
+              end loop;
+              RNG   := D( SM_RANGE, IDX_TYPE );
+              LO    := DI( SM_VALUE, D( AS_EXP1, RNG ) );
+              HI_B  := DI( SM_VALUE, D( AS_EXP2, RNG ) );
+              LEN   := HI_B - LO + 1;
+              if  LEN < 0  then  LEN := 0;  end if;			-- intervalle nul
+              PUT_LINE( tab & "LI" & tab & IMAGE( LEN ) );
+              return;
+            end;
+          end if;
+        end;
+      end if;
+
+      PREFIX_TYPE := D( SM_EXP_TYPE, PREFIX_NAME );				-- prefixe = objet : chemin d'origine
+
+
 		-- Cas Ada 83 : attribut LENGTH sur une valeur access-to-array.
 		-- A1'LENGTH est implicitement A1.all'LENGTH.
 		-- A1 est scalaire access : pas de A1__u.

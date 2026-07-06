@@ -204,3 +204,28 @@ Dernière entrée : n° 66 (5 juillet 2026).
     (2) à défaut, diff-er tout fichier complet contre la version locale
     AVANT écrasement ; jamais d'intégration en aveugle. Corollaire :
     rafraîchir les sources projet juste avant chaque lot. (session 5 juillet)
+
+67. **Offsets `virtual at 4` à travers le `__u` d'un type NON contraint =
+    lecture hors bloc.** Le bloc info d'un type non contraint ne réserve que
+    `use__info` et `SIZ` (:= -1, sentinelle correcte) ; les COMP_SIZ/FST/LST
+    n'y sont que des OFFSETS sans mémoire. Tout `LId __u, _TYPE.FST_1` dont le
+    `__u` pointe encore sur ce bloc lit les VARs voisines du frame — des
+    adresses de pile. Signature comportementale caractéristique : sous ASLR,
+    blocage (boucle géante) au 1ᵉʳ run, échec PROPRE au 2ᵉ — le
+    non-déterminisme entre exécutions EST le témoin de la lecture hors bloc,
+    et sa disparition la preuve du correctif. Règle : un objet dont le
+    SM_OBJ_TYPE est DN_ARRAY (ou DN_RECORD mutable un jour) doit TOUJOURS
+    re-pointer son `__u` vers un bloc contraint (anonyme ou du sous-type)
+    avant toute consommation ; le prélude commun qui pose `__u := use__info
+    du type` n'est qu'un provisoire à écraser (précédent : littéral chaîne).
+    (session 6 juillet)
+
+68. **Après un correctif systémique, l'unique rouge résiduel se suspecte
+    d'abord côté ORACLE.** Vécu sur ARRAY_TEST3 : neuf échecs + un blocage
+    ramenés à un seul foyer (doublet VC/VD) ; le correctif en a éteint huit
+    d'un coup, le neuvième (7.3) était un mensonge du test lui-même
+    (`LONGUEUR(VD) = 4` pour un agrégat à trois composants). Un compilateur
+    juste contre un oracle faux reste rouge indéfiniment. Règle de revue :
+    quand la chaîne causale d'un diagnostic prédit la chute GROUPÉE des
+    échecs, tout survivant isolé se re-vérifie à la main dans la source du
+    test avant de rouvrir l'expander. (session 6 juillet)

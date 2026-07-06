@@ -154,3 +154,22 @@ mutable → FAUX, objet contraint → VRAI), agrégat qualifié de record
 (doublet anonyme), sous-type contraint d'un type à défauts (MLEAF), mutable
 composant de record (BOX.N, taille max), changement de variante à travers
 un formel in out, retour de mutable par fonction.
+
+### ARRAY_TEST3 (pilier 3.6 reliquat non contraint, session 6 juillet, sections U1–U9)
+
+Format auto-jugeant (CHECK + verdict greppable « ARRAY_TEST3 PASSE »).
+Couvre les 7 trous de NOTE_MODELE_UNCONSTRAINED : U1 attributs sur marque de
+sous-type non contraint (VEC5) ; U2 objets contraints d'un type non contraint
+(directe, sous-type nommé, 2D) ; U3 objet non contraint initialisé par agrégat
+à bornes DÉDUITES (positionnel → INTEGER'FIRST.., nommé → 1..3) ; U4 littéral
+chaîne ; U5 STRING(1..N) et STRING(N..2N) dynamiques ; U6 composants non
+scalaires (array of constrained array, array of record) ; U7 formels/retours
+non contraints, 'LENGTH sur formel, 2D ; U8 retour STRING de longueur calculée
+(résultat nommé — contournement dette D10) ; U9 conversion avec glissement
+d'indices A3(VC), 7..9.
+**Sortie attendue** : les 9 bannières « === Un. ... === » sans aucune ligne
+« * ECHEC », puis `RESULTAT :  37 OK,   0 ECHECS` / `ARRAY_TEST3 PASSE`.
+**Témoin négatif** (piège n° 67) : deux exécutions consécutives IDENTIQUES —
+toute variation run-à-run signe une lecture hors bloc via `__u`.
+Historique d'oracle : 7.3 corrigé le 6 juillet (`LONGUEUR(VD) = 3`, et non 4 —
+piège n° 68). Vert intégral le 6 juillet 2026.
