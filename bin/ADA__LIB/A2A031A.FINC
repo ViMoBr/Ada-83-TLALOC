@@ -1,6 +1,9 @@
 if ~ definite REPORT
 include 'REPORT.FINC'
 end if
+if ~ definite REPORT
+include 'REPORT.FINC'
+end if
 PRO	A2A031A_L1				;---------- PRO A2A031A
 ELB 1					;    BODY ELAB
 
@@ -47,6 +50,9 @@ end virtual
 	LI	 size*8
 	Sd	1, SIZ
 end namespace
+STR EX1__exc, "EX1"
+STR EX2__exc, "EX2"
+STR EX3__exc, "EX3"
 VAR VAR_disp, q				; variable record : pointeur aux data record
 VAR VAR__u, q				; variable record : pointeur aux useinfo
 VAR VAR__dat, STANDARD.A2A031A_L1._REC.size
@@ -68,34 +74,42 @@ VAR EVAR_disp, b				; variable entiere
 
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-STR STR_L2, "CHECK USE OF ! AS SEPARATOR IN PLACE OF |"	; constante string="CHECK USE OF ! AS SEPARATOR IN PLACE OF |"
-	LCA	STR_L2.data_ptr
-STR STR_L3, "A2A031A"			; constante string="A2A031A"
-	LCA	STR_L3.data_ptr
+VAR	exc_ctx_L2, q, 9
+	La	0, STANDARD.EXCEPTIONS_TOP_CTX_disp
+	Sa  1,	exc_ctx_L2
+	LCA	L2
+	Sa  1,	exc_ctx_L2 + STANDARD._EXCEPTION_CONTEXT.DISPATCH
+	EXC_MACH  1,	exc_ctx_L2
+	LVA  1,	exc_ctx_L2
+	Sa	0, STANDARD.EXCEPTIONS_TOP_CTX_disp
+STR STR_L4, "CHECK USE OF ! AS SEPARATOR IN PLACE OF |"	; constante string="CHECK USE OF ! AS SEPARATOR IN PLACE OF |"
+	LCA	STR_L4.data_ptr
+STR STR_L5, "A2A031A"			; constante string="A2A031A"
+	LCA	STR_L5.data_ptr
 	CALL	STANDARD.REPORT. ,TEST_L1
 					; debut case
 	Lb 1,	EVAR_disp
 	DUP
 	LI	2
 	CEQ
-	BT	L5
+	BT	L7
 	DUP
 	LI	1
 	CEQ
-	BT	L6
+	BT	L8
 	DUP
 	LI	0
 	CEQ
-	BT	L6
+	BT	L8
 	DROP
-	BRA	L4
-L5:
+	BRA	L6
+L7:
 	DROP
-	BRA	L4
+	BRA	L6
+L8:
+	DROP
+	BRA	L6
 L6:
-	DROP
-	BRA	L4
-L4:
 					; fin case
 	LVA 1,	VAR_disp
 	La
@@ -120,12 +134,32 @@ L4:
 	Sd
 	DROP
 	CALL	STANDARD.REPORT. ,RESULT_L6
-; CHOICE_EXP in EXCEPTIONS todo
-; CHOICE_EXP in EXCEPTIONS todo
-; CHOICE_EXP in EXCEPTIONS todo
-	BRA	L7
-L8:
-L7:
+	La 0,	STANDARD.EXCEPTIONS_TOP_CTX_disp
+	La , 0
+	Sa 0,	STANDARD.EXCEPTIONS_TOP_CTX_disp
+	BRA	L3
+L2:
+	La	0, STANDARD.EXCEPTIONS_CURRENT_disp
+	Sa  1,	exc_ctx_L2
+	La	0, STANDARD.EXCEPTIONS_CURRENT_disp
+	LCA	STANDARD.A2A031A_L1.EX1__exc.data_ptr
+	CEQ
+	BT	L10
+	La	0, STANDARD.EXCEPTIONS_CURRENT_disp
+	LCA	STANDARD.A2A031A_L1.EX2__exc.data_ptr
+	CEQ
+	BT	L10
+	La	0, STANDARD.EXCEPTIONS_CURRENT_disp
+	LCA	STANDARD.A2A031A_L1.EX3__exc.data_ptr
+	CEQ
+	BT	L10
+	BRA	L11
+L10:
+	BRA	L9
+L11:
+	BRA	STANDARD.exc_raise_
+L9:
+L3:
 ret_lbl:
 	UNLINK 1
 	RTD

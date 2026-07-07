@@ -1,6 +1,9 @@
 if ~ definite MACHINE_CODE
 include 'MACHINE_CODE.FINC'
 end if
+if ~ definite MACHINE_CODE
+include 'MACHINE_CODE.FINC'
+end if
 CALENDAR = 'CALENDAR'
 namespace CALENDAR				;---------- PACKAGE (BDY)
 elab_spec:				;    SPEC ELAB
@@ -89,6 +92,7 @@ end namespace
 					; sub program entry decl (in instantiation FALSE )
 					; sub program entry decl (in instantiation FALSE )
 					; sub program entry decl (in instantiation FALSE )
+STR TIME_ERROR__exc, "TIME_ERROR"
 
 					; _TIME FIXED TYPE INFO
 _TIME = '_TIME'
@@ -173,7 +177,7 @@ begin:					;---------- BDY INSTRUCTIONS
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	2
 	CLE
-	BF	L3
+	BF	L5
 	Lq  1,	-Y_IN_ofs
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
@@ -184,8 +188,8 @@ begin:					;---------- BDY INSTRUCTIONS
 	LI	9
 	ADD
 	Sq  1,	M_ADJ_disp
-	BRA	L2
-L3:
+	BRA	L4
+L5:
 	Lq  1,	-Y_IN_ofs
 	Sq  1,	Y_disp
 	Lq  1,	-M_IN_ofs
@@ -193,20 +197,20 @@ L3:
 	LI	3
 	SUB
 	Sq  1,	M_ADJ_disp
-L2:					; post if
+L4:					; post if
 					; debut if
 	Lq 1,	Y_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	CGE
-	BF	L5
+	BF	L7
 	Lq 1,	Y_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	400
 	DIV
 	Sq  1,	ERA_disp
-	BRA	L4
-L5:
+	BRA	L6
+L7:
 	Lq 1,	Y_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	399
@@ -215,7 +219,7 @@ L5:
 	LI	400
 	DIV
 	Sq  1,	ERA_disp
-L4:					; post if
+L6:					; post if
 	Lq 1,	Y_disp
 	Lq 1,	ERA_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
@@ -272,8 +276,8 @@ excep:
 endPRO					;---------- end PRO DAYS_FROM_CIVIL
 end if
 
-if defined CIVIL_FROM_DAYS_L6_
-PRO	CIVIL_FROM_DAYS_L6			;---------- PRO CIVIL_FROM_DAYS
+if defined CIVIL_FROM_DAYS_L8_
+PRO	CIVIL_FROM_DAYS_L8			;---------- PRO CIVIL_FROM_DAYS
 PRMS					;    debut parametrage
 	PRM DAYS_ofs				; in
 	PRM Y_ofs				; out
@@ -306,17 +310,17 @@ begin:					;---------- BDY INSTRUCTIONS
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	CGE
-	BF	L8
+	BF	L12
 	Lq  1,	-DAYS_ofs
 	Sq  1,	TMP_disp
-	BRA	L7
-L8:
+	BRA	L11
+L12:
 	Lq  1,	-DAYS_ofs
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	00146096
 	SUB
 	Sq  1,	TMP_disp
-L7:					; post if
+L11:					; post if
 	Lq 1,	TMP_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	00146097
@@ -405,14 +409,14 @@ L7:					; post if
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	10
 	CLT
-	BF	L10
+	BF	L14
 	Lq 1,	MP_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	3
 	ADD
 	Sq  1,	M_OUT_disp
-	BRA	L9
-L10:
+	BRA	L13
+L14:
 	Lq 1,	MP_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	9
@@ -423,7 +427,7 @@ L10:
 	LI	1
 	ADD
 	Sq  1,	Y_OUT_disp
-L9:					; post if
+L13:					; post if
 	Lq 1,	Y_OUT_disp
 	SIq  1,	-Y_ofs
 	Lq 1,	M_OUT_disp
@@ -475,8 +479,8 @@ VAR T_disp, q				; variable fixed
 VAR NANOSEC_PART_disp, q			; variable fixed
 
 
-if defined GETTIME_SYSCALL_L11_
-PRO	GETTIME_SYSCALL_L11			;---------- PRO GETTIME_SYSCALL
+if defined GETTIME_SYSCALL_L15_
+PRO	GETTIME_SYSCALL_L15			;---------- PRO GETTIME_SYSCALL
 PRMS					;    debut parametrage
 	PRM TV_ofs				; out
 endPRMS					;    fin parametrage
@@ -494,7 +498,7 @@ end if
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 	LVA  1,	LTV_disp
-	CALL	STANDARD.CALENDAR.CLOCK_L1. ,GETTIME_SYSCALL_L11
+	CALL	STANDARD.CALENDAR.CLOCK_L1. ,GETTIME_SYSCALL_L15
 	LIq	1, LTV_disp, STANDARD.CALENDAR.CLOCK_L1._LINUX_TIMEVAL.NANOSEC
 ; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_FLOAT
 	CVTIF					; CODE_CONVERSION FLOAT TARGET FROM DN_INTEGER
@@ -534,8 +538,8 @@ excep:
 endPRO					;---------- end PRO CLOCK
 end if
 
-if defined WHOLE_SECONDS_L12_
-PRO	WHOLE_SECONDS_L12			;---------- PRO WHOLE_SECONDS
+if defined WHOLE_SECONDS_L20_
+PRO	WHOLE_SECONDS_L20			;---------- PRO WHOLE_SECONDS
 PRMS					;    debut parametrage
 	PRM DATE_ofs				; in
 	PRM result__ofs				; resultat de fonction
@@ -556,14 +560,14 @@ begin:					;---------- BDY INSTRUCTIONS
 	LI	 1
 	CVTIX
 	CEQ
-	BF	L14
+	BF	L24
 ; CODE_RETURN : EXPR TYPE = DN_INTEGER
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	Sq  1,	-result__ofs
 	BRA ret_lbl
-	BRA	L13
-L14:
+	BRA	L23
+L24:
 ; CODE_RETURN : EXPR TYPE = DN_INTEGER
 	Lq 1,	D_disp
 ; CODE_NUMERIC_LITERAL DN_FIXED
@@ -578,7 +582,7 @@ L14:
 	CVTXI
 	Sq  1,	-result__ofs
 	BRA ret_lbl
-L13:					; post if
+L23:					; post if
 ret_lbl:
 	UNLINK 1
 	RTD	prm_siz-8
@@ -596,7 +600,7 @@ ELB 1					;    BODY ELAB
 VAR SECONDS_TOTAL_disp, q			; variable entiere
 	LI	0					; lieu resultat sur pile
 	La  1,	-DATE_ofs
-	CALL	STANDARD.CALENDAR. ,WHOLE_SECONDS_L12
+	CALL	STANDARD.CALENDAR. ,WHOLE_SECONDS_L20
 	Sq  1,	SECONDS_TOTAL_disp
 
 VAR DAYS_FROM_1900_disp, q			; variable entiere
@@ -619,7 +623,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	Lq 1,	DAYS_FROM_1900_disp
 	Lq 0,	STANDARD.CALENDAR.DAYS_1900_disp
 	ADD
-	CALL	STANDARD.CALENDAR. ,CIVIL_FROM_DAYS_L6
+	CALL	STANDARD.CALENDAR. ,CIVIL_FROM_DAYS_L8
 ; CODE_RETURN : EXPR TYPE = DN_INTEGER
 	Lq 1,	Y_disp
 ; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
@@ -642,7 +646,7 @@ ELB 1					;    BODY ELAB
 VAR SECONDS_TOTAL_disp, q			; variable entiere
 	LI	0					; lieu resultat sur pile
 	La  1,	-DATE_ofs
-	CALL	STANDARD.CALENDAR. ,WHOLE_SECONDS_L12
+	CALL	STANDARD.CALENDAR. ,WHOLE_SECONDS_L20
 	Sq  1,	SECONDS_TOTAL_disp
 
 VAR DAYS_FROM_1900_disp, q			; variable entiere
@@ -665,7 +669,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	Lq 1,	DAYS_FROM_1900_disp
 	Lq 0,	STANDARD.CALENDAR.DAYS_1900_disp
 	ADD
-	CALL	STANDARD.CALENDAR. ,CIVIL_FROM_DAYS_L6
+	CALL	STANDARD.CALENDAR. ,CIVIL_FROM_DAYS_L8
 ; CODE_RETURN : EXPR TYPE = DN_INTEGER
 	Lq 1,	M_disp
 ; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
@@ -688,7 +692,7 @@ ELB 1					;    BODY ELAB
 VAR SECONDS_TOTAL_disp, q			; variable entiere
 	LI	0					; lieu resultat sur pile
 	La  1,	-DATE_ofs
-	CALL	STANDARD.CALENDAR. ,WHOLE_SECONDS_L12
+	CALL	STANDARD.CALENDAR. ,WHOLE_SECONDS_L20
 	Sq  1,	SECONDS_TOTAL_disp
 
 VAR DAYS_FROM_1900_disp, q			; variable entiere
@@ -711,7 +715,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	Lq 1,	DAYS_FROM_1900_disp
 	Lq 0,	STANDARD.CALENDAR.DAYS_1900_disp
 	ADD
-	CALL	STANDARD.CALENDAR. ,CIVIL_FROM_DAYS_L6
+	CALL	STANDARD.CALENDAR. ,CIVIL_FROM_DAYS_L8
 ; CODE_RETURN : EXPR TYPE = DN_INTEGER
 	Lq 1,	D_disp
 ; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
@@ -734,7 +738,7 @@ ELB 1					;    BODY ELAB
 VAR SECONDS_TOTAL_disp, q			; variable entiere
 	LI	0					; lieu resultat sur pile
 	La  1,	-DATE_ofs
-	CALL	STANDARD.CALENDAR. ,WHOLE_SECONDS_L12
+	CALL	STANDARD.CALENDAR. ,WHOLE_SECONDS_L20
 	Sq  1,	SECONDS_TOTAL_disp
 
 VAR SEC_OF_DAY_disp, q			; variable entiere
@@ -788,7 +792,7 @@ ELB 1					;    BODY ELAB
 VAR SEC_TOTAL_disp, q			; variable entiere
 	LI	0					; lieu resultat sur pile
 	La  1,	-DATE_ofs
-	CALL	STANDARD.CALENDAR. ,WHOLE_SECONDS_L12
+	CALL	STANDARD.CALENDAR. ,WHOLE_SECONDS_L20
 	Sq  1,	SEC_TOTAL_disp
 
 VAR DAYS_FROM_1900_disp, q			; variable entiere
@@ -828,7 +832,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	Lq 1,	DAYS_FROM_1900_disp
 	Lq 0,	STANDARD.CALENDAR.DAYS_1900_disp
 	ADD
-	CALL	STANDARD.CALENDAR. ,CIVIL_FROM_DAYS_L6
+	CALL	STANDARD.CALENDAR. ,CIVIL_FROM_DAYS_L8
 	Lq 1,	Y_disp
 ; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
 	SId  1,	-YEAR_ofs

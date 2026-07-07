@@ -113,8 +113,8 @@ excep:
 endPRO					;---------- end PRO V_CLEAR
 end if
 
-if defined V_INCREMENT_L2_
-PRO	V_INCREMENT_L2				;---------- PRO V_INCREMENT
+if defined V_INCREMENT_L4_
+PRO	V_INCREMENT_L4				;---------- PRO V_INCREMENT
 PRMS					;    debut parametrage
 	PRM DLTA_ofs				; in
 	PRM V_ofs				; in out
@@ -154,7 +154,7 @@ begin:					;---------- BDY INSTRUCTIONS
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	10000
 	CGE
-	BF	L4
+	BF	L8
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	Sw  2,	CARRY_disp
@@ -163,9 +163,9 @@ begin:					;---------- BDY INSTRUCTIONS
 	LI	10000
 	SUB
 	Sw  2,	TEMP_disp
-	BRA	L3
-L4:
-L3:					; post if
+	BRA	L7
+L8:
+L7:					; post if
 	La 2, -V_ofs
 	LIVA 	, 0, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.D
 ; EXPRESSIONS.CODE_INDEXED adresse component id
@@ -180,33 +180,33 @@ L3:					; post if
 	ADD					; add offset to start address
 	Lw 2,	TEMP_disp
 	Sw
-VAR	IL6_disp, d				; compteur boucle LOOP__1
+VAR	IL10_disp, d				; compteur boucle LOOP__1
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	2
-	Sd  2,	IL6_disp
-VAR	LMT_IL6_disp, d				; limite boucle LOOP__1
+	Sd  2,	IL10_disp
+VAR	LMT_IL10_disp, d			; limite boucle LOOP__1
 	La 2, -V_ofs
 	LId	, 0, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.L
-	Sd  2,	LMT_IL6_disp
-	Ld  2,	IL6_disp				; test null range LOOP__1
-	Ld  2,	LMT_IL6_disp
+	Sd  2,	LMT_IL10_disp
+	Ld  2,	IL10_disp				; test null range LOOP__1
+	Ld  2,	LMT_IL10_disp
 	CGT
-	BT	L5
+	BT	L9
 LOOP__1:					; corps boucle LOOP__1
 					; debut if
 	Lw 2,	CARRY_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	CEQ
-	BF	L8
+	BF	L12
 	BRA ret_lbl
-	BRA	L7
-L8:
-L7:					; post if
+	BRA	L11
+L12:
+L11:					; post if
 	La 2, -V_ofs
 	LIVA 	, 0, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.D
 ; EXPRESSIONS.CODE_INDEXED adresse component id
-	Ld	2, IL6_disp
+	Ld	2, IL10_disp
 	Ld	 1, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR_DIGITS._FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	Ld	 1, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR_DIGITS._COMP_SIZ
@@ -224,7 +224,7 @@ L7:					; post if
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	10000
 	CGE
-	BF	L10
+	BF	L14
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	Sw  2,	CARRY_disp
@@ -233,16 +233,16 @@ L7:					; post if
 	LI	10000
 	SUB
 	Sw  2,	TEMP_disp
-	BRA	L9
-L10:
+	BRA	L13
+L14:
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	Sw  2,	CARRY_disp
-L9:					; post if
+L13:					; post if
 	La 2, -V_ofs
 	LIVA 	, 0, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.D
 ; EXPRESSIONS.CODE_INDEXED adresse component id
-	Ld	2, IL6_disp
+	Ld	2, IL10_disp
 	Ld	 1, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR_DIGITS._FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	Ld	 1, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR_DIGITS._COMP_SIZ
@@ -252,21 +252,21 @@ L9:					; post if
 	ADD					; add offset to start address
 	Lw 2,	TEMP_disp
 	Sw
-	Ld  2,	IL6_disp				; test de sortie LOOP__1
-	Ld  2,	LMT_IL6_disp
+	Ld  2,	IL10_disp				; test de sortie LOOP__1
+	Ld  2,	LMT_IL10_disp
 	CEQ
-	BT	L5
-	Ld  2,	IL6_disp				; mise a jour compteur LOOP__1
+	BT	L9
+	Ld  2,	IL10_disp				; mise a jour compteur LOOP__1
 	INC
-	Sd  2,	IL6_disp
+	Sd  2,	IL10_disp
 	BRA	LOOP__1				; iteration suivante LOOP__1
-L5:					; post loop LOOP__1
+L9:					; post loop LOOP__1
 					; debut if
 	Lw 2,	CARRY_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	CGT
-	BF	L12
+	BF	L16
 	La 2, -V_ofs
 	LIVA 	, 0, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.L
 	La 2, -V_ofs
@@ -291,9 +291,9 @@ L5:					; post loop LOOP__1
 	Sw
 	La  2,	-V_ofs
 	CALL	STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS. ,NORMALIZE_L9
-	BRA	L11
-L12:
-L11:					; post if
+	BRA	L15
+L16:
+L15:					; post if
 ret_lbl:
 	UNLINK 2
 	RTD	prm_siz
@@ -301,8 +301,8 @@ excep:
 endPRO					;---------- end PRO V_INCREMENT
 end if
 
-if defined NEXT_CHR_L13_
-PRO	NEXT_CHR_L13				;---------- PRO NEXT_CHR
+if defined NEXT_CHR_L17_
+PRO	NEXT_CHR_L17				;---------- PRO NEXT_CHR
 ELB 2					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
@@ -315,7 +315,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	Ld 1,	STANDARD.IDL.SEM_PHASE_L11.EVAL_NUM_L501.COL_disp
 	Ld 1,	STANDARD.IDL.SEM_PHASE_L11.EVAL_NUM_L501.MAXCOL_disp
 	CLE
-	BF	L15
+	BF	L21
 	LVA	1, -TXT_ofs
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	STANDARD.IDL.SEM_PHASE_L11.EVAL_NUM_L501.COL_disp
@@ -332,11 +332,11 @@ begin:					;---------- BDY INSTRUCTIONS
 	ADD					; add offset to start address
 	Lb
 	Sb  1,	CHR_disp
-	BRA	L14
-L15:
+	BRA	L20
+L21:
 	LI	32
 	Sb  1,	CHR_disp
-L14:					; post if
+L20:					; post if
 ret_lbl:
 	UNLINK 2
 	RTD
@@ -356,55 +356,55 @@ LOOP__2:
 	CGE
 	ET
 	DUP
-	BT	L18
+	BT	L26
 	DROP
 	Lb 1,	CHR_disp
 	LI	46
 	CEQ
-L18:
+L26:
 	DUP
-	BT	L17
+	BT	L25
 	DROP
 	Lb 1,	CHR_disp
 	LI	95
 	CEQ
-L17:
-	BF	L16
+L25:
+	BF	L24
 					; debut if
 	Lb 1,	CHR_disp
 	LI	46
 	CEQ
-	BF	L20
+	BF	L28
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	Sd  1,	SCALEFACTOR_disp
-	BRA	L19
-L20:
+	BRA	L27
+L28:
 	Lb 1,	CHR_disp
 	LI	95
 	CNE
-	BF	L21
+	BF	L29
 	LVA  1,	VNUMER_disp
 	Lb 1,	CHR_disp
 	LI	48
 	SUB
-	CALL	STANDARD.IDL.SEM_PHASE_L11.EVAL_NUM_L501. ,V_INCREMENT_L2
+	CALL	STANDARD.IDL.SEM_PHASE_L11.EVAL_NUM_L501. ,V_INCREMENT_L4
 	Ld 1,	SCALEFACTOR_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SUB
 	Sd  1,	SCALEFACTOR_disp
-	BRA	L19
-L21:
-L19:					; post if
-	CALL	STANDARD.IDL.SEM_PHASE_L11.EVAL_NUM_L501. ,NEXT_CHR_L13
+	BRA	L27
+L29:
+L27:					; post if
+	CALL	STANDARD.IDL.SEM_PHASE_L11.EVAL_NUM_L501. ,NEXT_CHR_L17
 	BRA	LOOP__2
-L16:					; post loop LOOP__2
+L24:					; post loop LOOP__2
 					; debut if
 	Lb 1,	CHR_disp
 	LI	35
 	CEQ
-	BF	L23
+	BF	L31
 	LIVA 	1, VNUMER_disp, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.D
 ; EXPRESSIONS.CODE_INDEXED adresse component id
 ; CODE_NUMERIC_LITERAL DN_INTEGER
@@ -433,44 +433,44 @@ L16:					; post loop LOOP__2
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	Sw
-	CALL	STANDARD.IDL.SEM_PHASE_L11.EVAL_NUM_L501. ,NEXT_CHR_L13
+	CALL	STANDARD.IDL.SEM_PHASE_L11.EVAL_NUM_L501. ,NEXT_CHR_L17
 LOOP__3:
 	Lb 1,	CHR_disp
 	LI	35
 	CNE
-	BF	L24
+	BF	L32
 					; debut if
 	Lb 1,	CHR_disp
 	LI	46
 	CEQ
-	BF	L26
+	BF	L34
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	Sd  1,	SCALEFACTOR_disp
-	BRA	L25
-L26:
+	BRA	L33
+L34:
 	Lb 1,	CHR_disp
 	LI	95
 	CEQ
-	BF	L27
-	BRA	L25
-L27:
+	BF	L35
+	BRA	L33
+L35:
 	Lb 1,	CHR_disp
 	LI	57
 	CLE
-	BF	L28
+	BF	L36
 	LVA  1,	VNUMER_disp
 	Lb 1,	CHR_disp
 	LI	48
 	SUB
-	CALL	STANDARD.IDL.SEM_PHASE_L11.EVAL_NUM_L501. ,V_INCREMENT_L2
+	CALL	STANDARD.IDL.SEM_PHASE_L11.EVAL_NUM_L501. ,V_INCREMENT_L4
 	Ld 1,	SCALEFACTOR_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SUB
 	Sd  1,	SCALEFACTOR_disp
-	BRA	L25
-L28:
+	BRA	L33
+L36:
 	LVA  1,	VNUMER_disp
 	Lb 1,	CHR_disp
 	LI	65
@@ -478,61 +478,64 @@ L28:
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	10
 	ADD
-	CALL	STANDARD.IDL.SEM_PHASE_L11.EVAL_NUM_L501. ,V_INCREMENT_L2
+	CALL	STANDARD.IDL.SEM_PHASE_L11.EVAL_NUM_L501. ,V_INCREMENT_L4
 	Ld 1,	SCALEFACTOR_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SUB
 	Sd  1,	SCALEFACTOR_disp
-L25:					; post if
-	CALL	STANDARD.IDL.SEM_PHASE_L11.EVAL_NUM_L501. ,NEXT_CHR_L13
+L33:					; post if
+	CALL	STANDARD.IDL.SEM_PHASE_L11.EVAL_NUM_L501. ,NEXT_CHR_L17
 	BRA	LOOP__3
-L24:					; post loop LOOP__3
-	CALL	STANDARD.IDL.SEM_PHASE_L11.EVAL_NUM_L501. ,NEXT_CHR_L13
-	BRA	L22
-L23:
-L22:					; post if
+L32:					; post loop LOOP__3
+	CALL	STANDARD.IDL.SEM_PHASE_L11.EVAL_NUM_L501. ,NEXT_CHR_L17
+	BRA	L30
+L31:
+L30:					; post if
 					; debut if
 	Lb 1,	CHR_disp
 	LI	69
 	CEQ
-	BF	L30
-	CALL	STANDARD.IDL.SEM_PHASE_L11.EVAL_NUM_L501. ,NEXT_CHR_L13
+	BF	L38
+	CALL	STANDARD.IDL.SEM_PHASE_L11.EVAL_NUM_L501. ,NEXT_CHR_L17
 					; debut if
 	Lb 1,	CHR_disp
 	LI	43
 	CEQ
-	BF	L32
-	CALL	STANDARD.IDL.SEM_PHASE_L11.EVAL_NUM_L501. ,NEXT_CHR_L13
-	BRA	L31
-L32:
+	BF	L40
+	CALL	STANDARD.IDL.SEM_PHASE_L11.EVAL_NUM_L501. ,NEXT_CHR_L17
+	BRA	L39
+L40:
 	Lb 1,	CHR_disp
 	LI	45
 	CEQ
-	BF	L33
-	CALL	STANDARD.IDL.SEM_PHASE_L11.EVAL_NUM_L501. ,NEXT_CHR_L13
+	BF	L41
+	CALL	STANDARD.IDL.SEM_PHASE_L11.EVAL_NUM_L501. ,NEXT_CHR_L17
 	LI	0
 	Sb  1,	EXPONENT_POSITIVE_disp
-	BRA	L31
-L33:
-L31:					; post if
+	BRA	L39
+L41:
+L39:					; post if
 LOOP__4:
 	Lb 1,	CHR_disp
 	LI	32
 	CNE
-	BF	L34
+	BF	L42
 					; debut if
 	Ld 1,	EXPONENT_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	3275
 	CGT
-	BF	L36
-STR STR_L37, "!! EXPONENT IN NUMERIC LIT TOO LARGE"	; constante string="!! EXPONENT IN NUMERIC LIT TOO LARGE"
-	LCA	STR_L37.data_ptr
+	BF	L44
+STR STR_L45, "!! EXPONENT IN NUMERIC LIT TOO LARGE"	; constante string="!! EXPONENT IN NUMERIC LIT TOO LARGE"
+	LCA	STR_L45.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-	BRA	L35
-L36:
-L35:					; post if
+	LCA	STANDARD.PROGRAM_ERROR__exc.data_ptr
+	Sa	0, STANDARD.EXCEPTIONS_CURRENT_disp
+	BRA	STANDARD.exc_raise_
+	BRA	L43
+L44:
+L43:					; post if
 	Ld 1,	EXPONENT_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	10
@@ -542,29 +545,29 @@ L35:					; post if
 	LI	48
 	SUB
 	Sd  1,	EXPONENT_disp
-	CALL	STANDARD.IDL.SEM_PHASE_L11.EVAL_NUM_L501. ,NEXT_CHR_L13
+	CALL	STANDARD.IDL.SEM_PHASE_L11.EVAL_NUM_L501. ,NEXT_CHR_L17
 	BRA	LOOP__4
-L34:					; post loop LOOP__4
+L42:					; post loop LOOP__4
 					; debut if
 	Lb 1,	EXPONENT_POSITIVE_disp
 	LI	1
 	OUX
-	BF	L39
+	BF	L47
 	Ld 1,	EXPONENT_disp
 	NEG
 	Sd  1,	EXPONENT_disp
-	BRA	L38
-L39:
-L38:					; post if
-	BRA	L29
-L30:
-L29:					; post if
+	BRA	L46
+L47:
+L46:					; post if
+	BRA	L37
+L38:
+L37:					; post if
 					; debut if
 	Ld 1,	SCALEFACTOR_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	CLT
-	BF	L41
+	BF	L49
 	Ld 1,	EXPONENT_disp
 	Ld 1,	SCALEFACTOR_disp
 	ADD
@@ -585,80 +588,80 @@ L29:					; post if
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	Sw
-	BRA	L40
-L41:
-L40:					; post if
+	BRA	L48
+L49:
+L48:					; post if
 					; debut if
 	Ld 1,	EXPONENT_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	CGT
-	BF	L43
-VAR	IL45_disp, d				; compteur boucle LOOP__5
+	BF	L51
+VAR	IL53_disp, d				; compteur boucle LOOP__5
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
-	Sd  1,	IL45_disp
-VAR	LMT_IL45_disp, d			; limite boucle LOOP__5
+	Sd  1,	IL53_disp
+VAR	LMT_IL53_disp, d			; limite boucle LOOP__5
 	Ld 1,	EXPONENT_disp
-	Sd  1,	LMT_IL45_disp
-	Ld  1,	IL45_disp				; test null range LOOP__5
-	Ld  1,	LMT_IL45_disp
+	Sd  1,	LMT_IL53_disp
+	Ld  1,	IL53_disp				; test null range LOOP__5
+	Ld  1,	LMT_IL53_disp
 	CGT
-	BT	L44
+	BT	L52
 LOOP__5:					; corps boucle LOOP__5
 	LVA  1,	VNUMER_disp
 	Ld 1,	RADIX_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS. ,V_SCALE_L13
-	Ld  1,	IL45_disp				; test de sortie LOOP__5
-	Ld  1,	LMT_IL45_disp
+	Ld  1,	IL53_disp				; test de sortie LOOP__5
+	Ld  1,	LMT_IL53_disp
 	CEQ
-	BT	L44
-	Ld  1,	IL45_disp				; mise a jour compteur LOOP__5
+	BT	L52
+	Ld  1,	IL53_disp				; mise a jour compteur LOOP__5
 	INC
-	Sd  1,	IL45_disp
+	Sd  1,	IL53_disp
 	BRA	LOOP__5				; iteration suivante LOOP__5
-L44:					; post loop LOOP__5
-	BRA	L42
-L43:
+L52:					; post loop LOOP__5
+	BRA	L50
+L51:
 	Ld 1,	EXPONENT_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	CLT
-	BF	L46
-VAR	IL48_disp, d				; compteur boucle LOOP__6
+	BF	L54
+VAR	IL56_disp, d				; compteur boucle LOOP__6
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
-	Sd  1,	IL48_disp
-VAR	LMT_IL48_disp, d			; limite boucle LOOP__6
+	Sd  1,	IL56_disp
+VAR	LMT_IL56_disp, d			; limite boucle LOOP__6
 	Ld 1,	EXPONENT_disp
 	NEG
-	Sd  1,	LMT_IL48_disp
-	Ld  1,	IL48_disp				; test null range LOOP__6
-	Ld  1,	LMT_IL48_disp
+	Sd  1,	LMT_IL56_disp
+	Ld  1,	IL56_disp				; test null range LOOP__6
+	Ld  1,	LMT_IL56_disp
 	CGT
-	BT	L47
+	BT	L55
 LOOP__6:					; corps boucle LOOP__6
 	LVA  1,	VDENOM_disp
 	Ld 1,	RADIX_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS. ,V_SCALE_L13
-	Ld  1,	IL48_disp				; test de sortie LOOP__6
-	Ld  1,	LMT_IL48_disp
+	Ld  1,	IL56_disp				; test de sortie LOOP__6
+	Ld  1,	LMT_IL56_disp
 	CEQ
-	BT	L47
-	Ld  1,	IL48_disp				; mise a jour compteur LOOP__6
+	BT	L55
+	Ld  1,	IL56_disp				; mise a jour compteur LOOP__6
 	INC
-	Sd  1,	IL48_disp
+	Sd  1,	IL56_disp
 	BRA	LOOP__6				; iteration suivante LOOP__6
-L47:					; post loop LOOP__6
-	BRA	L42
-L46:
-L42:					; post if
+L55:					; post loop LOOP__6
+	BRA	L50
+L54:
+L50:					; post if
 					; debut if
 	Ld 1,	SCALEFACTOR_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	CGE
-	BF	L50
+	BF	L58
 	LIVA 	1, VNUMER_disp, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.D
 ; EXPRESSIONS.CODE_INDEXED adresse component id
 	LId	1, VNUMER_disp, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.L
@@ -693,8 +696,8 @@ VAR	ANON_143_12__dat, STANDARD.IDL._TREE.size
 	La  ,  0
 	BLKMOV
 	BRA ret_lbl
-	BRA	L49
-L50:
+	BRA	L57
+L58:
 	LVA  1,	VDENOM_disp
 	LVA  1,	VNUMER_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS. ,V_LOWEST_TERMS_L17
@@ -749,7 +752,7 @@ VAR	ANON_149_12__dat, STANDARD.IDL._TREE.size
 	La  ,  0
 	BLKMOV
 	BRA ret_lbl
-L49:					; post if
+L57:					; post if
 ret_lbl:
 	UNLINK 1
 	RTD	prm_siz-8

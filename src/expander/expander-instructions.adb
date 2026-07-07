@@ -479,28 +479,30 @@ separate ( EXPANDER )
 				----------
   procedure			CODE_RAISE		( ADA_RAISE :TREE )
   is
+    NAME	: TREE	:= D( AS_NAME, ADA_RAISE );
   begin
-    declare
-      NAME	: TREE	:= D( AS_NAME, ADA_RAISE );
-    begin
-      if  NAME = TREE_VOID  then
-null;--        EMIT( RAI );
+    if  NAME = TREE_VOID  then									-- raise; nu (LRM 11.3) -- forme confirmee au dump E-C
+      if  CODI.HANDLER_LVL < 0  then
+        PUT_LINE( "ANOMALIE : raise nu hors handler" );							-- sem le garantit ; ceinture bruyante
+
       else
-        declare
-	EXCEPTION_ID	: TREE		:= D( SM_DEFN, NAME );
---	LBL		: LABEL_TYPE;
-        begin
-	if D( CD_LABEL, EXCEPTION_ID ).TY /= DN_NUM_VAL then
-null;
---	  LBL := NEW_LABEL;
---	  DI  ( CD_LABEL, EXCEPTION_ID, INTEGER( LBL ) );
---	  EMIT( EXL, LBL, S=> PRINT_NAME( D( LX_SYMREP, NAME ) ),
---				COMMENT=> "NUMERO D EXCEPTION EXTERNE SUR RAISE" );
-	end if;
---          EMIT( RAI, DI( CD_LABEL, EXCEPTION_ID ) );
-        end;
+        PUT_LINE( tab & "La " & IMAGE( CODI.HANDLER_LVL ) & ',' & tab
+			& "exc_ctx_" & LABEL_STR( CODI.HANDLER_CTX_SUF ) );				-- l'exception DU handler, pas la globale
+        PUT_LINE( tab & "Sa" & tab & "0, STANDARD.EXCEPTIONS_CURRENT_disp" );
+        PUT_LINE( tab & "BRA" & tab & "STANDARD.exc_raise_" );
       end if;
-    end;
+    else
+      declare
+        EXCEPTION_ID    : TREE  := CODI.EXCEPTION_ID_OF( NAME );						-- resout selected + renames (LRM 8.5);
+      begin
+        PUT( tab & "LCA" & tab );
+        CODI.REGIONS_PATH( EXCEPTION_ID );
+        PUT_LINE( PRINT_NAME( D( LX_SYMREP, EXCEPTION_ID ) ) & "__exc.data_ptr" );				-- l'ADRESSE fait identite
+        PUT_LINE( tab & "Sa" & tab & "0, STANDARD.EXCEPTIONS_CURRENT_disp" );
+        PUT_LINE( tab & "BRA" & tab & "STANDARD.exc_raise_" );						-- derouler
+      end;
+    end if;
+
   end	CODE_RAISE;
 	----------
 
@@ -996,10 +998,16 @@ null;
         		---------------------
       end if;
 
-      -- Emettre les UNLINK pour chaque bloc declare traverse entre CUR_LEVEL et le niveau de la procedure englobante
+		-- PILIER 11 : depiler le contexte de chaque bloc protege traverse
+		-- (note v2 par. 5bis).  Dans un HANDLER le drapeau du niveau est faux
+		-- (contexte deja depile) : rien n'est emis pour ce bloc-la.
       for  L in reverse LEVEL_NUM( ENCLOSING_LEVEL + 1 ) .. CODI.CUR_LEVEL  loop
+        if  CODI.HANDLER_CTX_AT( L )  then  CODI.EXC_POP;  end if;
         PUT_LINE( tab & "UNLINK" & LEVEL_NUM'IMAGE( L ) );
       end loop;
+      if  CODI.HANDLER_CTX_AT( LEVEL_NUM( ENCLOSING_LEVEL ) )  then						-- return depuis le corps protege de la
+        CODI.EXC_POP;										-- procedure elle-meme (son UNLINK est a ret_lbl)
+      end if;
 
       PUT_LINE( tab & "BRA ret_lbl" );
     end;
@@ -1811,9 +1819,14 @@ null;
       AFTER_LOOP_LABEL	: LABEL_TYPE	:= LABEL_TYPE( DI( CD_AFTER_LOOP, LOOP_STM ) );
     begin
       if EXP = TREE_VOID then
-        if EXITED_LOOP_LEVEL /= CODI.CUR_LEVEL then
-	PUT_LINE( tab & "UNLINK" & tab & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL+1 - EXITED_LOOP_LEVEL ) );
-        end if;
+
+--        if EXITED_LOOP_LEVEL /= CODI.CUR_LEVEL then
+--	PUT_LINE( tab & "UNLINK" & tab & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL+1 - EXITED_LOOP_LEVEL ) );
+--        end if;
+        for  L in reverse EXITED_LOOP_LEVEL + 1 .. CODI.CUR_LEVEL  loop					-- UNLINK par NIVEAU (bug compte-comme-niveau
+	if  CODI.HANDLER_CTX_AT( L )  then  CODI.EXC_POP;  end if;						-- corrige) + pop des blocs proteges traverses
+	PUT_LINE( tab & "UNLINK" & LEVEL_NUM'IMAGE( L ) );
+        end loop;
         PUT_LINE( tab & "BRA" & tab & LABEL_STR( AFTER_LOOP_LABEL ) );
 
       else
@@ -1823,7 +1836,13 @@ null;
             SKIP_LBL	:constant STRING	:= NEW_LABEL;
           begin
 	  PUT_LINE( tab & "BF" & tab & SKIP_LBL );
-	  PUT_LINE( tab & "UNLINK" & tab & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL+1 - EXITED_LOOP_LEVEL ) );
+--	  PUT_LINE( tab & "UNLINK" & tab & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL+1 - EXITED_LOOP_LEVEL ) );
+
+	  for  L in reverse EXITED_LOOP_LEVEL + 1 .. CODI.CUR_LEVEL  loop
+	    if  CODI.HANDLER_CTX_AT( L )  then  CODI.EXC_POP;  end if;
+	    PUT_LINE( tab & "UNLINK" & LEVEL_NUM'IMAGE( L ) );
+	  end loop;
+
 	  PUT_LINE( tab & "BRA" & tab & LABEL_STR( AFTER_LOOP_LABEL ) );
             PUT_LINE( SKIP_LBL & ':' );
           end;

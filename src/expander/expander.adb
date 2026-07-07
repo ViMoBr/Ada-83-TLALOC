@@ -56,6 +56,12 @@ is
     CUR_LEVEL			: LEVEL_NUM;							--| NIVEAU D'IMBRICATION COURANT
     CUR_OFFSET			: OFFSET_VAL		:= 0;
 
+			-- EXCEPTIONS SERVICE
+--| PILIER 11 : contexte de reprise empile au niveau L.  VRAI pendant la generation des stms proteges SEULEMENT (jamais pendant les handlers : deja depile, LRM 11.4.1).
+    HANDLER_CTX_AT			: array( LEVEL_NUM ) of BOOLEAN	:= ( others => FALSE );
+    HANDLER_LVL			: INTEGER			:= -1;					--| PILIER 11 : handler INNERMOST en cours de
+    HANDLER_CTX_SUF			: LABEL_TYPE		:= 0;					--| generation -- niveau et suffixe (numero du label de dispatch) du contexte associe.
+												--| -1 : hors handler (raise nu = ANOMALIE).
     NO_SUBP_PARAMS			: BOOLEAN			:= TRUE;					--| pour prms et prm_siz
     ENCLOSING_BODY			: TREE;
     CHOICE_OTHERS_FLAG		: BOOLEAN			:= FALSE;
@@ -85,8 +91,11 @@ is
     function  CODE_DATA_TYPE_OF	( EXP_OR_TYPE_SPEC :TREE )		return CHARACTER;
     procedure LOAD_MEM		( DEFN :TREE );
     procedure STORE			( DEST_DEFN :TREE );
-    function  TAB50							return STRING;
 
+    procedure EXC_POP;
+    function  EXCEPTION_ID_OF		( NAME :TREE )			return TREE;			--| PILIER 11 : SM_DEFN a travers DN_SELECTED, puis chaine des renommages (LRM 8.5)
+
+    function  TAB50							return STRING;
     function  IMAGE			( I : NATURAL )			return STRING;
 
     procedure REGIONS_PATH		( ID : TREE; WITH_DOT :BOOLEAN := TRUE );
@@ -509,9 +518,30 @@ FIND_DOT_IF_ANY_AND_UPCASE:
 
 	PUT_LINE( tab & "LINK" & tab & "0, loc_siz" );
 
+   -- PILIER 11 EXCEPTIONS : contexte-sentinelle en fond de la pile des contextes de reprise
+	PUT_LINE( tab & "EXC_MACH" & tab & "0, EXC_CTX0__dat" );						-- photo niveau 0 (NXT_LVL=1 : FP(0))
+	PUT_LINE( tab & "LCA" & tab & "exc_uncaught_" );
+	PUT_LINE( tab & "Sa" & tab & "0, EXC_CTX0__dat + _EXCEPTION_CONTEXT.DISPATCH" );
+	PUT_LINE( tab & "LVA" & tab & "0, EXC_CTX0__dat" );
+	PUT_LINE( tab & "Sa" & tab & "0, EXCEPTIONS_TOP_CTX_disp" );					-- (PREV_CTX de la sentinelle : jamais lu)
+
 	PUT_LINE( "include '" & NOM_FAS & ".FINC'" );
 	PUT_LINE( tab & "CALL" & tab & "STANDARD., " & NOM_FAS & "_L1" );
 	PUT_LINE( tab & "SYS_EXIT" );
+
+    -- PILIER 11 EXCEPTIONS : region inatteignable (apres SYS_EXIT)						-- deroulage + sentinelle
+	PUT_LINE( "exc_raise_:" );									-- instance unique ; les raise viennent par BRA
+	PUT_LINE( tab & "EXC_RAISE" & tab & "EXCEPTIONS_TOP_CTX_disp" );
+	PUT_LINE( "exc_uncaught_:" );									-- dispatch du contexte-sentinelle
+	PUT_LINE( tab & "STR" & tab & "EXC_MSG__, 'EXCEPTION NON RATTRAPEE : '" );
+	PUT_LINE( tab & "STR" & tab & "EXC_NL__, 10" );
+	PUT_LINE( tab & "LCA" & tab & "EXC_MSG__.data_ptr" );
+	PUT_LINE( tab & "SYS_PUT_STR" );
+	PUT_LINE( tab & "La" & tab & "0, EXCEPTIONS_CURRENT_disp" );						-- le symbole EST son diagnostic
+	PUT_LINE( tab & "SYS_PUT_STR" );
+	PUT_LINE( tab & "LCA" & tab & "EXC_NL__.data_ptr" );
+	PUT_LINE( tab & "SYS_PUT_STR" );
+	PUT_LINE( tab & "SYS_EXIT" & tab & "1" );
 
 	PUT_LINE( " virtual VARzone" );
 	PUT_LINE( "   loc_siz = $" );

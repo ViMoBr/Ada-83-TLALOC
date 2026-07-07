@@ -1955,7 +1955,7 @@ end;
 --      CODE_EXP( ARG );
 
       -- Appel de la primitive Ada cachée.
-      PUT_LINE( tab & "CALL" & tab & "STANDARD. ,INTEGER_IMAGE_L9" );
+      PUT_LINE( tab & "CALL" & tab & "STANDARD. ,INTEGER_IMAGE_L11" );
 
       -- Résultat de l'expression : adresse du doublet.
 --      PUT_LINE( tab & "LVA " & LVL_STR & ", " & ANON & "_disp" );

@@ -1,85 +1,88 @@
 if ~ definite REPORT
 include 'REPORT.FINC'
 end if
+if ~ definite REPORT
+include 'REPORT.FINC'
+end if
 PRO	A83C01I_L1				;---------- PRO A83C01I
 ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 ; CODE & concat _STRING
-VAR	ANON_19_24_L2_G_data, q
-VAR	ANON_19_24_L2_G_info, q
-VAR	ANON_20_24_L2_D_data, q
-VAR	ANON_20_24_L2_D_info, q
-VAR	ANON_19_24_L2_G_len,  q
-VAR	ANON_20_24_L2_D_len,  q
-VAR	ANON_19_24_L2_R_disp, q
-VAR	ANON_19_24_L2_R__u,   q
-namespace ANON_19_24_L2_R_info
+VAR	ANON_19_24_L4_G_data, q
+VAR	ANON_19_24_L4_G_info, q
+VAR	ANON_20_24_L4_D_data, q
+VAR	ANON_20_24_L4_D_info, q
+VAR	ANON_19_24_L4_G_len,  q
+VAR	ANON_20_24_L4_D_len,  q
+VAR	ANON_19_24_L4_R_disp, q
+VAR	ANON_19_24_L4_R__u,   q
+namespace ANON_19_24_L4_R_info
   VAR SIZ,      d
   VAR _COMP_SIZ, d
   VAR _FST_1,    d
   VAR _LST_1,    d
 end namespace
-STR ANON_19_24_L2_G, "CHECK THAT COMPONENT NAMES MAY BE THE SAME AS"	; constante string="CHECK THAT COMPONENT NAMES MAY BE THE SAME AS"
-	LCA	ANON_19_24_L2_G.data_ptr
+STR ANON_19_24_L4_G, "CHECK THAT COMPONENT NAMES MAY BE THE SAME AS"	; constante string="CHECK THAT COMPONENT NAMES MAY BE THE SAME AS"
+	LCA	ANON_19_24_L4_G.data_ptr
 	DUP
 	La  ,  0
-	Sa  1, ANON_19_24_L2_G_data
+	Sa  1, ANON_19_24_L4_G_data
 	La  ,  8
-	Sa  1, ANON_19_24_L2_G_info
-	LId 1, ANON_19_24_L2_G_info, _STRING.LST_1
-	LId 1, ANON_19_24_L2_G_info, _STRING.FST_1
+	Sa  1, ANON_19_24_L4_G_info
+	LId 1, ANON_19_24_L4_G_info, _STRING.LST_1
+	LId 1, ANON_19_24_L4_G_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  1, ANON_19_24_L2_G_len
-STR ANON_20_24_L2_D, " NAMES OF LOOP PARAMETERS"	; constante string=" NAMES OF LOOP PARAMETERS"
-	LCA	ANON_20_24_L2_D.data_ptr
+	Sa  1, ANON_19_24_L4_G_len
+STR ANON_20_24_L4_D, " NAMES OF LOOP PARAMETERS"	; constante string=" NAMES OF LOOP PARAMETERS"
+	LCA	ANON_20_24_L4_D.data_ptr
 	DUP
 	La  ,  0
-	Sa  1, ANON_20_24_L2_D_data
+	Sa  1, ANON_20_24_L4_D_data
 	La  ,  8
-	Sa  1, ANON_20_24_L2_D_info
-	LId 1, ANON_20_24_L2_D_info, _STRING.LST_1
-	LId 1, ANON_20_24_L2_D_info, _STRING.FST_1
+	Sa  1, ANON_20_24_L4_D_info
+	LId 1, ANON_20_24_L4_D_info, _STRING.LST_1
+	LId 1, ANON_20_24_L4_D_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  1, ANON_20_24_L2_D_len
-	La  1, ANON_19_24_L2_G_len
-	La  1, ANON_20_24_L2_D_len
+	Sa  1, ANON_20_24_L4_D_len
+	La  1, ANON_19_24_L4_G_len
+	La  1, ANON_20_24_L4_D_len
 	ADD
 	CO_VAR
-	Sa  1, ANON_19_24_L2_R_disp
+	Sa  1, ANON_19_24_L4_R_disp
 	LI	1
-	Sd  1, ANON_19_24_L2_R_info._FST_1
-	La  1, ANON_19_24_L2_G_len
-	La  1, ANON_20_24_L2_D_len
+	Sd  1, ANON_19_24_L4_R_info._FST_1
+	La  1, ANON_19_24_L4_G_len
+	La  1, ANON_20_24_L4_D_len
 	ADD
-	Sd  1, ANON_19_24_L2_R_info._LST_1
+	Sd  1, ANON_19_24_L4_R_info._LST_1
 	LI	8
-	Sd  1, ANON_19_24_L2_R_info._COMP_SIZ
-	La  1, ANON_19_24_L2_G_len
-	La  1, ANON_20_24_L2_D_len
+	Sd  1, ANON_19_24_L4_R_info._COMP_SIZ
+	La  1, ANON_19_24_L4_G_len
+	La  1, ANON_20_24_L4_D_len
 	ADD
 	LI	8
 	MUL
-	Sd  1, ANON_19_24_L2_R_info.SIZ
-	LVA 1, ANON_19_24_L2_R_info.SIZ
-	Sa  1, ANON_19_24_L2_R__u
-	La  1, ANON_19_24_L2_R_disp
-	La  1, ANON_19_24_L2_G_len
-	La  1, ANON_19_24_L2_G_data
+	Sd  1, ANON_19_24_L4_R_info.SIZ
+	LVA 1, ANON_19_24_L4_R_info.SIZ
+	Sa  1, ANON_19_24_L4_R__u
+	La  1, ANON_19_24_L4_R_disp
+	La  1, ANON_19_24_L4_G_len
+	La  1, ANON_19_24_L4_G_data
 	BLKMOV
-	La  1, ANON_19_24_L2_R_disp
-	La  1, ANON_19_24_L2_G_len
+	La  1, ANON_19_24_L4_R_disp
+	La  1, ANON_19_24_L4_G_len
 	ADD
-	La  1, ANON_20_24_L2_D_len
-	La  1, ANON_20_24_L2_D_data
+	La  1, ANON_20_24_L4_D_len
+	La  1, ANON_20_24_L4_D_data
 	BLKMOV
-	LVA 1, ANON_19_24_L2_R_disp
-STR STR_L3, "A83C01I"			; constante string="A83C01I"
-	LCA	STR_L3.data_ptr
+	LVA 1, ANON_19_24_L4_R_disp
+STR STR_L5, "A83C01I"			; constante string="A83C01I"
+	LCA	STR_L5.data_ptr
 	CALL	STANDARD.REPORT. ,TEST_L1
 namespace	BLOCK__1
 ELB 2					;    BODY ELAB
@@ -145,44 +148,44 @@ VAR A1__dat, STANDARD.A83C01I_L1.BLOCK__1._R1.size
 
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-VAR	LOOP1L5_disp, d				; compteur boucle LOOP__2
+VAR	LOOP1L9_disp, d				; compteur boucle LOOP__2
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
-	Sd  2,	LOOP1L5_disp
-VAR	LMT_LOOP1L5_disp, d			; limite boucle LOOP__2
+	Sd  2,	LOOP1L9_disp
+VAR	LMT_LOOP1L9_disp, d			; limite boucle LOOP__2
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
-	Sd  2,	LMT_LOOP1L5_disp
-	Ld  2,	LOOP1L5_disp			; test null range LOOP__2
-	Ld  2,	LMT_LOOP1L5_disp
-	CGT
-	BT	L4
-LOOP__2:					; corps boucle LOOP__2
-VAR	LOOP2L7_disp, d				; compteur boucle LOOP__3
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	0
-	Sd  2,	LOOP2L7_disp
-VAR	LMT_LOOP2L7_disp, d			; limite boucle LOOP__3
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	2
-	Sd  2,	LMT_LOOP2L7_disp
-	Ld  2,	LOOP2L7_disp			; test null range LOOP__3
-	Ld  2,	LMT_LOOP2L7_disp
-	CGT
-	BT	L6
-LOOP__3:					; corps boucle LOOP__3
-VAR	LOOP3L9_disp, d				; compteur boucle LOOP__4
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	0
-	Sd  2,	LOOP3L9_disp
-VAR	LMT_LOOP3L9_disp, d			; limite boucle LOOP__4
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	3
-	Sd  2,	LMT_LOOP3L9_disp
-	Ld  2,	LOOP3L9_disp			; test null range LOOP__4
-	Ld  2,	LMT_LOOP3L9_disp
+	Sd  2,	LMT_LOOP1L9_disp
+	Ld  2,	LOOP1L9_disp			; test null range LOOP__2
+	Ld  2,	LMT_LOOP1L9_disp
 	CGT
 	BT	L8
+LOOP__2:					; corps boucle LOOP__2
+VAR	LOOP2L11_disp, d			; compteur boucle LOOP__3
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	Sd  2,	LOOP2L11_disp
+VAR	LMT_LOOP2L11_disp, d			; limite boucle LOOP__3
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	2
+	Sd  2,	LMT_LOOP2L11_disp
+	Ld  2,	LOOP2L11_disp			; test null range LOOP__3
+	Ld  2,	LMT_LOOP2L11_disp
+	CGT
+	BT	L10
+LOOP__3:					; corps boucle LOOP__3
+VAR	LOOP3L13_disp, d			; compteur boucle LOOP__4
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	Sd  2,	LOOP3L13_disp
+VAR	LMT_LOOP3L13_disp, d			; limite boucle LOOP__4
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	3
+	Sd  2,	LMT_LOOP3L13_disp
+	Ld  2,	LOOP3L13_disp			; test null range LOOP__4
+	Ld  2,	LMT_LOOP3L13_disp
+	CGT
+	BT	L12
 LOOP__4:					; corps boucle LOOP__4
 	LIVA 	2, A1_disp, STANDARD.A83C01I_L1.BLOCK__1._R1.LOOP1
 	LIVA 	2, A1_disp, STANDARD.A83C01I_L1.BLOCK__1._R1.LOOP2
@@ -259,18 +262,18 @@ VAR A1__dat, STANDARD.A83C01I_L1.BLOCK__1.BLOCK__5._R1.size
 
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-VAR	LOOP4L11_disp, d			; compteur boucle LOOP__6
+VAR	LOOP4L17_disp, d			; compteur boucle LOOP__6
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
-	Sd  3,	LOOP4L11_disp
-VAR	LMT_LOOP4L11_disp, d			; limite boucle LOOP__6
+	Sd  3,	LOOP4L17_disp
+VAR	LMT_LOOP4L17_disp, d			; limite boucle LOOP__6
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	4
-	Sd  3,	LMT_LOOP4L11_disp
-	Ld  3,	LOOP4L11_disp			; test null range LOOP__6
-	Ld  3,	LMT_LOOP4L11_disp
+	Sd  3,	LMT_LOOP4L17_disp
+	Ld  3,	LOOP4L17_disp			; test null range LOOP__6
+	Ld  3,	LMT_LOOP4L17_disp
 	CGT
-	BT	L10
+	BT	L16
 LOOP__6:					; corps boucle LOOP__6
 	LIVA 	3, A1_disp, STANDARD.A83C01I_L1.BLOCK__1.BLOCK__5._R1.LOOP1
 	LIVA 	3, A1_disp, STANDARD.A83C01I_L1.BLOCK__1.BLOCK__5._R1.LOOP2
@@ -279,44 +282,44 @@ LOOP__6:					; corps boucle LOOP__6
 	Ld	, STANDARD.A83C01I_L1.BLOCK__1.BLOCK__5._R1A.LOOP4
 	ADD
 	Sd
-	Ld  3,	LOOP4L11_disp			; test de sortie LOOP__6
-	Ld  3,	LMT_LOOP4L11_disp
+	Ld  3,	LOOP4L17_disp			; test de sortie LOOP__6
+	Ld  3,	LMT_LOOP4L17_disp
 	CEQ
-	BT	L10
-	Ld  3,	LOOP4L11_disp			; mise a jour compteur LOOP__6
+	BT	L16
+	Ld  3,	LOOP4L17_disp			; mise a jour compteur LOOP__6
 	INC
-	Sd  3,	LOOP4L11_disp
+	Sd  3,	LOOP4L17_disp
 	BRA	LOOP__6				; iteration suivante LOOP__6
-L10:					; post loop LOOP__6
+L16:					; post loop LOOP__6
 	UNLINK 3
 endPRO
-	Ld  2,	LOOP3L9_disp			; test de sortie LOOP__4
-	Ld  2,	LMT_LOOP3L9_disp
+	Ld  2,	LOOP3L13_disp			; test de sortie LOOP__4
+	Ld  2,	LMT_LOOP3L13_disp
+	CEQ
+	BT	L12
+	Ld  2,	LOOP3L13_disp			; mise a jour compteur LOOP__4
+	INC
+	Sd  2,	LOOP3L13_disp
+	BRA	LOOP__4				; iteration suivante LOOP__4
+L12:					; post loop LOOP__4
+	Ld  2,	LOOP2L11_disp			; test de sortie LOOP__3
+	Ld  2,	LMT_LOOP2L11_disp
+	CEQ
+	BT	L10
+	Ld  2,	LOOP2L11_disp			; mise a jour compteur LOOP__3
+	INC
+	Sd  2,	LOOP2L11_disp
+	BRA	LOOP__3				; iteration suivante LOOP__3
+L10:					; post loop LOOP__3
+	Ld  2,	LOOP1L9_disp			; test de sortie LOOP__2
+	Ld  2,	LMT_LOOP1L9_disp
 	CEQ
 	BT	L8
-	Ld  2,	LOOP3L9_disp			; mise a jour compteur LOOP__4
+	Ld  2,	LOOP1L9_disp			; mise a jour compteur LOOP__2
 	INC
-	Sd  2,	LOOP3L9_disp
-	BRA	LOOP__4				; iteration suivante LOOP__4
-L8:					; post loop LOOP__4
-	Ld  2,	LOOP2L7_disp			; test de sortie LOOP__3
-	Ld  2,	LMT_LOOP2L7_disp
-	CEQ
-	BT	L6
-	Ld  2,	LOOP2L7_disp			; mise a jour compteur LOOP__3
-	INC
-	Sd  2,	LOOP2L7_disp
-	BRA	LOOP__3				; iteration suivante LOOP__3
-L6:					; post loop LOOP__3
-	Ld  2,	LOOP1L5_disp			; test de sortie LOOP__2
-	Ld  2,	LMT_LOOP1L5_disp
-	CEQ
-	BT	L4
-	Ld  2,	LOOP1L5_disp			; mise a jour compteur LOOP__2
-	INC
-	Sd  2,	LOOP1L5_disp
+	Sd  2,	LOOP1L9_disp
 	BRA	LOOP__2				; iteration suivante LOOP__2
-L4:					; post loop LOOP__2
+L8:					; post loop LOOP__2
 	UNLINK 2
 endPRO
 	CALL	STANDARD.REPORT. ,RESULT_L6

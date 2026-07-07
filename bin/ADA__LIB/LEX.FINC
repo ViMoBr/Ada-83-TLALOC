@@ -1,6 +1,12 @@
 if ~ definite TEXT_IO
 include 'TEXT_IO.FINC'
 end if
+if ~ definite IO_EXCEPTIONS
+include 'IO_EXCEPTIONS.FINC'
+end if
+if ~ definite TEXT_IO
+include 'TEXT_IO.FINC'
+end if
 LEX = 'LEX'
 namespace LEX				;---------- PACKAGE (BDY)
 elab_spec:				;    SPEC ELAB
@@ -489,12 +495,12 @@ LOOP__1:
 	LI	90
 	CNE
 	DUP
-	BF	L5
+	BF	L7
 	DROP
 ; CODE composite "/=" _STRING
-VAR	ANON_32_49_L6_G_data, q
-VAR	ANON_32_49_L6_G_info, q
-VAR	ANON_32_49_L6_G_len,  q
+VAR	ANON_32_49_L8_G_data, q
+VAR	ANON_32_49_L8_G_info, q
+VAR	ANON_32_49_L8_G_len,  q
 VAR	ANON_32_49_disp, q
 VAR	ANON_32_49__u,   q
 namespace ANON_32_49_info
@@ -519,45 +525,45 @@ end namespace
 	CALL	STANDARD.LEX. ,LEX_IMAGE_L3
 	DUP
 	La  ,  0
-	Sa  1, ANON_32_49_L6_G_data
+	Sa  1, ANON_32_49_L8_G_data
 	La  ,  8
-	Sa  1, ANON_32_49_L6_G_info
-	LId 1, ANON_32_49_L6_G_info, _STRING.LST_1
-	LId 1, ANON_32_49_L6_G_info, _STRING.FST_1
+	Sa  1, ANON_32_49_L8_G_info
+	LId 1, ANON_32_49_L8_G_info, _STRING.LST_1
+	LId 1, ANON_32_49_L8_G_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  1, ANON_32_49_L6_G_len
-VAR	ANON_32_81_L6_D_data, q
-VAR	ANON_32_81_L6_D_info, q
-VAR	ANON_32_81_L6_D_len,  q
+	Sa  1, ANON_32_49_L8_G_len
+VAR	ANON_32_81_L8_D_data, q
+VAR	ANON_32_81_L8_D_info, q
+VAR	ANON_32_81_L8_D_len,  q
 	La  1,	-TXT_ofs
 	DUP
 	La  ,  0
-	Sa  1, ANON_32_81_L6_D_data
+	Sa  1, ANON_32_81_L8_D_data
 	La  ,  8
-	Sa  1, ANON_32_81_L6_D_info
-	LId 1, ANON_32_81_L6_D_info, _STRING.LST_1
-	LId 1, ANON_32_81_L6_D_info, _STRING.FST_1
+	Sa  1, ANON_32_81_L8_D_info
+	LId 1, ANON_32_81_L8_D_info, _STRING.LST_1
+	LId 1, ANON_32_81_L8_D_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  1, ANON_32_81_L6_D_len
-	La  1, ANON_32_49_L6_G_len
-	La  1, ANON_32_81_L6_D_len
+	Sa  1, ANON_32_81_L8_D_len
+	La  1, ANON_32_49_L8_G_len
+	La  1, ANON_32_81_L8_D_len
 	CEQ
 	DUP
-	BF	L7
+	BF	L9
 	DROP
-	La  1, ANON_32_49_L6_G_data
-	La  1, ANON_32_49_L6_G_len
-	La  1, ANON_32_81_L6_D_data
+	La  1, ANON_32_49_L8_G_data
+	La  1, ANON_32_49_L8_G_len
+	La  1, ANON_32_81_L8_D_data
 	BLKCMP
-L7:
+L9:
 	LI	1
 	OUX
-L5:
-	BF	L4
+L7:
+	BF	L6
 	Ld 1,	I_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
@@ -567,15 +573,15 @@ L5:
 	Ld 1,	I_disp
 	Ld 0,	STANDARD.LEX.HASH_SIZE_disp
 	CEQ
-	BF	L9
+	BF	L11
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	Sd  1,	I_disp
-	BRA	L8
-L9:
-L8:					; post if
+	BRA	L10
+L11:
+L10:					; post if
 	BRA	LOOP__1
-L4:					; post loop LOOP__1
+L6:					; post loop LOOP__1
 ; CODE_RETURN : EXPR TYPE = DN_INTEGER
 	Ld 1,	I_disp
 	Sd  1,	-result__ofs
@@ -587,8 +593,8 @@ excep:
 endPRO					;---------- end PRO HASH_POS
 end if
 
-if defined HASH_SEARCH_L10_
-PRO	HASH_SEARCH_L10				;---------- PRO HASH_SEARCH
+if defined HASH_SEARCH_L12_
+PRO	HASH_SEARCH_L12				;---------- PRO HASH_SEARCH
 PRMS					;    debut parametrage
 	PRM TXT_ofs				; in
 	PRM result__ofs				; resultat de fonction
@@ -618,8 +624,8 @@ excep:
 endPRO					;---------- end PRO HASH_SEARCH
 end if
 
-if defined NEXT_TOKEN_L11_
-PRO	NEXT_TOKEN_L11				;---------- PRO NEXT_TOKEN
+if defined NEXT_TOKEN_L15_
+PRO	NEXT_TOKEN_L15				;---------- PRO NEXT_TOKEN
 PRMS					;    debut parametrage
 	PRM CHAR_CONTEXT_ofs			; in
 	PRM TTYPE_OUT_ofs				; out
@@ -663,7 +669,7 @@ LOOP__2:
 	Ld 1,	W_COL_disp
 	Ld 1,	LINE_LENGTH_disp
 	CLE
-	BF	L12
+	BF	L18
 	LIVA 	1, SL_disp, STANDARD.LEX._LINE_OF_SOURCE.BDY
 ; EXPRESSIONS.CODE_INDEXED adresse component id
 	Ld 1,	W_COL_disp
@@ -680,7 +686,7 @@ LOOP__2:
 	LI	32
 	CNE
 	DUP
-	BF	L14
+	BF	L20
 	DROP
 	Lb 1,	CHR_disp
 	LI	 9
@@ -691,30 +697,30 @@ LOOP__2:
 	ET
 	LI	1
 	OUX
-L14:
-	BT	L12
+L20:
+	BT	L18
 	Ld 1,	W_COL_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
 	Sd  1,	W_COL_disp
 	BRA	LOOP__2
-L12:					; post loop LOOP__2
+L18:					; post loop LOOP__2
 	Ld 1,	W_COL_disp
 	Sd  1,	START_COL_disp
 					; debut if
 	Ld 1,	W_COL_disp
 	Ld 1,	LINE_LENGTH_disp
 	CGT
-	BF	L16
+	BF	L22
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	Sd  0,	TOKEN_LENGTH_disp
 	LI	0
 	Sb  1,	TOK_TYP_disp
-	BRA	L15
-L16:
-L15:					; post if
+	BRA	L21
+L22:
+L21:					; post if
 	La	 0, TEXT_disp				; array data start address on stack
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
@@ -741,7 +747,7 @@ L15:					; post if
 	Ld 1,	W_COL_disp
 	Ld 1,	LINE_LENGTH_disp
 	CLE
-	BF	L18
+	BF	L24
 	LIVA 	1, SL_disp, STANDARD.LEX._LINE_OF_SOURCE.BDY
 ; EXPRESSIONS.CODE_INDEXED adresse component id
 	Ld 1,	W_COL_disp
@@ -754,11 +760,11 @@ L15:					; post if
 	ADD					; add offset to start address
 	Lb
 	Sb  1,	CHR_disp
-	BRA	L17
-L18:
+	BRA	L23
+L24:
 	LI	32
 	Sb  1,	CHR_disp
-L17:					; post if
+L23:					; post if
 					; debut case
 	La	 0, TEXT_disp				; array data start address on stack
 ; CODE_NUMERIC_LITERAL DN_INTEGER
@@ -774,123 +780,123 @@ L17:					; post if
 	DUP
 	LI	65
 	CGE
-	BF	L36
+	BF	L42
 	DUP
 	LI	90
 	CGT
-	BF	L20
-L36:
+	BF	L26
+L42:
 	DUP
 	LI	95
 	CEQ
-	BT	L21
+	BT	L27
 	DUP
 	LI	97
 	CGE
-	BF	L37
+	BF	L43
 	DUP
 	LI	122
 	CGT
-	BF	L22
-L37:
+	BF	L28
+L43:
 	DUP
 	LI	48
 	CGE
-	BF	L38
+	BF	L44
 	DUP
 	LI	57
 	CGT
-	BF	L23
-L38:
+	BF	L29
+L44:
 	DUP
 	LI	34
 	CEQ
-	BT	L24
+	BT	L30
 	DUP
 	LI	37
 	CEQ
-	BT	L24
+	BT	L30
 	DUP
 	LI	39
 	CEQ
-	BT	L25
+	BT	L31
 	DUP
 	LI	45
 	CEQ
-	BT	L26
+	BT	L32
 	DUP
 	LI	61
 	CEQ
-	BT	L27
+	BT	L33
 	DUP
 	LI	46
 	CEQ
-	BT	L28
+	BT	L34
 	DUP
 	LI	42
 	CEQ
-	BT	L29
+	BT	L35
 	DUP
 	LI	58
 	CEQ
-	BT	L30
+	BT	L36
 	DUP
 	LI	47
 	CEQ
-	BT	L30
+	BT	L36
 	DUP
 	LI	62
 	CEQ
-	BT	L31
+	BT	L37
 	DUP
 	LI	60
 	CEQ
-	BT	L32
+	BT	L38
 	DUP
 	LI	38
 	CEQ
-	BT	L33
+	BT	L39
 	DUP
 	LI	40
 	CEQ
-	BT	L33
+	BT	L39
 	DUP
 	LI	41
 	CEQ
-	BT	L33
+	BT	L39
 	DUP
 	LI	43
 	CEQ
-	BT	L33
+	BT	L39
 	DUP
 	LI	44
 	CEQ
-	BT	L33
+	BT	L39
 	DUP
 	LI	59
 	CEQ
-	BT	L33
+	BT	L39
 	DUP
 	LI	124
 	CEQ
-	BT	L33
+	BT	L39
 	DUP
 	LI	33
 	CEQ
-	BT	L34
+	BT	L40
 	DROP
-	BRA	L35
-L20:
-	DROP
-	LI	1
-	Sb  1,	TOK_TYP_disp
-	BRA	L19
-L21:
+	BRA	L41
+L26:
 	DROP
 	LI	1
 	Sb  1,	TOK_TYP_disp
-	BRA	L19
-L22:
+	BRA	L25
+L27:
+	DROP
+	LI	1
+	Sb  1,	TOK_TYP_disp
+	BRA	L25
+L28:
 	DROP
 	La	 0, TEXT_disp				; array data start address on stack
 ; CODE_NUMERIC_LITERAL DN_INTEGER
@@ -920,13 +926,13 @@ L22:
 	Sb
 	LI	1
 	Sb  1,	TOK_TYP_disp
-	BRA	L19
-L23:
+	BRA	L25
+L29:
 	DROP
 	LI	4
 	Sb  1,	TOK_TYP_disp
-	BRA	L19
-L24:
+	BRA	L25
+L30:
 	DROP
 	LI	3
 	Sb  1,	TOK_TYP_disp
@@ -954,35 +960,35 @@ L24:
 	ADD					; add offset to start address
 	LI	34
 	Sb
-	BRA	L19
-L25:
-	DROP
-	BRA	L19
-L26:
-	DROP
-	BRA	L19
-L27:
-	DROP
-	BRA	L19
-L28:
-	DROP
-	BRA	L19
-L29:
-	DROP
-	BRA	L19
-L30:
-	DROP
-	BRA	L19
+	BRA	L25
 L31:
 	DROP
-	BRA	L19
+	BRA	L25
 L32:
 	DROP
-	BRA	L19
+	BRA	L25
 L33:
 	DROP
-	BRA	L19
+	BRA	L25
 L34:
+	DROP
+	BRA	L25
+L35:
+	DROP
+	BRA	L25
+L36:
+	DROP
+	BRA	L25
+L37:
+	DROP
+	BRA	L25
+L38:
+	DROP
+	BRA	L25
+L39:
+	DROP
+	BRA	L25
+L40:
 	DROP
 	La	 0, TEXT_disp				; array data start address on stack
 ; CODE_NUMERIC_LITERAL DN_INTEGER
@@ -996,8 +1002,8 @@ L34:
 	ADD					; add offset to start address
 	LI	124
 	Sb
-	BRA	L19
-L35:
+	BRA	L25
+L41:
 					; debut if
 	La	 0, TEXT_disp				; array data start address on stack
 ; CODE_NUMERIC_LITERAL DN_INTEGER
@@ -1029,7 +1035,7 @@ L35:
 	ET
 	LI	1
 	OUX
-	BF	L40
+	BF	L46
 	La	 0, TEXT_disp				; array data start address on stack
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
@@ -1042,11 +1048,11 @@ L35:
 	ADD					; add offset to start address
 	LI	63
 	Sb
-	BRA	L39
-L40:
-L39:					; post if
-	BRA	L19
-L19:
+	BRA	L45
+L46:
+L45:					; post if
+	BRA	L25
+L25:
 					; fin case
 	Ld 0,	STANDARD.LEX.TOKEN_LENGTH_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
@@ -1073,104 +1079,24 @@ L19:
 	Ld 1,	W_COL_disp
 	Ld 1,	LINE_LENGTH_disp
 	CLE
-	BF	L42
-	LIVA 	1, SL_disp, STANDARD.LEX._LINE_OF_SOURCE.BDY
-; EXPRESSIONS.CODE_INDEXED adresse component id
-	Ld 1,	W_COL_disp
-	Ld	 0, STANDARD._STRING._FST_1		; (index - FST_1) * SIZ_1
-	SUB
-	Ld	 0, STANDARD._STRING._COMP_SIZ
-	LI	8
-	DIV
-	MUL
-	ADD					; add offset to start address
-	Lb
-	Sb  1,	CHR_disp
-	BRA	L41
-L42:
-	LI	32
-	Sb  1,	CHR_disp
-L41:					; post if
-	La	 0, TEXT_disp				; array data start address on stack
-	Ld 0,	STANDARD.LEX.TOKEN_LENGTH_disp
-	LId	0, TEXT__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
-	SUB
-	LId	0, TEXT__u, STANDARD._STRING.COMP_SIZ
-	LI	8
-	DIV
-	MUL
-	ADD					; add offset to start address
-	Lb 1,	CHR_disp
-	Sb
-	Ld 1,	W_COL_disp
-; CODE_NUMERIC_LITERAL DN_INTEGER
-	LI	1
-	ADD
-	Sd  1,	W_COL_disp
-					; debut if
-	Ld 1,	W_COL_disp
-	Ld 1,	LINE_LENGTH_disp
-	CLE
-	BF	L44
-	LIVA 	1, SL_disp, STANDARD.LEX._LINE_OF_SOURCE.BDY
-; EXPRESSIONS.CODE_INDEXED adresse component id
-	Ld 1,	W_COL_disp
-	Ld	 0, STANDARD._STRING._FST_1		; (index - FST_1) * SIZ_1
-	SUB
-	Ld	 0, STANDARD._STRING._COMP_SIZ
-	LI	8
-	DIV
-	MUL
-	ADD					; add offset to start address
-	Lb
-	Sb  1,	CHR_disp
-	BRA	L43
-L44:
-	LI	32
-	Sb  1,	CHR_disp
-L43:					; post if
-					; debut if
-	Lb 1,	CHR_disp
-	LI	65
-	CGE
-	LI	90
-	Lb 1,	CHR_disp
-	CGE
-	ET
-	LI	1
-	OUX
-	DUP
 	BF	L48
-	DROP
-	Lb 1,	CHR_disp
-	LI	97
-	CGE
-	LI	122
-	Lb 1,	CHR_disp
-	CGE
-	ET
-	LI	1
-	OUX
+	LIVA 	1, SL_disp, STANDARD.LEX._LINE_OF_SOURCE.BDY
+; EXPRESSIONS.CODE_INDEXED adresse component id
+	Ld 1,	W_COL_disp
+	Ld	 0, STANDARD._STRING._FST_1		; (index - FST_1) * SIZ_1
+	SUB
+	Ld	 0, STANDARD._STRING._COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb
+	Sb  1,	CHR_disp
+	BRA	L47
 L48:
-	DUP
-	BF	L47
-	DROP
-	Lb 1,	CHR_disp
-	LI	48
-	CGE
-	LI	57
-	Lb 1,	CHR_disp
-	CGE
-	ET
-	LI	1
-	OUX
-L47:
-	BF	L46
-	LI	7
-	Sb  1,	TOK_TYP_disp
-	BRA	L45
-L46:
-L45:					; post if
+	LI	32
+	Sb  1,	CHR_disp
+L47:					; post if
 	La	 0, TEXT_disp				; array data start address on stack
 	Ld 0,	STANDARD.LEX.TOKEN_LENGTH_disp
 	LId	0, TEXT__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
@@ -1211,6 +1137,31 @@ L50:
 L49:					; post if
 					; debut if
 	Lb 1,	CHR_disp
+	LI	65
+	CGE
+	LI	90
+	Lb 1,	CHR_disp
+	CGE
+	ET
+	LI	1
+	OUX
+	DUP
+	BF	L54
+	DROP
+	Lb 1,	CHR_disp
+	LI	97
+	CGE
+	LI	122
+	Lb 1,	CHR_disp
+	CGE
+	ET
+	LI	1
+	OUX
+L54:
+	DUP
+	BF	L53
+	DROP
+	Lb 1,	CHR_disp
 	LI	48
 	CGE
 	LI	57
@@ -1219,6 +1170,7 @@ L49:					; post if
 	ET
 	LI	1
 	OUX
+L53:
 	BF	L52
 	LI	7
 	Sb  1,	TOK_TYP_disp
@@ -1245,7 +1197,7 @@ L51:					; post if
 	Ld 1,	W_COL_disp
 	Ld 1,	LINE_LENGTH_disp
 	CLE
-	BF	L54
+	BF	L56
 	LIVA 	1, SL_disp, STANDARD.LEX._LINE_OF_SOURCE.BDY
 ; EXPRESSIONS.CODE_INDEXED adresse component id
 	Ld 1,	W_COL_disp
@@ -1258,11 +1210,11 @@ L51:					; post if
 	ADD					; add offset to start address
 	Lb
 	Sb  1,	CHR_disp
-	BRA	L53
-L54:
+	BRA	L55
+L56:
 	LI	32
 	Sb  1,	CHR_disp
-L53:					; post if
+L55:					; post if
 					; debut if
 	Lb 1,	CHR_disp
 	LI	48
@@ -1273,27 +1225,81 @@ L53:					; post if
 	ET
 	LI	1
 	OUX
-	BF	L56
+	BF	L58
 	LI	7
 	Sb  1,	TOK_TYP_disp
-	BRA	L55
-L56:
-L55:					; post if
-VAR	IL58_disp, d				; compteur boucle LOOP__3
+	BRA	L57
+L58:
+L57:					; post if
+	La	 0, TEXT_disp				; array data start address on stack
+	Ld 0,	STANDARD.LEX.TOKEN_LENGTH_disp
+	LId	0, TEXT__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
+	SUB
+	LId	0, TEXT__u, STANDARD._STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb 1,	CHR_disp
+	Sb
+	Ld 1,	W_COL_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
-	Sd  1,	IL58_disp
-VAR	LMT_IL58_disp, d			; limite boucle LOOP__3
+	ADD
+	Sd  1,	W_COL_disp
+					; debut if
+	Ld 1,	W_COL_disp
+	Ld 1,	LINE_LENGTH_disp
+	CLE
+	BF	L60
+	LIVA 	1, SL_disp, STANDARD.LEX._LINE_OF_SOURCE.BDY
+; EXPRESSIONS.CODE_INDEXED adresse component id
+	Ld 1,	W_COL_disp
+	Ld	 0, STANDARD._STRING._FST_1		; (index - FST_1) * SIZ_1
+	SUB
+	Ld	 0, STANDARD._STRING._COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb
+	Sb  1,	CHR_disp
+	BRA	L59
+L60:
+	LI	32
+	Sb  1,	CHR_disp
+L59:					; post if
+					; debut if
+	Lb 1,	CHR_disp
+	LI	48
+	CGE
+	LI	57
+	Lb 1,	CHR_disp
+	CGE
+	ET
+	LI	1
+	OUX
+	BF	L62
+	LI	7
+	Sb  1,	TOK_TYP_disp
+	BRA	L61
+L62:
+L61:					; post if
+VAR	IL64_disp, d				; compteur boucle LOOP__3
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd  1,	IL64_disp
+VAR	LMT_IL64_disp, d			; limite boucle LOOP__3
 	Ld 0,	STANDARD.LEX.TOKEN_LENGTH_disp
-	Sd  1,	LMT_IL58_disp
-	Ld  1,	IL58_disp				; test null range LOOP__3
-	Ld  1,	LMT_IL58_disp
+	Sd  1,	LMT_IL64_disp
+	Ld  1,	IL64_disp				; test null range LOOP__3
+	Ld  1,	LMT_IL64_disp
 	CGT
-	BT	L57
+	BT	L63
 LOOP__3:					; corps boucle LOOP__3
 					; debut if
 	La	 0, TEXT_disp				; array data start address on stack
-	Ld	1, IL58_disp
+	Ld	1, IL64_disp
 	LId	0, TEXT__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, TEXT__u, STANDARD._STRING.COMP_SIZ
@@ -1306,7 +1312,7 @@ LOOP__3:					; corps boucle LOOP__3
 	CGE
 	LI	57
 	La	 0, TEXT_disp				; array data start address on stack
-	Ld	1, IL58_disp
+	Ld	1, IL64_disp
 	LId	0, TEXT__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, TEXT__u, STANDARD._STRING.COMP_SIZ
@@ -1318,20 +1324,20 @@ LOOP__3:					; corps boucle LOOP__3
 	CGE
 	ET
 	DUP
-	BF	L61
+	BF	L67
 	DROP
 	Ld 1,	BASE_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	16
 	CLE
-L61:
-	BF	L60
+L67:
+	BF	L66
 	Ld 1,	BASE_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	10
 	MUL
 	La	 0, TEXT_disp				; array data start address on stack
-	Ld	1, IL58_disp
+	Ld	1, IL64_disp
 	LId	0, TEXT__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, TEXT__u, STANDARD._STRING.COMP_SIZ
@@ -1344,18 +1350,18 @@ L61:
 	LI	48
 	SUB
 	Sd  1,	BASE_disp
-	BRA	L59
-L60:
-L59:					; post if
-	Ld  1,	IL58_disp				; test de sortie LOOP__3
-	Ld  1,	LMT_IL58_disp
+	BRA	L65
+L66:
+L65:					; post if
+	Ld  1,	IL64_disp				; test de sortie LOOP__3
+	Ld  1,	LMT_IL64_disp
 	CEQ
-	BT	L57
-	Ld  1,	IL58_disp				; mise a jour compteur LOOP__3
+	BT	L63
+	Ld  1,	IL64_disp				; mise a jour compteur LOOP__3
 	INC
-	Sd  1,	IL58_disp
+	Sd  1,	IL64_disp
 	BRA	LOOP__3				; iteration suivante LOOP__3
-L57:					; post loop LOOP__3
+L63:					; post loop LOOP__3
 					; debut if
 	Ld 1,	BASE_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
@@ -1368,21 +1374,21 @@ L57:					; post loop LOOP__3
 	ET
 	LI	1
 	OUX
-	BF	L63
+	BF	L69
 	LI	7
 	Sb  1,	TOK_TYP_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	16
 	Sd  1,	BASE_disp
-	BRA	L62
-L63:
-L62:					; post if
+	BRA	L68
+L69:
+L68:					; post if
 					; debut if
 	Ld 1,	BASE_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	9
 	CLE
-	BF	L65
+	BF	L71
 	LI	48
 	Ld 1,	BASE_disp
 	ADD
@@ -1390,11 +1396,11 @@ L62:					; post if
 	LI	1
 	SUB
 	Sb  1,	BASE_DIGIT_disp
-	BRA	L64
-L65:
+	BRA	L70
+L71:
 	LI	57
 	Sb  1,	BASE_DIGIT_disp
-L64:					; post if
+L70:					; post if
 	LI	65
 	Ld 1,	BASE_disp
 	ADD
@@ -1427,7 +1433,7 @@ L64:					; post if
 	Ld 1,	W_COL_disp
 	Ld 1,	LINE_LENGTH_disp
 	CLE
-	BF	L67
+	BF	L73
 	LIVA 	1, SL_disp, STANDARD.LEX._LINE_OF_SOURCE.BDY
 ; EXPRESSIONS.CODE_INDEXED adresse component id
 	Ld 1,	W_COL_disp
@@ -1440,11 +1446,11 @@ L64:					; post if
 	ADD					; add offset to start address
 	Lb
 	Sb  1,	CHR_disp
-	BRA	L66
-L67:
+	BRA	L72
+L73:
 	LI	32
 	Sb  1,	CHR_disp
-L66:					; post if
+L72:					; post if
 					; debut if
 	Lb 1,	CHR_disp
 	LI	48
@@ -1454,7 +1460,7 @@ L66:					; post if
 	CGE
 	ET
 	DUP
-	BT	L71
+	BT	L77
 	DROP
 	Lb 1,	CHR_disp
 	LI	65
@@ -1463,9 +1469,9 @@ L66:					; post if
 	Lb 1,	CHR_disp
 	CGE
 	ET
-L71:
+L77:
 	DUP
-	BT	L70
+	BT	L76
 	DROP
 	Lb 1,	CHR_disp
 	LI	97
@@ -1474,11 +1480,11 @@ L71:
 	Lb 1,	CHR_disp
 	CGE
 	ET
-L70:
-	BF	L69
-	BRA	L68
-L69:
-L68:					; post if
+L76:
+	BF	L75
+	BRA	L74
+L75:
+L74:					; post if
 	LIVA 	1, SL_disp, STANDARD.LEX._LINE_OF_SOURCE.BDY
 ; EXPRESSIONS.CODE_INDEXED adresse component id
 	Ld 1,	W_COL_disp
@@ -1503,20 +1509,20 @@ L68:					; post if
 	CGE
 	ET
 	DUP
-	BT	L75
+	BT	L81
 	DROP
 	Lb 1,	CHR_disp
 	LI	43
 	CEQ
-L75:
+L81:
 	DUP
-	BT	L74
+	BT	L80
 	DROP
 	Lb 1,	CHR_disp
 	LI	45
 	CEQ
-L74:
-	BF	L73
+L80:
+	BF	L79
 	Ld 1,	W_COL_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
@@ -1557,20 +1563,20 @@ L74:
 	LI	43
 	CEQ
 	DUP
-	BT	L79
+	BT	L85
 	DROP
 	Lb 1,	CHR_disp
 	LI	45
 	CEQ
-L79:
+L85:
 	DUP
-	BF	L78
+	BF	L84
 	DROP
 	Ld 1,	W_COL_disp
 	Ld 1,	LINE_LENGTH_disp
 	CGE
 	DUP
-	BT	L80
+	BT	L86
 	DROP
 	LIVA 	1, SL_disp, STANDARD.LEX._LINE_OF_SOURCE.BDY
 ; EXPRESSIONS.CODE_INDEXED adresse component id
@@ -1607,14 +1613,14 @@ L79:
 	ET
 	LI	1
 	OUX
-L80:
-L78:
-	BF	L77
+L86:
+L84:
+	BF	L83
 	LI	7
 	Sb  1,	TOK_TYP_disp
-	BRA	L76
-L77:
-L76:					; post if
+	BRA	L82
+L83:
+L82:					; post if
 	Ld 1,	W_COL_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
@@ -1624,7 +1630,7 @@ L76:					; post if
 	Ld 1,	W_COL_disp
 	Ld 1,	LINE_LENGTH_disp
 	CLE
-	BF	L82
+	BF	L88
 	LIVA 	1, SL_disp, STANDARD.LEX._LINE_OF_SOURCE.BDY
 ; EXPRESSIONS.CODE_INDEXED adresse component id
 	Ld 1,	W_COL_disp
@@ -1637,127 +1643,127 @@ L76:					; post if
 	ADD					; add offset to start address
 	Lb
 	Sb  1,	CHR_disp
-	BRA	L81
-L82:
+	BRA	L87
+L88:
 	LI	32
 	Sb  1,	CHR_disp
-L81:					; post if
-	BRA	L72
-L73:
+L87:					; post if
+	BRA	L78
+L79:
 	LI	7
 	Sb  1,	TOK_TYP_disp
-L72:					; post if
+L78:					; post if
 					; debut case
 	Lb 1,	CHR_disp
 	DUP
 	LI	32
 	CEQ
-	BT	L84
+	BT	L90
 	DUP
 	LI	65
 	CGE
-	BF	L86
+	BF	L92
 	DUP
 	LI	90
 	CGT
-	BF	L84
-L86:
+	BF	L90
+L92:
 	DUP
 	LI	97
 	CGE
-	BF	L87
+	BF	L93
 	DUP
 	LI	122
 	CGT
-	BF	L84
-L87:
+	BF	L90
+L93:
 	DUP
 	LI	48
 	CGE
-	BF	L88
+	BF	L94
 	DUP
 	LI	57
 	CGT
-	BF	L84
-L88:
+	BF	L90
+L94:
 	DUP
 	LI	38
 	CEQ
-	BT	L84
+	BT	L90
 	DUP
 	LI	39
 	CEQ
-	BT	L84
+	BT	L90
 	DUP
 	LI	40
 	CEQ
-	BT	L84
+	BT	L90
 	DUP
 	LI	41
 	CEQ
-	BT	L84
+	BT	L90
 	DUP
 	LI	42
 	CEQ
-	BT	L84
+	BT	L90
 	DUP
 	LI	43
 	CEQ
-	BT	L84
+	BT	L90
 	DUP
 	LI	44
 	CEQ
-	BT	L84
+	BT	L90
 	DUP
 	LI	45
 	CEQ
-	BT	L84
+	BT	L90
 	DUP
 	LI	46
 	CEQ
-	BT	L84
+	BT	L90
 	DUP
 	LI	47
 	CEQ
-	BT	L84
+	BT	L90
 	DUP
 	LI	58
 	CEQ
-	BT	L84
+	BT	L90
 	DUP
 	LI	60
 	CEQ
-	BT	L84
+	BT	L90
 	DUP
 	LI	61
 	CEQ
-	BT	L84
+	BT	L90
 	DUP
 	LI	62
 	CEQ
-	BT	L84
+	BT	L90
 	DUP
 	LI	124
 	CEQ
-	BT	L84
+	BT	L90
 	DUP
 	LI	33
 	CEQ
-	BT	L84
+	BT	L90
 	DUP
 	LI	37
 	CEQ
-	BT	L84
+	BT	L90
 	DUP
 	Lb 0,	STANDARD.ASCII.HT_disp
 	CEQ
-	BT	L84
+	BT	L90
 	DROP
-	BRA	L85
-L84:
+	BRA	L91
+L90:
 	DROP
-	BRA	L83
-L85:
+	BRA	L89
+L91:
 					; debut if
 	Lb 1,	CHR_disp
 	LI	32
@@ -1769,12 +1775,12 @@ L85:
 	ET
 	LI	1
 	OUX
-	BF	L90
+	BF	L96
 	LI	63
 	Sb  1,	CHR_disp
-	BRA	L89
-L90:
-L89:					; post if
+	BRA	L95
+L96:
+L95:					; post if
 	Ld 0,	STANDARD.LEX.TOKEN_LENGTH_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
@@ -1800,7 +1806,7 @@ L89:					; post if
 	Ld 1,	W_COL_disp
 	Ld 1,	LINE_LENGTH_disp
 	CLE
-	BF	L92
+	BF	L98
 	LIVA 	1, SL_disp, STANDARD.LEX._LINE_OF_SOURCE.BDY
 ; EXPRESSIONS.CODE_INDEXED adresse component id
 	Ld 1,	W_COL_disp
@@ -1813,13 +1819,13 @@ L89:					; post if
 	ADD					; add offset to start address
 	Lb
 	Sb  1,	CHR_disp
-	BRA	L91
-L92:
+	BRA	L97
+L98:
 	LI	32
 	Sb  1,	CHR_disp
-L91:					; post if
-	BRA	L83
-L83:
+L97:					; post if
+	BRA	L89
+L89:
 					; fin case
 	Lb 1,	TOK_TYP_disp
 	SIb  1,	-TTYPE_OUT_ofs
@@ -1846,7 +1852,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	LVA  1,	TOK_LEN_disp
 	LVA  1,	TOK_TYP_disp
 	Lb 0,	STANDARD.LEX.CHAR_CONTEXT_disp
-	CALL	STANDARD.LEX. ,NEXT_TOKEN_L11
+	CALL	STANDARD.LEX. ,NEXT_TOKEN_L15
 	Ld 0,	STANDARD.LEX.F_COL_disp
 	Ld 1,	TOK_LEN_disp
 	ADD
@@ -1858,22 +1864,22 @@ begin:					;---------- BDY INSTRUCTIONS
 	Lb 1,	TOK_TYP_disp
 	LI	0
 	CEQ
-	BF	L94
+	BF	L102
 	LI	94
 	Sb  0,	LTYPE_disp
-	BRA	L93
-L94:
+	BRA	L101
+L102:
 	LI	1
 	Sb  0,	CHAR_CONTEXT_disp
 					; debut if
 	Lb 1,	TOK_TYP_disp
 	LI	3
 	CEQ
-	BF	L96
+	BF	L104
 	LI	92
 	Sb  0,	LTYPE_disp
-	BRA	L95
-L96:
+	BRA	L103
+L104:
 	Lb 1,	TOK_TYP_disp
 	LI	4
 	CEQ
@@ -1881,41 +1887,41 @@ L96:
 	LI	5
 	CEQ
 	OU
-	BF	L97
+	BF	L105
 	LI	91
 	Sb  0,	LTYPE_disp
-	BRA	L95
-L97:
+	BRA	L103
+L105:
 	Lb 1,	TOK_TYP_disp
 	LI	6
 	CEQ
-	BF	L98
+	BF	L106
 	LI	93
 	Sb  0,	LTYPE_disp
-	BRA	L95
-L98:
+	BRA	L103
+L106:
 	Lb 1,	TOK_TYP_disp
 	LI	7
 	CEQ
-	BF	L99
+	BF	L107
 	LI	0
 	Sb  0,	LTYPE_disp
-	BRA	L95
-L99:
+	BRA	L103
+L107:
 					; debut if
 	Lb 0,	STANDARD.LEX.ATTRIBUTE_CONTEXT_disp
 	DUP
-	BF	L102
+	BF	L110
 	DROP
 	Lb 1,	TOK_TYP_disp
 	LI	1
 	CEQ
-L102:
-	BF	L101
+L110:
+	BF	L109
 	LI	90
 	Sb  0,	LTYPE_disp
-	BRA	L100
-L101:
+	BRA	L108
+L109:
 	LI	0					; lieu resultat sur pile
 	La 0, TEXT_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
@@ -1952,31 +1958,31 @@ VAR _LST_1, d
 	Sd	1, SIZ
 	LVA	1, ANON_622_31_disp
 end namespace
-	CALL	STANDARD.LEX. ,HASH_SEARCH_L10
+	CALL	STANDARD.LEX. ,HASH_SEARCH_L12
 	Sb  0,	LTYPE_disp
-L100:					; post if
+L108:					; post if
 					; debut if
 	Lb 0,	STANDARD.LEX.LTYPE_disp
 	LI	90
 	CEQ
-	BF	L104
+	BF	L112
 					; debut if
 	Lb 1,	TOK_TYP_disp
 	LI	1
 	CEQ
-	BF	L106
+	BF	L114
 	LI	0
 	Sb  0,	CHAR_CONTEXT_disp
-	BRA	L105
-L106:
+	BRA	L113
+L114:
 	LI	0
 	Sb  0,	LTYPE_disp
-L105:					; post if
-	BRA	L103
-L104:
+L113:					; post if
+	BRA	L111
+L112:
+L111:					; post if
 L103:					; post if
-L95:					; post if
-L93:					; post if
+L101:					; post if
 	Lb 0,	STANDARD.LEX.LTYPE_disp
 	LI	65
 	CEQ
@@ -2032,18 +2038,18 @@ VAR _LST_1, d
 	Sd	1, SIZ
 	LVA	1, ANON_644_10_disp
 end namespace
-VAR	RET_INFO_L107, q
+VAR	RET_INFO_L117, q
 	DUP
 	La  ,  0
 	SIq   1, -result__ofs,  0
 	DUP
 	La  ,  8
-	Sa   1, RET_INFO_L107
+	Sa   1, RET_INFO_L117
 	DROP
 	La   1, -result__ofs
 	La  ,  8
 	LI	16
-	La   1, RET_INFO_L107
+	La   1, RET_INFO_L117
 	BLKMOV
 	BRA ret_lbl
 ret_lbl:
@@ -2067,48 +2073,48 @@ begin:					;---------- BDY INSTRUCTIONS
 	DUP
 	LI	64
 	CGE
-	BF	L117
+	BF	L129
 	DUP
 	LI	89
 	CGT
-	BF	L109
-L117:
+	BF	L121
+L129:
 	DUP
 	LI	1
 	CGE
-	BF	L118
+	BF	L130
 	DUP
 	LI	63
 	CGT
-	BF	L110
-L118:
+	BF	L122
+L130:
 	DUP
 	LI	90
 	CEQ
-	BT	L111
+	BT	L123
 	DUP
 	LI	91
 	CEQ
-	BT	L112
+	BT	L124
 	DUP
 	LI	92
 	CEQ
-	BT	L113
+	BT	L125
 	DUP
 	LI	93
 	CEQ
-	BT	L114
+	BT	L126
 	DUP
 	LI	94
 	CEQ
-	BT	L115
+	BT	L127
 	DUP
 	LI	0
 	CEQ
-	BT	L116
+	BT	L128
 	DROP
-	BRA	L108
-L109:
+	BRA	L120
+L121:
 	DROP
 namespace	BLOCK__5
 ELB 2					;    BODY ELAB
@@ -2229,7 +2235,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	Lb
 	LI	32
 	CEQ
-	BF	L120
+	BF	L134
 ; CODE_RETURN : EXPR TYPE = DN_ARRAY
 	La 2, TEMP_STRING_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
@@ -2267,23 +2273,23 @@ VAR _LST_1, d
 	Sd	2, SIZ
 	LVA	2, ANON_664_45_disp
 end namespace
-VAR	RET_INFO_L121, q
+VAR	RET_INFO_L135, q
 	DUP
 	La  ,  0
 	SIq   1, -result__ofs,  0
 	DUP
 	La  ,  8
-	Sa   2, RET_INFO_L121
+	Sa   2, RET_INFO_L135
 	DROP
 	La   1, -result__ofs
 	La  ,  8
 	LI	16
-	La   2, RET_INFO_L121
+	La   2, RET_INFO_L135
 	BLKMOV
 	UNLINK 2
 	BRA ret_lbl
-	BRA	L119
-L120:
+	BRA	L133
+L134:
 ; CODE_RETURN : EXPR TYPE = DN_ARRAY
 	La 2, TEMP_STRING_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
@@ -2321,26 +2327,26 @@ VAR _LST_1, d
 	Sd	2, SIZ
 	LVA	2, ANON_665_19_disp
 end namespace
-VAR	RET_INFO_L122, q
+VAR	RET_INFO_L136, q
 	DUP
 	La  ,  0
 	SIq   1, -result__ofs,  0
 	DUP
 	La  ,  8
-	Sa   2, RET_INFO_L122
+	Sa   2, RET_INFO_L136
 	DROP
 	La   1, -result__ofs
 	La  ,  8
 	LI	16
-	La   2, RET_INFO_L122
+	La   2, RET_INFO_L136
 	BLKMOV
 	UNLINK 2
 	BRA ret_lbl
-L119:					; post if
+L133:					; post if
 	UNLINK 2
 endPRO
-	BRA	L108
-L110:
+	BRA	L120
+L122:
 	DROP
 namespace	BLOCK__6
 ELB 2					;    BODY ELAB
@@ -2417,145 +2423,145 @@ VAR TRONQ__u, q				; variable array : useinfo pointeur au rec info
 begin:					;---------- BDY INSTRUCTIONS
 ; CODE_RETURN : EXPR TYPE = DN_CONSTRAINED_ARRAY
 	LVA 2,	TRONQ_disp
-VAR	RET_INFO_L123, q
+VAR	RET_INFO_L139, q
 	DUP
 	La  ,  0
 	SIq   1, -result__ofs,  0
 	DUP
 	La  ,  8
-	Sa   2, RET_INFO_L123
+	Sa   2, RET_INFO_L139
 	DROP
 	La   1, -result__ofs
 	La  ,  8
 	LI	16
-	La   2, RET_INFO_L123
+	La   2, RET_INFO_L139
 	BLKMOV
 	UNLINK 2
 	BRA ret_lbl
 	UNLINK 2
 endPRO
-	BRA	L108
-L111:
+	BRA	L120
+L123:
 	DROP
 ; CODE_RETURN : EXPR TYPE = DN_VOID
-STR RET_STR_L124, "identifier"		; constante string="identifier"
-	LCA	RET_STR_L124.data_ptr
-VAR	RET_INFO_L125, q
+STR RET_STR_L140, "identifier"		; constante string="identifier"
+	LCA	RET_STR_L140.data_ptr
+VAR	RET_INFO_L141, q
 	DUP
 	La  ,  0
 	SIq   1, -result__ofs,  0
 	DUP
 	La  ,  8
-	Sa   1, RET_INFO_L125
+	Sa   1, RET_INFO_L141
 	DROP
 	La   1, -result__ofs
 	La  ,  8
 	LI	16
-	La   1, RET_INFO_L125
+	La   1, RET_INFO_L141
 	BLKMOV
 	BRA ret_lbl
-	BRA	L108
-L112:
+	BRA	L120
+L124:
 	DROP
 ; CODE_RETURN : EXPR TYPE = DN_VOID
-STR RET_STR_L126, "numeric_literal"		; constante string="numeric_literal"
-	LCA	RET_STR_L126.data_ptr
-VAR	RET_INFO_L127, q
+STR RET_STR_L142, "numeric_literal"		; constante string="numeric_literal"
+	LCA	RET_STR_L142.data_ptr
+VAR	RET_INFO_L143, q
 	DUP
 	La  ,  0
 	SIq   1, -result__ofs,  0
 	DUP
 	La  ,  8
-	Sa   1, RET_INFO_L127
+	Sa   1, RET_INFO_L143
 	DROP
 	La   1, -result__ofs
 	La  ,  8
 	LI	16
-	La   1, RET_INFO_L127
+	La   1, RET_INFO_L143
 	BLKMOV
 	BRA ret_lbl
-	BRA	L108
-L113:
+	BRA	L120
+L125:
 	DROP
 ; CODE_RETURN : EXPR TYPE = DN_VOID
-STR RET_STR_L128, "string_literal"		; constante string="string_literal"
-	LCA	RET_STR_L128.data_ptr
-VAR	RET_INFO_L129, q
+STR RET_STR_L144, "string_literal"		; constante string="string_literal"
+	LCA	RET_STR_L144.data_ptr
+VAR	RET_INFO_L145, q
 	DUP
 	La  ,  0
 	SIq   1, -result__ofs,  0
 	DUP
 	La  ,  8
-	Sa   1, RET_INFO_L129
+	Sa   1, RET_INFO_L145
 	DROP
 	La   1, -result__ofs
 	La  ,  8
 	LI	16
-	La   1, RET_INFO_L129
+	La   1, RET_INFO_L145
 	BLKMOV
 	BRA ret_lbl
-	BRA	L108
-L114:
+	BRA	L120
+L126:
 	DROP
 ; CODE_RETURN : EXPR TYPE = DN_VOID
-STR RET_STR_L130, "character_literal"		; constante string="character_literal"
-	LCA	RET_STR_L130.data_ptr
-VAR	RET_INFO_L131, q
+STR RET_STR_L146, "character_literal"		; constante string="character_literal"
+	LCA	RET_STR_L146.data_ptr
+VAR	RET_INFO_L147, q
 	DUP
 	La  ,  0
 	SIq   1, -result__ofs,  0
 	DUP
 	La  ,  8
-	Sa   1, RET_INFO_L131
+	Sa   1, RET_INFO_L147
 	DROP
 	La   1, -result__ofs
 	La  ,  8
 	LI	16
-	La   1, RET_INFO_L131
+	La   1, RET_INFO_L147
 	BLKMOV
 	BRA ret_lbl
-	BRA	L108
-L115:
+	BRA	L120
+L127:
 	DROP
 ; CODE_RETURN : EXPR TYPE = DN_VOID
-STR RET_STR_L132, "*end*"			; constante string="*end*"
-	LCA	RET_STR_L132.data_ptr
-VAR	RET_INFO_L133, q
+STR RET_STR_L148, "*end*"			; constante string="*end*"
+	LCA	RET_STR_L148.data_ptr
+VAR	RET_INFO_L149, q
 	DUP
 	La  ,  0
 	SIq   1, -result__ofs,  0
 	DUP
 	La  ,  8
-	Sa   1, RET_INFO_L133
+	Sa   1, RET_INFO_L149
 	DROP
 	La   1, -result__ofs
 	La  ,  8
 	LI	16
-	La   1, RET_INFO_L133
+	La   1, RET_INFO_L149
 	BLKMOV
 	BRA ret_lbl
-	BRA	L108
-L116:
+	BRA	L120
+L128:
 	DROP
 ; CODE_RETURN : EXPR TYPE = DN_VOID
-STR RET_STR_L134, "*error*"			; constante string="*error*"
-	LCA	RET_STR_L134.data_ptr
-VAR	RET_INFO_L135, q
+STR RET_STR_L150, "*error*"			; constante string="*error*"
+	LCA	RET_STR_L150.data_ptr
+VAR	RET_INFO_L151, q
 	DUP
 	La  ,  0
 	SIq   1, -result__ofs,  0
 	DUP
 	La  ,  8
-	Sa   1, RET_INFO_L135
+	Sa   1, RET_INFO_L151
 	DROP
 	La   1, -result__ofs
 	La  ,  8
 	LI	16
-	La   1, RET_INFO_L135
+	La   1, RET_INFO_L151
 	BLKMOV
 	BRA ret_lbl
-	BRA	L108
-L108:
+	BRA	L120
+L120:
 					; fin case
 ret_lbl:
 	UNLINK 1
@@ -2564,16 +2570,16 @@ excep:
 endPRO					;---------- end PRO LEX_IMAGE
 end if
 begin:					;---------- package BDY INSTRUCTIONS
-VAR	LTL137_disp, b				; compteur boucle LOOP__7
+VAR	LTL155_disp, b				; compteur boucle LOOP__7
 	LI	1
-	Sb  0,	LTL137_disp
-VAR	LMT_LTL137_disp, b			; limite boucle LOOP__7
+	Sb  0,	LTL155_disp
+VAR	LMT_LTL155_disp, b			; limite boucle LOOP__7
 	LI	89
-	Sb  0,	LMT_LTL137_disp
-	Lb  0,	LTL137_disp				; test null range LOOP__7
-	Lb  0,	LMT_LTL137_disp
+	Sb  0,	LMT_LTL155_disp
+	Lb  0,	LTL155_disp				; test null range LOOP__7
+	Lb  0,	LMT_LTL155_disp
 	CGT
-	BT	L136
+	BT	L154
 LOOP__7:					; corps boucle LOOP__7
 	La	 0, HASH_TABLE_disp			; array data start address on stack
 	LI	0					; lieu resultat sur pile
@@ -2588,7 +2594,7 @@ end namespace
 	LVA 0, ANON_691_27_info.SIZ
 	Sa  0, ANON_691_27__u
 	LVA 0, ANON_691_27_disp
-	Lb  0,	LTL137_disp
+	Lb  0,	LTL155_disp
 	CALL	STANDARD.LEX. ,LEX_IMAGE_L3
 	CALL	STANDARD.LEX. ,HASH_POS_L3
 	LId	0, HASH_TABLE__u, STANDARD.LEX._HASH_TABLE.FST_1	; (index - FST_1) * SIZ_1
@@ -2598,16 +2604,16 @@ end namespace
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb	0, LTL137_disp
+	Lb	0, LTL155_disp
 	Sb
-	Lb  0,	LTL137_disp				; test de sortie LOOP__7
-	Lb  0,	LMT_LTL137_disp
+	Lb  0,	LTL155_disp				; test de sortie LOOP__7
+	Lb  0,	LMT_LTL155_disp
 	CEQ
-	BT	L136
-	Lb  0,	LTL137_disp				; mise a jour compteur LOOP__7
+	BT	L154
+	Lb  0,	LTL155_disp				; mise a jour compteur LOOP__7
 	INC
-	Sb  0,	LTL137_disp
+	Sb  0,	LTL155_disp
 	BRA	LOOP__7				; iteration suivante LOOP__7
-L136:					; post loop LOOP__7
+L154:					; post loop LOOP__7
 end namespace 				;---------- end package BDY LEX
 

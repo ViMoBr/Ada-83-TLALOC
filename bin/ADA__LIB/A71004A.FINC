@@ -1,14 +1,17 @@
 if ~ definite REPORT
 include 'REPORT.FINC'
 end if
+if ~ definite REPORT
+include 'REPORT.FINC'
+end if
 PRO	A71004A_L1				;---------- PRO A71004A
 ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-STR STR_L2, "ALL FORMS OF DECLARATIONS IN PRIVATE PART"	; constante string="ALL FORMS OF DECLARATIONS IN PRIVATE PART"
-	LCA	STR_L2.data_ptr
-STR STR_L3, "A71004A"			; constante string="A71004A"
-	LCA	STR_L3.data_ptr
+STR STR_L4, "ALL FORMS OF DECLARATIONS IN PRIVATE PART"	; constante string="ALL FORMS OF DECLARATIONS IN PRIVATE PART"
+	LCA	STR_L4.data_ptr
+STR STR_L5, "A71004A"			; constante string="A71004A"
+	LCA	STR_L5.data_ptr
 	CALL	STANDARD.REPORT. ,TEST_L1
 namespace	DD
 ELB 2					;    BODY ELAB
@@ -233,8 +236,8 @@ end namespace
 	Ld  2, ANON_38_53_aga._CNT_1
 	LI	0
 	CLE
-	BT  L5
-L4:
+	BT  L7
+L6:
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	3
 	SIw  2, ANON_38_53_aga._PTR_1, 0
@@ -251,8 +254,8 @@ L4:
 	Sd  2, ANON_38_53_aga._CNT_1
 	LI	0
 	CGT
-	BT  L4
-L5:
+	BT  L6
+L7:
 
 
 					; _T3 ENUMERATION TYPE INFO
@@ -439,7 +442,7 @@ end namespace
 PK = 'PK'
 namespace PK				;---------- PACKAGE DECLARATION
 					; CODE_PACKAGE_SPEC
-; EXC_LBL	L9
+; EXC_LBL	L11
 end namespace
 
 PK1 = 'PK1'
@@ -448,34 +451,37 @@ namespace PK1				;---------- PACKAGE DECLARATION
 PK2 = 'PK2'
 namespace PK2				;---------- PACKAGE DECLARATION
 					; CODE_PACKAGE_SPEC
-; EXC_LBL	L10
+; EXC_LBL	L12
 end namespace
 
 PK3 = 'PK3'
 namespace PK3				;---------- PACKAGE DECLARATION
 					; CODE_PACKAGE_SPEC
-; EXC_LBL	L11
+; EXC_LBL	L13
 end namespace
 
-; EXC_LBL	L12
+; EXC_LBL	L14
 end namespace
 
+STR EX__exc, "EX"
+STR EX1__exc, "EX1"
+STR EX2__exc, "EX2"
 VAR X99_disp, q
 	LVa	2, X7_disp
 	Sa	2, X99_disp
 PQ1 = 'PQ1'
 namespace PQ1				;---------- PACKAGE DECLARATION
-; EXC_LBL	L13
+; EXC_LBL	L15
 end namespace
 
 PQ2 = 'PQ2'
 namespace PQ2				;---------- PACKAGE DECLARATION
-; EXC_LBL	L14
+; EXC_LBL	L16
 end namespace
 
 PQ3 = 'PQ3'
 namespace PQ3				;---------- PACKAGE DECLARATION
-; EXC_LBL	L15
+; EXC_LBL	L17
 end namespace
 
 					; sub program entry decl (in instantiation FALSE )
@@ -521,15 +527,15 @@ VAR CL__dat, STANDARD.A71004A_L1.DD.P1._L1.size
 	La  ,  0
 	BLKMOV
 
-; EXC_LBL	L18
+; EXC_LBL	L20
 end namespace
 
 P1 = 'P1'
 namespace P1				;---------- PACKAGE (BDY)
 					;    BODY ELAB
 
-if defined P1_L6_
-PRO	P1_L6					;---------- PRO P1
+if defined P1_L8_
+PRO	P1_L8					;---------- PRO P1
 ELB 3					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
@@ -540,8 +546,8 @@ excep:
 endPRO					;---------- end PRO P1
 end if
 
-if defined F1_L7_
-PRO	F1_L7					;---------- PRO F1
+if defined F1_L9_
+PRO	F1_L9					;---------- PRO F1
 PRMS					;    debut parametrage
 	PRM X_ofs				; in
 	PRM result__ofs				; resultat de fonction
@@ -551,18 +557,18 @@ ELB 3					;    BODY ELAB
 begin:					;---------- BDY INSTRUCTIONS
 ; CODE_RETURN : EXPR TYPE = DN_ARRAY
 	La  3,	-X_ofs
-VAR	RET_INFO_L19, q
+VAR	RET_INFO_L25, q
 	DUP
 	La  ,  0
 	SIq   3, -result__ofs,  0
 	DUP
 	La  ,  8
-	Sa   3, RET_INFO_L19
+	Sa   3, RET_INFO_L25
 	DROP
 	La   3, -result__ofs
 	La  ,  8
 	LI	16
-	La   3, RET_INFO_L19
+	La   3, RET_INFO_L25
 	BLKMOV
 	BRA ret_lbl
 ret_lbl:
@@ -572,8 +578,8 @@ excep:
 endPRO					;---------- end PRO F1
 end if
 
-if defined _PLUS__L8_
-PRO	_PLUS__L8				;---------- PRO _PLUS_
+if defined _PLUS__L10_
+PRO	_PLUS__L10				;---------- PRO _PLUS_
 PRMS					;    debut parametrage
 	PRM X_ofs				; in
 	PRM result__ofs				; resultat de fonction
@@ -594,19 +600,19 @@ end namespace
 	Sa  3, ANON_93_29__u
 	LVA 3, ANON_93_29_disp
 	La  3,	-X_ofs
-	CALL	STANDARD.A71004A_L1.DD.P1. ,F1_L7
-VAR	RET_INFO_L20, q
+	CALL	STANDARD.A71004A_L1.DD.P1. ,F1_L9
+VAR	RET_INFO_L28, q
 	DUP
 	La  ,  0
 	SIq   3, -result__ofs,  0
 	DUP
 	La  ,  8
-	Sa   3, RET_INFO_L20
+	Sa   3, RET_INFO_L28
 	DROP
 	La   3, -result__ofs
 	La  ,  8
 	LI	16
-	La   3, RET_INFO_L20
+	La   3, RET_INFO_L28
 	BLKMOV
 	BRA ret_lbl
 ret_lbl:

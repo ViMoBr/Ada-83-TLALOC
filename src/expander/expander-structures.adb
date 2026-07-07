@@ -15,6 +15,7 @@ is
   package CODI	renames EXPANDER.UTILS;
   use CODI;
 
+  procedure CODE_TRANS_WITH_INCLUDES ( COMPILATION_UNIT :TREE );
 
 			--=====================--
   procedure		  CODE_COMPILATION_UNIT	( COMPILATION_UNIT :TREE )
@@ -27,6 +28,9 @@ is
     THE_COMPILATION_UNIT := COMPILATION_UNIT;
 
     CODE_WITH_CONTEXT( D( AS_CONTEXT_ELEM_S, COMPILATION_UNIT ) );
+    if  UNIT_ALL_DECL.TY /= DN_SUBUNIT  then
+      CODE_TRANS_WITH_INCLUDES( COMPILATION_UNIT );
+    end if;
 
     case  UNIT_ALL_DECL.TY  is
 
@@ -105,13 +109,9 @@ is
 
 	    elsif  DEFN.TY = DN_PROCEDURE_ID  then
 	      if  not DB( CD_COMPILED, DEFN )  then
---	        declare
---		SUBP_LBL	:constant STRING	:= NEW_LABEL;
---	        begin
-		DI( CD_LEVEL,      DEFN,  1 );
-		DI( CD_PARAM_SIZE, DEFN,  0 );
-		DB( CD_COMPILED,   DEFN,  TRUE );
---	        end;
+	        DI( CD_LEVEL,      DEFN,  1 );
+	        DI( CD_PARAM_SIZE, DEFN,  0 );
+	        DB( CD_COMPILED,   DEFN,  TRUE );
 	      end if;
 	    end if;
 	  end;
@@ -123,6 +123,54 @@ is
 
   end	CODE_WITH_CONTEXT;
 	-----------------
+
+
+			------------------------
+  procedure		CODE_TRANS_WITH_INCLUDES	( COMPILATION_UNIT :TREE )
+  is			------------------------
+		-- Le FINC d'un CORPS re-elabore son spec inline (elab_spec:) mais
+		-- son texte ne porte pas les with du spec : les includes
+		-- correspondants manquaient (constate sur text_io : IO_EXCEPTIONS
+		-- absent, symboles __exc indefinis a l'assemblage).  XD_WITH_LIST
+		-- est la fermeture transitive (dump du 7/7) : une garde d'include
+		-- par unite package/generique, en sautant :
+		--   . _STANDRD -- inclus par le wrapper ;
+		--   . le spec de l'unite compilee -- son FINC n'existe pas quand on
+		--     compile le corps, et son contenu est re-elabore inline.
+		--     Identification par NOEUD (TW_COMP_UNIT = XD_PARENT), doublee
+		--     d'un test de nom (cas spec-seule : XD_PARENT est vierge).
+		-- Pas d'effet de bord CD_* ici : c'est le role de la passe
+		-- textuelle CODE_WITH_CONTEXT, inchangee.
+    TW_SEQ	: SEQ_TYPE	:= LIST( COMPILATION_UNIT );
+    TW		: TREE;
+    OWN_SPEC	:constant TREE	:= D( XD_PARENT, COMPILATION_UNIT );
+    OWN_NAME	:constant STRING
+		:= PRINT_NAME( D( LX_SYMREP, D( AS_SOURCE_NAME, D( AS_ALL_DECL, COMPILATION_UNIT ) ) ) );
+
+  begin
+
+    while  not IS_EMPTY( TW_SEQ )  loop
+      POP( TW_SEQ, TW );
+
+      declare
+        TW_UNIT		: TREE	:= D( TW_COMP_UNIT, TW );
+        DEFN		: TREE	:= D( AS_SOURCE_NAME, D( AS_ALL_DECL, TW_UNIT ) );
+        UNIT_NAME	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, DEFN ) );
+      begin
+        if  ( DEFN.TY = DN_PACKAGE_ID  or  DEFN.TY = DN_GENERIC_ID )
+	  and then  UNIT_NAME /= "_STANDRD"  and then  UNIT_NAME /= "STANDARD"
+	  and then  UNIT_NAME /= OWN_NAME
+	  and then  TW_UNIT /= OWN_SPEC
+        then
+	  PUT_LINE( "if ~ definite " & UNIT_NAME );
+	  PUT_LINE( "include '" & UNIT_NAME & ".FINC'" );
+	  PUT_LINE( "end if" );
+        end if;
+      end;
+    end loop;
+
+  end	CODE_TRANS_WITH_INCLUDES;
+	------------------------
 
 
 		--------------------------
@@ -529,14 +577,63 @@ is
     end if;
     NEW_LINE;
 
-    INSTRUCTIONS.CODE_STM_S( D( AS_STM_S, BLOCK_BODY ) );
+    declare
+      HAS_HANDLERS		:constant BOOLEAN	:= not IS_EMPTY( LIST( D( AS_ALTERNATIVE_S, BLOCK_BODY ) ) );
+      LVL_STR		:constant STRING	:= INTEGER'IMAGE( CODI.CUR_LEVEL );
+      DSP_NUM		:constant LABEL_TYPE	:= NEW_LABEL;					-- la surcharge NUMERIQUE
+      DSP_LBL		:constant STRING	:= LABEL_STR( DSP_NUM );
+      POST_LBL		:constant STRING	:= NEW_LABEL;
+      CTX_NAME		:constant STRING	:= "exc_ctx_" & LABEL_STR( DSP_NUM );
 
-    if  not IS_EMPTY( LIST( D( AS_ALTERNATIVE_S, BLOCK_BODY ) ) )
-    then  CODE_EXCEPTIONS_ALTERNATIVE_S( D( AS_ALTERNATIVE_S, BLOCK_BODY ) );
-    end if;
+    begin
+      if  HAS_HANDLERS  then
+        if  IS_PACK_BODY  then
+	PUT_LINE( "ANOMALIE : handlers sur corps de package non modelises" );					-- bruyant -- exceptions d'elaboration, differe
+
+        else
+			-- PILIER 11 : frame porteur -> contexte de reprise (push a begin:, apres
+			-- l'elaboration : LRM 11.4.2 gratuit).  Publication d'EXC_TOP en DERNIER.
+	PUT_LINE( "VAR" & tab & CTX_NAME & ", q," & INTEGER'IMAGE( 8 + CODI.CUR_LEVEL ) );			-- 7 en-tete + (lvl+1) display
+	PUT_LINE( tab & "La" & tab & "0, STANDARD.EXCEPTIONS_TOP_CTX_disp" );
+	PUT_LINE( tab & "Sa " & LVL_STR & ',' & tab & CTX_NAME );						-- PREV_CTX
+	PUT_LINE( tab & "LCA" & tab & DSP_LBL );
+	PUT_LINE( tab & "Sa " & LVL_STR & ',' & tab & CTX_NAME & " + STANDARD._EXCEPTION_CONTEXT.DISPATCH" );	-- offset symbolique : suit le record Ada
+	PUT_LINE( tab & "EXC_MACH " & LVL_STR & ',' & tab & CTX_NAME );					-- RBP RSP R13 R14 NXT_LVL FP(0..lvl)
+	PUT_LINE( tab & "LVA " & LVL_STR & ',' & tab & CTX_NAME );
+	PUT_LINE( tab & "Sa" & tab & "0, STANDARD.EXCEPTIONS_TOP_CTX_disp" );
+	CODI.HANDLER_CTX_AT( CODI.CUR_LEVEL ) := TRUE;							-- pour les pops de CODE_RETURN / CODE_EXIT
+        end if;
+      end if;
+
+      INSTRUCTIONS.CODE_STM_S( D( AS_STM_S, BLOCK_BODY ) );
+
+      if  HAS_HANDLERS  and then  not IS_PACK_BODY  then
+        CODI.HANDLER_CTX_AT( CODI.CUR_LEVEL ) := FALSE;							-- AVANT les handlers : leur contexte est
+												-- deja depile a l'entree du dispatch
+        CODI.EXC_POP;										-- sortie normale du corps protege
+        PUT_LINE( tab & "BRA" & tab & POST_LBL );								-- sauter la section dispatch+handlers
+
+        PUT_LINE( DSP_LBL & ':' );									-- LRM 11.3 : memoriser l'exception qui a cause le transfert, par ACTIVATION -- dans PREV_CTX (+0), mort depuis le pop.
+        PUT_LINE( tab & "La" & tab & "0, STANDARD.EXCEPTIONS_CURRENT_disp" );
+        PUT_LINE( tab & "Sa " & LVL_STR & ',' & tab & CTX_NAME );
+
+        declare
+	OLD_LVL	:constant INTEGER		:= CODI.HANDLER_LVL;
+	OLD_SUF	:constant LABEL_TYPE	:= CODI.HANDLER_CTX_SUF;
+        begin
+	CODI.HANDLER_LVL := CODI.CUR_LEVEL;
+	CODI.HANDLER_CTX_SUF := DSP_NUM;
+	CODE_EXCEPTIONS_ALTERNATIVE_S( D( AS_ALTERNATIVE_S, BLOCK_BODY ) );
+	CODI.HANDLER_LVL := OLD_LVL;
+	CODI.HANDLER_CTX_SUF := OLD_SUF;
+        end;
+        PUT_LINE( POST_LBL & ':' );									-- chute des handlers et du flux normal :
+												-- epilogue de l'appelant (ret_lbl / UNLINK)
+      end if;
+    end;
 
   end	CODE_BLOCK_BODY;
-	--===========--
+	---------------
 
 
 
@@ -578,71 +675,78 @@ is
 			-----------------------------
   procedure		CODE_EXCEPTIONS_ALTERNATIVE_S		( ALTERNATIVE_S :TREE )
   is			-----------------------------
+		-- PILIER 11 : dispatch des handlers.  On arrive sur le label pose par
+		-- CODE_BLOCK_BODY avec le contexte DEJA depile par exc_raise_ et l'etat
+		-- machine restaure a l'etat begin: du frame porteur ;
+		-- EXCEPTIONS_CURRENT porte l'identite (@doublet STR).
+		-- Chute en fond de section sans appariement : re-raise (LRM 11.4.1).
 
-    ALTERNATIVE_SEQ		: SEQ_TYPE	:= LIST ( ALTERNATIVE_S );
+    ALTERNATIVE_SEQ		: SEQ_TYPE		:= LIST ( ALTERNATIVE_S );
     ALTERNATIVE_ELEM	: TREE;
+    END_LBL		:constant STRING		:= NEW_LABEL;
+    SEEN_OTHERS		: BOOLEAN			:= FALSE;
 
 		----------------
     procedure	CODE_ALTERNATIVE	( ALTERNATIVE :TREE )
-    is
-
-      SKIP_LBL		:constant STRING	:= NEW_LABEL;
-      HANDLER_BEGIN_LBL	:constant STRING	:= NEW_LABEL;
-      CHOICE_S		: TREE		:= D( AS_CHOICE_S, ALTERNATIVE );
-      CHOICE_SEQ		: SEQ_TYPE	:= LIST( CHOICE_S );
+    is		----------------
+      HANDLER_LBL		:constant STRING		:= NEW_LABEL;
+      SKIP_LBL		:constant STRING		:= NEW_LABEL;
+      CHOICE_SEQ		: SEQ_TYPE		:= LIST( D( AS_CHOICE_S, ALTERNATIVE ) );
       CHOICE		: TREE;
+      IS_OTHERS		: BOOLEAN			:= FALSE;
 
     begin
---      DI( CD_LABEL, CHOICE_S, INTEGER ( HANDLER_BEGIN_LBL ) );
+      while  not IS_EMPTY( CHOICE_SEQ )  loop
+        POP( CHOICE_SEQ, CHOICE );
 
-			-------------
-			CODE_CHOICE_S:
-      begin
-        while not IS_EMPTY( CHOICE_SEQ ) loop
-	POP( CHOICE_SEQ, CHOICE );
+        if  CHOICE.TY = DN_CHOICE_EXP  then
+	declare
+	  EXCEPTION_ID	: TREE	:= CODI.EXCEPTION_ID_OF( D( AS_EXP, CHOICE ) );				-- resout selected + renames (LRM 8.5);
+	begin											-- when X =>  (choix multiple : une paire par choix)
+	  PUT_LINE( tab & "La" & tab & "0, STANDARD.EXCEPTIONS_CURRENT_disp" );
+	  PUT( tab & "LCA" & tab );
+	  CODI.REGIONS_PATH( EXCEPTION_ID );
+	  PUT_LINE( PRINT_NAME( D( LX_SYMREP, EXCEPTION_ID ) ) & "__exc.data_ptr" );
+	  PUT_LINE( tab & "CEQ" );
+	  PUT_LINE( tab & "BT" & tab & HANDLER_LBL );
+	end;
 
-	if CHOICE.TY = DN_CHOICE_EXP
-	then  PUT_LINE( "; CHOICE_EXP in EXCEPTIONS todo" );	-- CODE_CHOICE_EXP ( CHOICE );
+        elsif  CHOICE.TY = DN_CHOICE_OTHERS  then
+	IS_OTHERS := TRUE;  SEEN_OTHERS := TRUE;							-- sem : others seul dans son choix, et dernier
 
-	elsif CHOICE.TY = DN_CHOICE_OTHERS
-	then  PUT_LINE( "; CHOICE_OTHERS in EXCEPTIONS todo" );	-- CODE_CHOICE_OTHERS ( CHOICE );
+        elsif  CHOICE.TY = DN_CHOICE_RANGE  then
+	PUT_LINE( "ANOMALIE : CHOICE_RANGE in EXCEPTIONS" );
+        end if;
+      end loop;
 
-	elsif CHOICE.TY = DN_CHOICE_RANGE
-	then  PUT_LINE( "; ANOMALIE : CHOICE_RANGE in EXCEPTIONS" );
-	end if;
-
-	if not CHOICE_OTHERS_FLAG then
-	  null;	-- EMIT( JMPT, LABEL_TYPE( DI( CD_LABEL, CHOICE_S ) ), COMMENT=> "TRAITE EXCEPTION" );
-	end if;
-        end loop;
-      end			CODE_CHOICE_S;
-			-------------
-
-      if not  UTILS.CHOICE_OTHERS_FLAG
-      then
-        PUT_LINE( tab & "BRA" & tab & SKIP_LBL );
-        PUT_LINE( HANDLER_BEGIN_LBL & ':' );
+      if  not IS_OTHERS  then
+        PUT_LINE( tab & "BRA" & tab & SKIP_LBL );								-- aucun choix apparie : alternative suivante
+        PUT_LINE( HANDLER_LBL & ':' );
       end if;
       INSTRUCTIONS.CODE_STM_S( D( AS_STM_S, ALTERNATIVE ) );
-      if not  UTILS.CHOICE_OTHERS_FLAG
-      then
+      PUT_LINE( tab & "BRA" & tab & END_LBL );								-- fin de handler : reprendre apres le corps protege
+      if  not IS_OTHERS  then
         PUT_LINE( SKIP_LBL & ':' );
       end if;
-
     end	CODE_ALTERNATIVE;
 	----------------
 
   begin
-    while not IS_EMPTY( ALTERNATIVE_SEQ ) loop
+    while  not IS_EMPTY( ALTERNATIVE_SEQ )  loop
       POP( ALTERNATIVE_SEQ, ALTERNATIVE_ELEM );
 
-      if ALTERNATIVE_ELEM.TY = DN_ALTERNATIVE
-      then  CODE_ALTERNATIVE( ALTERNATIVE_ELEM );
+      if  ALTERNATIVE_ELEM.TY = DN_ALTERNATIVE  then
+        CODE_ALTERNATIVE( ALTERNATIVE_ELEM );
 
-      elsif ALTERNATIVE_ELEM.TY = DN_ALTERNATIVE_PRAGMA
-      then  PUT_LINE( "ANOMALIE : DN_ALTERNATIVE_PRAGMA in EXCEPTIONS" );
+      elsif  ALTERNATIVE_ELEM.TY = DN_ALTERNATIVE_PRAGMA  then
+        PUT_LINE( "ANOMALIE : DN_ALTERNATIVE_PRAGMA in EXCEPTIONS" );
       end if;
     end loop;
+
+    if  not SEEN_OTHERS  then
+      PUT_LINE( tab & "BRA" & tab & "STANDARD.exc_raise_" );						-- non-appariement : propager (contexte deja depile)
+    end if;
+    PUT_LINE( END_LBL & ':' );
 
   end	CODE_EXCEPTIONS_ALTERNATIVE_S;
 	-----------------------------

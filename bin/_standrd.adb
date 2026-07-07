@@ -16,6 +16,20 @@ is				--------
 			end record;
 
 
+				-- EXCEPTIONS SERVICE
+
+  EXCEPTIONS_TOP_CTX	: LONG_INTEGER;								-- PILIER 11 : sommet de la pile des contextes de reprise
+  EXCEPTIONS_CURRENT	: LONG_INTEGER;								-- identite (@doublet STR) de l'exception en cours
+
+  type FP_ARRAY		is array ( 0 .. 31 ) of LONG_INTEGER;
+  type EXCEPTION_CONTEXT	is record
+			  PREV_CTX, DISPATCH,
+			  RBP, RSP, R13, R14,
+			  NXT_LVL			: LONG_INTEGER;
+			  FRAME_POINTERS		: FP_ARRAY;
+			end record;
+  EXC_CTX0		: EXCEPTION_CONTEXT;							-- contexte-sentinelle : 7 qwords d'en-tete + FP(0)
+
 			-----
   function		WIDTH	( BIT_SIZE :INTEGER )	return INTEGER
   is			-----

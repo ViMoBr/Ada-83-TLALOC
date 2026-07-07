@@ -1431,6 +1431,66 @@ post:
   end namespace
 end macro
 
+;			----------------------------
+macro			EXC_MACH?		lvl, ctx			; PILIER 11 : photographie de l'etat machine cache
+;			----------------------------			; dans le contexte de reprise a [FP(lvl) + ctx].
+		; Remplit +16.. : RBP (pile de travail, etat courant),
+		; RSP (micro-pile), R13/R14 (co-pile), nlvl = lvl+1,
+		; puis le prefixe display FP(0..lvl).
+		; Le PROTOCOLE (prev, dispatch, EXC_TOP) est de la
+		; LLIR ordinaire emise par l'expander -- pas ici.
+		; Clobbere RAX, RCX, RSI, RDI (registres de travail).
+		; Chemin froid (une fois par entree de frame porteur
+		; de handlers) : deplacements disp32 uniformes.
+  assert lvl >= 0 & lvl <= 31
+  FP_IN_RAX lvl							; rax := FP(lvl)
+  db 0x48, 0x89, 0xA8						; mov [rax + ctx+16], rbp
+  dd ctx + 16
+  db 0x48, 0x89, 0xA0						; mov [rax + ctx+24], rsp
+  dd ctx + 24
+  db 0x4C, 0x89, 0xA8						; mov [rax + ctx+32], r13
+  dd ctx + 32
+  db 0x4C, 0x89, 0xB0						; mov [rax + ctx+40], r14
+  dd ctx + 40
+  db 0x48, 0xC7, 0x80						; mov qword [rax + ctx+48], lvl+1   (nlvl)
+  dd ctx + 48
+  dd lvl + 1
+  db 0x48, 0x8D, 0xB8						; lea rdi, [rax + ctx+56]   (destination du prefixe)
+  dd ctx + 56
+  db 0x4C, 0x89, 0xFE						; mov rsi, r15      (source : le display)
+  db 0xB9								; mov ecx, lvl+1
+  dd lvl + 1
+  db 0xF3, 0x48, 0xA5						; rep movsq     (FP(0..lvl) -> ctx+56..)
+end macro
+
+;			-----------------------
+macro			EXC_RAISE?	top			; PILIER 11 : deroulage. Corps de l'INSTANCE UNIQUE,
+;			-----------------------			; posee par le wrapper sous le label exc_raise_ ;
+			; top = deplacement VARzone niveau 0 du sommet de
+			; pile des contextes (EXCEPTIONS_TOP_CTX_disp).
+			; Precondition : EXCEPTIONS_CURRENT pose.
+			; POP AVANT dispatch (LRM 11.4.1 : raise dans un
+			; handler -> appelant ; fond de dispatch -> re-BRA).
+			; Atteint par BRA, jamais par CALL.
+  db 0x49, 0x8B, 0x1F						; mov rbx, [r15]		(rbx := FP(0))
+  db 0x48, 0x8B, 0x83						; mov rax, [rbx + top]	(rax := contexte sommet)
+  dd top
+  db 0x48, 0x8B, 0x08						; mov rcx, [rax]		(PREV_CTX)
+  db 0x48, 0x89, 0x8B						; mov [rbx + top], rcx	(POP avant dispatch)
+  dd top
+  db 0x4C, 0x8B, 0x68, 0x20						; mov r13, [rax+32]		(frame pointer co-pile)
+  db 0x4C, 0x8B, 0x70, 0x28						; mov r14, [rax+40]		(sommet co-pile : balaye
+                                ;  frames abandonnes et temporaires d'instruction)
+  db 0x48, 0x8B, 0x60, 0x18						; mov rsp, [rax+24]		(micro-pile : jette les
+                                ;  adresses de retour des frames deroules)
+  db 0x48, 0x8B, 0x48, 0x30						; mov rcx, [rax+48]		(NXT_LVL)
+  db 0x48, 0x8D, 0x70, 0x38						; lea rsi, [rax+56]
+  db 0x4C, 0x89, 0xFF						; mov rdi, r15
+  db 0xF3, 0x48, 0xA5						; rep movsq		(restaurer FP(0..lvl))
+  db 0x48, 0x8B, 0x68, 0x10						; mov rbp, [rax+16]		(pile de travail)
+  db 0xFF, 0x60, 0x08						; jmp [rax+8]		(DISPATCH du frame porteur)
+end macro
+
 ;-----------------------------------------------------------------------------------------------------------------------
 ;		O P E R A T I O N S   L O G I Q U E S   D E   B L O C   (LRM 4.5.1) -- lot D3
 ;-----------------------------------------------------------------------------------------------------------------------
@@ -1896,12 +1956,17 @@ macro			SYS_FILE_DELETE?				; destruction d'un fichier
 end macro
 
 
-;			---------
-macro			SYS_EXIT?					; retour au systeme
-;			---------
+;			----------------
+macro			SYS_EXIT?	code:0				; retour au systeme
+;			----------------
   db 0x6A, 0x3C							; push x3C  (sys_exit rax=60)
   db 0x58								; pop rax
+if code = 0
   db 0x31, 0xFF							; xor edi, edi (err_code=0)
+else
+  db 0xBF								; mov edi, imm32        (err_code)
+  dd code
+end if
   db 0x0F, 0x05							; syscall
 end macro
 

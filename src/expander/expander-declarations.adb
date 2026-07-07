@@ -273,6 +273,11 @@ null;
     begin
       while  not IS_EMPTY( SOURCE_NAME_SEQ )  loop
         POP( SOURCE_NAME_SEQ,	SOURCE_NAME );
+        declare
+	EXC_STR	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, SOURCE_NAME ) );
+        begin
+	PUT_LINE( "STR " & EXC_STR & "__exc, " & """" & EXC_STR & """" );
+        end;
       end	loop;
 
     end	CODE_SOURCE_NAME_S;
@@ -1300,12 +1305,18 @@ put_line( "; CODE_VC_NAME " & NODE_NAME'IMAGE( VC_NAME.TY ) );
 	---------------------
 
 
-  --|-------------------------------------------------------------------------------------------
-  procedure	CODE_RENAMES_EXC_DECL ( RENAMES_EXC_DECL :TREE )
-  is
+		---------------------
+  procedure	CODE_RENAMES_EXC_DECL	( RENAMES_EXC_DECL :TREE )
+  is		--------------------
   begin
-    null;
-  end;
+    null;		-- PILIER 11, LRM 8.5 : un renames d'exception ne declare RIEN.
+		-- L'identite est celle de l'exception d'ORIGINE, resolue au site
+		-- d'usage par CODI.EXCEPTION_ID_OF.  PIEGE : emettre une STR ici
+		-- creerait une identite DISTINCTE -- handlers inoperants a travers
+		-- le renommage.
+  end	CODE_RENAMES_EXC_DECL;
+	---------------------
+
 
   --|-------------------------------------------------------------------------------------------
   procedure	CODE_SIMPLE_RENAME_DECL ( SIMPLE_RENAME_DECL :TREE )

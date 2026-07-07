@@ -440,7 +440,6 @@ is					-----
 	--========--
 
 
-
 			--^^^^^--
   procedure		  STORE			( DEST_DEFN	:TREE )
   is			---------
@@ -478,6 +477,52 @@ is					-----
 
   end	STORE;
 	-----
+
+			--^^^--
+  procedure		EXC_POP
+  is			-------									-- PILIER 11 : EXC_TOP := EXC_TOP.PREV_CTX
+  begin
+    PUT_LINE( tab & "La 0," & tab & "STANDARD.EXCEPTIONS_TOP_CTX_disp" );
+    PUT_LINE( tab & "La , 0" );									-- PREV_CTX (offset 0)
+    PUT_LINE( tab & "Sa 0," & tab & "STANDARD.EXCEPTIONS_TOP_CTX_disp" );
+
+  end	EXC_POP;
+	-------
+
+
+			--^^^^^^^^^^^^^^^--
+  function		  EXCEPTION_ID_OF	( NAME :TREE )	return TREE
+  is			-------------------
+		-- Descend un nom eventuellement qualifie (DN_SELECTED) jusqu'au
+		-- USED_NAME_ID, prend son SM_DEFN, puis suit la chaine des
+		-- renommages.  LRM 8.5 : un renames ne declare pas une nouvelle
+		-- exception -- l'identite est celle de l'ORIGINE.
+		-- REPRESENTATION REELLE (dump exc_ren0, 7/7, contra diana_NODES) :
+		-- SM_RENAMES_EXC porte DIRECTEMENT l'EXCEPTION_ID cible, pas le
+		-- nom.  On accepte les deux formes -- foi au dump, pas a la
+		-- grammaire.
+    N		: TREE	:= NAME;
+    RESULT	: TREE	:= NAME;
+  begin
+    loop
+      while  N.TY = DN_SELECTED  loop
+        N := D( AS_DESIGNATOR, N );
+      end loop;
+
+      if	 N.TY = DN_USED_NAME_ID  then  RESULT := D( SM_DEFN, N );
+      elsif  N.TY = DN_EXCEPTION_ID  then  RESULT := N;							-- forme constatee : l'ID directement
+      else	 exit;										-- nom non modelise : rendre le dernier resolu
+      end if;
+
+      N := D( SM_RENAMES_EXC, RESULT );
+      exit when  N.TY /= DN_USED_NAME_ID
+        and then  N.TY /= DN_SELECTED
+        and then  N.TY /= DN_EXCEPTION_ID;								-- vierge/void : pas (plus) un renommage
+    end loop;
+    return  RESULT;
+
+  end	EXCEPTION_ID_OF;
+	---------------
 
 
 			--^^^^^--
