@@ -5,7 +5,7 @@ use  MACHINE_CODE;
 is					-------
 
   STDOUT_PAGE_LENGTH	: COUNT		:= 0;
-  STDOUT_LINE_LENGTH	: COUNT		:= 256;
+  STDOUT_LINE_LENGTH	: COUNT		:= 0;						-- LRM 14.3.3 : non borne par defaut
   STDOUT_PAGE		: POSITIVE_COUNT	:= 1;
   STDOUT_LINE		: POSITIVE_COUNT	:= 1;
   STDOUT_COL		: POSITIVE_COUNT	:= 1;
@@ -41,6 +41,7 @@ is					-------
 	------------------
 
   begin
+    if  FILE.IS_OPENED  then raise STATUS_ERROR; end if;					-- LRM 14.2.1(4)
     ERR_OR_ID := CREATE_SYSTEM_CALL( NAME );
     if  ERR_OR_ID >= 0  then
       FILE.ID := ERR_OR_ID;
@@ -57,6 +58,8 @@ is					-------
       FILE.LOOK_AHEAD	:= ASCII.NUL;
       FILE.HAS_LOOK_AHEAD	:= FALSE;
       FILE.AT_END_OF_FILE	:= FALSE;
+    else
+      raise USE_ERROR;									-- LRM 14.2.1(6) creation impossible
     end if;
 
   end	CREATE;
@@ -85,6 +88,7 @@ is					-------
 	----------------
 
   begin
+    if  FILE.IS_OPENED  then raise STATUS_ERROR; end if;					-- LRM 14.2.1(4)
     ERR_OR_ID := OPEN_SYSTEM_CALL( NAME );
     if  ERR_OR_ID >= 0  then
       FILE.ID := ERR_OR_ID;
@@ -101,6 +105,8 @@ is					-------
       FILE.LOOK_AHEAD	:= ASCII.NUL;
       FILE.HAS_LOOK_AHEAD	:= FALSE;
       FILE.AT_END_OF_FILE	:= FALSE;
+    else
+      raise NAME_ERROR;									-- LRM 14.2.1(7), piege n 45 desamorce
     end if;
 
   end	OPEN;
@@ -125,6 +131,7 @@ is					-------
     -----------------
 
   begin
+    if  FILE.IS_OPENED = FALSE  then raise STATUS_ERROR; end if;
     ERR_CODE := CLOSE_SYSTEM_CALL( FILE.ID );
     FILE.ID := -1;
     FILE.IS_OPENED := FALSE;
@@ -152,6 +159,7 @@ is					-------
 	------------------
 
   begin
+    if  FILE.IS_OPENED = FALSE  then raise STATUS_ERROR; end if;
     ERR_CODE := DELETE_SYSTEM_CALL( FILE.NAME( 1 .. FILE.NAME_LEN ) );
     FILE.IS_OPENED := FALSE;
 
@@ -312,6 +320,119 @@ is					-------
 	--------------
 
 
+		-- Primitives brutes (hors LRM)
+		--
+		-- Niveau RAW : flux d'octets pur. Aucune mise en page (COL/LINE/
+		-- PAGE), aucune exception TEXT_IO ; a EOF, GET_RAW arme
+		-- AT_END_OF_FILE et rend NUL. Consommateurs legitimes : les
+		-- scanners tokenisants (INTEGER_IO, FLOAT_IO, FIXED_IO,
+		-- ENUMERATION_IO), les lecteurs de structure (SKIP_LINE,
+		-- SKIP_PAGE, END_OF_LINE/PAGE/FILE, GET_LINE) et les emetteurs
+		-- de terminateurs (NEW_LINE, NEW_PAGE, SET_COL/SET_LINE).
+		-- L'interface publique conforme LRM (GET/PUT) est construite
+		-- au-dessus et ne touche jamais le flux directement ; le niveau
+		-- RAW, lui, n'appelle jamais le niveau public.
+
+
+			---
+  procedure		GET_RAW		( FILE :in FILE_TYPE; ITEM :out CHARACTER )
+  is			---
+
+    BYTES_READ	: INTEGER;
+
+		----------------
+    function	READ_SYSTEM_CALL		( FILE_ID :in INTEGER )		return INTEGER
+    is		----------------
+    begin
+      ASM_OP_1'( OPCODE => LI, VAL => 1 );								-- push LENGTH = 1 octet (immediat)
+      ASM_OP_2'( OPCODE => La, LVL => 1, OFS => -16 );							-- push @ITEM : charge l'adresse destination (out param GET level 1 offset -16)
+      ASM_OP_2'( OPCODE => Ld, LVL => 2, OFS => -8 );							-- push FILE_ID (in param READ_SYSTEM_CALL level 2 offset -8)
+      ASM_OP_0'( OPCODE => SYS_FILE_READ );								-- (-8) FILE_ID ; (-16) @ITEM ; (-24) LENGTH
+      ASM_OP_2'( OPCODE => SD, LVL => 2, OFS => -16 );							-- Retour du BYTES_READ
+
+    end	READ_SYSTEM_CALL;
+	-----------------
+
+  begin
+    if  FILE.HAS_LOOK_AHEAD  then
+      ITEM := FILE.LOOK_AHEAD;
+      FILE.HAS_LOOK_AHEAD := FALSE;
+    elsif  FILE.ID = -1  then										-- standard console input
+      ASM_OP_2'( OPCODE => La, LVL => 1, OFS => -16 );							-- push @ITEM : charge l'adresse destination (out param GET level 1 offset -16)
+      ASM_OP_0'( OPCODE => SYS_GET_CHAR );								-- get console char
+    else
+      BYTES_READ := READ_SYSTEM_CALL( FILE.ID );								-- general file
+      if  BYTES_READ = 0  then
+        FILE.AT_END_OF_FILE := TRUE;
+        ITEM := ASCII.NUL;
+      end if;
+    end if;
+
+  end	GET_RAW;
+	----
+
+
+			---
+  procedure		PUT_RAW		( FILE :in FILE_TYPE; ITEM :in CHARACTER )
+  is			---
+
+    ERR_CODE	: INTEGER;
+
+  		-----------------
+    function	WRITE_SYSTEM_CALL		( ID : INTEGER )		return INTEGER
+    is		-----------------
+    begin
+      ASM_OP_1'( OPCODE => LI,  VAL => 1 );								-- push LENGTH en -24
+      ASM_OP_2'( OPCODE => LVa, LVL => 1, OFS => -16 );							-- push @CHAR (in param PUT level 1 offset -16)
+      ASM_OP_2'( OPCODE => Ld,  LVL => 2, OFS => -8 );							-- ID  (in param WRITE_SYSTEM_CALL level 2 offset -8)
+      ASM_OP_0'( OPCODE => SYS_FILE_WRITE );								-- (-8) FILE_ID ; (-16) @ITEM ; (-24) LENGTH
+      ASM_OP_2'( OPCODE => SD,  LVL => 2, OFS => -16 );							-- Retour du resultat syscall
+
+    end	WRITE_SYSTEM_CALL;
+	-----------------
+  begin
+    if  FILE.ID = -1  then										-- standard console output
+      ASM_OP_2'( OPCODE => LB, LVL => 1, OFS => -16 );
+      ASM_OP_0'( OPCODE => SYS_PUT_CHAR );
+    else
+      ERR_CODE := WRITE_SYSTEM_CALL( FILE.ID );								-- general file
+    end if;
+
+  end	PUT_RAW;
+	----
+
+
+			---
+  procedure		PUT_RAW		( FILE :in FILE_TYPE; ITEM :in STRING )
+  is			---
+
+    ERR_CODE	: INTEGER;
+
+  		-----------------
+    function	WRITE_SYSTEM_CALL		( FILE_ID :INTEGER; LENGTH :POSITIVE )		return INTEGER
+    is		-----------------
+    begin
+      ASM_OP_2'( OPCODE => Ld, LVL => 2, OFS => -16 );							-- LENGTH en -16
+      ASM_OP_2'( OPCODE => LIa, LVL => 1, OFS => -16 );							-- @CHARS sur parametre ITEM de PUT
+      ASM_OP_2'( OPCODE => Ld, LVL => 2, OFS => -8 );							-- ID
+      ASM_OP_0'( OPCODE => SYS_FILE_WRITE );
+      ASM_OP_2'( OPCODE => SD, LVL => 2, OFS => -24 );							-- Retour du resultat syscall
+
+    end	WRITE_SYSTEM_CALL;
+	-----------------
+  begin
+    if  FILE.ID = -1  then
+      ASM_OP_2'( OPCODE => LA, LVL => 1, OFS => -16 );
+      ASM_OP_0'( OPCODE => SYS_PUT_STR );
+    else
+      ERR_CODE := WRITE_SYSTEM_CALL( FILE.ID, ITEM'LENGTH );
+    end if;
+
+  end	PUT_RAW;
+	---
+
+
+
 			-- Specification of line and page lengths
 
 
@@ -413,14 +534,14 @@ is					-------
     if  FILE.IS_OPENED = FALSE  then raise STATUS_ERROR; end if;
     if  FILE.MODE /= OUT_FILE  then raise MODE_ERROR; end if;
 
-    PUT( FILE, ASCII.CR );
+    PUT_RAW( FILE, ASCII.CR );
     FILE.COL := 1;											-- LRM 14.3.4(3) col := 1
     for  N in 1 .. SPACING  loop
-      PUT( FILE, ASCII.LF );
+      PUT_RAW( FILE, ASCII.LF );
     end loop;
     FILE.LINE := FILE.LINE + SPACING;
     if  FILE.PAGE_LENGTH /= 0  and then  FILE.LINE > FILE.PAGE_LENGTH  then
-      PUT( FILE,ASCII.FF );
+      PUT_RAW( FILE,ASCII.FF );
       FILE.PAGE := FILE.PAGE + 1;
       FILE.LINE := 1;
     end if;
@@ -450,11 +571,17 @@ is					-------
   begin
     if  FILE.IS_OPENED = FALSE  then raise STATUS_ERROR; end if;
     if  FILE.MODE /= IN_FILE  then raise MODE_ERROR; end if;
+    if  FILE.AT_END_OF_FILE  then raise END_ERROR; end if;					-- LRM 14.3.4(9)
 
     loop
       exit when  FILE.AT_END_OF_FILE;
-      GET( FILE, CH );
+      GET_RAW( FILE, CH );
       exit when  FILE.AT_END_OF_FILE;
+      if  CH = ASCII.FF  then								-- terminateur de page rencontre
+        FILE.PAGE := FILE.PAGE + 1;
+        FILE.LINE := 1;
+        FILE.COL  := 1;
+      end if;
       if  CH = ASCII.LF  then
         LINES_SKIPPED := LINES_SKIPPED + 1;
         FILE.LINE := FILE.LINE + 1;
@@ -488,16 +615,17 @@ is					-------
     if  FILE.MODE /= IN_FILE  then raise MODE_ERROR; end if;
     if  FILE.AT_END_OF_FILE  then return TRUE; end if;
     if  FILE.HAS_LOOK_AHEAD  then
-      return FILE.LOOK_AHEAD = ASCII.LF;
+      return FILE.LOOK_AHEAD = ASCII.LF  or else  FILE.LOOK_AHEAD = ASCII.CR
+					or else  FILE.LOOK_AHEAD = ASCII.FF;
     end if;
     -- Tenter de lire un caractere
-    GET( FILE, CH );
+    GET_RAW( FILE, CH );
     if  FILE.AT_END_OF_FILE  then
       return TRUE;
     else
       FILE.LOOK_AHEAD := CH;
       FILE.HAS_LOOK_AHEAD := TRUE;
-      return CH = ASCII.LF;
+      return CH = ASCII.LF  or else  CH = ASCII.CR  or else  CH = ASCII.FF;
     end if;
 
   end	END_OF_LINE;
@@ -523,7 +651,7 @@ is					-------
     if  FILE.COL /= 1  then
       NEW_LINE( FILE );
     end if;
-    PUT( FILE, ASCII.FF );
+    PUT_RAW( FILE, ASCII.FF );
     FILE.PAGE := FILE.PAGE + 1;
     FILE.LINE := 1;
 
@@ -550,9 +678,10 @@ is					-------
   begin
     if  FILE.IS_OPENED = FALSE  then raise STATUS_ERROR; end if;
     if  FILE.MODE /= IN_FILE  then raise MODE_ERROR; end if;
+    if  FILE.AT_END_OF_FILE  then raise END_ERROR; end if;					-- LRM 14.3.4(21)
     loop
       exit when  FILE.AT_END_OF_FILE;
-      GET( FILE, CH );
+      GET_RAW( FILE, CH );
       exit when  FILE.AT_END_OF_FILE;
       if  CH = ASCII.LF  then
         FILE.LINE := FILE.LINE + 1;
@@ -592,7 +721,7 @@ is					-------
       return FILE.LOOK_AHEAD = ASCII.FF;
     end if;
     -- Tenter de lire un caractere
-    GET( FILE, CH );
+    GET_RAW( FILE, CH );
     if  FILE.AT_END_OF_FILE  then
       return TRUE;
     else
@@ -627,7 +756,7 @@ is					-------
     if  FILE.AT_END_OF_FILE  then return TRUE; end if;
     if  FILE.HAS_LOOK_AHEAD  then return FALSE; end if;
     -- Tenter de lire un caractere
-    GET( FILE, CH );
+    GET_RAW( FILE, CH );
     if  FILE.AT_END_OF_FILE  then
       return TRUE;
     else
@@ -656,10 +785,25 @@ is					-------
   begin
     if  FILE.IS_OPENED = FALSE  then raise STATUS_ERROR; end if;
 
--- A FINIR LRM 14.3.4 (28-33)
     if  FILE.MODE /= IN_FILE  then
-      FILE.COL := TO;
+      -- Sortie, LRM 14.3.4(29-31) : espaces jusqu'a la colonne TO ;
+      -- si TO est en arriere, terminateur de ligne d'abord.
+      if  FILE.LINE_LENGTH /= 0  and then  TO > FILE.LINE_LENGTH  then
+        raise LAYOUT_ERROR;								-- LRM 14.3.4(31)
+      end if;
+      if  TO < FILE.COL  then
+        NEW_LINE( FILE );
+      end if;
+      while  FILE.COL < TO  loop
+        PUT_RAW( FILE, ' ' );
+        FILE.COL := FILE.COL + 1;
+      end loop;
     else
+      -- Entree, LRM 14.3.4(32-33) : DIFFERE (restriction consignee).
+      -- Le positionnement par lecture (saut de caracteres et de
+      -- terminateurs jusqu'a la colonne TO, END_ERROR au terminateur
+      -- de fichier) n'est pas implante ; on conserve l'affectation
+      -- directe historique du compteur.
       FILE.COL := TO;
     end if;
 
@@ -683,10 +827,21 @@ is					-------
   begin
     if  FILE.IS_OPENED = FALSE  then raise STATUS_ERROR; end if;
 
--- A FINIR LRM 14.3.4 (35-40)
     if  FILE.MODE /= IN_FILE  then
-      FILE.LINE := TO;
+      -- Sortie, LRM 14.3.4(36-38) : NEW_LINE jusqu'a la ligne TO ;
+      -- si TO est en arriere, terminateur de page d'abord.
+      if  FILE.PAGE_LENGTH /= 0  and then  TO > FILE.PAGE_LENGTH  then
+        raise LAYOUT_ERROR;								-- LRM 14.3.4(38)
+      end if;
+      if  TO < FILE.LINE  then
+        NEW_PAGE( FILE );
+      end if;
+      while  FILE.LINE < TO  loop
+        NEW_LINE( FILE );
+      end loop;
     else
+      -- Entree, LRM 14.3.4(39-40) : DIFFERE (restriction consignee),
+      -- meme regime que SET_COL en entree.
       FILE.LINE := TO;
     end if;
 
@@ -774,35 +929,33 @@ is					-------
   procedure		GET		( FILE :in FILE_TYPE; ITEM :out CHARACTER )
   is			---
 
-    BYTES_READ	: INTEGER;
-
-		----------------
-    function	READ_SYSTEM_CALL		( FILE_ID :in INTEGER )		return INTEGER
-    is		----------------
-    begin
-      ASM_OP_1'( OPCODE => LI, VAL => 1 );								-- push LENGTH = 1 octet (immediat)
-      ASM_OP_2'( OPCODE => La, LVL => 1, OFS => -16 );							-- push @ITEM : charge l'adresse destination (out param GET level 1 offset -16)
-      ASM_OP_2'( OPCODE => Ld, LVL => 2, OFS => -8 );							-- push FILE_ID (in param READ_SYSTEM_CALL level 2 offset -8)
-      ASM_OP_0'( OPCODE => SYS_FILE_READ );								-- (-8) FILE_ID ; (-16) @ITEM ; (-24) LENGTH
-      ASM_OP_2'( OPCODE => SD, LVL => 2, OFS => -16 );							-- Retour du BYTES_READ
-
-    end	READ_SYSTEM_CALL;
-	-----------------
+    CH	: CHARACTER;
 
   begin
-    if  FILE.HAS_LOOK_AHEAD  then
-      ITEM := FILE.LOOK_AHEAD;
-      FILE.HAS_LOOK_AHEAD := FALSE;
-    elsif  FILE.ID = -1  then										-- standard console input
-      ASM_OP_2'( OPCODE => La, LVL => 1, OFS => -16 );							-- push @ITEM : charge l'adresse destination (out param GET level 1 offset -16)
-      ASM_OP_0'( OPCODE => SYS_GET_CHAR );								-- get console char
-    else
-      BYTES_READ := READ_SYSTEM_CALL( FILE.ID );								-- general file
-      if  BYTES_READ = 0  then
-        FILE.AT_END_OF_FILE := TRUE;
-        ITEM := ASCII.NUL;
+    if  FILE.IS_OPENED = FALSE  then raise STATUS_ERROR; end if;
+    if  FILE.MODE /= IN_FILE  then raise MODE_ERROR; end if;
+
+    -- LRM 14.3.6(4-5) : saute les terminateurs de ligne et de page en
+    -- tenant LINE/COL/PAGE a jour ; leve END_ERROR sur le terminateur
+    -- de fichier. La lecture physique est deleguee a GET_RAW.
+    loop
+      if  FILE.AT_END_OF_FILE  then raise END_ERROR; end if;
+      GET_RAW( FILE, CH );
+      if  FILE.AT_END_OF_FILE  then raise END_ERROR; end if;
+
+      if  CH = ASCII.LF  then
+        FILE.LINE := FILE.LINE + 1;
+        FILE.COL  := 1;
+      elsif  CH = ASCII.FF  then
+        FILE.PAGE := FILE.PAGE + 1;
+        FILE.LINE := 1;
+        FILE.COL  := 1;
+      elsif  CH /= ASCII.CR  then							-- CR : moitie muette du terminateur CR LF
+        ITEM := CH;
+        FILE.COL := FILE.COL + 1;
+        return;
       end if;
-    end if;
+    end loop;
 
   end	GET;
 	----
@@ -821,28 +974,17 @@ is					-------
 			---
   procedure		PUT		( FILE :in FILE_TYPE; ITEM :in CHARACTER )
   is			---
-
-    ERR_CODE	: INTEGER;
-
-  		-----------------
-    function	WRITE_SYSTEM_CALL		( ID : INTEGER )		return INTEGER
-    is		-----------------
-    begin
-      ASM_OP_1'( OPCODE => LI,  VAL => 1 );								-- push LENGTH en -24
-      ASM_OP_2'( OPCODE => LVa, LVL => 1, OFS => -16 );							-- push @CHAR (in param PUT level 1 offset -16)
-      ASM_OP_2'( OPCODE => Ld,  LVL => 2, OFS => -8 );							-- ID  (in param WRITE_SYSTEM_CALL level 2 offset -8)
-      ASM_OP_0'( OPCODE => SYS_FILE_WRITE );								-- (-8) FILE_ID ; (-16) @ITEM ; (-24) LENGTH
-      ASM_OP_2'( OPCODE => SD,  LVL => 2, OFS => -16 );							-- Retour du resultat syscall
-
-    end	WRITE_SYSTEM_CALL;
-	-----------------
   begin
-    if  FILE.ID = -1  then										-- standard console output
-      ASM_OP_2'( OPCODE => LB, LVL => 1, OFS => -16 );
-      ASM_OP_0'( OPCODE => SYS_PUT_CHAR );
-    else
-      ERR_CODE := WRITE_SYSTEM_CALL( FILE.ID );								-- general file
+    if  FILE.IS_OPENED = FALSE  then raise STATUS_ERROR; end if;
+    if  FILE.MODE /= OUT_FILE  then raise MODE_ERROR; end if;
+
+    -- LRM 14.3.6(4) : coupure implicite si la longueur de ligne est
+    -- bornee et que la colonne courante la depasse.
+    if  FILE.LINE_LENGTH /= 0  and then  FILE.COL > FILE.LINE_LENGTH  then
+      NEW_LINE( FILE );
     end if;
+    PUT_RAW( FILE, ITEM );
+    FILE.COL := FILE.COL + 1;
 
   end	PUT;
 	----
@@ -864,30 +1006,13 @@ is					-------
 			---
   procedure		GET		( FILE :in FILE_TYPE; ITEM :out STRING )
   is			---
-
-    BYTES_READ	: INTEGER;
-
-		-----------------
-    function	READ_SYSTEM_CALL		( FILE_ID :INTEGER; LENGTH :POSITIVE )		return INTEGER
-    is		-----------------
-    begin
-      ASM_OP_2'( OPCODE => Ld, LVL => 2, OFS => -16 );			-- LENGTH
-      ASM_OP_2'( OPCODE => LIa, LVL => 1, OFS => -16 );			-- @CHARS : adresse des donnees de ITEM (2e param de GET)
-      ASM_OP_2'( OPCODE => Ld, LVL => 2, OFS => -8 );			-- FILE_ID
-      ASM_OP_0'( OPCODE => SYS_FILE_READ );
-      ASM_OP_2'( OPCODE => SD, LVL => 2, OFS => -24 );			-- Retour du BYTES_READ
-
-    end	READ_SYSTEM_CALL;
-	-----------------
-
   begin
-    if  FILE.ID = -1  then
-      for  I  in  ITEM'FIRST .. ITEM'LAST  loop
-        GET( FILE, ITEM( I ) );
-      end loop;
-    else
-      BYTES_READ := READ_SYSTEM_CALL( FILE.ID, ITEM'LENGTH );
-    end if;
+    -- LRM 14.3.6(6) : succession de GET caractere ; passe par le GET
+    -- public (saut des terminateurs, END_ERROR, look-ahead respecte).
+    -- L'ancien chemin de lecture en bloc contournait le look-ahead.
+    for  I  in  ITEM'FIRST .. ITEM'LAST  loop
+      GET( FILE, ITEM( I ) );
+    end loop;
 
   end	GET;
 	----
@@ -906,27 +1031,20 @@ is					-------
 			---
   procedure		PUT		( FILE :in FILE_TYPE; ITEM :in STRING )
   is			---
-
-    ERR_CODE	: INTEGER;
-
-  		-----------------
-    function	WRITE_SYSTEM_CALL		( FILE_ID :INTEGER; LENGTH :POSITIVE )		return INTEGER
-    is		-----------------
-    begin
-      ASM_OP_2'( OPCODE => Ld, LVL => 2, OFS => -16 );							-- LENGTH en -16
-      ASM_OP_2'( OPCODE => LIa, LVL => 1, OFS => -16 );							-- @CHARS sur parametre ITEM de PUT
-      ASM_OP_2'( OPCODE => Ld, LVL => 2, OFS => -8 );							-- ID
-      ASM_OP_0'( OPCODE => SYS_FILE_WRITE );
-      ASM_OP_2'( OPCODE => SD, LVL => 2, OFS => -24 );							-- Retour du resultat syscall
-
-    end	WRITE_SYSTEM_CALL;
-	-----------------
   begin
-    if  FILE.ID = -1  then
-      ASM_OP_2'( OPCODE => LA, LVL => 1, OFS => -16 );
-      ASM_OP_0'( OPCODE => SYS_PUT_STR );
+    if  FILE.IS_OPENED = FALSE  then raise STATUS_ERROR; end if;
+    if  FILE.MODE /= OUT_FILE  then raise MODE_ERROR; end if;
+
+    if  FILE.LINE_LENGTH /= 0  then
+      -- Ligne bornee : caractere par caractere pour beneficier des
+      -- coupures implicites du PUT public (LRM 14.3.6(4)).
+      for  I  in  ITEM'FIRST .. ITEM'LAST  loop
+        PUT( FILE, ITEM( I ) );
+      end loop;
     else
-      ERR_CODE := WRITE_SYSTEM_CALL( FILE.ID, ITEM'LENGTH );
+      -- Ligne non bornee : ecriture en bloc, comptabilite de colonne.
+      PUT_RAW( FILE, ITEM );
+      FILE.COL := FILE.COL + COUNT( ITEM'LENGTH );
     end if;
 
   end	PUT;
@@ -954,22 +1072,36 @@ is					-------
     POS	: NATURAL		:= ITEM'FIRST;
 
   begin
+    if  FILE.IS_OPENED = FALSE  then raise STATUS_ERROR; end if;
+    if  FILE.MODE /= IN_FILE  then raise MODE_ERROR; end if;
     if  FILE.ID = -1  then									-- standard console input : utiliser SYS_GET_STR (mode canonique avec echo)
       ASM_OP_2'( OPCODE => La, LVL => 1, OFS => -24 );					-- push @LAST  (adresse du parametre out LAST)
       ASM_OP_2'( OPCODE => La, LVL => 1, OFS => -16 );					-- push @ITEM descripteur (adresse du parametre out ITEM = descripteur string)
       ASM_OP_0'( OPCODE => SYS_GET_STR );							-- lit une ligne stdin avec echo, stocke longueur dans LAST
     else
+      if  FILE.AT_END_OF_FILE  then raise END_ERROR; end if;				-- LRM 14.3.6(12)
       LAST := ITEM'FIRST - 1;
       loop
         exit when  POS > ITEM'LAST;
         exit when  FILE.AT_END_OF_FILE;
-        GET( FILE, CH );
-        exit when  FILE.AT_END_OF_FILE;
-        exit when  CH = ASCII.LF;
+        GET_RAW( FILE, CH );
+        exit when  FILE.AT_END_OF_FILE;							-- fin de fichier = fin de ligne implicite
+        if  CH = ASCII.LF  then							-- terminateur de ligne consomme
+          FILE.LINE := FILE.LINE + 1;
+          FILE.COL  := 1;
+          exit;
+        end if;
+        if  CH = ASCII.FF  then							-- terminateur de page consomme
+          FILE.PAGE := FILE.PAGE + 1;
+          FILE.LINE := 1;
+          FILE.COL  := 1;
+          exit;
+        end if;
         if  CH /= ASCII.CR  then
 	ITEM( POS ) := CH;
 	LAST := POS;
 	POS := POS + 1;
+	FILE.COL := FILE.COL + 1;
         end if;
       end loop;
     end if;
@@ -1031,22 +1163,28 @@ is					-------
       DONE		: BOOLEAN		:= FALSE;
       BASE		: LONG_INTEGER	:= 10;    -- base courante
       IN_BASED		: BOOLEAN		:= FALSE;
+      HAVE_DIGIT	: BOOLEAN		:= FALSE;
+      DIG		: LONG_INTEGER;
 
     begin
+      if  FILE.IS_OPENED = FALSE  then raise STATUS_ERROR; end if;
+      if  FILE.MODE /= IN_FILE  then raise MODE_ERROR; end if;
 
       if  WIDTH = 0  then
         loop
           exit when  FILE.AT_END_OF_FILE;
-          GET( FILE, CH );
+          GET_RAW( FILE, CH );
           exit when  FILE.AT_END_OF_FILE;
           exit when  CH /= ' '  and then  CH /= ASCII.HT
                               and then  CH /= ASCII.LF
-                              and then  CH /= ASCII.CR;
+                              and then  CH /= ASCII.CR
+                              and then  CH /= ASCII.FF;
         end loop;
       else
-        GET( FILE, CH );
+        GET_RAW( FILE, CH );
         CHARS_READ := 0;
       end if;
+      if  FILE.AT_END_OF_FILE  then raise END_ERROR; end if;				-- LRM 14.3.7(?) fin de fichier avant l'item
 
       -- Signe optionnel
       if  not FILE.AT_END_OF_FILE  and then  CH = '-'  then
@@ -1054,19 +1192,19 @@ is					-------
         if  WIDTH > 0  then
           CHARS_READ := CHARS_READ + 1;
           if  CHARS_READ >= WIDTH  then  DONE := TRUE;
-          else  GET( FILE, CH );
+          else  GET_RAW( FILE, CH );
           end if;
         else
-          GET( FILE, CH );
+          GET_RAW( FILE, CH );
         end if;
       elsif  not FILE.AT_END_OF_FILE  and then  CH = '+'  then
         if  WIDTH > 0  then
           CHARS_READ := CHARS_READ + 1;
           if  CHARS_READ >= WIDTH  then  DONE := TRUE;
-          else  GET( FILE, CH );
+          else  GET_RAW( FILE, CH );
           end if;
         else
-          GET( FILE, CH );
+          GET_RAW( FILE, CH );
         end if;
       end if;
 
@@ -1075,15 +1213,19 @@ is					-------
         if  WIDTH > 0  and then  CHARS_READ >= WIDTH  then  exit;  end if;
 
         if  CH >= '0'  and then  CH <= '9'  then
-          VAL := BASE * VAL                               -- base courante (10 ou base#)
-                     + LONG_INTEGER( CHARACTER'POS( CH ) - CHARACTER'POS( '0' ) );
+          DIG := LONG_INTEGER( CHARACTER'POS( CH ) - CHARACTER'POS( '0' ) );
+          if  IN_BASED  and then  DIG >= BASE  then
+            raise DATA_ERROR;								-- chiffre incompatible avec la base
+          end if;
+          VAL := BASE * VAL + DIG;                        -- base courante (10 ou base#)
+          HAVE_DIGIT := TRUE;
           if  WIDTH > 0  then
             CHARS_READ := CHARS_READ + 1;
             if  CHARS_READ >= WIDTH  then  DONE := TRUE;
-            else  GET( FILE, CH );
+            else  GET_RAW( FILE, CH );
             end if;
           else
-            GET( FILE, CH );
+            GET_RAW( FILE, CH );
           end if;
 
         elsif  ( CH = 'A'  or else  CH = 'B'  or else  CH = 'C'
@@ -1092,19 +1234,22 @@ is					-------
               or else  CH = 'd'  or else  CH = 'e'  or else  CH = 'f' )
               and then  IN_BASED  then
           if  CH >= 'a'  then
-            VAL := BASE * VAL
-                       + LONG_INTEGER( CHARACTER'POS( CH ) - CHARACTER'POS( 'a' ) + 10 );
+            DIG := LONG_INTEGER( CHARACTER'POS( CH ) - CHARACTER'POS( 'a' ) + 10 );
           else
-            VAL := BASE * VAL
-                       + LONG_INTEGER( CHARACTER'POS( CH ) - CHARACTER'POS( 'A' ) + 10 );
+            DIG := LONG_INTEGER( CHARACTER'POS( CH ) - CHARACTER'POS( 'A' ) + 10 );
           end if;
+          if  DIG >= BASE  then
+            raise DATA_ERROR;								-- chiffre incompatible avec la base
+          end if;
+          VAL := BASE * VAL + DIG;
+          HAVE_DIGIT := TRUE;
           if  WIDTH > 0  then
             CHARS_READ := CHARS_READ + 1;
             if  CHARS_READ >= WIDTH  then  DONE := TRUE;
-            else  GET( FILE, CH );
+            else  GET_RAW( FILE, CH );
             end if;
           else
-            GET( FILE, CH );
+            GET_RAW( FILE, CH );
           end if;
 
         elsif  CH = '#'  and then  not IN_BASED  then
@@ -1114,10 +1259,10 @@ is					-------
           if  WIDTH > 0  then
             CHARS_READ := CHARS_READ + 1;
             if  CHARS_READ >= WIDTH  then  DONE := TRUE;
-            else  GET( FILE, CH );
+            else  GET_RAW( FILE, CH );
             end if;
           else
-            GET( FILE, CH );
+            GET_RAW( FILE, CH );
           end if;
 
         elsif  CH = '#'  and then  IN_BASED  then
@@ -1132,6 +1277,8 @@ is					-------
           DONE := TRUE;
         end if;
       end loop;
+
+      if  not HAVE_DIGIT  then raise DATA_ERROR; end if;					-- LRM 14.3.7 image invalide
 
       if  NEG  then  ITEM := -NUM( VAL );
       else           ITEM := NUM(  VAL );
@@ -1251,6 +1398,8 @@ is					-------
       BASE		: INTEGER		:= 10;
       IN_BASED		: BOOLEAN		:= FALSE;
       CH			: CHARACTER;
+      HAVE_DIGIT	: BOOLEAN		:= FALSE;
+      DIG		: INTEGER;
 
     begin
 
@@ -1280,8 +1429,12 @@ is					-------
         CH := FROM( POS );
 
         if  CH >= '0'  and then  CH <= '9'  then
-					-- ATTENTION il faudra verifier que le chiffre est compatible avec la base ! Sinon raise DATA_ERROR
-          VAL := BASE * VAL + INTEGER( CHARACTER'POS( CH ) - CHARACTER'POS( '0' ) );
+          DIG := INTEGER( CHARACTER'POS( CH ) - CHARACTER'POS( '0' ) );
+          if  IN_BASED  and then  DIG >= BASE  then
+            raise DATA_ERROR;								-- chiffre incompatible avec la base
+          end if;
+          VAL := BASE * VAL + DIG;
+          HAVE_DIGIT := TRUE;
           LAST := POS;
           POS  := POS + 1;
 
@@ -1291,10 +1444,15 @@ is					-------
               or else  CH = 'd'  or else  CH = 'e'  or else  CH = 'f' )
               and then  IN_BASED  then
           if  CH >= 'a'  then
-            VAL := BASE * VAL + INTEGER( CHARACTER'POS( CH ) - CHARACTER'POS( 'a' ) + 10 );
+            DIG := INTEGER( CHARACTER'POS( CH ) - CHARACTER'POS( 'a' ) + 10 );
           else
-            VAL := BASE * VAL + INTEGER( CHARACTER'POS( CH ) - CHARACTER'POS( 'A' ) + 10 );
+            DIG := INTEGER( CHARACTER'POS( CH ) - CHARACTER'POS( 'A' ) + 10 );
           end if;
+          if  DIG >= BASE  then
+            raise DATA_ERROR;								-- chiffre incompatible avec la base
+          end if;
+          VAL := BASE * VAL + DIG;
+          HAVE_DIGIT := TRUE;
           LAST := POS;
           POS  := POS + 1;
 
@@ -1316,6 +1474,8 @@ is					-------
           DONE := TRUE;
         end if;
       end loop;
+
+      if  not HAVE_DIGIT  then raise DATA_ERROR; end if;					-- LRM 14.3.7(16) image invalide
 
       if  NEG  then  ITEM := -NUM( VAL );
       else           ITEM :=  NUM( VAL );
@@ -1377,12 +1537,7 @@ is					-------
       -- Ecriture dans TO, justifie a droite avec espaces a gauche,
       -- comme PUT(FILE, WIDTH => TO'LENGTH).
        if  TLEN > TO'LENGTH  then
-        -- A remplacer ulterieurement par :
-        --   raise LAYOUT_ERROR;
-        for  I in TO'FIRST .. TO'LAST  loop
-          TO( I ) := '*';
-        end loop;
-        return;
+        raise LAYOUT_ERROR;								-- LRM 14.3.7(18)
       end if;
       DST := TO'FIRST;
 
@@ -1457,22 +1612,27 @@ is					-------
       EXP_NEG	: BOOLEAN		:= FALSE;
       CHARS_READ	: NATURAL		:= 0;
       DONE	: BOOLEAN		:= FALSE;
+      HAVE_DIGIT	: BOOLEAN		:= FALSE;
 
     begin
+      if  FILE.IS_OPENED = FALSE  then raise STATUS_ERROR; end if;
+      if  FILE.MODE /= IN_FILE  then raise MODE_ERROR; end if;
 
       if  WIDTH = 0  then
         loop
           exit when  FILE.AT_END_OF_FILE;
-          GET( FILE, CH );
+          GET_RAW( FILE, CH );
           exit when  FILE.AT_END_OF_FILE;
           exit when  CH /= ' '  and then  CH /= ASCII.HT
                               and then  CH /= ASCII.LF
-                              and then  CH /= ASCII.CR;
+                              and then  CH /= ASCII.CR
+                              and then  CH /= ASCII.FF;
         end loop;
       else
-        GET( FILE, CH );
+        GET_RAW( FILE, CH );
         CHARS_READ := 0;
       end if;
+      if  FILE.AT_END_OF_FILE  then raise END_ERROR; end if;				-- LRM 14.3.7(?) fin de fichier avant l'item
 
       -- Signe optionnel
       if  not FILE.AT_END_OF_FILE  and then  CH = '-'  then
@@ -1480,19 +1640,19 @@ is					-------
         if  WIDTH > 0  then
           CHARS_READ := CHARS_READ + 1;
           if  CHARS_READ >= WIDTH  then  DONE := TRUE;
-          else  GET( FILE, CH );
+          else  GET_RAW( FILE, CH );
           end if;
         else
-          GET( FILE, CH );
+          GET_RAW( FILE, CH );
         end if;
       elsif  not FILE.AT_END_OF_FILE  and then  CH = '+'  then
         if  WIDTH > 0  then
           CHARS_READ := CHARS_READ + 1;
           if  CHARS_READ >= WIDTH  then  DONE := TRUE;
-          else  GET( FILE, CH );
+          else  GET_RAW( FILE, CH );
           end if;
         else
-          GET( FILE, CH );
+          GET_RAW( FILE, CH );
         end if;
       end if;
 
@@ -1506,20 +1666,20 @@ is					-------
           if  WIDTH > 0  then
             CHARS_READ := CHARS_READ + 1;
             if  CHARS_READ >= WIDTH  then  DONE := TRUE;
-            else  GET( FILE, CH );
+            else  GET_RAW( FILE, CH );
             end if;
           else
-            GET( FILE, CH );
+            GET_RAW( FILE, CH );
           end if;
 
         elsif  CH = 'E'  or else  CH = 'e'  then
           if  WIDTH > 0  then
             CHARS_READ := CHARS_READ + 1;
             if  CHARS_READ >= WIDTH  then  DONE := TRUE;
-            else  GET( FILE, CH );
+            else  GET_RAW( FILE, CH );
             end if;
           else
-            GET( FILE, CH );
+            GET_RAW( FILE, CH );
           end if;
           if  not DONE  and then  not FILE.AT_END_OF_FILE  then
             if  CH = '-'  then
@@ -1527,19 +1687,19 @@ is					-------
               if  WIDTH > 0  then
                 CHARS_READ := CHARS_READ + 1;
                 if  CHARS_READ >= WIDTH  then  DONE := TRUE;
-                else  GET( FILE, CH );
+                else  GET_RAW( FILE, CH );
                 end if;
               else
-                GET( FILE, CH );
+                GET_RAW( FILE, CH );
               end if;
             elsif  CH = '+'  then
               if  WIDTH > 0  then
                 CHARS_READ := CHARS_READ + 1;
                 if  CHARS_READ >= WIDTH  then  DONE := TRUE;
-                else  GET( FILE, CH );
+                else  GET_RAW( FILE, CH );
                 end if;
               else
-                GET( FILE, CH );
+                GET_RAW( FILE, CH );
               end if;
             end if;
           end if;
@@ -1552,10 +1712,10 @@ is					-------
             if  WIDTH > 0  then
               CHARS_READ := CHARS_READ + 1;
               if  CHARS_READ >= WIDTH  then  DONE := TRUE;
-              else  GET( FILE, CH );
+              else  GET_RAW( FILE, CH );
               end if;
             else
-              GET( FILE, CH );
+              GET_RAW( FILE, CH );
             end if;
           end loop;
           if  WIDTH = 0  and then  not FILE.AT_END_OF_FILE
@@ -1574,13 +1734,14 @@ is					-------
             VAL  := 10.0 * VAL
                         + NUM( CHARACTER'POS( CH ) - CHARACTER'POS( '0' ) );
           end if;
+          HAVE_DIGIT := TRUE;
           if  WIDTH > 0  then
             CHARS_READ := CHARS_READ + 1;
             if  CHARS_READ >= WIDTH  then  DONE := TRUE;
-            else  GET( FILE, CH );
+            else  GET_RAW( FILE, CH );
             end if;
           else
-            GET( FILE, CH );
+            GET_RAW( FILE, CH );
           end if;
 
         else
@@ -1591,6 +1752,8 @@ is					-------
           DONE := TRUE;
         end if;
       end loop;
+
+      if  not HAVE_DIGIT  then raise DATA_ERROR; end if;					-- LRM 14.3.8 image invalide
 
       if  EXP_NEG  then
         for  J in 1 .. EXP_VAL  loop  VAL := VAL / 10.0;  end loop;
@@ -1763,6 +1926,7 @@ is					-------
       EXP_NEG	: BOOLEAN		:= FALSE;
       DONE	: BOOLEAN		:= FALSE;
       CH		: CHARACTER;
+      HAVE_DIGIT	: BOOLEAN		:= FALSE;
 
     begin
       -- Saut des separateurs initiaux (blancs et HT uniquement,
@@ -1829,6 +1993,7 @@ is					-------
             VAL  := 10.0 * VAL
                         + NUM( CHARACTER'POS( CH ) - CHARACTER'POS( '0' ) );
           end if;
+          HAVE_DIGIT := TRUE;
           LAST := POS;
           POS  := POS + 1;
 
@@ -1837,6 +2002,8 @@ is					-------
           DONE := TRUE;
         end if;
       end loop;
+
+      if  not HAVE_DIGIT  then raise DATA_ERROR; end if;					-- LRM 14.3.8 image invalide
 
       -- Application de l'exposant
       if  EXP_NEG  then
@@ -2095,13 +2262,7 @@ is					-------
       ------------------------------------------------------------
 
       if  BAD_LAYOUT  or else  LEN > TO'LENGTH  then
-
-        -- A remplacer ulterieurement par :
-        --   raise LAYOUT_ERROR;
-        for  K in TO'FIRST .. TO'LAST  loop
-          TO( K ) := '*';
-        end loop;
-
+        raise LAYOUT_ERROR;								-- LRM 14.3.8(15)
       else
 
         PAD := TO'LENGTH - LEN;
@@ -2149,22 +2310,27 @@ is					-------
       EXP_NEG	: BOOLEAN		:= FALSE;
       CHARS_READ	: NATURAL		:= 0;
       DONE	: BOOLEAN		:= FALSE;
+      HAVE_DIGIT	: BOOLEAN		:= FALSE;
 
     begin
+      if  FILE.IS_OPENED = FALSE  then raise STATUS_ERROR; end if;
+      if  FILE.MODE /= IN_FILE  then raise MODE_ERROR; end if;
 
       if  WIDTH = 0  then
         loop
           exit when  FILE.AT_END_OF_FILE;
-          GET( FILE, CH );
+          GET_RAW( FILE, CH );
           exit when  FILE.AT_END_OF_FILE;
           exit when  CH /= ' '  and then  CH /= ASCII.HT
                               and then  CH /= ASCII.LF
-                              and then  CH /= ASCII.CR;
+                              and then  CH /= ASCII.CR
+                              and then  CH /= ASCII.FF;
         end loop;
       else
-        GET( FILE, CH );
+        GET_RAW( FILE, CH );
         CHARS_READ := 0;
       end if;
+      if  FILE.AT_END_OF_FILE  then raise END_ERROR; end if;				-- LRM 14.3.7(?) fin de fichier avant l'item
 
       -- Signe optionnel
       if  not FILE.AT_END_OF_FILE  and then  CH = '-'  then
@@ -2172,19 +2338,19 @@ is					-------
         if  WIDTH > 0  then
           CHARS_READ := CHARS_READ + 1;
           if  CHARS_READ >= WIDTH  then  DONE := TRUE;
-          else  GET( FILE, CH );
+          else  GET_RAW( FILE, CH );
           end if;
         else
-          GET( FILE, CH );
+          GET_RAW( FILE, CH );
         end if;
       elsif  not FILE.AT_END_OF_FILE  and then  CH = '+'  then
         if  WIDTH > 0  then
           CHARS_READ := CHARS_READ + 1;
           if  CHARS_READ >= WIDTH  then  DONE := TRUE;
-          else  GET( FILE, CH );
+          else  GET_RAW( FILE, CH );
           end if;
         else
-          GET( FILE, CH );
+          GET_RAW( FILE, CH );
         end if;
       end if;
 
@@ -2198,20 +2364,20 @@ is					-------
           if  WIDTH > 0  then
             CHARS_READ := CHARS_READ + 1;
             if  CHARS_READ >= WIDTH  then  DONE := TRUE;
-            else  GET( FILE, CH );
+            else  GET_RAW( FILE, CH );
             end if;
           else
-            GET( FILE, CH );
+            GET_RAW( FILE, CH );
           end if;
 
         elsif  CH = 'E'  or else  CH = 'e'  then
           if  WIDTH > 0  then
             CHARS_READ := CHARS_READ + 1;
             if  CHARS_READ >= WIDTH  then  DONE := TRUE;
-            else  GET( FILE, CH );
+            else  GET_RAW( FILE, CH );
             end if;
           else
-            GET( FILE, CH );
+            GET_RAW( FILE, CH );
           end if;
           if  not DONE  and then  not FILE.AT_END_OF_FILE  then
             if  CH = '-'  then
@@ -2219,19 +2385,19 @@ is					-------
               if  WIDTH > 0  then
                 CHARS_READ := CHARS_READ + 1;
                 if  CHARS_READ >= WIDTH  then  DONE := TRUE;
-                else  GET( FILE, CH );
+                else  GET_RAW( FILE, CH );
                 end if;
               else
-                GET( FILE, CH );
+                GET_RAW( FILE, CH );
               end if;
             elsif  CH = '+'  then
               if  WIDTH > 0  then
                 CHARS_READ := CHARS_READ + 1;
                 if  CHARS_READ >= WIDTH  then  DONE := TRUE;
-                else  GET( FILE, CH );
+                else  GET_RAW( FILE, CH );
                 end if;
               else
-                GET( FILE, CH );
+                GET_RAW( FILE, CH );
               end if;
             end if;
           end if;
@@ -2243,10 +2409,10 @@ is					-------
             if  WIDTH > 0  then
               CHARS_READ := CHARS_READ + 1;
               if  CHARS_READ >= WIDTH  then  DONE := TRUE;
-              else  GET( FILE, CH );
+              else  GET_RAW( FILE, CH );
               end if;
             else
-              GET( FILE, CH );
+              GET_RAW( FILE, CH );
             end if;
           end loop;
           if  WIDTH = 0  and then  not FILE.AT_END_OF_FILE
@@ -2265,13 +2431,14 @@ is					-------
             VAL  := 10.0 * VAL
                         + LONG_FLOAT( CHARACTER'POS( CH ) - CHARACTER'POS( '0' ) );
           end if;
+          HAVE_DIGIT := TRUE;
           if  WIDTH > 0  then
             CHARS_READ := CHARS_READ + 1;
             if  CHARS_READ >= WIDTH  then  DONE := TRUE;
-            else  GET( FILE, CH );
+            else  GET_RAW( FILE, CH );
             end if;
           else
-            GET( FILE, CH );
+            GET_RAW( FILE, CH );
           end if;
 
         else
@@ -2282,6 +2449,8 @@ is					-------
           DONE := TRUE;
         end if;
       end loop;
+
+      if  not HAVE_DIGIT  then raise DATA_ERROR; end if;					-- LRM 14.3.8 image invalide
 
       if  EXP_NEG  then
         for  J in 1 .. EXP_VAL  loop  VAL := VAL / 10.0;  end loop;
@@ -2656,23 +2825,13 @@ begin
   end loop;
 
   -- Controle lexical minimal.
-  -- Lorsque les exceptions seront actives, ce chemin devra faire :
-  --   raise DATA_ERROR;
   BAD_IMAGE :=
     not HAVE_DIGIT
     or else  ( IN_FRAC  and then  not HAVE_FRAC_DIGIT )
     or else  ( EXP_SEEN  and then  not HAVE_EXP_DIGIT );
 
   if  BAD_IMAGE  then
-    ITEM := NUM( 0.0 );
-
-    if  FROM'FIRST <= FROM'LAST  then
-      LAST := FROM'FIRST;
-    else
-      LAST := 1;
-    end if;
-
-    return;
+    raise DATA_ERROR;									-- LRM 14.3.8(?) image invalide
   end if;
 
   -- Appliquer l'exposant decimal.
@@ -2942,13 +3101,7 @@ begin
       ------------------------------------------------------------
 
       if  BAD_LAYOUT  or else  LEN > TO'LENGTH  then
-
-        -- A remplacer ulterieurement par :
-        --   raise LAYOUT_ERROR;
-        for  K in TO'FIRST .. TO'LAST  loop
-          TO( K ) := '*';
-        end loop;
-
+        raise LAYOUT_ERROR;								-- LRM 14.3.8(15)
       else
 
         PAD := TO'LENGTH - LEN;
@@ -3017,13 +3170,6 @@ begin
           LEN := CHARACTER'POS( IMAGES_STR( I + 1 ) );
           if  REP = POS_VAL  then
             IMG_START := I + 2;
-            -- Padding avec des espaces si WIDTH > LEN
-            PAD := WIDTH - LEN;
-            if  PAD > 0  then
-              for  J in 1 .. PAD  loop
-                PUT( FILE, ' ' );
-              end loop;
-            end if;
             -- Ecrire les caracteres de l'image
             for  J in 0 .. LEN - 1  loop
               if  SET = LOWER_CASE  then
@@ -3039,6 +3185,14 @@ begin
                 PUT( FILE, IMAGES_STR( IMG_START + J ) );
               end if;
             end loop;
+            -- LRM 14.3.9(10) : cadrage a GAUCHE, blancs de QUEUE si
+            -- WIDTH depasse l'image (deviation console corrigee).
+            PAD := WIDTH - LEN;
+            if  PAD > 0  then
+              for  J in 1 .. PAD  loop
+                PUT( FILE, ' ' );
+              end loop;
+            end if;
             return;
           end if;
           I := I + 2 + LEN;
@@ -3152,11 +3306,17 @@ begin
         IMAGES_STR	: constant STRING	:= GET_ENUM_IMAGES;
 
       begin
+      if  FILE.IS_OPENED = FALSE  then raise STATUS_ERROR; end if;
+      if  FILE.MODE /= IN_FILE  then raise MODE_ERROR; end if;
+
 SKIP_BLANKS:
         loop
-	GET( FILE, CH );
+        exit when  FILE.AT_END_OF_FILE;
+	GET_RAW( FILE, CH );
+        exit when  FILE.AT_END_OF_FILE;
         exit when not IS_SEPARATOR( CH );
       end loop  SKIP_BLANKS;
+      if  FILE.AT_END_OF_FILE  then raise END_ERROR; end if;				-- fin de fichier avant l'item
 
       ------------------------------------------------------------
       -- 2. Lire l'image du literal enumere.
@@ -3176,7 +3336,7 @@ SKIP_BLANKS:
         TOKEN( 1 ) := CH;
 
         loop
-          GET( FILE, CH );
+          GET_RAW( FILE, CH );
 
           if  TOK_LEN < TOKEN'LAST  then
             TOK_LEN := TOK_LEN + 1;
@@ -3199,7 +3359,7 @@ SKIP_BLANKS:
               TOK_TOO_LONG := TRUE;
             end if;
 
-            GET( FILE, CH );
+            GET_RAW( FILE, CH );
 
           else
             UNGET_CHAR( CH );
@@ -3219,12 +3379,7 @@ SKIP_BLANKS:
       ------------------------------------------------------------
 
       if  TOK_LEN = 0  or else  TOK_TOO_LONG  then
-
-        -- A remplacer plus tard par :
-        --   raise DATA_ERROR;
-        ITEM := ENUM'FIRST;
-        return;
-
+        raise DATA_ERROR;								-- LRM 14.3.9(8)
       end if;
 
       I := IMAGES_STR'FIRST;
@@ -3278,9 +3433,7 @@ SKIP_BLANKS:
       -- 4. Aucune image trouvee.
       ------------------------------------------------------------
 
-      -- A remplacer plus tard par :
-      --   raise DATA_ERROR;
-      ITEM := ENUM'FIRST;
+      raise DATA_ERROR;									-- LRM 14.3.9(8) image inconnue
       end;
 
     end	GET;
@@ -3404,16 +3557,7 @@ IGNORE_BLANKS:
 	LAST := POSITIVE( I + MATCH_LEN - 1 );
 
         else
-        -- A remplacer plus tard par :
-        --   raise DATA_ERROR;
-	ITEM := ENUM'FIRST;
-
-	if  FROM'FIRST <= FROM'LAST  then
-	  LAST := FROM'FIRST;
-	else
-	  LAST := 1;
-	end if;
-
+          raise DATA_ERROR;								-- LRM 14.3.9(12)
         end if;
       end;
 
@@ -3468,15 +3612,7 @@ IGNORE_BLANKS:
             IMG_START := I + 2;
 
             if  LEN > TO'LENGTH  then
-
-              -- A remplacer plus tard par :
-              --   raise LAYOUT_ERROR;
-              for  K in TO'FIRST .. TO'LAST  loop
-                TO( K ) := '*';
-              end loop;
-
-              return;
-
+              raise LAYOUT_ERROR;							-- LRM 14.3.9(13)
             end if;
 
 --            PAD := TO'LENGTH - LEN;
@@ -3503,10 +3639,7 @@ IGNORE_BLANKS:
         end loop;
 
         -- Cas normalement impossible : ITEM doit toujours avoir une image.
-        -- A remplacer plus tard par une exception interne ou DATA_ERROR.
-        for  K in TO'FIRST .. TO'LAST  loop
-          TO( K ) := '*';
-        end loop;
+        raise PROGRAM_ERROR;
 
       end;
 
@@ -3519,23 +3652,36 @@ IGNORE_BLANKS:
 
 
 begin
+  -- Initialisation EXPLICITE et complete des fichiers standard : la
+  -- VARzone n'etant pas zeroee, aucun champ ne doit dependre des
+  -- defauts de composants du record (dette consignee, ETAT_PILIERS).
+  STD_INPUT.ID		:= -1;								-- -1 = console
   STD_INPUT.NAME_LEN	:= 0;
   STD_INPUT.MODE		:= IN_FILE;
-  STD_INPUT.PAGE_LENGTH	:= 0;
-  STD_INPUT.LINE_LENGTH	:= 256;
+  STD_INPUT.PAGE_LENGTH	:= 0;								-- LRM 14.3.3 : non borne
+  STD_INPUT.LINE_LENGTH	:= 0;
   STD_INPUT.PAGE := 1;
   STD_INPUT.LINE := 1;
   STD_INPUT.COL  := 1;
   STD_INPUT.IS_OPENED	:= TRUE;
+  STD_INPUT.IS_DEFAULT_IO	:= TRUE;
+  STD_INPUT.LOOK_AHEAD	:= ASCII.NUL;
+  STD_INPUT.HAS_LOOK_AHEAD	:= FALSE;
+  STD_INPUT.AT_END_OF_FILE	:= FALSE;
 
+  STD_OUTPUT.ID		:= -1;
   STD_OUTPUT.NAME_LEN	:= 0;
   STD_OUTPUT.MODE		:= OUT_FILE;
   STD_OUTPUT.PAGE_LENGTH	:= 0;
-  STD_OUTPUT.LINE_LENGTH	:= 256;
+  STD_OUTPUT.LINE_LENGTH	:= 0;
   STD_OUTPUT.PAGE := 1;
   STD_OUTPUT.LINE := 1;
   STD_OUTPUT.COL  := 1;
   STD_OUTPUT.IS_OPENED	:= TRUE;
+  STD_OUTPUT.IS_DEFAULT_IO	:= TRUE;
+  STD_OUTPUT.LOOK_AHEAD	:= ASCII.NUL;
+  STD_OUTPUT.HAS_LOOK_AHEAD	:= FALSE;
+  STD_OUTPUT.AT_END_OF_FILE	:= FALSE;
 
   DEFAULT_INPUT		:= STD_INPUT;
   DEFAULT_OUTPUT		:= STD_OUTPUT;

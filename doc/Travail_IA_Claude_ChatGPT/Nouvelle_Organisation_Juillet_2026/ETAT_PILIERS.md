@@ -44,7 +44,6 @@ La sémantique n'est protégée que par les programmes-témoins à sortie attend
 | Pilier (LRM) | Manque | Note |
 |---|---|---|
 | 3.4 Dérivation | derived_def, derived_subprog | — |
-| 11 Exceptions | handlers (squelette présent) | débloque les contrôles différés (CONSTRAINT_ERROR) |
 | 8.x Portée, visibilité, use, renommage complet | causes-mères présumées des 4 échecs A8 | tri à faire avant d'ouvrir |
 | 9 Tâches | tout | reporté |
 | 12.1.3 Défauts de formels génériques | box/name/no_default | CALLI en place (TODO 5.3) |
@@ -135,6 +134,7 @@ La sémantique n'est protégée que par les programmes-témoins à sortie attend
 - Option B — points fixes : mul/div générales (reliquat 3.5.9).
 - Option C — nettoyage conformité TEXT_IO (les trois dettes ci-dessus)
   avant qu'un témoin long ne les réveille.
+- Option D — amélioration du traitement des génériques
 
 2. Rédiger la note de modèle d'exécution du pilier retenu AVANT de coder.
 3. Filet complet + tag git à chaque clôture.

@@ -307,11 +307,11 @@ private
   type FILE_TYPE		is record
 			  ID		: INTEGER		:= -1;
 			  NAME		: FILE_NAME_BUFFER;
-			  NAME_LEN	: POSITIVE;
+			  NAME_LEN	: NATURAL;
 			  IS_OPENED	: BOOLEAN		:= FALSE;
 			  MODE		: FILE_MODE;
-			  PAGE_LENGTH	: POSITIVE_COUNT	:= 0;
-			  LINE_LENGTH	: POSITIVE_COUNT	:= 256;
+			  PAGE_LENGTH	: COUNT		:= UNBOUNDED;	-- LRM 14.3.3 : 0 = non borne
+			  LINE_LENGTH	: COUNT		:= UNBOUNDED;
 			  PAGE,
 			  LINE,
 			  COL		: POSITIVE_COUNT	:= 1;

@@ -1,0 +1,789 @@
+if ~ definite TEXT_IO
+include 'TEXT_IO.FINC'
+end if
+if ~ definite IO_EXCEPTIONS
+include 'IO_EXCEPTIONS.FINC'
+end if
+if ~ definite TEXT_IO
+include 'TEXT_IO.FINC'
+end if
+PRO	TEXT14P_L1				;---------- PRO TEXT14P
+ELB 1					;    BODY ELAB
+I_IO = 'I_IO'
+namespace I_IO				;---------- GENERIC PACKAGE INSTANTIATION
+elab_spec:				;    SPEC ELAB
+
+BRA post_LD_NUM
+LD_NUM.elab:
+	Ld -1, 0
+	RTD 0
+post_LD_NUM:
+BRA post_ST_NUM
+ST_NUM.elab:
+	Sd -1, 0
+	RTD 0
+post_ST_NUM:
+BRA post_INADR_NUM
+INADR_NUM.elab:
+	RTD 0
+post_INADR_NUM:
+BRA post_OUTADR_NUM
+OUTADR_NUM.elab:
+	La
+	RTD 0
+post_OUTADR_NUM:
+VAR NUM__outadr_ofs, q
+	LCA OUTADR_NUM.elab
+	Sa	 1, NUM__outadr_ofs
+VAR NUM__inadr_ofs, q
+	LCA INADR_NUM.elab
+	Sa	 1, NUM__inadr_ofs
+VAR NUM__st_ofs, q
+	LCA ST_NUM.elab
+	Sa	 1, NUM__st_ofs
+VAR NUM__ld_ofs, q
+	LCA LD_NUM.elab
+	Sa	 1, NUM__ld_ofs
+VAR NUM__u_ofs, q
+	La	 0, STANDARD._INTEGER.use__info
+	Sa	 1, NUM__u_ofs
+VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
+					; CODE_PACKAGE_SPEC
+VAR DEFAULT_WIDTH_disp, d			; variable entiere
+	LI	 11
+	Sd  1,	DEFAULT_WIDTH_disp
+
+VAR DEFAULT_BASE_disp, d			; variable entiere
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	10
+	Sd  1,	DEFAULT_BASE_disp
+
+					; sub program entry decl (in instantiation TRUE )
+if defined GET_L61_
+PRO	GET_L61				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM ITEM_ofs				; out
+	PRM WIDTH_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Ld	 2, -WIDTH_ofs
+	La 	 2, -ITEM_ofs
+	La 	 2, -FILE_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,GET_L61
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO GET
+end if
+					; sub program entry decl (in instantiation TRUE )
+if defined GET_L62_
+PRO	GET_L62				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM ITEM_ofs				; out
+	PRM WIDTH_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Ld	 2, -WIDTH_ofs
+	La 	 2, -ITEM_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,GET_L62
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO GET
+end if
+					; sub program entry decl (in instantiation TRUE )
+if defined PUT_L63_
+PRO	PUT_L63				;---------- PRO PUT
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM ITEM_ofs				; in
+	PRM WIDTH_ofs				; in
+	PRM BASE_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Ld	 2, -BASE_ofs
+	Ld	 2, -WIDTH_ofs
+	Ld	 2, -ITEM_ofs
+	La 	 2, -FILE_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,PUT_L63
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO PUT
+end if
+					; sub program entry decl (in instantiation TRUE )
+if defined PUT_L64_
+PRO	PUT_L64				;---------- PRO PUT
+PRMS					;    debut parametrage
+	PRM ITEM_ofs				; in
+	PRM WIDTH_ofs				; in
+	PRM BASE_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Ld	 2, -BASE_ofs
+	Ld	 2, -WIDTH_ofs
+	Ld	 2, -ITEM_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,PUT_L64
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO PUT
+end if
+					; sub program entry decl (in instantiation TRUE )
+if defined GET_L65_
+PRO	GET_L65				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM FROM_ofs				; in
+	PRM ITEM_ofs				; out
+	PRM LAST_ofs				; out
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	La 	 2, -LAST_ofs
+	La 	 2, -ITEM_ofs
+	La 	 2, -FROM_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,GET_L65
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO GET
+end if
+					; sub program entry decl (in instantiation TRUE )
+if defined PUT_L66_
+PRO	PUT_L66				;---------- PRO PUT
+PRMS					;    debut parametrage
+	PRM TO_ofs				; out
+	PRM ITEM_ofs				; in
+	PRM BASE_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Ld	 2, -BASE_ofs
+	Ld	 2, -ITEM_ofs
+	La 	 2, -TO_ofs
+	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,PUT_L66
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO PUT
+end if
+					;---------- end generic package instantiation I_IO
+end namespace
+
+
+					; _COULEUR ENUMERATION TYPE INFO
+_COULEUR = '_COULEUR'
+namespace _COULEUR
+VAR use__info, q
+BEGIN_BLOC_DEF
+db 0, 5, "ROUGE"
+db 1, 4, "VERT"
+db 2, 4, "BLEU"
+END_BLOC_DEF
+IMAGES	BYTES_BLOC
+CST LST, d, 2
+CST FST, d, 0
+CST SIZ, d, 8	; SIZ en bits !
+postpone
+  align_q
+end postpone
+	LCA	SIZ
+	Sa	1, use__info
+end namespace
+C_IO = 'C_IO'
+namespace C_IO				;---------- GENERIC PACKAGE INSTANTIATION
+elab_spec:				;    SPEC ELAB
+
+BRA post_LD_ENUM
+LD_ENUM.elab:
+	Lb -1, 0
+	RTD 0
+post_LD_ENUM:
+BRA post_ST_ENUM
+ST_ENUM.elab:
+	Sb -1, 0
+	RTD 0
+post_ST_ENUM:
+BRA post_INADR_ENUM
+INADR_ENUM.elab:
+	RTD 0
+post_INADR_ENUM:
+BRA post_OUTADR_ENUM
+OUTADR_ENUM.elab:
+	La
+	RTD 0
+post_OUTADR_ENUM:
+VAR ENUM__outadr_ofs, q
+	LCA OUTADR_ENUM.elab
+	Sa	 1, ENUM__outadr_ofs
+VAR ENUM__inadr_ofs, q
+	LCA INADR_ENUM.elab
+	Sa	 1, ENUM__inadr_ofs
+VAR ENUM__st_ofs, q
+	LCA ST_ENUM.elab
+	Sa	 1, ENUM__st_ofs
+VAR ENUM__ld_ofs, q
+	LCA LD_ENUM.elab
+	Sa	 1, ENUM__ld_ofs
+VAR ENUM__u_ofs, q
+	La	 1, STANDARD.TEXT14P_L1._COULEUR.use__info
+	Sa	 1, ENUM__u_ofs
+VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
+					; CODE_PACKAGE_SPEC
+VAR DEFAULT_WIDTH_disp, d			; variable entiere
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	Sd  1,	DEFAULT_WIDTH_disp
+
+VAR DEFAULT_SETTING_disp, b			; variable entiere
+	LI	1
+	Sb  1,	DEFAULT_SETTING_disp
+
+					; sub program entry decl (in instantiation TRUE )
+if defined GET_L79_
+PRO	GET_L79				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM ITEM_ofs				; out
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	La 	 2, -ITEM_ofs
+	La 	 2, -FILE_ofs
+	CALL	STANDARD.TEXT_IO.ENUMERATION_IO. ,GET_L79
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO GET
+end if
+					; sub program entry decl (in instantiation TRUE )
+if defined GET_L80_
+PRO	GET_L80				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM ITEM_ofs				; out
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	La 	 2, -ITEM_ofs
+	CALL	STANDARD.TEXT_IO.ENUMERATION_IO. ,GET_L80
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO GET
+end if
+					; sub program entry decl (in instantiation TRUE )
+if defined PUT_L81_
+PRO	PUT_L81				;---------- PRO PUT
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM ITEM_ofs				; in
+	PRM WIDTH_ofs				; in
+	PRM SET_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Lb	 2, -SET_ofs
+	Ld	 2, -WIDTH_ofs
+	Lb	 2, -ITEM_ofs
+	La 	 2, -FILE_ofs
+	CALL	STANDARD.TEXT_IO.ENUMERATION_IO. ,PUT_L81
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO PUT
+end if
+					; sub program entry decl (in instantiation TRUE )
+if defined PUT_L82_
+PRO	PUT_L82				;---------- PRO PUT
+PRMS					;    debut parametrage
+	PRM ITEM_ofs				; in
+	PRM WIDTH_ofs				; in
+	PRM SET_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Lb	 2, -SET_ofs
+	Ld	 2, -WIDTH_ofs
+	Lb	 2, -ITEM_ofs
+	CALL	STANDARD.TEXT_IO.ENUMERATION_IO. ,PUT_L82
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO PUT
+end if
+					; sub program entry decl (in instantiation TRUE )
+if defined GET_L83_
+PRO	GET_L83				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM FROM_ofs				; in
+	PRM ITEM_ofs				; out
+	PRM LAST_ofs				; out
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	La 	 2, -LAST_ofs
+	La 	 2, -ITEM_ofs
+	La 	 2, -FROM_ofs
+	CALL	STANDARD.TEXT_IO.ENUMERATION_IO. ,GET_L83
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO GET
+end if
+					; sub program entry decl (in instantiation TRUE )
+if defined PUT_L84_
+PRO	PUT_L84				;---------- PRO PUT
+PRMS					;    debut parametrage
+	PRM TO_ofs				; out
+	PRM ITEM_ofs				; in
+	PRM SET_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Lb	 2, -SET_ofs
+	Lb	 2, -ITEM_ofs
+	La 	 2, -TO_ofs
+	CALL	STANDARD.TEXT_IO.ENUMERATION_IO. ,PUT_L84
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO PUT
+end if
+					;---------- end generic package instantiation C_IO
+end namespace
+
+VAR F_disp, q				; variable record : pointeur aux data record
+VAR F__u, q				; variable record : pointeur aux useinfo
+VAR F__dat, STANDARD.TEXT_IO._FILE_TYPE.size
+	LVA	1, F__dat
+	Sa	1, F_disp				; record fin
+	LVA	1, STANDARD.TEXT_IO._FILE_TYPE.SIZ
+	Sa	1, F__u
+; CODE_VC_NAME DN_VARIABLE_ID
+	LIVa 1, F_disp, STANDARD.TEXT_IO._FILE_TYPE.ID
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	NEG
+	Sd
+	LIVa 1, F_disp, STANDARD.TEXT_IO._FILE_TYPE.IS_OPENED
+	LI	0
+	Sb
+	LIVa 1, F_disp, STANDARD.TEXT_IO._FILE_TYPE.PAGE_LENGTH
+	Ld 0,	STANDARD.TEXT_IO.UNBOUNDED_disp
+	Sd
+	LIVa 1, F_disp, STANDARD.TEXT_IO._FILE_TYPE.LINE_LENGTH
+	Ld 0,	STANDARD.TEXT_IO.UNBOUNDED_disp
+	Sd
+	LIVa 1, F_disp, STANDARD.TEXT_IO._FILE_TYPE.PAGE
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd
+	LIVa 1, F_disp, STANDARD.TEXT_IO._FILE_TYPE.LINE
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd
+	LIVa 1, F_disp, STANDARD.TEXT_IO._FILE_TYPE.COL
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd
+	LIVa 1, F_disp, STANDARD.TEXT_IO._FILE_TYPE.IS_DEFAULT_IO
+	LI	0
+	Sb
+	LIVa 1, F_disp, STANDARD.TEXT_IO._FILE_TYPE.LOOK_AHEAD
+	LI	 0
+	Sb
+	LIVa 1, F_disp, STANDARD.TEXT_IO._FILE_TYPE.HAS_LOOK_AHEAD
+	LI	0
+	Sb
+	LIVa 1, F_disp, STANDARD.TEXT_IO._FILE_TYPE.AT_END_OF_FILE
+	LI	0
+	Sb
+
+VAR C_disp, d				; variable bool char enum
+
+_S2__type = '_S2__type'
+namespace _S2__type				; array var constrained array type info
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+VAR _COMP_SIZ, d
+VAR _FST_1, d
+VAR _LST_1, d
+	LI	8
+	Sd	1, _COMP_SIZ
+	Ld	1, _COMP_SIZ
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd	1, _FST_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	2
+	Sd	1, _LST_1
+	Ld	1, _LST_1
+	Ld	1, _FST_1
+	SUB
+	INC
+	CLAMP0
+	MUL
+	Sd	1, SIZ
+  virtual at 4
+COMP_SIZ = $
+	rd 1 
+FST_1 = $
+	rd 1 
+LST_1 = $
+	rd 1 
+  end virtual
+end namespace
+VAR S2_disp, q				; variable array : pointeur aux data
+VAR S2__u, q				; variable array : useinfo pointeur au rec info
+	La 1, _S2__type.use__info
+	Sa	1, S2__u				; array info ptr at __u
+	Ld	1, _S2__type.SIZ
+	LI	8
+	DIV
+	CO_VAR
+	Sa	1, S2_disp				; array data ptr at _disp
+
+_BUF__type = '_BUF__type'
+namespace _BUF__type			; array var constrained array type info
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+VAR _COMP_SIZ, d
+VAR _FST_1, d
+VAR _LST_1, d
+	LI	8
+	Sd	1, _COMP_SIZ
+	Ld	1, _COMP_SIZ
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd	1, _FST_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	40
+	Sd	1, _LST_1
+	Ld	1, _LST_1
+	Ld	1, _FST_1
+	SUB
+	INC
+	CLAMP0
+	MUL
+	Sd	1, SIZ
+  virtual at 4
+COMP_SIZ = $
+	rd 1 
+FST_1 = $
+	rd 1 
+LST_1 = $
+	rd 1 
+  end virtual
+end namespace
+VAR BUF_disp, q				; variable array : pointeur aux data
+VAR BUF__u, q				; variable array : useinfo pointeur au rec info
+	La 1, _BUF__type.use__info
+	Sa	1, BUF__u				; array info ptr at __u
+	Ld	1, _BUF__type.SIZ
+	LI	8
+	DIV
+	CO_VAR
+	Sa	1, BUF_disp				; array data ptr at _disp
+
+VAR LST_disp, d				; variable entiere
+
+VAR N_disp, d				; variable entiere
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+STR STR_L16, "P00 debut"			; constante string="P00 debut"
+	LCA	STR_L16.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+STR STR_L17, ""				; constante string=""
+	LCA	STR_L17.data_ptr
+STR STR_L18, "TEXT14P.TXT"			; constante string="TEXT14P.TXT"
+	LCA	STR_L18.data_ptr
+	LI  1
+	LVA  1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,CREATE_L1
+STR STR_L19, "P01 CREATE"			; constante string="P01 CREATE"
+	LCA	STR_L19.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+STR STR_L20, "ABC"				; constante string="ABC"
+	LCA	STR_L20.data_ptr
+	LVA 1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L59
+STR STR_L21, "P02 PUT_LINE ABC"		; constante string="P02 PUT_LINE ABC"
+	LCA	STR_L21.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+STR STR_L22, "DE"				; constante string="DE"
+	LCA	STR_L22.data_ptr
+	LVA 1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L59
+STR STR_L23, "P03 PUT_LINE DE"		; constante string="P03 PUT_LINE DE"
+	LCA	STR_L23.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	Ld 1,	STANDARD.TEXT14P_L1.I_IO.DEFAULT_BASE_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	42
+	LVA 1,	F_disp
+	CALL	STANDARD.TEXT14P_L1.I_IO. ,PUT_L63
+STR STR_L24, "P04 I_IO.PUT 42"		; constante string="P04 I_IO.PUT 42"
+	LCA	STR_L24.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	LVA 1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L25
+STR STR_L25, "P05 NEW_LINE"			; constante string="P05 NEW_LINE"
+	LCA	STR_L25.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	Lb 1,	STANDARD.TEXT14P_L1.C_IO.DEFAULT_SETTING_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	6
+	LI  1
+	LVA 1,	F_disp
+	CALL	STANDARD.TEXT14P_L1.C_IO. ,PUT_L81
+STR STR_L26, "P06 C_IO.PUT VERT"		; constante string="P06 C_IO.PUT VERT"
+	LCA	STR_L26.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	LVA 1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L25
+STR STR_L27, "P07 NEW_LINE"			; constante string="P07 NEW_LINE"
+	LCA	STR_L27.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	LVA  1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,CLOSE_L3
+STR STR_L28, "P08 CLOSE"			; constante string="P08 CLOSE"
+	LCA	STR_L28.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+STR STR_L29, ""				; constante string=""
+	LCA	STR_L29.data_ptr
+STR STR_L30, "TEXT14P.TXT"			; constante string="TEXT14P.TXT"
+	LCA	STR_L30.data_ptr
+	LI  0
+	LVA  1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,OPEN_L2
+STR STR_L31, "P09 OPEN IN_FILE"		; constante string="P09 OPEN IN_FILE"
+	LCA	STR_L31.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	LVA  1,	C_disp
+	LVA 1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,GET_L49
+STR STR_L32, "P10 GET -> "			; constante string="P10 GET -> "
+	LCA	STR_L32.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	Lb 1,	C_disp
+	CALL	STANDARD.TEXT_IO. ,PUT_L52
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
+	LVA  1,	C_disp
+	LVA 1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,GET_L49
+STR STR_L33, "P11 GET -> "			; constante string="P11 GET -> "
+	LCA	STR_L33.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	Lb 1,	C_disp
+	CALL	STANDARD.TEXT_IO. ,PUT_L52
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
+	LVA  1,	C_disp
+	LVA 1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,GET_L49
+STR STR_L34, "P12 GET -> "			; constante string="P12 GET -> "
+	LCA	STR_L34.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	Lb 1,	C_disp
+	CALL	STANDARD.TEXT_IO. ,PUT_L52
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
+					; debut if
+	LI	0					; lieu resultat sur pile
+	LVA 1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,END_OF_LINE_L29
+	BF	L36
+STR STR_L37, "P13 EOL VRAI (attendu)"		; constante string="P13 EOL VRAI (attendu)"
+	LCA	STR_L37.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	BRA	L35
+L36:
+STR STR_L38, "P13 EOL FAUX (ANORMAL)"		; constante string="P13 EOL FAUX (ANORMAL)"
+	LCA	STR_L38.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+L35:					; post if
+	LVA  1,	S2_disp
+	LVA 1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,GET_L53
+STR STR_L39, "P14 GET S2 -> "			; constante string="P14 GET S2 -> "
+	LCA	STR_L39.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	LVA 1,	S2_disp
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	LVA  1,	N_disp
+	LVA 1,	F_disp
+	CALL	STANDARD.TEXT14P_L1.I_IO. ,GET_L61
+STR STR_L40, "P15 I_IO.GET -> "		; constante string="P15 I_IO.GET -> "
+	LCA	STR_L40.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	Ld 1,	STANDARD.TEXT14P_L1.I_IO.DEFAULT_BASE_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Ld 1,	N_disp
+	CALL	STANDARD.TEXT14P_L1.I_IO. ,PUT_L64
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
+	LVA  1,	LST_disp
+	LVA  1,	BUF_disp
+	LVA 1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,GET_LINE_L57
+STR STR_L41, "P16 GET_LINE LST = "		; constante string="P16 GET_LINE LST = "
+	LCA	STR_L41.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	Ld 1,	STANDARD.TEXT14P_L1.I_IO.DEFAULT_BASE_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Ld 1,	LST_disp
+	CALL	STANDARD.TEXT14P_L1.I_IO. ,PUT_L64
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
+	LVA  1,	LST_disp
+	LVA  1,	BUF_disp
+	LVA 1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,GET_LINE_L57
+STR STR_L42, "P17 GET_LINE ["			; constante string="P17 GET_LINE ["
+	LCA	STR_L42.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+					; debut if
+	Ld 1,	LST_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	CGE
+	BF	L44
+	La 1, BUF_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	LId 1, BUF__u, STANDARD._STRING.FST_1
+	SUB
+	LI	1
+	MUL
+	ADD
+namespace ANON_93_10			; ensemble doublet @data/@info pour slice anonyme source
+VAR ANON_93_10_disp, q
+VAR ANON_93_10__u, q
+VAR SIZ, d
+VAR COMP_SIZ, d
+VAR _FST_1, d
+VAR _LST_1, d
+	Sa	1, ANON_93_10_disp
+	LVA	1, SIZ
+	Sa	1, ANON_93_10__u
+	LI	8
+	Sd	1, COMP_SIZ
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd	1, _FST_1
+	Ld 1,	LST_disp
+	Sd	1, _LST_1
+	Ld	1, _LST_1
+	Ld	1, _FST_1
+	SUB
+	INC
+	CLAMP0
+	LI	8
+	MUL
+	Sd	1, SIZ
+	LVA	1, ANON_93_10_disp
+end namespace
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	BRA	L43
+L44:
+L43:					; post if
+STR STR_L45, "]"				; constante string="]"
+	LCA	STR_L45.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+					; debut if
+	LI	0					; lieu resultat sur pile
+	LVA 1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,END_OF_FILE_L37
+	BF	L47
+STR STR_L48, "P18 EOF VRAI (attendu)"		; constante string="P18 EOF VRAI (attendu)"
+	LCA	STR_L48.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	BRA	L46
+L47:
+STR STR_L49, "P18 EOF FAUX (ANORMAL)"		; constante string="P18 EOF FAUX (ANORMAL)"
+	LCA	STR_L49.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+L46:					; post if
+namespace	BLOCK__1
+ELB 2					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+VAR	exc_ctx_L50, q, 10
+	La	0, STANDARD.EXCEPTIONS_TOP_CTX_disp
+	Sa  2,	exc_ctx_L50
+	LCA	L50
+	Sa  2,	exc_ctx_L50 + STANDARD._EXCEPTION_CONTEXT.DISPATCH
+	EXC_MACH  2,	exc_ctx_L50
+	LVA  2,	exc_ctx_L50
+	Sa	0, STANDARD.EXCEPTIONS_TOP_CTX_disp
+	LVA  1,	C_disp
+	LVA 1,	STANDARD.TEXT14P_L1.F_disp
+	CALL	STANDARD.TEXT_IO. ,GET_L49
+STR STR_L52, "P19 pas d'exception (ANORMAL)"	; constante string="P19 pas d'exception (ANORMAL)"
+	LCA	STR_L52.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	La 0,	STANDARD.EXCEPTIONS_TOP_CTX_disp
+	La , 0
+	Sa 0,	STANDARD.EXCEPTIONS_TOP_CTX_disp
+	BRA	L51
+L50:
+	La	0, STANDARD.EXCEPTIONS_CURRENT_disp
+	Sa  2,	exc_ctx_L50
+	La	0, STANDARD.EXCEPTIONS_CURRENT_disp
+	LCA	STANDARD.IO_EXCEPTIONS.END_ERROR__exc.data_ptr
+	CEQ
+	BT	L54
+	BRA	L55
+L54:
+STR STR_L56, "P19 END_ERROR (attendu)"		; constante string="P19 END_ERROR (attendu)"
+	LCA	STR_L56.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	BRA	L53
+L55:
+STR STR_L59, "P19 autre exception (ANORMAL)"	; constante string="P19 autre exception (ANORMAL)"
+	LCA	STR_L59.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	BRA	L53
+L53:
+L51:
+	UNLINK 2
+endPRO
+	LVA  1,	F_disp
+	CALL	STANDARD.TEXT_IO. ,DELETE_L4
+STR STR_L60, "P20 DELETE, fin"		; constante string="P20 DELETE, fin"
+	LCA	STR_L60.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+ret_lbl:
+	UNLINK 1
+	RTD
+excep:
+endPRO					;---------- end PRO TEXT14P

@@ -792,6 +792,13 @@ separate ( EXPANDER )
 	  PUT_LINE( tab & "LVA " & IMAGE( CODI.CUR_LEVEL ) & ", " & ANONYMOUS_STR & "_disp" );
 	end;
 
+        elsif  ACT_PRM.TY = DN_INDEXED  then								-- COMPOSANT INDEXE EN ACTUAL
+	if  FRM_PRM_ID.TY = DN_IN_ID  then
+	  EXPRESSIONS.CODE_EXP( ACT_PRM );								-- in : rvalue (scalaire charge, composite laisse @)
+	else
+	  EXPRESSIONS.CODE_OBJECT_ADDRESS( ACT_PRM );							-- out / in out : adresse seule (par reference)
+	end if;
+
         else
 	EXPRESSIONS.CODE_EXP( ACT_PRM );
         end if;
