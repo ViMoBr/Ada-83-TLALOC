@@ -173,3 +173,35 @@ d'indices A3(VC), 7..9.
 toute variation run-à-run signe une lecture hors bloc via `__u`.
 Historique d'oracle : 7.3 corrigé le 6 juillet (`LONGUEUR(VD) = 3`, et non 4 —
 piège n° 68). Vert intégral le 6 juillet 2026.
+
+### EXC_TEST0 (pilier 11, session 7 juillet — témoin d'amorçage, dump DIANA de référence)
+Sortie : VIDE. Code retour 0. Trois chemins : handler local apparié (bloc 1),
+propagation LEVE → BLOCK__2 (prédéfinie non appariée puis others), frames
+frères de même niveau lexical (restauration FP(2) à la bonne incarnation).
+Le dump $$$_TREE de ce témoin est la référence des nœuds du pilier.
+
+### EXC_TEST1 (pilier 11, lots E-B/E-C + addendum, 19 assertions auto-jugées)
+12 sections : 1 return depuis corps protégé / 2 return depuis handler /
+3 exit à travers DEUX blocs protégés (témoin du piège n° 69) / 4 récursion
++ handler levant (CNT=4 incarnations) / 5 handler dans handler /
+6 propagation profonde (3 frames) / 7 renames croisés (les deux sens, via
+REN0_PACK) / 8 prédéfinies levées à la main / 9 choix multiple E1|E2 /
+10 raise nu dont ADVERSARIAUX 10.2-10.3 (exception traitée dans le handler
+— par bloc puis par appel — puis `raise;` qui doit relever l'EXTERNE ;
+juges du piège n° 75) / 11 exception en ÉLABORATION de bloc → englobant
+(LRM 11.4.2) / 12 bloc protégé × 100 000 itérations (anti-fuite).
+Sections 1/2/3/6 suivies d'un CONTROLE d'intégrité de la pile des
+contextes. Dernières lignes exactes :
+```
+RESULTAT :  19 OK,   0 ECHECS
+EXC_TEST1 PASSE
+```
+Code retour 0.
+
+### EXC_TEST1U (pilier 11 — témoin PERMANENT de la sentinelle)
+Sortie exacte : `EXCEPTION NON RATTRAPEE : PERDUE` (une ligne).
+Code retour 1 — LE VÉRIFIER (`$?`), c'est la moitié auto-jugeante.
+
+### EXC_REN0 (pilier 11 — renommage inter-unités, dump de référence SM_RENAMES_EXC)
+Deux unités (REN0_PACK + EXC_REN0). Sortie : VIDE. Code retour 0.
+Le dump de ce témoin a établi la forme réelle de SM_RENAMES_EXC (piège 71).

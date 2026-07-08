@@ -229,3 +229,81 @@ Dernière entrée : n° 66 (5 juillet 2026).
     quand la chaîne causale d'un diagnostic prédit la chute GROUPÉE des
     échecs, tout survivant isolé se re-vérifie à la main dans la source du
     test avant de rouvrir l'expander. (session 6 juillet)
+    
+    69. **UNLINK prend un NIVEAU, pas un compte.** CODE_EXIT émettait
+    `UNLINK CUR_LEVEL+1-EXITED_LOOP_LEVEL` — un compte passé à une macro qui
+    fait `FP_IN_RBP lvl`. Coïncidence numérique juste pour UN bloc traversé
+    depuis le niveau 1, faux dès deux (un seul UNLINK émis, mauvais niveau).
+    Corrigé en boucle par-niveau, forme de CODE_RETURN ; témoin exc_test1 §3
+    (exit à travers deux blocs protégés). (session 7 juillet)
+
+70. **R14 monotone est PORTEUR — interdiction de « corriger » UNLINK.**
+    La branche tableau de CODE_RETURN copie `data_ptr` (16 octets d'info),
+    pas les données : le retour de tableau est PAR RÉFÉRENCE, la donnée vit
+    dans la co-pile du frame appelé et se consomme APRÈS son UNLINK. C'est
+    parce qu'UNLINK ne redescend pas R14 que ça marche. Ajouter
+    `mov r14, r13` ferait pendre chaque `return S1 & S2`. Contrepartie
+    consignée : la co-pile ne se reprend JAMAIS en flux normal — un CO_VAR
+    en boucle fuit (budget 1 Mo). Seul point légitime de redescente : la
+    restauration du déroulage d'exception, couverte par l'invariant de
+    frontière d'instruction (tout @co-pile au-dessus de la photo est mort).
+    Refonte éventuelle = pilier « retours composites par copie », pas un
+    patch. (session 7 juillet, audit Q2)
+
+71. **diana_NODES.txt ne fait pas foi — le dump seul fait foi.**
+    `sm_renames_exc :NAME` d'après la grammaire ; sem y met l'EXCEPTION_ID
+    CIBLE directement (dump exc_ren0). Deuxième divergence constatée après
+    le design EXL/CD_LABEL fantôme. Toute modélisation d'attribut passe par
+    un dump du témoin AVANT le code ; les deux fois où la règle a été
+    suivie, le dump a contredit l'hypothèse. (session 7 juillet)
+
+72. **Renames d'exception = identité PARTAGÉE, jamais de nouvelle STR.**
+    LRM 8.5 : même entité. Émettre une STR au rename crée une identité
+    distincte → handlers inopérants à travers le renommage. Traitement :
+    alias d'assemblage au site de déclaration (namespace local dont
+    `data_ptr` VAUT celui de la cible directe ; les chaînes composent,
+    fasmg résout) — fondé sur la STRUCTURE (AS_NAME) + SM_DEFN seulement,
+    robustes au rechargement DCL. Toute manipulation d'un nom d'exception
+    passe par CODI.EXCEPTION_ID_OF (descente DN_SELECTED — qui n'a PAS de
+    SM_DEFN propre — puis chaîne SM_RENAMES_EXC sous ses deux formes),
+    jamais par un SM_DEFN nu. (session 7 juillet)
+
+73. **Les includes d'un FINC de corps viennent de XD_WITH_LIST, pas du
+    contexte textuel.** Le corps ré-élabore son spec inline (elab_spec:)
+    mais son texte ne porte pas les `with` du spec — symboles indéfinis à
+    l'assemblage. XD_WITH_LIST est la fermeture transitive (dump text_io) ;
+    passe CODE_TRANS_WITH_INCLUDES, exclusions : _STANDRD (wrapper) et le
+    spec propre (nœud TW_COMP_UNIT = XD_PARENT + test de nom). Nom pris au
+    SYMREP de l'unité, pas à TW_FILENAME. Gardes `if ~ definite` =
+    doublons inoffensifs. (session 7 juillet)
+
+74. **Fossiles réveillés : tout raise de bibliothèque était un no-op avant
+    le pilier 11.** L'ancien CODE_RAISE (`null;`) faisait tomber
+    l'exécution À TRAVERS les gardes — TEXT_IO a tourné depuis l'origine
+    avec des fichiers standard jamais ouverts (IS_OPENED jamais posé,
+    DEFAULT_IN/OUTPUT jamais affectés) et des gardes en décoration. Règle
+    de tri : tout `EXCEPTION NON RATTRAPEE : X` du filet est une DETTE DE
+    BIBLIOTHÈQUE rendue visible, pas une régression du pilier — la
+    sentinelle nomme l'exception, le grep des gardes localise. Précédents :
+    fichiers standard TEXT_IO (corrigé), END_ERROR DIRECT_IO (en cours).
+    (session 7 juillet)
+
+75. **`raise;` nu ≠ la globale (LRM 11.3) — sauvegarde par ACTIVATION.**
+    Le re-raise relève l'exception qui a causé le transfert AU handler
+    englobant le plus interne ; or EXCEPTIONS_CURRENT est clobberée par
+    tout raise intermédiaire TRAITÉ (bloc interne ou appel qui rattrape
+    chez lui). Solution : à l'entrée du dispatch, copier la globale dans
+    PREV_CTX (+0) du contexte — champ MORT depuis le pop, par incarnation
+    (récursion couverte), aucun restore nulle part. Corollaires : le
+    drapeau HANDLER_CTX_AT(L) n'est vrai que pendant les stms protégés
+    (un return depuis un HANDLER ne pope pas — contexte déjà dépilé) ; le
+    fond de dispatch, lui, propage bien la globale (aucun handler n'a
+    couru). Témoins adversariaux exc_test1 §10.2/10.3. (session 7 juillet)
+
+76. **Un nom de symbole émis en deux endroits se FABRIQUE par une fonction
+    unique appliquée à une valeur partagée — jamais reconstruit deux
+    fois.** Vécu : contexte `exc_ctx_L57` déclaré par CODE_BLOCK_BODY et
+    référencé par CODE_RAISE — l'espace de tête d'`'IMAGE` ou un préfixe
+    doublé (`exc_ctx_LL57`) guettent toute reconstruction. Faire circuler
+    le NUMÉRO (LABEL_TYPE) et composer par LABEL_STR des deux côtés.
+    (session 7 juillet)

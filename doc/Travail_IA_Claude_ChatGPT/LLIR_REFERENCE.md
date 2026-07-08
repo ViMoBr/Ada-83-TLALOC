@@ -253,7 +253,7 @@ Pour obtenir `<` ou `≤`, inverser l'ordre d'empilement de A et B.
 | `CALL ns., name` | namespace, nom | Appel de sous-programme. Empile l'adresse de retour sur la micro-pile RSP. |
 | `RTD [prm_size]` | taille paramètres | Retour. Désalloue `prm_size` octets de la pile de travail avant le ret. |
 
-### 4.8 Gestion de pile et frames
+### 4.8.1 Gestion de pile et frames
 
 | Instruction | Paramètres | Description |
 |-------------|------------|-------------|
@@ -262,6 +262,30 @@ Pour obtenir `<` ou `≤`, inverser l'ordre d'empilement de A et B.
 | `PRO name` | label | Début de procédure : ouvre un namespace FASM, BRA autour de l'élaboration. |
 | `endPRO` | — | Fin de procédure : calcule `loc_siz` (taille des locales rétropropagée au LINK), ferme le namespace. |
 | `ELB lvl` | niveau | Point d'entrée de l'élaboration : ouvre la zone VARzone, appelle LINK. |
+
+### 4.8.2 Gestion des exceptions
+
+| Instruction | Paramètres | Description |
+|-------------|------------|-------------|
+| `EXC_MACH lvl, ctx` | niveau adresse contexte | photographie de l'état machine caché dans le  contexte de reprise à [FP(lvl)+ctx] : RBP +16 (frontière d'instruction),  RSP +24, R13 +32, R14 +40, NXT_LVL +48 (= lvl+1), FP(0..lvl) +56.  Clobbère RAX/RCX/RSI/RDI. Le layout EST le record STANDARD.EXCEPTION_CONTEXT (_standrd.adb) — toute évolution du record
+  impose la mise à jour de la macro (et d'EXC_RAISE).|
+| `EXC_RAISE top` | adresse contexte haut| corps du déroulage ; instance UNIQUE posée par le  wrapper sous `exc_raise_:` (région inatteignable après SYS_EXIT),  atteinte par `BRA STANDARD.exc_raise_`. Dépile AVANT le saut au dispatch  (11.4.1). Précondition : EXCEPTIONS_CURRENT posée.|
+
+Protocole LLIR d'exceptions  (émis par l'expander — aucune macro)
+- PUSH (begin: d'un frame porteur, niveau lvl) :
+  `VAR exc_ctx_<Ln>, q, 8+lvl` ; La 0,EXCEPTIONS_TOP_CTX_disp ; Sa lvl,ctx
+  (PREV) ; LCA dsp ; Sa lvl,ctx+DISPATCH ; EXC_MACH lvl,ctx ; LVA lvl,ctx ;
+  Sa 0,TOP (publication EN DERNIER).
+- POP (sortie normale + un par niveau porteur traversé par return/exit) :
+  La 0,TOP ; La ,0 ; Sa 0,TOP  (CODI.EXC_POP).
+- DISPATCH (entrée) : La 0,CURRENT ; Sa lvl,ctx  — sauvegarde 11.3 dans
+  PREV_CTX mort. Par choix : La 0,CURRENT ; LCA <path>X__exc.data_ptr ;
+  CEQ ; BT h. Others : direct. Chute : BRA exc_raise_ (la globale, intacte
+  à cet endroit).
+- RAISE nommé : LCA <path>X__exc.data_ptr ; Sa 0,CURRENT ; BRA exc_raise_.
+  Nu : La lvl_handler, exc_ctx_<Ln> ; Sa 0,CURRENT ; BRA exc_raise_.
+- Identité = adresse `X__exc.data_ptr` (STR postponée) ; renames = alias
+  de namespace, jamais de STR.
 
 ### 4.9 Déclarations
 
@@ -294,7 +318,7 @@ Pour obtenir `<` ou `≤`, inverser l'ordre d'empilement de A et B.
 
 | Instruction | Effet | Description |
 |-------------|-------|-------------|
-| `SYS_EXIT` | — | Terminaison (syscall 60, code 0) |
+| `SYS_EXIT` | code erreur | Terminaison (syscall 60, code 0) |
 | `SYS_PUT_CHAR` | char → | Écrit un caractère sur stdout |
 | `SYS_PUT_STR` | @desc → | Écrit un string Ada sur stdout |
 | `SYS_GET_CHAR` | @dest → | Lit un caractère sur stdin (mode non-canonique) |

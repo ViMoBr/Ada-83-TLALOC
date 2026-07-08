@@ -514,3 +514,43 @@ bruyants (égalité des TREE du bootstrap, return "" de FORM, NOT scalaire). Le
 motif dominant — « la vue contrainte n'est pas le type de base » — a produit
 six correctifs. Pilier suivant décidé : reliquat 3.6 unconstrained arrays,
 puis exceptions.
+
+## Session 7 juillet 2026 — Pilier 11 (exceptions) : ouverture ET clôture
+
+**Note avant code** : fusion de la note de la session antérieure et du
+rafraîchissement (v2) ; l'audit Q2 a INVERSÉ le verdict pressenti — R14
+monotone est porteur (retour tableau par référence, piège n° 70) →
+contexte en VARzone acté. Recadrage doctrinal du mainteneur : « codi =
+machine à pile, pas le runtime » — le runtime vit en Ada dans _standrd.adb
+(variables de service, record EXCEPTION_CONTEXT dont les STATOFS SONT la
+spécification du layout, sentinelle EXC_CTX0, cinq prédéfinies par
+CODE_EXCEPTION_DECL ordinaire) ; codi ne gagne que EXC_MACH (photographie
+de l'état caché) et EXC_RAISE (déroulage, instance unique posée par le
+wrapper, atteinte par BRA — 5 octets/site, les checks futurs compteront) ;
+tout le protocole est de la LLIR émise par l'expander.
+
+**E-A1** raise→déroulage→sentinelle jugé avant tout handler (exc_test0
+mourant proprement). **E-A2** handlers : push à begin: (11.4.2 gratuit),
+pop-avant-dispatch (11.4.1), dispatch CEQ/BT auto-contenu, pops de sorties
+anticipées par HANDLER_CTX_AT — et correction au passage du bug UNLINK
+compte-vs-niveau de CODE_EXIT (piège n° 69). **E-A3/bis/ter** renames :
+identité partagée par alias d'assemblage (LRM 8.5), résolution
+EXCEPTION_ID_OF (DN_SELECTED sans SM_DEFN propre → raise/choix qualifiés
+réparés du même coup) ; deux dumps ont contredit deux hypothèses —
+sm_renames_exc porte l'ID, pas le NAME (piège n° 71). **E-A4** includes
+des corps depuis XD_WITH_LIST (fermeture transitive prouvée au dump,
+exclusion du spec propre par XD_PARENT, piège n° 73). **Fossile majeur**
+réveillé par le pilier : les fichiers standard de TEXT_IO n'ont JAMAIS été
+ouverts — gardes en décoration depuis l'origine (piège n° 74) ; corrigé à
+l'élaboration du corps. **E-B** exc_test1 14/14. **E-C** raise nu : piège
+sémantique 11.3 identifié AVANT codage (la globale clobberée par toute
+exception traitée dans le handler) → sauvegarde par activation dans
+PREV_CTX mort, pistage expander (niveau + suffixe LABEL_TYPE, fabrication
+du nom par LABEL_STR unique — piège n° 76). Addendum critique externe
+réconcilié : convergences confirmées, off-by-one 7+lvl→8+lvl repris dans
+la note, design EXC_HANDLED écarté (discipline de restauration évitée),
+deux sections de témoin extraites (élaboration 11.4.2, boucle anti-fuite).
+
+**Clôture** : exc_test1 19/19, exc_test1u (sentinelle + $?=1), exc_ren0 ;
+filet ACVC A2–A7, tous modules du compilateur ; un fossile résiduel
+(END_ERROR DIRECT_IO) en cours côté mainteneur. Tag git.

@@ -1,6 +1,6 @@
 # Triage de couverture DIANA / EXPANDER
 
-**Date** : 4 juillet 2026 — mis à jour le 5 juillet 2026 (clôture pilier 3.6)
+**Date** : 4 juillet 2026 — mis à jour le 7 juillet 2026 (clôture pilier 11)
 **Statut** : instrument d'audit — première passe, à valider et maintenir
 **Méthode** : extraction des 230 nœuds de `diana_NODES.txt`, recherche de `DN_<NOM>` dans les
 8 fichiers `expander*.adb`. Le dispatch de l'expander se fait surtout par chaînes
@@ -85,11 +85,16 @@ C'est la liste qui compte. Regroupée par pilier LRM :
 | 8.5 Renames | `renames_unit` | DN_RENAMES_OBJ_DECL, DN_RENAMES_EXC_DECL (1 mention chacun) |
 | 5.9 / 5.1 Labels et goto | `label_id, block_loop_id, block_body` | DN_GOTO, DN_LABELED (goto « fonctionne » — vérifier par où passent les labels) |
 | 9 Tâches | `entry, task_spec, task_body_id, block_master` | DN_TASK_BODY, DN_ACCEPT, DN_DELAY, DN_ABORT, DN_ENTRY_CALL, DN_SELECTIVE_WAIT… (mentions isolées) |
-| 11 Exceptions | — (nœuds mentionnés) | DN_RAISE, DN_EXCEPTION_ID, DN_ALTERNATIVE : squelette, handlers incomplets |
 | 13 Clauses de représentation | `alignment, comp_rep_pragma, variant_pragma` | DN_COMP_REP, DN_RECORD_REP, DN_LENGTH_ENUM_REP (mentions) |
 | 12.1.3 Défauts de formels génériques | `box_default, name_default, no_default` | — |
 | 2.8 / 10.1 Pragmas et contexte | `pragma_id, context_pragma, use_pragma_s` | DN_PRAGMA (1 mention) |
 | Divers à trier | `attribute_id, argument_id, compilation, compilation_unit` | CODE_COMPILATION_UNIT existe : vérifier le chemin d'entrée réel |
+
+## Sortis de la catégorie E
+
+Pilier 11 CLOS (7 juillet 2026) — sortent de la dette : DN_RAISE (nommé, qualifié, nu), DN_EXCEPTION_DECL, DN_EXCEPTION_ID, DN_RENAMES_EXC_DECL (alias, aucune émission d’identité), DN_ALTERNATIVE_S / DN_ALTERNATIVE, DN_CHOICE_EXP / DN_CHOICE_OTHERS (contexte exceptions ; DN_CHOICE_RANGE y reste ANOMALIE — illégal en Ada 83 de toute façon). Attributs désormais exploités : SM_RENAMES_EXC (forme réelle : EXCEPTION_ID direct, piège 71), XD_WITH_LIST / TW_COMP_UNIT / XD_PARENT (DN_TRANS_WITH, includes des corps). DN_ALTERNATIVE_PRAGMA : ANOMALIE bruyante conservée.
+
+
 
 ## Utilisation prévue de ce document
 

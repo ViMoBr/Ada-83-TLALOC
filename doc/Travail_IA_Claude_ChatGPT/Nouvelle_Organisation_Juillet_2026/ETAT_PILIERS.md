@@ -1,6 +1,6 @@
 # ÉTAT DES PILIERS — tableau de bord TLALOC
 
-**Dernière mise à jour : 5 juillet 2026** (clôture pilier 3.7, records à discriminants et variantes — lots R-A/R-B).
+**Dernière mise à jour : 7 juillet 2026 (clôture pilier 11, exceptions — lots E-A1..E-A4, E-B, E-C).
 **Régime** : ce fichier est RÉÉCRIT à chaque clôture ; il est la seule source de
 vérité sur « où on en est ». Le récit des sessions est dans JOURNAL_SESSIONS.md,
 les pièges dans PIEGES.md, les conventions dans CONVENTIONS_ARCHITECTURE.md,
@@ -30,12 +30,12 @@ La sémantique n'est protégée que par les programmes-témoins à sortie attend
 | **3.6 Tableaux (formes contraintes, opérateurs complets)** | **CLOS** : affectation complète, égalité, ordre lexicographique, logiques booléens composites, caténation toutes formes, tranches (lecture/écriture/paramètre/retour), intervalles nuls, agrégats (positionnel/nommé/others/2D/qualifiés), conversions, attributs dimensionnés, 'RANGE (objet et marque de sous-type) | **5 juillet 2026** — oracles ARRAY_TEST1/2 |
 | **3.6 reliquat non contraint** | **CLOS** objets non contraints par agrégat (bornes déduites, trou n°3), attributs sur marque, STRING dynamique, formels/retours,  conversion — ARRAY_TEST3 37/37 | **6 juillet 2026**   (ARRAY_TEST1/2, RECORD_TEST1/2, A2–A8, auto-compilation) + tag git |
 | **3.7 Records à discriminants et variantes** | **CLOS** : discriminants (déclaration, contrainte, défauts, lecture, contrôle de flux), variantes statiques (layout ADDITIF), agrégats canoniques (positionnel/nommé/mixte/variantes/imbriqués), vues contraintes nommées et anonymes (objets, composants, éléments de tableau, formels, retours, qualifiés), égalité (BLKCMP sans variantes ; cascade statique à variantes), 'CONSTRAINED par objet, mutables, changement de variante | **5 juillet 2026** — oracles RECORD_TEST1/2 |
-| 13 Clauses de représentation (records compacts) | acquis pour le type TREE du bootstrap | 21 juin |
+| **11 Exceptions (11.1–11.4 périmètre statique)** | **CLOS** : déclaration (STR identité `__exc.data_ptr`), raise nommé/qualifié/nu (LRM 11.3, sauvegarde par activation), handlers sur corps de procédure et blocs (dispatch CEQ/BT, others, choix multiples), propagation multi-frames par pile de contextes de reprise (VARzone, `8+lvl` qwords, EXC_MACH/EXC_RAISE seules macros codi ; runtime auto-hébergé dans _standrd.adb), sorties anticipées (return corps protégé / return handler / exit multi-blocs, pops par niveau), renames = alias d'assemblage (identité partagée, appariement croisé), prédéfinies = exceptions ordinaires de STANDARD, exception d'élaboration → contexte englobant (11.4.2), sentinelle non-rattrapée (nom + code 1) | **7 juillet 2026** — oracles EXC_TEST0/1/1U, EXC_REN0 ; filet A2–A7 + modules compilateur OK || 13 Clauses de représentation (records compacts) | acquis pour le type TREE du bootstrap | 21 juin |
 | 3.8/4.8 Access minimal (`new`, `.all`) | minimal bootstrap | 22 juin |
 | 5, 6 Instructions, sous-programmes, blocs | acquis (PRO/ELB/UNLINK, display, blocs declare) | ≤ avril + pièges 47–48 |
 | 8.5 Renames d'objets | entamé (déclarations traitées) | 14 juin |
 | 12 Génériques (packages, sous-programmes, thunks LD/ST CALLI) | acquis | avril + 4 juillet (piège 47) |
-| 14.3 TEXT_IO | presque achevé (hors exceptions) ; GET scanners conformes ; FIXED_IO testé | 5 juin |
+| 14.3 TEXT_IO | presque achevé, EXCEPTIONS CÂBLÉES (gardes actives, fichiers standard initialisés à l'élaboration du corps) ; GET scanners conformes ; FIXED_IO testé | 5 juin + 7 juillet |
 | 14.2.3 / 14.2.5 SEQUENTIAL_IO, DIRECT_IO | validés tous types | 10 mai |
 | 9.6 CALENDAR | opérationnel (cas normaux) | 5 juin |
 
@@ -75,24 +75,67 @@ La sémantique n'est protégée que par les programmes-témoins à sortie attend
   nommé à choix DN_NUMERIC_LITERAL (min/max calculés dans l'expander) ;
   multidim, choix dynamiques, mixte, `others` → refus bruyant. À élargir si
   un test ACVC l'exige.
+
 - **DN_QUALIFIED à marque non contrainte** (COMPILE_ARRAY_VAR l. ~666) : même
   vice latent que l'ex-branche agrégat (COVAR_ALLOCATE sur SIZ = -1). Aucun
   témoin ne l'exerce ; le jour venu, router vers
   UNCONSTRAINED_AGGREGATE_OBJECT.
+
 - **Marcheur `_aga`** : la retombée ADD_INDEX_DIMENSION sur index non
   contraint calcule des _FST/_LST faux (range du sous-type d'index) —
   INERTES pour l'émission des données (placement séquentiel par _PTR), mais
   non autoritaires : les bornes d'un agrégat ne font foi QUE publiées dans
   un descripteur. Ne pas « corriger » sans témoin, code partagé (D9, 2D,
   qualifiés).
+
+- **Co-pile monotone (piège n° 70)** : R14 ne redescend jamais en flux
+  normal — convention PORTEUSE du retour de tableau par référence ; fuite
+  CO_VAR en boucle (budget 1 Mo). Refonte = futur pilier « retours
+  composites par copie ». Jumelle de la fragilité déjà consignée des
+  retours de tableaux CONTRAINTS (donnée en VARzone du frame mort).
+
+- **TEXT_IO conformité 14.3.3** : fichiers standard initialisés avec
+  PAGE_LENGTH=72 / LINE_LENGTH=256 au lieu de 0 (non borné). ARMÉ : form
+  feed inséré à la 73ᵉ ligne de toute sortie longue (les oracles diff le
+  verront). Correctif conjoint requis : longueurs 0 + garde
+  `PAGE_LENGTH /= 0 and then` dans NEW_LINE (et audit des usages de
+  LINE_LENGTH le jour du cadrage de PUT).
+
+- **STD_INPUT.AT_END_OF_FILE / HAS_LOOK_AHEAD non initialisés** (VARzone
+  non zéroée) : look-ahead fantôme possible au premier GET console.
+
+- **DIRECT_IO : END_ERROR fossile réveillé** (piège n° 74) — en cours de
+  correction (mainteneur).
+
+- **Handlers sur corps de PACKAGE** : ANOMALIE bruyante (exceptions
+  d'élaboration, différé).
+
+- **Exceptions pendant l'élaboration des unités de bibliothèque** (avant
+  le CALL du programme) : atterrissent sur la sentinelle — acceptable.
+
+- **TASKING_ERROR** : symbole déclaré, jamais levée (pilier 9).
+
+- **`goto` sortant de corps protégé** : même comptabilité de pops que
+  return/exit, à faire quand CODE_GOTO existera (pilier 5.9) —
+  HANDLER_CTX_AT est prêt.
+
+- **SM_RENAMES_EXC au rechargement DCL** : régime constaté au LCA émis par
+  text_io recompilé (noter au journal lequel) ; sans conséquence — l'alias
+  garantit la correction dans les deux régimes.
+
+- **Checks runtime (CONSTRAINT_ERROR & co.)** : hors pilier 11 ; le point
+  d'entrée est prêt (`LCA STANDARD.<X>__exc.data_ptr` + `Sa EXCEPTIONS_
+  CURRENT` + `BRA exc_raise_`).
+
 ## Prochaine séquence (à arbitrer à l'ouverture de la prochaine session)
 
-1. **Pilier retenu : reliquat 3.6 — unconstrained arrays** (déclaration du
-   type non contraint lui-même, CODE_UNCONSTRAINED_ARRAY_DECL, STRING
-   général). Décidé le 5 juillet : coût faible, ferme la strate des types
-   composites avant les exceptions (gros chantier, interaction frames).
-   Exceptions (pilier 11) ensuite. Audit à l'ouverture : témoin
-   auto-jugeant + dump `unconstrained_array_def` (protocole triage).
+1. A discuter
+- Option A — **checks runtime** (contraintes scalaires, index, LEN_G=LEN_D
+  des logiques composites en dette D3-contrôle) : le mécanisme les attend.
+- Option B — points fixes : mul/div générales (reliquat 3.5.9).
+- Option C — nettoyage conformité TEXT_IO (les trois dettes ci-dessus)
+  avant qu'un témoin long ne les réveille.
+
 2. Rédiger la note de modèle d'exécution du pilier retenu AVANT de coder.
 3. Filet complet + tag git à chaque clôture.
 
@@ -122,4 +165,4 @@ Les 8 `expander*.adb`, `codi_x86_64.finc`, les paquetages IO concernés,
   (RM 3.2.1) : non émis, aucun témoin ne l'exerce.
 - Déviation console : PUT d'énuméré avec WIDTH cadre à DROITE (blancs de
   tête, RM 14.3.9 prescrit blancs de queue) ; PUT vers chaîne conforme.
-  À harmoniser au pilier 14.
+  À harmoniser au pilier 14.Dernière mise à jour : 7 juillet 2026 (clôture pilier 11, exceptions — lots E-A1..E-A4, E-B, E-C).Dernière mise à jour : 7 juillet 2026 (clôture pilier 11, exceptions — lots E-A1..E-A4, E-B, E-C).
