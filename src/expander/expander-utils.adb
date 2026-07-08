@@ -369,6 +369,20 @@ is					-----
         end	SCALAR_IN_PARAMETER;
 		-------------------
 
+      elsif  D( SM_OBJ_TYPE, DEFN ).TY in CLASS_SCALAR
+	or else  D( SM_OBJ_TYPE, DEFN ).TY = DN_ACCESS  then						-- out/in_out SCALAIRE lu en expression :
+			----------------------								-- le slot contient l'ADRESSE, dereferencer
+			SCALAR_REF_PARAMETER:								-- (meme geste que la re-passe out->in de
+        declare											-- CODE_PROCEDURE_CALL). Piege n° 80.
+	SIZ_CHAR	: CHARACTER	:= OPER_SIZ_CHAR( D( SM_OBJ_TYPE, DEFN ) );
+
+        begin
+	PUT( tab & "LI" & SIZ_CHAR & ' ' & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' &	tab );
+	PUT( '-' & PRINT_NAME( D( LX_SYMREP, DEFN ) ) );
+	PUT_LINE(	"_ofs" );
+        end	SCALAR_REF_PARAMETER;
+		----------------------
+
       else											-- pas scalaire ou out in/out
         PUT( tab & "La " & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' & tab );
         PUT( '-' & PRINT_NAME( D( LX_SYMREP, DEFN	) ) );							-- ATTENTION signe offset de params opposé aux vars

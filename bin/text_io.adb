@@ -402,9 +402,9 @@ is					-------
 	----
 
 
-			---
+			-------
   procedure		PUT_RAW		( FILE :in FILE_TYPE; ITEM :in STRING )
-  is			---
+  is			-------
 
     ERR_CODE	: INTEGER;
 
@@ -421,6 +421,7 @@ is					-------
     end	WRITE_SYSTEM_CALL;
 	-----------------
   begin
+    if  ITEM'LENGTH = 0  then return; end if;
     if  FILE.ID = -1  then
       ASM_OP_2'( OPCODE => LA, LVL => 1, OFS => -16 );
       ASM_OP_0'( OPCODE => SYS_PUT_STR );

@@ -51,6 +51,12 @@ cadrage à gauche conforme), GET fichier/casse mixte/JOUR, roundtrips
 couleurs et jours, boucle GET en ordre non déclaratif, GET chaîne (token,
 casse, index de fin L), attributs 'FIRST/'LAST/'POS.
 
+Mise à jour ENUM_TEST : la note « Sections visuelles résiduelles
+(déviation RM 14.3.9 consignée — cadrage à DROITE, blancs de tête) » est
+caduque depuis le 8 juillet : le cadrage console est désormais conforme
+(blancs de QUEUE). Les sections visuelles montrent le comportement
+conforme ; re-vérification visuelle faite au filet du 8 juillet.
+
 ### DIRECT_IO_TEST (session 10 mai (1), scalaire LONG_FLOAT)
 
 ```
@@ -205,3 +211,34 @@ Code retour 1 — LE VÉRIFIER (`$?`), c'est la moitié auto-jugeante.
 ### EXC_REN0 (pilier 11 — renommage inter-unités, dump de référence SM_RENAMES_EXC)
 Deux unités (REN0_PACK + EXC_REN0). Sortie : VIDE. Code retour 0.
 Le dump de ce témoin a établi la forme réelle de SM_RENAMES_EXC (piège 71).
+
+### TEXT14 (pilier 14.3, 8 juillet 2026, 42 assertions)
+
+Témoin auto-jugeant de la conformité LRM chapitre 14 de TEXT_IO.
+U1 comptabilité COL/LINE en sortie ; U2 SET_COL avant/arrière ;
+U3 coupure implicite à LINE_LENGTH bornée + LAYOUT_ERROR ; U4 SET_LINE et
+longueur de page ; U5 relecture sur fichier réel (GET à travers les
+terminateurs, look-ahead END_OF_LINE traversé par GET(STRING), scanner
+entier, GET_LINE, END_ERROR) ; U6 gardes MODE/STATUS/NAME_ERROR ;
+U7 DATA_ERROR et LAYOUT_ERROR des variantes chaîne ; U8 cas résiduels
+(chaîne nulle, DATA_ERROR fichier, FF devant un entier, END_OF_LINE sur
+FF). Crée et supprime ses fichiers TEXT14_*.TXT.
+RESULTAT :  42 OK,   0 ECHECS
+TEXT14 PASSE
+Oracle du filet = la ligne `TEXT14 PASSE`.
+
+### OUTARG1 (correctif expandeur piège n° 77, 8 juillet 2026, 8 assertions)
+
+Verrou de la classe « actual out/in out composé » : composant indexé en
+out et in out (indice littéral et calculé), composant sélectionné en out
+et in out, boucle sur composant indexé d'un formel non contraint (motif
+exact du GET(STRING) public). Indépendant du chemin fichier.
+OUTARG1 PASSE
+Oracle du filet = la ligne `OUTARG1 PASSE`.
+
+### TEXT14P (sonde, hors filet)
+
+Sonde de bisection à marqueurs séquentiels P00..P20 sur la séquence
+écriture → CLOSE → OPEN → relecture. Pas d'oracle : outil de diagnostic à
+ressortir quand un chemin d'E/S neuf s'ouvre (piège n° 78).
+

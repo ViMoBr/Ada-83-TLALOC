@@ -627,7 +627,11 @@ separate ( EXPANDER )
 	    end;
 
 	  else
-	    EXPRESSIONS.CODE_SELECTED( ACT_PRM );
+	    if  FRM_PRM_ID.TY = DN_IN_ID  then
+	      EXPRESSIONS.CODE_SELECTED( ACT_PRM );							-- in : rvalue (historique, couvre aussi DN_ALL)
+	    else
+	      EXPRESSIONS.CODE_OBJECT_ADDRESS( ACT_PRM );							-- out / in out : adresse seule
+	    end if;
 	  end if;
 	end;
 
@@ -648,7 +652,6 @@ separate ( EXPANDER )
 	      NEW_LINE;
 
 	    end if;
-
 
 	  elsif  DEFN.TY = DN_VARIABLE_ID  then
 	    if FRM_PRM_ID.TY = DN_IN_ID then

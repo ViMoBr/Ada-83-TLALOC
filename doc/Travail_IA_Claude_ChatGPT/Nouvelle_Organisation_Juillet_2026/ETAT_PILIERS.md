@@ -1,6 +1,7 @@
 # ÉTAT DES PILIERS — tableau de bord TLALOC
 
-**Dernière mise à jour : 7 juillet 2026 (clôture pilier 11, exceptions — lots E-A1..E-A4, E-B, E-C).
+**Dernière mise à jour : 8 juillet 2026** (clôture pilier 14.3 TEXT_IO ; correctif expandeur actuals out composés).
+
 **Régime** : ce fichier est RÉÉCRIT à chaque clôture ; il est la seule source de
 vérité sur « où on en est ». Le récit des sessions est dans JOURNAL_SESSIONS.md,
 les pièges dans PIEGES.md, les conventions dans CONVENTIONS_ARCHITECTURE.md,
@@ -32,11 +33,11 @@ La sémantique n'est protégée que par les programmes-témoins à sortie attend
 | **3.7 Records à discriminants et variantes** | **CLOS** : discriminants (déclaration, contrainte, défauts, lecture, contrôle de flux), variantes statiques (layout ADDITIF), agrégats canoniques (positionnel/nommé/mixte/variantes/imbriqués), vues contraintes nommées et anonymes (objets, composants, éléments de tableau, formels, retours, qualifiés), égalité (BLKCMP sans variantes ; cascade statique à variantes), 'CONSTRAINED par objet, mutables, changement de variante | **5 juillet 2026** — oracles RECORD_TEST1/2 |
 | **11 Exceptions (11.1–11.4 périmètre statique)** | **CLOS** : déclaration (STR identité `__exc.data_ptr`), raise nommé/qualifié/nu (LRM 11.3, sauvegarde par activation), handlers sur corps de procédure et blocs (dispatch CEQ/BT, others, choix multiples), propagation multi-frames par pile de contextes de reprise (VARzone, `8+lvl` qwords, EXC_MACH/EXC_RAISE seules macros codi ; runtime auto-hébergé dans _standrd.adb), sorties anticipées (return corps protégé / return handler / exit multi-blocs, pops par niveau), renames = alias d'assemblage (identité partagée, appariement croisé), prédéfinies = exceptions ordinaires de STANDARD, exception d'élaboration → contexte englobant (11.4.2), sentinelle non-rattrapée (nom + code 1) | **7 juillet 2026** — oracles EXC_TEST0/1/1U, EXC_REN0 ; filet A2–A7 + modules compilateur OK || 13 Clauses de représentation (records compacts) | acquis pour le type TREE du bootstrap | 21 juin |
 | 3.8/4.8 Access minimal (`new`, `.all`) | minimal bootstrap | 22 juin |
-| 5, 6 Instructions, sous-programmes, blocs | acquis (PRO/ELB/UNLINK, display, blocs declare) | ≤ avril + pièges 47–48 |
+| 5, 6 Instructions, sous-programmes, blocs | acquis (PRO/ELB/UNLINK, display, blocs declare) | ≤ avril + pièges 47–48 + actuals out/in out composants indexés/sélectionnés (piège n° 77, correctif CODE_PROCEDURE_CALL, témoin OUTARG1, 8 juillet).|
 | 8.5 Renames d'objets | entamé (déclarations traitées) | 14 juin |
 | 12 Génériques (packages, sous-programmes, thunks LD/ST CALLI) | acquis | avril + 4 juillet (piège 47) |
-| 14.3 TEXT_IO | presque achevé, EXCEPTIONS CÂBLÉES (gardes actives, fichiers standard initialisés à l'élaboration du corps) ; GET scanners conformes ; FIXED_IO testé | 5 juin + 7 juillet |
-| 14.2.3 / 14.2.5 SEQUENTIAL_IO, DIRECT_IO | validés tous types | 10 mai |
+| **14.3 TEXT_IO** | **CLOS** (conforme LRM sous restrictions consignées) : architecture deux niveaux RAW/public (GET_RAW/PUT_RAW hors spec ; scanners et lecteurs de structure sur RAW, NEW_LINE/NEW_PAGE émettent en RAW) ; GET public saute les terminateurs et tient LINE/COL/PAGE ; PUT tient COL, coupure implicite à LINE_LENGTH bornée ; SET_COL/SET_LINE sortie ; longueurs COUNT := UNBOUNDED (bombe POSITIVE_COUNT := 0 désamorcée) ; exceptions toutes armées (STATUS/MODE/NAME/USE/END/DATA/LAYOUT, 14.2.1 complet, piège n° 45 désamorcé) ; cadrage énuméré WIDTH en blancs de queue (RM 14.3.9, déviation supprimée) ; FF séparateur des scanners et terminateur de ligne. Restrictions consignées : SET_COL/SET_LINE en entrée différés ; END_OF_FILE/END_OF_PAGE mono-anticipation (piège n° 79) ; copies FILE_TYPE non partagées (état COL/look-ahead divergent entre handles) | **8 juillet 2026** — oracles TEXT14 (42), OUTARG1, IO_TEST |
+| 14.2.3 / 14.2.5 SEQUENTIAL_IO, DIRECT_IO | validés tous types ; **témoins DIRECT_IO_TEST et SEQ_IO_TEST à reprendre** (END_ERROR : ancien contrat de lecture à EOF, piège n° 79 — packages inchangés) | 10 mai ; reprise à planifier |
 | 9.6 CALENDAR | opérationnel (cas normaux) | 5 juin |
 
 ## Fondations absentes (piliers non ouverts)
@@ -128,16 +129,15 @@ La sémantique n'est protégée que par les programmes-témoins à sortie attend
 
 ## Prochaine séquence (à arbitrer à l'ouverture de la prochaine session)
 
-1. A discuter
+1. Session courte dédiée : remise d’aplomb des témoins DIRECT_IO_TEST / SEQ_IO_TEST (tri idiome-de-témoin vs défaut réel ; les packages n’ont pas changé).
+2. Tri des 4 échecs ACVC A8 (dump DIANA par test, classement défaut local vs pilier absent) — AVANT d’ouvrir le pilier désigné (présomption : 8.x portée/visibilité/use/renommage).
+3. Ouverture du pilier désigné par le tri ou discuté :
 - Option A — **checks runtime** (contraintes scalaires, index, LEN_G=LEN_D
   des logiques composites en dette D3-contrôle) : le mécanisme les attend.
-- Option B — points fixes : mul/div générales (reliquat 3.5.9).
-- Option C — nettoyage conformité TEXT_IO (les trois dettes ci-dessus)
-  avant qu'un témoin long ne les réveille.
-- Option D — amélioration du traitement des génériques
+- Option C — points fixes : mul/div générales (reliquat 3.5.9).
 
-2. Rédiger la note de modèle d'exécution du pilier retenu AVANT de coder.
-3. Filet complet + tag git à chaque clôture.
+4. Rédiger la note de modèle d'exécution du pilier retenu AVANT de coder.
+5. Filet complet + tag git à chaque clôture.
 
 ## Fichiers à uploader en début de session
 

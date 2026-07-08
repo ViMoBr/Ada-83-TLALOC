@@ -119,8 +119,7 @@ Dernière entrée : n° 66 (5 juillet 2026).
     valeurs par défaut (IS_OPENED=FALSE, MODE=IN_FILE). Toujours utiliser
     CREATE pour créer un nouveau fichier, OPEN uniquement pour un fichier
     existant. (session 10 mai (3))
-
-
+__DÉSAMORCÉ le 8 juillet 2026__: OPEN → NAME_ERROR, CREATE → USE_ERROR (TEXT14/U6.4). »
 
 46. **Sous-type tableau anonyme partagé + `CD_COMPILED`** : deux objets de contrainte identique (p. ex. deux `STRING(1..6)`) peuvent partager le **même** nœud `DN_CONSTRAINED_ARRAY` en DIANA (vérifiable par le dump : `SM_OBJ_TYPE` identique). Le drapeau `CD_COMPILED` posé par `PROCESS_CONSTRAINED_ARRAY_TYPE_SPEC` fait alors sauter la génération du descripteur local pour le second objet, qui retombe sur le type de base non contraint (`STANDARD._STRING`) via `XD_SOURCE_NAME` → `use__info` invalide → segfault au déréférencement. Matérialiser un type-info local par objet dès qu’il existe une contrainte anonyme, sans dépendre de `CD_COMPILED`. (session 4 juillet)
 
@@ -285,9 +284,8 @@ Dernière entrée : n° 66 (5 juillet 2026).
     de tri : tout `EXCEPTION NON RATTRAPEE : X` du filet est une DETTE DE
     BIBLIOTHÈQUE rendue visible, pas une régression du pilier — la
     sentinelle nomme l'exception, le grep des gardes localise. Précédents :
-    fichiers standard TEXT_IO (corrigé), END_ERROR DIRECT_IO (en cours).
-    (session 7 juillet)
-
+    fichiers standard TEXT_IO (corrigé), END_ERROR DIRECT_IO/SEQUENTIAL_IO (session 7 juillet témoins à l'ancien contrat, cf. piège n° 79 — reprise planifiée).
+ 
 75. **`raise;` nu ≠ la globale (LRM 11.3) — sauvegarde par ACTIVATION.**
     Le re-raise relève l'exception qui a causé le transfert AU handler
     englobant le plus interne ; or EXCEPTIONS_CURRENT est clobberée par
@@ -307,3 +305,42 @@ Dernière entrée : n° 66 (5 juillet 2026).
     doublé (`exc_ctx_LL57`) guettent toute reconstruction. Faire circuler
     le NUMÉRO (LABEL_TYPE) et composer par LABEL_STR des deux côtés.
     (session 7 juillet)
+
+77. **Actual out/in out qui est un composant indexé (ou sélectionné) :
+    le fallback de CODE_PROCEDURE_CALL l'émettait en rvalue.** Le Lb
+    final de CODE_EXP remplace l'adresse calculée du composant par sa
+    valeur ; l'appelé (convention scalaire out = par référence) écrit à
+    travers cette pseudo-adresse — écriture sauvage, segfault à
+    retardement ou corruption silencieuse d'une variable voisine. La
+    branche DN_INDEXED doit tester le mode du formel comme le fait déjà
+    DN_VARIABLE_ID : in → CODE_EXP (correct pour scalaire chargé ET
+    composite qui laisse @), out/in out → CODE_OBJECT_ADDRESS (adresse
+    seule). Jumeau DN_SELECTED scalaire dans le même dispatch
+    (IS_SOURCE => FALSE). Témoin de verrouillage OUTARG1 (indexé,
+    sélectionné, indice calculé, boucle sur composant d'un formel non
+    contraint). Détecté par TEXT14P/P14 sur le GET(STRING) public de
+    TEXT_IO. (session 8 juillet)
+
+78. **« Validé » ne veut pas dire « exercé » : recenser les chemins que
+    personne n'emprunte.** Le chemin de lecture sur fichier réel de
+    TEXT_IO (OPEN + GET par descripteur, FILE.ID >= 0) n'avait JAMAIS
+    tourné depuis l'origine : tous les témoins de lecture passaient par
+    la console redirigée (`< fichier`, chemin ID = -1). Le fossile n° 77
+    dormait dans le seul appel de cette forme du corpus, sur ce chemin
+    mort. À l'ouverture d'un chemin neuf, une sonde à marqueurs
+    séquentiels (modèle TEXT14P : un marqueur APRÈS chaque étape, le
+    dernier affiché = dernière étape réussie) localise le point de chute
+    en une exécution, avant toute spéculation. (session 8 juillet)
+
+79. **END_OF_FILE et END_OF_PAGE ne voient pas à travers les
+    terminateurs (un seul caractère d'anticipation).** Depuis que le GET
+    public lève END_ERROR au terminateur de fichier, l'idiome
+    `while not END_OF_FILE loop GET(char)` lève END_ERROR sur les
+    terminateurs de queue d'un fichier fini par PUT_LINE (END_OF_FILE
+    peek le CR → FALSE, le GET suivant traverse CR LF et tombe sur la
+    fin). Idiomes sûrs : ligne à ligne (GET_LINE + END_OF_FILE), ou
+    boucle GET protégée par un handler END_ERROR. Même limite pour
+    END_OF_PAGE derrière un CR LF non consommé. Remède complet =
+    FILE_TYPE descripteur partagé à tampon (chantier non planifié).
+    Premier suspect des échecs DIRECT_IO_TEST/SEQ_IO_TEST du filet du
+    8 juillet. (session 8 juillet)

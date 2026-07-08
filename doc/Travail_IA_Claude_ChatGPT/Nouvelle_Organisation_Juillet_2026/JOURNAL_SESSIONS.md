@@ -554,3 +554,82 @@ deux sections de témoin extraites (élaboration 11.4.2, boucle anti-fuite).
 **Clôture** : exc_test1 19/19, exc_test1u (sentinelle + $?=1), exc_ren0 ;
 filet ACVC A2–A7, tous modules du compilateur ; un fossile résiduel
 (END_ERROR DIRECT_IO) en cours côté mainteneur. Tag git.
+
+## Session 8 juillet 2026 — TEXT_IO conforme LRM 14 ; fossile expandeur « actual out composé »
+
+Refonte de conformité du package TEXT_IO, préparée par un arbitrage à deux
+avis (Claude + second expert) dont la clé d'architecture est la séparation
+stricte de deux niveaux. Le niveau RAW (GET_RAW, PUT_RAW caractère et
+chaîne, hors spec, corps ASM inchangés relocalisés avant leurs appelants)
+est un flux d'octets pur : pas de mise en page, pas d'exceptions, GET_RAW
+arme AT_END_OF_FILE et rend NUL à EOF. Le niveau public conforme LRM est
+construit au-dessus : GET saute les terminateurs LF/FF (CR ignoré comme
+moitié muette du CR LF), tient LINE/COL/PAGE et lève END_ERROR ; PUT tient
+COL et fait la coupure implicite à LINE_LENGTH bornée (14.3.6(4)). Règles
+de circulation : les scanners tokenisants (INTEGER/FLOAT/FIXED/
+ENUMERATION_IO) et les lecteurs de structure (SKIP_*, END_OF_*, GET_LINE)
+restent intégralement sur GET_RAW (visibilité des terminateurs, droit au
+unget) ; NEW_LINE/NEW_PAGE/SET_COL émettent leurs caractères physiques via
+PUT_RAW (sinon double comptabilité de COL) ; aucun niveau n'appelle
+l'autre à contre-sens. GET(STRING) est réécrit en boucle sur le GET
+public — l'ancien chemin READ en bloc, qui contournait le look-ahead, a
+disparu ; PUT(STRING) garde un chemin rapide en bloc quand la ligne n'est
+pas bornée.
+
+Contenu du lot, dans l'ordre du patch : champs de longueur passés de
+POSITIVE_COUNT à COUNT := UNBOUNDED (le 0 hors sous-type était une bombe
+pour le futur pilier checks) et défauts non bornés partout (LRM 14.3.3) ;
+élaboration explicite complète des fichiers standard (ID, IS_DEFAULT_IO,
+LOOK_AHEAD, HAS_LOOK_AHEAD, AT_END_OF_FILE — VARzone non zéroée) ; gardes
+LRM 14.2.1 (CREATE/OPEN sur fichier déjà ouvert → STATUS_ERROR, CLOSE/
+DELETE sur fichier fermé → STATUS_ERROR) ; échec d'OPEN → NAME_ERROR
+(piège n° 45 désamorcé) et de CREATE → USE_ERROR ; END_ERROR à l'entrée de
+SKIP_LINE/SKIP_PAGE/GET_LINE et après le saut de blancs des scanners
+fichier ; DATA_ERROR armé partout (énumérés, image sans chiffre, chiffre
+incompatible avec la base des based literals — variantes chaîne ET
+fichier) ; LAYOUT_ERROR dans les quatre PUT(TO : STRING) à la place du
+remplissage d'étoiles, et dans SET_COL/SET_LINE contre les longueurs
+bornées ; SET_COL/SET_LINE sortie complets (espaces, NEW_LINE/NEW_PAGE
+implicites en arrière) ; cadrage énuméré PUT(FILE) avec WIDTH corrigé en
+blancs de QUEUE (RM 14.3.9(10), la déviation console consignée disparaît) ;
+FF reconnu comme séparateur par les scanners numériques et comme
+terminateur de ligne par END_OF_LINE (un FF seul porte ligne+page dans
+notre encodage).
+
+Le lot a réveillé un fossile de l'expandeur, vieux comme
+CODE_PROCEDURE_CALL : un actual DN_INDEXED tombait dans le fallback
+CODE_EXP (rvalue) quel que soit le mode du formel — pour un out/in out
+scalaire (convention par référence), le Lb final remplaçait l'adresse
+calculée du composant par sa valeur, que l'appelé utilisait comme adresse
+de dépôt : écriture sauvage. Le seul appel de cette forme dans tout le
+corpus était la branche console de l'ancien GET(STRING), jamais exercée ;
+la boucle du GET(STRING) public en a fait le chemin unique. Chaîne de
+diagnostic exemplaire à retenir : segfault TEXT14/U5 → sonde à marqueurs
+séquentiels TEXT14P (une exécution localise : P14) → lecture du FINC
+(séquence LIa/…/ADD/Lb avant le CALL) → correctif d'une branche dans
+INVERSE_RECURSE_ON_PARAMETERS, calquée sur le test de mode existant de
+DN_VARIABLE_ID (in → CODE_EXP ; out/in out → CODE_OBJECT_ADDRESS).
+Le témoin OUTARG1 verrouille la classe entière : indexé (U1), sélectionné
+— le jumeau du même fallback — (U2), et le motif exact du GET(STRING)
+(boucle sur composant indexé d'un formel non contraint, U3). Pièges
+n° 77-78.
+
+L'extension U8 du témoin (utilisateur) a trouvé trois trous dans l'angle
+mort du lot — les scanners fichier n'étaient nourris qu'en entrées
+valides sans terminateur de page : DATA_ERROR absent des variantes
+fichier, FF non séparateur, END_OF_LINE aveugle au FF. Les trois corrigés
+le jour même (TEXT14 42/42).
+
+Filet final : modules du compilateur, TEXT14, OUTARG1, IO_TEST, EXC_TEST*,
+ENUM_TEST, A2–A8, auto-compilation — tout vert SAUF DIRECT_IO_TEST et
+SEQ_IO_TEST qui tombent en END_ERROR : témoins datant de l'ancien contrat
+(« GET rend NUL à EOF » / idiome END_OF_FILE + lecture caractère,
+déviation mono-anticipation consignée au piège n° 79), les packages
+eux-mêmes n'ont pas bougé. Remise d'aplomb dans une session dédiée.
+
+Restrictions consignées de la session : SET_COL/SET_LINE en ENTRÉE
+restent des affectations directes du compteur (placeholder commenté) ;
+END_OF_FILE/END_OF_PAGE à un caractère d'anticipation ne voient pas à
+travers les terminateurs (remède commun avec l'aliasing des copies
+FILE_TYPE : futur chantier « descripteur partagé à tampon », non
+planifié).
