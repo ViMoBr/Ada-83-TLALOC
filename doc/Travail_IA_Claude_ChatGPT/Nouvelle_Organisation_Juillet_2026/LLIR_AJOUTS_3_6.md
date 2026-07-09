@@ -12,3 +12,21 @@
 | `BLKNOT` | @DST, LEN → | NOT composite : chaque octet `^= 1` (NOT booléen 0/1, piège n° 5 — pas 0xFF). |
 
 Tous détruisent RAX/RCX/RSI/RDI (LEXCMP aussi RBX/RDX), comme BLKMOV.
+
+<!-- Ajouts session 9 juillet 2026 (2) — série a8. -->
+
+| Op | Pile | Description |
+|---|---|---|
+| `LSPA prefix, subname` | → @elab | Load SubProgram Address : empile l'adresse de `prefix#subname.elab` ET arme la garde d'assemblage paresseux `prefix#subname#_` (postpone, même mécanisme que CALL). Obligatoire pour toute prise d'adresse de sous-programme (actuels génériques). Un LCA nu sur un `.elab` = piège n° 83. |
+
+**BLOC_DEF refondu** (codi + CODE_ENUMERATION_DECL) :
+`BEGIN_BLOC_DEF` (sans argument) ouvre le bloc d'images d'un énuméré —
+données `db` INLINE protégées par `BRA IMAGES.skip`, noms fixes sous
+`IMAGES.` (unicité par le namespace `_TYPE`) ; `END_BLOC_DEF siz,fst,lst`
+pose le ENUM_USE_INFO étendu, layout contractuel : `SIZ@0 (dd) | FST@+4 |
+LST@+8 | pad | IMAGES.data_ptr@+16 (dq) | IMAGES.info_ptr@+24` ;
+`use__info` pointe SIZ ; TEXT_IO (GET_ENUM_IMAGES) lit le doublet à
+__u+16. Supprimés : struc `BYTES_BLOC`, instanciation `IMAGES
+BYTES_BLOC`, les trois `CST` et le triplet `postpone align_q` dans ce
+chemin. Macros ordinaires (ni « ! », ni capture, ni postpone) : saines
+sous `if defined` (pièges n° 86-87). Gardien : ENUM_TEST.

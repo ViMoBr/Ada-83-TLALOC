@@ -94,6 +94,11 @@ C'est la liste qui compte. Regroupée par pilier LRM :
 
 Pilier 11 CLOS (7 juillet 2026) — sortent de la dette : DN_RAISE (nommé, qualifié, nu), DN_EXCEPTION_DECL, DN_EXCEPTION_ID, DN_RENAMES_EXC_DECL (alias, aucune émission d’identité), DN_ALTERNATIVE_S / DN_ALTERNATIVE, DN_CHOICE_EXP / DN_CHOICE_OTHERS (contexte exceptions ; DN_CHOICE_RANGE y reste ANOMALIE — illégal en Ada 83 de toute façon). Attributs désormais exploités : SM_RENAMES_EXC (forme réelle : EXCEPTION_ID direct, piège 71), XD_WITH_LIST / TW_COMP_UNIT / XD_PARENT (DN_TRANS_WITH, includes des corps). DN_ALTERNATIVE_PRAGMA : ANOMALIE bruyante conservée.
 
+- `renames_unit` (sous-programmes) : traité au site d'appel par
+  SUBPROGRAM_ORIGIN (session 9 juillet (2), piège n° 82) — la
+  déclaration elle-même n'émet rien, l'appel vise l'origine. Reste en
+  dette : renamings d'ENTRÉES (tasking) et renamings comme actuels
+  génériques.
 
 
 ## Utilisation prévue de ce document

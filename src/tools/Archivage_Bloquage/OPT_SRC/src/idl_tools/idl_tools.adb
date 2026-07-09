@@ -1,15 +1,15 @@
 ------------------------------------------------------------------------------------------------------------------------
--- SPDX-FileCopyrightText: 2026 VINCENT	MORIN, UBO
+-- SPDX-FileCopyrightText: 2026 VINCENT MORIN, UBO
 -- SPDX-License-Identifier: GPL-3.0-or-later
 ------------------------------------------------------------------------------------------------------------------------
 --	1	2	3	4	5	6	7	8	9	0	1	2
 
 with TEXT_IO, IDL;
-use  TEXT_IO;									--| LA VERSION ADAPTÉE À LA GESTION DES	STRUCTURES DE GRAMMAIRE LALR
+use  TEXT_IO;									--| LA VERSION ADAPTÉE À LA GESTION DES STRUCTURES DE GRAMMAIRE LALR
 --|-------------------------------------------------------------------------------------------------
---|		PROCEDURE	IDL_TOOLS
+--|		PROCEDURE IDL_TOOLS
 --|-------------------------------------------------------------------------------------------------
-procedure	IDL_TOOLS	is
+procedure IDL_TOOLS is
 
    C	: CHARACTER;
    L	: NATURAL;
@@ -29,13 +29,13 @@ begin
     PUT_LINE ( "QUITTER ..................................... Q" );
     NEW_LINE;
     PUT	   ( "                 CHOIX : " );
-    GET_LINE ( CMD,	L );
+    GET_LINE ( CMD, L );
     C := CMD( 1 );
     NEW_LINE;
 
     case C is
     when 'R' | 'T' | 'N' =>
-      PUT	( "NOM DE FICHIER DESCRIPTION (SANS EXTENSION .idl) : " );
+      PUT ( "NOM DE FICHIER DESCRIPTION (SANS EXTENSION .idl) : " );
       GET_LINE ( CMD, L );
       NEW_LINE;
 
@@ -49,11 +49,11 @@ begin
     if C = 'R' then
       IDL.IDL_READ ( CMD( 1..L ) );
 
-    elsif	C = 'T' then
-      IDL.TBL_PUT (	CMD( 1..L	) );
+    elsif C = 'T' then
+      IDL.TBL_PUT ( CMD( 1..L ) );
 
-    elsif	C = 'N' then
-      IDL.NAM_PUT (	CMD( 1..L	) );
+    elsif C = 'N' then
+      IDL.NAM_PUT ( CMD( 1..L ) );
     end if;
 
     NEW_LINE;

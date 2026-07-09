@@ -38,14 +38,8 @@ BEGIN_BLOC_DEF
 db 0, 7, "IN_FILE"
 db 1, 10, "INOUT_FILE"
 db 2, 8, "OUT_FILE"
-END_BLOC_DEF
-IMAGES	BYTES_BLOC
-CST LST, d, 2
-CST FST, d, 0
-CST SIZ, d, 8	; SIZ en bits !
-postpone
-  align_q
-end postpone
+END_BLOC_DEF 8, 0, 2
+	; SIZ en bits !
 	LCA	SIZ
 	Sa	0, use__info
 end namespace
@@ -862,7 +856,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	LA 2 ,	-24
 	LD 2 ,	-8
 	SYS_FILE_READ
-	SD 2 ,	-32
+	SD 2 ,	-40
 ret_lbl:
 	UNLINK 2
 	RTD	prm_siz-8
@@ -984,7 +978,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	LA 2 ,	-24
 	LD 2 ,	-8
 	SYS_FILE_READ
-	SD 2 ,	-32
+	SD 2 ,	-40
 ret_lbl:
 	UNLINK 2
 	RTD	prm_siz-8
@@ -1105,7 +1099,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	LA 2 ,	-24
 	LD 2 ,	-8
 	SYS_FILE_WRITE
-	SD 2 ,	-32
+	SD 2 ,	-40
 ret_lbl:
 	UNLINK 2
 	RTD	prm_siz-8
@@ -1216,7 +1210,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	LA 2 ,	-24
 	LD 2 ,	-8
 	SYS_FILE_WRITE
-	SD 2 ,	-32
+	SD 2 ,	-40
 ret_lbl:
 	UNLINK 2
 	RTD	prm_siz-8

@@ -1366,14 +1366,8 @@ db 11, 12, "STORAGE_UNIT"
 db 12, 8, "SUPPRESS"
 db 13, 11, "SYSTEM_NAME"
 db 14, 5, "DEBUG"
-END_BLOC_DEF
-IMAGES	BYTES_BLOC
-CST LST, d, 14
-CST FST, d, 0
-CST SIZ, d, 8	; SIZ en bits !
-postpone
-  align_q
-end postpone
+END_BLOC_DEF 8, 0, 14
+	; SIZ en bits !
 	LCA	SIZ
 	Sa	1, use__info
 end namespace
@@ -1385,14 +1379,8 @@ VAR use__info, q
 BEGIN_BLOC_DEF
 db 0, 3, "OFF"
 db 1, 2, "ON"
-END_BLOC_DEF
-IMAGES	BYTES_BLOC
-CST LST, d, 1
-CST FST, d, 0
-CST SIZ, d, 8	; SIZ en bits !
-postpone
-  align_q
-end postpone
+END_BLOC_DEF 8, 0, 1
+	; SIZ en bits !
 	LCA	SIZ
 	Sa	1, use__info
 end namespace
@@ -1404,14 +1392,8 @@ VAR use__info, q
 BEGIN_BLOC_DEF
 db 0, 4, "TIME"
 db 1, 5, "SPACE"
-END_BLOC_DEF
-IMAGES	BYTES_BLOC
-CST LST, d, 1
-CST FST, d, 0
-CST SIZ, d, 8	; SIZ en bits !
-postpone
-  align_q
-end postpone
+END_BLOC_DEF 8, 0, 1
+	; SIZ en bits !
 	LCA	SIZ
 	Sa	1, use__info
 end namespace
@@ -1431,14 +1413,8 @@ db 6, 17, "ELABORATION_CHECK"
 db 7, 14, "DIVISION_CHECK"
 db 8, 14, "OVERFLOW_CHECK"
 db 9, 13, "STORAGE_CHECK"
-END_BLOC_DEF
-IMAGES	BYTES_BLOC
-CST LST, d, 9
-CST FST, d, 0
-CST SIZ, d, 8	; SIZ en bits !
-postpone
-  align_q
-end postpone
+END_BLOC_DEF 8, 0, 9
+	; SIZ en bits !
 	LCA	SIZ
 	Sa	1, use__info
 end namespace
@@ -1450,14 +1426,8 @@ VAR use__info, q
 BEGIN_BLOC_DEF
 db 0, 3, "ADA"
 db 1, 3, "ASM"
-END_BLOC_DEF
-IMAGES	BYTES_BLOC
-CST LST, d, 1
-CST FST, d, 0
-CST SIZ, d, 8	; SIZ en bits !
-postpone
-  align_q
-end postpone
+END_BLOC_DEF 8, 0, 1
+	; SIZ en bits !
 	LCA	SIZ
 	Sa	1, use__info
 end namespace
@@ -1507,14 +1477,8 @@ db 36, 10, "TERMINATED"
 db 37, 3, "VAL"
 db 38, 5, "VALUE"
 db 39, 5, "WIDTH"
-END_BLOC_DEF
-IMAGES	BYTES_BLOC
-CST LST, d, 39
-CST FST, d, 0
-CST SIZ, d, 8	; SIZ en bits !
-postpone
-  align_q
-end postpone
+END_BLOC_DEF 8, 0, 39
+	; SIZ en bits !
 	LCA	SIZ
 	Sa	1, use__info
 end namespace
@@ -1545,14 +1509,8 @@ db 17, 6, "OP_MOD"
 db 18, 6, "OP_REM"
 db 19, 6, "OP_CAT"
 db 20, 6, "OP_EXP"
-END_BLOC_DEF
-IMAGES	BYTES_BLOC
-CST LST, d, 20
-CST FST, d, 0
-CST SIZ, d, 8	; SIZ en bits !
-postpone
-  align_q
-end postpone
+END_BLOC_DEF 8, 0, 20
+	; SIZ en bits !
 	LCA	SIZ
 	Sa	1, use__info
 end namespace
@@ -2488,6 +2446,7 @@ namespace REP_CLAU				;---------- PACKAGE DECLARATION
 end namespace
 
 VAR USED_PACKAGE_LIST_disp, q
+	La 1, STANDARD.IDL.SEM_PHASE_L11.FIX_WITH.USED_PACKAGE_LIST_disp
 	Sa	1, USED_PACKAGE_LIST_disp
 VAR USED_PACKAGE_LIST__u, q
 	LVA	1, STANDARD.IDL._SEQ_TYPE.SIZ
@@ -2749,6 +2708,7 @@ L509:
 	LI	0					; lieu resultat sur pile
 	VAR SELARG_L510_disp, q
 	VAR SELARG_L510__u, q
+	La 1, STANDARD.IDL.SEM_PHASE_L11.SEM_GLOB.INITIAL_H_disp
 	Sa	2, SELARG_L510_disp
 	La 1, STANDARD.IDL.SEM_PHASE_L11.SEM_GLOB._H_TYPE.use__info
 	Sa	2, SELARG_L510__u
@@ -5584,6 +5544,7 @@ namespace ANON_2499_23_L654_G_info
   VAR _FST_1,    d
   VAR _LST_1,    d
 end namespace
+	La 0, STANDARD.IDL.LIB_PATH_disp
 	Ld 0,	STANDARD.IDL.LIB_PATH_LENGTH_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1

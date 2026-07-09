@@ -250,7 +250,7 @@ is					----------
       ASM_OP_2'( OPCODE => La, LVL => 2, OFS => -24 );			-- @ITEM_DATA (param out READ : adresse de la zone destination)
       ASM_OP_2'( OPCODE => Ld, LVL => 2, OFS => -8 );			-- FILE_ID
       ASM_OP_0'( OPCODE => SYS_FILE_READ );
-      ASM_OP_2'( OPCODE => SD, LVL => 2, OFS => -32 );			-- Retour du BYTES_READ apres le GFP
+      ASM_OP_2'( OPCODE => SD, LVL => 2, OFS => -40 );			-- Retour du BYTES_READ apres le GFP
 
     end	READ_SYSTEM_CALL;
 	----------------
@@ -288,7 +288,7 @@ is					----------
       ASM_OP_2'( OPCODE => La, LVL => 2, OFS => -24 );			-- @ITEM_DATA
       ASM_OP_2'( OPCODE => Ld, LVL => 2, OFS => -8 );			-- FILE_ID
       ASM_OP_0'( OPCODE => SYS_FILE_READ );
-      ASM_OP_2'( OPCODE => SD, LVL => 2, OFS => -32 );
+      ASM_OP_2'( OPCODE => SD, LVL => 2, OFS => -40 );
 
     end	READ_SYSTEM_CALL;
 	----------------
@@ -337,7 +337,7 @@ is					----------
       ASM_OP_2'( OPCODE => La, LVL => 2, OFS => -24 );			-- @ITEM_DATA (param in WRITE : adresse de la zone source)
       ASM_OP_2'( OPCODE => Ld, LVL => 2, OFS => -8 );			-- FILE_ID
       ASM_OP_0'( OPCODE => SYS_FILE_WRITE );
-      ASM_OP_2'( OPCODE => SD, LVL => 2, OFS => -32 );
+      ASM_OP_2'( OPCODE => SD, LVL => 2, OFS => -40 );
 
     end	WRITE_SYSTEM_CALL;
 	-----------------
@@ -371,7 +371,7 @@ is					----------
       ASM_OP_2'( OPCODE => La, LVL => 2, OFS => -24 );		-- @ITEM_DATA
       ASM_OP_2'( OPCODE => Ld, LVL => 2, OFS => -8 );		-- FILE
       ASM_OP_0'( OPCODE => SYS_FILE_WRITE );
-      ASM_OP_2'( OPCODE => SD, LVL => 2, OFS => -32 );
+      ASM_OP_2'( OPCODE => SD, LVL => 2, OFS => -40 );
 
     end	WRITE_SYSTEM_CALL;
 	-----------------

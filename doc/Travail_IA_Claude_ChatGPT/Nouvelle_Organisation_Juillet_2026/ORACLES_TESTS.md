@@ -57,56 +57,68 @@ caduque depuis le 8 juillet : le cadrage console est désormais conforme
 (blancs de QUEUE). Les sections visuelles montrent le comportement
 conforme ; re-vérification visuelle faite au filet du 8 juillet.
 
-### DIRECT_IO_TEST (session 10 mai (1), scalaire LONG_FLOAT)
+- 9 juillet 2026  (41 assertions + vérification console interactive
+  « rouge ») : GARDIEN DU CONTRAT ENUM_USE_INFO étendu (SIZ@0, FST@+4,
+  LST@+8, doublet images @+16 lu par GET_ENUM_IMAGES). À repasser après
+  TOUTE retouche de BLOC_DEF, de CODE_ENUMERATION_DECL ou
+  d'ENUMERATION_IO. Attendu : « RESULTAT : 41 OK, 0 ECHECS /
+  ENUM_TEST PASSE », plus l'écho console. Vert le 9 juillet (2) après
+  refonte BLOC_DEF.
 
-```
-LONG_FLOAT SIZE = 64 bits
-create+write+close ok / open in_file ok
-read seq #1/#2/#3 : 3.1415 / 6.5 / -2.25
-read positioned #2/#3 : 6.5 / -2.25
-open inout_file ok / rewrite position 2 ok
-size after rewrite = 3
-final #1/#2/#3 : 3.1415 / 3.1415 / -2.25
-```
+### DIRECT_IO_TEST v2 (refonte auto-jugeante, 9 juillet 2026, 65 assertions)
 
-### DIRECT_IO_TEST2 (sessions 10 mai (1) et 10 mai (2), tous types)
-
+Conversion au format canonique après le fossile n° 80 (SD -32 → -40,
+slot résultat des fonctions en corps générique). Trois instances
+(COULEUR énuméré 8 bits, POINT record 96 bits, VECTEUR tableau 128 bits).
+S1-S3 roundtrips par égalité composite complète + SIZE (après écriture et
+en relecture) + IS_OPEN/MODE ; S2 INDEX = FROM+1 après READ positionné ;
+S4 SET_INDEX/INDEX/END_OF_FILE ; S5 RESET + réécriture partielle INOUT
+(agrégat qualifié de record en actual) ; S6 boucle `while not END_OF_FILE
+loop READ` — idiome SÛR pour DIRECT_IO, positions exactes, pas de
+look-ahead (contra piège n° 79) ; S7 extension par WRITE positionné
+au-delà de la fin (LRM 14.2), SIZE étendu + trou relu à zéro (fichier
+creux Linux) ; S8 exceptions : END_ERROR (séquentiel à EOF, positionné
+hors fichier, **élément tronqué** — fichier COULEUR de 5 octets ouvert
+par POINT_DIO, verrou du fossile n° 80), MODE_ERROR (READ sur OUT,
+END_OF_FILE sur OUT, WRITE sur IN), STATUS_ERROR (READ/SIZE/RESET sur
+fichier fermé) ; S9 DELETE ressuscité, jugé par échec de la tentative de
+re-OPEN (régime actuel : échec silencieux → IS_OPEN FALSE ; handler
+NAME_ERROR accepte d'avance le régime du futur lot 14.2.1).
+Crée et supprime ses fichiers *_direct.dat et scratch_direct.dat.
+Dernières lignes exactes :
 ```
-=== 1. COULEUR (énuméré, 8 bits) ===   5 writes, seq + positioned, ok
-=== 2. POINT (record 3 INTEGER) ===    4 writes, seq + positioned, ok
-=== 3. VECTEUR (array 1..4 INTEGER) == 3 writes, seq + positioned, ok
-=== 4. SET_INDEX + END_OF_FILE ===     SET_INDEX(4), EOF avant/après lecture, retour début, ok
-=== 5. RESET + réécriture partielle == INOUT_FILE, rewrite pos 2+4 (variable en bloc declare), ok
-=== 6. IS_OPEN ===                     FALSE après CLOSE, TRUE après OPEN, ok
-=== 7. Boucle END_OF_FILE ===          parcours séquentiel VECTEUR, 3 éléments, ok
-=== 8. DELETE ===                      3 fichiers supprimés, ok
+RESULTAT :  65 OK,   0 ECHECS
+DIRECT_IO_TEST PASSE
 ```
+Oracle du filet = la ligne `DIRECT_IO_TEST PASSE`. Vert intégral le
+9 juillet 2026.
+Non asserté (dette 14.2.1, gardes absentes des packages) : CREATE/OPEN
+sur fichier déjà ouvert → STATUS_ERROR ; échec d'OPEN → NAME_ERROR ;
+CLOSE/DELETE sur fichier fermé → STATUS_ERROR.
 
-Fichier `point_direct.dat` après 4 writes (hexdump vérifié) :
+### SEQ_IO_TEST v2 (refonte auto-jugeante, 9 juillet 2026, 50 assertions)
+
+Jumeau séquentiel de DIRECT_IO_TEST v2, mêmes trois instances.
+S1-S3 roundtrips par égalité composite + IS_OPEN/MODE + END_OF_FILE
+après le dernier élément ; S4 boucle `while not END_OF_FILE` (idiome
+sûr, positions exactes) ; S5 RESET : rembobinage simple puis RESET avec
+changement de mode (IN → OUT → IN) en réécriture COMPLÈTE des 5 éléments
+en ordre inverse — délibérément indépendant de la sémantique de
+troncature de RESET(OUT_FILE), non arbitrée (le corps fait lseek 0 sans
+troncature) ; S6 exceptions : END_ERROR (lecture après le dernier
+élément, **élément tronqué** — verrou du fossile n° 80), MODE_ERROR
+(READ sur OUT, END_OF_FILE sur OUT, WRITE sur IN), STATUS_ERROR
+(READ/RESET/MODE sur fichier fermé) ; S7 DELETE jugé par échec de
+re-OPEN (NAME_ERROR accepté d'avance, dette 14.2.1).
+Crée et supprime ses fichiers *_seq.dat et scratch_seq.dat.
+Dernières lignes exactes :
 ```
-0001 0000  0002 0000  0003 0000   → X=1,  Y=2,  Z=3   (P1)
-0010 0000  0020 0000  0040 0000   → X=16, Y=32, Z=64  (P2)
-fffb ffff  0000 0000  0063 0000   → X=-5, Y=0,  Z=99  (P3)
-002a 0000  ffff ffff  0007 0000   → X=42, Y=-1, Z=7   (P4)
+RESULTAT :  50 OK,   0 ECHECS
+SEQ_IO_TEST PASSE
 ```
-
-Note : agrégats nommés en position de paramètre (`(X=>777,Y=>888,Z=>999)`)
-non encore compilables — contournement par variable intermédiaire déclarée
-dans un bloc `declare`.
-
-### SEQ_IO_TEST (session 10 mai (3), tous types)
-
-```
-=== 1. COULEUR (énuméré, 8 bits) ===   5 writes, 3 reads seq, ok
-=== 2. POINT (record 3 INTEGER) ===    3 writes, 3 reads seq, ok
-=== 3. VECTEUR (array 1..4 INTEGER) == 3 writes, 3 reads seq, ok
-=== 4. END_OF_FILE + boucle ===        EOF=FALSE au début, boucle 3 éléments, EOF=TRUE après, ok
-=== 5. RESET ===                       relecture depuis le début après RESET, ok
-=== 6. IS_OPEN ===                     FALSE après CLOSE, TRUE après OPEN, ok
-=== 7. MODE ===                        IN_FILE et OUT_FILE corrects (CREATE pour OUT_FILE), ok
-=== 8. DELETE ===                      4 fichiers supprimés, ok
-```
-
+Oracle du filet = la ligne `SEQ_IO_TEST PASSE`. Vert intégral le
+9 juillet 2026 (au premier passage).
+Même dette 14.2.1 non assertée que DIRECT_IO_TEST v2.
 
 ### ARRAY_TEST1 v2 (pilier 3.6, sessions 4–5 juillet, 9 sections)
 
@@ -139,6 +151,12 @@ en totalité**. Série **A8 : 17 tests verts**, échecs restants consignés
 cf. point de méthode du 4 juillet). Auto-compilation : verte après lot D2
 (les comparaisons STRING du compilateur passaient auparavant par le stub).
 
+- **Série ACVC a8** : verte le 9 juillet (2) à l'exception d'A87B59A
+  (assemble, segfaut d'exécution — dette « actuels génériques
+  non-sous-programmes », voir ETAT_PILIERS). A83009A/B (BLOC_DEF sous
+  garde), A85013B (renamings), A83C01G (préfixe package) sont les
+  verrous des pièges n° 81-82, 85-87.
+  
 ### RECORD_TEST1 (pilier 3.7, lot R-A) 
 — sortie attendue intégrale :
 R1 `5 30 9` ; R2 `3 7` ; R3 `42 43 0 2` ; R4 `200 VRAI FAUX` ;
@@ -241,4 +259,3 @@ Oracle du filet = la ligne `OUTARG1 PASSE`.
 Sonde de bisection à marqueurs séquentiels P00..P20 sur la séquence
 écriture → CLOSE → OPEN → relecture. Pas d'oracle : outil de diagnostic à
 ressortir quand un chemin d'E/S neuf s'ouvre (piège n° 78).
-

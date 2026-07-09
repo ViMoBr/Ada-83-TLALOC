@@ -1,15 +1,15 @@
 ------------------------------------------------------------------------------------------------------------------------
--- SPDX-FileCopyrightText: 2026 VINCENT	MORIN, UBO
+-- SPDX-FileCopyrightText: 2026 VINCENT MORIN, UBO
 -- SPDX-License-Identifier: GPL-3.0-or-later
 ------------------------------------------------------------------------------------------------------------------------
 --	1	2	3	4	5	6	7	8	9	0	1	2
 
 with TEXT_IO;
 use  TEXT_IO;
-with IDL;					--| LA VERSION ADAPTÉE À LA GESTION DES	STRUCTURES DE GRAMMAIRE LALR
+with IDL;					--| LA VERSION ADAPTÉE À LA GESTION DES STRUCTURES DE GRAMMAIRE LALR
 --|-------------------------------------------------------------------------------------------------
 --|	LALR_TOOLS
-procedure	LALR_TOOLS is
+procedure LALR_TOOLS is
 
   C	: CHARACTER;
   L	: NATURAL;
@@ -33,18 +33,18 @@ begin
     NEW_LINE;
     PUT_LINE ( "QUITTER ................. Q" );
     NEW_LINE;
-    PUT (	"     CHOIX : " ); GET_LINE (	CMD, L );
+    PUT ( "     CHOIX : " ); GET_LINE ( CMD, L );
     C := CMD( 1 );
     NEW_LINE;
 
     case C is
     when 'R' | 'O' | 'I' | 'E' | 'L' | 'V' | 'B' | 'P' =>
-      PUT	( "NOM DE TEXTE : "	); GET_LINE ( CMD, L );
+      PUT ( "NOM DE TEXTE : " ); GET_LINE ( CMD, L );
       NEW_LINE;
     when 'Q' =>
       exit;
     when others =>
-      PUT	( " ?! COMMANDE INCOMPRISE" );
+      PUT ( " ?! COMMANDE INCOMPRISE" );
       goto FIN_TRAITEMENT;
     end case;
 
@@ -53,25 +53,25 @@ begin
       goto FIN_TRAITEMENT;
     end if;
 
-    PUT_LINE ( "---------- READ_GRMR ----------" );   IDL.READ_GRMR (	CMD( 1..L	) );
-    if C = 'R' then	goto FIN_TRAITEMENT; end if;
+    PUT_LINE ( "---------- READ_GRMR ----------" );   IDL.READ_GRMR ( CMD( 1..L ) );
+    if C = 'R' then goto FIN_TRAITEMENT; end if;
 
-    PUT_LINE ( "---------- OPTR_GRMR ----------" );   IDL.OPTR_GRMR (	CMD( 1..L	) );
-    if C = 'O' then	goto FIN_TRAITEMENT; end if;
+    PUT_LINE ( "---------- OPTR_GRMR ----------" );   IDL.OPTR_GRMR ( CMD( 1..L ) );
+    if C = 'O' then goto FIN_TRAITEMENT; end if;
 
-    PUT_LINE ( "---------- INIT_GRMR ----------" );   IDL.INIT_GRMR (	CMD( 1..L	) );
-    if C = 'I' then	goto FIN_TRAITEMENT; end if;
+    PUT_LINE ( "---------- INIT_GRMR ----------" );   IDL.INIT_GRMR ( CMD( 1..L ) );
+    if C = 'I' then goto FIN_TRAITEMENT; end if;
 
-    PUT_LINE ( "---------- STAT_GRMR ----------" );   IDL.STAT_GRMR (	CMD( 1..L	) );
-    if C = 'E' then	goto FIN_TRAITEMENT; end if;
+    PUT_LINE ( "---------- STAT_GRMR ----------" );   IDL.STAT_GRMR ( CMD( 1..L ) );
+    if C = 'E' then goto FIN_TRAITEMENT; end if;
 
-    PUT_LINE ( "---------- LALR_GRMR ----------" );   IDL.LALR_GRMR (	CMD( 1..L	) );
-    if C = 'L' then	goto FIN_TRAITEMENT; end if;
+    PUT_LINE ( "---------- LALR_GRMR ----------" );   IDL.LALR_GRMR ( CMD( 1..L ) );
+    if C = 'L' then goto FIN_TRAITEMENT; end if;
 
-    PUT_LINE ( "---------- CHECK_GRMR ----------"	);  IDL.CHECK_GRMR ( CMD( 1..L ) );
-    if C = 'V' then	goto FIN_TRAITEMENT; end if;
+    PUT_LINE ( "---------- CHECK_GRMR ----------" );  IDL.CHECK_GRMR ( CMD( 1..L ) );
+    if C = 'V' then goto FIN_TRAITEMENT; end if;
 
-    PUT_LINE ( "---------- LOAD_GRMR ----------" );   IDL.LOAD_GRMR (	CMD( 1..L	) );
+    PUT_LINE ( "---------- LOAD_GRMR ----------" );   IDL.LOAD_GRMR ( CMD( 1..L ) );
 
 <<FIN_TRAITEMENT>>
     NEW_LINE;

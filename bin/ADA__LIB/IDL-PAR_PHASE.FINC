@@ -145,14 +145,8 @@ BEGIN_BLOC_DEF
 db 0, 9, "NODE_ELMT"
 db 1, 10, "TOKEN_ELMT"
 db 2, 9, "LIST_ELMT"
-END_BLOC_DEF
-IMAGES	BYTES_BLOC
-CST LST, d, 2
-CST FST, d, 0
-CST SIZ, d, 8	; SIZ en bits !
-postpone
-  align_q
-end postpone
+END_BLOC_DEF 8, 0, 2
+	; SIZ en bits !
 	LCA	SIZ
 	Sa	1, use__info
 end namespace
@@ -336,6 +330,7 @@ L9:
 endPRO
 	VAR SELARG_L16_disp, q
 	VAR SELARG_L16__u, q
+	La 0, STANDARD.GRMR_TBL.GRMR_disp
 	Sa	3, SELARG_L16_disp
 	La 0, STANDARD.GRMR_TBL._GRMR_TBL_RECORD.use__info
 	Sa	3, SELARG_L16__u
@@ -1485,6 +1480,7 @@ VAR	ANON_297_32__dat, STANDARD.IDL._TREE.size
 	LI	15
 	BFI
 					; pack LN range 2 .. 8 width 7
+	La 0, STANDARD.GRMR_TBL.GRMR_disp
 	LVA	, STANDARD.GRMR_TBL._GRMR_TBL_RECORD.AC_TBL
 ; EXPRESSIONS.CODE_INDEXED adresse component id
 	LId  2,	-AP_ofs
@@ -4857,6 +4853,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	LI	0
 	Sd  1,	SSITOP_disp
 LOOP__9:
+	La 0, STANDARD.GRMR_TBL.GRMR_disp
 	LVA	, STANDARD.GRMR_TBL._GRMR_TBL_RECORD.ST_TBL
 ; EXPRESSIONS.CODE_INDEXED adresse component id
 	Ld 2,	STATE_disp
@@ -4880,6 +4877,7 @@ LOOP__9:
 	BRA	L281
 L282:
 LOOP__10:
+	La 0, STANDARD.GRMR_TBL.GRMR_disp
 	LVA	, STANDARD.GRMR_TBL._GRMR_TBL_RECORD.AC_SYM
 ; EXPRESSIONS.CODE_INDEXED adresse component id
 	Ld 2,	AP_disp
@@ -4910,6 +4908,7 @@ L285:
 	Sd  2,	AP_disp
 	BRA	LOOP__10
 L283:					; post loop LOOP__10
+	La 0, STANDARD.GRMR_TBL.GRMR_disp
 	LVA	, STANDARD.GRMR_TBL._GRMR_TBL_RECORD.AC_TBL
 ; EXPRESSIONS.CODE_INDEXED adresse component id
 	Ld 2,	AP_disp
@@ -5660,6 +5659,7 @@ LOOP__11:
 	NEG
 	Sd  2,	AP_disp
 LOOP__12:
+	La 0, STANDARD.GRMR_TBL.GRMR_disp
 	LVA	, STANDARD.GRMR_TBL._GRMR_TBL_RECORD.AC_TBL
 ; EXPRESSIONS.CODE_INDEXED adresse component id
 	Ld 2,	AP_disp
@@ -5898,6 +5898,7 @@ L326:
 	BRA	L324
 L325:
 L324:					; post if
+	La 0, STANDARD.GRMR_TBL.GRMR_disp
 	LVA	, STANDARD.GRMR_TBL._GRMR_TBL_RECORD.ST_TBL
 ; EXPRESSIONS.CODE_INDEXED adresse component id
 	Ld 2,	STATE_disp
@@ -5916,6 +5917,7 @@ LOOP__13:
 	LI	1
 	SUB
 	Sd  2,	AP_disp
+	La 0, STANDARD.GRMR_TBL.GRMR_disp
 	LVA	, STANDARD.GRMR_TBL._GRMR_TBL_RECORD.AC_SYM
 ; EXPRESSIONS.CODE_INDEXED adresse component id
 	Ld 2,	AP_disp
@@ -5949,6 +5951,7 @@ L336:					; post if
 	BT	L335
 	BRA	LOOP__13
 L335:					; post loop LOOP__13
+	La 0, STANDARD.GRMR_TBL.GRMR_disp
 	LVA	, STANDARD.GRMR_TBL._GRMR_TBL_RECORD.AC_TBL
 ; EXPRESSIONS.CODE_INDEXED adresse component id
 	Ld 2,	AP_disp
@@ -6295,6 +6298,7 @@ namespace ANON_796_25_L350_G_info
   VAR _FST_1,    d
   VAR _LST_1,    d
 end namespace
+	La 0, STANDARD.IDL.LIB_PATH_disp
 	Ld 0,	STANDARD.IDL.LIB_PATH_LENGTH_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1

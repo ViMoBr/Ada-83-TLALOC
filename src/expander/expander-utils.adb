@@ -492,6 +492,40 @@ is					-----
   end	STORE;
 	-----
 
+
+		--^^^^^^^^^^^^^^^^^--
+  function	  SUBPROGRAM_ORIGIN		( DEFN :TREE )	return TREE
+  is		---------------------
+		-- LRM 8.5 : un renames de sous-programme ne declare pas un
+		-- nouveau corps -- l'appel vise l'ORIGINE.  On suit la chaine
+		-- SM_UNIT_DESC = DN_RENAMES_UNIT jusqu'au premier id porteur
+		-- d'un vrai corps.  Meme prudence que EXCEPTION_ID_OF : la
+		-- representation reelle est a confirmer au dump.
+    RESULT	: TREE	:= DEFN;
+
+  begin
+    loop
+      declare
+        UD	: TREE	:= D( SM_UNIT_DESC, RESULT );
+      begin
+        exit when  UD = TREE_VOID  or else  UD = TREE_NIL
+	or else  UD.TY /= DN_RENAMES_UNIT;
+
+        declare
+	NAME	: TREE	:= D( AS_NAME, UD );
+        begin
+	while  NAME.TY = DN_SELECTED  loop
+	  NAME := D( AS_DESIGNATOR, NAME );
+	end loop;
+	RESULT := D( SM_DEFN, NAME );
+        end;
+      end;
+    end loop;
+    return  RESULT;
+
+end	SUBPROGRAM_ORIGIN;
+	-----------------
+
 			--^^^--
   procedure		EXC_POP
   is			-------									-- PILIER 11 : EXC_TOP := EXC_TOP.PREV_CTX
@@ -597,6 +631,18 @@ is					-----
 
       if	REGION.TY	= DN_PROCEDURE_ID  or  REGION.TY = DN_FUNCTION_ID  then
         PUT( '_' & LABEL_STR(	LABEL_TYPE( DI( CD_LABEL, REGION ) ) ) );
+
+      elsif  REGION.TY = DN_GENERIC_ID  and then
+		( D( SM_SPEC, REGION ).TY = DN_PROCEDURE_SPEC  or  D( SM_SPEC, REGION ).TY = DN_FUNCTION_SPEC )
+      then
+		-- Region = generique de SOUS-PROGRAMME : le namespace physique
+		-- est le PRO du corps, au nom etiquete, mais generic_id ne porte
+		-- pas CD_LABEL (schema DIANA).  Le label est sur l'AS_SOURCE_NAME
+		-- du corps -- pose par CODE_SUBPROGRAM_BODY.  Lien verifie au
+		-- dump (MINIG) : XD_BODY, et non SM_BODY (absent du dump).
+		-- Les generiques de PACKAGE gardent leur namespace NON etiquete.
+        PUT( '_' & LABEL_STR( LABEL_TYPE( DI( CD_LABEL, D( AS_SOURCE_NAME, D( XD_BODY, REGION ) ) ) ) ) );
+
       end	if;
       if	WITH_DOT	then PUT(	'.' ); end if;
 

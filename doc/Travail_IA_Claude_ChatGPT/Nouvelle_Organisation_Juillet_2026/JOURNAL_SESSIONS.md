@@ -633,3 +633,118 @@ END_OF_FILE/END_OF_PAGE à un caractère d'anticipation ne voient pas à
 travers les terminateurs (remède commun avec l'aliasing des copies
 FILE_TYPE : futur chantier « descripteur partagé à tampon », non
 planifié).
+
+## Session 9 juillet 2026 — fossile n° 80 (slot résultat en corps générique) ; témoins DIRECT_IO/SEQUENTIAL_IO auto-jugeants
+
+Tri du reliquat `EXCEPTION NON RATTRAPEE : END_ERROR` du filet du
+7 juillet (DIRECT_IO_TEST/SEQ_IO_TEST) : défaut réel de bibliothèque,
+pas idiome de témoin — le point de chute était le premier READ après
+réouverture, sa garde `BYTES_READ < SIZE_BYTES` armée par le pilier 11.
+Cause : les 4 wrappers syscall à 3 paramètres (READ_SYSTEM_CALL ×2,
+WRITE_SYSTEM_CALL ×2) de chacun des deux paquetages stockaient le retour
+du syscall par `SD -32` — le slot GFP_ofs — au lieu de `-40`, le vrai
+result__ofs (-8(N+2), le PRM GFP_ofs s'intercalant en corps générique ;
+piège n° 80). BYTES_READ recevait la valeur résiduelle du slot -40
+jamais écrit → END_ERROR spurieux ; les données étaient pourtant
+correctement lues depuis l'origine, et côté WRITE le clobber était
+masqué (ERR_CODE inutilisé, frame aussitôt mort). Les wrappers à 1 et
+2 paramètres étaient justes — la table de contrôle des SD par arité
+(1→-24, 2→-32, 3→-40) a fait le diagnostic. Correctif appliqué à la
+main par le mainteneur dans les deux corps (8 SD au total).
+
+Refonte des deux témoins au format canonique du 5 juillet :
+DIRECT_IO_TEST v2 (65 assertions — SIZE/INDEX/MODE/IS_OPEN assertés,
+extension par WRITE positionné au-delà de la fin, élément tronqué,
+MODE_ERROR ×3, STATUS_ERROR ×3, DELETE ressuscité jugé par échec de
+re-OPEN) et SEQ_IO_TEST v2 (50 assertions — RESET avec changement de
+mode en réécriture complète inversée, indépendante de la sémantique de
+troncature non arbitrée ; jumeau de l'élément tronqué). Verts au premier
+passage. Les §8.3/§6.2 (élément tronqué : fichier de 5 octets ouvert par
+l'instance POINT, lecture partielle non nulle) sont les verrous exacts
+de la branche du fossile.
+
+Au passage, tri d'un faux piège : le « DESACCORD DE TYPE » du frontend
+sur `MODE(F) = IN_FILE` hors clause use est CONFORME (LRM 8.4(5),
+l'égalité de FILE_MODE est déclarée dans l'instance ; c'est la plaie qui
+a motivé `use type` en Ada 95) — idiome `declare use` consigné en
+convention. Signal utile pour le tri A8 à venir : le frontend applique
+strictement les règles de visibilité.
+
+Dette 14.2.1 des deux paquetages consignée (gardes CREATE/OPEN déjà
+ouvert, échec d'OPEN → NAME_ERROR, CLOSE/DELETE fermé → STATUS_ERROR,
+sur le modèle du lot TEXT_IO du 8 juillet) ; les témoins acceptent déjà
+le régime futur (handlers NAME_ERROR d'avance en S9/S7).
+
+**Clôture** : DIRECT_IO_TEST v2 65/65, SEQ_IO_TEST v2 50/50 ; filet
+complet + tag git.
+
+## Session 9 juillet 2026 (2) — série ACVC a8 : quatre erreurs, deux segfaults, refonte BLOC_DEF
+
+Tri des quatre échecs de la série a8 (A83009A/B, A85013B, A87B59A), puis
+deux segfaults repérés après coup dans le flux (A83C01G, A87B59A), puis
+le problème fasmg de fond commun aux A83009x.
+
+**A83009B** : PROGRAM_ERROR idl_man sur générique SANS formels
+(`GENERIC PROCEDURE P;` légal) — POP inconditionnel en tête de
+CODE_GENERIC_FRAME_OFFSETS, la garde IS_EMPTY ne protégeait que la
+récursion (piège n° 81). Le bloc `virtual at 8` n'est plus émis si vide.
+
+**A85013B** : appel à travers une chaîne de renamings
+(PROC3 renames PROC2 renames PROC1). Un renaming n'a pas de corps ;
+SUBPROGRAM_ORIGIN (expander-utils) suit SM_UNIT_DESC = DN_RENAMES_UNIT
+maillon par maillon — le dump a confirmé AS_NAME.SM_DEFN lien à lien,
+pas de raccourci sem, et l'arrêt sur SM_UNIT_DESC void. Nom, label ET
+chemin de région doivent tous venir de l'origine — l'oubli du nom a
+produit l'hybride PROC3_L7 en cours de route (piège n° 82). Les défauts
+du profil du renaming étaient déjà justes (SM_NORMALIZED_PARAM_S).
+
+**A87B59A structurel**, deux étages : (1) l'assemblage paresseux n'est
+armé que par CALL — un actuel générique sous-programme jamais appelé
+directement laissait son corps non assemblé (`LCA F1_L11.elab` sans
+garde) ; macro LSPA ajoutée au codi, émission par ACTUAL_SUBPROGRAM avec
+REGIONS_PATH (piège n° 83). (2) REGIONS_PATH à travers une région
+générique : generic_id ne porte pas CD_LABEL au schéma, le namespace
+physique est le PRO étiqueté du corps ; dump MINIG à l'appui
+(XD_REGION des locaux = le GENERIC_ID ; label via XD_BODY →
+AS_SOURCE_NAME — XD_BODY, pas SM_BODY, absent du dump). Correctif
+systémique dans REGIONS_PATH + nom relatif pour les locaux du frame
+courant au site BLKMOV (piège n° 84).
+
+**A83C01G (segfault)** : composants de record homonymes de packages —
+CODE_SELECTED ne poussait jamais la base d'une variable COMPOSITE
+nommée à travers un préfixe package (PACK1.ARG1.champs) ; les
+LVA ,offset s'additionnaient sur pile vide. Base poussée par
+La lvl + REGIONS_PATH + _disp (piège n° 85, jumeaux non exercés
+consignés).
+
+**A87B59A (segfault)** : TRIAGE, pas correctif — trois familles
+d'actuels génériques sans convention d'exécution : littéral
+d'énumération comme fonction (bloc C/F : position stockée en F_disp,
+corps partagé CALLI sur F__call_ofs jamais écrit), opérateur prédéfini
+(bloc E/F : VAR sans store ; "&" STRING = le morceau dur), entrée de
+tâche (bloc D : pilier tasking absent). Dette consignée, thunk littéral
+identifié comme seule pièce détachable. Le bloc E ne survit que parce
+que le corps partagé INLINE l'opérateur (ADD) — faux pour l'instance à
+"+" utilisateur, dette corollaire.
+
+**Refonte BLOC_DEF** (A83009A/B) : la split-macro struc/esc/postpone
+avec END_BLOC_DEF « ! » était structurellement condamnée — le « ! »
+est indispensable pendant la capture et fatal dans un `if defined`
+faux, exigences irréconciliables (piège n° 86). Au passage, mea culpa
+instructif : « aucun consommateur d'IMAGES » au grep symbolique — faux,
+TEXT_IO.ENUMERATION_IO lit le doublet images par OFFSET (LIVa
+__u+16), contrat d'adjacence construit par l'ordre LIFO des postpones
+(piège n° 87). Nouveau schéma : données inline sautées par BRA (pattern
+des thunks), noms fixes IMAGES.* dans le namespace du type,
+END_BLOC_DEF siz,fst,lst pose le layout ENUM_USE_INFO étendu EN CLAIR
+(SIZ@0, FST@+4, LST@+8, doublet@+16) ; plus de struc BYTES_BLOC, de
+CST ni de postpone dans ce chemin. CODE_ENUMERATION_DECL adapté.
+Première formulation locale/match fautive (« :skip » indéfini),
+remplacée par les noms fixes — l'unicité vient du namespace.
+
+**Clôture** : ENUM_TEST 41 OK + console (gardien du contrat),
+série a8 verte sauf A87B59A (exécution, triage actuels génériques),
+non-régression complète. Patchs : expander-structures,
+expander-instructions, expander-expressions, expander-utils,
+expander-declarations, types_decls, codi_x86_64.finc, _STANDRD.FINC
+régénéré.

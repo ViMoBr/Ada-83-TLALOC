@@ -146,17 +146,13 @@ is
 
     PUT_LINE( "BEGIN_BLOC_DEF" );
     CODE_ENUM_LITERAL_S( D( SM_LITERAL_S, TYPE_SPEC ) );
-    PUT_LINE( "END_BLOC_DEF" );
-    PUT_LINE( "IMAGES" & ASCII.HT & "BYTES_BLOC" );
+    PUT_LINE( "END_BLOC_DEF "
+	    & IMAGE( DI( CD_IMPL_SIZE, TYPE_SPEC ) ) & ','
+	    & INTEGER'IMAGE( MIN_REP ) & ','
+	    & INTEGER'IMAGE( MAX_REP ) );
 
-    PUT_LINE( "CST " & "LST, d," & INTEGER'IMAGE(	MAX_REP )	);
-    PUT_LINE( "CST " & "FST, d," & INTEGER'IMAGE(	MIN_REP )	);
-    PUT	  ( "CST " & "SIZ, d," & INTEGER'IMAGE(	DI( CD_IMPL_SIZE, TYPE_SPEC )	) );
     if  CODI.DEBUG	then PUT(	ASCII.HT & "; SIZ en bits !" ); end if;
     NEW_LINE;
-    PUT_LINE( "postpone" );
-    PUT_LINE( "  align_q" );										-- Assurer  l'alignement de départ de tout le bloc
-    PUT_LINE( "end postpone" );
 
     PUT_LINE( tab & "LCA" & tab & "SIZ" );
     PUT_LINE( tab &	"Sa" & tab & IMAGE( CODI.CUR_LEVEL ) & ", use__info" );

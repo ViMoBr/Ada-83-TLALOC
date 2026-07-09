@@ -959,120 +959,129 @@ end if;
         DESIGNATOR_LEVEL	: INTEGER;
 
       begin
-	if  DESIGNATOR_DEFN.TY = DN_VARIABLE_ID	 then
-	  if  D( SM_EXP_TYPE, DESIGNATOR ).TY in CLASS_SCALAR  then
-	    DESIGNATOR_LEVEL := DI( CD_LEVEL, DESIGNATOR_DEFN );
-	    PUT_LINE( tab &	"L" & OPER_SIZ_CHAR( D( SM_EXP_TYPE, DESIGNATOR ) )
+        if  DESIGNATOR_DEFN.TY = DN_VARIABLE_ID	 then
+	if  D( SM_EXP_TYPE, DESIGNATOR ).TY in CLASS_SCALAR  then
+	  DESIGNATOR_LEVEL := DI( CD_LEVEL, DESIGNATOR_DEFN );
+	  PUT_LINE( tab &	"L" & OPER_SIZ_CHAR( D( SM_EXP_TYPE, DESIGNATOR ) )
 			& tab & IMAGE( DESIGNATOR_LEVEL ) & ", " & DESIGNATOR_STR  );
-	  end if;
+	else
+		-- Variable COMPOSITE nommee a travers un prefixe package
+		-- (PACK1.ARG1.<champs>) : pousser le data_ptr, base de la
+		-- chaine de selection.  Chemin absolu obligatoire : la
+		-- variable vit dans le namespace du package, la reference
+		-- vient d'ailleurs.
+	  PUT( tab & "La " & IMAGE( DI( CD_LEVEL, DESIGNATOR_DEFN ) ) & ", " );
+	  REGIONS_PATH( DESIGNATOR_DEFN );
+	  PUT_LINE( DESIGNATOR_STR & "_disp" );
+	end if;
 
-	elsif  DESIGNATOR_DEFN.TY = DN_COMPONENT_ID  or else  DESIGNATOR_DEFN.TY = DN_DISCRIMINANT_ID  then
+        elsif  DESIGNATOR_DEFN.TY = DN_COMPONENT_ID  or else  DESIGNATOR_DEFN.TY = DN_DISCRIMINANT_ID  then
 
-	  if  IS_SOURCE  and then  REPRESENTED_ITEMS.HAS_COMPONENT_REP( DESIGNATOR_DEFN )  then
+	if  IS_SOURCE  and then  REPRESENTED_ITEMS.HAS_COMPONENT_REP( DESIGNATOR_DEFN )  then
 
-	    if  NAME.TY = DN_USED_OBJECT_ID  then
+	  if  NAME.TY = DN_USED_OBJECT_ID  then
 
-	      if  D( SM_DEFN, NAME ).TY in CLASS_PARAM_NAME  then
+	    if  D( SM_DEFN, NAME ).TY in CLASS_PARAM_NAME  then
 	        -- Paramètre composite : le paramètre contient l'adresse
 	        -- du doublet {data_ptr,use_info_ptr}.
-	        PUT_LINE( tab & "La " & IMAGE( DI( CD_LEVEL, D( SM_DEFN, NAME ) ) ) & ", "
+	      PUT_LINE( tab & "La " & IMAGE( DI( CD_LEVEL, D( SM_DEFN, NAME ) ) ) & ", "
 			& '-' & PRINT_NAME( D( LX_SYMREP, NAME ) ) & "_ofs" );
 
 	        -- Extraction de data_ptr depuis le doublet.
-	        PUT_LINE( tab & "La" & tab & "-1, 0" );
-
-	      else
-	        -- Objet record autonome : NAME_disp contient directement
-	        -- le pointeur vers les données.
-	        PUT_LINE( tab & "La" & tab & IMAGE( DI( CD_LEVEL, D( SM_DEFN, NAME ) ) ) & ", "
-			& PRINT_NAME( D( LX_SYMREP, NAME ) ) & "_disp" );
-	      end if;
+	      PUT_LINE( tab & "La" & tab & "-1, 0" );
 
 	    else
+	        -- Objet record autonome : NAME_disp contient directement
+	        -- le pointeur vers les données.
+	      PUT_LINE( tab & "La" & tab & IMAGE( DI( CD_LEVEL, D( SM_DEFN, NAME ) ) ) & ", "
+			& PRINT_NAME( D( LX_SYMREP, NAME ) ) & "_disp" );
+	    end if;
+
+	  else
 	      -- NAME est déjà un préfixe composite calculé par :
 	      --   RECURSE_SELECTED(NAME)
 	      -- ou
 	      --   CODE_INDEXED(NAME)
 	      --
 	      -- Dans ce cas l'adresse des données est déjà au sommet de pile.
-	      null;
-	    end if;
-
-	    REPRESENTED_ITEMS.CODE_LOAD_REP_COMPONENT( DESIGNATOR_DEFN );
-	    return;
+	    null;
 	  end if;
 
-	  if  NAME.TY = DN_USED_OBJECT_ID  then
+	  REPRESENTED_ITEMS.CODE_LOAD_REP_COMPONENT( DESIGNATOR_DEFN );
+	  return;
+	end if;
 
-	    if  D( SM_DEFN,	NAME ).TY	in  CLASS_PARAM_NAME  then
-	      PUT_LINE( tab	& "La "
+	if  NAME.TY = DN_USED_OBJECT_ID  then
+
+	  if  D( SM_DEFN,	NAME ).TY	in  CLASS_PARAM_NAME  then
+	    PUT_LINE( tab	& "La "
 		& IMAGE( DI( CD_LEVEL, D( SM_DEFN, NAME	) ) ) & ", "
 		& '-' & PRINT_NAME(	D(LX_SYMREP, NAME )	) & "_ofs" );
 
-	      if	( D( SM_EXP_TYPE, DESIGNATOR ).TY in CLASS_SCALAR
+	    if  ( D( SM_EXP_TYPE, DESIGNATOR ).TY in CLASS_SCALAR
 			  or else D( SM_EXP_TYPE, DESIGNATOR ).TY = DN_ACCESS )
 			  and  IS_SOURCE  then
-	        PUT( tab & "LI" & OPER_SIZ_CHAR( D( SM_EXP_TYPE, DESIGNATOR )	) );
-
-	      else
-	        PUT( tab & "LIVA " );
-	      end	if;
-
-	      PUT( tab & ", 0, " );
-	      REGIONS_PATH(	DESIGNATOR_DEFN );
-	      PUT_LINE( DESIGNATOR_STR );
+	      PUT( tab & "LI" & OPER_SIZ_CHAR( D( SM_EXP_TYPE, DESIGNATOR )	) );
 
 	    else
-	      if	( D( SM_EXP_TYPE, DESIGNATOR ).TY in CLASS_SCALAR
-			  or else D( SM_EXP_TYPE, DESIGNATOR ).TY = DN_ACCESS )
-			  and  IS_SOURCE  then
-	        PUT( tab & "LI" & OPER_SIZ_CHAR( D( SM_EXP_TYPE, DESIGNATOR )	) );
-	      else
-	        PUT( tab & "LIVA " );
-	      end	if;
+	      PUT( tab & "LIVA " );
+	    end	if;
 
-	      PUT( tab & IMAGE( DI( CD_LEVEL, D( SM_DEFN,	NAME ) ) ) & ", " );
-	      PUT( PRINT_NAME( D(LX_SYMREP, NAME ) ) & "_disp, " );
-	      REGIONS_PATH(	DESIGNATOR_DEFN );
-	      PUT_LINE( DESIGNATOR_STR );
-
-	    end if;
+	    PUT( tab & ", 0, " );
+	    REGIONS_PATH(	DESIGNATOR_DEFN );
+	    PUT_LINE( DESIGNATOR_STR );
 
 	  else
-	    -- NAME est une expression composite resolue en adresse directe sur la pile
-	    if  ( D( SM_EXP_TYPE, DESIGNATOR ).TY in CLASS_SCALAR
-		   or else D( SM_EXP_TYPE, DESIGNATOR ).TY = DN_ACCESS )
-		   and  IS_SOURCE  then
-	      -- Champ scalaire terminal : load direct depuis l'adresse en sommet de pile
-	      PUT( tab & "L" & OPER_SIZ_CHAR( D( SM_EXP_TYPE, DESIGNATOR ) ) );
-	      PUT( tab & ", " );
-	      REGIONS_PATH( DESIGNATOR_DEFN );
-	      PUT_LINE( DESIGNATOR_STR );
+	    if	( D( SM_EXP_TYPE, DESIGNATOR ).TY in CLASS_SCALAR
+			  or else D( SM_EXP_TYPE, DESIGNATOR ).TY = DN_ACCESS )
+			  and  IS_SOURCE  then
+	      PUT( tab & "LI" & OPER_SIZ_CHAR( D( SM_EXP_TYPE, DESIGNATOR )	) );
 	    else
-	      -- Champ composite : calculer l'adresse pour sélection ultérieure
-	      PUT( tab & "LVA" & tab & ", " );
-	      REGIONS_PATH( DESIGNATOR_DEFN );
-	      PUT_LINE( DESIGNATOR_STR );
-	    end if;
+	      PUT( tab & "LIVA " );
+	    end	if;
+
+	    PUT( tab & IMAGE( DI( CD_LEVEL, D( SM_DEFN,	NAME ) ) ) & ", " );
+	    PUT( PRINT_NAME( D(LX_SYMREP, NAME ) ) & "_disp, " );
+	    REGIONS_PATH(	DESIGNATOR_DEFN );
+	    PUT_LINE( DESIGNATOR_STR );
 
 	  end if;
 
-	elsif  DESIGNATOR_DEFN.TY = DN_CONSTANT_ID
+	else
+	    -- NAME est une expression composite resolue en adresse directe sur la pile
+	  if  ( D( SM_EXP_TYPE, DESIGNATOR ).TY in CLASS_SCALAR
+		   or else D( SM_EXP_TYPE, DESIGNATOR ).TY = DN_ACCESS )
+		   and  IS_SOURCE  then
+	      -- Champ scalaire terminal : load direct depuis l'adresse en sommet de pile
+	    PUT( tab & "L" & OPER_SIZ_CHAR( D( SM_EXP_TYPE, DESIGNATOR ) ) );
+	    PUT( tab & ", " );
+	    REGIONS_PATH( DESIGNATOR_DEFN );
+	    PUT_LINE( DESIGNATOR_STR );
+	  else
+	      -- Champ composite : calculer l'adresse pour sélection ultérieure
+	    PUT( tab & "LVA" & tab & ", " );
+	    REGIONS_PATH( DESIGNATOR_DEFN );
+	    PUT_LINE( DESIGNATOR_STR );
+	  end if;
+
+	end if;
+
+        elsif  DESIGNATOR_DEFN.TY = DN_CONSTANT_ID
 		or  DESIGNATOR_DEFN.TY = DN_NUMBER_ID
 		or  DESIGNATOR_DEFN.TY = DN_ENUMERATION_ID
-	then
-	  PUT_LINE( tab & "LI" & tab & PRINT_NUM( D( SM_VALUE, DESIGNATOR ) )	);
+          then
+	PUT_LINE( tab & "LI" & tab & PRINT_NUM( D( SM_VALUE, DESIGNATOR ) )	);
 
-	elsif  DESIGNATOR_DEFN.TY = DN_FUNCTION_ID
+        elsif  DESIGNATOR_DEFN.TY = DN_FUNCTION_ID
 	then
-	  PUT( tab & "LI" & tab &	"0" );
-	  if	CODI.DEBUG  then  PUT( tab50 & "; lieu resultat sur pile" ); end if;
-	  NEW_LINE;
-	  INSTRUCTIONS.CODE_PROCEDURE_CALL(	CONTEXT, DESIGNATOR );
+	PUT( tab & "LI" & tab &	"0" );
+	if CODI.DEBUG  then  PUT( tab50 & "; lieu resultat sur pile" ); end if;
+	NEW_LINE;
+	INSTRUCTIONS.CODE_PROCEDURE_CALL(	CONTEXT, DESIGNATOR );
 
-	else
-	  PUT_LINE( "; CODE_SELECTED.RECURSE_SELECTED DESIGNATOR.TY PAS FAIT: " & NODE_NAME'IMAGE( DESIGNATOR_DEFN.TY	) );
-	end if;
+        else
+	PUT_LINE( "; CODE_SELECTED.RECURSE_SELECTED DESIGNATOR.TY PAS FAIT: " & NODE_NAME'IMAGE( DESIGNATOR_DEFN.TY	) );
+        end if;
 
       end	PROCESS_DESIGNATOR;
 	------------------

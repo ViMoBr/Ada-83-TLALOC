@@ -277,9 +277,11 @@ is
     end	INVERSE_RECURSE;
 	---------------
   begin
-    PUT_LINE( "virtual at 8" );
-    INVERSE_RECURSE;
-    PUT_LINE( "end virtual" );
+    if  not IS_EMPTY( GPRM_SEQ )  then
+      PUT_LINE( "virtual at 8" );
+      INVERSE_RECURSE;
+      PUT_LINE( "end virtual" );
+    end if;
 
   end	CODE_GENERIC_FRAME_OFFSETS;
 	--------------------------

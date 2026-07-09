@@ -3,20 +3,20 @@ with IO_EXCEPTIONS;
 package					TEXT_IO
 is					-------
 
-  type FILE_TYPE is	limited private;
+  type FILE_TYPE is limited private;
 
-  type FILE_MODE is	(IN_FILE,	OUT_FILE);
+  type FILE_MODE is (IN_FILE, OUT_FILE);
 
   type COUNT		is range 0 .. INTEGER'LAST;
-  subtype	POSITIVE_COUNT	is COUNT range 1 ..	COUNT'LAST;
-  UNBOUNDED		:constant	COUNT	:= 0; -- line and page length
+  subtype POSITIVE_COUNT	is COUNT range 1 .. COUNT'LAST;
+  UNBOUNDED		:constant COUNT	:= 0; -- line and page length
 
-	 -- The upper bound	for COUNT	is implementation-defined.
+	 -- The upper bound for COUNT is implementation-defined.
 
-  subtype	FIELD		is INTEGER range 0 .. INTEGER'LAST;
-  subtype	NUMBER_BASE	is INTEGER range 2 .. 16;
+  subtype FIELD		is INTEGER range 0 .. INTEGER'LAST;
+  subtype NUMBER_BASE	is INTEGER range 2 .. 16;
 
-	 -- The upper bound	for FIELD	is implementation-defined.
+	 -- The upper bound for FIELD is implementation-defined.
 
   type TYPE_SET is (LOWER_CASE, UPPER_CASE);
 
@@ -44,7 +44,7 @@ is					-------
 
   function IS_OPEN		( FILE :in FILE_TYPE )		return BOOLEAN;
 
-	 -- Control of default input and output	files
+	 -- Control of default input and output files
 
   procedure SET_INPUT	( FILE :in FILE_TYPE );
   procedure SET_OUTPUT	( FILE :in FILE_TYPE );
@@ -55,7 +55,7 @@ is					-------
   function CURRENT_INPUT					return FILE_TYPE;
   function CURRENT_OUTPUT					return FILE_TYPE;
 
-	 -- Specification of line and	page lengths
+	 -- Specification of line and page lengths
 
   procedure SET_LINE_LENGTH	( FILE :in FILE_TYPE; TO :in COUNT );
   procedure SET_LINE_LENGTH	( TO   :in COUNT);
@@ -72,12 +72,12 @@ is					-------
 	 -- Column, Line, and Page Control
 
   procedure NEW_LINE	( FILE	:in FILE_TYPE;
-			  SPACING	:in POSITIVE_COUNT := 1);
-  procedure NEW_LINE	( SPACING	:in POSITIVE_COUNT := 1);
+			  SPACING :in POSITIVE_COUNT := 1);
+  procedure NEW_LINE	( SPACING :in POSITIVE_COUNT := 1);
 
   procedure SKIP_LINE	( FILE	:in FILE_TYPE;
-			  SPACING	:in POSITIVE_COUNT := 1);
-  procedure SKIP_LINE	( SPACING	:in POSITIVE_COUNT := 1);
+			  SPACING :in POSITIVE_COUNT := 1);
+  procedure SKIP_LINE	( SPACING :in POSITIVE_COUNT := 1);
 
   function END_OF_LINE	( FILE :in FILE_TYPE)		return BOOLEAN;
   function END_OF_LINE					return BOOLEAN;
@@ -91,22 +91,22 @@ is					-------
   function END_OF_PAGE	( FILE :in FILE_TYPE )		return BOOLEAN;
   function END_OF_PAGE					return BOOLEAN;
 
-  function END_OF_FILE	(FILE :in	FILE_TYPE	)		return BOOLEAN;
+  function END_OF_FILE	(FILE :in FILE_TYPE )		return BOOLEAN;
   function END_OF_FILE					return BOOLEAN;
 
-  procedure SET_COL		(FILE :in	FILE_TYPE; TO :in POSITIVE_COUNT );
-  procedure SET_COL		(TO   :in	POSITIVE_COUNT );
+  procedure SET_COL		(FILE :in FILE_TYPE; TO :in POSITIVE_COUNT );
+  procedure SET_COL		(TO   :in POSITIVE_COUNT );
 
-  procedure SET_LINE	(FILE :in	FILE_TYPE; TO :in POSITIVE_COUNT );
-  procedure SET_LINE	(TO   :in	POSITIVE_COUNT );
+  procedure SET_LINE	(FILE :in FILE_TYPE; TO :in POSITIVE_COUNT );
+  procedure SET_LINE	(TO   :in POSITIVE_COUNT );
 
-  function COL		(FILE :in	FILE_TYPE	)		return POSITIVE_COUNT;
+  function COL		(FILE :in FILE_TYPE )		return POSITIVE_COUNT;
   function COL						return POSITIVE_COUNT;
 
   function LINE		( FILE :in FILE_TYPE )		return POSITIVE_COUNT;
   function LINE						return POSITIVE_COUNT;
 
-  function PAGE		(FILE :in	FILE_TYPE	)		return POSITIVE_COUNT;
+  function PAGE		(FILE :in FILE_TYPE )		return POSITIVE_COUNT;
   function PAGE						return POSITIVE_COUNT;
 
 	 -- Character Input-Output
@@ -127,11 +127,11 @@ is					-------
 			  ITEM :out STRING;
 			  LAST :out NATURAL
 			);
-  procedure GET_LINE	( ITEM :out STRING;	  LAST :out NATURAL	);
+  procedure GET_LINE	( ITEM :out STRING;	  LAST :out NATURAL );
   procedure PUT_LINE	( FILE :in FILE_TYPE; ITEM :in STRING );
   procedure PUT_LINE	( ITEM :in STRING );
 
-	 -- Generic package	for Input-Output of	Integer Types
+	 -- Generic package for Input-Output of Integer Types
 
   generic
     type NUM is range <>;
@@ -169,7 +169,7 @@ is					-------
 
   end INTEGER_IO;
 
-	 -- Generic package	for Input-Output of	Real Types
+	 -- Generic package for Input-Output of Real Types
 
   generic
     type NUM is digits <>;
@@ -253,7 +253,7 @@ is					-------
   end	FIXED_IO;
 	--------
 
-	 -- Generic package	for Input-Output of	Enumeration types
+	 -- Generic package for Input-Output of Enumeration types
 
   generic
     type ENUM is (<>);
@@ -262,7 +262,7 @@ is					-------
   is			--------------
 
     DEFAULT_WIDTH	: FIELD := 0;
-    DEFAULT_SETTING	: TYPE_SET := UPPER_CASE;
+    DEFAULT_SETTING : TYPE_SET := UPPER_CASE;
 
 
     procedure GET		( FILE :in FILE_TYPE; ITEM :out ENUM);
@@ -302,16 +302,16 @@ is					-------
 
 private
 
-  subtype	FILE_NAME_BUFFER	is STRING( 1 .. 256	);
+  subtype FILE_NAME_BUFFER	is STRING( 1 .. 256 );
 
   type FILE_TYPE		is record
 			  ID		: INTEGER		:= -1;
 			  NAME		: FILE_NAME_BUFFER;
-			  NAME_LEN	: POSITIVE;
+			  NAME_LEN	: NATURAL;
 			  IS_OPENED	: BOOLEAN		:= FALSE;
 			  MODE		: FILE_MODE;
-			  PAGE_LENGTH	: POSITIVE_COUNT	:= 72;
-			  LINE_LENGTH	: POSITIVE_COUNT	:= 256;
+			  PAGE_LENGTH	: COUNT		:= UNBOUNDED;	-- LRM 14.3.3 : 0 = non borne
+			  LINE_LENGTH	: COUNT		:= UNBOUNDED;
 			  PAGE,
 			  LINE,
 			  COL		: POSITIVE_COUNT	:= 1;

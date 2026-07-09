@@ -1,7 +1,7 @@
 with IO_EXCEPTIONS;
 
 generic
-  type ELEMENT_TYPE	is private;
+  type ELEMENT_TYPE is private;
 					-------------
 package					SEQUENTIAL_IO
 is					-------------
@@ -34,7 +34,7 @@ is					-------------
 
   function IS_OPEN		( FILE : in FILE_TYPE )			return BOOLEAN;
 
-	 -- Input	and output operations
+	 -- Input and output operations
 
   procedure READ		( FILE :in FILE_TYPE; ITEM :out ELEMENT_TYPE );
   procedure WRITE		( FILE :in FILE_TYPE; ITEM :in ELEMENT_TYPE );
@@ -43,17 +43,17 @@ is					-------------
 
 	 -- Exceptions
 
-  STATUS_ERROR	: exception renames	IO_EXCEPTIONS.STATUS_ERROR;
-  MODE_ERROR	: exception renames	IO_EXCEPTIONS.MODE_ERROR;
-  NAME_ERROR	: exception renames	IO_EXCEPTIONS.NAME_ERROR;
-  USE_ERROR	: exception renames	IO_EXCEPTIONS.USE_ERROR;
-  DEVICE_ERROR	: exception renames	IO_EXCEPTIONS.DEVICE_ERROR;
-  END_ERROR	: exception renames	IO_EXCEPTIONS.END_ERROR;
-  DATA_ERROR	: exception renames	IO_EXCEPTIONS.DATA_ERROR;
+  STATUS_ERROR	: exception renames IO_EXCEPTIONS.STATUS_ERROR;
+  MODE_ERROR	: exception renames IO_EXCEPTIONS.MODE_ERROR;
+  NAME_ERROR	: exception renames IO_EXCEPTIONS.NAME_ERROR;
+  USE_ERROR	: exception renames IO_EXCEPTIONS.USE_ERROR;
+  DEVICE_ERROR	: exception renames IO_EXCEPTIONS.DEVICE_ERROR;
+  END_ERROR	: exception renames IO_EXCEPTIONS.END_ERROR;
+  DATA_ERROR	: exception renames IO_EXCEPTIONS.DATA_ERROR;
 
 private
 
-  subtype	FILE_NAME_BUFFER	is STRING( 1 .. 256	);
+  subtype FILE_NAME_BUFFER	is STRING( 1 .. 256 );
 
   type FILE_TYPE		is record
 			  ID		: INTEGER		:= -1;

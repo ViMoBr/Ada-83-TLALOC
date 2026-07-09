@@ -1,5 +1,5 @@
 ------------------------------------------------------------------------------------------------------------------------
--- SPDX-FileCopyrightText: 2026 VINCENT	MORIN, UBO
+-- SPDX-FileCopyrightText: 2026 VINCENT MORIN, UBO
 -- SPDX-License-Identifier: GPL-3.0-or-later
 ------------------------------------------------------------------------------------------------------------------------
 --	1	2	3	4	5	6	7	8	9	0	1	2
@@ -16,7 +16,7 @@ is
   HCODE			: INTEGER;
       
   type HTABLE_TYPE		is record
-			  HN	: STRING(	1 .. 17 )		:= (others=>' ');
+			  HN	: STRING( 1 .. 17 )		:= (others=>' ');
 			  HP	: GRMR_OP			:= G_ERROR;
 			end record;
 
@@ -29,14 +29,14 @@ is
   procedure			HASH_SEARCH		( S :STRING )
 				-----------
   is
-    A_17		: STRING(	1 .. 17 )	:= (others => ' ');
+    A_17		: STRING( 1 .. 17 ) := (others => ' ');
   begin
-    if  S'LENGTH <=	17  then
+    if  S'LENGTH <= 17  then
       A_17( 1 .. S'LENGTH ) := S;
     end if;
-    HCODE	:= (S'LENGTH + CHARACTER'POS(	S( S'LAST	) ) ) mod	HSIZE;
+    HCODE := (S'LENGTH + CHARACTER'POS( S( S'LAST ) ) ) mod HSIZE;
       
-    while	 A_17 /= HTABLE( HCODE ).HN  and then  HTABLE( HCODE ).HP /= G_ERROR	loop
+    while  A_17 /= HTABLE( HCODE ).HN  and then  HTABLE( HCODE ).HP /= G_ERROR  loop
       HCODE := (HCODE + 1) mod HSIZE;
     end loop;
 
@@ -59,8 +59,8 @@ is
   function			GRMR_OP_IMAGE		( GO :GRMR_OP ) return STRING
 				-------------
   is
-    LL	: INTEGER	:= 17;
-    TXT	: STRING(	1..17 )	:= HTABLE( INTEGER(	ITABLE( GO ) ) ).HN;
+    LL	: INTEGER := 17;
+    TXT	: STRING( 1..17 )	:= HTABLE( INTEGER( ITABLE( GO ) ) ).HN;
   begin
     loop
       exit when TXT( LL ) /= ' ';
@@ -78,11 +78,11 @@ begin
     procedure			STASH		( P :GRMR_OP; S :STRING )
 				-----
     is
-      A_17	: STRING(	1 .. 17 )		:= (others => ' ');
+      A_17	: STRING( 1 .. 17 )		:= (others => ' ');
     begin
       HASH_SEARCH( S );
       A_17( 1 .. S'LENGTH ) := S;
-      HTABLE( HCODE	)       := (HN=> A_17, HP=> P);
+      HTABLE( HCODE )       := (HN=> A_17, HP=> P);
       ITABLE( P )	        := HASH_BYTE( HCODE );
 
     end	STASH;
@@ -115,7 +115,7 @@ begin
     STASH( G_EXCH_2,		"exch_2"		);
     STASH( G_CHECK_NAME,		"check_name"	);
     STASH( G_CHECK_SUBP_NAME,		"check_subp_name"	);
-    STASH( G_CHECK_ACCEPT_NAME,	"check_accept_name"	);
+    STASH( G_CHECK_ACCEPT_NAME,	"check_accept_name" );
   end;
 
 	--------

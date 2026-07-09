@@ -540,9 +540,9 @@ separate ( EXPANDER )
   procedure			CODE_PROCEDURE_CALL		( PROCEDURE_CALL :TREE; USED_NAME_ID : TREE )
   is
     NORM_ACT_PRM_S	: SEQ_TYPE	:= LIST( D( SM_NORMALIZED_PARAM_S, PROCEDURE_CALL ) );
-    SUB_NAME	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, USED_NAME_ID ) );
 
-    PROC_ID	: TREE		:= D( SM_DEFN, USED_NAME_ID );
+    PROC_ID	: TREE		:= SUBPROGRAM_ORIGIN( D( SM_DEFN, USED_NAME_ID ) );
+    SUB_NAME	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, PROC_ID ) );
     LBL		: LABEL_TYPE	:= LABEL_TYPE( DI( CD_LABEL, PROC_ID ) );
 
     SPEC_PRM_GRP_S	: SEQ_TYPE	:= LIST( D( AS_PARAM_S, D( SM_SPEC, PROC_ID) ) );
@@ -1653,22 +1653,6 @@ separate ( EXPANDER )
 	  EXPRESSIONS.CODE_EXP( SRC_EXP );
 	  CODI.STORE( DEFN );
 
-
-
-
---	elsif  NAME_TYPE.TY = DN_ARRAY  or  NAME_TYPE.TY = DN_CONSTRAINED_ARRAY  then								-- OBJET ASSIGNE TABLEAU
---	  CODE_OBJECT( DEFN );
---	  if  SRC_EXP.TY = DN_USED_OBJECT_ID  then
---	    CODE_OBJECT( D( SM_DEFN, SRC_EXP ) );
---	    CODE_OBJECT( SRC_EXP );
-
---	  elsif  SRC_EXP.TY = DN_AGGREGATE  then
---	    EXPRESSIONS.CODE_AGGREGATE( SRC_EXP, NAME_TYPE );
-
---	  else
---	    EXPRESSIONS.CODE_EXP( SRC_EXP );
---          end if;
-
 	elsif  NAME_TYPE.TY = DN_ARRAY  or  NAME_TYPE.TY = DN_CONSTRAINED_ARRAY  then				-- OBJET ASSIGNE TABLEAU
 
 	  if  SRC_EXP.TY = DN_AGGREGATE  then
@@ -1691,11 +1675,16 @@ separate ( EXPANDER )
 			& ", -" & PRINT_NAME( D( LX_SYMREP, DEFN ) ) & "_ofs" );
 	      PUT_LINE( tab & "LIa" & tab & ", ," & INTEGER'IMAGE( CODI.ADDR_SIZE ) );				-- @info
 	      PUT_LINE( tab & "Ld" & tab & ", 0" );							-- SIZ (bits)
+
 	    else											-- idiome CODE_LENGTH, chemin variable
 	      PUT( tab & "LId" & tab & IMAGE( DI( CD_LEVEL, DEFN ) ) & ", " );
-	      CODI.REGIONS_PATH( DEFN );
+	      if  DI( CD_LEVEL, DEFN ) /= INTEGER( CODI.CUR_LEVEL )  then					-- uplevel : chemin absolu
+	        CODI.REGIONS_PATH( DEFN );								-- (! traverse mal une region generique, cf. PIEGES)
+	      end if;										-- local : nom relatif, comme l'elaboration
 	      PUT_LINE( PRINT_NAME( D( LX_SYMREP, DEFN ) ) & "__u, 0" );					-- SIZ (bits)
+
 	    end if;
+
 	    PUT_LINE( tab & "LI" & tab & IMAGE( CODI.STORAGE_UNIT ) );
 	    PUT_LINE( tab & "DIV" );									-- LEN en octets
 

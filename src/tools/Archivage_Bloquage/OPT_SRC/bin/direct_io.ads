@@ -1,18 +1,18 @@
 with IO_EXCEPTIONS;
 
 generic
-  type ELEMENT_TYPE	is private;
+  type ELEMENT_TYPE is private;
 					---------
 package					DIRECT_IO
 is					---------
 
-  type FILE_TYPE is	limited private;
+  type FILE_TYPE is limited private;
 
   type	FILE_MODE		is (IN_FILE, INOUT_FILE, OUT_FILE);
   type	COUNT		is range 0 .. INTEGER'LAST;
-  subtype	POSITIVE_COUNT	is COUNT range 1 ..	COUNT'LAST;
+  subtype POSITIVE_COUNT	is COUNT range 1 .. COUNT'LAST;
 
-	 -- The upper bound	for COUNT	is implementation-defined.
+	 -- The upper bound for COUNT is implementation-defined.
 
 	 -- File management
 
@@ -40,7 +40,7 @@ is					---------
 
   function IS_OPEN		( FILE :in FILE_TYPE )			return BOOLEAN;
 
-	 -- Input	and output operations
+	 -- Input and output operations
 
   procedure READ		( FILE :in  FILE_TYPE;
 			  ITEM :out ELEMENT_TYPE;
@@ -57,7 +57,7 @@ is					---------
   procedure WRITE		( FILE :in FILE_TYPE;
 			  ITEM :in ELEMENT_TYPE );
 
-  procedure SET_INDEX	( FILE :in FILE_TYPE;  TO :in	POSITIVE_COUNT );
+  procedure SET_INDEX	( FILE :in FILE_TYPE;  TO :in POSITIVE_COUNT );
 
   function  INDEX		( FILE :in FILE_TYPE )			return POSITIVE_COUNT;
 
@@ -78,7 +78,7 @@ is					---------
 
 private
 
-  subtype	FILE_NAME_BUFFER	is STRING( 1 .. 256	);
+  subtype FILE_NAME_BUFFER	is STRING( 1 .. 256 );
 
   type FILE_TYPE		is record
 			  ID		: INTEGER		:= -1;

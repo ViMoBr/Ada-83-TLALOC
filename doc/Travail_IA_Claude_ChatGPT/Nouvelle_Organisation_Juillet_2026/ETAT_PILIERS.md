@@ -1,6 +1,6 @@
 # ÉTAT DES PILIERS — tableau de bord TLALOC
 
-**Dernière mise à jour : 8 juillet 2026** (clôture pilier 14.3 TEXT_IO ; correctif expandeur actuals out composés).
+**Dernière mise à jour : 9 juillet 2026** (fossile n° 80 DIRECT_IO/SEQUENTIAL_IO ; témoins v2 auto-jugeants)
 
 **Régime** : ce fichier est RÉÉCRIT à chaque clôture ; il est la seule source de
 vérité sur « où on en est ». Le récit des sessions est dans JOURNAL_SESSIONS.md,
@@ -37,7 +37,7 @@ La sémantique n'est protégée que par les programmes-témoins à sortie attend
 | 8.5 Renames d'objets | entamé (déclarations traitées) | 14 juin |
 | 12 Génériques (packages, sous-programmes, thunks LD/ST CALLI) | acquis | avril + 4 juillet (piège 47) |
 | **14.3 TEXT_IO** | **CLOS** (conforme LRM sous restrictions consignées) : architecture deux niveaux RAW/public (GET_RAW/PUT_RAW hors spec ; scanners et lecteurs de structure sur RAW, NEW_LINE/NEW_PAGE émettent en RAW) ; GET public saute les terminateurs et tient LINE/COL/PAGE ; PUT tient COL, coupure implicite à LINE_LENGTH bornée ; SET_COL/SET_LINE sortie ; longueurs COUNT := UNBOUNDED (bombe POSITIVE_COUNT := 0 désamorcée) ; exceptions toutes armées (STATUS/MODE/NAME/USE/END/DATA/LAYOUT, 14.2.1 complet, piège n° 45 désamorcé) ; cadrage énuméré WIDTH en blancs de queue (RM 14.3.9, déviation supprimée) ; FF séparateur des scanners et terminateur de ligne. Restrictions consignées : SET_COL/SET_LINE en entrée différés ; END_OF_FILE/END_OF_PAGE mono-anticipation (piège n° 79) ; copies FILE_TYPE non partagées (état COL/look-ahead divergent entre handles) | **8 juillet 2026** — oracles TEXT14 (42), OUTARG1, IO_TEST |
-| 14.2.3 / 14.2.5 SEQUENTIAL_IO, DIRECT_IO | validés tous types ; **témoins DIRECT_IO_TEST et SEQ_IO_TEST à reprendre** (END_ERROR : ancien contrat de lecture à EOF, piège n° 79 — packages inchangés) | 10 mai ; reprise à planifier |
+| 14.2.3 / 14.2.5 SEQUENTIAL_IO, DIRECT_IO | validés tous types ; **témoins DIRECT_IO_TEST et SEQ_IO_TEST repris auto jugeant ** |
 | 9.6 CALENDAR | opérationnel (cas normaux) | 5 juin |
 
 ## Fondations absentes (piliers non ouverts)
@@ -104,8 +104,12 @@ La sémantique n'est protégée que par les programmes-témoins à sortie attend
 - **STD_INPUT.AT_END_OF_FILE / HAS_LOOK_AHEAD non initialisés** (VARzone
   non zéroée) : look-ahead fantôme possible au premier GET console.
 
-- **DIRECT_IO : END_ERROR fossile réveillé** (piège n° 74) — en cours de
-  correction (mainteneur).
+- **DIRECT_IO/SEQUENTIAL_IO : gardes LRM 14.2.1 absentes** (CREATE/OPEN
+  sur fichier déjà ouvert → STATUS_ERROR ; échec d'OPEN → NAME_ERROR ;
+  CLOSE/DELETE sur fichier fermé → STATUS_ERROR) — lot conjoint à
+  planifier sur le modèle TEXT_IO du 8 juillet ; DIRECT_IO_TEST v2 /
+  SEQ_IO_TEST v2 acceptent déjà le régime futur. DELETE ne ferme pas le
+  descripteur système (fuite d'fd bénigne, à reprendre dans le même lot).
 
 - **Handlers sur corps de PACKAGE** : ANOMALIE bruyante (exceptions
   d'élaboration, différé).
@@ -127,10 +131,28 @@ La sémantique n'est protégée que par les programmes-témoins à sortie attend
   d'entrée est prêt (`LCA STANDARD.<X>__exc.data_ptr` + `Sa EXCEPTIONS_
   CURRENT` + `BRA exc_raise_`).
 
+- **Actuels génériques non-sous-programmes** (12.3, A87B59A) : trois
+  familles sans convention d'exécution — (1) littéral d'énumération
+  comme fonction : l'instanciation stocke la position (`Sb F_disp`),
+  le corps partagé CALLI `F__call_ofs` jamais écrit ; thunk résultat
+  faisable à court terme (pattern LD_/ST_, convention result__ofs) ;
+  (2) opérateur prédéfini : `VAR __call_ofs` sans store ; thunk
+  opérateur, "&" sur STRING = le morceau dur (résultat composite) ;
+  (3) entrée de tâche : bloqué pilier tasking (la tâche elle-même est
+  élidée du FINC). A87B59A assemble, segfaute au bloc C. Corollaire :
+  le corps générique partagé INLINE les opérateurs du type formel
+  (bloc E : ADD au lieu de CALLI) — faux pour une instance à opérateur
+  utilisateur, et masque l'absence de thunk.
+- **CODE_SELECTED, branche scalaire à préfixe package** : nom nu sans
+  REGIONS_PATH (piège n° 85) — casserait à l'assemblage si exercé.
+- **SUBPROGRAM_ORIGIN non appliqué** au chemin fonction ni aux actuels
+  génériques qui seraient des renamings (piège n° 82).
+- **REGIONS_PATH et sous-unités** : corps générique `is separate`
+  (xd_stub / XD_BODY) non vérifié au dump (piège n° 84).
+  
 ## Prochaine séquence (à arbitrer à l'ouverture de la prochaine session)
 
-1. Session courte dédiée : remise d’aplomb des témoins DIRECT_IO_TEST / SEQ_IO_TEST (tri idiome-de-témoin vs défaut réel ; les packages n’ont pas changé).
-2. Tri des 4 échecs ACVC A8 (dump DIANA par test, classement défaut local vs pilier absent) — AVANT d’ouvrir le pilier désigné (présomption : 8.x portée/visibilité/use/renommage).
+1. Tri des 4 échecs ACVC A8 (dump DIANA par test, classement défaut local vs pilier absent) — AVANT d’ouvrir le pilier désigné (présomption : 8.x portée/visibilité/use/renommage).
 3. Ouverture du pilier désigné par le tri ou discuté :
 - Option A — **checks runtime** (contraintes scalaires, index, LEN_G=LEN_D
   des logiques composites en dette D3-contrôle) : le mécanisme les attend.

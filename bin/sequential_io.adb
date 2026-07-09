@@ -233,7 +233,7 @@ is					--------------
       ASM_OP_2'( OPCODE => La, LVL => 2, OFS => -24 );			-- @ITEM_DATA (data_ptr reel via ADR)
       ASM_OP_2'( OPCODE => Ld, LVL => 2, OFS => -8 );			-- FILE_ID
       ASM_OP_0'( OPCODE => SYS_FILE_READ );
-      ASM_OP_2'( OPCODE => SD, LVL => 2, OFS => -32 );			-- Retour du BYTES_READ apres le GFP
+      ASM_OP_2'( OPCODE => SD, LVL => 2, OFS => -40 );			-- Retour du BYTES_READ apres le GFP
 
     end	READ_SYSTEM_CALL;
 	----------------
@@ -270,7 +270,7 @@ is					--------------
       ASM_OP_2'( OPCODE => La, LVL => 2, OFS => -24 );			-- @ITEM_DATA (data_ptr reel via ADR)
       ASM_OP_2'( OPCODE => Ld, LVL => 2, OFS => -8 );			-- FILE_ID
       ASM_OP_0'( OPCODE => SYS_FILE_WRITE );
-      ASM_OP_2'( OPCODE => SD, LVL => 2, OFS => -32 );			-- Retour du resultat syscall apres le GFP
+      ASM_OP_2'( OPCODE => SD, LVL => 2, OFS => -40 );			-- Retour du resultat syscall apres le GFP
 
     end	WRITE_SYSTEM_CALL;
 	-----------------

@@ -92,6 +92,8 @@ is
     procedure LOAD_MEM		( DEFN :TREE );
     procedure STORE			( DEST_DEFN :TREE );
 
+    function  SUBPROGRAM_ORIGIN	( DEFN :TREE )			return TREE;
+
     procedure EXC_POP;
     function  EXCEPTION_ID_OF		( NAME :TREE )			return TREE;			--| PILIER 11 : SM_DEFN a travers DN_SELECTED, puis chaine des renommages (LRM 8.5)
 

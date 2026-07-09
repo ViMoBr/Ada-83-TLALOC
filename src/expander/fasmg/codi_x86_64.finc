@@ -444,6 +444,20 @@ macro			LCA?	ptr, disp:0			; Load Constant Address (distinguer de LI - qui charg
   PUSH_RAX
 end macro
 
+;			--------------------------
+macro			LSPA?	prefix, subname			; Load SubProgram Address de .elab, en armant l'assemblage lazy
+;			--------------------------
+  postpone
+    if ~definite prefix#subname#_
+      prefix#subname#_ = prefix#subname#.elab				; le nom finissant en _ determine l'assemblage de la routine
+    end if
+  end postpone
+
+  db 0x48, 0xB8							; movabs rax, imm64
+  dq prefix#subname#_
+  PUSH_RAX
+end macro
+
 ;			------------------------
 macro			LVa?	lvl:-1, disp:0			; Load Variable Address pour lvl et disp (empile l'adresse de la variable au deplacement disp du frame de lvl	donne)
 ;			------------------------
@@ -1270,9 +1284,10 @@ end macro
 ;	On décompose en deux parties	la constitution d'une chaîne	pour pouvoir insérer tous les octets voulus.
 
 ;			--------------
-macro			BEGIN_BLOC_DEF				; Debut de definition d'un bloc octets utilisable	comme STRING Ada
+macro			BEGIN_BLOC_DEF_OLD				; Debut de definition d'un bloc octets utilisable	comme STRING Ada
 ;			--------------
 ;
+;BLOC_DEF_ACTIF = 1
   esc struc BYTES_BLOC						; Structure du bloc	type STRING avec saut de fin de macro par "esc" pour coupure en deux parties
     postpone							; ATTENTION : différé terminé par la	macro BYTE_BLK_END
     local	data
@@ -1299,13 +1314,50 @@ macro			BEGIN_BLOC_DEF				; Debut de definition d'un bloc octets utilisable	comm
 end macro
 
 ;			-------------
-macro			END_BLOC_DEF!				; Fin de definition	d'une constante chaine (Attention inconditionnelle "!")
+macro			END_BLOC_DEF_OLD!				; Fin de definition	d'une constante chaine (Attention inconditionnelle "!")
 ;			-------------
+;if BLOC_DEF_ACTIF = 1
       str_bit_size = 8*($ - data)					; Calculer la taille effective en bits
     end postpone
   esc end	struc							; Fin de la structure du bloc	arrêt de	la coupure par "esc"
+;BLOC_DEF_ACTIF = 0
+;end if
 end macro
 
+;			--------------
+macro			BEGIN_BLOC_DEF				; Debut du bloc d'images d'un enumere
+;			--------------
+;	Donnees inline protegees par BRA (pattern des thunks LD_/ST_, sain
+;	sous "if defined"). Macros ordinaires, noms FIXES : la paire vit dans
+;	le namespace _TYPE de l'enumere, unicite garantie par construction.
+;	Ni struc coupee, ni postpone, ni "!", ni local inter-macros.
+  BRA	IMAGES.skip
+IMAGES.data = $							; les db d'images suivent, inline
+end macro
+
+;			------------
+macro			END_BLOC_DEF	siz, fst, lst		; Fin : pose le ENUM_USE_INFO etendu
+;			------------
+;	CONTRAT (record ENUM_USE_INFO du prelude + doublet images) :
+;	  SIZ @0 (dd) | FST @+4 | LST @+8 | pad | data_ptr @+16 | info_ptr @+24
+;	  use__info pointe SIZ ; TEXT_IO (GET_ENUM_IMAGES) lit le doublet a __u+16.
+IMAGES.data_end = $							; fin des octets d'images (avant info/scalaires)
+IMAGES.info = $
+	dd 8*(IMAGES.data_end - IMAGES.data), 8, 1, IMAGES.data_end - IMAGES.data
+  align_q
+SIZ = $
+	dd siz
+FST = $
+	dd fst
+LST = $
+	dd lst
+	dd 0
+IMAGES.data_ptr = $
+	dq IMAGES.data
+IMAGES.info_ptr = $
+	dq IMAGES.info
+IMAGES.skip:
+end macro
 
 ;			---------------------
 macro			STR	name, bytes			; Definition d'une constante chaine au format d'un tableau de caracteres (pour traitement	homogene des chaines)
@@ -1543,14 +1595,14 @@ macro			BLKNOT?					; NOT composite : chaque octet ^= 1
 ; (piege n 5) applique par octet.  La destination a deja recu la copie
 ; de l'operande par BLKMOV.
   local  boucle, fin
-  POP_RCX					; LEN (octets)
-  POP_RDI					; @DST
-  db 0x48, 0x85, 0xC9				; test rcx, rcx
-  db 0x74, fin - $ - 1				; jz  fin
+  POP_RCX								; LEN (octets)
+  POP_RDI								; @DST
+  db 0x48, 0x85, 0xC9						; test rcx, rcx
+  db 0x74, fin - $ - 1						; jz  fin
 boucle:
-  db 0x80, 0x37, 0x01				; xor byte [rdi], 1
-  db 0x48, 0xFF, 0xC7				; inc rdi
-  db 0xE2, boucle - $ - 1			; loop boucle
+  db 0x80, 0x37, 0x01						; xor byte [rdi], 1
+  db 0x48, 0xFF, 0xC7						; inc rdi
+  db 0xE2, boucle - $ - 1						; loop boucle
 fin:
 end macro
 ;			------

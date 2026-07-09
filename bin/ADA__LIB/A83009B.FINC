@@ -15,14 +15,8 @@ BEGIN_BLOC_DEF
 db 0, 2, "E1"
 db 1, 2, "E2"
 db 2, 2, "E3"
-END_BLOC_DEF
-IMAGES	BYTES_BLOC
-CST LST, d, 2
-CST FST, d, 0
-CST SIZ, d, 8	; SIZ en bits !
-postpone
-  align_q
-end postpone
+END_BLOC_DEF 8, 0, 2
+	; SIZ en bits !
 	LCA	SIZ
 	Sa	1, use__info
 end namespace
@@ -55,14 +49,8 @@ BEGIN_BLOC_DEF
 db 0, 2, "E1"
 db 1, 2, "E2"
 db 2, 2, "E3"
-END_BLOC_DEF
-IMAGES	BYTES_BLOC
-CST LST, d, 2
-CST FST, d, 0
-CST SIZ, d, 8	; SIZ en bits !
-postpone
-  align_q
-end postpone
+END_BLOC_DEF 8, 0, 2
+	; SIZ en bits !
 	LCA	SIZ
 	Sa	1, use__info
 end namespace
@@ -326,14 +314,8 @@ BEGIN_BLOC_DEF
 db 0, 2, "E1"
 db 1, 2, "E2"
 db 2, 2, "E3"
-END_BLOC_DEF
-IMAGES	BYTES_BLOC
-CST LST, d, 2
-CST FST, d, 0
-CST SIZ, d, 8	; SIZ en bits !
-postpone
-  align_q
-end postpone
+END_BLOC_DEF 8, 0, 2
+	; SIZ en bits !
 	LCA	SIZ
 	Sa	2, use__info
 end namespace
@@ -353,14 +335,8 @@ BEGIN_BLOC_DEF
 db 0, 2, "E1"
 db 1, 2, "E2"
 db 2, 2, "E3"
-END_BLOC_DEF
-IMAGES	BYTES_BLOC
-CST LST, d, 2
-CST FST, d, 0
-CST SIZ, d, 8	; SIZ en bits !
-postpone
-  align_q
-end postpone
+END_BLOC_DEF 8, 0, 2
+	; SIZ en bits !
 	LCA	SIZ
 	Sa	2, use__info
 end namespace
@@ -377,14 +353,8 @@ BEGIN_BLOC_DEF
 db 0, 2, "E1"
 db 1, 2, "E2"
 db 2, 2, "E3"
-END_BLOC_DEF
-IMAGES	BYTES_BLOC
-CST LST, d, 2
-CST FST, d, 0
-CST SIZ, d, 8	; SIZ en bits !
-postpone
-  align_q
-end postpone
+END_BLOC_DEF 8, 0, 2
+	; SIZ en bits !
 	LCA	SIZ
 	Sa	2, use__info
 end namespace
@@ -392,5 +362,880 @@ end namespace
 
 if defined P_L26_
 PRO	P_L26					;---------- PRO P
-virtual at 8
-IDL.IDL-MAN.HEAD : TETE DE SEQUENCE SEQ.FIRST = TREE_NIL !
+PRMS					;    debut parametrage
+	PRM GFP_ofs
+endPRMS					;    fin parametrage
+ELB 3					;    BODY ELAB
+
+					; _CHILD4 ENUMERATION TYPE INFO
+_CHILD4 = '_CHILD4'
+namespace _CHILD4
+VAR use__info, q
+BEGIN_BLOC_DEF
+db 0, 2, "E1"
+db 1, 2, "E2"
+db 2, 2, "E3"
+END_BLOC_DEF 8, 0, 2
+	; SIZ en bits !
+	LCA	SIZ
+	Sa	3, use__info
+end namespace
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+ret_lbl:
+	UNLINK 3
+	RTD
+excep:
+endPRO					;---------- end PRO P
+end if
+IN_PACK2 = 'IN_PACK2'
+namespace IN_PACK2				;---------- PACKAGE (BDY)
+					;    BODY ELAB
+
+if defined HP_L21_
+PRO	HP_L21				;---------- PRO HP
+PRMS					;    debut parametrage
+	PRM P1_ofs				; in
+	PRM P2_ofs				; in
+	PRM GFP_ofs
+endPRMS					;    fin parametrage
+ELB 3					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+ret_lbl:
+	UNLINK 3
+	RTD	prm_siz
+excep:
+endPRO					;---------- end PRO HP
+end if
+
+if defined HP_L22_
+PRO	HP_L22				;---------- PRO HP
+PRMS					;    debut parametrage
+	PRM P3_ofs				; in
+	PRM P4_ofs				; in
+	PRM GFP_ofs
+endPRMS					;    fin parametrage
+ELB 3					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+ret_lbl:
+	UNLINK 3
+	RTD	prm_siz
+excep:
+endPRO					;---------- end PRO HP
+end if
+
+if defined HF_L23_
+PRO	HF_L23				;---------- PRO HF
+PRMS					;    debut parametrage
+	PRM P1_ofs				; in
+	PRM P2_ofs				; in
+	PRM GFP_ofs
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 3					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
+	LI	0
+	Sb  3,	-result__ofs
+	BRA ret_lbl
+ret_lbl:
+	UNLINK 3
+	RTD	prm_siz-8
+excep:
+endPRO					;---------- end PRO HF
+end if
+
+if defined HF_L24_
+PRO	HF_L24				;---------- PRO HF
+PRMS					;    debut parametrage
+	PRM P3_ofs				; in
+	PRM P4_ofs				; in
+	PRM GFP_ofs
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 3					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
+	LI	1
+	Sb  3,	-result__ofs
+	BRA ret_lbl
+ret_lbl:
+	UNLINK 3
+	RTD	prm_siz-8
+excep:
+endPRO					;---------- end PRO HF
+end if
+begin:					;---------- package BDY INSTRUCTIONS
+end namespace 				;---------- end package BDY IN_PACK2
+
+begin:					;---------- package BDY INSTRUCTIONS
+end namespace 				;---------- end generic package BDY PACK2
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	UNLINK 2
+endPRO
+namespace	BLOCK__2
+ELB 2					;    BODY ELAB
+; GENERIC_SUBPROGRAM_SPEC
+
+if defined P1_L43_
+PRO	P1_L43				;---------- PRO P1
+PRMS					;    debut parametrage
+	PRM GFP_ofs
+endPRMS					;    fin parametrage
+ELB 3					;    BODY ELAB
+INSTANCE4 = 'INSTANCE4'
+namespace INSTANCE4				;---------- GENERIC PACKAGE INSTANTIATION
+elab_spec:				;    SPEC ELAB
+
+BRA post_LD_T1
+LD_T1.elab:
+	Lb -1, 0
+	RTD 0
+post_LD_T1:
+BRA post_ST_T1
+ST_T1.elab:
+	Sb -1, 0
+	RTD 0
+post_ST_T1:
+BRA post_INADR_T1
+INADR_T1.elab:
+	RTD 0
+post_INADR_T1:
+BRA post_OUTADR_T1
+OUTADR_T1.elab:
+	La
+	RTD 0
+post_OUTADR_T1:
+VAR T1__outadr_ofs, q
+	LCA OUTADR_T1.elab
+	Sa	 3, T1__outadr_ofs
+VAR T1__inadr_ofs, q
+	LCA INADR_T1.elab
+	Sa	 3, T1__inadr_ofs
+VAR T1__st_ofs, q
+	LCA ST_T1.elab
+	Sa	 3, T1__st_ofs
+VAR T1__ld_ofs, q
+	LCA LD_T1.elab
+	Sa	 3, T1__ld_ofs
+VAR T1__u_ofs, q
+	La	 0, STANDARD._BOOLEAN.use__info
+	Sa	 3, T1__u_ofs
+BRA post_LD_T2
+LD_T2.elab:
+	Lb -1, 0
+	RTD 0
+post_LD_T2:
+BRA post_ST_T2
+ST_T2.elab:
+	Sb -1, 0
+	RTD 0
+post_ST_T2:
+BRA post_INADR_T2
+INADR_T2.elab:
+	RTD 0
+post_INADR_T2:
+BRA post_OUTADR_T2
+OUTADR_T2.elab:
+	La
+	RTD 0
+post_OUTADR_T2:
+VAR T2__outadr_ofs, q
+	LCA OUTADR_T2.elab
+	Sa	 3, T2__outadr_ofs
+VAR T2__inadr_ofs, q
+	LCA INADR_T2.elab
+	Sa	 3, T2__inadr_ofs
+VAR T2__st_ofs, q
+	LCA ST_T2.elab
+	Sa	 3, T2__st_ofs
+VAR T2__ld_ofs, q
+	LCA LD_T2.elab
+	Sa	 3, T2__ld_ofs
+VAR T2__u_ofs, q
+	La	 0, STANDARD._BOOLEAN.use__info
+	Sa	 3, T2__u_ofs
+VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
+					; CODE_PACKAGE_SPEC
+
+					; _PARENT ENUMERATION TYPE INFO
+_PARENT = '_PARENT'
+namespace _PARENT
+VAR use__info, q
+BEGIN_BLOC_DEF
+db 0, 2, "E1"
+db 1, 2, "E2"
+db 2, 2, "E3"
+END_BLOC_DEF 8, 0, 2
+	; SIZ en bits !
+	LCA	SIZ
+	Sa	3, use__info
+end namespace
+					; sub program entry decl (in instantiation TRUE )
+if defined HP_L44_
+PRO	HP_L44				;---------- PRO HP
+PRMS					;    debut parametrage
+	PRM P1_ofs				; in
+	PRM P2_ofs				; in
+	PRM GFP_ofs
+endPRMS					;    fin parametrage
+ELB 4
+begin:
+	LVA	 3, GFP_disp
+	Lb	 4, -P2_ofs
+	Lb	 4, -P1_ofs
+	CALL	STANDARD.A83009B_L1.G_PACK. ,HP_L2
+	UNLINK	 4
+	RTD	prm_siz
+endPRO					;---------- end PRO HP
+end if
+					; sub program entry decl (in instantiation TRUE )
+if defined HP_L45_
+PRO	HP_L45				;---------- PRO HP
+PRMS					;    debut parametrage
+	PRM P3_ofs				; in
+	PRM P4_ofs				; in
+	PRM GFP_ofs
+endPRMS					;    fin parametrage
+ELB 4
+begin:
+	LVA	 3, GFP_disp
+	Lb	 4, -P4_ofs
+	Lb	 4, -P3_ofs
+	CALL	STANDARD.A83009B_L1.G_PACK. ,HP_L3
+	UNLINK	 4
+	RTD	prm_siz
+endPRO					;---------- end PRO HP
+end if
+					; sub program entry decl (in instantiation TRUE )
+if defined HF_L46_
+PRO	HF_L46				;---------- PRO HF
+PRMS					;    debut parametrage
+	PRM P1_ofs				; in
+	PRM GFP_ofs
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 4
+begin:
+	LI	0					; lieu result
+	LVA	 3, GFP_disp
+	Lb	 4, -P1_ofs
+	CALL	STANDARD.A83009B_L1.G_PACK. ,HF_L4
+	Sb	 4, -result__ofs			; retour resultat
+	UNLINK	 4
+	RTD	prm_siz-8
+endPRO					;---------- end PRO HF
+end if
+					; sub program entry decl (in instantiation TRUE )
+if defined HF_L47_
+PRO	HF_L47				;---------- PRO HF
+PRMS					;    debut parametrage
+	PRM P2_ofs				; in
+	PRM GFP_ofs
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 4
+begin:
+	LI	0					; lieu result
+	LVA	 3, GFP_disp
+	Lb	 4, -P2_ofs
+	CALL	STANDARD.A83009B_L1.G_PACK. ,HF_L5
+	Sb	 4, -result__ofs			; retour resultat
+	UNLINK	 4
+	RTD	prm_siz-8
+endPRO					;---------- end PRO HF
+end if
+					;---------- end generic package instantiation INSTANCE4
+end namespace
+
+
+					; _CHILD4 ENUMERATION TYPE INFO
+_CHILD4 = '_CHILD4'
+namespace _CHILD4
+VAR use__info, q
+BEGIN_BLOC_DEF
+db 0, 2, "E1"
+db 1, 2, "E2"
+db 2, 2, "E3"
+END_BLOC_DEF 8, 0, 2
+	; SIZ en bits !
+	LCA	SIZ
+	Sa	3, use__info
+end namespace
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+ret_lbl:
+	UNLINK 3
+	RTD
+excep:
+endPRO					;---------- end PRO P1
+end if
+PACK1 = 'PACK1'
+namespace PACK1
+					;---------- GENERIC PACKAGE ----------
+
+PRMS
+endPRMS
+
+					;---------- GENERIC PACKAGE SPEC OF BODY ----------
+
+					; CODE_PACKAGE_SPEC
+INSTANCE2 = 'INSTANCE2'
+namespace INSTANCE2				;---------- GENERIC PACKAGE INSTANTIATION
+elab_spec:				;    SPEC ELAB
+
+BRA post_LD_T1
+LD_T1.elab:
+	Lb -1, 0
+	RTD 0
+post_LD_T1:
+BRA post_ST_T1
+ST_T1.elab:
+	Sb -1, 0
+	RTD 0
+post_ST_T1:
+BRA post_INADR_T1
+INADR_T1.elab:
+	RTD 0
+post_INADR_T1:
+BRA post_OUTADR_T1
+OUTADR_T1.elab:
+	La
+	RTD 0
+post_OUTADR_T1:
+VAR T1__outadr_ofs, q
+	LCA OUTADR_T1.elab
+	Sa	 2, T1__outadr_ofs
+VAR T1__inadr_ofs, q
+	LCA INADR_T1.elab
+	Sa	 2, T1__inadr_ofs
+VAR T1__st_ofs, q
+	LCA ST_T1.elab
+	Sa	 2, T1__st_ofs
+VAR T1__ld_ofs, q
+	LCA LD_T1.elab
+	Sa	 2, T1__ld_ofs
+VAR T1__u_ofs, q
+	La	 0, STANDARD._CHARACTER.use__info
+	Sa	 2, T1__u_ofs
+BRA post_LD_T2
+LD_T2.elab:
+	Lb -1, 0
+	RTD 0
+post_LD_T2:
+BRA post_ST_T2
+ST_T2.elab:
+	Sb -1, 0
+	RTD 0
+post_ST_T2:
+BRA post_INADR_T2
+INADR_T2.elab:
+	RTD 0
+post_INADR_T2:
+BRA post_OUTADR_T2
+OUTADR_T2.elab:
+	La
+	RTD 0
+post_OUTADR_T2:
+VAR T2__outadr_ofs, q
+	LCA OUTADR_T2.elab
+	Sa	 2, T2__outadr_ofs
+VAR T2__inadr_ofs, q
+	LCA INADR_T2.elab
+	Sa	 2, T2__inadr_ofs
+VAR T2__st_ofs, q
+	LCA ST_T2.elab
+	Sa	 2, T2__st_ofs
+VAR T2__ld_ofs, q
+	LCA LD_T2.elab
+	Sa	 2, T2__ld_ofs
+VAR T2__u_ofs, q
+	La	 0, STANDARD._CHARACTER.use__info
+	Sa	 2, T2__u_ofs
+VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
+					; CODE_PACKAGE_SPEC
+
+					; _PARENT ENUMERATION TYPE INFO
+_PARENT = '_PARENT'
+namespace _PARENT
+VAR use__info, q
+BEGIN_BLOC_DEF
+db 0, 2, "E1"
+db 1, 2, "E2"
+db 2, 2, "E3"
+END_BLOC_DEF 8, 0, 2
+	; SIZ en bits !
+	LCA	SIZ
+	Sa	2, use__info
+end namespace
+					; sub program entry decl (in instantiation TRUE )
+if defined HP_L50_
+PRO	HP_L50				;---------- PRO HP
+PRMS					;    debut parametrage
+	PRM P1_ofs				; in
+	PRM P2_ofs				; in
+	PRM GFP_ofs
+endPRMS					;    fin parametrage
+ELB 3
+begin:
+	LVA	 2, GFP_disp
+	Lb	 3, -P2_ofs
+	Lb	 3, -P1_ofs
+	CALL	STANDARD.A83009B_L1.G_PACK. ,HP_L2
+	UNLINK	 3
+	RTD	prm_siz
+endPRO					;---------- end PRO HP
+end if
+					; sub program entry decl (in instantiation TRUE )
+if defined HP_L51_
+PRO	HP_L51				;---------- PRO HP
+PRMS					;    debut parametrage
+	PRM P3_ofs				; in
+	PRM P4_ofs				; in
+	PRM GFP_ofs
+endPRMS					;    fin parametrage
+ELB 3
+begin:
+	LVA	 2, GFP_disp
+	Lb	 3, -P4_ofs
+	Lb	 3, -P3_ofs
+	CALL	STANDARD.A83009B_L1.G_PACK. ,HP_L3
+	UNLINK	 3
+	RTD	prm_siz
+endPRO					;---------- end PRO HP
+end if
+					; sub program entry decl (in instantiation TRUE )
+if defined HF_L52_
+PRO	HF_L52				;---------- PRO HF
+PRMS					;    debut parametrage
+	PRM P1_ofs				; in
+	PRM GFP_ofs
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 3
+begin:
+	LI	0					; lieu result
+	LVA	 2, GFP_disp
+	Lb	 3, -P1_ofs
+	CALL	STANDARD.A83009B_L1.G_PACK. ,HF_L4
+	Sb	 3, -result__ofs			; retour resultat
+	UNLINK	 3
+	RTD	prm_siz-8
+endPRO					;---------- end PRO HF
+end if
+					; sub program entry decl (in instantiation TRUE )
+if defined HF_L53_
+PRO	HF_L53				;---------- PRO HF
+PRMS					;    debut parametrage
+	PRM P2_ofs				; in
+	PRM GFP_ofs
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 3
+begin:
+	LI	0					; lieu result
+	LVA	 2, GFP_disp
+	Lb	 3, -P2_ofs
+	CALL	STANDARD.A83009B_L1.G_PACK. ,HF_L5
+	Sb	 3, -result__ofs			; retour resultat
+	UNLINK	 3
+	RTD	prm_siz-8
+endPRO					;---------- end PRO HF
+end if
+					;---------- end generic package instantiation INSTANCE2
+end namespace
+
+
+					; _CHILD2 ENUMERATION TYPE INFO
+_CHILD2 = '_CHILD2'
+namespace _CHILD2
+VAR use__info, q
+BEGIN_BLOC_DEF
+db 0, 2, "E1"
+db 1, 2, "E2"
+db 2, 2, "E3"
+END_BLOC_DEF 8, 0, 2
+	; SIZ en bits !
+	LCA	SIZ
+	Sa	2, use__info
+end namespace
+; EXPANDER.DECLARATIONS.CODE_TYPE_DECL : skip PRIVATE CHILD3 (deferred to full type)
+INSTANCE3 = 'INSTANCE3'
+namespace INSTANCE3				;---------- GENERIC PACKAGE INSTANTIATION
+elab_spec:				;    SPEC ELAB
+
+BRA post_LD_T1
+LD_T1.elab:
+	Lb -1, 0
+	RTD 0
+post_LD_T1:
+BRA post_ST_T1
+ST_T1.elab:
+	Sb -1, 0
+	RTD 0
+post_ST_T1:
+BRA post_INADR_T1
+INADR_T1.elab:
+	RTD 0
+post_INADR_T1:
+BRA post_OUTADR_T1
+OUTADR_T1.elab:
+	La
+	RTD 0
+post_OUTADR_T1:
+VAR T1__outadr_ofs, q
+	LCA OUTADR_T1.elab
+	Sa	 2, T1__outadr_ofs
+VAR T1__inadr_ofs, q
+	LCA INADR_T1.elab
+	Sa	 2, T1__inadr_ofs
+VAR T1__st_ofs, q
+	LCA ST_T1.elab
+	Sa	 2, T1__st_ofs
+VAR T1__ld_ofs, q
+	LCA LD_T1.elab
+	Sa	 2, T1__ld_ofs
+VAR T1__u_ofs, q
+	La	 1, STANDARD.A83009B_L1._ENUM.use__info
+	Sa	 2, T1__u_ofs
+BRA post_LD_T2
+LD_T2.elab:
+	Lb -1, 0
+	RTD 0
+post_LD_T2:
+BRA post_ST_T2
+ST_T2.elab:
+	Sb -1, 0
+	RTD 0
+post_ST_T2:
+BRA post_INADR_T2
+INADR_T2.elab:
+	RTD 0
+post_INADR_T2:
+BRA post_OUTADR_T2
+OUTADR_T2.elab:
+	La
+	RTD 0
+post_OUTADR_T2:
+VAR T2__outadr_ofs, q
+	LCA OUTADR_T2.elab
+	Sa	 2, T2__outadr_ofs
+VAR T2__inadr_ofs, q
+	LCA INADR_T2.elab
+	Sa	 2, T2__inadr_ofs
+VAR T2__st_ofs, q
+	LCA ST_T2.elab
+	Sa	 2, T2__st_ofs
+VAR T2__ld_ofs, q
+	LCA LD_T2.elab
+	Sa	 2, T2__ld_ofs
+VAR T2__u_ofs, q
+	La	 1, STANDARD.A83009B_L1._ENUM.use__info
+	Sa	 2, T2__u_ofs
+VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
+					; CODE_PACKAGE_SPEC
+
+					; _PARENT ENUMERATION TYPE INFO
+_PARENT = '_PARENT'
+namespace _PARENT
+VAR use__info, q
+BEGIN_BLOC_DEF
+db 0, 2, "E1"
+db 1, 2, "E2"
+db 2, 2, "E3"
+END_BLOC_DEF 8, 0, 2
+	; SIZ en bits !
+	LCA	SIZ
+	Sa	2, use__info
+end namespace
+					; sub program entry decl (in instantiation TRUE )
+if defined HP_L54_
+PRO	HP_L54				;---------- PRO HP
+PRMS					;    debut parametrage
+	PRM P1_ofs				; in
+	PRM P2_ofs				; in
+	PRM GFP_ofs
+endPRMS					;    fin parametrage
+ELB 3
+begin:
+	LVA	 2, GFP_disp
+	Lb	 3, -P2_ofs
+	Lb	 3, -P1_ofs
+	CALL	STANDARD.A83009B_L1.G_PACK. ,HP_L2
+	UNLINK	 3
+	RTD	prm_siz
+endPRO					;---------- end PRO HP
+end if
+					; sub program entry decl (in instantiation TRUE )
+if defined HP_L55_
+PRO	HP_L55				;---------- PRO HP
+PRMS					;    debut parametrage
+	PRM P3_ofs				; in
+	PRM P4_ofs				; in
+	PRM GFP_ofs
+endPRMS					;    fin parametrage
+ELB 3
+begin:
+	LVA	 2, GFP_disp
+	Lb	 3, -P4_ofs
+	Lb	 3, -P3_ofs
+	CALL	STANDARD.A83009B_L1.G_PACK. ,HP_L3
+	UNLINK	 3
+	RTD	prm_siz
+endPRO					;---------- end PRO HP
+end if
+					; sub program entry decl (in instantiation TRUE )
+if defined HF_L56_
+PRO	HF_L56				;---------- PRO HF
+PRMS					;    debut parametrage
+	PRM P1_ofs				; in
+	PRM GFP_ofs
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 3
+begin:
+	LI	0					; lieu result
+	LVA	 2, GFP_disp
+	Lb	 3, -P1_ofs
+	CALL	STANDARD.A83009B_L1.G_PACK. ,HF_L4
+	Sb	 3, -result__ofs			; retour resultat
+	UNLINK	 3
+	RTD	prm_siz-8
+endPRO					;---------- end PRO HF
+end if
+					; sub program entry decl (in instantiation TRUE )
+if defined HF_L57_
+PRO	HF_L57				;---------- PRO HF
+PRMS					;    debut parametrage
+	PRM P2_ofs				; in
+	PRM GFP_ofs
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 3
+begin:
+	LI	0					; lieu result
+	LVA	 2, GFP_disp
+	Lb	 3, -P2_ofs
+	CALL	STANDARD.A83009B_L1.G_PACK. ,HF_L5
+	Sb	 3, -result__ofs			; retour resultat
+	UNLINK	 3
+	RTD	prm_siz-8
+endPRO					;---------- end PRO HF
+end if
+					;---------- end generic package instantiation INSTANCE3
+end namespace
+
+
+					; _CHILD3 ENUMERATION TYPE INFO
+_CHILD3 = '_CHILD3'
+namespace _CHILD3
+VAR use__info, q
+BEGIN_BLOC_DEF
+db 0, 2, "E1"
+db 1, 2, "E2"
+db 2, 2, "E3"
+END_BLOC_DEF 8, 0, 2
+	; SIZ en bits !
+	LCA	SIZ
+	Sa	2, use__info
+end namespace
+
+					;---------- GENERIC PACKAGE BODY ----------
+
+					;    BODY ELAB
+INSTANCE5 = 'INSTANCE5'
+namespace INSTANCE5				;---------- GENERIC PACKAGE INSTANTIATION
+elab_spec:				;    SPEC ELAB
+
+BRA post_LD_T1
+LD_T1.elab:
+	Lb -1, 0
+	RTD 0
+post_LD_T1:
+BRA post_ST_T1
+ST_T1.elab:
+	Sb -1, 0
+	RTD 0
+post_ST_T1:
+BRA post_INADR_T1
+INADR_T1.elab:
+	RTD 0
+post_INADR_T1:
+BRA post_OUTADR_T1
+OUTADR_T1.elab:
+	La
+	RTD 0
+post_OUTADR_T1:
+VAR T1__outadr_ofs, q
+	LCA OUTADR_T1.elab
+	Sa	 2, T1__outadr_ofs
+VAR T1__inadr_ofs, q
+	LCA INADR_T1.elab
+	Sa	 2, T1__inadr_ofs
+VAR T1__st_ofs, q
+	LCA ST_T1.elab
+	Sa	 2, T1__st_ofs
+VAR T1__ld_ofs, q
+	LCA LD_T1.elab
+	Sa	 2, T1__ld_ofs
+VAR T1__u_ofs, q
+	La	 1, STANDARD.A83009B_L1._ENUM.use__info
+	Sa	 2, T1__u_ofs
+BRA post_LD_T2
+LD_T2.elab:
+	Lb -1, 0
+	RTD 0
+post_LD_T2:
+BRA post_ST_T2
+ST_T2.elab:
+	Sb -1, 0
+	RTD 0
+post_ST_T2:
+BRA post_INADR_T2
+INADR_T2.elab:
+	RTD 0
+post_INADR_T2:
+BRA post_OUTADR_T2
+OUTADR_T2.elab:
+	La
+	RTD 0
+post_OUTADR_T2:
+VAR T2__outadr_ofs, q
+	LCA OUTADR_T2.elab
+	Sa	 2, T2__outadr_ofs
+VAR T2__inadr_ofs, q
+	LCA INADR_T2.elab
+	Sa	 2, T2__inadr_ofs
+VAR T2__st_ofs, q
+	LCA ST_T2.elab
+	Sa	 2, T2__st_ofs
+VAR T2__ld_ofs, q
+	LCA LD_T2.elab
+	Sa	 2, T2__ld_ofs
+VAR T2__u_ofs, q
+	La	 1, STANDARD.A83009B_L1._ENUM.use__info
+	Sa	 2, T2__u_ofs
+VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
+					; CODE_PACKAGE_SPEC
+
+					; _PARENT ENUMERATION TYPE INFO
+_PARENT = '_PARENT'
+namespace _PARENT
+VAR use__info, q
+BEGIN_BLOC_DEF
+db 0, 2, "E1"
+db 1, 2, "E2"
+db 2, 2, "E3"
+END_BLOC_DEF 8, 0, 2
+	; SIZ en bits !
+	LCA	SIZ
+	Sa	2, use__info
+end namespace
+					; sub program entry decl (in instantiation TRUE )
+if defined HP_L58_
+PRO	HP_L58				;---------- PRO HP
+PRMS					;    debut parametrage
+	PRM P1_ofs				; in
+	PRM P2_ofs				; in
+	PRM GFP_ofs
+endPRMS					;    fin parametrage
+ELB 3
+begin:
+	LVA	 2, GFP_disp
+	Lb	 3, -P2_ofs
+	Lb	 3, -P1_ofs
+	CALL	STANDARD.A83009B_L1.G_PACK. ,HP_L2
+	UNLINK	 3
+	RTD	prm_siz
+endPRO					;---------- end PRO HP
+end if
+					; sub program entry decl (in instantiation TRUE )
+if defined HP_L59_
+PRO	HP_L59				;---------- PRO HP
+PRMS					;    debut parametrage
+	PRM P3_ofs				; in
+	PRM P4_ofs				; in
+	PRM GFP_ofs
+endPRMS					;    fin parametrage
+ELB 3
+begin:
+	LVA	 2, GFP_disp
+	Lb	 3, -P4_ofs
+	Lb	 3, -P3_ofs
+	CALL	STANDARD.A83009B_L1.G_PACK. ,HP_L3
+	UNLINK	 3
+	RTD	prm_siz
+endPRO					;---------- end PRO HP
+end if
+					; sub program entry decl (in instantiation TRUE )
+if defined HF_L60_
+PRO	HF_L60				;---------- PRO HF
+PRMS					;    debut parametrage
+	PRM P1_ofs				; in
+	PRM GFP_ofs
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 3
+begin:
+	LI	0					; lieu result
+	LVA	 2, GFP_disp
+	Lb	 3, -P1_ofs
+	CALL	STANDARD.A83009B_L1.G_PACK. ,HF_L4
+	Sb	 3, -result__ofs			; retour resultat
+	UNLINK	 3
+	RTD	prm_siz-8
+endPRO					;---------- end PRO HF
+end if
+					; sub program entry decl (in instantiation TRUE )
+if defined HF_L61_
+PRO	HF_L61				;---------- PRO HF
+PRMS					;    debut parametrage
+	PRM P2_ofs				; in
+	PRM GFP_ofs
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 3
+begin:
+	LI	0					; lieu result
+	LVA	 2, GFP_disp
+	Lb	 3, -P2_ofs
+	CALL	STANDARD.A83009B_L1.G_PACK. ,HF_L5
+	Sb	 3, -result__ofs			; retour resultat
+	UNLINK	 3
+	RTD	prm_siz-8
+endPRO					;---------- end PRO HF
+end if
+					;---------- end generic package instantiation INSTANCE5
+end namespace
+
+
+					; _CHILD5 ENUMERATION TYPE INFO
+_CHILD5 = '_CHILD5'
+namespace _CHILD5
+VAR use__info, q
+BEGIN_BLOC_DEF
+db 0, 2, "E1"
+db 1, 2, "E2"
+db 2, 2, "E3"
+END_BLOC_DEF 8, 0, 2
+	; SIZ en bits !
+	LCA	SIZ
+	Sa	2, use__info
+end namespace
+begin:					;---------- package BDY INSTRUCTIONS
+end namespace 				;---------- end generic package BDY PACK1
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	UNLINK 2
+endPRO
+	CALL	STANDARD.REPORT. ,RESULT_L6
+ret_lbl:
+	UNLINK 1
+	RTD
+excep:
+endPRO					;---------- end PRO A83009B

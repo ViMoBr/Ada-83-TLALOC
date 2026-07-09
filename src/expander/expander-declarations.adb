@@ -1770,8 +1770,11 @@ begin
 --              ACTUAL      => ACTUAL_SUBP );
 
 	  PUT_LINE( "VAR " & SUBNAME_STR & "__call_ofs, q" );
-	  PUT_LINE( tab & "LCA " & ACTUAL_STR & ".elab" );
+	  PUT( tab & "LSPA" & tab );
+	  CODI.REGIONS_PATH( ACTUAL_DEFN );
+	  PUT_LINE( " ," & ACTUAL_STR );
 	  PUT_LINE( tab & "Sa" & tab & LVL_STR & ", " & SUBNAME_STR & "__call_ofs" );
+
 end;
 end if;
 	end	ACTUAL_SUBPROGRAM;

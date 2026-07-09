@@ -1,5 +1,5 @@
 ------------------------------------------------------------------------------------------------------------------------
--- SPDX-FileCopyrightText: 2026 VINCENT	MORIN, UBO
+-- SPDX-FileCopyrightText: 2026 VINCENT MORIN, UBO
 -- SPDX-License-Identifier: GPL-3.0-or-later
 ------------------------------------------------------------------------------------------------------------------------
 --	1	2	3	4	5	6	7	8	9	0	1	2
@@ -20,7 +20,7 @@ is
 						  NODE	  :TREE )
 						return NATURAL
   is
-    HASH_CODE	: NATURAL	:= abs( INTEGER( NODE.PG ) - 79 * INTEGER( NODE.LN ) );
+    HASH_CODE	: NATURAL := abs( INTEGER( NODE.PG ) - 79 * INTEGER( NODE.LN ) );
   begin
     HASH_CODE := HASH_CODE mod NODE_HASH.A'LENGTH;
     return HASH_CODE;
@@ -31,18 +31,18 @@ is
 
 
 			--============--
-	procedure		INSERT_NODE_HASH		( NODE_HASH :in out	NODE_HASH_TYPE;
+	procedure		INSERT_NODE_HASH		( NODE_HASH :in out NODE_HASH_TYPE;
 						  NEW_NODE  :TREE;
 						  OLD_NODE  :TREE )
   is
-    HASH_INDEX	: NATURAL	:= HASH_NODE_HASH( NODE_HASH,	OLD_NODE );
+    HASH_INDEX	: NATURAL := HASH_NODE_HASH( NODE_HASH, OLD_NODE );
     HASH_CHAIN	: TREE	:= NODE_HASH.A( HASH_INDEX );
-    NEW_HASH_CHAIN	: TREE	:= MAKE( DN_LIB_INFO );
+    NEW_HASH_CHAIN  : TREE	:= MAKE( DN_LIB_INFO );
   begin
     D( XD_SHORT,	 NEW_HASH_CHAIN, HASH_CHAIN );
     D( XD_PRIMARY,	 NEW_HASH_CHAIN, OLD_NODE );
     D( XD_SECONDARY, NEW_HASH_CHAIN, NEW_NODE );
-    NODE_HASH.A( HASH_INDEX )	:= NEW_HASH_CHAIN;
+    NODE_HASH.A( HASH_INDEX ) := NEW_HASH_CHAIN;
 
   end	INSERT_NODE_HASH;
 	--============--
@@ -50,18 +50,18 @@ is
 
 
 			----------------
-	procedure		SEARCH_NODE_HASH		( NODE_HASH :in out	NODE_HASH_TYPE;
-						  NODE	  :in out	TREE )
+	procedure		SEARCH_NODE_HASH		( NODE_HASH :in out NODE_HASH_TYPE;
+						  NODE	  :in out TREE )
   is
-    HASH_INDEX	: NATURAL	:= HASH_NODE_HASH( NODE_HASH,	NODE );
+    HASH_INDEX	: NATURAL := HASH_NODE_HASH( NODE_HASH, NODE );
     HASH_CHAIN	: TREE	:= NODE_HASH.A( HASH_INDEX );
   begin
-    while	HASH_CHAIN /= TREE_VOID loop
+    while HASH_CHAIN /= TREE_VOID loop
       if D( XD_PRIMARY, HASH_CHAIN ) = NODE then
         NODE := D( XD_SECONDARY, HASH_CHAIN );
         exit;
-      end	if;
-      HASH_CHAIN :=	D( XD_SHORT, HASH_CHAIN );
+      end if;
+      HASH_CHAIN := D( XD_SHORT, HASH_CHAIN );
     end loop;
 
   end	SEARCH_NODE_HASH;
@@ -70,8 +70,8 @@ is
 
 
 			--========--
-	procedure		REPLACE_NODE			( NODE	  :in out	TREE;
-							  NODE_HASH :in out	NODE_HASH_TYPE )
+	procedure		REPLACE_NODE			( NODE	  :in out TREE;
+							  NODE_HASH :in out NODE_HASH_TYPE )
   is
     OLD_NODE	: constant TREE	:= NODE;
   begin
@@ -84,26 +84,26 @@ is
 
 
 			--=================--
-	procedure		SUBSTITUTE_ATTRIBUTES		( NODE	  :in out	TREE;
-							  NODE_HASH :in out	NODE_HASH_TYPE;
-							  H_IN	  :H_TYPE	)
+	procedure		SUBSTITUTE_ATTRIBUTES		( NODE	  :in out TREE;
+							  NODE_HASH :in out NODE_HASH_TYPE;
+							  H_IN	  :H_TYPE )
   is
     use IDL_TBL;
-    H		: H_TYPE	renames H_IN;
+    H		: H_TYPE  renames H_IN;
 
     OLD_ATTRIBUTE	: TREE;
     ATTRIBUTE	: TREE;
   begin
 
-    for I	in 1 .. N_SPEC( NODE.TY ).NS_SIZE loop
+    for I in 1 .. N_SPEC( NODE.TY ).NS_SIZE loop
       ATTRIBUTE	:= DABS( I, NODE );
-      OLD_ATTRIBUTE	:= ATTRIBUTE;
+      OLD_ATTRIBUTE := ATTRIBUTE;
 
-      SUBSTITUTE( ATTRIBUTE, NODE_HASH,	H );
+      SUBSTITUTE( ATTRIBUTE, NODE_HASH, H );
 
       if ATTRIBUTE /= OLD_ATTRIBUTE then
         DABS( I, NODE, ATTRIBUTE );
-      end	if;
+      end if;
     end loop;
 
   end	SUBSTITUTE_ATTRIBUTES;
@@ -112,9 +112,9 @@ is
 
 
 			----------------------------------
-	procedure		SUBSTITUTE_ATTRIBUTES_ON_NODE_COPY	( NODE	  :in out	TREE;
-							  NODE_HASH :in out	NODE_HASH_TYPE;
-							  H	  :H_TYPE	)
+	procedure		SUBSTITUTE_ATTRIBUTES_ON_NODE_COPY	( NODE	  :in out TREE;
+							  NODE_HASH :in out NODE_HASH_TYPE;
+							  H	  :H_TYPE )
   is
     use IDL_TBL;
 
@@ -124,18 +124,18 @@ is
   begin
 
 
-    for I	in 1 .. N_SPEC (NODE.TY).NS_SIZE loop
+    for I in 1 .. N_SPEC (NODE.TY).NS_SIZE loop
       ATTRIBUTE	:= DABS (I, NODE);
-      OLD_ATTRIBUTE	:= ATTRIBUTE;
+      OLD_ATTRIBUTE := ATTRIBUTE;
 
-      SUBSTITUTE( ATTRIBUTE, NODE_HASH,	H );
+      SUBSTITUTE( ATTRIBUTE, NODE_HASH, H );
 
       if ATTRIBUTE /= OLD_ATTRIBUTE then
 
-        if NODE = OLD_NODE then NODE :=	COPY_NODE( NODE ); end if;
+        if NODE = OLD_NODE then NODE := COPY_NODE( NODE ); end if;
 
         DABS( I, NODE, ATTRIBUTE );
-      end	if;
+      end if;
 
     end loop;
 
@@ -145,9 +145,9 @@ is
 
 
 				--======--
-	procedure			SUBSTITUTE		( NODE	  :in out	TREE;
-							  NODE_HASH :in out	NODE_HASH_TYPE;
-							  H_IN	  :H_TYPE	)
+	procedure			SUBSTITUTE		( NODE	  :in out TREE;
+							  NODE_HASH :in out NODE_HASH_TYPE;
+							  H_IN	  :H_TYPE )
   is
     OLD_NODE	: constant TREE	:= NODE;
     H		: H_TYPE		renames H_IN;
@@ -160,7 +160,7 @@ is
       raise PROGRAM_ERROR;
     end if;
 
-    if (NODE.PT = HI or NODE.PT = S) or	else (NODE.PG = 0 or else DABS( 0, NODE	).NSIZ = 0) then
+    if (NODE.PT = HI or NODE.PT = S) or else (NODE.PG = 0 or else DABS( 0, NODE ).NSIZ = 0) then
       return;
     end if;
 
@@ -188,14 +188,14 @@ is
 	DERIVED_ID_LIST	: SEQ_TYPE;
 	DERIVED_ID	: TREE;
         begin
-	REPLACE_SOURCE_NAME	    ( SOURCE_NAME, NODE_HASH,	H, NODE );
-	GEN_PREDEFINED_OPERATORS( D( SM_TYPE_SPEC, SOURCE_NAME ), H	);
+	REPLACE_SOURCE_NAME	    ( SOURCE_NAME, NODE_HASH, H, NODE );
+	GEN_PREDEFINED_OPERATORS( D( SM_TYPE_SPEC, SOURCE_NAME ), H );
 
 	if D( AS_TYPE_DEF, NODE ).TY = DN_DERIVED_DEF then
-	  DERIVED_ID_LIST := LIST( D(	AS_TYPE_DEF, NODE )	);
-	  while not IS_EMPTY( DERIVED_ID_LIST )	loop
+	  DERIVED_ID_LIST := LIST( D( AS_TYPE_DEF, NODE ) );
+	  while not IS_EMPTY( DERIVED_ID_LIST ) loop
 	    POP( DERIVED_ID_LIST, DERIVED_ID );
-	    REPLACE_SOURCE_NAME( DERIVED_ID, NODE_HASH, H	);
+	    REPLACE_SOURCE_NAME( DERIVED_ID, NODE_HASH, H );
 	  end loop;
 	end if;
 	SUBSTITUTE_ATTRIBUTES_ON_NODE_COPY( NODE, NODE_HASH, H );
@@ -228,12 +228,12 @@ is
 	TYPE_DEF_KIND	: NODE_NAME	:= D( AS_TYPE_DEF, NODE ).TY;
         begin
 
-	while not	IS_EMPTY(	SOURCE_NAME_LIST ) loop
+	while not IS_EMPTY( SOURCE_NAME_LIST ) loop
 	  POP( SOURCE_NAME_LIST, SOURCE_NAME );
 
-	  REPLACE_SOURCE_NAME( SOURCE_NAME, NODE_HASH, H,	NODE );
+	  REPLACE_SOURCE_NAME( SOURCE_NAME, NODE_HASH, H, NODE );
 	  if TYPE_DEF_KIND = DN_CONSTRAINED_ARRAY_DEF then
-	    GEN_PREDEFINED_OPERATORS(	D( SM_OBJ_TYPE, SOURCE_NAME ), H );
+	    GEN_PREDEFINED_OPERATORS( D( SM_OBJ_TYPE, SOURCE_NAME ), H );
 	  end if;
 	end loop;
 
@@ -242,15 +242,15 @@ is
 
       when CLASS_USED_OBJECT =>
         declare
-	OLD_DEFN : constant	TREE := D( SM_DEFN,	NODE );
+	OLD_DEFN : constant TREE := D( SM_DEFN, NODE );
 	DEFN     : TREE	     := OLD_DEFN;
 	EXP_TYPE : TREE	     := D( SM_EXP_TYPE, NODE );
         begin
 	SUBSTITUTE( DEFN, NODE_HASH, H );
-	if DEFN /= OLD_DEFN	then
+	if DEFN /= OLD_DEFN then
 	  SUBSTITUTE( EXP_TYPE, NODE_HASH, H );
-	  NODE :=	COPY_NODE( NODE );
-	  D( SM_DEFN, NODE,	DEFN );
+	  NODE := COPY_NODE( NODE );
+	  D( SM_DEFN, NODE, DEFN );
 	  D( SM_EXP_TYPE, NODE, EXP_TYPE );
 	end if;
         end;
@@ -264,9 +264,9 @@ is
 	SOURCE_NAME	: TREE;
         begin
 
-	while not	IS_EMPTY(	SOURCE_NAME_LIST ) loop
+	while not IS_EMPTY( SOURCE_NAME_LIST ) loop
 	  POP( SOURCE_NAME_LIST, SOURCE_NAME );
-	  REPLACE_SOURCE_NAME( SOURCE_NAME, NODE_HASH, H,	NODE );
+	  REPLACE_SOURCE_NAME( SOURCE_NAME, NODE_HASH, H, NODE );
 	end loop;
 
 	SUBSTITUTE_ATTRIBUTES_ON_NODE_COPY( NODE, NODE_HASH, H );
@@ -276,8 +276,8 @@ is
         declare
 	USED_NAME_ID	: TREE	:= D( AS_USED_NAME_ID, NODE );
         begin
-	USED_NAME_ID := COPY_NODE( USED_NAME_ID	);
-	if D( SM_DEFN, USED_NAME_ID )	/= TREE_VOID then
+	USED_NAME_ID := COPY_NODE( USED_NAME_ID );
+	if D( SM_DEFN, USED_NAME_ID ) /= TREE_VOID then
 	  SUBSTITUTE_ATTRIBUTES_ON_NODE_COPY( NODE, NODE_HASH, H );
 	end if;
         end;
@@ -296,7 +296,7 @@ is
 	| DN_UNIVERSAL_INTEGER	| DN_UNIVERSAL_FIXED	| DN_UNIVERSAL_REAL
 	| DN_USER_ROOT		| DN_TRANS_WITH .. DN_NULLARY_CALL
 	=>
-	PUT_LINE(	"GEN_SUBS.SUBSTITUTE : NOEUD INVALIDE EN COPIE GENERIQUE " & NODE_NAME'IMAGE( NODE.TY ) );
+	PUT_LINE( "GEN_SUBS.SUBSTITUTE : NOEUD INVALIDE EN COPIE GENERIQUE " & NODE_NAME'IMAGE( NODE.TY ) );
 	raise PROGRAM_ERROR;
 
       when  DN_TXTREP		| DN_NUM_VAL		| DN_SYMBOL_REP
@@ -313,7 +313,7 @@ is
     end case;
 
     if NODE /= OLD_NODE then
-      INSERT_NODE_HASH( NODE_HASH, NODE, OLD_NODE	);
+      INSERT_NODE_HASH( NODE_HASH, NODE, OLD_NODE );
     end if;
 
   end	SUBSTITUTE;

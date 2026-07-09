@@ -1,5 +1,5 @@
 ------------------------------------------------------------------------------------------------------------------------
--- SPDX-FileCopyrightText: 2026 VINCENT	MORIN, UBO
+-- SPDX-FileCopyrightText: 2026 VINCENT MORIN, UBO
 -- SPDX-License-Identifier: GPL-3.0-or-later
 ------------------------------------------------------------------------------------------------------------------------
 --	1	2	3	4	5	6	7	8	9	0	1	2
@@ -15,17 +15,17 @@ is					--------
 	G_UNARY,		G_LX_SYMREP,	G_LX_NUMREP,	G_LX_DEFAULT,
 	G_NOT_LX_DEFAULT,	G_NIL,		G_INSERT,		G_APPEND,
 	G_CAT,		G_VOID,		G_LIST,		G_EXCH_1,
-	G_EXCH_2,		G_CHECK_NAME,	G_CHECK_SUBP_NAME,	G_CHECK_ACCEPT_NAME
+	G_EXCH_2,		G_CHECK_NAME,	G_CHECK_SUBP_NAME,  G_CHECK_ACCEPT_NAME
 	);
 
-  subtype	GRMR_OP_NODE	is GRMR_OP range N_0 .. N_L;
-  subtype	GRMR_OP_NULLARY	is GRMR_OP range N_0 .. N_DEF;
-  subtype	GRMR_OP_UNARY	is GRMR_OP range N_1 .. N_1;
-  subtype	GRMR_OP_BINARY	is GRMR_OP range N_2 .. N_V2;
-  subtype	GRMR_OP_TERNARY	is GRMR_OP range N_3 .. N_V3;
-  subtype	GRMR_OP_ARBITRARY	is GRMR_OP range N_L .. N_L;
-  subtype	GRMR_OP_QUOTE	is GRMR_OP range G_INFIX .. G_UNARY;
-  subtype	GRMR_OP_NOARG	is GRMR_OP range G_LX_SYMREP .. GRMR_OP'LAST;
+  subtype GRMR_OP_NODE	is GRMR_OP range N_0 .. N_L;
+  subtype GRMR_OP_NULLARY	is GRMR_OP range N_0 .. N_DEF;
+  subtype GRMR_OP_UNARY	is GRMR_OP range N_1 .. N_1;
+  subtype GRMR_OP_BINARY	is GRMR_OP range N_2 .. N_V2;
+  subtype GRMR_OP_TERNARY	is GRMR_OP range N_3 .. N_V3;
+  subtype GRMR_OP_ARBITRARY	is GRMR_OP range N_L .. N_L;
+  subtype GRMR_OP_QUOTE	is GRMR_OP range G_INFIX .. G_UNARY;
+  subtype GRMR_OP_NOARG	is GRMR_OP range G_LX_SYMREP .. GRMR_OP'LAST;
       
       
   function  GRMR_OP_VALUE	( S :STRING )	return GRMR_OP;

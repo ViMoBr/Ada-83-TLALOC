@@ -36,6 +36,19 @@ expander.adb                  Programme principal + CODE_ROOT
   `A or else B` → DUP, BT skip, DROP, eval B, skip:
 - **Doublet composite** : `_disp` + `__u`. Passage = adresse du doublet.
 - **PRM result__ofs en dernier** dans les fonctions.
+
+- **result__ofs en corps générique** : le PRM GFP_ofs s'intercale entre
+  les paramètres et result__ofs (ordre CODE_PARAM_S : params, GFP_ofs si
+  IN_GENERIC_BODY, result__ofs si fonction). Slot résultat =
+  -8(N params + 2). Piège n° 80.
+- **Opérateurs d'un type déclaré dans un package** (dont FILE_MODE des  instances IO) : l'infixe exige un `use` local — l'égalité prédéfinie
+  est implicitement déclarée DANS le package et LRM 8.4(5) ne la rend
+  pas visible par qualification (l'infixe ne se qualifie pas ; `use
+  type` n'existe qu'en Ada 95). Le frontend est CONFORME — le
+  « DESACCORD DE TYPE » sur `MODE(F) = IN_FILE` hors clause use n'est
+  pas une anomalie. Idiome : `declare use <instance>; begin … end;`.
+  Alternative (renommage d'opérateur, 8.5) à éviter tant que le tri A8
+  renommage/visibilité n'est pas fait. (session 9 juillet)
 - **SD après syscall** : transférer `[rbp]` vers result__ofs.
 - **NOT booléen** : `LI 1` + `OUX`. Pas `NON` (bitwise).
 - **Syntaxe virgules vides** : `LIa , , offset` / `Ld , FIELD`.

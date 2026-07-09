@@ -1,5 +1,6 @@
 generic
-   type SOURCE is limited private;
-   type TARGET is limited private;
-
-function UNCHECKED_CONVERSION		( S :SOURCE )		return TARGET;
+  type SOURCE is private;
+  type TARGET is private;
+		--------------------
+function		UNCHECKED_CONVERSION	( S :SOURCE )		return TARGET;
+		--------------------

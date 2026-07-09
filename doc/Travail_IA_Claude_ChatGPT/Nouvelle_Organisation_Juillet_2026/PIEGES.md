@@ -344,3 +344,109 @@ __DÉSAMORCÉ le 8 juillet 2026__: OPEN → NAME_ERROR, CREATE → USE_ERROR (TE
     FILE_TYPE descripteur partagé à tampon (chantier non planifié).
     Premier suspect des échecs DIRECT_IO_TEST/SEQ_IO_TEST du filet du
     8 juillet. (session 8 juillet)
+
+80. **Dans un corps générique, le slot résultat d'une fonction est à
+    -8(N+2), pas -8(N+1) : le PRM GFP_ofs s'intercale entre les
+    paramètres et result__ofs** (CODE_PARAM_S, drapeau IN_GENERIC_BODY,
+    expander-declarations.adb l. ~152-161). Un `SD` au mauvais cran
+    écrit dans le slot GFP et laisse le résultat à sa valeur résiduelle
+    de pile — fossile invisible tant que le raise aval était un no-op
+    (corollaire du n° 74). Vécu : les 4 wrappers syscall à 3 paramètres
+    de DIRECT_IO et SEQUENTIAL_IO (`SD -32` au lieu de `-40`) ;
+    BYTES_READ en garbage → END_ERROR spurieux au premier READ, données
+    pourtant correctement lues depuis l'origine. Les wrappers à 1 et
+    2 paramètres étaient justes — le décompte a glissé au passage à 3.
+    Règle de contrôle : dans un corps générique, result__ofs =
+    -8(nombre de paramètres + 2). Verrous : DIRECT_IO_TEST v2 §8.3 et
+    SEQ_IO_TEST v2 §6.2 (élément tronqué : lecture partielle non nulle,
+    la branche exacte `BYTES_READ < SIZE_BYTES`). (session 9 juillet)
+
+81. **POP inconditionnel en tête d'une récursion sur séquence DIANA :
+    la garde IS_EMPTY qui protège la récursion ne protège pas le
+    premier appel.** Vécu : CODE_GENERIC_FRAME_OFFSETS sur un générique
+    SANS formels (`GENERIC PROCEDURE P;` — légal) ; le POP d'ouverture
+    fait HEAD sur séquence vide → PROGRAM_ERROR idl_man « TETE DE
+    SEQUENCE SEQ.FIRST = TREE_NIL ». Règle : tout POP d'ouverture se
+    garde lui-même par IS_EMPTY ; ici on n'émet plus du tout le bloc
+    `virtual at 8` vide. Détecté par A83009B. (session 9 juillet)
+
+82. **Appel à travers une chaîne de renamings de sous-programme : nom,
+    label ET chemin de région doivent TOUS venir de l'origine.** Un
+    renaming (SM_UNIT_DESC = DN_RENAMES_UNIT) n'a pas de corps — label
+    attribué par CODE_SUBPROG_ENTRY_DECL mais aucun PRO n'existe.
+    SUBPROGRAM_ORIGIN (expander-utils) suit AS_NAME.SM_DEFN maillon par
+    maillon (dump : pas de raccourci sem ; arrêt sur SM_UNIT_DESC
+    void). Résolution partielle = symbole hybride (`PROC3_L7` : nom de
+    l'appelé, label de l'origine). Les défauts du profil du renaming
+    sont déjà matérialisés par SM_NORMALIZED_PARAM_S — ne rediriger que
+    la cible. Non traité : chemin fonction et actuels génériques qui
+    seraient des renamings. Détecté par A85013B. (session 9 juillet)
+
+83. **L'assemblage paresseux (`if defined X_`) n'est armé que par la
+    macro CALL : toute autre référence à `X.elab` laisse le corps non
+    assemblé.** Prendre l'adresse d'un sous-programme par un LCA nu
+    (actuels génériques) → « symbol X.elab is undefined » dès que X
+    n'est CALLé nulle part directement. Macro LSPA (Load SubProgram
+    Address) : même postpone d'armement que CALL + empilement de
+    l'adresse ; émise par ACTUAL_SUBPROGRAM avec chemin absolu
+    REGIONS_PATH (la résolution relative de l'ancien LCA ne marchait
+    que par co-localisation). Règle : adresse de sous-programme = LSPA,
+    jamais LCA. Détecté par A87B59A (six occurrences d'un coup).
+    (session 9 juillet)
+
+84. **REGIONS_PATH à travers une région générique de sous-programme :
+    `generic_id` ne porte pas CD_LABEL (schéma DIANA), et le namespace
+    physique est le PRO étiqueté du corps (`P_Lxx`).** XD_REGION des
+    locaux d'un corps générique = le GENERIC_ID lui-même (dump MINIG) ;
+    le chemin émis « P. » sans label ne correspond à aucun namespace.
+    Label à récupérer via D(AS_SOURCE_NAME, D(XD_BODY, REGION)) —
+    XD_BODY, pas SM_BODY (absent du dump). Les génériques de PACKAGE
+    gardent leur namespace NON étiqueté (discriminer par SM_SPEC).
+    Réserve : corps en sous-unité (xd_stub) non vérifié. Corollaire :
+    pour un objet du frame COURANT, émettre le nom relatif (niveau =
+    CUR_LEVEL) plutôt qu'un chemin absolu — toujours valide, immunisé.
+    Détecté par A87B59A (BLKMOV, lecture du descripteur destination).
+    (session 9 juillet)
+
+85. **CODE_SELECTED : variable COMPOSITE nommée à travers un préfixe
+    package — la base n'était jamais poussée.** La branche
+    DN_VARIABLE_ID de PROCESS_DESIGNATOR ne traitait que le scalaire ;
+    pour PACK1.ARG1.<champs> (record), rien n'était émis et les
+    `LVA ,offset` de la chaîne s'additionnaient sur pile vide → Ld sur
+    adresse poubelle, segfault. Fix : La lvl + REGIONS_PATH + `_disp`
+    (chemin absolu obligatoire, la variable vit dans le namespace du
+    package). Jumeaux consignés NON exercés : la branche scalaire du
+    même endroit émet le nom NU sans REGIONS_PATH (`PACK1.SCALAIRE`
+    casserait à l'assemblage) ; un package imbriqué dans le préfixe
+    transite par le else « PAS FAIT » (commentaire inoffensif, le
+    chemin absolu couvre). Détecté par A83C01G (composants homonymes
+    de packages). (session 9 juillet)
+
+86. **Macro fasmg inconditionnelle « ! » : indispensable pendant une
+    capture (struc/postpone laissée ouverte), fatale dans un `if`
+    faux — exigences irréconciliables.** Le « ! » a la sémantique de
+    `end if` : interprété même dans un bloc sauté. Une split-macro dont
+    la seconde moitié ferme une capture ouverte par la première DOIT
+    être « ! » (sinon elle est avalée comme texte)… et explose
+    (`end postpone` orphelin, « unexpected instruction ») dès que la
+    paire vit sous un `if defined` faux — aucun flag ne peut aider, le
+    déséquilibre est syntaxique, avant toute évaluation. Remède : ne
+    JAMAIS capturer entre deux macros ; données inline sautées par BRA
+    (pattern des thunks LD_/ST_, prouvé sous les gardes), tailles par
+    différence d'étiquettes résolue au multipasse. Un `postpone /
+    end postpone` COMPLET sur lignes brutes reste, lui, sain dans un
+    if faux (sauté en bloc). Vécu : BEGIN/END_BLOC_DEF, énuméré déclaré
+    dans un sous-programme jamais appelé (A83009A/B).
+    (session 9 juillet)
+
+87. **Les postpones fasmg s'exécutent en LIFO — tout contrat
+    d'adjacence mémoire fondé sur leur ordre d'enregistrement est
+    invisible et fragile.** L'ancien BLOC_DEF construisait le layout
+    ENUM_USE_INFO étendu — SIZ@0, FST@+4, LST@+8, doublet images @+16,
+    consommé EN DUR par GET_ENUM_IMAGES de TEXT_IO (LIVa __u+16) — par
+    l'ordre d'enregistrement de cinq postpones ; l'ordre d'émission des
+    CST (LST, FST, SIZ) était le miroir du LIFO. Un grep symbolique ne
+    voit pas ce consommateur : chercher AUSSI les offsets en dur côté
+    runtime Ada (ASM_OP_x). Le contrat est désormais posé en clair et
+    d'un seul tenant par END_BLOC_DEF siz,fst,lst ; gardien :
+    ENUM_TEST. (session 9 juillet)

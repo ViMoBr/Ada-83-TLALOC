@@ -12,6 +12,13 @@ is			----------
 
   TAB_WIDTH		: constant NATURAL		:= 10;
 
+  -- Largeur visuelle minimale (en colonnes) d'une suite de blancs pour
+  -- autoriser son remplacement par des tabulations. Les sauts d'une ou
+  -- deux colonnes restent en espaces, afin de ne pas rendre le texte
+  -- penible a reediter (tabulation posee pour un seul blanc, ou double
+  -- blanc de lisibilite coupe en deux).
+  MIN_TAB_RUN		: constant NATURAL		:= 3;
+
   LIST_FILE_STR		: STRING(	1 .. 128 );
   LIST_FILE_LEN		: NATURAL			:= 0;
   LIST_FILE		: FILE_TYPE;
@@ -70,21 +77,26 @@ is			----------
     -- jusqu'a la colonne VIS_COL_OUT. Regenere dans OUT_BUFFER le blanc
     -- minimal : tabulations jusqu'au dernier multiple de TAB_WIDTH
     -- inferieur ou	egal a VIS_COL_OUT,	puis espaces pour completer.
+    -- Exception : un saut visuel de moins de MIN_TAB_RUN colonnes est
+    -- regenere en espaces seuls, jamais en tabulation.
 		---------------
     procedure	EMIT_WHITESPACE	( VIS_COL_IN, VIS_COL_OUT :in	NATURAL )
     is		---------------
       CUR_COL	: NATURAL	:= VIS_COL_IN;
       NEXT_TAB	: NATURAL;
     begin
-      -- Emettre des tabulations tant qu'elles font progresser vers la cible
-      loop
-        -- Colonne atteinte par une tabulation depuis CUR_COL
-        NEXT_TAB :=	((CUR_COL	/ TAB_WIDTH) + 1) *	TAB_WIDTH;
-        exit when NEXT_TAB > VIS_COL_OUT;
-        OUT_LEN := OUT_LEN + 1;
-        OUT_BUFFER(	OUT_LEN )	:= ASCII.HT;
-        CUR_COL := NEXT_TAB;
-      end	loop;
+      -- Emettre des tabulations tant qu'elles font progresser vers la
+      -- cible, mais seulement si le saut visuel est assez large.
+      if  VIS_COL_OUT - VIS_COL_IN >= MIN_TAB_RUN  then
+        loop
+          -- Colonne atteinte par une tabulation depuis CUR_COL
+          NEXT_TAB := ((CUR_COL / TAB_WIDTH) + 1) * TAB_WIDTH;
+          exit when NEXT_TAB > VIS_COL_OUT;
+          OUT_LEN := OUT_LEN + 1;
+          OUT_BUFFER( OUT_LEN ) := ASCII.HT;
+          CUR_COL := NEXT_TAB;
+        end loop;
+      end if;
 
       -- Completer avec des espaces
       while  CUR_COL < VIS_COL_OUT  loop

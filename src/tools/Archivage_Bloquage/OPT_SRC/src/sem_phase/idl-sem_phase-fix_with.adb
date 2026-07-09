@@ -1,5 +1,5 @@
 ------------------------------------------------------------------------------------------------------------------------
--- SPDX-FileCopyrightText: 2026 VINCENT	MORIN, UBO
+-- SPDX-FileCopyrightText: 2026 VINCENT MORIN, UBO
 -- SPDX-License-Identifier: GPL-3.0-or-later
 ------------------------------------------------------------------------------------------------------------------------
 --	1	2	3	4	5	6	7	8	9	0	1	2
@@ -10,16 +10,16 @@ package body				FIX_WITH
 					--------
 is
    
-      use	DEF_UTIL,	SEM_GLOB,	PRE_FCNS,	REQ_UTIL,	DERIVED;
+      use DEF_UTIL, SEM_GLOB, PRE_FCNS, REQ_UTIL, DERIVED;
    
         -- FIX UP TRANSITIVELY WITHED UNITS FOR THE GIVEN COMP UNIT
-        -- I.E., CREATE DEF RECORDS FOR	ID'S, ETC
+        -- I.E., CREATE DEF RECORDS FOR ID'S, ETC
    
         --$$$$TEMPORARY
-       function STORE_SYM ( TXTREP: TREE ) return	TREE is
+       function STORE_SYM ( TXTREP: TREE ) return TREE is
       begin
-         return STORE_SYM ( PRINT_NAME ( TXTREP )	);
-      end	STORE_SYM;
+         return STORE_SYM ( PRINT_NAME ( TXTREP ) );
+      end STORE_SYM;
    
         -- $$$ TEMPORARY
 
@@ -38,11 +38,11 @@ is
 		);
   begin
          if  REGION_DEF /= TREE_VOID  then
-	 H.LEX_LEVEL := DI(	XD_LEX_LEVEL, REGION_DEF );
+	 H.LEX_LEVEL := DI( XD_LEX_LEVEL, REGION_DEF );
          end if;
 	      -- $$$$ THE FOLLOWING IN CASE IT'S A TEXTREP
          if  D( LX_SYMREP,ID).TY = DN_TXTREP  then
-	 D( LX_SYMREP, ID, STORE_SYM(	D( LX_SYMREP, ID ) ) );
+	 D( LX_SYMREP, ID, STORE_SYM( D( LX_SYMREP, ID ) ) );
          end if;
          
          return DEF_UTIL.MAKE_DEF_FOR_ID( ID, H );
@@ -64,7 +64,7 @@ is
     REGION_DEF		: TREE;
 
 			---------------------
-    procedure		ADD_BLTN_IDS_TO_TABLE	( DECL_S2	:TREE )
+    procedure		ADD_BLTN_IDS_TO_TABLE	( DECL_S2 :TREE )
 			---------------------
     is
       subtype OP_CLASS is PRENAME.OP_CLASS;
@@ -73,13 +73,13 @@ is
       ID		: TREE;
       SYMREP	: TREE;
     begin
-	      -- FOR EACH ITEM IN THE	PRIVATE PART OF _STANDRD
+	      -- FOR EACH ITEM IN THE PRIVATE PART OF _STANDRD
       while  not IS_EMPTY( ID_LIST)  loop
         POP( ID_LIST, ID);
-		    -- IF	IT IS A BLTN_OPERATOR_ID
-        if  ID.TY =	DN_BLTN_OPERATOR_ID	 then
-			  -- FORCE A SYMREP	IF SYMBOL	IS USED
-	SYMREP :=	D( LX_SYMREP, ID);
+		    -- IF IT IS A BLTN_OPERATOR_ID
+        if  ID.TY = DN_BLTN_OPERATOR_ID  then
+			  -- FORCE A SYMREP IF SYMBOL IS USED
+	SYMREP := D( LX_SYMREP, ID);
 	if  SYMREP.TY = DN_TXTREP  then
 	  SYMREP := STORE_SYM ( PRINT_NAME ( SYMREP ) );
 	  if  SYMREP /= TREE_VOID  then
@@ -87,12 +87,12 @@ is
 	  end if;
 	end if;
 			  -- IF SYMBOL IS USED
-	if SYMREP	/= TREE_VOID then
-				-- ADD IT	TO THE BUILTIN OPERATOR TABLE
-	  PRENAME.BLTN_ID_ARRAY( OP_CLASS'VAL (	DI ( SM_OPERATOR, ID ) ) ) :=	ID;
+	if SYMREP /= TREE_VOID then
+				-- ADD IT TO THE BUILTIN OPERATOR TABLE
+	  PRENAME.BLTN_ID_ARRAY( OP_CLASS'VAL ( DI ( SM_OPERATOR, ID ) ) ) := ID;
 	end if;
         end if;
-      end	loop;
+      end loop;
 
     end	ADD_BLTN_IDS_TO_TABLE;
 	---------------------
@@ -110,12 +110,12 @@ is
 			REGION_DEF	=> REGION_DEF_IN,
 			RETURN_TYPE	=> TREE_VOID,
 			ENCLOSING_LOOP_ID	=> TREE_VOID,
-			LEX_LEVEL	=> 0,
+			LEX_LEVEL => 0,
 			IS_IN_SPEC	=> IN_SPEC_IN,
 			IS_IN_BODY	=> FALSE,
 			SUBP_SYMREP	=> TREE_VOID
 			);
-	  SOURCE_NAME_LIST	: SEQ_TYPE;
+	  SOURCE_NAME_LIST  : SEQ_TYPE;
 	  SOURCE_NAME	: TREE;
 	  DEF		: TREE;
 	  TYPE_DEF	: TREE;
@@ -134,24 +134,24 @@ is
         DECL_LIST		: SEQ_TYPE	:= DECL_LIST_IN;
         DECL		: TREE;
       begin
-        while  not IS_EMPTY( DECL_LIST)	 loop
+        while  not IS_EMPTY( DECL_LIST)  loop
 	POP( DECL_LIST, DECL );
 	     
-	if  DECL.TY in CLASS_ALL_DECL	 then
-	  if  not( DECL.TY = DN_USE  and  SUBUNIT_IN = TREE_VOID )	then
+	if  DECL.TY in CLASS_ALL_DECL  then
+	  if  not( DECL.TY = DN_USE  and  SUBUNIT_IN = TREE_VOID )  then
 	    FIX_WITH_ONE_DECL( DECL, REGION_DEF, IN_SPEC );
 	  end if;
 	end if;
 	     
 	exit when				--| THIS IS STUB FOR CURRENT COMP UNIT BODY
 		 DECL.TY in CLASS_SUBUNIT_BODY
-		 and then	D( AS_BODY, DECL ).TY = DN_STUB
-		 and then	SUBUNIT_IN.TY = DN_SUBUNIT
-		 and then	IS_ANCESTOR( D( SM_FIRST, D( AS_SOURCE_NAME, DECL	) ), SUBUNIT_IN );
+		 and then D( AS_BODY, DECL ).TY = DN_STUB
+		 and then SUBUNIT_IN.TY = DN_SUBUNIT
+		 and then IS_ANCESTOR( D( SM_FIRST, D( AS_SOURCE_NAME, DECL ) ), SUBUNIT_IN );
 	     
         end loop;
 
-      end	FIX_WITH_DECL_LIST;
+      end FIX_WITH_DECL_LIST;
 	------------------
 
 
@@ -165,8 +165,8 @@ is
         FIRST_NAME		: TREE		:= SOURCE_NAME;
         DEF		: TREE		:= TREE_VOID;
       begin
-	     case	CLASS_DEF_NAME'( SOURCE_NAME.TY ) is
-	        when DN_VARIABLE_ID |	DN_NUMBER_ID | CLASS_ENUM_LITERAL | DN_SUBTYPE_ID	|
+	     case CLASS_DEF_NAME'( SOURCE_NAME.TY ) is
+	        when DN_VARIABLE_ID | DN_NUMBER_ID | CLASS_ENUM_LITERAL | DN_SUBTYPE_ID |
 		   DN_PRIVATE_TYPE_ID | DN_L_PRIVATE_TYPE_ID | DN_GENERIC_ID | DN_COMPONENT_ID |
 		   DN_EXCEPTION_ID =>
 		 if D ( LX_SYMREP, SOURCE_NAME ).TY = DN_SYMBOL_REP then
@@ -174,11 +174,11 @@ is
 		    MAKE_DEF_VISIBLE ( DEF );
 		 end if;
 	        when DN_ENTRY_ID =>
-		 if D ( LX_SYMREP,SOURCE_NAME	).TY = DN_SYMBOL_REP then
+		 if D ( LX_SYMREP,SOURCE_NAME ).TY = DN_SYMBOL_REP then
 		    DEF := MAKE_DEF_FOR_ID ( 
 				        SOURCE_NAME, REGION_DEF,
 				        IN_SPEC);
-		    if D ( AS_DISCRETE_RANGE,	D ( SM_SPEC,
+		    if D ( AS_DISCRETE_RANGE, D ( SM_SPEC,
 						    SOURCE_NAME)) =
 					      TREE_VOID
 					      then
@@ -189,14 +189,14 @@ is
 		       MAKE_DEF_VISIBLE(DEF);
 		    end if;
 		 end if;
-	        when DN_CONSTANT_ID |	DN_DISCRIMINANT_ID |
+	        when DN_CONSTANT_ID | DN_DISCRIMINANT_ID |
 				CLASS_PARAM_NAME
 				| DN_TASK_BODY_ID =>
 		 FIRST_NAME := D ( SM_FIRST, SOURCE_NAME);
-		 if FIRST_NAME /= SOURCE_NAME	then
+		 if FIRST_NAME /= SOURCE_NAME then
 		    if D ( LX_SYMREP,FIRST_NAME).TY =
 					      DN_TXTREP then
-		       DEF := MAKE_DEF_FOR_ID	( FIRST_NAME, REGION_DEF, IN_SPEC );
+		       DEF := MAKE_DEF_FOR_ID ( FIRST_NAME, REGION_DEF, IN_SPEC );
 		    else
 		       DEF := GET_DEF_FOR_ID ( FIRST_NAME );
 		    end if;
@@ -206,27 +206,27 @@ is
 		 end if;
 	        when CLASS_SUBPROG_NAME =>
 		 FIRST_NAME := D ( SM_FIRST, SOURCE_NAME);
-		 if FIRST_NAME /= SOURCE_NAME	then
+		 if FIRST_NAME /= SOURCE_NAME then
 		    if D ( LX_SYMREP,FIRST_NAME).TY = DN_TXTREP then
-		       DEF := MAKE_DEF_FOR_ID	( FIRST_NAME, REGION_DEF, IN_SPEC );
+		       DEF := MAKE_DEF_FOR_ID ( FIRST_NAME, REGION_DEF, IN_SPEC );
 		    else
 		       DEF := GET_DEF_FOR_ID ( FIRST_NAME );
 		    end if;
 		 elsif D ( LX_SYMREP,FIRST_NAME).TY = DN_SYMBOL_REP then
 		    DEF := MAKE_DEF_FOR_ID ( FIRST_NAME,
-				        REGION_DEF,	IN_SPEC);
-		    MAKE_DEF_VISIBLE ( DEF, D	( SM_SPEC, SOURCE_NAME ) );
+				        REGION_DEF, IN_SPEC);
+		    MAKE_DEF_VISIBLE ( DEF, D ( SM_SPEC, SOURCE_NAME ) );
 		 end if;
-	        when DN_TYPE_ID | DN_PACKAGE_ID	=>
+	        when DN_TYPE_ID | DN_PACKAGE_ID =>
 		 FIRST_NAME := D ( SM_FIRST, SOURCE_NAME);
-		 if FIRST_NAME /= SOURCE_NAME	then
+		 if FIRST_NAME /= SOURCE_NAME then
 		    if D ( LX_SYMREP,FIRST_NAME).TY = DN_TXTREP then
-		       DEF := MAKE_DEF_FOR_ID	( FIRST_NAME, REGION_DEF, IN_SPEC );
+		       DEF := MAKE_DEF_FOR_ID ( FIRST_NAME, REGION_DEF, IN_SPEC );
 		    else
 		       DEF := GET_DEF_FOR_ID ( FIRST_NAME );
 		    end if;
 		 else
-		    if D ( LX_SYMREP,SOURCE_NAME).TY /=	DN_SYMBOL_REP then
+		    if D ( LX_SYMREP,SOURCE_NAME).TY /= DN_SYMBOL_REP then
 		       D ( LX_SYMREP, SOURCE_NAME, STORE_SYM ( D ( LX_SYMREP, SOURCE_NAME ) ) );
 		    end if;
 		    DEF := MAKE_DEF_FOR_ID ( SOURCE_NAME, REGION_DEF, IN_SPEC );
@@ -234,13 +234,13 @@ is
 		 end if;
 	     
 	        when CLASS_PREDEF_NAME | DN_ITERATION_ID | CLASS_LABEL_NAME =>
-		 PUT_LINE	( "!! BAD ID IN MAKE_DEF_IF_NEEDED" );
+		 PUT_LINE ( "!! BAD ID IN MAKE_DEF_IF_NEEDED" );
 		 raise PROGRAM_ERROR;
 	     end case;
 	  
 	     return DEF;
 
-      end	MAKE_DEF_IF_NEEDED;
+      end MAKE_DEF_IF_NEEDED;
 	------------------
 
 
@@ -258,20 +258,20 @@ is
 	POP( NAME_LIST, NAME);
 	loop
 	  if  NAME.TY = DN_SELECTED  then
-	    NAME := D( AS_DESIGNATOR,	NAME );
+	    NAME := D( AS_DESIGNATOR, NAME );
 	  end if;
 	  NAME_DEFN := D( SM_DEFN, NAME );
-	  exit when  NAME_DEFN.TY /= DN_PACKAGE_ID  or else  D( SM_UNIT_DESC,	NAME_DEFN	).TY /= DN_RENAMES_UNIT;
-	  NAME :=	D( AS_NAME, D( SM_UNIT_DESC, NAME_DEFN ) );
+	  exit when  NAME_DEFN.TY /= DN_PACKAGE_ID  or else  D( SM_UNIT_DESC, NAME_DEFN ).TY /= DN_RENAMES_UNIT;
+	  NAME := D( AS_NAME, D( SM_UNIT_DESC, NAME_DEFN ) );
 	end loop;
 	if NAME_DEFN.TY = DN_PACKAGE_ID then
 	  PACKAGE_DEF := GET_DEF_FOR_ID( NAME_DEFN );
 	  DB( XD_IS_USED, PACKAGE_DEF, TRUE );
-	  USED_PACKAGE_LIST	:= INSERT( USED_PACKAGE_LIST,	PACKAGE_DEF );
+	  USED_PACKAGE_LIST := INSERT( USED_PACKAGE_LIST, PACKAGE_DEF );
 	end if;
         end loop;
 
-      end	REPROCESS_ANCESTOR_USE_CLAUSE;
+      end REPROCESS_ANCESTOR_USE_CLAUSE;
 	-----------------------------
 
 
@@ -280,124 +280,124 @@ is
 			----------------
       is
       begin
-        if  DEF /= TREE_VOID	then
-	DI ( XD_LEX_LEVEL, DEF, LEVEL	);
+        if  DEF /= TREE_VOID  then
+	DI ( XD_LEX_LEVEL, DEF, LEVEL );
         end if;
 
-      end	SET_REGION_LEVEL;
+      end SET_REGION_LEVEL;
 	----------------
 
 
 			------------------
-      procedure		FIX_WITH_COMP_LIST			( COMP_LIST :TREE; REGION_DEF	:TREE )
+      procedure		FIX_WITH_COMP_LIST			( COMP_LIST :TREE; REGION_DEF :TREE )
 			------------------
       is
         VARIANT_PART	: constant TREE	:= D( AS_VARIANT_PART, COMP_LIST );
         VARIANT_LIST	: SEQ_TYPE;
         VARIANT		: TREE;
       begin
-        FIX_WITH_DECL_LIST( LIST( D( AS_DECL_S,COMP_LIST ) ), REGION_DEF, FALSE	);
+        FIX_WITH_DECL_LIST( LIST( D( AS_DECL_S,COMP_LIST ) ), REGION_DEF, FALSE );
         if  VARIANT_PART /= TREE_VOID  then
 	VARIANT_LIST := LIST( D( AS_VARIANT_S,VARIANT_PART ) );
 	while  not IS_EMPTY( VARIANT_LIST )  loop
-	  POP ( VARIANT_LIST, VARIANT	);
-	  if  VARIANT.TY = DN_VARIANT	 then
+	  POP ( VARIANT_LIST, VARIANT );
+	  if  VARIANT.TY = DN_VARIANT  then
 	    FIX_WITH_COMP_LIST( D( AS_COMP_LIST, VARIANT ), REGION_DEF );
 	  end if;
 	end loop;
         end if;
 
-      end	FIX_WITH_COMP_LIST;
+      end FIX_WITH_COMP_LIST;
 	------------------
 
     begin
-      if	REGION_DEF_IN /= TREE_VOID  then
-	     H.LEX_LEVEL :=	DI ( XD_LEX_LEVEL, REGION_DEF_IN );
-      end	if;
+      if  REGION_DEF_IN /= TREE_VOID  then
+	     H.LEX_LEVEL := DI ( XD_LEX_LEVEL, REGION_DEF_IN );
+      end if;
 	  
       case CLASS_ALL_DECL'( DECL.TY ) is
 	  
-	     when	DN_BLOCK_MASTER | DN_SUBUNIT =>
+	     when DN_BLOCK_MASTER | DN_SUBUNIT =>
 	        PUT_LINE ( "!! BAD NODE IN FIX_WITH_ONE_DECL");
 	        raise PROGRAM_ERROR;
 	        
-	     when	CLASS_OBJECT_DECL =>
+	     when CLASS_OBJECT_DECL =>
 	        SOURCE_NAME_LIST := LIST ( D ( AS_SOURCE_NAME_S, DECL ) );
 	        while not IS_EMPTY ( SOURCE_NAME_LIST ) loop
 		 POP ( SOURCE_NAME_LIST, SOURCE_NAME );
 		 DEF := MAKE_DEF_IF_NEEDED ( SOURCE_NAME, H.REGION_DEF, H.IS_IN_SPEC );
 		 if D ( AS_TYPE_DEF,DECL).TY = DN_CONSTRAINED_ARRAY_DEF then
-		    SET_REGION_LEVEL ( DEF, H.LEX_LEVEL	+ 1 );
-		    GEN_PREDEFINED_OPERATORS ( D ( SM_OBJ_TYPE, SOURCE_NAME	), H );
-		    SET_REGION_LEVEL ( DEF, 0	);
+		    SET_REGION_LEVEL ( DEF, H.LEX_LEVEL + 1 );
+		    GEN_PREDEFINED_OPERATORS ( D ( SM_OBJ_TYPE, SOURCE_NAME ), H );
+		    SET_REGION_LEVEL ( DEF, 0 );
 		 end if;
 	        end loop;
 	        
-	     when	CLASS_DSCRMT_PARAM_DECL | DN_NUMBER_DECL | DN_EXCEPTION_DECL | DN_DEFERRED_CONSTANT_DECL =>
+	     when CLASS_DSCRMT_PARAM_DECL | DN_NUMBER_DECL | DN_EXCEPTION_DECL | DN_DEFERRED_CONSTANT_DECL =>
 	        SOURCE_NAME_LIST := LIST ( D ( AS_SOURCE_NAME_S, DECL ) );
 	        while not IS_EMPTY ( SOURCE_NAME_LIST) loop
 		 POP ( SOURCE_NAME_LIST, SOURCE_NAME );
 		 DEF := MAKE_DEF_IF_NEEDED ( SOURCE_NAME, H.REGION_DEF, H.IS_IN_SPEC );
 	        end loop;
 	        
-	     when	DN_TYPE_DECL =>
-	        SOURCE_NAME	:= D ( AS_SOURCE_NAME, DECL );
+	     when DN_TYPE_DECL =>
+	        SOURCE_NAME := D ( AS_SOURCE_NAME, DECL );
 	        DEF := MAKE_DEF_IF_NEEDED ( SOURCE_NAME, H.REGION_DEF, H.IS_IN_SPEC );
-	        SET_REGION_LEVEL(DEF,	H.LEX_LEVEL + 1 );
-	        FIX_WITH_DECL_LIST ( LIST ( D (	AS_DSCRMT_DECL_S, DECL ) ), DEF, FALSE );
-	        TYPE_DEF :=	D ( AS_TYPE_DEF, DECL );
-	        BASE_TYPE := GET_BASE_TYPE ( D ( SM_TYPE_SPEC, D ( AS_SOURCE_NAME, DECL	) ) );
-	        BASE_STRUCT	:= GET_BASE_STRUCT ( BASE_TYPE );
+	        SET_REGION_LEVEL(DEF, H.LEX_LEVEL + 1 );
+	        FIX_WITH_DECL_LIST ( LIST ( D ( AS_DSCRMT_DECL_S, DECL ) ), DEF, FALSE );
+	        TYPE_DEF := D ( AS_TYPE_DEF, DECL );
+	        BASE_TYPE := GET_BASE_TYPE ( D ( SM_TYPE_SPEC, D ( AS_SOURCE_NAME, DECL ) ) );
+	        BASE_STRUCT := GET_BASE_STRUCT ( BASE_TYPE );
 	        
-	        if TYPE_DEF	= TREE_VOID or else	TYPE_DEF.TY in DN_PRIVATE_DEF	.. DN_FORMAL_FLOAT_DEF then
+	        if TYPE_DEF = TREE_VOID or else TYPE_DEF.TY in DN_PRIVATE_DEF .. DN_FORMAL_FLOAT_DEF then
 		 null;
 		 
 	        elsif BASE_STRUCT.TY = DN_ENUMERATION then
 		 declare				--| PRÉPARER UN HEADER POUR LES LITTÉRAUX ÉNUMÉRÉS
-		    PARAM_S	: TREE	:= MAKE (	DN_PARAM_S );
-		    FUNCTION_SPEC	: TREE	:= MAKE (	DN_FUNCTION_SPEC );
-		    USED_NAME_ID	: TREE	:= MAKE (	DN_USED_NAME_ID );
+		    PARAM_S	: TREE	:= MAKE ( DN_PARAM_S );
+		    FUNCTION_SPEC	: TREE	:= MAKE ( DN_FUNCTION_SPEC );
+		    USED_NAME_ID	: TREE	:= MAKE ( DN_USED_NAME_ID );
 		 begin
-		    LIST ( PARAM_S,	(TREE_NIL,TREE_NIL)	);
+		    LIST ( PARAM_S, (TREE_NIL,TREE_NIL) );
 		    D( LX_SRCPOS, PARAM_S, TREE_VOID );
 		 
 		    D( LX_SRCPOS, USED_NAME_ID, TREE_VOID );
 		    D( LX_SYMREP, USED_NAME_ID, TREE_VOID );
-		    D( SM_DEFN, USED_NAME_ID,	SOURCE_NAME );
+		    D( SM_DEFN, USED_NAME_ID, SOURCE_NAME );
 		 
-		    D( AS_PARAM_S,	FUNCTION_SPEC, PARAM_S );
+		    D( AS_PARAM_S,  FUNCTION_SPEC, PARAM_S );
 		    D( AS_NAME,	FUNCTION_SPEC, USED_NAME_ID );
 		    D( LX_SRCPOS,	FUNCTION_SPEC, TREE_VOID );
 		    
 		    HEADER := FUNCTION_SPEC;
 		 end;	
 			
-		 SOURCE_NAME_LIST := LIST ( D	( SM_LITERAL_S, BASE_STRUCT )	);
-		 while not IS_EMPTY	( SOURCE_NAME_LIST ) loop
-		    POP (	SOURCE_NAME_LIST, SOURCE_NAME	);
-		    DEF := MAKE_DEF_IF_NEEDED	( SOURCE_NAME, H.REGION_DEF, H.IS_IN_SPEC );
+		 SOURCE_NAME_LIST := LIST ( D ( SM_LITERAL_S, BASE_STRUCT ) );
+		 while not IS_EMPTY ( SOURCE_NAME_LIST ) loop
+		    POP ( SOURCE_NAME_LIST, SOURCE_NAME );
+		    DEF := MAKE_DEF_IF_NEEDED ( SOURCE_NAME, H.REGION_DEF, H.IS_IN_SPEC );
 		    if DEF /= TREE_VOID then
 		       D ( XD_HEADER, DEF, HEADER );
 		    end if;
 		 end loop;
 		 
 	        elsif BASE_STRUCT.TY = DN_RECORD then
-		 FIX_WITH_COMP_LIST	( D ( SM_COMP_LIST,	BASE_STRUCT ), DEF );
+		 FIX_WITH_COMP_LIST ( D ( SM_COMP_LIST, BASE_STRUCT ), DEF );
 	        end if;
-			  -- (OPS	FOR [L-]PRIVATE CREATED AT FULL DECLARATION)
-	        if TYPE_DEF.TY = DN_PRIVATE_DEF	then
+			  -- (OPS FOR [L-]PRIVATE CREATED AT FULL DECLARATION)
+	        if TYPE_DEF.TY = DN_PRIVATE_DEF then
 		 declare
-		    HOLD_TYPE_SPEC	: TREE;
+		    HOLD_TYPE_SPEC  : TREE;
 		 begin
-		    BASE_TYPE := D ( SM_TYPE_SPEC, D ( AS_SOURCE_NAME, DECL	) );
-		    if BASE_TYPE.TY	in CLASS_CONSTRAINED then
-		       BASE_TYPE :=	D ( SM_BASE_TYPE, BASE_TYPE );
+		    BASE_TYPE := D ( SM_TYPE_SPEC, D ( AS_SOURCE_NAME, DECL ) );
+		    if BASE_TYPE.TY in CLASS_CONSTRAINED then
+		       BASE_TYPE := D ( SM_BASE_TYPE, BASE_TYPE );
 		    end if;
-		    if BASE_TYPE.TY	/= DN_PRIVATE then
+		    if BASE_TYPE.TY /= DN_PRIVATE then
 		       PUT_LINE ( "!! TYPE PRIVATE EXPECTED" );
 		       raise PROGRAM_ERROR;
 		    end if;
-		    HOLD_TYPE_SPEC := D ( SM_TYPE_SPEC,	BASE_TYPE	);
+		    HOLD_TYPE_SPEC := D ( SM_TYPE_SPEC, BASE_TYPE );
 		    D ( SM_TYPE_SPEC, BASE_TYPE, TREE_VOID );
 		    GEN_PREDEFINED_OPERATORS ( BASE_TYPE, H );
 		    D ( SM_TYPE_SPEC, BASE_TYPE, HOLD_TYPE_SPEC );
@@ -406,14 +406,14 @@ is
 		 GEN_PREDEFINED_OPERATORS ( BASE_TYPE, H );
 	        end if;
 	        
-	        if TYPE_DEF.TY = DN_DERIVED_DEF	then
-		 REMEMBER_DERIVED_DECL ( DECL	);
+	        if TYPE_DEF.TY = DN_DERIVED_DEF then
+		 REMEMBER_DERIVED_DECL ( DECL );
 		 declare
-		    DERIVED_SUBP_LIST	: SEQ_TYPE	:= LIST (	TYPE_DEF );
+		    DERIVED_SUBP_LIST	: SEQ_TYPE	:= LIST ( TYPE_DEF );
 		    DERIVED_SUBP_ID		: TREE;
 		    DUMMY		: TREE;
 		 begin
-		    while	not IS_EMPTY ( DERIVED_SUBP_LIST ) loop
+		    while not IS_EMPTY ( DERIVED_SUBP_LIST ) loop
 		       POP ( DERIVED_SUBP_LIST, DERIVED_SUBP_ID );
 		       DUMMY := MAKE_DEF_IF_NEEDED ( DERIVED_SUBP_ID, H.REGION_DEF, H.IS_IN_SPEC );
 		    end loop;
@@ -421,72 +421,72 @@ is
 	        end if;
 	        SET_REGION_LEVEL ( DEF, 0 );
 	        
-	     when	DN_TASK_DECL =>
-	        SOURCE_NAME	:= D ( AS_SOURCE_NAME, DECL );
+	     when DN_TASK_DECL =>
+	        SOURCE_NAME := D ( AS_SOURCE_NAME, DECL );
 	        DEF := MAKE_DEF_IF_NEEDED ( SOURCE_NAME, H.REGION_DEF, H.IS_IN_SPEC );
-	        SET_REGION_LEVEL(DEF,	H.LEX_LEVEL + 1);
-	        FIX_WITH_DECL_LIST ( LIST ( D (	AS_DECL_S, DECL)),
+	        SET_REGION_LEVEL(DEF, H.LEX_LEVEL + 1);
+	        FIX_WITH_DECL_LIST ( LIST ( D ( AS_DECL_S, DECL)),
 				DEF, TRUE);
-	        SET_REGION_LEVEL(DEF,	0);
+	        SET_REGION_LEVEL(DEF, 0);
 	        
-	     when	DN_SUBPROG_ENTRY_DECL =>
-	        SOURCE_NAME	:= D ( AS_SOURCE_NAME, DECL);
-	        DEF := MAKE_DEF_IF_NEEDED (  SOURCE_NAME,	H.REGION_DEF, H.IS_IN_SPEC);
-	        SET_REGION_LEVEL(DEF,	H.LEX_LEVEL + 1);
-	        FIX_WITH_DECL_LIST (	LIST ( D ( AS_PARAM_S, D ( AS_HEADER, DECL ) ) ),	DEF, TRUE);
+	     when DN_SUBPROG_ENTRY_DECL =>
+	        SOURCE_NAME := D ( AS_SOURCE_NAME, DECL);
+	        DEF := MAKE_DEF_IF_NEEDED (  SOURCE_NAME, H.REGION_DEF, H.IS_IN_SPEC);
+	        SET_REGION_LEVEL(DEF, H.LEX_LEVEL + 1);
+	        FIX_WITH_DECL_LIST (  LIST ( D ( AS_PARAM_S, D ( AS_HEADER, DECL ) ) ), DEF, TRUE);
 	        SET_REGION_LEVEL ( DEF, 0 );
 	        
-	     when	DN_GENERIC_DECL =>
-	        SOURCE_NAME	:= D ( AS_SOURCE_NAME, DECL);
+	     when DN_GENERIC_DECL =>
+	        SOURCE_NAME := D ( AS_SOURCE_NAME, DECL);
 	        DEF := MAKE_DEF_IF_NEEDED ( SOURCE_NAME,
 				H.REGION_DEF, H.IS_IN_SPEC);
 	        SET_REGION_LEVEL ( DEF, H.LEX_LEVEL + 1 );
-	        FIX_WITH_DECL_LIST (	LIST ( D ( AS_ITEM_S, DECL ) ), DEF, FALSE );
+	        FIX_WITH_DECL_LIST (  LIST ( D ( AS_ITEM_S, DECL ) ), DEF, FALSE );
 	        if D ( AS_HEADER,DECL).TY in CLASS_SUBP_ENTRY_HEADER then
-		 FIX_WITH_DECL_LIST	(  LIST (	D ( AS_PARAM_S, D (	AS_HEADER, DECL ) )	), DEF, FALSE );
-	        else -- SINCE IT IS A	GENERIC PACKAGE
+		 FIX_WITH_DECL_LIST (  LIST ( D ( AS_PARAM_S, D ( AS_HEADER, DECL ) ) ), DEF, FALSE );
+	        else -- SINCE IT IS A GENERIC PACKAGE
 		 HEADER := D ( AS_HEADER, DECL);
-		 FIX_WITH_DECL_LIST	( LIST ( D ( AS_DECL_S1, HEADER ) ), DEF, TRUE );
-		 FIX_WITH_DECL_LIST	( LIST ( D ( AS_DECL_S2, HEADER ) ), DEF, FALSE );
+		 FIX_WITH_DECL_LIST ( LIST ( D ( AS_DECL_S1, HEADER ) ), DEF, TRUE );
+		 FIX_WITH_DECL_LIST ( LIST ( D ( AS_DECL_S2, HEADER ) ), DEF, FALSE );
 	        end if;
-	        SET_REGION_LEVEL(DEF,	0);
+	        SET_REGION_LEVEL(DEF, 0);
 	        
-	     when	DN_PACKAGE_DECL =>
-	        SOURCE_NAME	:= D ( AS_SOURCE_NAME, DECL);
+	     when DN_PACKAGE_DECL =>
+	        SOURCE_NAME := D ( AS_SOURCE_NAME, DECL);
 	        DEF := MAKE_DEF_IF_NEEDED ( SOURCE_NAME, H.REGION_DEF, H.IS_IN_SPEC );
 	        SET_REGION_LEVEL ( DEF, H.LEX_LEVEL + 1 );
 			  -- (NOTE: GET SPEC FROM SOURCE NAME IN CASE IT IS AN INSTANTIATION)
-	        HEADER := D	( SM_SPEC, SOURCE_NAME );
+	        HEADER := D ( SM_SPEC, SOURCE_NAME );
 	        if HEADER /= TREE_VOID then
-		 FIX_WITH_DECL_LIST	( LIST ( D ( AS_DECL_S1, HEADER ) ), DEF, TRUE, SUBUNIT_IN );
-		 if not H.IS_IN_BODY or else SUBUNIT_IN	/= TREE_VOID then
-		    FIX_WITH_DECL_LIST ( LIST	( D ( AS_DECL_S2, HEADER)), DEF, FALSE,	SUBUNIT_IN );
+		 FIX_WITH_DECL_LIST ( LIST ( D ( AS_DECL_S1, HEADER ) ), DEF, TRUE, SUBUNIT_IN );
+		 if not H.IS_IN_BODY or else SUBUNIT_IN /= TREE_VOID then
+		    FIX_WITH_DECL_LIST ( LIST ( D ( AS_DECL_S2, HEADER)), DEF, FALSE, SUBUNIT_IN );
 		 end if;
 	        end if;
-	        SET_REGION_LEVEL(DEF,	0);
+	        SET_REGION_LEVEL(DEF, 0);
 	        
-	     when	DN_SUBTYPE_DECL | CLASS_SIMPLE_RENAME_DECL =>
-	        SOURCE_NAME	:= D ( AS_SOURCE_NAME, DECL);
+	     when DN_SUBTYPE_DECL | CLASS_SIMPLE_RENAME_DECL =>
+	        SOURCE_NAME := D ( AS_SOURCE_NAME, DECL);
 	        DEF := MAKE_DEF_IF_NEEDED ( SOURCE_NAME, H.REGION_DEF, H.IS_IN_SPEC );
 	        
-	     when	DN_NULL_COMP_DECL |	CLASS_REP	| DN_PRAGMA =>
+	     when DN_NULL_COMP_DECL | CLASS_REP | DN_PRAGMA =>
 	        null;
 	        
-	     when	DN_USE =>				-- NOTE. ONLY GET HERE FOR ANCESTORS
-	        REPROCESS_ANCESTOR_USE_CLAUSE (	DECL );
+	     when DN_USE =>				-- NOTE. ONLY GET HERE FOR ANCESTORS
+	        REPROCESS_ANCESTOR_USE_CLAUSE ( DECL );
 	        
-	     when	CLASS_SUBUNIT_BODY =>
-	        SOURCE_NAME	:= D ( AS_SOURCE_NAME, DECL);
+	     when CLASS_SUBUNIT_BODY =>
+	        SOURCE_NAME := D ( AS_SOURCE_NAME, DECL);
 	        DEF := MAKE_DEF_IF_NEEDED ( SOURCE_NAME,
 				H.REGION_DEF, FALSE);
-	        SET_REGION_LEVEL(DEF,	H.LEX_LEVEL + 1);
+	        SET_REGION_LEVEL(DEF, H.LEX_LEVEL + 1);
 	        if D ( AS_BODY, DECL).TY = DN_BLOCK_BODY
-		and then SUBUNIT_IN	/= TREE_VOID then
-		 FIX_WITH_DECL_LIST	( LIST ( D ( AS_ITEM_S, D ( AS_BODY, DECL ) ) ), DEF, FALSE, SUBUNIT_IN );
+		and then SUBUNIT_IN /= TREE_VOID then
+		 FIX_WITH_DECL_LIST ( LIST ( D ( AS_ITEM_S, D ( AS_BODY, DECL ) ) ), DEF, FALSE, SUBUNIT_IN );
 	        elsif D ( AS_BODY, DECL).TY = DN_STUB
 		and then D ( SM_FIRST, SOURCE_NAME ) = SOURCE_NAME
-		and then D ( AS_HEADER, DECL).TY in CLASS_SUBP_ENTRY_HEADER	then
-		 FIX_WITH_DECL_LIST	( LIST ( D ( AS_PARAM_S,D ( AS_HEADER, DECL ) ) ), DEF, FALSE );
+		and then D ( AS_HEADER, DECL).TY in CLASS_SUBP_ENTRY_HEADER then
+		 FIX_WITH_DECL_LIST ( LIST ( D ( AS_PARAM_S,D ( AS_HEADER, DECL ) ) ), DEF, FALSE );
 	        end if;
 	        SET_REGION_LEVEL ( DEF, 0 );
 	  end case;
@@ -498,22 +498,22 @@ is
   begin
     REMEMBER_DERIVED_DECL( TREE_VOID );
 
-    POP( TRANS_WITH_LIST, TRANS_WITH );									--| LE PREMIER WITH	IMPLICITE	EST STANDARD
-    WITH_UNIT := D(	TW_COMP_UNIT, TRANS_WITH );
-    ALL_DECL  := D(	AS_ALL_DECL,  WITH_UNIT );
-    ADD_BLTN_IDS_TO_TABLE( D(	AS_DECL_S2, D( AS_HEADER, ALL_DECL ) ) );					--| AJOUTER LES IDS	OPERATEURS STANDARD
+    POP( TRANS_WITH_LIST, TRANS_WITH );									--| LE PREMIER WITH IMPLICITE EST STANDARD
+    WITH_UNIT := D( TW_COMP_UNIT, TRANS_WITH );
+    ALL_DECL  := D( AS_ALL_DECL,  WITH_UNIT );
+    ADD_BLTN_IDS_TO_TABLE( D( AS_DECL_S2, D( AS_HEADER, ALL_DECL ) ) );					--| AJOUTER LES IDS OPERATEURS STANDARD
 
 	      -- WALK PACKAGE_DECL FOR _STANDRD
     SUBUNIT := D( AS_ALL_DECL, COMPLTN_UNIT );
     FIX_WITH_ONE_DECL( ALL_DECL, TREE_VOID, IN_SPEC_IN => TRUE, SUBUNIT_IN => SUBUNIT );
 	      -- FIND DEF FOR PREDEFINED STANDARD
-    STANDARD_DEF :=	GET_DEF_FOR_ID(
+    STANDARD_DEF := GET_DEF_FOR_ID(
 		    D( AS_SOURCE_NAME,
-		       HEAD( LIST( D( AS_DECL_S1, D( AS_HEADER, ALL_DECL)))	)));
+		       HEAD( LIST( D( AS_DECL_S1, D( AS_HEADER, ALL_DECL))) )));
 	      -- SET ITS LEVEL TO 2 AND SET LEVEL OF _STANDRD TO 1
     DI( XD_LEX_LEVEL, STANDARD_DEF, 2 );
-    DI( XD_LEX_LEVEL, D( XD_REGION_DEF,	STANDARD_DEF ), 1 );
-	      -- SAVE IT IN	GLOBAL DATA AREA
+    DI( XD_LEX_LEVEL, D( XD_REGION_DEF, STANDARD_DEF ), 1 );
+	      -- SAVE IT IN GLOBAL DATA AREA
     PREDEFINED_STANDARD_DEF := STANDARD_DEF;
       
 	      -- MAKE DEFS FOR PREDEFINED FUNCTIONS ON UNVERSAL TYPES
@@ -534,28 +534,28 @@ is
 	      -- LOOP THROUGH REMAINING TRANSITIVELY WITHED UNITS
 	      -- NOTE THAT FOR BODIES, ENCLOSING UNIT DETERMINED FROM SM_FIRST
 	      -- NOTE ALSO THAT FOR BODIES, IN_SPEC IS FORCED TO FALSE
-    while	not IS_EMPTY ( TRANS_WITH_LIST) loop
+    while not IS_EMPTY ( TRANS_WITH_LIST) loop
 	  POP ( TRANS_WITH_LIST, TRANS_WITH);
-	  SUBUNIT	:= D ( AS_ALL_DECL,	COMPLTN_UNIT );
+	  SUBUNIT := D ( AS_ALL_DECL, COMPLTN_UNIT );
 	  WITH_UNIT := D ( TW_COMP_UNIT, TRANS_WITH );
 	  ALL_DECL := D ( AS_ALL_DECL, WITH_UNIT );
 	  REGION_DEF := STANDARD_DEF;
-	  if ALL_DECL.TY = DN_SUBUNIT	then
+	  if ALL_DECL.TY = DN_SUBUNIT then
 	     ALL_DECL := D ( AS_SUBUNIT_BODY, ALL_DECL );
-	     REGION_DEF := GET_DEF_FOR_ID ( D (	XD_REGION,D ( AS_SOURCE_NAME,	ALL_DECL ) ) );
-	  elsif ALL_DECL.TY	= DN_PACKAGE_DECL or ALL_DECL.TY = DN_SUBPROGRAM_BODY then
+	     REGION_DEF := GET_DEF_FOR_ID ( D ( XD_REGION,D ( AS_SOURCE_NAME, ALL_DECL ) ) );
+	  elsif ALL_DECL.TY = DN_PACKAGE_DECL or ALL_DECL.TY = DN_SUBPROGRAM_BODY then
 			  -- SUPPRESS USE CLAUSES IN WITHED PACKAGES
 	     if SUBUNIT.TY = DN_PACKAGE_BODY then
-	        if D ( AS_SOURCE_NAME, ALL_DECL) /= D ( SM_FIRST, D	( AS_SOURCE_NAME, SUBUNIT ) )	then
+	        if D ( AS_SOURCE_NAME, ALL_DECL) /= D ( SM_FIRST, D ( AS_SOURCE_NAME, SUBUNIT ) ) then
 		 SUBUNIT := TREE_VOID;
 	        end if;
 	     elsif SUBUNIT.TY = DN_SUBUNIT then
 	        if ALL_DECL.TY = DN_SUBPROGRAM_BODY then
-		 if not IS_ANCESTOR	( D ( SM_FIRST, D (	AS_SOURCE_NAME, ALL_DECL ) ),	SUBUNIT )	then
+		 if not IS_ANCESTOR ( D ( SM_FIRST, D ( AS_SOURCE_NAME, ALL_DECL ) ), SUBUNIT ) then
 		    SUBUNIT := TREE_VOID;
 		 end if;
 	        else
-		 if not IS_ANCESTOR	( D ( AS_SOURCE_NAME, ALL_DECL ), SUBUNIT ) then
+		 if not IS_ANCESTOR ( D ( AS_SOURCE_NAME, ALL_DECL ), SUBUNIT ) then
 		    SUBUNIT := TREE_VOID;
 		 end if;
 	        end if;
@@ -563,9 +563,9 @@ is
 	        SUBUNIT := TREE_VOID;
 	     end if;
 	  end if;
-	  FIX_WITH_ONE_DECL	( ALL_DECL, REGION_DEF, IN_SPEC_IN => TRUE, SUBUNIT_IN => SUBUNIT );
+	  FIX_WITH_ONE_DECL ( ALL_DECL, REGION_DEF, IN_SPEC_IN => TRUE, SUBUNIT_IN => SUBUNIT );
 		    -- CLEAR PARENT, SO THAT UNIT IS NOT WITH'ED
-	  D ( XD_REGION_DEF, GET_DEF_FOR_ID ( D	( SM_FIRST, D ( AS_SOURCE_NAME, ALL_DECL ) ) ), TREE_VOID );
+	  D ( XD_REGION_DEF, GET_DEF_FOR_ID ( D ( SM_FIRST, D ( AS_SOURCE_NAME, ALL_DECL ) ) ), TREE_VOID );
     end loop;
 
   end	FIX_WITH_CLAUSES;
@@ -577,7 +577,7 @@ is
 				-----------
   is
     UNIT_SYMREP		: TREE	:= D( LX_SYMREP, UNIT_ID );
-    SUBUNIT_SYMREP		: TREE	:= D( LX_SYMREP, D(	AS_SOURCE_NAME, D( AS_SUBUNIT_BODY, SUBUNIT ) ) );
+    SUBUNIT_SYMREP		: TREE	:= D( LX_SYMREP, D( AS_SOURCE_NAME, D( AS_SUBUNIT_BODY, SUBUNIT ) ) );
     ANCESTOR_NAME		: TREE	:= D( AS_NAME, SUBUNIT );
   begin
 
@@ -585,23 +585,23 @@ is
 
 		------------------------------
 		REMONTE_SELECTED_SUBUNIT:
-      while  ANCESTOR_NAME.TY	= DN_SELECTED  loop
-        if  D( LX_SYMREP, D( AS_DESIGNATOR, ANCESTOR_NAME )	) = UNIT_SYMREP  then				--| UNIT RENCONTREE	EN INTERMEDIAIRE
+      while  ANCESTOR_NAME.TY = DN_SELECTED  loop
+        if  D( LX_SYMREP, D( AS_DESIGNATOR, ANCESTOR_NAME ) ) = UNIT_SYMREP  then				--| UNIT RENCONTREE EN INTERMEDIAIRE
 	exit;
         end if;
         ANCESTOR_NAME := D( AS_NAME, ANCESTOR_NAME );							--| SUITE
-      end	loop	REMONTE_SELECTED_SUBUNIT;
+      end loop	REMONTE_SELECTED_SUBUNIT;
 		------------------------------
 
-      if	ANCESTOR_NAME.TY /=	DN_SELECTED  then								--| PREMIER ELEMENT	DE LA CHAINE DE NOMS
-        return  D( LX_SYMREP,	ANCESTOR_NAME) = UNIT_SYMREP;
-      end	if;
+      if  ANCESTOR_NAME.TY /= DN_SELECTED  then								--| PREMIER ELEMENT DE LA CHAINE DE NOMS
+        return  D( LX_SYMREP, ANCESTOR_NAME) = UNIT_SYMREP;
+      end if;
  
     end if;
 		------------------------------
 		FINIT_REMONTE_SELECTED_SUBUNIT:
-    while	 ANCESTOR_NAME.TY =	DN_SELECTED  loop
-      ANCESTOR_NAME	:= D( AS_NAME, ANCESTOR_NAME );
+    while  ANCESTOR_NAME.TY = DN_SELECTED  loop
+      ANCESTOR_NAME := D( AS_NAME, ANCESTOR_NAME );
     end loop	FINIT_REMONTE_SELECTED_SUBUNIT;
 		------------------------------
 
@@ -610,13 +610,13 @@ is
     begin
 		---------------
 		REMONTE_REGIONS:
-      while  D( XD_REGION, PRIOR_UNIT )	/= TREE_VOID
-	and  D( XD_REGION, PRIOR_UNIT	) /= D( XD_SOURCE_NAME, PREDEFINED_STANDARD_DEF )	 loop
+      while  D( XD_REGION, PRIOR_UNIT ) /= TREE_VOID
+	and  D( XD_REGION, PRIOR_UNIT ) /= D( XD_SOURCE_NAME, PREDEFINED_STANDARD_DEF )  loop
         PRIOR_UNIT := D( XD_REGION, PRIOR_UNIT );
-      end	loop	REMONTE_REGIONS;
+      end loop	REMONTE_REGIONS;
 		---------------
 
-      return  D( LX_SYMREP, PRIOR_UNIT)	= D( LX_SYMREP, ANCESTOR_NAME	);
+      return  D( LX_SYMREP, PRIOR_UNIT) = D( LX_SYMREP, ANCESTOR_NAME );
     end;
 
   end	IS_ANCESTOR;

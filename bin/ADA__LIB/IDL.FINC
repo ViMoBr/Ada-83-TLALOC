@@ -438,14 +438,8 @@ db 0, 1, "P"
 db 1, 1, "S"
 db 2, 1, "L"
 db 3, 2, "HI"
-END_BLOC_DEF
-IMAGES	BYTES_BLOC
-CST LST, d, 3
-CST FST, d, 0
-CST SIZ, d, 8	; SIZ en bits !
-postpone
-  align_q
-end postpone
+END_BLOC_DEF 8, 0, 3
+	; SIZ en bits !
 	LCA	SIZ
 	Sa	0, use__info
 end namespace
@@ -1339,14 +1333,8 @@ db 1, 5, "UNARY"
 db 2, 6, "BINARY"
 db 3, 7, "TERNARY"
 db 4, 9, "ARBITRARY"
-END_BLOC_DEF
-IMAGES	BYTES_BLOC
-CST LST, d, 4
-CST FST, d, 0
-CST SIZ, d, 8	; SIZ en bits !
-postpone
-  align_q
-end postpone
+END_BLOC_DEF 8, 0, 4
+	; SIZ en bits !
 	LCA	SIZ
 	Sa	0, use__info
 end namespace
@@ -2279,6 +2267,7 @@ ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 					; debut if
+	La 0, STANDARD.IDL.IDL_TBL.N_SPEC_disp
 	La	 0, N_SPEC_disp				; array data start address on stack
 	Lb  1,	-NN_ofs
 	LId	0, N_SPEC__u, STANDARD.IDL.IDL_TBL._NODE_SPECIF_TABLE.FST_1	; (index - FST_1) * SIZ_1
@@ -5293,7 +5282,7 @@ VAR THE_CHN__u, q				; variable array : useinfo pointeur au rec info
 begin:					;---------- BDY INSTRUCTIONS
 	LVA 2,	THE_CHN_disp
 	La
-	LId	2, STANDARD.IDL.PRINT_NAME_L25.BLOCK__11.THE_CHN__u, 0
+	LId	2, THE_CHN__u, 0
 	LI	8
 	DIV
 	LI	0					; lieu resultat sur pile
