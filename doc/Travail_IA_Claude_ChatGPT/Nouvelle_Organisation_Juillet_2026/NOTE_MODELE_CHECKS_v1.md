@@ -1,11 +1,10 @@
-# NOTE DE MODÈLE D'EXÉCUTION — CHECKS RUNTIME (LRM 11.1) — v1.1 ARBITRÉE
+# NOTE DE MODÈLE D'EXÉCUTION — CHECKS RUNTIME (LRM 11.1) — v1.3 : E-A/E-B/E-C TELLES QUE CONSTRUITES
 
-**9–10 juillet 2026 — pilier OUVERT, arbitrages Q1–Q4 CLOS (mainteneur).**
-Aval entièrement fourni par le pilier 11 (NOTE_MODELE_EXCEPTIONS_v3) :
-identité des prédéfinies, EXCEPTIONS_CURRENT, `exc_raise_`, sentinelle —
-tout est jugé. Ce pilier ne construit que l'AMONT : décider où comparer
-quoi, et brancher. Restent ouvertes : Q5–Q7 (§9), à trancher au DUMP de
-CHK_DUMP0 (dump fourni par le mainteneur).
+**9–11 juillet 2026 — étapes E-0 à E-C CLOSES, jugées (CHK_TEST0,
+CHK_LEN0, CHK_IDX0), filet et ACVC verts checks ON.** Reste Q7 (avant
+E-E) ; l'arbitrage n° 80-b est ANNULÉ (rectificatif §7 bis) — E-D est
+débloquée sans préalable. La
+campagne de fossiles de cette phase est consignée en §7 bis.
 
 ## 1. Stratégie : comparer-et-brancher vers UN trampoline par prédéfinie
 
@@ -83,6 +82,24 @@ C'est le motif dominant du pilier 3.7 (« la vue contrainte n'est pas le type
 de base »), transposé : six correctifs là-bas disent que c'est ICI que les
 bugs viendront.
 
+### 3 bis. Confirmations du dump CHK_DUMP0 (E-0, 10 juillet)
+
+**La source des bornes est UNIFORME sur tous les sites** — la CIBLE porte
+le spec du SOUS-TYPE, les sources portent le type de base :
+- affectation : `D(SM_EXP_TYPE, AS_NAME)` = spec du sous-type (S→SMALL
+  P227,L21 ; D→DYN P227,L77 ; C→UPPER P229,L32 ; F→FPOS P239,L61) ;
+- composante indexée : SM_EXP_TYPE du DN_INDEXED = SOUS-TYPE de composante
+  (ici INTEGER base → élidé) ; le check d'INDEX lit le spec du tableau via
+  le préfixe (DN_CONSTRAINED_ARRAY) — deux checks, deux sources, un site ;
+- conversion : SM_EXP_TYPE du DN_CONVERSION = sous-type cible ; idem
+  DN_QUALIFIED ;
+- param in : SM_OBJ_TYPE du formel (P de TWICE → SMALL) ;
+- return : l'expression porte le type de BASE (résultat de "+") — le
+  sous-type de retour se lit dans le FUNCTION_SPEC (AS_NAME) via SM_SPEC.
+
+Donc UNE seule fonction expander `CHECK_SUBTYPE_OF_SITE` qui rend le spec,
+et l'idiome §3 derrière — pas de logique par site au-delà de la lecture.
+
 ## 4. Taxonomie LRM 11.1 et affectation aux prédéfinies
 
 | Check | Lève | Sites d'émission | Périmètre |
@@ -103,7 +120,11 @@ bugs viendront.
 
 Émettre TOUJOURS, sauf :
 1. Sous-type cible = type de base (aucune contrainte) — cas massivement
-   majoritaire, indispensable pour contenir la taille des FINC ;
+   majoritaire, indispensable pour contenir la taille des FINC. Test
+   concret (dump) : `TYPE_SPEC = D(SM_BASE_TYPE, TYPE_SPEC)` — comparaison
+   de NŒUDS (SMALL P227,L21 a SM_BASE_TYPE→P27,L112 ≠ lui-même → check ;
+   INTEGER P27,L112 est son propre base → élision). Jamais de comparaison
+   de bornes pour élider en périmètre 1 ;
 2. Valeur statique (SM_VALUE présent) ET bornes du sous-type statiques ET
    valeur prouvée dans les bornes — élision totale ; hors bornes statiquement :
    émettre le raise INCONDITIONNEL (BRA ce_raise_) + avertissement en
@@ -117,20 +138,18 @@ LLIR explicite — cohérent avec Q2).
 
 ## 6. Ordre de construction (étapes-témoins)
 
-- **E-0** : DUMP de CHK_DUMP0 (fourni par le mainteneur) — tranche Q5/Q6
-  et confirme les formes d'arbre aux six sites de gamme scalaire AVANT
-  toute émission (piège 71 : les deux fois où la règle a été suivie, le
-  dump a contredit l'hypothèse).
-- **E-A** : trampolines dans le wrapper + `CHECKS_ENABLED` + témoin
-  CHK_TEST0 : une affectation scalaire hors bornes rattrapée par handler,
-  une non rattrapée → sentinelle nomme CONSTRAINT_ERROR, $? = 1. Juge le
-  chemin check→trampoline→déroulage de bout en bout AVANT multiplication
-  des sites.
-- **E-B** : LEN_G = LEN_D (solde la dette D3-contrôle). Les deux longueurs
-  sont DÉJÀ chargées au site — une comparaison + BT. Retirer la ligne
-  d'ETAT_PILIERS et le commentaire RESTRICTION de CODE_DN_BLTN_OPERATOR_ID.
-- **E-C** : index check dans CODE_INDEXED (bornes du descripteur sous la
-  main). Témoin : indexation dynamique hors bornes, y compris via tranche.
+- **E-0 — FAITE (10 juillet)** : dump de CHK_DUMP0 lu. Q5/Q6 closes,
+  source des bornes uniforme confirmée (§3 bis), test d'élision confirmé
+  (§5). Le piège 71 a encore frappé : l'hypothèse « fixed = bornes
+  scalées » était FAUSSE (rationnels en unités du type), et le placeholder
+  DN_ENUMERATION du formel pour un actuel ENTIER n'était pas prévisible.
+- **E-A — FAITE (10 juillet, CHK_TEST0 6/6)** : trampolines wrapper,
+  `CHECKS_ENABLED`, CODE_RANGE_CHECK, site affectation (INTEGER +
+  ENUMERATION). Complétée le 11 par la garde d'élision n° 80.
+- **E-B — FAITE (10 juillet, CHK_LEN0 5/5)** : LEN_G = LEN_D, dette
+  D3-contrôle SOLDÉE (ETAT_PILIERS mis à jour).
+- **E-C — FAITE (10 juillet, CHK_IDX0 12/12)** : index check dans les
+  QUATRE variantes de CODE_INDEXED, sans élision (consigné).
 - **E-D** : gamme scalaire, UN site à la fois dans l'ordre : affectation →
   init de déclaration → param in → return → conversion → qualification.
   Témoin par site (CHK_TEST1 auto-jugeant, sections numérotées façon
@@ -153,6 +172,43 @@ localisé ; le site du check fautif se trouve en instrumentant le FINC.
 Prévoir que la passe d'auto-compilation checks ON sera longue à verdir la
 première fois — c'est le stress test du pilier, pas un incident.
 
+## 7 bis. Campagne de fossiles E-A/E-C (10-11 juillet) — bilan
+
+La règle de tri du §7 a été appliquée en vraie grandeur sur la levée
+A54B02A (série A). Chaîne : cinq sondes (chk_anon0..3, 2b), trois faux
+suspects écartés dans l'ordre (E-C, REPORT.FINC périmé, pilier 11),
+un fait décisif (DYN'LAST = 0). Butin :
+
+- **n° 80 (RECTIFIÉ le 11 juillet)** : sous-type ANONYME →
+  XD_SOURCE_NAME remonte au base — la garde d'élision est CORRECTE
+  (contrôler une contrainte anonyme contre les bornes du base est
+  vide de sens) et la dette (a) — contraintes anonymes non
+  contrôlées — TIENT. En revanche la sous-hypothèse (b) « bornes des
+  prédéfinis jamais élaborées » était FAUSSE : _STANDRD.FINC les
+  élabore bien (stores SHL/NEG/SUB vers FST/LST, exécutés en tête de
+  flux). Elle reposait sur l'attribution de la levée au site I —
+  réfutée ensuite par le n° 81 (la levée venait du site J via
+  IDENT_INT ≡ 0). Leçon de triage : quand une cause plus profonde est
+  trouvée, RÉ-AUDITER ce que les hypothèses antérieures expliquaient
+  encore — ici, plus rien. L'arbitrage 80-b est ANNULÉ ; clôture
+  empirique par CHK_PREDEF0 (lecture des bornes prédéfinies par le
+  chemin use-info, celui du site générique d'E-D).
+- **n° 81 + bis + ter** : actuels CONSTANTS perdus en silence par
+  CODE_PROCEDURE_CALL — trois familles (scalaires non-énumérés,
+  composites, types privés dont TREE_VOID). Conséquence historique :
+  IDENT_INT ≡ 0 depuis l'origine, toute la série A tournait avec un
+  harnais inerte ; les FINC auto-compilés portaient des appels à
+  arité tronquée (bootstrap inviable). Else BRUYANT en poste — deux
+  prises en 24 h. Témoins : chk_cstprm0/1/2.
+- **n° 82** : oscillation rel8/rel32 de BT/BF sous alignements
+  (anti-monotonie) — tous les sauts passés en rel32, précédent BRA
+  généralisé. Le « 4 octets de NOP » historique est expliqué.
+
+Leçon d'ensemble : les trois fossiles ont été trouvés PAR le pilier
+(un check, puis la garde qu'il a justifiée) et étaient structurellement
+invisibles à la série A. Le filet post-fossiles tourne avec des
+IDENT_* vivants pour la première fois.
+
 ## 8. Restrictions consignées à l'ouverture
 
 Overflow, STORAGE_ERROR, checks d'élaboration, pragma SUPPRESS : hors
@@ -172,13 +228,26 @@ l'instance via __u (Q6, dump E-0).
 - Q4 — Ordre pile aux stores : push adresse puis push data (pop data,
   pop address) — idiome §3 inchangé sur toutes les branches. CLOS.
 
-**Restantes (tranchées au dump E-0) :**
-- **Q5 — Fixed point.** Valeurs = entiers scalés : les bornes _FST/_LST
-  d'un sous-type fixed sont-elles stockées scalées (comparaison entière
-  directe) ou en unités du type (rescale nécessaire) ? CHK_DUMP0 §F.
-- **Q6 — Génériques.** Bornes du formel discret en corps partagé : chemin
-  __u/_ENUM_USE_INFO (GENERIC_FIRST_LAST, expressions ~1830) réutilisable
-  tel quel ? CHK_DUMP0 §G.
+**Closes au dump E-0 (10 juillet) :**
+- Q5 — Fixed : les bornes DIANA sont des RATIONNELS en unités du type
+  (FPOS : SM_VALUE +0/+1 et +2/+1 sur son SM_RANGE), PAS scalées. Le spec
+  porte CD_IMPL_SMALL (+1/+16 ici — noter : ≠ delta +1/+8). Constante de
+  comparaison = borne / IMPL_SMALL (FPOS → 0 et 32), calcul rationnel déjà
+  outillé (NUMER/DENOM de CVTIX/CVTXI). Bornes fixed dynamiques : rare,
+  suit le périmètre 2 des fixed. CLOS.
+- Q6 — Génériques : dans le corps partagé, le formel `(<>)` est un
+  PLACEHOLDER DN_ENUMERATION à liste de littéraux VIDE, SANS SM_RANGE,
+  CD_COMPILED FALSE — MÊME quand l'actuel est un sous-type d'INTEGER (ne
+  jamais brancher entier/énuméré sur le placeholder). Bornes à l'exécution
+  par le chemin GENERIC_FIRST_LAST existant (La GFP ; LId __u_ofs,
+  STANDARD._ENUM_USE_INFO.FST/.LST — expressions ~1831), réutilisable TEL
+  QUEL ; garde = CODI.IN_GENERIC_BODY et IS_GENERIC_FORMAL_TYPE. AUCUNE
+  élision en corps partagé (bornes inconnues statiquement). Hors du corps,
+  l'instanciation PARTAGE le nœud spec de l'actuel (ELEM→SMALL, même
+  P227,L21 — identité partagée, motif des renames) : les sites appelants
+  passent par le chemin normal sans rien savoir du générique. CLOS.
+
+**Restante :**
 - **Q7 — NUMERIC_ERROR vs CONSTRAINT_ERROR.** LRM 83 les distingue (11.1) ;
   l'AI-00387 (adopté ensuite) les confond. ACVC 1.11 accepte les deux pour
   la division. Proposé : distinguer (fidélité 83), coût nul (deuxième

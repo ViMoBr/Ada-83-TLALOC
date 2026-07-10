@@ -820,6 +820,14 @@ separate ( EXPANDER )
         else
 	EXPRESSIONS.CODE_EXP( ACT_PRM );
         end if;
+
+	-- E-D2 : gamme du SOUS-TYPE DU FORMEL (LRM 6.4.1), mode in seul.
+	-- Les modes out/in_out posent une ADRESSE : pas de check ici
+	-- (copy-back hors perimetre 1, consigne).
+        if  FRM_PRM_ID.TY = DN_IN_ID  then
+	EXPRESSIONS.CODE_RANGE_CHECK( D( SM_OBJ_TYPE, FRM_PRM_ID ) );
+        end if;
+
       end loop;
     end	INVERSE_RECURSE_ON_PARAMETERS;
 	-----------------------------
@@ -900,6 +908,11 @@ separate ( EXPANDER )
 
 	if  EXPR_TYPE.TY in CLASS_SCALAR  or else  EXPR_TYPE.TY = DN_ACCESS  then
 	  EXPRESSIONS.CODE_EXP( EXP );
+	  if  EXPR_TYPE.TY /= DN_ACCESS  then							-- E-D3 : gamme du SOUS-TYPE DE RETOUR --
+	    EXPRESSIONS.CODE_RANGE_CHECK(							-- l'expression porte le type de BASE
+	      D( SM_TYPE_SPEC, D( SM_DEFN, D( AS_NAME,						-- (dump CHK_DUMP0), le sous-type vit dans
+	        D( AS_HEADER, CODI.ENCLOSING_BODY ) ) ) ) );					-- le FUNCTION_SPEC (dump REPORT).
+	  end if;
 	  PUT_LINE( tab & "S" & CODI.EXP_TYPE_CHAR( EXP ) & ' ' & INTEGER'IMAGE( CODI.CUR_LEVEL ) & ',' & tab & "-result__ofs" );
 
 	elsif  EXPR_TYPE.TY = DN_ARRAY  or  EXPR_TYPE.TY = DN_CONSTRAINED_ARRAY
@@ -1773,11 +1786,11 @@ separate ( EXPANDER )
 	    else
  	      PUT( tab & "LI" & tab );
 	      CODI.REGIONS_PATH( D( XD_SOURCE_NAME, NAME_TYPE ) );
-	      PUT_LINE( '_' & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, NAME_TYPE ) ) ) & ".size" );			-- LEN (taille en octets, calculee par FASM)
+	      PUT_LINE( '_' & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, NAME_TYPE ) ) ) & ".size" );		-- LEN (taille en octets, calculee par FASM)
 
 	      EXPRESSIONS.CODE_EXP( SRC_EXP );								-- @variable (adresse du doublet)
 	      PUT_LINE( tab & "La" );									-- @SRC (adresse des data)
-	      PUT_LINE( tab & "BLKMOV" );									-- COPY_BLOCK  @DST LEN @SRC
+	      PUT_LINE( tab & "BLKMOV" );								-- COPY_BLOCK  @DST LEN @SRC
 	    end if;
 	  end;
 
@@ -1787,8 +1800,36 @@ separate ( EXPANDER )
 	    PUT_LINE( tab & "La" );
 	  end if;
 	  EXPRESSIONS.CODE_EXP( SRC_EXP );
-	  STORE_OR_CALLI;
 
+	  -- E-D6 : gamme du FORMEL en corps partage -- bornes via le dictionnaire
+	  -- d'instance (GFP), idiome GENERIC_FIRST_LAST verbatim (expressions ~1830).
+	  -- Seul site hors CODE_RANGE_CHECK ; AUCUNE elision (note, Q6).
+	  if  CODI.CHECKS_ENABLED
+	  and then  CODI.IN_GENERIC_BODY
+	  and then  EXPRESSIONS.IS_GENERIC_FORMAL_TYPE( D( XD_SOURCE_NAME, NAME_TYPE ) )
+	  then
+	    declare
+	      LA_GFP	:constant STRING
+			 := tab & "LVa" & INTEGER'IMAGE( INTEGER( CODI.GENERIC_BASE_LEVEL ) + 1 )
+			  & ',' & tab & "-GFP_ofs";
+	      CHN_LID	:constant STRING
+			 := tab & "LId , -"
+			  & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, NAME_TYPE ) ) )
+			  & "__u_ofs, STANDARD._ENUM_USE_INFO";
+	    begin
+	      PUT_LINE( tab & "DUP" );
+	      PUT_LINE( LA_GFP );
+	      PUT_LINE( CHN_LID & ".FST" );
+	      PUT_LINE( tab & "CLT" );
+	      PUT_LINE( tab & "BT" & tab & "STANDARD.ce_raise_" );
+	      PUT_LINE( tab & "DUP" );
+	      PUT_LINE( LA_GFP );
+	      PUT_LINE( CHN_LID & ".LST" );
+	      PUT_LINE( tab & "CGT" );
+	      PUT_LINE( tab & "BT" & tab & "STANDARD.ce_raise_" );
+	    end;
+	  end if;
+	  STORE_OR_CALLI;
           end if;
 
         end	DESTINATION_USED_OBJECT_ID;

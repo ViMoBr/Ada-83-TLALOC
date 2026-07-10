@@ -325,6 +325,17 @@ null;--	     declare
         PUT_LINE( tab & "LVA " & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ','
 		    & tab & '-' & PRINT_NAME( D( LX_SYMREP, DEFN ) ) & "_ofs" );
 
+-----
+        PUT_LINE( tab & "La " & IMAGE( GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );
+
+        if  DEFN.TY = DN_IN_ID  then
+	PUT_LINE( tab & "La ," & tab & '-' & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, D( SM_OBJ_TYPE, DEFN ) ) ) ) & "__inadr_ofs" );
+        else
+	PUT_LINE( tab & "La ," & tab & '-' & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, D( SM_OBJ_TYPE, DEFN ) ) ) ) & "__outadr_ofs" );
+        end if;
+        PUT_LINE( tab & "CALLI" );
+-----
+
         PUT_LINE( tab & "La " & LEVEL_NUM'IMAGE( CODI.GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );
         PUT_LINE( tab & "La ," & tab & '-' & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, D( SM_OBJ_TYPE, DEFN ) ) ) )
 			& "__ld_ofs" );
@@ -3614,9 +3625,18 @@ end;
         elsif OP_STR = """*"""   then
 	if IS_FLOAT then PUT_LINE( tab & "FMUL"	); else PUT_LINE( tab & "MUL"	); end if;
         elsif OP_STR = """/"""   then
-	if IS_FLOAT then PUT_LINE( tab & "FDIV"	); else PUT_LINE( tab & "DIV"	); end if;
-        elsif OP_STR = """MOD""" then  PUT_LINE( tab & "MODI" );
-        elsif OP_STR = """REM""" then  PUT_LINE( tab & "REMI" );
+	if IS_FLOAT then
+	  PUT_LINE( tab & "FDIV" );
+	else
+	  CODE_ZERO_DIVIDE_CHECK;								-- E-E
+	  PUT_LINE( tab & "DIV"	);
+	end if;
+        elsif OP_STR = """MOD""" then
+	CODE_ZERO_DIVIDE_CHECK;
+	PUT_LINE( tab & "MODI" );
+        elsif OP_STR = """REM""" then
+	CODE_ZERO_DIVIDE_CHECK;
+	PUT_LINE( tab & "REMI" );
         elsif OP_STR = """="""   then
 	if IS_FLOAT then PUT_LINE( tab & "FCEQ"	); else PUT_LINE( tab & "CEQ"	); end if;
         elsif OP_STR = """>"""   then
@@ -5517,6 +5537,8 @@ SCAN_IDS:
 
     end if;
 
+    CODE_RANGE_CHECK( TARGET_TYPE );									-- E-D4 : gamme du sous-type CIBLE (4.6)
+
   end	CODE_CONVERSION;
 	---------------
 
@@ -5630,6 +5652,8 @@ procedure CODE_ARRAY_AGGREGATE_DYNAMIC ( AGG, TYPE_SPEC : TREE )
       else
         PUT_LINE( tab & "LI" & tab & PRINT_NUM( VAL ) );
       end	if;
+
+      CODE_RANGE_CHECK( D( SM_EXP_TYPE, QUALIFIED ) );							-- E-D5 : gamme du sous-type qualifie (4.7)
 
     else
 
@@ -5827,6 +5851,7 @@ put_line( "; CODE_QUALIFIED : DN_QUALIFIED" & NODE_NAME'IMAGE( SRC_EXP.TY ) );
 
       else
         CODE_EXP( SRC_EXP );
+        CODE_RANGE_CHECK( D( SM_EXP_TYPE, QUALIFIED ) );							-- E-D5 : gamme du sous-type qualifie (4.7)
       end if;
 
     end if;
@@ -5910,6 +5935,19 @@ put_line( "; CODE_QUALIFIED : DN_QUALIFIED" & NODE_NAME'IMAGE( SRC_EXP.TY ) );
 	  REGIONS_PATH( VC_ID );
 	end if;
 	PUT_LINE(	PRINT_NAME( D( LX_SYMREP, VC_ID ) )  & "_disp" );
+
+
+-----
+        PUT_LINE( tab & "La " & IMAGE( GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );
+
+        if  VC_ID.TY = DN_IN_ID  then
+	PUT_LINE( tab & "La ," & tab & '-' & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, D( SM_OBJ_TYPE, VC_ID ) ) ) ) & "__inadr_ofs" );
+        else
+	PUT_LINE( tab & "La ," & tab & '-' & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, D( SM_OBJ_TYPE, VC_ID ) ) ) ) & "__outadr_ofs" );
+        end if;
+        PUT_LINE( tab & "CALLI" );
+-----
+
 
 	PUT_LINE( tab & "La " & IMAGE( GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );
 	PUT_LINE( tab & "La ," & tab & '-' & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, VC_TYPE ) ) )  & "__ld_ofs" );
@@ -6243,6 +6281,25 @@ put_line( "; CODE_QUALIFIED : DN_QUALIFIED" & NODE_NAME'IMAGE( SRC_EXP.TY ) );
 
   end	CODE_RANGE_CHECK;
 	----------------
+
+
+			----------------------
+  procedure		CODE_ZERO_DIVIDE_CHECK
+  is			----------------------
+	-- PILIER CHECKS (E-E) : division par zero (4.5.5) -> NUMERIC_ERROR,
+	-- trampoline ne_raise_ (pose en E-A). Diviseur au SOMMET, PRESERVE
+	-- (idiome DUP, effet net nul). Flottants : perimetre 2 (FDIV intact).
+	-- Ne concerne QUE les operateurs UTILISATEUR : les DIV internes du
+	-- compilateur (adressage, STORAGE_UNIT) ne passent pas ici.
+  begin
+    if  CODI.CHECKS_ENABLED  then
+      PUT_LINE( tab & "DUP" );
+      PUT_LINE( tab & "LI" & tab & "0" );
+      PUT_LINE( tab & "CEQ" );
+      PUT_LINE( tab & "BT" & tab & "STANDARD.ne_raise_" );
+    end if;
+  end	CODE_ZERO_DIVIDE_CHECK;
+	----------------------
 
 
 	-----------

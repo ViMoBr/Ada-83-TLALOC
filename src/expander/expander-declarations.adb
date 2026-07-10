@@ -376,6 +376,7 @@ null;
 
 	if  INIT_EXP /= TREE_VOID  then
 	  EXPRESSIONS.CODE_EXP( INIT_EXP );
+	  EXPRESSIONS.CODE_RANGE_CHECK( TYPE_SPEC );						-- E-D1 : gamme du sous-type de l'objet
 	  CODI.STORE( VC_NAME );
 	end if;
 
@@ -480,6 +481,7 @@ null;
 
 	if  INIT_EXP /= TREE_VOID  then
 	  EXPRESSIONS.CODE_EXP( INIT_EXP );
+	  EXPRESSIONS.CODE_RANGE_CHECK( TYPE_SPEC );						-- E-D1 : gamme du sous-type de l'objet
 	  CODI.STORE( VC_NAME );
 	end if;
 

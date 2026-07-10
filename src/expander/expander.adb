@@ -143,6 +143,7 @@ is
     function  IS_GENERIC_FORMAL_SUBPROGRAM( ID		:TREE )		return BOOLEAN;
     procedure CODE_DISCRETE_RANGE_BOUND	( DISCRETE_RANGE :TREE; IS_LAST :BOOLEAN );
     procedure CODE_RANGE_CHECK	( TYPE_SPEC	:TREE );						--| PILIER CHECKS : gamme scalaire, valeur au
+    procedure CODE_ZERO_DIVIDE_CHECK;									--| PILIER CHECKS E-E : diviseur au sommet,
 
 
   private
@@ -522,9 +523,10 @@ FIND_DOT_IF_ANY_AND_UPCASE:
 	PUT_LINE( "  virtual at 8" );
 	PUT_LINE( "    VARzone::" );
 	PUT_LINE( "  end virtual" );
-	PUT_LINE( "include '../../bin/ADA__LIB/_STANDRD.FINC'" );
 
 	PUT_LINE( tab & "LINK" & tab & "0, loc_siz" );
+
+	PUT_LINE( "include '../../bin/ADA__LIB/_STANDRD.FINC'" );
 
    -- PILIER 11 EXCEPTIONS : contexte-sentinelle en fond de la pile des contextes de reprise
 	PUT_LINE( tab & "EXC_MACH" & tab & "0, EXC_CTX0__dat" );						-- photo niveau 0 (NXT_LVL=1 : FP(0))

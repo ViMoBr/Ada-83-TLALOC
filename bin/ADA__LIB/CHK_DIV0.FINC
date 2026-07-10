@@ -1,0 +1,268 @@
+if ~ definite TEXT_IO
+include 'TEXT_IO.FINC'
+end if
+if ~ definite IO_EXCEPTIONS
+include 'IO_EXCEPTIONS.FINC'
+end if
+if ~ definite TEXT_IO
+include 'TEXT_IO.FINC'
+end if
+PRO	CHK_DIV0_L1				;---------- PRO CHK_DIV0
+ELB 1					;    BODY ELAB
+VAR A_disp, d				; variable entiere
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	12
+	Sd  1,	A_disp
+
+VAR Z_disp, d				; variable entiere
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	Sd  1,	Z_disp
+
+VAR R_disp, d				; variable entiere
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	Sd  1,	R_disp
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+					; debut if
+	Ld 1,	A_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	4
+	DUP
+	LI	0
+	CEQ
+	BT	STANDARD.ne_raise_
+	DIV
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	3
+	CEQ
+	Ld 1,	A_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	5
+	DUP
+	LI	0
+	CEQ
+	BT	STANDARD.ne_raise_
+	REMI
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	2
+	CEQ
+	ET
+	Ld 1,	A_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	5
+	NEG
+	DUP
+	LI	0
+	CEQ
+	BT	STANDARD.ne_raise_
+	MODI
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	3
+	NEG
+	CEQ
+	ET
+	BF	L5
+STR STR_L6, "CHK_DIV0 1 OK valeurs justes"	; constante string="CHK_DIV0 1 OK valeurs justes"
+	LCA	STR_L6.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	BRA	L4
+L5:
+STR STR_L7, "CHK_DIV0 1 KO"			; constante string="CHK_DIV0 1 KO"
+	LCA	STR_L7.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+L4:					; post if
+namespace	BLOCK__1
+ELB 2					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+VAR	exc_ctx_L8, q, 10
+	La	0, STANDARD.EXCEPTIONS_TOP_CTX_disp
+	Sa  2,	exc_ctx_L8
+	LCA	L8
+	Sa  2,	exc_ctx_L8 + STANDARD._EXCEPTION_CONTEXT.DISPATCH
+	EXC_MACH  2,	exc_ctx_L8
+	LVA  2,	exc_ctx_L8
+	Sa	0, STANDARD.EXCEPTIONS_TOP_CTX_disp
+	Ld 1,	STANDARD.CHK_DIV0_L1.A_disp
+	Ld 1,	STANDARD.CHK_DIV0_L1.Z_disp
+	DUP
+	LI	0
+	CEQ
+	BT	STANDARD.ne_raise_
+	DIV
+	Sd  1,	R_disp
+STR STR_L10, "CHK_DIV0 2 KO pas de levee"	; constante string="CHK_DIV0 2 KO pas de levee"
+	LCA	STR_L10.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	La 0,	STANDARD.EXCEPTIONS_TOP_CTX_disp
+	La , 0
+	Sa 0,	STANDARD.EXCEPTIONS_TOP_CTX_disp
+	BRA	L9
+L8:
+	La	0, STANDARD.EXCEPTIONS_CURRENT_disp
+	Sa  2,	exc_ctx_L8
+	La	0, STANDARD.EXCEPTIONS_CURRENT_disp
+	LCA	STANDARD.NUMERIC_ERROR__exc.data_ptr
+	CEQ
+	BT	L12
+	BRA	L13
+L12:
+STR STR_L14, "CHK_DIV0 2 OK NUMERIC_ERROR sur /"	; constante string="CHK_DIV0 2 OK NUMERIC_ERROR sur /"
+	LCA	STR_L14.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	BRA	L11
+L13:
+	La	0, STANDARD.EXCEPTIONS_CURRENT_disp
+	LCA	STANDARD.CONSTRAINT_ERROR__exc.data_ptr
+	CEQ
+	BT	L15
+	BRA	L16
+L15:
+STR STR_L17, "CHK_DIV0 2 KO mauvaise exception"	; constante string="CHK_DIV0 2 KO mauvaise exception"
+	LCA	STR_L17.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	BRA	L11
+L16:
+	BRA	STANDARD.exc_raise_
+L11:
+L9:
+	UNLINK 2
+endPRO
+namespace	BLOCK__2
+ELB 2					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+VAR	exc_ctx_L18, q, 10
+	La	0, STANDARD.EXCEPTIONS_TOP_CTX_disp
+	Sa  2,	exc_ctx_L18
+	LCA	L18
+	Sa  2,	exc_ctx_L18 + STANDARD._EXCEPTION_CONTEXT.DISPATCH
+	EXC_MACH  2,	exc_ctx_L18
+	LVA  2,	exc_ctx_L18
+	Sa	0, STANDARD.EXCEPTIONS_TOP_CTX_disp
+	Ld 1,	STANDARD.CHK_DIV0_L1.A_disp
+	Ld 1,	STANDARD.CHK_DIV0_L1.Z_disp
+	DUP
+	LI	0
+	CEQ
+	BT	STANDARD.ne_raise_
+	REMI
+	Sd  1,	R_disp
+STR STR_L20, "CHK_DIV0 3 KO pas de levee"	; constante string="CHK_DIV0 3 KO pas de levee"
+	LCA	STR_L20.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	La 0,	STANDARD.EXCEPTIONS_TOP_CTX_disp
+	La , 0
+	Sa 0,	STANDARD.EXCEPTIONS_TOP_CTX_disp
+	BRA	L19
+L18:
+	La	0, STANDARD.EXCEPTIONS_CURRENT_disp
+	Sa  2,	exc_ctx_L18
+	La	0, STANDARD.EXCEPTIONS_CURRENT_disp
+	LCA	STANDARD.NUMERIC_ERROR__exc.data_ptr
+	CEQ
+	BT	L22
+	BRA	L23
+L22:
+STR STR_L24, "CHK_DIV0 3 OK NUMERIC_ERROR sur rem"	; constante string="CHK_DIV0 3 OK NUMERIC_ERROR sur rem"
+	LCA	STR_L24.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	BRA	L21
+L23:
+	La	0, STANDARD.EXCEPTIONS_CURRENT_disp
+	LCA	STANDARD.CONSTRAINT_ERROR__exc.data_ptr
+	CEQ
+	BT	L25
+	BRA	L26
+L25:
+STR STR_L27, "CHK_DIV0 3 KO mauvaise exception"	; constante string="CHK_DIV0 3 KO mauvaise exception"
+	LCA	STR_L27.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	BRA	L21
+L26:
+	BRA	STANDARD.exc_raise_
+L21:
+L19:
+	UNLINK 2
+endPRO
+namespace	BLOCK__3
+ELB 2					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+VAR	exc_ctx_L28, q, 10
+	La	0, STANDARD.EXCEPTIONS_TOP_CTX_disp
+	Sa  2,	exc_ctx_L28
+	LCA	L28
+	Sa  2,	exc_ctx_L28 + STANDARD._EXCEPTION_CONTEXT.DISPATCH
+	EXC_MACH  2,	exc_ctx_L28
+	LVA  2,	exc_ctx_L28
+	Sa	0, STANDARD.EXCEPTIONS_TOP_CTX_disp
+	Ld 1,	STANDARD.CHK_DIV0_L1.A_disp
+	Ld 1,	STANDARD.CHK_DIV0_L1.Z_disp
+	DUP
+	LI	0
+	CEQ
+	BT	STANDARD.ne_raise_
+	MODI
+	Sd  1,	R_disp
+STR STR_L30, "CHK_DIV0 4 KO pas de levee"	; constante string="CHK_DIV0 4 KO pas de levee"
+	LCA	STR_L30.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	La 0,	STANDARD.EXCEPTIONS_TOP_CTX_disp
+	La , 0
+	Sa 0,	STANDARD.EXCEPTIONS_TOP_CTX_disp
+	BRA	L29
+L28:
+	La	0, STANDARD.EXCEPTIONS_CURRENT_disp
+	Sa  2,	exc_ctx_L28
+	La	0, STANDARD.EXCEPTIONS_CURRENT_disp
+	LCA	STANDARD.NUMERIC_ERROR__exc.data_ptr
+	CEQ
+	BT	L32
+	BRA	L33
+L32:
+STR STR_L34, "CHK_DIV0 4 OK NUMERIC_ERROR sur mod"	; constante string="CHK_DIV0 4 OK NUMERIC_ERROR sur mod"
+	LCA	STR_L34.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	BRA	L31
+L33:
+	La	0, STANDARD.EXCEPTIONS_CURRENT_disp
+	LCA	STANDARD.CONSTRAINT_ERROR__exc.data_ptr
+	CEQ
+	BT	L35
+	BRA	L36
+L35:
+STR STR_L37, "CHK_DIV0 4 KO mauvaise exception"	; constante string="CHK_DIV0 4 KO mauvaise exception"
+	LCA	STR_L37.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	BRA	L31
+L36:
+	BRA	STANDARD.exc_raise_
+L31:
+L29:
+	UNLINK 2
+endPRO
+STR STR_L38, "CHK_DIV0 5 attendu : EXCEPTION NON RATTRAPEE : NUMERIC_ERROR, $? = 1"	; constante string="CHK_DIV0 5 attendu : EXCEPTION NON RATTRAPEE : NUMERIC_ERROR, $? = 1"
+	LCA	STR_L38.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	Ld 1,	A_disp
+	Ld 1,	R_disp
+	ADD
+	Ld 1,	Z_disp
+	DUP
+	LI	0
+	CEQ
+	BT	STANDARD.ne_raise_
+	DIV
+	Sd  1,	R_disp
+STR STR_L39, "CHK_DIV0 5 KO ligne atteinte"	; constante string="CHK_DIV0 5 KO ligne atteinte"
+	LCA	STR_L39.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+ret_lbl:
+	UNLINK 1
+	RTD
+excep:
+endPRO					;---------- end PRO CHK_DIV0
