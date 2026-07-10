@@ -643,13 +643,28 @@ separate ( EXPANDER )
 	begin
 	  if  DEFN.TY = DN_CONSTANT_ID  then
 
+	    while  EXP_TYPE.TY = DN_PRIVATE  or else  EXP_TYPE.TY = DN_L_PRIVATE  loop				-- n 81 ter : vue privee -> vue complete
+	      EXP_TYPE := D( SM_TYPE_SPEC, EXP_TYPE );							-- (TREE_VOID et autres constantes differees
+	    end loop;										-- en actuel), reflexe maison avant dispatch.
+
 	    if EXP_TYPE.TY = DN_ENUMERATION then
 	      PUT_LINE( tab & "LI" & tab & INTEGER'IMAGE( DI( SM_VALUE, ACT_PRM ) ) );
 
-	    elsif EXP_TYPE.TY = DN_ARRAY then
-	      PUT( tab & "LVA" & ' ' & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' & tab & DEFN_STR & "_disp" );
+	    elsif EXP_TYPE.TY = DN_ARRAY  or else  EXP_TYPE.TY = DN_CONSTRAINED_ARRAY
+	        or else  EXP_TYPE.TY = DN_RECORD  or else  EXP_TYPE.TY = DN_CONSTRAINED_RECORD  then
+	      PUT( tab & "LVA" & ' ' & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' & tab );
+	      REGIONS_PATH( DEFN );
+	      PUT( DEFN_STR & "_disp" );
 	      if  CODI.DEBUG  then PUT( tab50 & "; array actual" ); end if;
 	      NEW_LINE;
+
+	    elsif  EXP_TYPE.TY = DN_INTEGER  then							-- PIEGE n 81 : INTEGER/FIXED/FLOAT.
+	      LOAD_MEM( DEFN );									-- Constante ELABOREE (slot _disp, cf.
+
+	    else											-- style BRUYANT (piege n 53) : la retombee
+	      PUT_LINE( "; !!! CODE_PROCEDURE_CALL : actuel constant non gere "				-- silencieuse de cette branche a coute le
+		      & NODE_NAME'IMAGE( EXP_TYPE.TY ) );						-- fossile n 81 (IDENT_INT inerte).
+	      raise PROGRAM_ERROR;
 
 	    end if;
 
@@ -1713,6 +1728,7 @@ separate ( EXPANDER )
 	    PUT_LINE( tab & "La" );
 	  end if;
 	  EXPRESSIONS.CODE_EXP( SRC_EXP );
+	  EXPRESSIONS.CODE_RANGE_CHECK( NAME_TYPE );							-- PILIER CHECKS : gamme du sous-type de la vue
 	  STORE_OR_CALLI;
 
 	elsif  NAME_TYPE.TY = DN_INTEGER  or  NAME_TYPE.TY = DN_FIXED  or  NAME_TYPE.TY = DN_FLOAT  then		-- OBJET ASSIGNE SCALAIRE
@@ -1732,6 +1748,7 @@ separate ( EXPANDER )
 	  end if;
 
 	  EXPRESSIONS.CODE_EXP( SRC_EXP );
+	  EXPRESSIONS.CODE_RANGE_CHECK( NAME_TYPE );							-- PILIER CHECKS : gamme du sous-type de la vue
 	  STORE_OR_CALLI;
 
 	elsif  NAME_TYPE.TY = DN_RECORD  or else NAME_TYPE.TY = DN_CONSTRAINED_RECORD  then

@@ -172,8 +172,17 @@ STR ANON_19_61_L3_D, "$$$.TMP"		; constante string="$$$.TMP"
 	LVA 1, ANON_19_24_L3_R_disp
 	CALL	STANDARD.IDL. ,OPEN_IDL_TREE_FILE_L6
 	LI	0					; lieu resultat sur pile
+	LVA  0,	STANDARD.IDL.TREE_ROOT_disp		; array actual
 	LI  3
 	CALL	STANDARD.IDL. ,DI_L21
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	ERR_COUNT_disp
 					; debut if
 	Ld 1,	ERR_COUNT_disp
@@ -214,6 +223,7 @@ VAR	ANON_28_32__dat, STANDARD.IDL._SEQ_TYPE.size
 	Sa  2, ANON_28_32__u
 	LVA 2, ANON_28_32_disp
 					; doublet resultat record anonyme
+	LVA  0,	STANDARD.IDL.TREE_ROOT_disp		; array actual
 	CALL	STANDARD.IDL. ,LIST_L22
 	La  ,  0
 	BLKMOV
@@ -323,6 +333,14 @@ L15:
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	LINE_COUNT_disp
 					; debut if
 	LI	0					; lieu resultat sur pile
@@ -412,6 +430,14 @@ LOOP__8:					; corps boucle LOOP__8
 					; debut if
 	La	 3, SLINE_disp				; array data start address on stack
 	Ld	3, IL23_disp
+	DUP
+	LId	3, SLINE__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	3, SLINE__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	3, SLINE__u, STANDARD._STRING.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	3, SLINE__u, STANDARD._STRING.COMP_SIZ
@@ -425,6 +451,14 @@ LOOP__8:					; corps boucle LOOP__8
 	BF	L25
 	La	 3, SLINE_disp				; array data start address on stack
 	Ld	3, IL23_disp
+	DUP
+	LId	3, SLINE__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	3, SLINE__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	3, SLINE__u, STANDARD._STRING.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	3, SLINE__u, STANDARD._STRING.COMP_SIZ
@@ -479,6 +513,14 @@ STR STR_L30, ":  "				; constante string=":  "
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SUB
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  2,	NB_PREFIX_CHARS_disp
 	La 3, SLINE_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER

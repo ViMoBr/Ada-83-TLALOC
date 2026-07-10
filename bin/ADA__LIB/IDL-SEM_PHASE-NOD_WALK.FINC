@@ -102,6 +102,14 @@ LOOP__1:					; corps boucle LOOP__1
 					; debut if
 	La	 2, A_disp				; array data start address on stack
 	Ld	2, IIL6_disp
+	DUP
+	LId	2, A__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	2, A__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	2, A__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	2, A__u, STANDARD._STRING.COMP_SIZ
@@ -115,6 +123,14 @@ LOOP__1:					; corps boucle LOOP__1
 	LI	90
 	La	 2, A_disp				; array data start address on stack
 	Ld	2, IIL6_disp
+	DUP
+	LId	2, A__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	2, A__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	2, A__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	2, A__u, STANDARD._STRING.COMP_SIZ
@@ -128,6 +144,14 @@ LOOP__1:					; corps boucle LOOP__1
 	BF	L8
 	La	 2, A_disp				; array data start address on stack
 	Ld	2, IIL6_disp
+	DUP
+	LId	2, A__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	2, A__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	2, A__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	2, A__u, STANDARD._STRING.COMP_SIZ
@@ -137,6 +161,14 @@ LOOP__1:					; corps boucle LOOP__1
 	ADD					; add offset to start address
 	La	 2, A_disp				; array data start address on stack
 	Ld	2, IIL6_disp
+	DUP
+	LId	2, A__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	2, A__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	2, A__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	2, A__u, STANDARD._STRING.COMP_SIZ
@@ -378,6 +410,7 @@ VAR	ANON_63_21__dat, STANDARD.IDL._TREE.size
 	CALL	STANDARD.IDL.SEM_PHASE_L11.DEF_UTIL. ,GET_DEF_FOR_ID_L55
 	La
 	BLKMOV
+	LVA  0,	STANDARD.IDL.TREE_VOID_disp		; array actual
 	LVA 1,	SOURCE_DEF_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.DEF_UTIL. ,MAKE_DEF_VISIBLE_L67
 	LVA 1,	PRIOR_DEF_disp
@@ -1108,6 +1141,7 @@ VAR	ANON_85_9__dat, STANDARD.IDL._TREE.size
 L36:					; post if
 	BRA	L23
 L30:
+	LVA  0,	STANDARD.IDL.TREE_VOID_disp		; array actual
 	LVA 1,	SOURCE_DEF_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.DEF_UTIL. ,MAKE_DEF_VISIBLE_L67
 L23:					; post if
@@ -2468,11 +2502,13 @@ begin:					;---------- BDY INSTRUCTIONS
 	LI  129
 	CALL	STANDARD.IDL. ,DB_L18
 	LVA 2,	H_disp
+	LVA  2,	STANDARD.IDL.SEM_PHASE_L11.NOD_WALK.WALK_HEADER_L85.BLOCK__8.DECL_S1_disp	; array actual
 	CALL	STANDARD.IDL.SEM_PHASE_L11.NOD_WALK. ,WALK_ITEM_S_L193
 	LIVA 	2, H_disp, STANDARD.IDL.SEM_PHASE_L11.SEM_GLOB._H_TYPE.IS_IN_SPEC
 	LI	0
 	Sb
 	LVA 2,	H_disp
+	LVA  2,	STANDARD.IDL.SEM_PHASE_L11.NOD_WALK.WALK_HEADER_L85.BLOCK__8.DECL_S2_disp	; array actual
 	CALL	STANDARD.IDL.SEM_PHASE_L11.NOD_WALK. ,WALK_ITEM_S_L193
 	LI  1
 	La  1,	-NODE_ofs
@@ -3537,6 +3573,7 @@ VAR	ANON_326_32__dat, STANDARD.IDL._TREE.size
 	LVA 1, ANON_326_32_disp
 					; doublet resultat record anonyme
 	La  1,	-OPERATOR_ID_ofs
+	LVA  0,	STANDARD.IDL.TREE_VOID_disp		; array actual
 	CALL	STANDARD.IDL.SEM_PHASE_L11.MAKE_NOD. ,MAKE_IMPLICIT_NOT_EQ_L390
 	LVA 1,	NEW_ID_disp
 	LI  112
@@ -5098,6 +5135,7 @@ VAR	ANON_488_17__dat, STANDARD.IDL._TREE.size
 	Sa  2, ANON_488_17__u
 	LVA 2, ANON_488_17_disp
 					; doublet resultat record anonyme
+	LVA  0,	STANDARD.IDL.TREE_VOID_disp		; array actual
 	La  1,	-H_ofs
 VAR	ANON_488_42_disp, q
 VAR	ANON_488_42__u,    q
@@ -5339,6 +5377,7 @@ VAR	ANON_522_17__dat, STANDARD.IDL._TREE.size
 	Sa  2, ANON_522_17__u
 	LVA 2, ANON_522_17_disp
 					; doublet resultat record anonyme
+	LVA  0,	STANDARD.IDL.TREE_VOID_disp		; array actual
 	La  1,	-H_ofs
 VAR	ANON_522_42_disp, q
 VAR	ANON_522_42__u,    q
@@ -5944,6 +5983,7 @@ VAR	ANON_589_11__dat, STANDARD.IDL._TREE.size
 	BRA	L321
 L322:
 L321:					; post if
+	LVA  0,	STANDARD.IDL.TREE_VOID_disp		; array actual
 	LVA 2,	TYPE_SPEC_disp
 	LVA 2,	SOURCE_NAME_S_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.NOD_WALK. ,INSERT_OBJ_TYPE_AND_INIT_EXP_IN_S_L12
@@ -7351,6 +7391,7 @@ VAR	ANON_677_17__dat, STANDARD.IDL._TREE.size
 	Sa  2, ANON_677_17__u
 	LVA 2, ANON_677_17_disp
 					; doublet resultat record anonyme
+	LVA  0,	STANDARD.IDL.TREE_VOID_disp		; array actual
 	LVA 2,	SOURCE_NAME_disp
 	LVA 2,	NEW_DSCRMT_DECL_S_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.MAKE_NOD. ,MAKE_INCOMPLETE_L429
@@ -7657,6 +7698,7 @@ L429:
 L428:					; post if
 	BRA	L421
 L422:
+	LVA  0,	STANDARD.IDL.TREE_VOID_disp		; array actual
 	LVA 2,	SOURCE_DEF_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.DEF_UTIL. ,MAKE_DEF_VISIBLE_L67
 L421:					; post if
@@ -7786,6 +7828,7 @@ VAR	ANON_714_15__dat, STANDARD.IDL._TREE.size
 	Sa  2, ANON_714_15__u
 	LVA 2, ANON_714_15_disp
 					; doublet resultat record anonyme
+	LVA  0,	STANDARD.IDL.TREE_VOID_disp		; array actual
 	La  1,	-H_ofs
 	LVA 2,	SOURCE_NAME_disp
 	LVA 2,	SUBTYPE_INDICATION_disp
@@ -7877,6 +7920,7 @@ L442:
 	LI	1
 	OUX
 	BF	L440
+	LVA  0,	STANDARD.IDL.TREE_VOID_disp		; array actual
 	LVA 2,	SOURCE_DEF_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.DEF_UTIL. ,MAKE_DEF_VISIBLE_L67
 	BRA	L439
@@ -8020,9 +8064,16 @@ VAR	ANON_740_22__dat, STANDARD.IDL._TREE.size
 	Sa  2, ANON_740_22__u
 	LVA 2, ANON_740_22_disp
 					; doublet resultat record anonyme
+	LVA  0,	STANDARD.IDL.TREE_VOID_disp		; array actual
+	LVA  0,	STANDARD.IDL.TREE_VOID_disp		; array actual
 	LVA 2,	SOURCE_NAME_disp
+	LVA  0,	STANDARD.IDL.TREE_VOID_disp		; array actual
+	LVA  0,	STANDARD.IDL.TREE_VOID_disp		; array actual
+	LVA  0,	STANDARD.IDL.TREE_VOID_disp		; array actual
+	LVA  0,	STANDARD.IDL.TREE_VOID_disp		; array actual
 	LVA 2,	DECL_S_disp
 	LI  0
+	LVA  0,	STANDARD.IDL.TREE_VOID_disp		; array actual
 	CALL	STANDARD.IDL.SEM_PHASE_L11.MAKE_NOD. ,MAKE_TASK_SPEC_L416
 	La  ,  0
 	BLKMOV
@@ -8382,6 +8433,7 @@ VAR	ANON_761_36__dat, STANDARD.IDL._TREE.size
 	CALL	STANDARD.IDL. ,D_L16
 	BRA	L450
 L451:
+	LVA  0,	STANDARD.IDL.TREE_VOID_disp		; array actual
 	LVA 2,	SOURCE_DEF_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.DEF_UTIL. ,MAKE_DEF_VISIBLE_L67
 L450:					; post if
@@ -9057,6 +9109,7 @@ L484:
 	OUX
 L482:
 	BF	L481
+	LVA  0,	STANDARD.IDL.TREE_VOID_disp		; array actual
 	LVA 2,	SOURCE_DEF_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.DEF_UTIL. ,MAKE_DEF_VISIBLE_L67
 	LVA 2,	PRIOR_DEF_disp
@@ -9527,10 +9580,12 @@ begin:					;---------- BDY INSTRUCTIONS
 	CALL	STANDARD.IDL. ,D_L16
 	LVA 2,	SOURCE_DEF_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.DEF_UTIL. ,CHECK_UNIQUE_DEF_L60
+	LVA  0,	STANDARD.IDL.TREE_VOID_disp		; array actual
 	LVA 2,	H_disp
 	LVA 2,	UNIT_KIND_disp
 	LVA 2,	SOURCE_NAME_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.NOD_WALK. ,WALK_UNIT_DESC_L117
+	LVA  0,	STANDARD.IDL.TREE_VOID_disp		; array actual
 	LVA 2,	SOURCE_DEF_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.DEF_UTIL. ,MAKE_DEF_VISIBLE_L67
 					; debut if
@@ -9852,7 +9907,11 @@ VAR	ANON_906_132__dat, STANDARD.IDL._TREE.size
 	LVA 2,	SOURCE_NAME_disp
 	LI  14
 	CALL	STANDARD.IDL. ,D_L17
+	LVA  0,	STANDARD.IDL.TREE_VOID_disp		; array actual
+	LVA  0,	STANDARD.IDL.TREE_VOID_disp		; array actual
 	LI  0
+	LVA  0,	STANDARD.IDL.TREE_VOID_disp		; array actual
+	LVA  0,	STANDARD.IDL.TREE_VOID_disp		; array actual
 VAR	ANON_906_91_disp, q
 VAR	ANON_906_91__u,    q
 VAR	ANON_906_91__dat, STANDARD.IDL._TREE.size
@@ -10963,6 +11022,7 @@ VAR	ANON_1065_16__dat, STANDARD.IDL._TREE.size
 	LVA 2,	SOURCE_NAME_disp
 	LI  109
 	CALL	STANDARD.IDL. ,D_L16
+	LVA  0,	STANDARD.IDL.TREE_VOID_disp		; array actual
 	LVA 2,	SOURCE_NAME_disp
 	LI  112
 	CALL	STANDARD.IDL. ,D_L16
@@ -12302,6 +12362,7 @@ VAR	ANON_1145_48__dat, STANDARD.IDL._TREE.size
 	BRA	L631
 L632:
 L631:					; post if
+	LVA  0,	STANDARD.IDL.TREE_VOID_disp		; array actual
 	LVA 2,	H_disp
 	LVA 2,	BODY_NODE_disp
 	LVA 2,	SOURCE_NAME_disp
@@ -12315,6 +12376,7 @@ L631:					; post if
 	LI	31
 	CEQ
 	BF	L634
+	LVA  0,	STANDARD.IDL.TREE_VOID_disp		; array actual
 	LVA 2,	SOURCE_DEF_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.DEF_UTIL. ,MAKE_DEF_VISIBLE_L67
 	BRA	L633
@@ -12780,6 +12842,7 @@ VAR	ANON_1175_18__dat, STANDARD.IDL._TREE.size
 	CALL	STANDARD.IDL.SEM_PHASE_L11.DEF_UTIL. ,MAKE_DEF_FOR_ID_L52
 	La
 	BLKMOV
+	LVA  0,	STANDARD.IDL.TREE_VOID_disp		; array actual
 	LVA 2,	SOURCE_NAME_disp
 	LI  109
 	CALL	STANDARD.IDL. ,D_L16
@@ -13183,6 +13246,7 @@ VAR	ANON_1192_27__dat, STANDARD.IDL._TREE.size
 	LVA 2,	SOURCE_NAME_disp
 	LI  109
 	CALL	STANDARD.IDL. ,D_L16
+	LVA  0,	STANDARD.IDL.TREE_VOID_disp		; array actual
 	LVA 2,	SOURCE_NAME_disp
 	LI  112
 	CALL	STANDARD.IDL. ,D_L16
@@ -13355,6 +13419,7 @@ L670:
 L669:					; post if
 	UNLINK 3
 endPRO
+	LVA  0,	STANDARD.IDL.TREE_VOID_disp		; array actual
 	LVA 2,	H_disp
 	LVA 2,	BODY_NODE_disp
 	LVA 2,	SOURCE_NAME_disp
@@ -14098,6 +14163,7 @@ L703:					; post if
 	LVA  2,	H_disp
 	LVA 2,	SOURCE_DEF_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.NOD_WALK. ,ENTER_BODY_L191
+	LVA  0,	STANDARD.IDL.TREE_VOID_disp		; array actual
 	LVA 2,	H_disp
 	LVA 2,	BODY_NODE_disp
 	LVA 2,	SOURCE_NAME_disp
@@ -14606,6 +14672,7 @@ L745:
 	OUX
 L743:
 	BF	L742
+	LVA  0,	STANDARD.IDL.TREE_VOID_disp		; array actual
 	La  1,	-DEF_ofs
 	CALL	STANDARD.IDL.SEM_PHASE_L11.DEF_UTIL. ,MAKE_DEF_VISIBLE_L67
 	BRA	L741
@@ -15067,6 +15134,7 @@ VAR	ANON_1380_25__dat, STANDARD.IDL._TREE.size
 	Sa  1, ANON_1380_25__u
 	LVA 1, ANON_1380_25_disp
 					; doublet resultat record anonyme
+	LVA  1,	STANDARD.IDL.SEM_PHASE_L11.NOD_WALK.WALK_NAME_L186.NEW_NAME_disp	; array actual
 	CALL	STANDARD.IDL.SEM_PHASE_L11.EXPRESO. ,GET_NAME_DEFN_L156
 	La  ,  0
 	BLKMOV
@@ -15311,6 +15379,7 @@ VAR	ANON_1388_14__dat, STANDARD.IDL._TREE.size
 	LI	137
 	CEQ
 	BF	L784
+	LVA  0,	STANDARD.IDL.TREE_VOID_disp		; array actual
 VAR	ANON_1392_21_disp, q
 VAR	ANON_1392_21__u,    q
 VAR	ANON_1392_21__dat, STANDARD.IDL._TREE.size
@@ -15320,12 +15389,15 @@ VAR	ANON_1392_21__dat, STANDARD.IDL._TREE.size
 	Sa  1, ANON_1392_21__u
 	LVA 1, ANON_1392_21_disp
 					; doublet resultat record anonyme
+	LVA  1,	STANDARD.IDL.SEM_PHASE_L11.NOD_WALK.WALK_NAME_L186.NEW_NAME_disp	; array actual
 	LI  91
 	CALL	STANDARD.IDL. ,D_L17
 	LI  89
 	CALL	STANDARD.IDL. ,D_L16
 	BRA	L783
 L784:
+	LVA  0,	STANDARD.IDL.TREE_VOID_disp		; array actual
+	LVA  1,	STANDARD.IDL.SEM_PHASE_L11.NOD_WALK.WALK_NAME_L186.NEW_NAME_disp	; array actual
 	LI  89
 	CALL	STANDARD.IDL. ,D_L16
 L783:					; post if
@@ -15395,6 +15467,7 @@ VAR	ANON_1403_25__dat, STANDARD.IDL._TREE.size
 	Sa  1, ANON_1403_25__u
 	LVA 1, ANON_1403_25_disp
 					; doublet resultat record anonyme
+	LVA  1,	STANDARD.IDL.SEM_PHASE_L11.NOD_WALK.WALK_TYPE_MARK_L187.NEW_NAME_disp	; array actual
 	CALL	STANDARD.IDL.SEM_PHASE_L11.EXPRESO. ,GET_NAME_DEFN_L156
 	La  ,  0
 	BLKMOV

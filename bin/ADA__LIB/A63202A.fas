@@ -26,6 +26,14 @@ exc_uncaught_:
 	LCA	EXC_NL__.data_ptr
 	SYS_PUT_STR
 	SYS_EXIT	1
+ce_raise_:
+	LCA	CONSTRAINT_ERROR__exc.data_ptr
+	Sa	0, EXCEPTIONS_CURRENT_disp
+	BRA	exc_raise_
+ne_raise_:
+	LCA	NUMERIC_ERROR__exc.data_ptr
+	Sa	0, EXCEPTIONS_CURRENT_disp
+	BRA	exc_raise_
  virtual VARzone
    loc_siz = $
   end virtual

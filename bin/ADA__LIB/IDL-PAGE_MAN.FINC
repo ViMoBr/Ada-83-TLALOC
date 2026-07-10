@@ -739,6 +739,14 @@ L26:
 	BT  L26
 L27:
 	Ld	0, STANDARD.IDL.PAGE_MAN._RPG_NUM.LST
+	DUP
+	Ld	0, STANDARD.IDL.PAGE_MAN._RPG_NUM.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD.IDL.PAGE_MAN._RPG_NUM.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  0,	RPG_ALLOC_disp
 ret_lbl:
 	UNLINK 1
@@ -772,8 +780,24 @@ STR STR_L30, ""				; constante string=""
 	CALL	STANDARD.IDL.PAGE_MAN.PAGE_IO. ,CREATE_L1
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
+	DUP
+	Lw	0, STANDARD.IDL.PAGE_MAN._VPG_IDX.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Lw	0, STANDARD.IDL.PAGE_MAN._VPG_IDX.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sw  0,	HIGH_VPG_disp
 	Lw 0,	STANDARD.IDL.PAGE_MAN.MAX_VPG_disp
+	DUP
+	Lw	0, STANDARD.IDL.PAGE_MAN._VPG_NUM.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Lw	0, STANDARD.IDL.PAGE_MAN._VPG_NUM.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sw  0,	CUR_VP_disp
 					; debut if
 	Lb 0,	STANDARD.IDL.PAGE_MAN.PAGE_MAN_DEBUG_disp
@@ -981,12 +1005,36 @@ L42:					; post if
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	CALL	STANDARD.IDL.PAGE_MAN. ,READ_PAGE_L16
+	DUP
+	Ld	0, STANDARD.IDL.PAGE_MAN._RPG_NUM.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD.IDL.PAGE_MAN._RPG_NUM.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  0,	CUR_RP_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
+	DUP
+	Lw	0, STANDARD.IDL.PAGE_MAN._VPG_NUM.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Lw	0, STANDARD.IDL.PAGE_MAN._VPG_NUM.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sw  0,	CUR_VP_disp
 	La	 0, PAG_disp				; array data start address on stack
 	Ld 0,	STANDARD.IDL.PAGE_MAN.CUR_RP_disp
+	DUP
+	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.COMP_SIZ
@@ -997,6 +1045,14 @@ L42:					; post if
 	Lq	, STANDARD.IDL.PAGE_MAN._RPG_DATA.DATA
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
+	DUP
+	Ld	 0, STANDARD.IDL.PAGE_MAN._SECTOR._FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	 0, STANDARD.IDL.PAGE_MAN._SECTOR._LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	Ld	 0, STANDARD.IDL.PAGE_MAN._SECTOR._FST_1
 	SUB
 	Ld	 0, STANDARD.IDL.PAGE_MAN._SECTOR._COMP_SIZ
@@ -1009,6 +1065,14 @@ L42:					; post if
 	LI	15
 	UBFX
 ; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
+	DUP
+	Lw	0, STANDARD.IDL.PAGE_MAN._VPG_IDX.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Lw	0, STANDARD.IDL.PAGE_MAN._VPG_IDX.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sw  0,	HIGH_VPG_disp
 	La 0,	STANDARD.EXCEPTIONS_TOP_CTX_disp
 	La , 0
@@ -1261,6 +1325,14 @@ ELB 1					;    BODY ELAB
 VAR THE_PAGE_disp, q
 	La	 0, PAG_disp				; array data start address on stack
 	Ld  1,	-RP_ofs
+	DUP
+	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.COMP_SIZ
@@ -2066,6 +2138,14 @@ end namespace
 	LVA 1, ANON_109_13_disp
 	La	 0, PAG_disp				; array data start address on stack
 	Ld  1,	-RP_ofs
+	DUP
+	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.COMP_SIZ
@@ -2180,6 +2260,14 @@ L73:
 L72:					; post if
 	La	 0, PAG_disp				; array data start address on stack
 	Ld  1,	-RP_ofs
+	DUP
+	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.COMP_SIZ
@@ -2193,6 +2281,14 @@ L72:					; post if
 	VAR SELARG_L78__u, q
 	La	 0, PAG_disp				; array data start address on stack
 	Ld  1,	-RP_ofs
+	DUP
+	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.COMP_SIZ
@@ -2209,6 +2305,14 @@ L72:					; post if
 	CALL	STANDARD.IDL.PAGE_MAN.PAGE_IO. ,WRITE_L13
 	La	 0, PAG_disp				; array data start address on stack
 	Ld  1,	-RP_ofs
+	DUP
+	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.COMP_SIZ
@@ -2235,6 +2339,14 @@ ELB 1					;    BODY ELAB
 VAR THE_PAGE_disp, q
 	La	 0, PAG_disp				; array data start address on stack
 	Ld  1,	-RP_ofs
+	DUP
+	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.COMP_SIZ
@@ -2739,6 +2851,14 @@ L93:
 L92:					; post if
 	La	 0, ASSOC_PAGE_disp			; array data start address on stack
 	LIw	1, VP_disp, 0
+	DUP
+	LId	0, ASSOC_PAGE__u, STANDARD.IDL.PAGE_MAN._ASSOC_PAGE.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, ASSOC_PAGE__u, STANDARD.IDL.PAGE_MAN._ASSOC_PAGE.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, ASSOC_PAGE__u, STANDARD.IDL.PAGE_MAN._ASSOC_PAGE.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, ASSOC_PAGE__u, STANDARD.IDL.PAGE_MAN._ASSOC_PAGE.COMP_SIZ
@@ -2941,11 +3061,27 @@ CHERCHE_ET_DEGAGE:
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD.IDL.PAGE_MAN._RPG_NUM.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD.IDL.PAGE_MAN._RPG_NUM.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  0,	RPG_ALLOC_disp
 	BRA	L102
 L103:
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
+	DUP
+	Ld	0, STANDARD.IDL.PAGE_MAN._RPG_NUM.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD.IDL.PAGE_MAN._RPG_NUM.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  0,	RPG_ALLOC_disp
 L102:					; post if
 					; debut if
@@ -3261,6 +3397,14 @@ end namespace
 	LVA 1, ANON_156_14_disp
 	La	 0, PAG_disp				; array data start address on stack
 	Ld 0,	STANDARD.IDL.PAGE_MAN.RPG_ALLOC_disp
+	DUP
+	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.COMP_SIZ
@@ -3393,6 +3537,14 @@ end namespace
 	LVA 1, ANON_157_22_disp
 	La	 0, PAG_disp				; array data start address on stack
 	Ld 0,	STANDARD.IDL.PAGE_MAN.RPG_ALLOC_disp
+	DUP
+	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.COMP_SIZ
@@ -3507,6 +3659,14 @@ L105:
 L104:					; post if
 	La	 0, PAG_disp				; array data start address on stack
 	Ld 0,	STANDARD.IDL.PAGE_MAN.RPG_ALLOC_disp
+	DUP
+	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.COMP_SIZ
@@ -3523,6 +3683,14 @@ L104:					; post if
 	DROP
 	La	 0, PAG_disp				; array data start address on stack
 	Ld 0,	STANDARD.IDL.PAGE_MAN.RPG_ALLOC_disp
+	DUP
+	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.COMP_SIZ
@@ -3538,6 +3706,14 @@ L101:					; post loop CHERCHE_ET_DEGAGE
 					; debut if
 	La	 0, PAG_disp				; array data start address on stack
 	Ld 0,	STANDARD.IDL.PAGE_MAN.RPG_ALLOC_disp
+	DUP
+	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.COMP_SIZ
@@ -3554,6 +3730,14 @@ L116:
 L115:					; post if
 	La	 0, ASSOC_PAGE_disp			; array data start address on stack
 	Lw  1,	-VP_ofs
+	DUP
+	LId	0, ASSOC_PAGE__u, STANDARD.IDL.PAGE_MAN._ASSOC_PAGE.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, ASSOC_PAGE__u, STANDARD.IDL.PAGE_MAN._ASSOC_PAGE.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, ASSOC_PAGE__u, STANDARD.IDL.PAGE_MAN._ASSOC_PAGE.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, ASSOC_PAGE__u, STANDARD.IDL.PAGE_MAN._ASSOC_PAGE.COMP_SIZ
@@ -3565,6 +3749,14 @@ L115:					; post if
 	Sd
 	La	 0, PAG_disp				; array data start address on stack
 	Ld 0,	STANDARD.IDL.PAGE_MAN.RPG_ALLOC_disp
+	DUP
+	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.COMP_SIZ
@@ -3911,6 +4103,14 @@ ELB 1					;    BODY ELAB
 VAR RP_disp, q
 	La	 0, ASSOC_PAGE_disp			; array data start address on stack
 	Lw  1,	-VP_ofs
+	DUP
+	LId	0, ASSOC_PAGE__u, STANDARD.IDL.PAGE_MAN._ASSOC_PAGE.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, ASSOC_PAGE__u, STANDARD.IDL.PAGE_MAN._ASSOC_PAGE.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, ASSOC_PAGE__u, STANDARD.IDL.PAGE_MAN._ASSOC_PAGE.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, ASSOC_PAGE__u, STANDARD.IDL.PAGE_MAN._ASSOC_PAGE.COMP_SIZ
@@ -4252,6 +4452,14 @@ L125:					; post if
 	VAR SELARG_L133__u, q
 	La	 0, PAG_disp				; array data start address on stack
 	LId	1, RP_disp, 0
+	DUP
+	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.COMP_SIZ
@@ -4603,6 +4811,14 @@ begin:					;---------- BDY INSTRUCTIONS
 	La	 0, AREA_disp				; array data start address on stack
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
+	DUP
+	LId	0, AREA__u, STANDARD.IDL.PAGE_MAN._AREA.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, AREA__u, STANDARD.IDL.PAGE_MAN._AREA.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, AREA__u, STANDARD.IDL.PAGE_MAN._AREA.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, AREA__u, STANDARD.IDL.PAGE_MAN._AREA.COMP_SIZ
@@ -4632,6 +4848,14 @@ VAR NB_FREE_LINES_disp, w			; variable entiere
 ; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
 	La	 0, AREA_disp				; array data start address on stack
 	Ld  1,	-AR_ofs
+	DUP
+	LId	0, AREA__u, STANDARD.IDL.PAGE_MAN._AREA.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, AREA__u, STANDARD.IDL.PAGE_MAN._AREA.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, AREA__u, STANDARD.IDL.PAGE_MAN._AREA.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, AREA__u, STANDARD.IDL.PAGE_MAN._AREA.COMP_SIZ
@@ -4658,6 +4882,14 @@ ELB 2					;    BODY ELAB
 VAR VP_disp, q
 	La	 0, AREA_disp				; array data start address on stack
 	Ld  1,	-AR_ofs
+	DUP
+	LId	0, AREA__u, STANDARD.IDL.PAGE_MAN._AREA.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, AREA__u, STANDARD.IDL.PAGE_MAN._AREA.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, AREA__u, STANDARD.IDL.PAGE_MAN._AREA.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, AREA__u, STANDARD.IDL.PAGE_MAN._AREA.COMP_SIZ
@@ -4670,6 +4902,14 @@ VAR VP_disp, q
 VAR RP_disp, q
 	La	 0, ASSOC_PAGE_disp			; array data start address on stack
 	LIw	2, VP_disp, 0
+	DUP
+	LId	0, ASSOC_PAGE__u, STANDARD.IDL.PAGE_MAN._ASSOC_PAGE.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, ASSOC_PAGE__u, STANDARD.IDL.PAGE_MAN._ASSOC_PAGE.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, ASSOC_PAGE__u, STANDARD.IDL.PAGE_MAN._ASSOC_PAGE.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, ASSOC_PAGE__u, STANDARD.IDL.PAGE_MAN._ASSOC_PAGE.COMP_SIZ
@@ -5013,6 +5253,14 @@ ELB 3					;    BODY ELAB
 VAR THE_PAGE_disp, q
 	La	 0, PAG_disp				; array data start address on stack
 	LId	2, RP_disp, 0
+	DUP
+	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.COMP_SIZ
@@ -5367,6 +5615,14 @@ ELB 2					;    BODY ELAB
 VAR VP_disp, w				; variable entiere
 	La	 0, AREA_disp				; array data start address on stack
 	Ld  1,	-AR_ofs
+	DUP
+	LId	0, AREA__u, STANDARD.IDL.PAGE_MAN._AREA.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, AREA__u, STANDARD.IDL.PAGE_MAN._AREA.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, AREA__u, STANDARD.IDL.PAGE_MAN._AREA.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, AREA__u, STANDARD.IDL.PAGE_MAN._AREA.COMP_SIZ
@@ -5389,6 +5645,14 @@ begin:					;---------- BDY INSTRUCTIONS
 	DROP
 	La	 0, ASSOC_PAGE_disp			; array data start address on stack
 	Lw 2,	VP_disp
+	DUP
+	LId	0, ASSOC_PAGE__u, STANDARD.IDL.PAGE_MAN._ASSOC_PAGE.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, ASSOC_PAGE__u, STANDARD.IDL.PAGE_MAN._ASSOC_PAGE.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, ASSOC_PAGE__u, STANDARD.IDL.PAGE_MAN._ASSOC_PAGE.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, ASSOC_PAGE__u, STANDARD.IDL.PAGE_MAN._ASSOC_PAGE.COMP_SIZ
@@ -5404,6 +5668,14 @@ L170:
 	BF	L169
 	La	 0, ASSOC_PAGE_disp			; array data start address on stack
 	Lw 2,	VP_disp
+	DUP
+	LId	0, ASSOC_PAGE__u, STANDARD.IDL.PAGE_MAN._ASSOC_PAGE.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, ASSOC_PAGE__u, STANDARD.IDL.PAGE_MAN._ASSOC_PAGE.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, ASSOC_PAGE__u, STANDARD.IDL.PAGE_MAN._ASSOC_PAGE.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, ASSOC_PAGE__u, STANDARD.IDL.PAGE_MAN._ASSOC_PAGE.COMP_SIZ
@@ -5434,6 +5706,14 @@ VAR	exc_ctx_L171, q, 10
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Lw	0, STANDARD.IDL.PAGE_MAN._VPG_IDX.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Lw	0, STANDARD.IDL.PAGE_MAN._VPG_IDX.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sw  0,	HIGH_VPG_disp
 	La 0,	STANDARD.EXCEPTIONS_TOP_CTX_disp
 	La , 0
@@ -5553,6 +5833,14 @@ VAR RP_disp, d				; variable entiere
 begin:					;---------- BDY INSTRUCTIONS
 	La	 0, PAG_disp				; array data start address on stack
 	Ld 2,	RP_disp
+	DUP
+	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.COMP_SIZ
@@ -5616,6 +5904,14 @@ L179:
 L180:
 	La	 0, PAG_disp				; array data start address on stack
 	Ld 2,	RP_disp
+	DUP
+	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.COMP_SIZ
@@ -5628,6 +5924,14 @@ L180:
 	Sd
 	La	 0, PAG_disp				; array data start address on stack
 	Ld 2,	RP_disp
+	DUP
+	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.COMP_SIZ
@@ -5642,6 +5946,14 @@ L180:
 endPRO
 	La	 0, AREA_disp				; array data start address on stack
 	Ld  1,	-AR_ofs
+	DUP
+	LId	0, AREA__u, STANDARD.IDL.PAGE_MAN._AREA.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, AREA__u, STANDARD.IDL.PAGE_MAN._AREA.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, AREA__u, STANDARD.IDL.PAGE_MAN._AREA.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, AREA__u, STANDARD.IDL.PAGE_MAN._AREA.COMP_SIZ
@@ -5686,6 +5998,14 @@ begin:					;---------- BDY INSTRUCTIONS
 					; debut if
 	La	 0, PAG_disp				; array data start address on stack
 	Ld 2,	RP_disp
+	DUP
+	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.COMP_SIZ
@@ -5696,6 +6016,14 @@ begin:					;---------- BDY INSTRUCTIONS
 	Lq	, STANDARD.IDL.PAGE_MAN._RPG_DATA.DATA
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
+	DUP
+	Ld	 0, STANDARD.IDL.PAGE_MAN._SECTOR._FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	 0, STANDARD.IDL.PAGE_MAN._SECTOR._LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	Ld	 0, STANDARD.IDL.PAGE_MAN._SECTOR._FST_1
 	SUB
 	Ld	 0, STANDARD.IDL.PAGE_MAN._SECTOR._COMP_SIZ
@@ -5713,6 +6041,14 @@ begin:					;---------- BDY INSTRUCTIONS
 	BF	L186
 	La	 0, PAG_disp				; array data start address on stack
 	Ld 2,	RP_disp
+	DUP
+	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.COMP_SIZ
@@ -5723,6 +6059,14 @@ begin:					;---------- BDY INSTRUCTIONS
 	Lq	, STANDARD.IDL.PAGE_MAN._RPG_DATA.DATA
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
+	DUP
+	Ld	 0, STANDARD.IDL.PAGE_MAN._SECTOR._FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	 0, STANDARD.IDL.PAGE_MAN._SECTOR._LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	Ld	 0, STANDARD.IDL.PAGE_MAN._SECTOR._FST_1
 	SUB
 	Ld	 0, STANDARD.IDL.PAGE_MAN._SECTOR._COMP_SIZ
@@ -5741,6 +6085,14 @@ begin:					;---------- BDY INSTRUCTIONS
 	Sd
 	La	 0, PAG_disp				; array data start address on stack
 	Ld 2,	RP_disp
+	DUP
+	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, PAG__u, STANDARD.IDL.PAGE_MAN._PAG.COMP_SIZ

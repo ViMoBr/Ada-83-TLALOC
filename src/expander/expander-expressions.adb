@@ -405,10 +405,28 @@ null;--	     declare
 	    INDEX_NUM      : INTEGER := 1;
 	    NB_DIMS        : INTEGER := 0;
 
-	    procedure INDEX ( EXP : TREE ) is
-	    INDEX_NUM_IMG : constant STRING := IMAGE( INDEX_NUM );
+			-----
+	    procedure	INDEX	( EXP : TREE )
+	    is		-----
+	    INDEX_NUM_IMG	:constant STRING	:= IMAGE( INDEX_NUM );
 	  begin
 	    CODE_EXP( EXP );
+
+	    -- PILIER CHECKS (E-C) : FST_n <= index <= LST_n (LRM 4.1.1)
+	    if  CODI.CHECKS_ENABLED  then
+	      PUT_LINE( tab & "DUP" );
+	      PUT( tab & "Ld" & tab & INTEGER'IMAGE( TYPE_LVL ) & ", " );
+	      REGIONS_PATH( DESIG_NAME );
+	      PUT_LINE( TYPE_NAME_STR & "._FST_" & INDEX_NUM_IMG );
+	      PUT_LINE( tab & "CLT" );
+	      PUT_LINE( tab & "BT" & tab & "STANDARD.ce_raise_" );
+	      PUT_LINE( tab & "DUP" );
+	      PUT( tab & "Ld" & tab & INTEGER'IMAGE( TYPE_LVL ) & ", " );
+	      REGIONS_PATH( DESIG_NAME );
+	      PUT_LINE( TYPE_NAME_STR & "._LST_" & INDEX_NUM_IMG );
+	      PUT_LINE( tab & "CGT" );
+	      PUT_LINE( tab & "BT" & tab & "STANDARD.ce_raise_" );
+	    end if;
 
 	    PUT( tab & "Ld" & tab & INTEGER'IMAGE( TYPE_LVL ) & ", " );
 	    REGIONS_PATH( DESIG_NAME );
@@ -474,10 +492,26 @@ null;--	     declare
 
 		-----
         procedure	INDEX	( EXP :TREE )
-        is		-----
+        is	-----
           INDEX_NUM_IMG	:constant STRING	:= IMAGE( INDEX_NUM );
         begin
           CODE_EXP( EXP );
+
+          -- PILIER CHECKS (E-C) : FST_n <= index <= LST_n (LRM 4.1.1)
+          if  CODI.CHECKS_ENABLED  then
+            PUT_LINE( tab & "DUP" );
+            PUT( tab & "Ld" & tab & INTEGER'IMAGE( TYPE_LVL ) & ", " );
+            REGIONS_PATH( EXP_TYPE_NAME );
+            PUT_LINE( TYPE_NAME_STR & "._FST_" & INDEX_NUM_IMG );
+            PUT_LINE( tab & "CLT" );
+            PUT_LINE( tab & "BT" & tab & "STANDARD.ce_raise_" );
+            PUT_LINE( tab & "DUP" );
+            PUT( tab & "Ld" & tab & INTEGER'IMAGE( TYPE_LVL ) & ", " );
+            REGIONS_PATH( EXP_TYPE_NAME );
+            PUT_LINE( TYPE_NAME_STR & "._LST_" & INDEX_NUM_IMG );
+            PUT_LINE( tab & "CGT" );
+            PUT_LINE( tab & "BT" & tab & "STANDARD.ce_raise_" );
+          end if;
 
           PUT( tab & "Ld" & tab & INTEGER'IMAGE( TYPE_LVL ) & ", " );
           REGIONS_PATH( EXP_TYPE_NAME );
@@ -497,7 +531,8 @@ null;--	     declare
           PUT_LINE( tab & "DIV" );
           PUT_LINE( tab & "MUL" );
           PUT_LINE( tab & "ADD" );
-        end INDEX;
+
+        end	INDEX;
 		-----
 
       begin
@@ -533,9 +568,8 @@ null;--	     declare
       NAME := D( AS_DESIGNATOR, NAME );
     end if;
 
-
-if  NAME.TY = DN_INDEXED  then
-   declare
+    if  NAME.TY = DN_INDEXED  then
+    declare
       PREFIX_TYPE      : TREE := D( SM_EXP_TYPE, NAME );
       PREFIX_BASE_TYPE : TREE;
       PREFIX_TYPE_NAME : TREE;
@@ -545,8 +579,9 @@ if  NAME.TY = DN_INDEXED  then
       INDEX_NUM        : INTEGER := 1;
       NB_DIMS          : INTEGER := 0;
 
-      function FULL_VIEW_LOCAL ( T : TREE ) return TREE
-      is
+		---------------
+      function	FULL_VIEW_LOCAL ( T : TREE ) return TREE
+      is		---------------
          R : TREE := T;
       begin
          loop
@@ -560,20 +595,42 @@ if  NAME.TY = DN_INDEXED  then
                return R;
             end if;
          end loop;
-      end FULL_VIEW_LOCAL;
 
-      procedure SET_TYPE_NAME ( S : STRING )
-      is
+      end	FULL_VIEW_LOCAL;
+	---------------
+
+		-------------
+      procedure	SET_TYPE_NAME ( S : STRING )
+      is		-------------
       begin
-         TYPE_NAME_LEN := S'LENGTH;
-         TYPE_NAME_STR(1 .. TYPE_NAME_LEN) := S;
-      end SET_TYPE_NAME;
+       TYPE_NAME_LEN := S'LENGTH;
+       TYPE_NAME_STR(1 .. TYPE_NAME_LEN) := S;
 
-      procedure INDEX ( EXP : TREE )
-      is
+      end	SET_TYPE_NAME;
+	-------------
+
+		-----
+      procedure	INDEX ( EXP : TREE )
+      is		-----
          INDEX_NUM_IMG : constant STRING := IMAGE( INDEX_NUM );
       begin
          CODE_EXP( EXP );
+
+         -- PILIER CHECKS (E-C) : FST_n <= index <= LST_n (LRM 4.1.1)
+         if  CODI.CHECKS_ENABLED  then
+            PUT_LINE( tab & "DUP" );
+            PUT( tab & "Ld" & tab & INTEGER'IMAGE( TYPE_LVL ) & ", " );
+            REGIONS_PATH( PREFIX_TYPE_NAME );
+            PUT_LINE( TYPE_NAME_STR(1 .. TYPE_NAME_LEN) & "._FST_" & INDEX_NUM_IMG );
+            PUT_LINE( tab & "CLT" );
+            PUT_LINE( tab & "BT" & tab & "STANDARD.ce_raise_" );
+            PUT_LINE( tab & "DUP" );
+            PUT( tab & "Ld" & tab & INTEGER'IMAGE( TYPE_LVL ) & ", " );
+            REGIONS_PATH( PREFIX_TYPE_NAME );
+            PUT_LINE( TYPE_NAME_STR(1 .. TYPE_NAME_LEN) & "._LST_" & INDEX_NUM_IMG );
+            PUT_LINE( tab & "CGT" );
+            PUT_LINE( tab & "BT" & tab & "STANDARD.ce_raise_" );
+         end if;
 
          PUT( tab & "Ld" & tab & INTEGER'IMAGE( TYPE_LVL ) & ", " );
          REGIONS_PATH( PREFIX_TYPE_NAME );
@@ -637,7 +694,7 @@ if  NAME.TY = DN_INDEXED  then
 
       return;
    end;
-end if;
+    end if;
 
 
     declare
@@ -662,6 +719,49 @@ end if;
 
       begin
         CODE_EXP( EXP );
+
+        -- PILIER CHECKS (E-C) : FST_n <= index <= LST_n (LRM 4.1.1),
+        -- bornes chargees par la MEME sequence que le calcul d'offset
+        -- ci-dessous, sous-cas par sous-cas.
+        if  CODI.CHECKS_ENABLED  then
+          PUT_LINE( tab & "DUP" );
+          if  IS_PARAM  then
+	    PUT_LINE(	tab & "LVA" & tab &	LVL_IMG &	", -" & ARRAY_NAME & "_ofs" );
+            PUT_LINE( tab & "LIa" & tab & ", 0, " & INTEGER'IMAGE( CODI.ADDR_SIZE ) );
+            PUT( tab & "Ld" & tab & ", " );
+	    REGIONS_PATH( EXP_TYPE_NAME );
+	    PUT_LINE( TYPE_NAME_STR & ".FST_" & INDEX_NUM_IMG );
+          elsif  USE_TYPE_INFO_DIRECT  then
+            PUT( tab & "Ld" & tab & INTEGER'IMAGE( TYPE_LVL ) & ", " );
+	    REGIONS_PATH( EXP_TYPE_NAME );
+	    PUT_LINE( TYPE_NAME_STR & "._FST_" & INDEX_NUM_IMG );
+          else
+	    PUT( tab & "LId" & tab & LVL_IMG & ", "	& ARRAY_NAME & "__u" & ", " );
+	    REGIONS_PATH( EXP_TYPE_NAME );
+	    PUT_LINE( TYPE_NAME_STR & ".FST_" & INDEX_NUM_IMG );
+          end if;
+          PUT_LINE( tab & "CLT" );
+          PUT_LINE( tab & "BT" & tab & "STANDARD.ce_raise_" );
+
+          PUT_LINE( tab & "DUP" );
+          if  IS_PARAM  then
+	    PUT_LINE(	tab & "LVA" & tab &	LVL_IMG &	", -" & ARRAY_NAME & "_ofs" );
+            PUT_LINE( tab & "LIa" & tab & ", 0, " & INTEGER'IMAGE( CODI.ADDR_SIZE ) );
+            PUT( tab & "Ld" & tab & ", " );
+	    REGIONS_PATH( EXP_TYPE_NAME );
+	    PUT_LINE( TYPE_NAME_STR & ".LST_" & INDEX_NUM_IMG );
+          elsif  USE_TYPE_INFO_DIRECT  then
+            PUT( tab & "Ld" & tab & INTEGER'IMAGE( TYPE_LVL ) & ", " );
+	    REGIONS_PATH( EXP_TYPE_NAME );
+	    PUT_LINE( TYPE_NAME_STR & "._LST_" & INDEX_NUM_IMG );
+          else
+	    PUT( tab & "LId" & tab & LVL_IMG & ", "	& ARRAY_NAME & "__u" & ", " );
+	    REGIONS_PATH( EXP_TYPE_NAME );
+	    PUT_LINE( TYPE_NAME_STR & ".LST_" & INDEX_NUM_IMG );
+          end if;
+          PUT_LINE( tab & "CGT" );
+          PUT_LINE( tab & "BT" & tab & "STANDARD.ce_raise_" );
+        end if;
 
         -- Charger FST_n depuis useinfo
         if  IS_PARAM  then
@@ -2903,9 +3003,9 @@ end;
       -- Bornes du resultat = celles de l'operande GAUCHE (4.5.1) : le __u du
       -- resultat REUTILISE l'info de G ; seule la data est allouee (co-pile,
       -- meme idiome que la concat).  NOT est unaire : PRM_2 = PRM_1, ignore.
-      -- RESTRICTION consignee : pas de controle d'egalite des longueurs
-      -- (CONSTRAINT_ERROR differe au pilier 11) ; l'operation itere LEN_G octets
-      -- -- comportement indefini si LEN_D < LEN_G (lecture au-dela de D).
+      -- PILIER CHECKS (E-B) : l'egalite des longueurs est CONTROLEE (4.5.1),
+      -- CONSTRAINT_ERROR par STANDARD.ce_raise_ -- la RESTRICTION D3 est soldee.
+      -- L'operation itere LEN_G octets, garanti = LEN_D (checks ON).
 
       if CODI.DEBUG then PUT_LINE( "; CODE composite " & OP_STR & ' ' & TYPE_STR ); end if;
 
@@ -2917,6 +3017,18 @@ end;
       SETUP_OPERAND( PRM_1, ANON_G );
       if  OP_STR /= """NOT"""  then
         SETUP_OPERAND( PRM_2, ANON_D );
+
+        -- ---- PILIER CHECKS (E-B) : LEN_G = LEN_D (LRM 4.5.1) ----
+        -- Longueurs en OCTETS = nombre de composants (BOOLEAN, 1 octet --
+        -- piege n 56), deja bornees a 0 par CLAMP0 dans SETUP_OPERAND :
+        -- deux tableaux nuls sont EGAUX, aucune levee (piege n 52).
+        -- Effet de pile net NUL : s'insere sans toucher la suite.
+        if  CODI.CHECKS_ENABLED  then
+          PUT_LINE( tab & "La  " & LVL & ", " & ANON_G & "_len" );
+          PUT_LINE( tab & "La  " & LVL & ", " & ANON_D & "_len" );
+          PUT_LINE( tab & "CNE" );
+          PUT_LINE( tab & "BT" & tab & "STANDARD.ce_raise_" );
+        end if;
       end if;
 
       -- ---- data resultat : LEN_G octets sur la co-pile ----
@@ -6057,6 +6169,80 @@ put_line( "; CODE_QUALIFIED : DN_QUALIFIED" & NODE_NAME'IMAGE( SRC_EXP.TY ) );
 
   end	CODE_DISCRETE_RANGE_BOUND;
 	-------------------------
+
+
+			----------------
+  procedure		CODE_RANGE_CHECK		( TYPE_SPEC :TREE )
+  is			----------------
+	-- PILIER CHECKS (E-A) : check de gamme scalaire (LRM 3.5.4). La valeur controlee est au
+	-- SOMMET de pile et y RESTE (idiome DUP -- s'insere entre evaluation et consommation).
+	-- Bornes : celles du SOUS-TYPE DE LA VUE (motif pilier 3.7), lues dans _<SUBTYPE>.FST/.LST
+	-- elaborees par TYPES_DECLS -- meme chemin statique/dynamique.
+	-- Elision : sous-type = type de base, par comparaison de NOEUDS, jamais de bornes (note §5).
+	--   Le placeholder d'un formel generique est son propre SM_BASE_TYPE (dump CHK_DUMP0) :
+	--   l'elision couvre donc AUSSI les corps partages -- bornes du formel via GENERIC_FIRST_LAST
+	--   a l'etape E-D, pas ici.
+	-- E-A : DN_INTEGER et DN_ENUMERATION seulement ; fixed/float -> perimetre 2 (note §4).
+	-- Comparaisons CLT/CGT signees, coherentes par construction : fetch codi movsx des deux cotes.
+  begin
+    if  not CODI.CHECKS_ENABLED  then
+      return;
+    end if;
+
+    if  TYPE_SPEC.TY /= DN_INTEGER  and  TYPE_SPEC.TY /= DN_ENUMERATION  then
+      return;											-- fixed/float : perimetre 2
+    end if;
+
+    if  TYPE_SPEC = D( SM_BASE_TYPE, TYPE_SPEC )  then
+      return;											-- pas de contrainte : elision
+    end if;
+
+    -- PIEGE n 80 (fossile A54B02A) : sous-type ANONYME -- contrainte portee par la
+    -- declaration d'objet. XD_SOURCE_NAME remonte au TYPE DE BASE : le check
+    -- chargerait les bornes du bloc du base (pour les predefinies : bloc de
+    -- STANDARD JAMAIS ELABORE -> faux positif deterministe). Le controle contre
+    -- les bornes du base serait vide de toute facon : ELISION par comparaison des
+    -- NOEUDS de nom. La contrainte anonyme reste NON CONTROLEE : dette consignee
+    -- (NOTE_MODELE_CHECKS, restrictions).
+    if  D( XD_SOURCE_NAME, TYPE_SPEC )
+      = D( XD_SOURCE_NAME, D( SM_BASE_TYPE, TYPE_SPEC ) )  then
+      return;
+    end if;
+
+    declare
+      SUBTYPE_NAME	:constant TREE	:= D( XD_SOURCE_NAME, TYPE_SPEC );
+      SUBTYPE_STR	:constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, SUBTYPE_NAME ) );
+      TYPE_LVL	:constant INTEGER	:= DI( CD_LEVEL, TYPE_SPEC );
+      SIZ_CHAR	:constant CHARACTER	:= OPER_SIZ_CHAR( TYPE_SPEC );
+
+		----------
+      procedure	LOAD_BOUND	( IS_LAST :BOOLEAN )
+      is		----------
+      begin											-- idiome CODE_SCALAR_SUBTYPE_FIRST_LAST
+        PUT( tab & 'L' & SIZ_CHAR & tab & IMAGE( TYPE_LVL ) & ", " );
+        if  TYPE_LVL /= INTEGER( CODI.CUR_LEVEL )
+         or else  D( XD_REGION, SUBTYPE_NAME ).TY = DN_PACKAGE_ID
+        then
+          REGIONS_PATH( SUBTYPE_NAME );
+        end if;
+        PUT( SUBTYPE_STR & "." );
+        if  IS_LAST  then  PUT_LINE( "LST" );  else  PUT_LINE( "FST" );  end if;
+      end	LOAD_BOUND;
+	----------
+
+    begin
+      PUT_LINE( tab & "DUP" );
+      LOAD_BOUND( IS_LAST => FALSE );
+      PUT_LINE( tab & "CLT" );									-- val < FST ?
+      PUT_LINE( tab & "BT" & tab & "STANDARD.ce_raise_" );
+      PUT_LINE( tab & "DUP" );
+      LOAD_BOUND( IS_LAST => TRUE );
+      PUT_LINE( tab & "CGT" );									-- val > LST ?
+      PUT_LINE( tab & "BT" & tab & "STANDARD.ce_raise_" );
+    end;
+
+  end	CODE_RANGE_CHECK;
+	----------------
 
 
 	-----------

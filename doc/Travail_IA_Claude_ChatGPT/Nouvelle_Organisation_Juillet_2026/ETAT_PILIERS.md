@@ -152,11 +152,8 @@ La sémantique n'est protégée que par les programmes-témoins à sortie attend
   
 ## Prochaine séquence (à arbitrer à l'ouverture de la prochaine session)
 
-1. Tri des 4 échecs ACVC A8 (dump DIANA par test, classement défaut local vs pilier absent) — AVANT d’ouvrir le pilier désigné (présomption : 8.x portée/visibilité/use/renommage).
-3. Ouverture du pilier désigné par le tri ou discuté :
-- Option A — **checks runtime** (contraintes scalaires, index, LEN_G=LEN_D
-  des logiques composites en dette D3-contrôle) : le mécanisme les attend.
-- Option C — points fixes : mul/div générales (reliquat 3.5.9).
+1- Option A — **checks runtime** (contraintes scalaires, index, LEN_G=LEN_D  des logiques composites en dette D3-contrôle) : le mécanisme les attend.
+- Option B — points fixes : mul/div générales (reliquat 3.5.9).
 
 4. Rédiger la note de modèle d'exécution du pilier retenu AVANT de coder.
 5. Filet complet + tag git à chaque clôture.

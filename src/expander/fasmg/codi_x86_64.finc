@@ -1119,13 +1119,13 @@ macro			BT?	lbl				; branch true
   POP_RAX
   db 0x08, 0xC0							; or AL, AL
   local disp
-  if disp	>= -128 &	disp <= 127
-    db 0x75							; jnz rel8
-    db disp
-  else
+;  if disp	>= -128 &	disp <= 127
+;    db 0x75							; jnz rel8
+;    db disp
+;  else
     db 0x0F, 0x85							; jnz rel32
     dd disp
-  end if
+;  end if
   disp = lbl-$
 end macro
 ;			-------------
@@ -1134,13 +1134,13 @@ macro			BF?	lbl				; branch false
   POP_RAX
   db 0x08, 0xC0							; or AL, AL
   local disp
-  if disp	>= -128 &	disp <= 127
-    db 0x74							; jz rel8
-    db disp
-  else
+;  if disp	>= -128 &	disp <= 127
+;    db 0x74							; jz rel8
+;    db disp
+;  else
     db 0x0F, 0x84							; jz rel32
     dd disp
-  end if
+;  end if
   disp = lbl-$
 end macro
 ;			-------------------------

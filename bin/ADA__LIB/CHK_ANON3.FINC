@@ -1,0 +1,447 @@
+if ~ definite TEXT_IO
+include 'TEXT_IO.FINC'
+end if
+if ~ definite IO_EXCEPTIONS
+include 'IO_EXCEPTIONS.FINC'
+end if
+if ~ definite TEXT_IO
+include 'TEXT_IO.FINC'
+end if
+PRO	CHK_ANON3_L1				;---------- PRO CHK_ANON3
+ELB 1					;    BODY ELAB
+VAR F_disp, d				; variable entiere
+
+VAR L_disp, d				; variable entiere
+
+
+if defined EQ_L2_
+PRO	EQ_L2					;---------- PRO EQ
+PRMS					;    debut parametrage
+	PRM X_ofs				; in
+	PRM Y_ofs				; in
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 2					;    BODY ELAB
+VAR Z_disp, d				; variable bool char enum
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+VAR	exc_ctx_L3, q, 10
+	La	0, STANDARD.EXCEPTIONS_TOP_CTX_disp
+	Sa  2,	exc_ctx_L3
+	LCA	L3
+	Sa  2,	exc_ctx_L3 + STANDARD._EXCEPTION_CONTEXT.DISPATCH
+	EXC_MACH  2,	exc_ctx_L3
+	LVA  2,	exc_ctx_L3
+	Sa	0, STANDARD.EXCEPTIONS_TOP_CTX_disp
+					; debut if
+	Ld  2,	-X_ofs
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	CGT
+	BF	L6
+	LI	0					; lieu resultat sur pile
+	Ld  2,	-Y_ofs
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	SUB
+	Ld  2,	-X_ofs
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	SUB
+	CALL	STANDARD.CHK_ANON3_L1. ,EQ_L2
+	Sb  2,	Z_disp
+	BRA	L5
+L6:
+	Ld  2,	-Y_ofs
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	CEQ
+	Sb  2,	Z_disp
+L5:					; post if
+; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
+	Lb 2,	Z_disp
+	Sb  2,	-result__ofs
+	La 0,	STANDARD.EXCEPTIONS_TOP_CTX_disp
+	La , 0
+	Sa 0,	STANDARD.EXCEPTIONS_TOP_CTX_disp
+	BRA ret_lbl
+	La 0,	STANDARD.EXCEPTIONS_TOP_CTX_disp
+	La , 0
+	Sa 0,	STANDARD.EXCEPTIONS_TOP_CTX_disp
+	BRA	L4
+L3:
+	La	0, STANDARD.EXCEPTIONS_CURRENT_disp
+	Sa  2,	exc_ctx_L3
+; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
+	LI	0
+	Sb  2,	-result__ofs
+	BRA ret_lbl
+	BRA	L7
+L7:
+L4:
+ret_lbl:
+	UNLINK 2
+	RTD	prm_siz-8
+excep:
+endPRO					;---------- end PRO EQ
+end if
+
+if defined IDENT_L10_
+PRO	IDENT_L10				;---------- PRO IDENT
+PRMS					;    debut parametrage
+	PRM X_ofs				; in
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 2					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+					; debut if
+	LI	0					; lieu resultat sur pile
+	Ld  2,	-X_ofs
+	Ld  2,	-X_ofs
+	CALL	STANDARD.CHK_ANON3_L1. ,EQ_L2
+	BF	L14
+; CODE_RETURN : EXPR TYPE = DN_INTEGER
+	Ld  2,	-X_ofs
+	Sd  2,	-result__ofs
+	BRA ret_lbl
+	BRA	L13
+L14:
+L13:					; post if
+; CODE_RETURN : EXPR TYPE = DN_INTEGER
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	Sd  2,	-result__ofs
+	BRA ret_lbl
+ret_lbl:
+	UNLINK 2
+	RTD	prm_siz-8
+excep:
+endPRO					;---------- end PRO IDENT
+end if
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+STR STR_L17, "CHK_ANON3 P0"			; constante string="CHK_ANON3 P0"
+	LCA	STR_L17.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+namespace	BLOCK__1
+ELB 2					;    BODY ELAB
+
+					; _STAT INTEGER SUBTYPE INFO
+_STAT = '_STAT'
+namespace _STAT
+VAR use__info, q
+VAR SIZ, d
+	LVA	2, SIZ
+	Sa	2, use__info
+VAR FST, d
+VAR LST, d
+	LI	32
+	Sd	2, SIZ
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd	2, FST
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	50
+	Sd	2, LST
+VAR PARENT__u, q
+	La	0, STANDARD._INTEGER.use__info
+	Sa	2, PARENT__u
+end namespace
+
+					; _DYN INTEGER SUBTYPE INFO
+_DYN = '_DYN'
+namespace _DYN
+VAR use__info, q
+VAR SIZ, d
+	LVA	2, SIZ
+	Sa	2, use__info
+VAR FST, d
+VAR LST, d
+	LI	32
+	Sd	2, SIZ
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd	2, FST
+	LI	0					; lieu resultat sur pile
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	5
+	CALL	STANDARD.CHK_ANON3_L1. ,IDENT_L10
+	Sd	2, LST
+VAR PARENT__u, q
+	La	0, STANDARD._INTEGER.use__info
+	Sa	2, PARENT__u
+end namespace
+VAR J_disp, d				; variable entiere
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	Ld	2, _DYN.FST
+	Sd  1,	F_disp
+	Ld	2, _DYN.LST
+	Sd  1,	L_disp
+; CODE & concat _STRING
+VAR	ANON_50_17_L20_G_data, q
+VAR	ANON_50_17_L20_G_info, q
+VAR	ANON_51_30_L20_D_data, q
+VAR	ANON_51_30_L20_D_info, q
+VAR	ANON_50_17_L20_G_len,  q
+VAR	ANON_51_30_L20_D_len,  q
+VAR	ANON_50_17_L20_R_disp, q
+VAR	ANON_50_17_L20_R__u,   q
+namespace ANON_50_17_L20_R_info
+  VAR SIZ,      d
+  VAR _COMP_SIZ, d
+  VAR _FST_1,    d
+  VAR _LST_1,    d
+end namespace
+; CODE & concat _STRING
+VAR	ANON_50_17_L21_G_data, q
+VAR	ANON_50_17_L21_G_info, q
+VAR	ANON_51_17_L21_D_data, q
+VAR	ANON_51_17_L21_D_info, q
+VAR	ANON_50_17_L21_G_len,  q
+VAR	ANON_51_17_L21_D_len,  q
+VAR	ANON_50_17_L21_R_disp, q
+VAR	ANON_50_17_L21_R__u,   q
+namespace ANON_50_17_L21_R_info
+  VAR SIZ,      d
+  VAR _COMP_SIZ, d
+  VAR _FST_1,    d
+  VAR _LST_1,    d
+end namespace
+; CODE & concat _STRING
+VAR	ANON_50_17_L22_G_data, q
+VAR	ANON_50_17_L22_G_info, q
+VAR	ANON_50_42_L22_D_data, q
+VAR	ANON_50_42_L22_D_info, q
+VAR	ANON_50_17_L22_G_len,  q
+VAR	ANON_50_42_L22_D_len,  q
+VAR	ANON_50_17_L22_R_disp, q
+VAR	ANON_50_17_L22_R__u,   q
+namespace ANON_50_17_L22_R_info
+  VAR SIZ,      d
+  VAR _COMP_SIZ, d
+  VAR _FST_1,    d
+  VAR _LST_1,    d
+end namespace
+STR ANON_50_17_L22_G, "CHK_ANON3 P1 FIRST ="	; constante string="CHK_ANON3 P1 FIRST ="
+	LCA	ANON_50_17_L22_G.data_ptr
+	DUP
+	La  ,  0
+	Sa  2, ANON_50_17_L22_G_data
+	La  ,  8
+	Sa  2, ANON_50_17_L22_G_info
+	LId 2, ANON_50_17_L22_G_info, _STRING.LST_1
+	LId 2, ANON_50_17_L22_G_info, _STRING.FST_1
+	SUB
+	INC
+	CLAMP0
+	Sa  2, ANON_50_17_L22_G_len
+VAR	ANON_50_42_disp, q
+VAR	ANON_50_42__u,   q
+namespace ANON_50_42_info
+  VAR SIZ, d
+  VAR _COMP_SIZ, d
+  VAR _FST_1, d
+  VAR _LST_1, d
+end namespace
+	LVA 2, ANON_50_42_info.SIZ
+	Sa  2, ANON_50_42__u
+	LVA 2, ANON_50_42_disp
+	Ld 1,	STANDARD.CHK_ANON3_L1.F_disp
+	CALL	STANDARD. ,INTEGER_IMAGE_L11
+	DUP
+	La  ,  0
+	Sa  2, ANON_50_42_L22_D_data
+	La  ,  8
+	Sa  2, ANON_50_42_L22_D_info
+	LId 2, ANON_50_42_L22_D_info, _STRING.LST_1
+	LId 2, ANON_50_42_L22_D_info, _STRING.FST_1
+	SUB
+	INC
+	CLAMP0
+	Sa  2, ANON_50_42_L22_D_len
+	La  2, ANON_50_17_L22_G_len
+	La  2, ANON_50_42_L22_D_len
+	ADD
+	CO_VAR
+	Sa  2, ANON_50_17_L22_R_disp
+	LI	1
+	Sd  2, ANON_50_17_L22_R_info._FST_1
+	La  2, ANON_50_17_L22_G_len
+	La  2, ANON_50_42_L22_D_len
+	ADD
+	Sd  2, ANON_50_17_L22_R_info._LST_1
+	LI	8
+	Sd  2, ANON_50_17_L22_R_info._COMP_SIZ
+	La  2, ANON_50_17_L22_G_len
+	La  2, ANON_50_42_L22_D_len
+	ADD
+	LI	8
+	MUL
+	Sd  2, ANON_50_17_L22_R_info.SIZ
+	LVA 2, ANON_50_17_L22_R_info.SIZ
+	Sa  2, ANON_50_17_L22_R__u
+	La  2, ANON_50_17_L22_R_disp
+	La  2, ANON_50_17_L22_G_len
+	La  2, ANON_50_17_L22_G_data
+	BLKMOV
+	La  2, ANON_50_17_L22_R_disp
+	La  2, ANON_50_17_L22_G_len
+	ADD
+	La  2, ANON_50_42_L22_D_len
+	La  2, ANON_50_42_L22_D_data
+	BLKMOV
+	LVA 2, ANON_50_17_L22_R_disp
+	DUP
+	La  ,  0
+	Sa  2, ANON_50_17_L21_G_data
+	La  ,  8
+	Sa  2, ANON_50_17_L21_G_info
+	LId 2, ANON_50_17_L21_G_info, _STRING.LST_1
+	LId 2, ANON_50_17_L21_G_info, _STRING.FST_1
+	SUB
+	INC
+	CLAMP0
+	Sa  2, ANON_50_17_L21_G_len
+STR ANON_51_17_L21_D, " LAST ="		; constante string=" LAST ="
+	LCA	ANON_51_17_L21_D.data_ptr
+	DUP
+	La  ,  0
+	Sa  2, ANON_51_17_L21_D_data
+	La  ,  8
+	Sa  2, ANON_51_17_L21_D_info
+	LId 2, ANON_51_17_L21_D_info, _STRING.LST_1
+	LId 2, ANON_51_17_L21_D_info, _STRING.FST_1
+	SUB
+	INC
+	CLAMP0
+	Sa  2, ANON_51_17_L21_D_len
+	La  2, ANON_50_17_L21_G_len
+	La  2, ANON_51_17_L21_D_len
+	ADD
+	CO_VAR
+	Sa  2, ANON_50_17_L21_R_disp
+	LI	1
+	Sd  2, ANON_50_17_L21_R_info._FST_1
+	La  2, ANON_50_17_L21_G_len
+	La  2, ANON_51_17_L21_D_len
+	ADD
+	Sd  2, ANON_50_17_L21_R_info._LST_1
+	LI	8
+	Sd  2, ANON_50_17_L21_R_info._COMP_SIZ
+	La  2, ANON_50_17_L21_G_len
+	La  2, ANON_51_17_L21_D_len
+	ADD
+	LI	8
+	MUL
+	Sd  2, ANON_50_17_L21_R_info.SIZ
+	LVA 2, ANON_50_17_L21_R_info.SIZ
+	Sa  2, ANON_50_17_L21_R__u
+	La  2, ANON_50_17_L21_R_disp
+	La  2, ANON_50_17_L21_G_len
+	La  2, ANON_50_17_L21_G_data
+	BLKMOV
+	La  2, ANON_50_17_L21_R_disp
+	La  2, ANON_50_17_L21_G_len
+	ADD
+	La  2, ANON_51_17_L21_D_len
+	La  2, ANON_51_17_L21_D_data
+	BLKMOV
+	LVA 2, ANON_50_17_L21_R_disp
+	DUP
+	La  ,  0
+	Sa  2, ANON_50_17_L20_G_data
+	La  ,  8
+	Sa  2, ANON_50_17_L20_G_info
+	LId 2, ANON_50_17_L20_G_info, _STRING.LST_1
+	LId 2, ANON_50_17_L20_G_info, _STRING.FST_1
+	SUB
+	INC
+	CLAMP0
+	Sa  2, ANON_50_17_L20_G_len
+VAR	ANON_51_30_disp, q
+VAR	ANON_51_30__u,   q
+namespace ANON_51_30_info
+  VAR SIZ, d
+  VAR _COMP_SIZ, d
+  VAR _FST_1, d
+  VAR _LST_1, d
+end namespace
+	LVA 2, ANON_51_30_info.SIZ
+	Sa  2, ANON_51_30__u
+	LVA 2, ANON_51_30_disp
+	Ld 1,	STANDARD.CHK_ANON3_L1.L_disp
+	CALL	STANDARD. ,INTEGER_IMAGE_L11
+	DUP
+	La  ,  0
+	Sa  2, ANON_51_30_L20_D_data
+	La  ,  8
+	Sa  2, ANON_51_30_L20_D_info
+	LId 2, ANON_51_30_L20_D_info, _STRING.LST_1
+	LId 2, ANON_51_30_L20_D_info, _STRING.FST_1
+	SUB
+	INC
+	CLAMP0
+	Sa  2, ANON_51_30_L20_D_len
+	La  2, ANON_50_17_L20_G_len
+	La  2, ANON_51_30_L20_D_len
+	ADD
+	CO_VAR
+	Sa  2, ANON_50_17_L20_R_disp
+	LI	1
+	Sd  2, ANON_50_17_L20_R_info._FST_1
+	La  2, ANON_50_17_L20_G_len
+	La  2, ANON_51_30_L20_D_len
+	ADD
+	Sd  2, ANON_50_17_L20_R_info._LST_1
+	LI	8
+	Sd  2, ANON_50_17_L20_R_info._COMP_SIZ
+	La  2, ANON_50_17_L20_G_len
+	La  2, ANON_51_30_L20_D_len
+	ADD
+	LI	8
+	MUL
+	Sd  2, ANON_50_17_L20_R_info.SIZ
+	LVA 2, ANON_50_17_L20_R_info.SIZ
+	Sa  2, ANON_50_17_L20_R__u
+	La  2, ANON_50_17_L20_R_disp
+	La  2, ANON_50_17_L20_G_len
+	La  2, ANON_50_17_L20_G_data
+	BLKMOV
+	La  2, ANON_50_17_L20_R_disp
+	La  2, ANON_50_17_L20_G_len
+	ADD
+	La  2, ANON_51_30_L20_D_len
+	La  2, ANON_51_30_L20_D_data
+	BLKMOV
+	LVA 2, ANON_50_17_L20_R_disp
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	LI	0					; lieu resultat sur pile
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	2
+	CALL	STANDARD.CHK_ANON3_L1. ,IDENT_L10
+	DUP
+	Ld	2, _DYN.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	2, _DYN.LST
+	CGT
+	BT	STANDARD.ce_raise_
+	Sd  2,	J_disp
+STR STR_L23, "CHK_ANON3 P2 site J passe"	; constante string="CHK_ANON3 P2 site J passe"
+	LCA	STR_L23.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	UNLINK 2
+endPRO
+STR STR_L24, "CHK_ANON3 P3 fin"		; constante string="CHK_ANON3 P3 fin"
+	LCA	STR_L24.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+ret_lbl:
+	UNLINK 1
+	RTD
+excep:
+endPRO					;---------- end PRO CHK_ANON3

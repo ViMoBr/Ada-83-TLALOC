@@ -1,0 +1,233 @@
+if ~ definite TEXT_IO
+include 'TEXT_IO.FINC'
+end if
+if ~ definite IO_EXCEPTIONS
+include 'IO_EXCEPTIONS.FINC'
+end if
+if ~ definite TEXT_IO
+include 'TEXT_IO.FINC'
+end if
+PRO	CHK_CSTPRM1_L1				;---------- PRO CHK_CSTPRM1
+ELB 1					;    BODY ELAB
+
+					; _PAIR RECORD TYPE INFO
+_PAIR = '_PAIR'
+namespace _PAIR
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+USEINFO 1, A, 	La 0, STANDARD._INTEGER.use__info
+USEINFO 1, B, 	La 0, STANDARD._INTEGER.use__info
+virtual at 0				; calcul des offsets statiques
+STATOFS A, 4
+STATOFS B, 4
+size = $
+end virtual
+	LI	 size*8
+	Sd	1, SIZ
+end namespace
+VAR CP_disp, q				; variable record : pointeur aux data record
+VAR CP__u, q				; variable record : pointeur aux useinfo
+VAR CP__dat, STANDARD.CHK_CSTPRM1_L1._PAIR.size
+	LVA	1, CP__dat
+	Sa	1, CP_disp				; record fin
+	LVA	1, STANDARD.CHK_CSTPRM1_L1._PAIR.SIZ
+	Sa	1, CP__u
+; CODE_VC_NAME DN_CONSTANT_ID
+	La 1, CP_disp
+					; Assign_record_aggregate type DN_RECORD
+	DUP
+	LVA	, STANDARD.CHK_CSTPRM1_L1._PAIR.A
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	3
+	Sd
+	DUP
+	LVA	, STANDARD.CHK_CSTPRM1_L1._PAIR.B
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	4
+	Sd
+	DROP
+
+VAR CS_disp, q				; variable array : pointeur aux data
+VAR CS__u, q				; variable array : useinfo pointeur au rec info
+	La 0, STANDARD._STRING.use__info
+	Sa	1, CS__u				; array info ptr at __u
+STR CS, "TLALOC"				; constante string="TLALOC"
+	LCA	CS.data_ptr
+	La
+	Sa	1, CS_disp				; array data ptr at _disp
+	LCA	CS.info_ptr
+	La
+	Sa	1, CS__u				; array info ptr at __u
+
+VAR V_disp, d				; variable entiere
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	Sd  1,	V_disp
+
+
+if defined PSUM_L2_
+PRO	PSUM_L2				;---------- PRO PSUM
+PRMS					;    debut parametrage
+	PRM P_ofs				; in
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 2					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+; CODE_RETURN : EXPR TYPE = DN_INTEGER
+	La 2, -P_ofs
+	LId	, 0, STANDARD.CHK_CSTPRM1_L1._PAIR.A
+	La 2, -P_ofs
+	LId	, 0, STANDARD.CHK_CSTPRM1_L1._PAIR.B
+	ADD
+	Sd  2,	-result__ofs
+	BRA ret_lbl
+ret_lbl:
+	UNLINK 2
+	RTD	prm_siz-8
+excep:
+endPRO					;---------- end PRO PSUM
+end if
+
+if defined NTH_L5_
+PRO	NTH_L5				;---------- PRO NTH
+PRMS					;    debut parametrage
+	PRM S_ofs				; in
+	PRM I_ofs				; in
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 2					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
+	LVA	2, -S_ofs
+	LIa	, , 0				; array data start address on stack
+	Ld  2,	-I_ofs
+	DUP
+	LVA	2, -S_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LVA	2, -S_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
+	LVA	2, -S_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.FST_1			; (index - FST_1) * SIZ_1
+	SUB
+	LVA	2, -S_ofs
+	LIa	, , 8
+	Ld	, STANDARD._STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb
+	Sb  2,	-result__ofs
+	BRA ret_lbl
+ret_lbl:
+	UNLINK 2
+	RTD	prm_siz-8
+excep:
+endPRO					;---------- end PRO NTH
+end if
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	LI	0					; lieu resultat sur pile
+	LVA  1,	CP_disp				; array actual
+	CALL	STANDARD.CHK_CSTPRM1_L1. ,PSUM_L2
+	Sd  1,	V_disp
+					; debut if
+	Ld 1,	V_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	7
+	CEQ
+	BF	L11
+STR STR_L12, "CHK_CSTPRM1 1 OK constante record"	; constante string="CHK_CSTPRM1 1 OK constante record"
+	LCA	STR_L12.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	BRA	L10
+L11:
+STR STR_L13, "CHK_CSTPRM1 1 KO"		; constante string="CHK_CSTPRM1 1 KO"
+	LCA	STR_L13.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+L10:					; post if
+					; debut if
+	LI	0					; lieu resultat sur pile
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	LVA  1,	CS_disp				; array actual
+	CALL	STANDARD.CHK_CSTPRM1_L1. ,NTH_L5
+	LI	84
+	CEQ
+	LI	0					; lieu resultat sur pile
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	6
+	LVA  1,	CS_disp				; array actual
+	CALL	STANDARD.CHK_CSTPRM1_L1. ,NTH_L5
+	LI	67
+	CEQ
+	ET
+	BF	L15
+STR STR_L16, "CHK_CSTPRM1 2 OK constante tableau contraint"	; constante string="CHK_CSTPRM1 2 OK constante tableau contraint"
+	LCA	STR_L16.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	BRA	L14
+L15:
+STR STR_L17, "CHK_CSTPRM1 2 KO"		; constante string="CHK_CSTPRM1 2 KO"
+	LCA	STR_L17.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+L14:					; post if
+					; debut if
+	LId	1, CP_disp, STANDARD.CHK_CSTPRM1_L1._PAIR.A
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	3
+	CEQ
+	LId	1, CP_disp, STANDARD.CHK_CSTPRM1_L1._PAIR.B
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	4
+	CEQ
+	ET
+	La	 1, CS_disp				; array data start address on stack
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	3
+	DUP
+	LId	1, CS__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	1, CS__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
+	LId	1, CS__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, CS__u, STANDARD._STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb
+	LI	65
+	CEQ
+	ET
+	BF	L19
+STR STR_L20, "CHK_CSTPRM1 3 OK constantes intactes"	; constante string="CHK_CSTPRM1 3 OK constantes intactes"
+	LCA	STR_L20.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	BRA	L18
+L19:
+STR STR_L21, "CHK_CSTPRM1 3 KO"		; constante string="CHK_CSTPRM1 3 KO"
+	LCA	STR_L21.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+L18:					; post if
+ret_lbl:
+	UNLINK 1
+	RTD
+excep:
+endPRO					;---------- end PRO CHK_CSTPRM1

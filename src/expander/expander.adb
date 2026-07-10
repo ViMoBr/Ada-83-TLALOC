@@ -56,11 +56,15 @@ is
     CUR_LEVEL			: LEVEL_NUM;							--| NIVEAU D'IMBRICATION COURANT
     CUR_OFFSET			: OFFSET_VAL		:= 0;
 
+
 			-- EXCEPTIONS SERVICE
+
 --| PILIER 11 : contexte de reprise empile au niveau L.  VRAI pendant la generation des stms proteges SEULEMENT (jamais pendant les handlers : deja depile, LRM 11.4.1).
     HANDLER_CTX_AT			: array( LEVEL_NUM ) of BOOLEAN	:= ( others => FALSE );
     HANDLER_LVL			: INTEGER			:= -1;					--| PILIER 11 : handler INNERMOST en cours de
     HANDLER_CTX_SUF			: LABEL_TYPE		:= 0;					--| generation -- niveau et suffixe (numero du label de dispatch) du contexte associe.
+    CHECKS_ENABLED			: BOOLEAN			:= TRUE;					--| PILIER CHECKS : commutateur global d'emission.
+
 												--| -1 : hors handler (raise nu = ANOMALIE).
     NO_SUBP_PARAMS			: BOOLEAN			:= TRUE;					--| pour prms et prm_siz
     ENCLOSING_BODY			: TREE;
@@ -138,6 +142,8 @@ is
     function  IS_GENERIC_FORMAL_OBJECT	( DEFN		:TREE )		return BOOLEAN;
     function  IS_GENERIC_FORMAL_SUBPROGRAM( ID		:TREE )		return BOOLEAN;
     procedure CODE_DISCRETE_RANGE_BOUND	( DISCRETE_RANGE :TREE; IS_LAST :BOOLEAN );
+    procedure CODE_RANGE_CHECK	( TYPE_SPEC	:TREE );						--| PILIER CHECKS : gamme scalaire, valeur au
+
 
   private
 
@@ -539,11 +545,25 @@ FIND_DOT_IF_ANY_AND_UPCASE:
 	PUT_LINE( tab & "STR" & tab & "EXC_NL__, 10" );
 	PUT_LINE( tab & "LCA" & tab & "EXC_MSG__.data_ptr" );
 	PUT_LINE( tab & "SYS_PUT_STR" );
-	PUT_LINE( tab & "La" & tab & "0, EXCEPTIONS_CURRENT_disp" );						-- le symbole EST son diagnostic
+	PUT_LINE( tab & "La" & tab & "0, EXCEPTIONS_CURRENT_disp" );					-- le symbole EST son diagnostic
 	PUT_LINE( tab & "SYS_PUT_STR" );
 	PUT_LINE( tab & "LCA" & tab & "EXC_NL__.data_ptr" );
 	PUT_LINE( tab & "SYS_PUT_STR" );
 	PUT_LINE( tab & "SYS_EXIT" & tab & "1" );
+
+    -- PILIER CHECKS : trampolines de levee des predefinies. Instance unique par executable,
+    -- atteinte par BT/BF depuis les sites de check ; ne font que POSER l'identite et sauter
+    -- au deroulage (pilier 11). Pas de photographie : l'invariant de frontiere d'instruction
+    -- couvre le saut depuis toute profondeur d'expression, comme pour raise.
+	PUT_LINE( "ce_raise_:" );									-- CONSTRAINT_ERROR
+	PUT_LINE( tab & "LCA" & tab & "CONSTRAINT_ERROR__exc.data_ptr" );
+	PUT_LINE( tab & "Sa" & tab & "0, EXCEPTIONS_CURRENT_disp" );
+	PUT_LINE( tab & "BRA" & tab & "exc_raise_" );
+	PUT_LINE( "ne_raise_:" );									-- NUMERIC_ERROR (utilise a partir de E-E)
+	PUT_LINE( tab & "LCA" & tab & "NUMERIC_ERROR__exc.data_ptr" );
+	PUT_LINE( tab & "Sa" & tab & "0, EXCEPTIONS_CURRENT_disp" );
+	PUT_LINE( tab & "BRA" & tab & "exc_raise_" );
+
 
 	PUT_LINE( " virtual VARzone" );
 	PUT_LINE( "   loc_siz = $" );

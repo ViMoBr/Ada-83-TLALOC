@@ -1,0 +1,278 @@
+if ~ definite TEXT_IO
+include 'TEXT_IO.FINC'
+end if
+if ~ definite IO_EXCEPTIONS
+include 'IO_EXCEPTIONS.FINC'
+end if
+if ~ definite TEXT_IO
+include 'TEXT_IO.FINC'
+end if
+PRO	CHK_CSTPRM0_L1				;---------- PRO CHK_CSTPRM0
+ELB 1					;    BODY ELAB
+VAR CST3_disp, d				; variable entiere
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	3
+	Sd  1,	CST3_disp
+
+VAR N_disp, d				; variable entiere
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	4
+	Sd  1,	N_disp
+
+VAR CDYN_disp, d				; variable entiere
+	Ld 1,	N_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	3
+	ADD
+	Sd  1,	CDYN_disp
+
+VAR CCH_disp, d				; variable bool char enum
+	LI	75
+	Sb  1,	CCH_disp
+
+
+if defined SUM_L2_
+PRO	SUM_L2				;---------- PRO SUM
+PRMS					;    debut parametrage
+	PRM A_ofs				; in
+	PRM B_ofs				; in
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 2					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+; CODE_RETURN : EXPR TYPE = DN_INTEGER
+	Ld  2,	-A_ofs
+	Ld  2,	-B_ofs
+	ADD
+	Sd  2,	-result__ofs
+	BRA ret_lbl
+ret_lbl:
+	UNLINK 2
+	RTD	prm_siz-8
+excep:
+endPRO					;---------- end PRO SUM
+end if
+
+if defined PICK_L5_
+PRO	PICK_L5				;---------- PRO PICK
+PRMS					;    debut parametrage
+	PRM C_ofs				; in
+	PRM I_ofs				; in
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 2					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+					; debut if
+	Lb  2,	-C_ofs
+	LI	75
+	CEQ
+	BF	L9
+; CODE_RETURN : EXPR TYPE = DN_INTEGER
+	Ld  2,	-I_ofs
+	Sd  2,	-result__ofs
+	BRA ret_lbl
+	BRA	L8
+L9:
+L8:					; post if
+; CODE_RETURN : EXPR TYPE = DN_INTEGER
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	NEG
+	Sd  2,	-result__ofs
+	BRA ret_lbl
+ret_lbl:
+	UNLINK 2
+	RTD	prm_siz-8
+excep:
+endPRO					;---------- end PRO PICK
+end if
+
+if defined EQ_L10_
+PRO	EQ_L10				;---------- PRO EQ
+PRMS					;    debut parametrage
+	PRM X_ofs				; in
+	PRM Y_ofs				; in
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 2					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+					; debut if
+	Ld  2,	-X_ofs
+	Ld 1,	STANDARD.CHK_CSTPRM0_L1.CST3_disp
+	CGT
+	BF	L14
+; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
+	LI	0					; lieu resultat sur pile
+	Ld  2,	-Y_ofs
+	Ld  2,	-X_ofs
+	SUB
+	Ld 1,	STANDARD.CHK_CSTPRM0_L1.CST3_disp
+	ADD
+	Ld 1,	STANDARD.CHK_CSTPRM0_L1.CST3_disp
+	CALL	STANDARD.CHK_CSTPRM0_L1. ,EQ_L10
+	Sb  2,	-result__ofs
+	BRA ret_lbl
+	BRA	L13
+L14:
+	Ld  2,	-X_ofs
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	CGT
+	BF	L15
+; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
+	LI	0					; lieu resultat sur pile
+	Ld  2,	-Y_ofs
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	SUB
+	Ld  2,	-X_ofs
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	SUB
+	CALL	STANDARD.CHK_CSTPRM0_L1. ,EQ_L10
+	Sb  2,	-result__ofs
+	BRA ret_lbl
+	BRA	L13
+L15:
+; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
+	Ld  2,	-Y_ofs
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	CEQ
+	Sb  2,	-result__ofs
+	BRA ret_lbl
+L13:					; post if
+ret_lbl:
+	UNLINK 2
+	RTD	prm_siz-8
+excep:
+endPRO					;---------- end PRO EQ
+end if
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+					; debut if
+	LI	0					; lieu resultat sur pile
+	Ld 1,	N_disp
+	Ld 1,	CST3_disp
+	CALL	STANDARD.CHK_CSTPRM0_L1. ,SUM_L2
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	7
+	CEQ
+	BF	L19
+STR STR_L20, "CHK_CSTPRM0 1 OK constante en 1er actuel"	; constante string="CHK_CSTPRM0 1 OK constante en 1er actuel"
+	LCA	STR_L20.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	BRA	L18
+L19:
+STR STR_L21, "CHK_CSTPRM0 1 KO"		; constante string="CHK_CSTPRM0 1 KO"
+	LCA	STR_L21.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+L18:					; post if
+					; debut if
+	LI	0					; lieu resultat sur pile
+	Ld 1,	CST3_disp
+	Ld 1,	N_disp
+	CALL	STANDARD.CHK_CSTPRM0_L1. ,SUM_L2
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	7
+	CEQ
+	BF	L23
+STR STR_L24, "CHK_CSTPRM0 2 OK constante en 2eme actuel"	; constante string="CHK_CSTPRM0 2 OK constante en 2eme actuel"
+	LCA	STR_L24.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	BRA	L22
+L23:
+STR STR_L25, "CHK_CSTPRM0 2 KO"		; constante string="CHK_CSTPRM0 2 KO"
+	LCA	STR_L25.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+L22:					; post if
+					; debut if
+	LI	0					; lieu resultat sur pile
+	Ld 1,	CST3_disp
+	Ld 1,	CST3_disp
+	CALL	STANDARD.CHK_CSTPRM0_L1. ,SUM_L2
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	6
+	CEQ
+	BF	L27
+STR STR_L28, "CHK_CSTPRM0 3 OK deux constantes"	; constante string="CHK_CSTPRM0 3 OK deux constantes"
+	LCA	STR_L28.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	BRA	L26
+L27:
+STR STR_L29, "CHK_CSTPRM0 3 KO"		; constante string="CHK_CSTPRM0 3 KO"
+	LCA	STR_L29.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+L26:					; post if
+					; debut if
+	LI	0					; lieu resultat sur pile
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	Ld 1,	CDYN_disp
+	CALL	STANDARD.CHK_CSTPRM0_L1. ,SUM_L2
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	7
+	CEQ
+	BF	L31
+STR STR_L32, "CHK_CSTPRM0 4 OK constante dynamique"	; constante string="CHK_CSTPRM0 4 OK constante dynamique"
+	LCA	STR_L32.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	BRA	L30
+L31:
+STR STR_L33, "CHK_CSTPRM0 4 KO"		; constante string="CHK_CSTPRM0 4 KO"
+	LCA	STR_L33.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+L30:					; post if
+					; debut if
+	LI	0					; lieu resultat sur pile
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	9
+	LI	 75
+	CALL	STANDARD.CHK_CSTPRM0_L1. ,PICK_L5
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	9
+	CEQ
+	BF	L35
+STR STR_L36, "CHK_CSTPRM0 5 OK constante enumeree"	; constante string="CHK_CSTPRM0 5 OK constante enumeree"
+	LCA	STR_L36.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	BRA	L34
+L35:
+STR STR_L37, "CHK_CSTPRM0 5 KO"		; constante string="CHK_CSTPRM0 5 KO"
+	LCA	STR_L37.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+L34:					; post if
+					; debut if
+	LI	0					; lieu resultat sur pile
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	5
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	5
+	CALL	STANDARD.CHK_CSTPRM0_L1. ,EQ_L10
+	LI	0					; lieu resultat sur pile
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	6
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	5
+	CALL	STANDARD.CHK_CSTPRM0_L1. ,EQ_L10
+	LI	1
+	OUX
+	ET
+	BF	L39
+STR STR_L40, "CHK_CSTPRM0 6 OK motif EQUAL recursif"	; constante string="CHK_CSTPRM0 6 OK motif EQUAL recursif"
+	LCA	STR_L40.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	BRA	L38
+L39:
+STR STR_L41, "CHK_CSTPRM0 6 KO"		; constante string="CHK_CSTPRM0 6 KO"
+	LCA	STR_L41.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+L38:					; post if
+ret_lbl:
+	UNLINK 1
+	RTD
+excep:
+endPRO					;---------- end PRO CHK_CSTPRM0

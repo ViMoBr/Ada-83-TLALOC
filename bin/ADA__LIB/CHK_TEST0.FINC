@@ -1,0 +1,274 @@
+if ~ definite TEXT_IO
+include 'TEXT_IO.FINC'
+end if
+if ~ definite IO_EXCEPTIONS
+include 'IO_EXCEPTIONS.FINC'
+end if
+if ~ definite TEXT_IO
+include 'TEXT_IO.FINC'
+end if
+PRO	CHK_TEST0_L1				;---------- PRO CHK_TEST0
+ELB 1					;    BODY ELAB
+
+					; _SMALL INTEGER SUBTYPE INFO
+_SMALL = '_SMALL'
+namespace _SMALL
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+VAR FST, d
+VAR LST, d
+	LI	32
+	Sd	1, SIZ
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd	1, FST
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	10
+	Sd	1, LST
+VAR PARENT__u, q
+	La	0, STANDARD._INTEGER.use__info
+	Sa	1, PARENT__u
+end namespace
+
+					; _UPPER ENUMERATION SUBTYPE INFO
+_UPPER = '_UPPER'
+namespace _UPPER
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+VAR FST, b
+VAR LST, b
+	LI	8
+	Sd	1, SIZ
+	LI	65
+	Sb	1, FST
+	LI	90
+	Sb	1, LST
+VAR PARENT__u, q
+	La 0	, STANDARD._CHARACTER.use__info
+	Sa	1, PARENT__u
+end namespace
+VAR S_disp, d				; variable entiere
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	5
+	Sd  1,	S_disp
+
+VAR C_disp, b				; variable entiere
+	LI	65
+	Sb  1,	C_disp
+
+VAR I_disp, d				; variable entiere
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	7
+	Sd  1,	I_disp
+
+VAR NEGV_disp, d				; variable entiere
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	3
+	NEG
+	Sd  1,	NEGV_disp
+
+VAR CH_disp, d				; variable bool char enum
+	LI	113
+	Sb  1,	CH_disp
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	Ld 1,	I_disp
+	DUP
+	Ld	1, _SMALL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	1, _SMALL.LST
+	CGT
+	BT	STANDARD.ce_raise_
+	Sd  1,	S_disp
+STR STR_L4, "CHK_TEST0 1 OK affectation dans les bornes"	; constante string="CHK_TEST0 1 OK affectation dans les bornes"
+	LCA	STR_L4.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+namespace	BLOCK__1
+ELB 2					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+VAR	exc_ctx_L5, q, 10
+	La	0, STANDARD.EXCEPTIONS_TOP_CTX_disp
+	Sa  2,	exc_ctx_L5
+	LCA	L5
+	Sa  2,	exc_ctx_L5 + STANDARD._EXCEPTION_CONTEXT.DISPATCH
+	EXC_MACH  2,	exc_ctx_L5
+	LVA  2,	exc_ctx_L5
+	Sa	0, STANDARD.EXCEPTIONS_TOP_CTX_disp
+	Ld 1,	STANDARD.CHK_TEST0_L1.NEGV_disp
+	DUP
+	Ld	1, STANDARD.CHK_TEST0_L1._SMALL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	1, STANDARD.CHK_TEST0_L1._SMALL.LST
+	CGT
+	BT	STANDARD.ce_raise_
+	Sd  1,	S_disp
+STR STR_L7, "CHK_TEST0 2 KO pas de levee"	; constante string="CHK_TEST0 2 KO pas de levee"
+	LCA	STR_L7.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	La 0,	STANDARD.EXCEPTIONS_TOP_CTX_disp
+	La , 0
+	Sa 0,	STANDARD.EXCEPTIONS_TOP_CTX_disp
+	BRA	L6
+L5:
+	La	0, STANDARD.EXCEPTIONS_CURRENT_disp
+	Sa  2,	exc_ctx_L5
+	La	0, STANDARD.EXCEPTIONS_CURRENT_disp
+	LCA	STANDARD.CONSTRAINT_ERROR__exc.data_ptr
+	CEQ
+	BT	L9
+	BRA	L10
+L9:
+STR STR_L11, "CHK_TEST0 2 OK CONSTRAINT_ERROR rattrapee (borne basse, negatif)"	; constante string="CHK_TEST0 2 OK CONSTRAINT_ERROR rattrapee (borne basse, negatif)"
+	LCA	STR_L11.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	BRA	L8
+L10:
+	BRA	STANDARD.exc_raise_
+L8:
+L6:
+	UNLINK 2
+endPRO
+namespace	BLOCK__2
+ELB 2					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+VAR	exc_ctx_L12, q, 10
+	La	0, STANDARD.EXCEPTIONS_TOP_CTX_disp
+	Sa  2,	exc_ctx_L12
+	LCA	L12
+	Sa  2,	exc_ctx_L12 + STANDARD._EXCEPTION_CONTEXT.DISPATCH
+	EXC_MACH  2,	exc_ctx_L12
+	LVA  2,	exc_ctx_L12
+	Sa	0, STANDARD.EXCEPTIONS_TOP_CTX_disp
+	Ld 1,	STANDARD.CHK_TEST0_L1.I_disp
+	Ld 1,	STANDARD.CHK_TEST0_L1.I_disp
+	ADD
+	DUP
+	Ld	1, STANDARD.CHK_TEST0_L1._SMALL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	1, STANDARD.CHK_TEST0_L1._SMALL.LST
+	CGT
+	BT	STANDARD.ce_raise_
+	Sd  1,	S_disp
+STR STR_L14, "CHK_TEST0 3 KO pas de levee"	; constante string="CHK_TEST0 3 KO pas de levee"
+	LCA	STR_L14.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	La 0,	STANDARD.EXCEPTIONS_TOP_CTX_disp
+	La , 0
+	Sa 0,	STANDARD.EXCEPTIONS_TOP_CTX_disp
+	BRA	L13
+L12:
+	La	0, STANDARD.EXCEPTIONS_CURRENT_disp
+	Sa  2,	exc_ctx_L12
+	La	0, STANDARD.EXCEPTIONS_CURRENT_disp
+	LCA	STANDARD.CONSTRAINT_ERROR__exc.data_ptr
+	CEQ
+	BT	L16
+	BRA	L17
+L16:
+STR STR_L18, "CHK_TEST0 3 OK CONSTRAINT_ERROR rattrapee (borne haute)"	; constante string="CHK_TEST0 3 OK CONSTRAINT_ERROR rattrapee (borne haute)"
+	LCA	STR_L18.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	BRA	L15
+L17:
+	BRA	STANDARD.exc_raise_
+L15:
+L13:
+	UNLINK 2
+endPRO
+namespace	BLOCK__3
+ELB 2					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+VAR	exc_ctx_L19, q, 10
+	La	0, STANDARD.EXCEPTIONS_TOP_CTX_disp
+	Sa  2,	exc_ctx_L19
+	LCA	L19
+	Sa  2,	exc_ctx_L19 + STANDARD._EXCEPTION_CONTEXT.DISPATCH
+	EXC_MACH  2,	exc_ctx_L19
+	LVA  2,	exc_ctx_L19
+	Sa	0, STANDARD.EXCEPTIONS_TOP_CTX_disp
+	Lb 1,	STANDARD.CHK_TEST0_L1.CH_disp
+	DUP
+	Lb	1, STANDARD.CHK_TEST0_L1._UPPER.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Lb	1, STANDARD.CHK_TEST0_L1._UPPER.LST
+	CGT
+	BT	STANDARD.ce_raise_
+	Sb  1,	C_disp
+STR STR_L21, "CHK_TEST0 4 KO pas de levee"	; constante string="CHK_TEST0 4 KO pas de levee"
+	LCA	STR_L21.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	La 0,	STANDARD.EXCEPTIONS_TOP_CTX_disp
+	La , 0
+	Sa 0,	STANDARD.EXCEPTIONS_TOP_CTX_disp
+	BRA	L20
+L19:
+	La	0, STANDARD.EXCEPTIONS_CURRENT_disp
+	Sa  2,	exc_ctx_L19
+	La	0, STANDARD.EXCEPTIONS_CURRENT_disp
+	LCA	STANDARD.CONSTRAINT_ERROR__exc.data_ptr
+	CEQ
+	BT	L23
+	BRA	L24
+L23:
+STR STR_L25, "CHK_TEST0 4 OK CONSTRAINT_ERROR rattrapee (enumere)"	; constante string="CHK_TEST0 4 OK CONSTRAINT_ERROR rattrapee (enumere)"
+	LCA	STR_L25.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	BRA	L22
+L24:
+	BRA	STANDARD.exc_raise_
+L22:
+L20:
+	UNLINK 2
+endPRO
+					; debut if
+	Ld 1,	S_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	7
+	CEQ
+	BF	L27
+STR STR_L28, "CHK_TEST0 5 OK valeur preservee"	; constante string="CHK_TEST0 5 OK valeur preservee"
+	LCA	STR_L28.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	BRA	L26
+L27:
+STR STR_L29, "CHK_TEST0 5 KO valeur alteree"	; constante string="CHK_TEST0 5 KO valeur alteree"
+	LCA	STR_L29.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+L26:					; post if
+STR STR_L30, "CHK_TEST0 6 attendu : EXCEPTION NON RATTRAPEE : CONSTRAINT_ERROR, $? = 1"	; constante string="CHK_TEST0 6 attendu : EXCEPTION NON RATTRAPEE : CONSTRAINT_ERROR, $? = 1"
+	LCA	STR_L30.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	Ld 1,	NEGV_disp
+	DUP
+	Ld	1, _SMALL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	1, _SMALL.LST
+	CGT
+	BT	STANDARD.ce_raise_
+	Sd  1,	S_disp
+STR STR_L31, "CHK_TEST0 6 KO ligne atteinte apres violation"	; constante string="CHK_TEST0 6 KO ligne atteinte apres violation"
+	LCA	STR_L31.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+ret_lbl:
+	UNLINK 1
+	RTD
+excep:
+endPRO					;---------- end PRO CHK_TEST0

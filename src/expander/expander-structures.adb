@@ -590,7 +590,7 @@ is
     begin
       if  HAS_HANDLERS  then
         if  IS_PACK_BODY  then
-	PUT_LINE( "ANOMALIE : handlers sur corps de package non modelises" );					-- bruyant -- exceptions d'elaboration, differe
+	PUT_LINE( ";ANOMALIE : handlers sur corps de package non modelises" );					-- bruyant -- exceptions d'elaboration, differe
 
         else
 			-- PILIER 11 : frame porteur -> contexte de reprise (push a begin:, apres

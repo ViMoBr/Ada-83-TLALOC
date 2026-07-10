@@ -1,0 +1,168 @@
+if ~ definite TEXT_IO
+include 'TEXT_IO.FINC'
+end if
+if ~ definite IO_EXCEPTIONS
+include 'IO_EXCEPTIONS.FINC'
+end if
+if ~ definite TEXT_IO
+include 'TEXT_IO.FINC'
+end if
+PRO	CHK_ANON1_L1				;---------- PRO CHK_ANON1
+ELB 1					;    BODY ELAB
+
+if defined IDENT_L2_
+PRO	IDENT_L2				;---------- PRO IDENT
+PRMS					;    debut parametrage
+	PRM X_ofs				; in
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 2					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+; CODE_RETURN : EXPR TYPE = DN_INTEGER
+	Ld  2,	-X_ofs
+	Sd  2,	-result__ofs
+	BRA ret_lbl
+ret_lbl:
+	UNLINK 2
+	RTD	prm_siz-8
+excep:
+endPRO					;---------- end PRO IDENT
+end if
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+STR STR_L7, "CHK_ANON1 P0 avant bloc"		; constante string="CHK_ANON1 P0 avant bloc"
+	LCA	STR_L7.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+namespace	BLOCK__1
+ELB 2					;    BODY ELAB
+
+					; _STAT INTEGER SUBTYPE INFO
+_STAT = '_STAT'
+namespace _STAT
+VAR use__info, q
+VAR SIZ, d
+	LVA	2, SIZ
+	Sa	2, use__info
+VAR FST, d
+VAR LST, d
+	LI	32
+	Sd	2, SIZ
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd	2, FST
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	50
+	Sd	2, LST
+VAR PARENT__u, q
+	La	0, STANDARD._INTEGER.use__info
+	Sa	2, PARENT__u
+end namespace
+
+					; _DYN INTEGER SUBTYPE INFO
+_DYN = '_DYN'
+namespace _DYN
+VAR use__info, q
+VAR SIZ, d
+	LVA	2, SIZ
+	Sa	2, use__info
+VAR FST, d
+VAR LST, d
+	LI	32
+	Sd	2, SIZ
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd	2, FST
+	LI	0					; lieu resultat sur pile
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	5
+	CALL	STANDARD.CHK_ANON1_L1. ,IDENT_L2
+	Sd	2, LST
+VAR PARENT__u, q
+	La	0, STANDARD._INTEGER.use__info
+	Sa	2, PARENT__u
+end namespace
+VAR J_disp, d				; variable entiere
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+STR STR_L10, "CHK_ANON1 P1 elaboration du bloc passee"	; constante string="CHK_ANON1 P1 elaboration du bloc passee"
+	LCA	STR_L10.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	LI	0					; lieu resultat sur pile
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	2
+	CALL	STANDARD.CHK_ANON1_L1. ,IDENT_L2
+	DUP
+	Ld	2, _DYN.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	2, _DYN.LST
+	CGT
+	BT	STANDARD.ce_raise_
+	Sd  2,	J_disp
+STR STR_L11, "CHK_ANON1 P2 J affecte : pas de faux positif"	; constante string="CHK_ANON1 P2 J affecte : pas de faux positif"
+	LCA	STR_L11.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+namespace	BLOCK__2
+ELB 3					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+VAR	exc_ctx_L12, q, 11
+	La	0, STANDARD.EXCEPTIONS_TOP_CTX_disp
+	Sa  3,	exc_ctx_L12
+	LCA	L12
+	Sa  3,	exc_ctx_L12 + STANDARD._EXCEPTION_CONTEXT.DISPATCH
+	EXC_MACH  3,	exc_ctx_L12
+	LVA  3,	exc_ctx_L12
+	Sa	0, STANDARD.EXCEPTIONS_TOP_CTX_disp
+	LI	0					; lieu resultat sur pile
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	9
+	CALL	STANDARD.CHK_ANON1_L1. ,IDENT_L2
+	DUP
+	Ld	2, STANDARD.CHK_ANON1_L1.BLOCK__1._DYN.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	2, STANDARD.CHK_ANON1_L1.BLOCK__1._DYN.LST
+	CGT
+	BT	STANDARD.ce_raise_
+	Sd  2,	J_disp
+STR STR_L14, "CHK_ANON1 P3 KO pas de levee"	; constante string="CHK_ANON1 P3 KO pas de levee"
+	LCA	STR_L14.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	La 0,	STANDARD.EXCEPTIONS_TOP_CTX_disp
+	La , 0
+	Sa 0,	STANDARD.EXCEPTIONS_TOP_CTX_disp
+	BRA	L13
+L12:
+	La	0, STANDARD.EXCEPTIONS_CURRENT_disp
+	Sa  3,	exc_ctx_L12
+	La	0, STANDARD.EXCEPTIONS_CURRENT_disp
+	LCA	STANDARD.CONSTRAINT_ERROR__exc.data_ptr
+	CEQ
+	BT	L16
+	BRA	L17
+L16:
+STR STR_L18, "CHK_ANON1 P3 OK 9 hors 1..5 leve"	; constante string="CHK_ANON1 P3 OK 9 hors 1..5 leve"
+	LCA	STR_L18.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	BRA	L15
+L17:
+	BRA	STANDARD.exc_raise_
+L15:
+L13:
+	UNLINK 3
+endPRO
+	UNLINK 2
+endPRO
+STR STR_L19, "CHK_ANON1 P4 fin"		; constante string="CHK_ANON1 P4 fin"
+	LCA	STR_L19.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+ret_lbl:
+	UNLINK 1
+	RTD
+excep:
+endPRO					;---------- end PRO CHK_ANON1

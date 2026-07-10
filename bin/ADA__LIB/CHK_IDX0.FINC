@@ -1,0 +1,1722 @@
+if ~ definite TEXT_IO
+include 'TEXT_IO.FINC'
+end if
+if ~ definite IO_EXCEPTIONS
+include 'IO_EXCEPTIONS.FINC'
+end if
+if ~ definite TEXT_IO
+include 'TEXT_IO.FINC'
+end if
+PRO	CHK_IDX0_L1				;---------- PRO CHK_IDX0
+ELB 1					;    BODY ELAB
+
+					; _VEC UNCONSTRAINED ARRAY SUBTYPE INFO
+_VEC = '_VEC'
+namespace _VEC
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+	LI	1
+	NEG
+	Sd	1, SIZ
+  virtual at 4				; use info offsets pour acces sur array contraint
+
+COMP_SIZ = $
+	rd 1 
+FST_1 = $
+	rd 1 
+LST_1 = $
+	rd 1 
+  end virtual
+end namespace
+
+					; array decl constrained array type info
+_MAT = '_MAT'
+namespace _MAT
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+VAR _COMP_SIZ, d
+VAR _FST_2, d
+VAR _LST_2, d
+	LI	32
+	Sd	1, _COMP_SIZ
+	Ld	1, _COMP_SIZ
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd	1, _FST_2
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	3
+	Sd	1, _LST_2
+	Ld	1, _LST_2
+	Ld	1, _FST_2
+	SUB
+	INC
+	CLAMP0
+VAR _SIZ_1, d
+VAR _FST_1, d
+VAR _LST_1, d
+	MUL
+	Sd	1, _SIZ_1
+	Ld	1, _SIZ_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd	1, _FST_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	2
+	Sd	1, _LST_1
+	Ld	1, _LST_1
+	Ld	1, _FST_1
+	SUB
+	INC
+	CLAMP0
+	MUL
+	Sd	1, SIZ
+  virtual at 4
+COMP_SIZ = $
+	rd 1 
+FST_2 = $
+	rd 1 
+LST_2 = $
+	rd 1 
+SIZ_1 = $
+	rd 1 
+FST_1 = $
+	rd 1 
+LST_1 = $
+	rd 1 
+  end virtual
+end namespace
+
+					; array decl constrained array type info
+_ROW = '_ROW'
+namespace _ROW
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+VAR _COMP_SIZ, d
+VAR _FST_1, d
+VAR _LST_1, d
+	LI	32
+	Sd	1, _COMP_SIZ
+	Ld	1, _COMP_SIZ
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd	1, _FST_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	3
+	Sd	1, _LST_1
+	Ld	1, _LST_1
+	Ld	1, _FST_1
+	SUB
+	INC
+	CLAMP0
+	MUL
+	Sd	1, SIZ
+  virtual at 4
+COMP_SIZ = $
+	rd 1 
+FST_1 = $
+	rd 1 
+LST_1 = $
+	rd 1 
+  end virtual
+end namespace
+
+					; array decl constrained array type info
+_TAB2 = '_TAB2'
+namespace _TAB2
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+VAR _COMP_SIZ, d
+VAR _FST_1, d
+VAR _LST_1, d
+	LI	96
+	Sd	1, _COMP_SIZ
+	Ld	1, _COMP_SIZ
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd	1, _FST_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	2
+	Sd	1, _LST_1
+	Ld	1, _LST_1
+	Ld	1, _FST_1
+	SUB
+	INC
+	CLAMP0
+	MUL
+	Sd	1, SIZ
+  virtual at 4
+COMP_SIZ = $
+	rd 1 
+FST_1 = $
+	rd 1 
+LST_1 = $
+	rd 1 
+  end virtual
+end namespace
+
+					; array decl constrained array type info
+_VEC5C = '_VEC5C'
+namespace _VEC5C
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+VAR _COMP_SIZ, d
+VAR _FST_1, d
+VAR _LST_1, d
+	LI	32
+	Sd	1, _COMP_SIZ
+	Ld	1, _COMP_SIZ
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd	1, _FST_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	5
+	Sd	1, _LST_1
+	Ld	1, _LST_1
+	Ld	1, _FST_1
+	SUB
+	INC
+	CLAMP0
+	MUL
+	Sd	1, SIZ
+  virtual at 4
+COMP_SIZ = $
+	rd 1 
+FST_1 = $
+	rd 1 
+LST_1 = $
+	rd 1 
+  end virtual
+end namespace
+; CODE_ACCESS_DECL cd_level void ? FALSE
+
+					; _PV ACCESS TYPE INFO
+_PV = '_PV'
+namespace _PV
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+	LI	64
+	Sd	1, SIZ
+VAR DESIG__u, q
+	La 1, STANDARD.CHK_IDX0_L1._VEC5C.use__info
+	Sa	1, DESIG__u
+end namespace
+
+					; _REC RECORD TYPE INFO
+_REC = '_REC'
+namespace _REC
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+USEINFO 1, A, 	La 1, STANDARD.CHK_IDX0_L1._ROW.use__info
+; STSB
+virtual at 0				; calcul des offsets statiques
+; STSB
+STATOFS A, 12
+size = $
+end virtual
+	LI	 size*8
+	Sd	1, SIZ
+end namespace
+_V__type = '_V__type'
+namespace _V__type				; array var constrained array type info
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+VAR _COMP_SIZ, d
+VAR _FST_1, d
+VAR _LST_1, d
+	LI	32
+	Sd	1, _COMP_SIZ
+	Ld	1, _COMP_SIZ
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd	1, _FST_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	3
+	Sd	1, _LST_1
+	Ld	1, _LST_1
+	Ld	1, _FST_1
+	SUB
+	INC
+	CLAMP0
+	MUL
+	Sd	1, SIZ
+  virtual at 4
+COMP_SIZ = $
+	rd 1 
+FST_1 = $
+	rd 1 
+LST_1 = $
+	rd 1 
+  end virtual
+end namespace
+VAR V_disp, q				; variable array : pointeur aux data
+VAR V__u, q				; variable array : useinfo pointeur au rec info
+	La 1, _V__type.use__info
+	Sa	1, V__u				; array info ptr at __u
+	Ld	1, _V__type.SIZ
+	LI	8
+	DIV
+	CO_VAR
+	Sa	1, V_disp				; array data ptr at _disp
+					; array data aggregate
+	La	1, V_disp
+					; Assign_array_aggregate dynamic type DN_CONSTRAINED_ARRAY
+namespace ANON_20_25_aga
+  VAR _FST_1, d
+  VAR _LST_1, d
+  VAR _LEN_1, d
+  VAR _STR_1, d
+  VAR _PTR_1, q
+  VAR _CNT_1, d
+  VAR _EMIS_1, d
+end namespace
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd  1, ANON_20_25_aga._FST_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	3
+	Sd  1, ANON_20_25_aga._LST_1
+	Ld  1, ANON_20_25_aga._LST_1
+	Ld  1, ANON_20_25_aga._FST_1
+	SUB
+	INC
+	CLAMP0
+	Sd  1, ANON_20_25_aga._LEN_1
+	LI	4
+	Sd  1, ANON_20_25_aga._STR_1
+	Sa  1, ANON_20_25_aga._PTR_1
+	LI	0
+	Sd  1, ANON_20_25_aga._EMIS_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	10
+	SId  1, ANON_20_25_aga._PTR_1, 0
+	La  1, ANON_20_25_aga._PTR_1
+	Ld  1, ANON_20_25_aga._STR_1
+	ADD
+	Sa  1, ANON_20_25_aga._PTR_1
+	Ld  1, ANON_20_25_aga._EMIS_1
+	INC
+	Sd  1, ANON_20_25_aga._EMIS_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	20
+	SId  1, ANON_20_25_aga._PTR_1, 0
+	La  1, ANON_20_25_aga._PTR_1
+	Ld  1, ANON_20_25_aga._STR_1
+	ADD
+	Sa  1, ANON_20_25_aga._PTR_1
+	Ld  1, ANON_20_25_aga._EMIS_1
+	INC
+	Sd  1, ANON_20_25_aga._EMIS_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	30
+	SId  1, ANON_20_25_aga._PTR_1, 0
+	La  1, ANON_20_25_aga._PTR_1
+	Ld  1, ANON_20_25_aga._STR_1
+	ADD
+	Sa  1, ANON_20_25_aga._PTR_1
+	Ld  1, ANON_20_25_aga._EMIS_1
+	INC
+	Sd  1, ANON_20_25_aga._EMIS_1
+
+VAR M_disp, q				; variable array : pointeur aux data
+VAR M__u, q				; variable array : useinfo pointeur au rec info
+	La 1, STANDARD.CHK_IDX0_L1._MAT.use__info
+	Sa	1, M__u				; array info ptr at __u
+	Ld	1, STANDARD.CHK_IDX0_L1._MAT.SIZ
+	LI	8
+	DIV
+	CO_VAR
+	Sa	1, M_disp				; array data ptr at _disp
+					; array data aggregate
+	La	1, M_disp
+					; Assign_array_aggregate dynamic type DN_CONSTRAINED_ARRAY
+namespace ANON_21_17_aga
+  VAR _FST_1, d
+  VAR _LST_1, d
+  VAR _LEN_1, d
+  VAR _STR_1, d
+  VAR _PTR_1, q
+  VAR _CNT_1, d
+  VAR _EMIS_1, d
+  VAR _FST_2, d
+  VAR _LST_2, d
+  VAR _LEN_2, d
+  VAR _STR_2, d
+  VAR _PTR_2, q
+  VAR _CNT_2, d
+  VAR _EMIS_2, d
+end namespace
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd  1, ANON_21_17_aga._FST_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	2
+	Sd  1, ANON_21_17_aga._LST_1
+	Ld  1, ANON_21_17_aga._LST_1
+	Ld  1, ANON_21_17_aga._FST_1
+	SUB
+	INC
+	CLAMP0
+	Sd  1, ANON_21_17_aga._LEN_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd  1, ANON_21_17_aga._FST_2
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	3
+	Sd  1, ANON_21_17_aga._LST_2
+	Ld  1, ANON_21_17_aga._LST_2
+	Ld  1, ANON_21_17_aga._FST_2
+	SUB
+	INC
+	CLAMP0
+	Sd  1, ANON_21_17_aga._LEN_2
+	LI	4
+	Sd  1, ANON_21_17_aga._STR_2
+	Ld  1, ANON_21_17_aga._STR_2
+	Ld  1, ANON_21_17_aga._LEN_2
+	MUL
+	Sd  1, ANON_21_17_aga._STR_1
+	Sa  1, ANON_21_17_aga._PTR_1
+	LI	0
+	Sd  1, ANON_21_17_aga._EMIS_1
+	La  1, ANON_21_17_aga._PTR_1
+	Sa  1, ANON_21_17_aga._PTR_2
+	LI	0
+	Sd  1, ANON_21_17_aga._EMIS_2
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	SId  1, ANON_21_17_aga._PTR_2, 0
+	La  1, ANON_21_17_aga._PTR_2
+	Ld  1, ANON_21_17_aga._STR_2
+	ADD
+	Sa  1, ANON_21_17_aga._PTR_2
+	Ld  1, ANON_21_17_aga._EMIS_2
+	INC
+	Sd  1, ANON_21_17_aga._EMIS_2
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	2
+	SId  1, ANON_21_17_aga._PTR_2, 0
+	La  1, ANON_21_17_aga._PTR_2
+	Ld  1, ANON_21_17_aga._STR_2
+	ADD
+	Sa  1, ANON_21_17_aga._PTR_2
+	Ld  1, ANON_21_17_aga._EMIS_2
+	INC
+	Sd  1, ANON_21_17_aga._EMIS_2
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	3
+	SId  1, ANON_21_17_aga._PTR_2, 0
+	La  1, ANON_21_17_aga._PTR_2
+	Ld  1, ANON_21_17_aga._STR_2
+	ADD
+	Sa  1, ANON_21_17_aga._PTR_2
+	Ld  1, ANON_21_17_aga._EMIS_2
+	INC
+	Sd  1, ANON_21_17_aga._EMIS_2
+	La  1, ANON_21_17_aga._PTR_1
+	Ld  1, ANON_21_17_aga._STR_1
+	ADD
+	Sa  1, ANON_21_17_aga._PTR_1
+	Ld  1, ANON_21_17_aga._EMIS_1
+	INC
+	Sd  1, ANON_21_17_aga._EMIS_1
+	La  1, ANON_21_17_aga._PTR_1
+	Sa  1, ANON_21_17_aga._PTR_2
+	LI	0
+	Sd  1, ANON_21_17_aga._EMIS_2
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	4
+	SId  1, ANON_21_17_aga._PTR_2, 0
+	La  1, ANON_21_17_aga._PTR_2
+	Ld  1, ANON_21_17_aga._STR_2
+	ADD
+	Sa  1, ANON_21_17_aga._PTR_2
+	Ld  1, ANON_21_17_aga._EMIS_2
+	INC
+	Sd  1, ANON_21_17_aga._EMIS_2
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	5
+	SId  1, ANON_21_17_aga._PTR_2, 0
+	La  1, ANON_21_17_aga._PTR_2
+	Ld  1, ANON_21_17_aga._STR_2
+	ADD
+	Sa  1, ANON_21_17_aga._PTR_2
+	Ld  1, ANON_21_17_aga._EMIS_2
+	INC
+	Sd  1, ANON_21_17_aga._EMIS_2
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	6
+	SId  1, ANON_21_17_aga._PTR_2, 0
+	La  1, ANON_21_17_aga._PTR_2
+	Ld  1, ANON_21_17_aga._STR_2
+	ADD
+	Sa  1, ANON_21_17_aga._PTR_2
+	Ld  1, ANON_21_17_aga._EMIS_2
+	INC
+	Sd  1, ANON_21_17_aga._EMIS_2
+	La  1, ANON_21_17_aga._PTR_1
+	Ld  1, ANON_21_17_aga._STR_1
+	ADD
+	Sa  1, ANON_21_17_aga._PTR_1
+	Ld  1, ANON_21_17_aga._EMIS_1
+	INC
+	Sd  1, ANON_21_17_aga._EMIS_1
+
+VAR T2_disp, q				; variable array : pointeur aux data
+VAR T2__u, q				; variable array : useinfo pointeur au rec info
+	La 1, STANDARD.CHK_IDX0_L1._TAB2.use__info
+	Sa	1, T2__u				; array info ptr at __u
+	Ld	1, STANDARD.CHK_IDX0_L1._TAB2.SIZ
+	LI	8
+	DIV
+	CO_VAR
+	Sa	1, T2_disp				; array data ptr at _disp
+					; array data aggregate
+	La	1, T2_disp
+					; Assign_array_aggregate dynamic type DN_CONSTRAINED_ARRAY
+namespace ANON_22_17_aga
+  VAR _FST_1, d
+  VAR _LST_1, d
+  VAR _LEN_1, d
+  VAR _STR_1, d
+  VAR _PTR_1, q
+  VAR _CNT_1, d
+  VAR _EMIS_1, d
+  VAR _FST_2, d
+  VAR _LST_2, d
+  VAR _LEN_2, d
+  VAR _STR_2, d
+  VAR _PTR_2, q
+  VAR _CNT_2, d
+  VAR _EMIS_2, d
+end namespace
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd  1, ANON_22_17_aga._FST_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	2
+	Sd  1, ANON_22_17_aga._LST_1
+	Ld  1, ANON_22_17_aga._LST_1
+	Ld  1, ANON_22_17_aga._FST_1
+	SUB
+	INC
+	CLAMP0
+	Sd  1, ANON_22_17_aga._LEN_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd  1, ANON_22_17_aga._FST_2
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	3
+	Sd  1, ANON_22_17_aga._LST_2
+	Ld  1, ANON_22_17_aga._LST_2
+	Ld  1, ANON_22_17_aga._FST_2
+	SUB
+	INC
+	CLAMP0
+	Sd  1, ANON_22_17_aga._LEN_2
+	LI	4
+	Sd  1, ANON_22_17_aga._STR_2
+	Ld  1, ANON_22_17_aga._STR_2
+	Ld  1, ANON_22_17_aga._LEN_2
+	MUL
+	Sd  1, ANON_22_17_aga._STR_1
+	Sa  1, ANON_22_17_aga._PTR_1
+	LI	0
+	Sd  1, ANON_22_17_aga._EMIS_1
+	La  1, ANON_22_17_aga._PTR_1
+	Sa  1, ANON_22_17_aga._PTR_2
+	LI	0
+	Sd  1, ANON_22_17_aga._EMIS_2
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	SId  1, ANON_22_17_aga._PTR_2, 0
+	La  1, ANON_22_17_aga._PTR_2
+	Ld  1, ANON_22_17_aga._STR_2
+	ADD
+	Sa  1, ANON_22_17_aga._PTR_2
+	Ld  1, ANON_22_17_aga._EMIS_2
+	INC
+	Sd  1, ANON_22_17_aga._EMIS_2
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	2
+	SId  1, ANON_22_17_aga._PTR_2, 0
+	La  1, ANON_22_17_aga._PTR_2
+	Ld  1, ANON_22_17_aga._STR_2
+	ADD
+	Sa  1, ANON_22_17_aga._PTR_2
+	Ld  1, ANON_22_17_aga._EMIS_2
+	INC
+	Sd  1, ANON_22_17_aga._EMIS_2
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	3
+	SId  1, ANON_22_17_aga._PTR_2, 0
+	La  1, ANON_22_17_aga._PTR_2
+	Ld  1, ANON_22_17_aga._STR_2
+	ADD
+	Sa  1, ANON_22_17_aga._PTR_2
+	Ld  1, ANON_22_17_aga._EMIS_2
+	INC
+	Sd  1, ANON_22_17_aga._EMIS_2
+	La  1, ANON_22_17_aga._PTR_1
+	Ld  1, ANON_22_17_aga._STR_1
+	ADD
+	Sa  1, ANON_22_17_aga._PTR_1
+	Ld  1, ANON_22_17_aga._EMIS_1
+	INC
+	Sd  1, ANON_22_17_aga._EMIS_1
+	La  1, ANON_22_17_aga._PTR_1
+	Sa  1, ANON_22_17_aga._PTR_2
+	LI	0
+	Sd  1, ANON_22_17_aga._EMIS_2
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	4
+	SId  1, ANON_22_17_aga._PTR_2, 0
+	La  1, ANON_22_17_aga._PTR_2
+	Ld  1, ANON_22_17_aga._STR_2
+	ADD
+	Sa  1, ANON_22_17_aga._PTR_2
+	Ld  1, ANON_22_17_aga._EMIS_2
+	INC
+	Sd  1, ANON_22_17_aga._EMIS_2
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	5
+	SId  1, ANON_22_17_aga._PTR_2, 0
+	La  1, ANON_22_17_aga._PTR_2
+	Ld  1, ANON_22_17_aga._STR_2
+	ADD
+	Sa  1, ANON_22_17_aga._PTR_2
+	Ld  1, ANON_22_17_aga._EMIS_2
+	INC
+	Sd  1, ANON_22_17_aga._EMIS_2
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	6
+	SId  1, ANON_22_17_aga._PTR_2, 0
+	La  1, ANON_22_17_aga._PTR_2
+	Ld  1, ANON_22_17_aga._STR_2
+	ADD
+	Sa  1, ANON_22_17_aga._PTR_2
+	Ld  1, ANON_22_17_aga._EMIS_2
+	INC
+	Sd  1, ANON_22_17_aga._EMIS_2
+	La  1, ANON_22_17_aga._PTR_1
+	Ld  1, ANON_22_17_aga._STR_1
+	ADD
+	Sa  1, ANON_22_17_aga._PTR_1
+	Ld  1, ANON_22_17_aga._EMIS_1
+	INC
+	Sd  1, ANON_22_17_aga._EMIS_1
+
+VAR P_disp, q
+	Ld	1, STANDARD.CHK_IDX0_L1._VEC5C.SIZ
+	LI	8
+	DIV
+	HEAP_ALLOC
+VAR NEW_L2_ptr, q
+	DUP
+	Sa	1, NEW_L2_ptr
+					; Assign_array_aggregate dynamic type DN_CONSTRAINED_ARRAY
+namespace ANON_23_27_aga
+  VAR _FST_1, d
+  VAR _LST_1, d
+  VAR _LEN_1, d
+  VAR _STR_1, d
+  VAR _PTR_1, q
+  VAR _CNT_1, d
+  VAR _EMIS_1, d
+end namespace
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd  1, ANON_23_27_aga._FST_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	5
+	Sd  1, ANON_23_27_aga._LST_1
+	Ld  1, ANON_23_27_aga._LST_1
+	Ld  1, ANON_23_27_aga._FST_1
+	SUB
+	INC
+	CLAMP0
+	Sd  1, ANON_23_27_aga._LEN_1
+	LI	4
+	Sd  1, ANON_23_27_aga._STR_1
+	Sa  1, ANON_23_27_aga._PTR_1
+	LI	0
+	Sd  1, ANON_23_27_aga._EMIS_1
+	Ld  1, ANON_23_27_aga._LEN_1
+	Ld  1, ANON_23_27_aga._EMIS_1
+	SUB
+	Sd  1, ANON_23_27_aga._CNT_1
+	Ld  1, ANON_23_27_aga._CNT_1
+	LI	0
+	CLE
+	BT  L4
+L3:
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	SId  1, ANON_23_27_aga._PTR_1, 0
+	La  1, ANON_23_27_aga._PTR_1
+	Ld  1, ANON_23_27_aga._STR_1
+	ADD
+	Sa  1, ANON_23_27_aga._PTR_1
+	Ld  1, ANON_23_27_aga._EMIS_1
+	INC
+	Sd  1, ANON_23_27_aga._EMIS_1
+	Ld  1, ANON_23_27_aga._CNT_1
+	DEC
+	DUP
+	Sd  1, ANON_23_27_aga._CNT_1
+	LI	0
+	CGT
+	BT  L3
+L4:
+	La	1, NEW_L2_ptr
+	Sa	1, P_disp
+
+VAR R_disp, q				; variable record : pointeur aux data record
+VAR R__u, q				; variable record : pointeur aux useinfo
+VAR R__dat, STANDARD.CHK_IDX0_L1._REC.size
+	LVA	1, R__dat
+	Sa	1, R_disp				; record fin
+	LVA	1, STANDARD.CHK_IDX0_L1._REC.SIZ
+	Sa	1, R__u
+; CODE_VC_NAME DN_VARIABLE_ID
+	La 1, R_disp
+					; Assign_record_aggregate type DN_RECORD
+	DUP
+	LVA	, STANDARD.CHK_IDX0_L1._REC.A
+					; Assign_array_aggregate dynamic type DN_CONSTRAINED_ARRAY
+namespace ANON_24_23_aga
+  VAR _FST_1, d
+  VAR _LST_1, d
+  VAR _LEN_1, d
+  VAR _STR_1, d
+  VAR _PTR_1, q
+  VAR _CNT_1, d
+  VAR _EMIS_1, d
+end namespace
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd  1, ANON_24_23_aga._FST_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	3
+	Sd  1, ANON_24_23_aga._LST_1
+	Ld  1, ANON_24_23_aga._LST_1
+	Ld  1, ANON_24_23_aga._FST_1
+	SUB
+	INC
+	CLAMP0
+	Sd  1, ANON_24_23_aga._LEN_1
+	LI	4
+	Sd  1, ANON_24_23_aga._STR_1
+	Sa  1, ANON_24_23_aga._PTR_1
+	LI	0
+	Sd  1, ANON_24_23_aga._EMIS_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	7
+	SId  1, ANON_24_23_aga._PTR_1, 0
+	La  1, ANON_24_23_aga._PTR_1
+	Ld  1, ANON_24_23_aga._STR_1
+	ADD
+	Sa  1, ANON_24_23_aga._PTR_1
+	Ld  1, ANON_24_23_aga._EMIS_1
+	INC
+	Sd  1, ANON_24_23_aga._EMIS_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	8
+	SId  1, ANON_24_23_aga._PTR_1, 0
+	La  1, ANON_24_23_aga._PTR_1
+	Ld  1, ANON_24_23_aga._STR_1
+	ADD
+	Sa  1, ANON_24_23_aga._PTR_1
+	Ld  1, ANON_24_23_aga._EMIS_1
+	INC
+	Sd  1, ANON_24_23_aga._EMIS_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	9
+	SId  1, ANON_24_23_aga._PTR_1, 0
+	La  1, ANON_24_23_aga._PTR_1
+	Ld  1, ANON_24_23_aga._STR_1
+	ADD
+	Sa  1, ANON_24_23_aga._PTR_1
+	Ld  1, ANON_24_23_aga._EMIS_1
+	INC
+	Sd  1, ANON_24_23_aga._EMIS_1
+	DROP
+
+VAR K_disp, d				; variable entiere
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	2
+	Sd  1,	K_disp
+
+VAR KH_disp, d				; variable entiere
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	9
+	Sd  1,	KH_disp
+
+VAR KN_disp, d				; variable entiere
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	NEG
+	Sd  1,	KN_disp
+
+
+if defined GET_L5_
+PRO	GET_L5				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM X_ofs				; in
+	PRM I_ofs				; in
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 2					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+; CODE_RETURN : EXPR TYPE = DN_INTEGER
+	LVA	2, -X_ofs
+	LIa	, , 0				; array data start address on stack
+	Ld  2,	-I_ofs
+	DUP
+	LVA	2, -X_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD.CHK_IDX0_L1._VEC.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LVA	2, -X_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD.CHK_IDX0_L1._VEC.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
+	LVA	2, -X_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD.CHK_IDX0_L1._VEC.FST_1		; (index - FST_1) * SIZ_1
+	SUB
+	LVA	2, -X_ofs
+	LIa	, , 8
+	Ld	, STANDARD.CHK_IDX0_L1._VEC.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Ld
+	Sd  2,	-result__ofs
+	BRA ret_lbl
+ret_lbl:
+	UNLINK 2
+	RTD	prm_siz-8
+excep:
+endPRO					;---------- end PRO GET
+end if
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	La	 1, V_disp				; array data start address on stack
+	Ld 1,	K_disp
+	DUP
+	LId	1, V__u, STANDARD.CHK_IDX0_L1._VEC.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	1, V__u, STANDARD.CHK_IDX0_L1._VEC.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
+	LId	1, V__u, STANDARD.CHK_IDX0_L1._VEC.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, V__u, STANDARD.CHK_IDX0_L1._VEC.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	La	 1, V_disp				; array data start address on stack
+	Ld 1,	K_disp
+	DUP
+	LId	1, V__u, STANDARD.CHK_IDX0_L1._VEC.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	1, V__u, STANDARD.CHK_IDX0_L1._VEC.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
+	LId	1, V__u, STANDARD.CHK_IDX0_L1._VEC.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, V__u, STANDARD.CHK_IDX0_L1._VEC.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Ld
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	5
+	ADD
+	Sd
+					; debut if
+	La	 1, V_disp				; array data start address on stack
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	2
+	DUP
+	LId	1, V__u, STANDARD.CHK_IDX0_L1._VEC.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	1, V__u, STANDARD.CHK_IDX0_L1._VEC.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
+	LId	1, V__u, STANDARD.CHK_IDX0_L1._VEC.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, V__u, STANDARD.CHK_IDX0_L1._VEC.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Ld
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	25
+	CEQ
+	BF	L11
+STR STR_L12, "CHK_IDX0 1 OK indexation dans les bornes, valeurs justes"	; constante string="CHK_IDX0 1 OK indexation dans les bornes, valeurs justes"
+	LCA	STR_L12.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	BRA	L10
+L11:
+STR STR_L13, "CHK_IDX0 1 KO valeurs fausses"	; constante string="CHK_IDX0 1 KO valeurs fausses"
+	LCA	STR_L13.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+L10:					; post if
+namespace	BLOCK__1
+ELB 2					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+VAR	exc_ctx_L14, q, 10
+	La	0, STANDARD.EXCEPTIONS_TOP_CTX_disp
+	Sa  2,	exc_ctx_L14
+	LCA	L14
+	Sa  2,	exc_ctx_L14 + STANDARD._EXCEPTION_CONTEXT.DISPATCH
+	EXC_MACH  2,	exc_ctx_L14
+	LVA  2,	exc_ctx_L14
+	Sa	0, STANDARD.EXCEPTIONS_TOP_CTX_disp
+	La	 1, V_disp				; array data start address on stack
+	Ld 1,	STANDARD.CHK_IDX0_L1.KH_disp
+	DUP
+	LId	1, V__u, STANDARD.CHK_IDX0_L1._VEC.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	1, V__u, STANDARD.CHK_IDX0_L1._VEC.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
+	LId	1, V__u, STANDARD.CHK_IDX0_L1._VEC.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, V__u, STANDARD.CHK_IDX0_L1._VEC.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	Sd
+STR STR_L16, "CHK_IDX0 2 KO pas de levee"	; constante string="CHK_IDX0 2 KO pas de levee"
+	LCA	STR_L16.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	La 0,	STANDARD.EXCEPTIONS_TOP_CTX_disp
+	La , 0
+	Sa 0,	STANDARD.EXCEPTIONS_TOP_CTX_disp
+	BRA	L15
+L14:
+	La	0, STANDARD.EXCEPTIONS_CURRENT_disp
+	Sa  2,	exc_ctx_L14
+	La	0, STANDARD.EXCEPTIONS_CURRENT_disp
+	LCA	STANDARD.CONSTRAINT_ERROR__exc.data_ptr
+	CEQ
+	BT	L18
+	BRA	L19
+L18:
+STR STR_L20, "CHK_IDX0 2 OK variable, haut"	; constante string="CHK_IDX0 2 OK variable, haut"
+	LCA	STR_L20.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	BRA	L17
+L19:
+	BRA	STANDARD.exc_raise_
+L17:
+L15:
+	UNLINK 2
+endPRO
+namespace	BLOCK__2
+ELB 2					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+VAR	exc_ctx_L21, q, 10
+	La	0, STANDARD.EXCEPTIONS_TOP_CTX_disp
+	Sa  2,	exc_ctx_L21
+	LCA	L21
+	Sa  2,	exc_ctx_L21 + STANDARD._EXCEPTION_CONTEXT.DISPATCH
+	EXC_MACH  2,	exc_ctx_L21
+	LVA  2,	exc_ctx_L21
+	Sa	0, STANDARD.EXCEPTIONS_TOP_CTX_disp
+	La	 1, V_disp				; array data start address on stack
+	Ld 1,	STANDARD.CHK_IDX0_L1.KN_disp
+	DUP
+	LId	1, V__u, STANDARD.CHK_IDX0_L1._VEC.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	1, V__u, STANDARD.CHK_IDX0_L1._VEC.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
+	LId	1, V__u, STANDARD.CHK_IDX0_L1._VEC.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, V__u, STANDARD.CHK_IDX0_L1._VEC.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	Sd
+STR STR_L23, "CHK_IDX0 3 KO pas de levee"	; constante string="CHK_IDX0 3 KO pas de levee"
+	LCA	STR_L23.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	La 0,	STANDARD.EXCEPTIONS_TOP_CTX_disp
+	La , 0
+	Sa 0,	STANDARD.EXCEPTIONS_TOP_CTX_disp
+	BRA	L22
+L21:
+	La	0, STANDARD.EXCEPTIONS_CURRENT_disp
+	Sa  2,	exc_ctx_L21
+	La	0, STANDARD.EXCEPTIONS_CURRENT_disp
+	LCA	STANDARD.CONSTRAINT_ERROR__exc.data_ptr
+	CEQ
+	BT	L25
+	BRA	L26
+L25:
+STR STR_L27, "CHK_IDX0 3 OK variable, negatif"	; constante string="CHK_IDX0 3 OK variable, negatif"
+	LCA	STR_L27.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	BRA	L24
+L26:
+	BRA	STANDARD.exc_raise_
+L24:
+L22:
+	UNLINK 2
+endPRO
+namespace	BLOCK__3
+ELB 2					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+VAR	exc_ctx_L28, q, 10
+	La	0, STANDARD.EXCEPTIONS_TOP_CTX_disp
+	Sa  2,	exc_ctx_L28
+	LCA	L28
+	Sa  2,	exc_ctx_L28 + STANDARD._EXCEPTION_CONTEXT.DISPATCH
+	EXC_MACH  2,	exc_ctx_L28
+	LVA  2,	exc_ctx_L28
+	Sa	0, STANDARD.EXCEPTIONS_TOP_CTX_disp
+					; debut if
+	LI	0					; lieu resultat sur pile
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	4
+	LVA 1,	STANDARD.CHK_IDX0_L1.V_disp
+	CALL	STANDARD.CHK_IDX0_L1. ,GET_L5
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	CEQ
+	BF	L31
+	BRA	L30
+L31:
+L30:					; post if
+STR STR_L32, "CHK_IDX0 4 KO pas de levee"	; constante string="CHK_IDX0 4 KO pas de levee"
+	LCA	STR_L32.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	La 0,	STANDARD.EXCEPTIONS_TOP_CTX_disp
+	La , 0
+	Sa 0,	STANDARD.EXCEPTIONS_TOP_CTX_disp
+	BRA	L29
+L28:
+	La	0, STANDARD.EXCEPTIONS_CURRENT_disp
+	Sa  2,	exc_ctx_L28
+	La	0, STANDARD.EXCEPTIONS_CURRENT_disp
+	LCA	STANDARD.CONSTRAINT_ERROR__exc.data_ptr
+	CEQ
+	BT	L34
+	BRA	L35
+L34:
+STR STR_L36, "CHK_IDX0 4 OK parametre, descripteur"	; constante string="CHK_IDX0 4 OK parametre, descripteur"
+	LCA	STR_L36.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	BRA	L33
+L35:
+	BRA	STANDARD.exc_raise_
+L33:
+L29:
+	UNLINK 2
+endPRO
+namespace	BLOCK__4
+ELB 2					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+VAR	exc_ctx_L37, q, 10
+	La	0, STANDARD.EXCEPTIONS_TOP_CTX_disp
+	Sa  2,	exc_ctx_L37
+	LCA	L37
+	Sa  2,	exc_ctx_L37 + STANDARD._EXCEPTION_CONTEXT.DISPATCH
+	EXC_MACH  2,	exc_ctx_L37
+	LVA  2,	exc_ctx_L37
+	Sa	0, STANDARD.EXCEPTIONS_TOP_CTX_disp
+	LIVA 	1, R_disp, STANDARD.CHK_IDX0_L1._REC.A
+; EXPRESSIONS.CODE_INDEXED adresse component id
+	Ld 1,	STANDARD.CHK_IDX0_L1.KH_disp
+	DUP
+	Ld	 1, STANDARD.CHK_IDX0_L1._ROW._FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	 1, STANDARD.CHK_IDX0_L1._ROW._LST_1
+	CGT
+	BT	STANDARD.ce_raise_
+	Ld	 1, STANDARD.CHK_IDX0_L1._ROW._FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	Ld	 1, STANDARD.CHK_IDX0_L1._ROW._COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	Sd
+STR STR_L39, "CHK_IDX0 5 KO pas de levee"	; constante string="CHK_IDX0 5 KO pas de levee"
+	LCA	STR_L39.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	La 0,	STANDARD.EXCEPTIONS_TOP_CTX_disp
+	La , 0
+	Sa 0,	STANDARD.EXCEPTIONS_TOP_CTX_disp
+	BRA	L38
+L37:
+	La	0, STANDARD.EXCEPTIONS_CURRENT_disp
+	Sa  2,	exc_ctx_L37
+	La	0, STANDARD.EXCEPTIONS_CURRENT_disp
+	LCA	STANDARD.CONSTRAINT_ERROR__exc.data_ptr
+	CEQ
+	BT	L41
+	BRA	L42
+L41:
+STR STR_L43, "CHK_IDX0 5 OK composante de record"	; constante string="CHK_IDX0 5 OK composante de record"
+	LCA	STR_L43.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	BRA	L40
+L42:
+	BRA	STANDARD.exc_raise_
+L40:
+L38:
+	UNLINK 2
+endPRO
+namespace	BLOCK__5
+ELB 2					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+VAR	exc_ctx_L44, q, 10
+	La	0, STANDARD.EXCEPTIONS_TOP_CTX_disp
+	Sa  2,	exc_ctx_L44
+	LCA	L44
+	Sa  2,	exc_ctx_L44 + STANDARD._EXCEPTION_CONTEXT.DISPATCH
+	EXC_MACH  2,	exc_ctx_L44
+	LVA  2,	exc_ctx_L44
+	Sa	0, STANDARD.EXCEPTIONS_TOP_CTX_disp
+	La	 1, M_disp				; array data start address on stack
+	Ld 1,	STANDARD.CHK_IDX0_L1.KH_disp
+	DUP
+	LId	1, M__u, STANDARD.CHK_IDX0_L1._MAT.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	1, M__u, STANDARD.CHK_IDX0_L1._MAT.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
+	LId	1, M__u, STANDARD.CHK_IDX0_L1._MAT.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, M__u, STANDARD.CHK_IDX0_L1._MAT.SIZ_1
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	DUP
+	LId	1, M__u, STANDARD.CHK_IDX0_L1._MAT.FST_2
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	1, M__u, STANDARD.CHK_IDX0_L1._MAT.LST_2
+	CGT
+	BT	STANDARD.ce_raise_
+	LId	1, M__u, STANDARD.CHK_IDX0_L1._MAT.FST_2	; (index - FST_2) * SIZ_2
+	SUB
+	LId	1, M__u, STANDARD.CHK_IDX0_L1._MAT.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	Sd
+STR STR_L46, "CHK_IDX0 6a KO pas de levee"	; constante string="CHK_IDX0 6a KO pas de levee"
+	LCA	STR_L46.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	La 0,	STANDARD.EXCEPTIONS_TOP_CTX_disp
+	La , 0
+	Sa 0,	STANDARD.EXCEPTIONS_TOP_CTX_disp
+	BRA	L45
+L44:
+	La	0, STANDARD.EXCEPTIONS_CURRENT_disp
+	Sa  2,	exc_ctx_L44
+	La	0, STANDARD.EXCEPTIONS_CURRENT_disp
+	LCA	STANDARD.CONSTRAINT_ERROR__exc.data_ptr
+	CEQ
+	BT	L48
+	BRA	L49
+L48:
+STR STR_L50, "CHK_IDX0 6a OK multi-dim, dim 1"	; constante string="CHK_IDX0 6a OK multi-dim, dim 1"
+	LCA	STR_L50.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	BRA	L47
+L49:
+	BRA	STANDARD.exc_raise_
+L47:
+L45:
+	UNLINK 2
+endPRO
+namespace	BLOCK__6
+ELB 2					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+VAR	exc_ctx_L51, q, 10
+	La	0, STANDARD.EXCEPTIONS_TOP_CTX_disp
+	Sa  2,	exc_ctx_L51
+	LCA	L51
+	Sa  2,	exc_ctx_L51 + STANDARD._EXCEPTION_CONTEXT.DISPATCH
+	EXC_MACH  2,	exc_ctx_L51
+	LVA  2,	exc_ctx_L51
+	Sa	0, STANDARD.EXCEPTIONS_TOP_CTX_disp
+	La	 1, M_disp				; array data start address on stack
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	DUP
+	LId	1, M__u, STANDARD.CHK_IDX0_L1._MAT.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	1, M__u, STANDARD.CHK_IDX0_L1._MAT.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
+	LId	1, M__u, STANDARD.CHK_IDX0_L1._MAT.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, M__u, STANDARD.CHK_IDX0_L1._MAT.SIZ_1
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Ld 1,	STANDARD.CHK_IDX0_L1.KH_disp
+	DUP
+	LId	1, M__u, STANDARD.CHK_IDX0_L1._MAT.FST_2
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	1, M__u, STANDARD.CHK_IDX0_L1._MAT.LST_2
+	CGT
+	BT	STANDARD.ce_raise_
+	LId	1, M__u, STANDARD.CHK_IDX0_L1._MAT.FST_2	; (index - FST_2) * SIZ_2
+	SUB
+	LId	1, M__u, STANDARD.CHK_IDX0_L1._MAT.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	Sd
+STR STR_L53, "CHK_IDX0 6b KO pas de levee"	; constante string="CHK_IDX0 6b KO pas de levee"
+	LCA	STR_L53.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	La 0,	STANDARD.EXCEPTIONS_TOP_CTX_disp
+	La , 0
+	Sa 0,	STANDARD.EXCEPTIONS_TOP_CTX_disp
+	BRA	L52
+L51:
+	La	0, STANDARD.EXCEPTIONS_CURRENT_disp
+	Sa  2,	exc_ctx_L51
+	La	0, STANDARD.EXCEPTIONS_CURRENT_disp
+	LCA	STANDARD.CONSTRAINT_ERROR__exc.data_ptr
+	CEQ
+	BT	L55
+	BRA	L56
+L55:
+STR STR_L57, "CHK_IDX0 6b OK multi-dim, dim 2"	; constante string="CHK_IDX0 6b OK multi-dim, dim 2"
+	LCA	STR_L57.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	BRA	L54
+L56:
+	BRA	STANDARD.exc_raise_
+L54:
+L52:
+	UNLINK 2
+endPRO
+namespace	BLOCK__7
+ELB 2					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+VAR	exc_ctx_L58, q, 10
+	La	0, STANDARD.EXCEPTIONS_TOP_CTX_disp
+	Sa  2,	exc_ctx_L58
+	LCA	L58
+	Sa  2,	exc_ctx_L58 + STANDARD._EXCEPTION_CONTEXT.DISPATCH
+	EXC_MACH  2,	exc_ctx_L58
+	LVA  2,	exc_ctx_L58
+	Sa	0, STANDARD.EXCEPTIONS_TOP_CTX_disp
+	Lq 1,	STANDARD.CHK_IDX0_L1.P_disp
+	Ld 1,	STANDARD.CHK_IDX0_L1.KH_disp
+	DUP
+	Ld	 1, STANDARD.CHK_IDX0_L1._VEC5C._FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	 1, STANDARD.CHK_IDX0_L1._VEC5C._LST_1
+	CGT
+	BT	STANDARD.ce_raise_
+	Ld	 1, STANDARD.CHK_IDX0_L1._VEC5C._FST_1
+	SUB
+	Ld	 1, STANDARD.CHK_IDX0_L1._VEC5C._COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	Sd
+STR STR_L60, "CHK_IDX0 7a KO pas de levee"	; constante string="CHK_IDX0 7a KO pas de levee"
+	LCA	STR_L60.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	La 0,	STANDARD.EXCEPTIONS_TOP_CTX_disp
+	La , 0
+	Sa 0,	STANDARD.EXCEPTIONS_TOP_CTX_disp
+	BRA	L59
+L58:
+	La	0, STANDARD.EXCEPTIONS_CURRENT_disp
+	Sa  2,	exc_ctx_L58
+	La	0, STANDARD.EXCEPTIONS_CURRENT_disp
+	LCA	STANDARD.CONSTRAINT_ERROR__exc.data_ptr
+	CEQ
+	BT	L62
+	BRA	L63
+L62:
+STR STR_L64, "CHK_IDX0 7a OK access implicite"	; constante string="CHK_IDX0 7a OK access implicite"
+	LCA	STR_L64.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	BRA	L61
+L63:
+	BRA	STANDARD.exc_raise_
+L61:
+L59:
+	UNLINK 2
+endPRO
+namespace	BLOCK__8
+ELB 2					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+VAR	exc_ctx_L65, q, 10
+	La	0, STANDARD.EXCEPTIONS_TOP_CTX_disp
+	Sa  2,	exc_ctx_L65
+	LCA	L65
+	Sa  2,	exc_ctx_L65 + STANDARD._EXCEPTION_CONTEXT.DISPATCH
+	EXC_MACH  2,	exc_ctx_L65
+	LVA  2,	exc_ctx_L65
+	Sa	0, STANDARD.EXCEPTIONS_TOP_CTX_disp
+	Lq 1,	STANDARD.CHK_IDX0_L1.P_disp
+	Ld 1,	STANDARD.CHK_IDX0_L1.KH_disp
+	DUP
+	Ld	 1, STANDARD.CHK_IDX0_L1._VEC5C._FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	 1, STANDARD.CHK_IDX0_L1._VEC5C._LST_1
+	CGT
+	BT	STANDARD.ce_raise_
+	Ld	 1, STANDARD.CHK_IDX0_L1._VEC5C._FST_1
+	SUB
+	Ld	 1, STANDARD.CHK_IDX0_L1._VEC5C._COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	Sd
+STR STR_L67, "CHK_IDX0 7b KO pas de levee"	; constante string="CHK_IDX0 7b KO pas de levee"
+	LCA	STR_L67.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	La 0,	STANDARD.EXCEPTIONS_TOP_CTX_disp
+	La , 0
+	Sa 0,	STANDARD.EXCEPTIONS_TOP_CTX_disp
+	BRA	L66
+L65:
+	La	0, STANDARD.EXCEPTIONS_CURRENT_disp
+	Sa  2,	exc_ctx_L65
+	La	0, STANDARD.EXCEPTIONS_CURRENT_disp
+	LCA	STANDARD.CONSTRAINT_ERROR__exc.data_ptr
+	CEQ
+	BT	L69
+	BRA	L70
+L69:
+STR STR_L71, "CHK_IDX0 7b OK access explicite"	; constante string="CHK_IDX0 7b OK access explicite"
+	LCA	STR_L71.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	BRA	L68
+L70:
+	BRA	STANDARD.exc_raise_
+L68:
+L66:
+	UNLINK 2
+endPRO
+namespace	BLOCK__9
+ELB 2					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+VAR	exc_ctx_L72, q, 10
+	La	0, STANDARD.EXCEPTIONS_TOP_CTX_disp
+	Sa  2,	exc_ctx_L72
+	LCA	L72
+	Sa  2,	exc_ctx_L72 + STANDARD._EXCEPTION_CONTEXT.DISPATCH
+	EXC_MACH  2,	exc_ctx_L72
+	LVA  2,	exc_ctx_L72
+	Sa	0, STANDARD.EXCEPTIONS_TOP_CTX_disp
+	La	 1, T2_disp				; array data start address on stack
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	DUP
+	LId	1, T2__u, STANDARD.CHK_IDX0_L1._TAB2.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	1, T2__u, STANDARD.CHK_IDX0_L1._TAB2.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
+	LId	1, T2__u, STANDARD.CHK_IDX0_L1._TAB2.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, T2__u, STANDARD.CHK_IDX0_L1._TAB2.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Ld 1,	STANDARD.CHK_IDX0_L1.KH_disp
+	DUP
+	Ld	 1, STANDARD.CHK_IDX0_L1._ROW._FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	 1, STANDARD.CHK_IDX0_L1._ROW._LST_1
+	CGT
+	BT	STANDARD.ce_raise_
+	Ld	 1, STANDARD.CHK_IDX0_L1._ROW._FST_1
+	SUB
+	Ld	 1, STANDARD.CHK_IDX0_L1._ROW._COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	Sd
+STR STR_L74, "CHK_IDX0 8 KO pas de levee"	; constante string="CHK_IDX0 8 KO pas de levee"
+	LCA	STR_L74.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	La 0,	STANDARD.EXCEPTIONS_TOP_CTX_disp
+	La , 0
+	Sa 0,	STANDARD.EXCEPTIONS_TOP_CTX_disp
+	BRA	L73
+L72:
+	La	0, STANDARD.EXCEPTIONS_CURRENT_disp
+	Sa  2,	exc_ctx_L72
+	La	0, STANDARD.EXCEPTIONS_CURRENT_disp
+	LCA	STANDARD.CONSTRAINT_ERROR__exc.data_ptr
+	CEQ
+	BT	L76
+	BRA	L77
+L76:
+STR STR_L78, "CHK_IDX0 8 OK indexe imbrique"	; constante string="CHK_IDX0 8 OK indexe imbrique"
+	LCA	STR_L78.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	BRA	L75
+L77:
+	BRA	STANDARD.exc_raise_
+L75:
+L73:
+	UNLINK 2
+endPRO
+	Lq 1,	P_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	5
+	DUP
+	Ld	 1, STANDARD.CHK_IDX0_L1._VEC5C._FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	 1, STANDARD.CHK_IDX0_L1._VEC5C._LST_1
+	CGT
+	BT	STANDARD.ce_raise_
+	Ld	 1, STANDARD.CHK_IDX0_L1._VEC5C._FST_1
+	SUB
+	Ld	 1, STANDARD.CHK_IDX0_L1._VEC5C._COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	55
+	Sd
+	La	 1, T2_disp				; array data start address on stack
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	2
+	DUP
+	LId	1, T2__u, STANDARD.CHK_IDX0_L1._TAB2.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	1, T2__u, STANDARD.CHK_IDX0_L1._TAB2.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
+	LId	1, T2__u, STANDARD.CHK_IDX0_L1._TAB2.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, T2__u, STANDARD.CHK_IDX0_L1._TAB2.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	DUP
+	Ld	 1, STANDARD.CHK_IDX0_L1._ROW._FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	 1, STANDARD.CHK_IDX0_L1._ROW._LST_1
+	CGT
+	BT	STANDARD.ce_raise_
+	Ld	 1, STANDARD.CHK_IDX0_L1._ROW._FST_1
+	SUB
+	Ld	 1, STANDARD.CHK_IDX0_L1._ROW._COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	44
+	Sd
+					; debut if
+	La	 1, M_disp				; array data start address on stack
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	2
+	DUP
+	LId	1, M__u, STANDARD.CHK_IDX0_L1._MAT.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	1, M__u, STANDARD.CHK_IDX0_L1._MAT.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
+	LId	1, M__u, STANDARD.CHK_IDX0_L1._MAT.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, M__u, STANDARD.CHK_IDX0_L1._MAT.SIZ_1
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	3
+	DUP
+	LId	1, M__u, STANDARD.CHK_IDX0_L1._MAT.FST_2
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	1, M__u, STANDARD.CHK_IDX0_L1._MAT.LST_2
+	CGT
+	BT	STANDARD.ce_raise_
+	LId	1, M__u, STANDARD.CHK_IDX0_L1._MAT.FST_2	; (index - FST_2) * SIZ_2
+	SUB
+	LId	1, M__u, STANDARD.CHK_IDX0_L1._MAT.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Ld
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	6
+	CEQ
+	La	 1, V_disp				; array data start address on stack
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	2
+	DUP
+	LId	1, V__u, STANDARD.CHK_IDX0_L1._VEC.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	1, V__u, STANDARD.CHK_IDX0_L1._VEC.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
+	LId	1, V__u, STANDARD.CHK_IDX0_L1._VEC.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, V__u, STANDARD.CHK_IDX0_L1._VEC.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Ld
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	25
+	CEQ
+	ET
+	LI	0					; lieu resultat sur pile
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	3
+	LVA 1,	V_disp
+	CALL	STANDARD.CHK_IDX0_L1. ,GET_L5
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	30
+	CEQ
+	ET
+	Lq 1,	P_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	5
+	DUP
+	Ld	 1, STANDARD.CHK_IDX0_L1._VEC5C._FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	 1, STANDARD.CHK_IDX0_L1._VEC5C._LST_1
+	CGT
+	BT	STANDARD.ce_raise_
+	Ld	 1, STANDARD.CHK_IDX0_L1._VEC5C._FST_1
+	SUB
+	Ld	 1, STANDARD.CHK_IDX0_L1._VEC5C._COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD
+	Ld
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	55
+	CEQ
+	ET
+	La	 1, T2_disp				; array data start address on stack
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	2
+	DUP
+	LId	1, T2__u, STANDARD.CHK_IDX0_L1._TAB2.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	1, T2__u, STANDARD.CHK_IDX0_L1._TAB2.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
+	LId	1, T2__u, STANDARD.CHK_IDX0_L1._TAB2.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, T2__u, STANDARD.CHK_IDX0_L1._TAB2.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	DUP
+	Ld	 1, STANDARD.CHK_IDX0_L1._ROW._FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	 1, STANDARD.CHK_IDX0_L1._ROW._LST_1
+	CGT
+	BT	STANDARD.ce_raise_
+	Ld	 1, STANDARD.CHK_IDX0_L1._ROW._FST_1
+	SUB
+	Ld	 1, STANDARD.CHK_IDX0_L1._ROW._COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD
+	Ld
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	44
+	CEQ
+	ET
+	LIVA 	1, R_disp, STANDARD.CHK_IDX0_L1._REC.A
+; EXPRESSIONS.CODE_INDEXED adresse component id
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	2
+	DUP
+	Ld	 1, STANDARD.CHK_IDX0_L1._ROW._FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	 1, STANDARD.CHK_IDX0_L1._ROW._LST_1
+	CGT
+	BT	STANDARD.ce_raise_
+	Ld	 1, STANDARD.CHK_IDX0_L1._ROW._FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	Ld	 1, STANDARD.CHK_IDX0_L1._ROW._COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Ld
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	8
+	CEQ
+	ET
+	BF	L80
+STR STR_L81, "CHK_IDX0 9 OK etat intact apres les levees"	; constante string="CHK_IDX0 9 OK etat intact apres les levees"
+	LCA	STR_L81.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	BRA	L79
+L80:
+STR STR_L82, "CHK_IDX0 9 KO etat altere"	; constante string="CHK_IDX0 9 KO etat altere"
+	LCA	STR_L82.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+L79:					; post if
+STR STR_L83, "CHK_IDX0 10 attendu : EXCEPTION NON RATTRAPEE : CONSTRAINT_ERROR, $? = 1"	; constante string="CHK_IDX0 10 attendu : EXCEPTION NON RATTRAPEE : CONSTRAINT_ERROR, $? = 1"
+	LCA	STR_L83.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	La	 1, V_disp				; array data start address on stack
+	Ld 1,	KH_disp
+	DUP
+	LId	1, V__u, STANDARD.CHK_IDX0_L1._VEC.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	1, V__u, STANDARD.CHK_IDX0_L1._VEC.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
+	LId	1, V__u, STANDARD.CHK_IDX0_L1._VEC.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	1, V__u, STANDARD.CHK_IDX0_L1._VEC.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	Sd
+STR STR_L84, "CHK_IDX0 10 KO ligne atteinte apres violation"	; constante string="CHK_IDX0 10 KO ligne atteinte apres violation"
+	LCA	STR_L84.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+ret_lbl:
+	UNLINK 1
+	RTD
+excep:
+endPRO					;---------- end PRO CHK_IDX0
