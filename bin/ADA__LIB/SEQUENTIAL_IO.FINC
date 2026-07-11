@@ -587,7 +587,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	BRA	L38
 L39:
 L38:					; post if
-; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
+; CODE_RETURN : EXPR TYPE = DN_ENUMERATION  VUE COMPLETE = DN_ENUMERATION
 	La 1, -FILE_ofs
 	LIb	, 0, STANDARD.SEQUENTIAL_IO._FILE_TYPE.MODE
 	Sb  1,	-result__ofs
@@ -621,7 +621,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	BRA	L42
 L43:
 L42:					; post if
-; CODE_RETURN : EXPR TYPE = DN_ARRAY
+; CODE_RETURN : EXPR TYPE = DN_ARRAY  VUE COMPLETE = DN_ARRAY
 	La 1, -FILE_ofs
 	LIVA 	, 0, STANDARD.SEQUENTIAL_IO._FILE_TYPE.NAME
 namespace ANON_188_12			; ensemble doublet @data/@info pour slice anonyme source
@@ -695,7 +695,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	BRA	L47
 L48:
 L47:					; post if
-; CODE_RETURN : EXPR TYPE = DN_VOID
+; CODE_RETURN : EXPR TYPE = DN_VOID  VUE COMPLETE = DN_VOID
 STR RET_STR_L49, ""				; constante string=""
 	LCA	RET_STR_L49.data_ptr
 VAR	RET_INFO_L50, q
@@ -729,7 +729,7 @@ endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
+; CODE_RETURN : EXPR TYPE = DN_ENUMERATION  VUE COMPLETE = DN_ENUMERATION
 	La 1, -FILE_ofs
 	LIb	, 0, STANDARD.SEQUENTIAL_IO._FILE_TYPE.IS_OPENED
 	Sb  1,	-result__ofs
@@ -755,6 +755,10 @@ VAR SIZE_BYTES_disp, d			; variable entiere
 	La  1,	-GFP_ofs
 	LId , -ELEMENT_TYPE__u_ofs
 	LI	 8
+	DUP
+	LI	0
+	CEQ
+	BT	STANDARD.ne_raise_
 	DIV
 	Sd  1,	SIZE_BYTES_disp
 
@@ -861,6 +865,10 @@ VAR SIZE_BYTES_disp, d			; variable entiere
 	La  1,	-GFP_ofs
 	LId , -ELEMENT_TYPE__u_ofs
 	LI	 8
+	DUP
+	LI	0
+	CEQ
+	BT	STANDARD.ne_raise_
 	DIV
 	Sd  1,	SIZE_BYTES_disp
 
@@ -1022,7 +1030,7 @@ L85:					; post if
 	LId	, 0, STANDARD.SEQUENTIAL_IO._FILE_TYPE.ID
 	CALL	STANDARD.SEQUENTIAL_IO.END_OF_FILE_L13. ,GET_SIZE_SYSTEM_CALL_L78
 	Sd  1,	SIZ_BYTES_disp
-; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
+; CODE_RETURN : EXPR TYPE = DN_ENUMERATION  VUE COMPLETE = DN_ENUMERATION
 	Ld 1,	POS_BYTES_disp
 	Ld 1,	SIZ_BYTES_disp
 	CGE

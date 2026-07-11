@@ -76,7 +76,35 @@ VAR PARENT__u, q
 	La	0, STANDARD._INTEGER.use__info
 	Sa	0, PARENT__u
 end namespace
-;  CODE_SUBTYPE_DECL : TYPE_SPEC.TY PAS FAIT DN_FIXED
+
+					; _DAY_DURATION FIXED SUBTYPE INFO
+_DAY_DURATION = '_DAY_DURATION'
+namespace _DAY_DURATION
+VAR use__info, q
+VAR SIZ, d
+	LVA	0, SIZ
+	Sa	0, use__info
+	LI	64
+	Sd	0, SIZ
+VAR FST, q
+VAR LST, q
+	LI	 0
+	LI	000536870912
+	LI	 1
+	CVTIX
+	Sq	0, FST
+	LI	00086400
+	LI	000536870912
+	LI	 1
+	CVTIX
+	Sq	0, LST
+VAR NUMER, q
+VAR DENOM, q
+	LI	 1
+	Sq	0, NUMER
+	LI	000536870912
+	Sq	0, DENOM
+end namespace
 					; sub program entry decl (in instantiation FALSE )
 					; sub program entry decl (in instantiation FALSE )
 					; sub program entry decl (in instantiation FALSE )
@@ -94,7 +122,7 @@ end namespace
 					; sub program entry decl (in instantiation FALSE )
 STR TIME_ERROR__exc, "TIME_ERROR"
 
-					; _TIME FIXED TYPE INFO
+					; _TIME FIXED SUBTYPE INFO
 _TIME = '_TIME'
 namespace _TIME
 VAR use__info, q
@@ -207,6 +235,10 @@ L4:					; post if
 	Lq 1,	Y_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	400
+	DUP
+	LI	0
+	CEQ
+	BT	STANDARD.ne_raise_
 	DIV
 	Sq  1,	ERA_disp
 	BRA	L6
@@ -217,6 +249,10 @@ L7:
 	SUB
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	400
+	DUP
+	LI	0
+	CEQ
+	BT	STANDARD.ne_raise_
 	DIV
 	Sq  1,	ERA_disp
 L6:					; post if
@@ -236,6 +272,10 @@ L6:					; post if
 	ADD
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	5
+	DUP
+	LI	0
+	CEQ
+	BT	STANDARD.ne_raise_
 	DIV
 	Lq  1,	-D_IN_ofs
 	ADD
@@ -250,17 +290,25 @@ L6:					; post if
 	Lq 1,	YOE_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	4
+	DUP
+	LI	0
+	CEQ
+	BT	STANDARD.ne_raise_
 	DIV
 	ADD
 	Lq 1,	YOE_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	100
+	DUP
+	LI	0
+	CEQ
+	BT	STANDARD.ne_raise_
 	DIV
 	SUB
 	Lq 1,	DOY_disp
 	ADD
 	Sq  1,	DOE_disp
-; CODE_RETURN : EXPR TYPE = DN_INTEGER
+; CODE_RETURN : EXPR TYPE = DN_INTEGER  VUE COMPLETE = DN_INTEGER
 	Lq 1,	ERA_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	00146097
@@ -324,6 +372,10 @@ L11:					; post if
 	Lq 1,	TMP_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	00146097
+	DUP
+	LI	0
+	CEQ
+	BT	STANDARD.ne_raise_
 	DIV
 	Sq  1,	ERA_disp
 	Lq  1,	-DAYS_ofs
@@ -337,20 +389,36 @@ L11:					; post if
 	Lq 1,	DOE_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1460
+	DUP
+	LI	0
+	CEQ
+	BT	STANDARD.ne_raise_
 	DIV
 	SUB
 	Lq 1,	DOE_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	00036524
+	DUP
+	LI	0
+	CEQ
+	BT	STANDARD.ne_raise_
 	DIV
 	ADD
 	Lq 1,	DOE_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	00146096
+	DUP
+	LI	0
+	CEQ
+	BT	STANDARD.ne_raise_
 	DIV
 	SUB
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	365
+	DUP
+	LI	0
+	CEQ
+	BT	STANDARD.ne_raise_
 	DIV
 	Sq  1,	YOE_disp
 	Lq 1,	YOE_disp
@@ -368,11 +436,19 @@ L11:					; post if
 	Lq 1,	YOE_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	4
+	DUP
+	LI	0
+	CEQ
+	BT	STANDARD.ne_raise_
 	DIV
 	ADD
 	Lq 1,	YOE_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	100
+	DUP
+	LI	0
+	CEQ
+	BT	STANDARD.ne_raise_
 	DIV
 	SUB
 	SUB
@@ -386,6 +462,10 @@ L11:					; post if
 	ADD
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	153
+	DUP
+	LI	0
+	CEQ
+	BT	STANDARD.ne_raise_
 	DIV
 	Sq  1,	MP_disp
 	Lq 1,	DOY_disp
@@ -398,6 +478,10 @@ L11:					; post if
 	ADD
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	5
+	DUP
+	LI	0
+	CEQ
+	BT	STANDARD.ne_raise_
 	DIV
 	SUB
 ; CODE_NUMERIC_LITERAL DN_INTEGER
@@ -521,15 +605,10 @@ begin:					;---------- BDY INSTRUCTIONS
 	Lq 1,	NANOSEC_PART_disp
 	ADD
 	Sq  1,	T_disp
-; CODE_RETURN : EXPR TYPE = DN_PRIVATE
-	La   1,	-result__ofs
-	La  ,  0
-	LI	STANDARD.CALENDAR._TIME.size
+; CODE_RETURN : EXPR TYPE = DN_PRIVATE  VUE COMPLETE = DN_FIXED
 	Lq 1,	T_disp
 ; CODE CONVERSION SOURCE DN_FIXED TARGET DN_FIXED
-; FIXED to FIXED a faire
-	La  ,  0
-	BLKMOV
+	Sq  1,	-result__ofs
 	BRA ret_lbl
 ret_lbl:
 	UNLINK 1
@@ -561,14 +640,14 @@ begin:					;---------- BDY INSTRUCTIONS
 	CVTIX
 	CEQ
 	BF	L24
-; CODE_RETURN : EXPR TYPE = DN_INTEGER
+; CODE_RETURN : EXPR TYPE = DN_INTEGER  VUE COMPLETE = DN_INTEGER
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	Sq  1,	-result__ofs
 	BRA ret_lbl
 	BRA	L23
 L24:
-; CODE_RETURN : EXPR TYPE = DN_INTEGER
+; CODE_RETURN : EXPR TYPE = DN_INTEGER  VUE COMPLETE = DN_INTEGER
 	Lq 1,	D_disp
 ; CODE_NUMERIC_LITERAL DN_FIXED
 	LI	 1
@@ -606,6 +685,10 @@ VAR SECONDS_TOTAL_disp, q			; variable entiere
 VAR DAYS_FROM_1900_disp, q			; variable entiere
 	Lq 1,	SECONDS_TOTAL_disp
 	Lq 0,	STANDARD.CALENDAR.SECONDS_PER_DAY_disp
+	DUP
+	LI	0
+	CEQ
+	BT	STANDARD.ne_raise_
 	DIV
 	Sq  1,	DAYS_FROM_1900_disp
 
@@ -624,9 +707,25 @@ begin:					;---------- BDY INSTRUCTIONS
 	Lq 0,	STANDARD.CALENDAR.DAYS_1900_disp
 	ADD
 	CALL	STANDARD.CALENDAR. ,CIVIL_FROM_DAYS_L8
-; CODE_RETURN : EXPR TYPE = DN_INTEGER
+; CODE_RETURN : EXPR TYPE = DN_INTEGER  VUE COMPLETE = DN_INTEGER
 	Lq 1,	Y_disp
 ; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
+	DUP
+	Ld	0, STANDARD.CALENDAR._YEAR_NUMBER.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD.CALENDAR._YEAR_NUMBER.LST
+	CGT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD.CALENDAR._YEAR_NUMBER.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD.CALENDAR._YEAR_NUMBER.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	-result__ofs
 	BRA ret_lbl
 ret_lbl:
@@ -652,6 +751,10 @@ VAR SECONDS_TOTAL_disp, q			; variable entiere
 VAR DAYS_FROM_1900_disp, q			; variable entiere
 	Lq 1,	SECONDS_TOTAL_disp
 	Lq 0,	STANDARD.CALENDAR.SECONDS_PER_DAY_disp
+	DUP
+	LI	0
+	CEQ
+	BT	STANDARD.ne_raise_
 	DIV
 	Sq  1,	DAYS_FROM_1900_disp
 
@@ -670,9 +773,25 @@ begin:					;---------- BDY INSTRUCTIONS
 	Lq 0,	STANDARD.CALENDAR.DAYS_1900_disp
 	ADD
 	CALL	STANDARD.CALENDAR. ,CIVIL_FROM_DAYS_L8
-; CODE_RETURN : EXPR TYPE = DN_INTEGER
+; CODE_RETURN : EXPR TYPE = DN_INTEGER  VUE COMPLETE = DN_INTEGER
 	Lq 1,	M_disp
 ; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
+	DUP
+	Ld	0, STANDARD.CALENDAR._MONTH_NUMBER.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD.CALENDAR._MONTH_NUMBER.LST
+	CGT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD.CALENDAR._MONTH_NUMBER.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD.CALENDAR._MONTH_NUMBER.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	-result__ofs
 	BRA ret_lbl
 ret_lbl:
@@ -698,6 +817,10 @@ VAR SECONDS_TOTAL_disp, q			; variable entiere
 VAR DAYS_FROM_1900_disp, q			; variable entiere
 	Lq 1,	SECONDS_TOTAL_disp
 	Lq 0,	STANDARD.CALENDAR.SECONDS_PER_DAY_disp
+	DUP
+	LI	0
+	CEQ
+	BT	STANDARD.ne_raise_
 	DIV
 	Sq  1,	DAYS_FROM_1900_disp
 
@@ -716,9 +839,25 @@ begin:					;---------- BDY INSTRUCTIONS
 	Lq 0,	STANDARD.CALENDAR.DAYS_1900_disp
 	ADD
 	CALL	STANDARD.CALENDAR. ,CIVIL_FROM_DAYS_L8
-; CODE_RETURN : EXPR TYPE = DN_INTEGER
+; CODE_RETURN : EXPR TYPE = DN_INTEGER  VUE COMPLETE = DN_INTEGER
 	Lq 1,	D_disp
 ; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
+	DUP
+	Ld	0, STANDARD.CALENDAR._DAY_NUMBER.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD.CALENDAR._DAY_NUMBER.LST
+	CGT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD.CALENDAR._DAY_NUMBER.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD.CALENDAR._DAY_NUMBER.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	-result__ofs
 	BRA ret_lbl
 ret_lbl:
@@ -744,6 +883,10 @@ VAR SECONDS_TOTAL_disp, q			; variable entiere
 VAR SEC_OF_DAY_disp, q			; variable entiere
 	Lq 1,	SECONDS_TOTAL_disp
 	Lq 0,	STANDARD.CALENDAR.SECONDS_PER_DAY_disp
+	DUP
+	LI	0
+	CEQ
+	BT	STANDARD.ne_raise_
 	REMI
 	Sq  1,	SEC_OF_DAY_disp
 
@@ -760,7 +903,7 @@ VAR FRAC_PART_disp, q			; variable fixed
 
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-; CODE_RETURN : EXPR TYPE = DN_FIXED
+; CODE_RETURN : EXPR TYPE = DN_FIXED  VUE COMPLETE = DN_FIXED
 	Lq 1,	SEC_OF_DAY_disp
 ; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_FIXED
 	LI	000536870912
@@ -769,7 +912,6 @@ begin:					;---------- BDY INSTRUCTIONS
 	Lq 1,	FRAC_PART_disp
 	ADD
 ; CODE CONVERSION SOURCE DN_FIXED TARGET DN_FIXED
-; FIXED to FIXED a faire
 	Sq  1,	-result__ofs
 	BRA ret_lbl
 ret_lbl:
@@ -798,12 +940,20 @@ VAR SEC_TOTAL_disp, q			; variable entiere
 VAR DAYS_FROM_1900_disp, q			; variable entiere
 	Lq 1,	SEC_TOTAL_disp
 	Lq 0,	STANDARD.CALENDAR.SECONDS_PER_DAY_disp
+	DUP
+	LI	0
+	CEQ
+	BT	STANDARD.ne_raise_
 	DIV
 	Sq  1,	DAYS_FROM_1900_disp
 
 VAR SEC_OF_DAY_disp, q			; variable entiere
 	Lq 1,	SEC_TOTAL_disp
 	Lq 0,	STANDARD.CALENDAR.SECONDS_PER_DAY_disp
+	DUP
+	LI	0
+	CEQ
+	BT	STANDARD.ne_raise_
 	REMI
 	Sq  1,	SEC_OF_DAY_disp
 
@@ -835,12 +985,60 @@ begin:					;---------- BDY INSTRUCTIONS
 	CALL	STANDARD.CALENDAR. ,CIVIL_FROM_DAYS_L8
 	Lq 1,	Y_disp
 ; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
+	DUP
+	Ld	0, STANDARD.CALENDAR._YEAR_NUMBER.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD.CALENDAR._YEAR_NUMBER.LST
+	CGT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD.CALENDAR._YEAR_NUMBER.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD.CALENDAR._YEAR_NUMBER.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	SId  1,	-YEAR_ofs
 	Lq 1,	M_disp
 ; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
+	DUP
+	Ld	0, STANDARD.CALENDAR._MONTH_NUMBER.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD.CALENDAR._MONTH_NUMBER.LST
+	CGT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD.CALENDAR._MONTH_NUMBER.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD.CALENDAR._MONTH_NUMBER.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	SId  1,	-MONTH_ofs
 	Lq 1,	D_disp
 ; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
+	DUP
+	Ld	0, STANDARD.CALENDAR._DAY_NUMBER.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD.CALENDAR._DAY_NUMBER.LST
+	CGT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD.CALENDAR._DAY_NUMBER.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD.CALENDAR._DAY_NUMBER.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	SId  1,	-DAY_ofs
 	Lq 1,	SEC_OF_DAY_disp
 ; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_FIXED
@@ -850,7 +1048,6 @@ begin:					;---------- BDY INSTRUCTIONS
 	Lq 1,	FRAC_PART_disp
 	ADD
 ; CODE CONVERSION SOURCE DN_FIXED TARGET DN_FIXED
-; FIXED to FIXED a faire
 	SIq  1,	-SECONDS_ofs
 ret_lbl:
 	UNLINK 1
@@ -888,10 +1085,7 @@ VAR DAYS_FROM_1900_LOCAL_disp, q		; variable entiere
 
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-; CODE_RETURN : EXPR TYPE = DN_PRIVATE
-	La   1,	-result__ofs
-	La  ,  0
-	LI	STANDARD.CALENDAR._TIME.size
+; CODE_RETURN : EXPR TYPE = DN_PRIVATE  VUE COMPLETE = DN_FIXED
 	Lq 1,	DAYS_FROM_1900_LOCAL_disp
 	Lq 0,	STANDARD.CALENDAR.SECONDS_PER_DAY_disp
 	MUL
@@ -901,8 +1095,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	CVTIX
 	Lq  1,	-SECONDS_ofs
 	ADD
-	La  ,  0
-	BLKMOV
+	Sq  1,	-result__ofs
 	BRA ret_lbl
 ret_lbl:
 	UNLINK 1
@@ -921,18 +1114,13 @@ endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-; CODE_RETURN : EXPR TYPE = DN_PRIVATE
-	La   1,	-result__ofs
-	La  ,  0
-	LI	STANDARD.CALENDAR._TIME.size
+; CODE_RETURN : EXPR TYPE = DN_PRIVATE  VUE COMPLETE = DN_FIXED
 	La  1,	-LEFT_ofs
 ; CODE CONVERSION SOURCE DN_FIXED TARGET DN_FIXED
 	Lq  1,	-RIGHT_ofs
 	ADD
 ; CODE CONVERSION SOURCE DN_FIXED TARGET DN_FIXED
-; FIXED to FIXED a faire
-	La  ,  0
-	BLKMOV
+	Sq  1,	-result__ofs
 	BRA ret_lbl
 ret_lbl:
 	UNLINK 1
@@ -951,18 +1139,13 @@ endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-; CODE_RETURN : EXPR TYPE = DN_PRIVATE
-	La   1,	-result__ofs
-	La  ,  0
-	LI	STANDARD.CALENDAR._TIME.size
+; CODE_RETURN : EXPR TYPE = DN_PRIVATE  VUE COMPLETE = DN_FIXED
 	Lq  1,	-LEFT_ofs
 	La  1,	-RIGHT_ofs
 ; CODE CONVERSION SOURCE DN_FIXED TARGET DN_FIXED
 	ADD
 ; CODE CONVERSION SOURCE DN_FIXED TARGET DN_FIXED
-; FIXED to FIXED a faire
-	La  ,  0
-	BLKMOV
+	Sq  1,	-result__ofs
 	BRA ret_lbl
 ret_lbl:
 	UNLINK 1
@@ -981,18 +1164,13 @@ endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-; CODE_RETURN : EXPR TYPE = DN_PRIVATE
-	La   1,	-result__ofs
-	La  ,  0
-	LI	STANDARD.CALENDAR._TIME.size
+; CODE_RETURN : EXPR TYPE = DN_PRIVATE  VUE COMPLETE = DN_FIXED
 	La  1,	-LEFT_ofs
 ; CODE CONVERSION SOURCE DN_FIXED TARGET DN_FIXED
 	Lq  1,	-RIGHT_ofs
 	SUB
 ; CODE CONVERSION SOURCE DN_FIXED TARGET DN_FIXED
-; FIXED to FIXED a faire
-	La  ,  0
-	BLKMOV
+	Sq  1,	-result__ofs
 	BRA ret_lbl
 ret_lbl:
 	UNLINK 1
@@ -1011,7 +1189,7 @@ endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-; CODE_RETURN : EXPR TYPE = DN_FIXED
+; CODE_RETURN : EXPR TYPE = DN_FIXED  VUE COMPLETE = DN_FIXED
 	La  1,	-LEFT_ofs
 ; CODE CONVERSION SOURCE DN_FIXED TARGET DN_FIXED
 	La  1,	-RIGHT_ofs
@@ -1036,7 +1214,7 @@ endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
+; CODE_RETURN : EXPR TYPE = DN_ENUMERATION  VUE COMPLETE = DN_ENUMERATION
 	La  1,	-LEFT_ofs
 	La  1,	-RIGHT_ofs
 	CLT
@@ -1059,7 +1237,7 @@ endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
+; CODE_RETURN : EXPR TYPE = DN_ENUMERATION  VUE COMPLETE = DN_ENUMERATION
 	La  1,	-LEFT_ofs
 	La  1,	-RIGHT_ofs
 	CLE
@@ -1082,7 +1260,7 @@ endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
+; CODE_RETURN : EXPR TYPE = DN_ENUMERATION  VUE COMPLETE = DN_ENUMERATION
 	La  1,	-LEFT_ofs
 	La  1,	-RIGHT_ofs
 	CGT
@@ -1105,7 +1283,7 @@ endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
+; CODE_RETURN : EXPR TYPE = DN_ENUMERATION  VUE COMPLETE = DN_ENUMERATION
 	La  1,	-LEFT_ofs
 	La  1,	-RIGHT_ofs
 	CGE

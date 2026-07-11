@@ -322,6 +322,14 @@ VAR PARENT__u, q
 end namespace
 VAR CHAR_disp, b				; variable entiere
 	LI	70
+	DUP
+	Lb	2, _DYNCHAR.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Lb	2, _DYNCHAR.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sb  2,	CHAR_disp
 
 
@@ -392,11 +400,27 @@ VAR PARENT__u, q
 end namespace
 VAR ENUM_disp, b				; variable entiere
 	LI	1
+	DUP
+	Lb	2, _DYNENUM.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Lb	2, _DYNENUM.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sb  2,	ENUM_disp
 
 VAR CONS_disp, d				; variable entiere
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	3
+	DUP
+	Ld	2, _DYN.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	2, _DYN.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  2,	CONS_disp
 
 
@@ -408,9 +432,17 @@ endPRMS					;    fin parametrage
 ELB 3					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-; CODE_RETURN : EXPR TYPE = DN_INTEGER
+; CODE_RETURN : EXPR TYPE = DN_INTEGER  VUE COMPLETE = DN_INTEGER
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	2
+	DUP
+	Ld	2, STANDARD.A54B02A_L1.BLOCK__1._DYN.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	2, STANDARD.A54B02A_L1.BLOCK__1._DYN.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  3,	-result__ofs
 	BRA ret_lbl
 ret_lbl:
@@ -430,6 +462,14 @@ begin:					;---------- BDY INSTRUCTIONS
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	2
 	CALL	STANDARD.REPORT. ,IDENT_INT_L7
+	DUP
+	Ld	2, _DYN.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	2, _DYN.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  2,	J_disp
 					; debut case
 	Ld 2,	I_disp
@@ -692,6 +732,14 @@ L38:
 					; debut case
 	LI	2
 	DUP
+	Ld	2, _DYN.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	2, _DYN.LST
+	CGT
+	BT	STANDARD.ce_raise_
+	DUP
 	LI	-002147483648
 	CGE
 	BF	L50
@@ -748,6 +796,14 @@ L46:
 					; debut case
 	Ld 2,	J_disp
 ; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
+	DUP
+	Ld	2, _DYN.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	2, _DYN.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	DUP
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	5
@@ -972,6 +1028,14 @@ L75:
 ; CODE_QUALIFIED : DN_QUALIFIEDDN_USED_OBJECT_ID
 	Ld 2,	I_disp
 	DUP
+	Ld	2, _DYN.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	2, _DYN.LST
+	CGT
+	BT	STANDARD.ce_raise_
+	DUP
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	4
 	CGE
@@ -1030,6 +1094,14 @@ L81:
 ; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
 	LI	2
 ; CODE CONVERSION SOURCE DN_UNIVERSAL_INTEGER TARGET DN_INTEGER
+	DUP
+	Ld	2, _DYN.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	2, _DYN.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	DUP
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	5

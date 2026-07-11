@@ -676,7 +676,7 @@ LST_1 = $
   end virtual
 end namespace
 
-					; _DURATION FIXED TYPE INFO
+					; _DURATION FIXED SUBTYPE INFO
 _DURATION = '_DURATION'
 namespace _DURATION
 VAR use__info, q
@@ -884,7 +884,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	LI	8
 	CLE
 	BF	L7
-; CODE_RETURN : EXPR TYPE = DN_INTEGER
+; CODE_RETURN : EXPR TYPE = DN_INTEGER  VUE COMPLETE = DN_INTEGER
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	4
 	Sd  1,	-result__ofs
@@ -896,7 +896,7 @@ L7:
 	LI	16
 	CLE
 	BF	L8
-; CODE_RETURN : EXPR TYPE = DN_INTEGER
+; CODE_RETURN : EXPR TYPE = DN_INTEGER  VUE COMPLETE = DN_INTEGER
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	6
 	Sd  1,	-result__ofs
@@ -908,7 +908,7 @@ L8:
 	LI	32
 	CLE
 	BF	L9
-; CODE_RETURN : EXPR TYPE = DN_INTEGER
+; CODE_RETURN : EXPR TYPE = DN_INTEGER  VUE COMPLETE = DN_INTEGER
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	11
 	Sd  1,	-result__ofs
@@ -920,14 +920,14 @@ L9:
 	LI	64
 	CLE
 	BF	L10
-; CODE_RETURN : EXPR TYPE = DN_INTEGER
+; CODE_RETURN : EXPR TYPE = DN_INTEGER  VUE COMPLETE = DN_INTEGER
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	21
 	Sd  1,	-result__ofs
 	BRA ret_lbl
 	BRA	L6
 L10:
-; CODE_RETURN : EXPR TYPE = DN_INTEGER
+; CODE_RETURN : EXPR TYPE = DN_INTEGER  VUE COMPLETE = DN_INTEGER
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	40
 	Sd  1,	-result__ofs
@@ -999,6 +999,10 @@ LOOP__2:
 	Ld 2,	N_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	10
+	DUP
+	LI	0
+	CEQ
+	BT	STANDARD.ne_raise_
 	DIV
 	Sd  2,	N_disp
 	BRA	LOOP__2
@@ -1071,6 +1075,14 @@ begin:					;---------- BDY INSTRUCTIONS
 	BF	L24
 	La	 2, BUF_disp				; array data start address on stack
 	Ld 2,	POS_disp
+	DUP
+	LId	2, BUF__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	2, BUF__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	2, BUF__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	2, BUF__u, STANDARD._STRING.COMP_SIZ
@@ -1108,11 +1120,23 @@ LOOP__3:
 	Ld 2,	N_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	10
+	DUP
+	LI	0
+	CEQ
+	BT	STANDARD.ne_raise_
 	REMI
 	NEG
 	Sd  2,	DIG_disp
 	La	 2, BUF_disp				; array data start address on stack
 	Ld 2,	POS_disp
+	DUP
+	LId	2, BUF__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	2, BUF__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	2, BUF__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	2, BUF__u, STANDARD._STRING.COMP_SIZ
@@ -1132,6 +1156,10 @@ LOOP__3:
 	Ld 2,	N_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	10
+	DUP
+	LI	0
+	CEQ
+	BT	STANDARD.ne_raise_
 	DIV
 	Sd  2,	N_disp
 	BRA	LOOP__3
@@ -1145,6 +1173,14 @@ L23:					; post if
 	BF	L29
 	La	 2, BUF_disp				; array data start address on stack
 	Ld 2,	POS_disp
+	DUP
+	LId	2, BUF__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	2, BUF__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	2, BUF__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	2, BUF__u, STANDARD._STRING.COMP_SIZ
@@ -1158,6 +1194,14 @@ L23:					; post if
 L29:
 	La	 2, BUF_disp				; array data start address on stack
 	Ld 2,	POS_disp
+	DUP
+	LId	2, BUF__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	2, BUF__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	2, BUF__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	2, BUF__u, STANDARD._STRING.COMP_SIZ
@@ -1168,7 +1212,7 @@ L29:
 	LI	32
 	Sb
 L28:					; post if
-; CODE_RETURN : EXPR TYPE = DN_CONSTRAINED_ARRAY
+; CODE_RETURN : EXPR TYPE = DN_CONSTRAINED_ARRAY  VUE COMPLETE = DN_CONSTRAINED_ARRAY
 	LVA 2,	BUF_disp
 VAR	RET_INFO_L30, q
 	DUP

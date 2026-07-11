@@ -208,6 +208,50 @@ is
 	-----------------
 
 
+		--------------------
+  procedure	EMIT_FIXED_TYPE_INFO	( SUBTYPE_STR, LVL_STR :STRING; TYPE_SPEC :TREE )
+  is
+    SIZE_CHAR	: CHARACTER	:= OPER_SIZ_CHAR( TYPE_SPEC );
+    SMALL_VAL	: TREE		:= D( CD_IMPL_SMALL, TYPE_SPEC );	-- herite du parent tel quel (dump F-1)
+    FIXED_RANGE	: TREE		:= D( SM_RANGE, TYPE_SPEC );		-- contrainte pliee du subtype_indication
+    EXP_FST	: TREE		:= D( AS_EXP1, FIXED_RANGE );
+    EXP_LST	: TREE		:= D( AS_EXP2, FIXED_RANGE );
+  begin
+	-- Bornes = SM_VALUE rationnels en unites du type (piege 71),
+	-- scalees par la formule unique. Pas de PARENT__u : layout
+	-- strictement identique a CODE_FIXED_DECL (SIZ, FST, LST, NUMER, DENOM).
+    if  CODI.DEBUG  then NEW_LINE; PUT_LINE( tab50 & "; " & SUBTYPE_STR & " FIXED SUBTYPE INFO" ); end if;
+
+    PUT_LINE( SUBTYPE_STR & " = '" & SUBTYPE_STR & "'" );
+    PUT_LINE( "namespace " & SUBTYPE_STR );
+
+    PUT_LINE( "VAR use__info, q" );
+    PUT_LINE( "VAR SIZ, d" );
+    PUT_LINE( tab & "LVA" & tab & LVL_STR & ", SIZ" );
+    PUT_LINE( tab & "Sa" & tab & LVL_STR & ", use__info" );
+    PUT_LINE( tab & "LI" & tab & IMAGE( DI( CD_IMPL_SIZE, TYPE_SPEC ) ) );
+    PUT_LINE( tab & "Sd" & tab & LVL_STR & ", SIZ" );
+
+    PUT_LINE( "VAR FST, " & SIZE_CHAR );
+    PUT_LINE( "VAR LST, " & SIZE_CHAR );
+    EXPRESSIONS.CODE_STATIC_FIXED_VALUE( D( SM_VALUE, EXP_FST ), TYPE_SPEC );
+    PUT_LINE( tab & 'S' & SIZE_CHAR & tab & LVL_STR & ", FST" );
+    EXPRESSIONS.CODE_STATIC_FIXED_VALUE( D( SM_VALUE, EXP_LST ), TYPE_SPEC );
+    PUT_LINE( tab & 'S' & SIZE_CHAR & tab & LVL_STR & ", LST" );
+
+    PUT_LINE( "VAR NUMER, q" );
+    PUT_LINE( "VAR DENOM, q" );
+    PUT_LINE( tab & "LI" & tab & PRINT_NUM( D( XD_NUMER, SMALL_VAL ) ) );
+    PUT_LINE( tab & "Sq" & tab & LVL_STR & ", NUMER" );
+    PUT_LINE( tab & "LI" & tab & PRINT_NUM( D( XD_DENOM, SMALL_VAL ) ) );
+    PUT_LINE( tab & "Sq" & tab & LVL_STR & ", DENOM" );
+
+    PUT_LINE( "end namespace" );
+
+  end	EMIT_FIXED_TYPE_INFO;
+	--------------------
+
+
 			---------------
   procedure		CODE_FIXED_DECL		( TYPE_DECL :TREE )
   is			---------------
@@ -215,59 +259,16 @@ is
     TYPE_ID		: TREE		:= D( AS_SOURCE_NAME, TYPE_DECL );
     TYPE_STR		:constant	STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, TYPE_ID ) );
     FIXED_SPEC		: TREE		:= D( SM_TYPE_SPEC,	TYPE_ID );
-    SIZE_CHAR		: CHARACTER	:= OPER_SIZ_CHAR( FIXED_SPEC );
-    SMALL_VAL		: TREE		:= D( CD_IMPL_SMALL, FIXED_SPEC );
-    FIXED_RANGE		: TREE		:= D( SM_RANGE, FIXED_SPEC );
-    EXP_FST		: TREE		:= D( AS_EXP1, FIXED_RANGE );
-    EXP_LST		: TREE		:= D( AS_EXP2, FIXED_RANGE );
     LVL_STR		:constant	STRING	:= IMAGE(	CODI.CUR_LEVEL );
 
   begin
     DI( CD_LEVEL,	  FIXED_SPEC, INTEGER( CODI.CUR_LEVEL )	);
     DB( CD_COMPILED,  FIXED_SPEC, TRUE );
 
-    if  CODI.DEBUG	then  NEW_LINE; PUT_LINE( tab50 & "; " & TYPE_STR & " FIXED TYPE INFO" ); end if;
-
-    PUT_LINE( TYPE_STR & " = '" & TYPE_STR & "'" );
-    PUT_LINE( "namespace " & TYPE_STR );
-
-    PUT_LINE( "VAR use__info, q" );
-    PUT_LINE( "VAR SIZ, d" );
-    PUT_LINE( tab &	"LVA" & tab & LVL_STR & ", SIZ" );
-    PUT_LINE( tab &	"Sa" & tab & LVL_STR & ", use__info" );
-
-    PUT_LINE( tab &	"LI" & tab & IMAGE(	DI( CD_IMPL_SIZE, FIXED_SPEC ) ) );
-    PUT_LINE( tab &	"Sd" & tab & LVL_STR & ", SIZ" );
-
-    PUT_LINE( "VAR FST, " & SIZE_CHAR );
-    PUT_LINE( "VAR LST, " & SIZE_CHAR );
-
-    EXPRESSIONS.CODE_STATIC_FIXED_VALUE( D( SM_VALUE, EXP_FST ), FIXED_SPEC );
-    PUT_LINE( tab & 'S' & SIZE_CHAR & tab & LVL_STR & ", FST" );
-
-    EXPRESSIONS.CODE_STATIC_FIXED_VALUE( D( SM_VALUE, EXP_LST ), FIXED_SPEC );
-    PUT_LINE( tab & 'S' & SIZE_CHAR & tab & LVL_STR & ", LST" );
-
-
---    EXPRESSIONS.CODE_EXP( EXP_FST );
---    PUT_LINE( tab &	'S' & SIZE_CHAR & tab & LVL_STR & ", FST" );
-
---    EXPRESSIONS.CODE_EXP( EXP_LST );
---    PUT_LINE( tab &	'S' & SIZE_CHAR & tab & LVL_STR & ", LST" );
-
-    PUT_LINE( "VAR NUMER, q" );
-    PUT_LINE( "VAR DENOM, q" );
-
-    PUT_LINE( tab &	"LI" & tab & PRINT_NUM( D( XD_NUMER, SMALL_VAL ) ) );
-    PUT_LINE( tab &	"Sq" & tab & LVL_STR & ", NUMER" );
-    PUT_LINE( tab &	"LI" & tab & PRINT_NUM( D( XD_DENOM, SMALL_VAL ) ) );
-    PUT_LINE( tab &	"Sq" & tab & LVL_STR & ", DENOM" );
-
-    PUT_LINE( "end namespace"	);
+    EMIT_FIXED_TYPE_INFO( TYPE_STR, LVL_STR, FIXED_SPEC );
 
   end	CODE_FIXED_DECL;
 	---------------
-
 
 
 			---------------
@@ -1971,6 +1972,9 @@ put_line( "; CODE_ACCESS_DECL cd_level rempli" );
 
     elsif  TYPE_SPEC.TY = DN_CONSTRAINED_RECORD  then
       CODE_CONSTRAINED_RECORD_DECL( SUBTYPE_ID, TYPE_SPEC );
+
+    elsif  TYPE_SPEC.TY = DN_FIXED  then
+      EMIT_FIXED_TYPE_INFO( SUBTYPE_STR, LVL_STR, TYPE_SPEC );
 
     else
       PUT_LINE( ";  CODE_SUBTYPE_DECL : TYPE_SPEC.TY PAS FAIT " & NODE_NAME'IMAGE( TYPE_SPEC.TY ) );

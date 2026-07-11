@@ -1155,26 +1155,26 @@ put_line( "; CODE_VC_NAME " & NODE_NAME'IMAGE( VC_NAME.TY ) );
 	------------------
 
 
-      function FULL_VIEW ( TYPE_SPEC : TREE ) return TREE is
-        TS	: TREE	:= TYPE_SPEC;
-      begin
-        loop
-	if  TS.TY = DN_L_PRIVATE  or  TS.TY = DN_PRIVATE  then
-	  TS := D( SM_TYPE_SPEC, TS );
+ --     function FULL_VIEW ( TYPE_SPEC : TREE ) return TREE is
+ --       TS	: TREE	:= TYPE_SPEC;
+ --     begin
+ --       loop
+--	if  TS.TY = DN_L_PRIVATE  or  TS.TY = DN_PRIVATE  then
+--	  TS := D( SM_TYPE_SPEC, TS );
 
-	elsif  TS.TY = DN_INCOMPLETE  then
-	  TS := D( XD_FULL_TYPE_SPEC, TS );
+--	elsif  TS.TY = DN_INCOMPLETE  then
+--	  TS := D( XD_FULL_TYPE_SPEC, TS );
 
-	else
-	  return  TS;
-	end if;
-        end loop;
+--	else
+--	  return  TS;
+--	end if;
+--        end loop;
 
-      end	FULL_VIEW;
+--      end	FULL_VIEW;
 	---------
 
     begin
-      TYPE_SPEC := FULL_VIEW( TYPE_SPEC );
+      TYPE_SPEC := CODI.FULL_VIEW( TYPE_SPEC );
 
       case TYPE_SPEC.TY is
       when DN_ENUMERATION		=> TYPE_SYMREP := D( XD_SOURCE_NAME, TYPE_SPEC );
@@ -1968,24 +1968,24 @@ end if;
     end if;
   end ACTUAL_EXP;
 
-  function FULL_VIEW ( T : TREE ) return TREE is
-    R : TREE := T;
-  begin
-    loop
-      if R.TY = DN_PRIVATE or else R.TY = DN_L_PRIVATE then
-        R := D( SM_TYPE_SPEC, R );
+--  function FULL_VIEW ( T : TREE ) return TREE is
+--    R : TREE := T;
+--  begin
+--    loop
+--      if R.TY = DN_PRIVATE or else R.TY = DN_L_PRIVATE then
+--        R := D( SM_TYPE_SPEC, R );
 
-      elsif R.TY = DN_INCOMPLETE then
-        R := D( XD_FULL_TYPE_SPEC, R );
+--      elsif R.TY = DN_INCOMPLETE then
+--        R := D( XD_FULL_TYPE_SPEC, R );
 
-      else
-        return R;
-      end if;
-    end loop;
-  end FULL_VIEW;
+--      else
+--        return R;
+--      end if;
+--    end loop;
+--  end FULL_VIEW;
 
   procedure EMIT_TYPE_SIZE_BYTES ( T : TREE ) is
-    TT : TREE := FULL_VIEW( T );
+    TT : TREE := CODI.FULL_VIEW( T );
   begin
     if TT.TY = DN_RECORD then
       declare
@@ -2021,7 +2021,7 @@ end if;
   end EMIT_TYPE_SIZE_BYTES;
 
 function IS_COMPOSITE ( T : TREE ) return BOOLEAN is
-  TT : TREE := FULL_VIEW( T );
+  TT : TREE := CODI.FULL_VIEW( T );
 begin
   return TT.TY = DN_RECORD
       or else TT.TY = DN_CONSTRAINED_RECORD
@@ -2039,8 +2039,8 @@ begin
   SRC_DEFN := D( SM_DEFN, SRC_ACT );
   DST_DEFN := D( SM_DEFN, DST_ACT );
 
-  SRC_TYPE := FULL_VIEW( D( SM_TYPE_SPEC, SRC_DEFN ) );
-  DST_TYPE := FULL_VIEW( D( SM_TYPE_SPEC, DST_DEFN ) );
+  SRC_TYPE := CODI.FULL_VIEW( D( SM_TYPE_SPEC, SRC_DEFN ) );
+  DST_TYPE := CODI.FULL_VIEW( D( SM_TYPE_SPEC, DST_DEFN ) );
 
   -- Version minimale robuste pour composite -> composite.
   if  (SRC_TYPE.TY = DN_ARRAY or else SRC_TYPE.TY = DN_CONSTRAINED_ARRAY

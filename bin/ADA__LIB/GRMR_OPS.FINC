@@ -536,6 +536,18 @@ L6:					; post if
 	LVA	1, -S_ofs
 	LIa	, , 8
 	Ld	, _STRING.LST_1
+	DUP
+	LVA	1, -S_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LVA	1, -S_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LVA	1, -S_ofs
 	LIa	, 0,  8
 	Ld	, STANDARD._STRING.FST_1			; (index - FST_1) * SIZ_1
@@ -551,6 +563,10 @@ L6:					; post if
 	ADD
 ; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
 	LI	37
+	DUP
+	LI	0
+	CEQ
+	BT	STANDARD.ne_raise_
 	MODI
 	Sd  0,	HCODE_disp
 LOOP__1:
@@ -575,6 +591,14 @@ VAR	ANON_39_20_L10_D_info, q
 VAR	ANON_39_20_L10_D_len,  q
 	La	 0, HTABLE_disp				; array data start address on stack
 	Ld 0,	STANDARD.GRMR_OPS.HCODE_disp
+	DUP
+	LId	0, HTABLE__u, STANDARD.GRMR_OPS._HTABLE.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, HTABLE__u, STANDARD.GRMR_OPS._HTABLE.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, HTABLE__u, STANDARD.GRMR_OPS._HTABLE.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, HTABLE__u, STANDARD.GRMR_OPS._HTABLE.COMP_SIZ
@@ -612,6 +636,14 @@ L11:
 	DROP
 	La	 0, HTABLE_disp				; array data start address on stack
 	Ld 0,	STANDARD.GRMR_OPS.HCODE_disp
+	DUP
+	LId	0, HTABLE__u, STANDARD.GRMR_OPS._HTABLE.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, HTABLE__u, STANDARD.GRMR_OPS._HTABLE.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, HTABLE__u, STANDARD.GRMR_OPS._HTABLE.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, HTABLE__u, STANDARD.GRMR_OPS._HTABLE.COMP_SIZ
@@ -630,6 +662,10 @@ L9:
 	ADD
 ; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
 	LI	37
+	DUP
+	LI	0
+	CEQ
+	BT	STANDARD.ne_raise_
 	MODI
 	Sd  0,	HCODE_disp
 	BRA	LOOP__1
@@ -652,9 +688,17 @@ ELB 1					;    BODY ELAB
 begin:					;---------- BDY INSTRUCTIONS
 	La  1,	-S_ofs
 	CALL	STANDARD.GRMR_OPS. ,HASH_SEARCH_L1
-; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
+; CODE_RETURN : EXPR TYPE = DN_ENUMERATION  VUE COMPLETE = DN_ENUMERATION
 	La	 0, HTABLE_disp				; array data start address on stack
 	Ld 0,	STANDARD.GRMR_OPS.HCODE_disp
+	DUP
+	LId	0, HTABLE__u, STANDARD.GRMR_OPS._HTABLE.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, HTABLE__u, STANDARD.GRMR_OPS._HTABLE.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, HTABLE__u, STANDARD.GRMR_OPS._HTABLE.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, HTABLE__u, STANDARD.GRMR_OPS._HTABLE.COMP_SIZ
@@ -729,6 +773,14 @@ begin:					;---------- BDY INSTRUCTIONS
 LOOP__2:
 	La	 1, TXT_disp				; array data start address on stack
 	Ld 1,	LL_disp
+	DUP
+	LId	1, TXT__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	1, TXT__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	1, TXT__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	1, TXT__u, STANDARD._STRING.COMP_SIZ
@@ -747,7 +799,7 @@ LOOP__2:
 	Sd  1,	LL_disp
 	BRA	LOOP__2
 L16:					; post loop LOOP__2
-; CODE_RETURN : EXPR TYPE = DN_ARRAY
+; CODE_RETURN : EXPR TYPE = DN_ARRAY  VUE COMPLETE = DN_ARRAY
 	La 1, TXT_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
@@ -946,6 +998,14 @@ begin:					;---------- BDY INSTRUCTIONS
 	BLKMOV
 	La	 0, HTABLE_disp				; array data start address on stack
 	Ld 0,	STANDARD.GRMR_OPS.HCODE_disp
+	DUP
+	LId	0, HTABLE__u, STANDARD.GRMR_OPS._HTABLE.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, HTABLE__u, STANDARD.GRMR_OPS._HTABLE.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, HTABLE__u, STANDARD.GRMR_OPS._HTABLE.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, HTABLE__u, STANDARD.GRMR_OPS._HTABLE.COMP_SIZ
@@ -965,6 +1025,14 @@ begin:					;---------- BDY INSTRUCTIONS
 	DROP
 	La	 0, ITABLE_disp				; array data start address on stack
 	Lb  2,	-P_ofs
+	DUP
+	LId	0, ITABLE__u, STANDARD.GRMR_OPS._ITABLE.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, ITABLE__u, STANDARD.GRMR_OPS._ITABLE.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, ITABLE__u, STANDARD.GRMR_OPS._ITABLE.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, ITABLE__u, STANDARD.GRMR_OPS._ITABLE.COMP_SIZ

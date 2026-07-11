@@ -201,6 +201,14 @@ end namespace
 VAR MAX_STRING_disp, d			; variable entiere
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	255
+	DUP
+	Ld	0, STANDARD._POSITIVE.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._POSITIVE.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  0,	MAX_STRING_disp
 
 
@@ -450,6 +458,18 @@ begin:					;---------- BDY INSTRUCTIONS
 	LVA	1, -TXT_ofs
 	LIa	, , 8
 	Ld	, _STRING.LST_1
+	DUP
+	LVA	1, -TXT_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LVA	1, -TXT_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LVA	1, -TXT_ofs
 	LIa	, 0,  8
 	Ld	, STANDARD._STRING.FST_1			; (index - FST_1) * SIZ_1
@@ -467,11 +487,23 @@ begin:					;---------- BDY INSTRUCTIONS
 	Sd  1,	I_disp
 	Ld 1,	I_disp
 	Ld 0,	STANDARD.LEX.HASH_SIZE_disp
+	DUP
+	LI	0
+	CEQ
+	BT	STANDARD.ne_raise_
 	MODI
 	Sd  1,	I_disp
 LOOP__1:
 	La	 0, HASH_TABLE_disp			; array data start address on stack
 	Ld 1,	I_disp
+	DUP
+	LId	0, HASH_TABLE__u, STANDARD.LEX._HASH_TABLE.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, HASH_TABLE__u, STANDARD.LEX._HASH_TABLE.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, HASH_TABLE__u, STANDARD.LEX._HASH_TABLE.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, HASH_TABLE__u, STANDARD.LEX._HASH_TABLE.COMP_SIZ
@@ -502,6 +534,14 @@ end namespace
 	LVA 1, ANON_32_49_disp
 	La	 0, HASH_TABLE_disp			; array data start address on stack
 	Ld 1,	I_disp
+	DUP
+	LId	0, HASH_TABLE__u, STANDARD.LEX._HASH_TABLE.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, HASH_TABLE__u, STANDARD.LEX._HASH_TABLE.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, HASH_TABLE__u, STANDARD.LEX._HASH_TABLE.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, HASH_TABLE__u, STANDARD.LEX._HASH_TABLE.COMP_SIZ
@@ -570,7 +610,7 @@ L11:
 L10:					; post if
 	BRA	LOOP__1
 L6:					; post loop LOOP__1
-; CODE_RETURN : EXPR TYPE = DN_INTEGER
+; CODE_RETURN : EXPR TYPE = DN_INTEGER  VUE COMPLETE = DN_INTEGER
 	Ld 1,	I_disp
 	Sd  1,	-result__ofs
 	BRA ret_lbl
@@ -590,11 +630,19 @@ endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
+; CODE_RETURN : EXPR TYPE = DN_ENUMERATION  VUE COMPLETE = DN_ENUMERATION
 	La	 0, HASH_TABLE_disp			; array data start address on stack
 	LI	0					; lieu resultat sur pile
 	La  1,	-TXT_ofs
 	CALL	STANDARD.LEX. ,HASH_POS_L3
+	DUP
+	LId	0, HASH_TABLE__u, STANDARD.LEX._HASH_TABLE.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, HASH_TABLE__u, STANDARD.LEX._HASH_TABLE.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, HASH_TABLE__u, STANDARD.LEX._HASH_TABLE.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, HASH_TABLE__u, STANDARD.LEX._HASH_TABLE.COMP_SIZ
@@ -652,6 +700,14 @@ begin:					;---------- BDY INSTRUCTIONS
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	W_COL_disp
 LOOP__2:
 	Ld 1,	W_COL_disp
@@ -661,6 +717,14 @@ LOOP__2:
 	LIVA 	1, SL_disp, STANDARD.LEX._LINE_OF_SOURCE.BDY
 ; EXPRESSIONS.CODE_INDEXED adresse component id
 	Ld 1,	W_COL_disp
+	DUP
+	Ld	 0, STANDARD._STRING._FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	 0, STANDARD._STRING._LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	Ld	 0, STANDARD._STRING._FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	Ld	 0, STANDARD._STRING._COMP_SIZ
@@ -691,10 +755,26 @@ L20:
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	W_COL_disp
 	BRA	LOOP__2
 L18:					; post loop LOOP__2
 	Ld 1,	W_COL_disp
+	DUP
+	Ld	0, STANDARD._POSITIVE.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._POSITIVE.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	START_COL_disp
 					; debut if
 	Ld 1,	W_COL_disp
@@ -703,6 +783,14 @@ L18:					; post loop LOOP__2
 	BF	L22
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  0,	TOKEN_LENGTH_disp
 	LI	0
 	Sb  1,	TOK_TYP_disp
@@ -712,6 +800,14 @@ L21:					; post if
 	La	 0, TEXT_disp				; array data start address on stack
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
+	DUP
+	LId	0, TEXT__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, TEXT__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, TEXT__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, TEXT__u, STANDARD._STRING.COMP_SIZ
@@ -723,6 +819,14 @@ L21:					; post if
 	Sb
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  0,	TOKEN_LENGTH_disp
 	LI	2
 	Sb  1,	TOK_TYP_disp
@@ -730,6 +834,14 @@ L21:					; post if
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	W_COL_disp
 					; debut if
 	Ld 1,	W_COL_disp
@@ -739,6 +851,14 @@ L21:					; post if
 	LIVA 	1, SL_disp, STANDARD.LEX._LINE_OF_SOURCE.BDY
 ; EXPRESSIONS.CODE_INDEXED adresse component id
 	Ld 1,	W_COL_disp
+	DUP
+	Ld	 0, STANDARD._STRING._FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	 0, STANDARD._STRING._LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	Ld	 0, STANDARD._STRING._FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	Ld	 0, STANDARD._STRING._COMP_SIZ
@@ -757,6 +877,14 @@ L23:					; post if
 	La	 0, TEXT_disp				; array data start address on stack
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
+	DUP
+	LId	0, TEXT__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, TEXT__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, TEXT__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, TEXT__u, STANDARD._STRING.COMP_SIZ
@@ -889,6 +1017,14 @@ L28:
 	La	 0, TEXT_disp				; array data start address on stack
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
+	DUP
+	LId	0, TEXT__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, TEXT__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, TEXT__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, TEXT__u, STANDARD._STRING.COMP_SIZ
@@ -899,6 +1035,14 @@ L28:
 	La	 0, TEXT_disp				; array data start address on stack
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
+	DUP
+	LId	0, TEXT__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, TEXT__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, TEXT__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, TEXT__u, STANDARD._STRING.COMP_SIZ
@@ -927,6 +1071,14 @@ L30:
 	La	 0, TEXT_disp				; array data start address on stack
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
+	DUP
+	LId	0, TEXT__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, TEXT__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, TEXT__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, TEXT__u, STANDARD._STRING.COMP_SIZ
@@ -939,6 +1091,14 @@ L30:
 	La	 0, TEXT_disp				; array data start address on stack
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
+	DUP
+	LId	0, TEXT__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, TEXT__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, TEXT__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, TEXT__u, STANDARD._STRING.COMP_SIZ
@@ -981,6 +1141,14 @@ L40:
 	La	 0, TEXT_disp				; array data start address on stack
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
+	DUP
+	LId	0, TEXT__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, TEXT__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, TEXT__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, TEXT__u, STANDARD._STRING.COMP_SIZ
@@ -996,6 +1164,14 @@ L41:
 	La	 0, TEXT_disp				; array data start address on stack
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
+	DUP
+	LId	0, TEXT__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, TEXT__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, TEXT__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, TEXT__u, STANDARD._STRING.COMP_SIZ
@@ -1011,6 +1187,14 @@ L41:
 	La	 0, TEXT_disp				; array data start address on stack
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
+	DUP
+	LId	0, TEXT__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, TEXT__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, TEXT__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, TEXT__u, STANDARD._STRING.COMP_SIZ
@@ -1027,6 +1211,14 @@ L41:
 	La	 0, TEXT_disp				; array data start address on stack
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
+	DUP
+	LId	0, TEXT__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, TEXT__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, TEXT__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, TEXT__u, STANDARD._STRING.COMP_SIZ
@@ -1046,9 +1238,25 @@ L25:
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  0,	TOKEN_LENGTH_disp
 	La	 0, TEXT_disp				; array data start address on stack
 	Ld 0,	STANDARD.LEX.TOKEN_LENGTH_disp
+	DUP
+	LId	0, TEXT__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, TEXT__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, TEXT__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, TEXT__u, STANDARD._STRING.COMP_SIZ
@@ -1062,6 +1270,14 @@ L25:
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	W_COL_disp
 					; debut if
 	Ld 1,	W_COL_disp
@@ -1071,6 +1287,14 @@ L25:
 	LIVA 	1, SL_disp, STANDARD.LEX._LINE_OF_SOURCE.BDY
 ; EXPRESSIONS.CODE_INDEXED adresse component id
 	Ld 1,	W_COL_disp
+	DUP
+	Ld	 0, STANDARD._STRING._FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	 0, STANDARD._STRING._LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	Ld	 0, STANDARD._STRING._FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	Ld	 0, STANDARD._STRING._COMP_SIZ
@@ -1087,6 +1311,14 @@ L48:
 L47:					; post if
 	La	 0, TEXT_disp				; array data start address on stack
 	Ld 0,	STANDARD.LEX.TOKEN_LENGTH_disp
+	DUP
+	LId	0, TEXT__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, TEXT__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, TEXT__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, TEXT__u, STANDARD._STRING.COMP_SIZ
@@ -1100,6 +1332,14 @@ L47:					; post if
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	W_COL_disp
 					; debut if
 	Ld 1,	W_COL_disp
@@ -1109,6 +1349,14 @@ L47:					; post if
 	LIVA 	1, SL_disp, STANDARD.LEX._LINE_OF_SOURCE.BDY
 ; EXPRESSIONS.CODE_INDEXED adresse component id
 	Ld 1,	W_COL_disp
+	DUP
+	Ld	 0, STANDARD._STRING._FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	 0, STANDARD._STRING._LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	Ld	 0, STANDARD._STRING._FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	Ld	 0, STANDARD._STRING._COMP_SIZ
@@ -1167,6 +1415,14 @@ L52:
 L51:					; post if
 	La	 0, TEXT_disp				; array data start address on stack
 	Ld 0,	STANDARD.LEX.TOKEN_LENGTH_disp
+	DUP
+	LId	0, TEXT__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, TEXT__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, TEXT__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, TEXT__u, STANDARD._STRING.COMP_SIZ
@@ -1180,6 +1436,14 @@ L51:					; post if
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	W_COL_disp
 					; debut if
 	Ld 1,	W_COL_disp
@@ -1189,6 +1453,14 @@ L51:					; post if
 	LIVA 	1, SL_disp, STANDARD.LEX._LINE_OF_SOURCE.BDY
 ; EXPRESSIONS.CODE_INDEXED adresse component id
 	Ld 1,	W_COL_disp
+	DUP
+	Ld	 0, STANDARD._STRING._FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	 0, STANDARD._STRING._LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	Ld	 0, STANDARD._STRING._FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	Ld	 0, STANDARD._STRING._COMP_SIZ
@@ -1221,6 +1493,14 @@ L58:
 L57:					; post if
 	La	 0, TEXT_disp				; array data start address on stack
 	Ld 0,	STANDARD.LEX.TOKEN_LENGTH_disp
+	DUP
+	LId	0, TEXT__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, TEXT__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, TEXT__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, TEXT__u, STANDARD._STRING.COMP_SIZ
@@ -1234,6 +1514,14 @@ L57:					; post if
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	W_COL_disp
 					; debut if
 	Ld 1,	W_COL_disp
@@ -1243,6 +1531,14 @@ L57:					; post if
 	LIVA 	1, SL_disp, STANDARD.LEX._LINE_OF_SOURCE.BDY
 ; EXPRESSIONS.CODE_INDEXED adresse component id
 	Ld 1,	W_COL_disp
+	DUP
+	Ld	 0, STANDARD._STRING._FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	 0, STANDARD._STRING._LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	Ld	 0, STANDARD._STRING._FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	Ld	 0, STANDARD._STRING._COMP_SIZ
@@ -1288,6 +1584,14 @@ LOOP__3:					; corps boucle LOOP__3
 					; debut if
 	La	 0, TEXT_disp				; array data start address on stack
 	Ld	1, IL64_disp
+	DUP
+	LId	0, TEXT__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, TEXT__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, TEXT__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, TEXT__u, STANDARD._STRING.COMP_SIZ
@@ -1301,6 +1605,14 @@ LOOP__3:					; corps boucle LOOP__3
 	LI	57
 	La	 0, TEXT_disp				; array data start address on stack
 	Ld	1, IL64_disp
+	DUP
+	LId	0, TEXT__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, TEXT__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, TEXT__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, TEXT__u, STANDARD._STRING.COMP_SIZ
@@ -1326,6 +1638,14 @@ L67:
 	MUL
 	La	 0, TEXT_disp				; array data start address on stack
 	Ld	1, IL64_disp
+	DUP
+	LId	0, TEXT__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, TEXT__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, TEXT__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, TEXT__u, STANDARD._STRING.COMP_SIZ
@@ -1400,9 +1720,25 @@ L70:					; post if
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  0,	TOKEN_LENGTH_disp
 	La	 0, TEXT_disp				; array data start address on stack
 	Ld 0,	STANDARD.LEX.TOKEN_LENGTH_disp
+	DUP
+	LId	0, TEXT__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, TEXT__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, TEXT__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, TEXT__u, STANDARD._STRING.COMP_SIZ
@@ -1416,6 +1752,14 @@ L70:					; post if
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	W_COL_disp
 					; debut if
 	Ld 1,	W_COL_disp
@@ -1425,6 +1769,14 @@ L70:					; post if
 	LIVA 	1, SL_disp, STANDARD.LEX._LINE_OF_SOURCE.BDY
 ; EXPRESSIONS.CODE_INDEXED adresse component id
 	Ld 1,	W_COL_disp
+	DUP
+	Ld	 0, STANDARD._STRING._FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	 0, STANDARD._STRING._LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	Ld	 0, STANDARD._STRING._FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	Ld	 0, STANDARD._STRING._COMP_SIZ
@@ -1479,6 +1831,14 @@ L74:					; post if
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	 0, STANDARD._STRING._FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	 0, STANDARD._STRING._LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	Ld	 0, STANDARD._STRING._FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	Ld	 0, STANDARD._STRING._COMP_SIZ
@@ -1515,17 +1875,41 @@ L80:
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	W_COL_disp
 	Ld 0,	STANDARD.LEX.TOKEN_LENGTH_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	2
 	ADD
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  0,	TOKEN_LENGTH_disp
 	La	 0, TEXT_disp				; array data start address on stack
 	Ld 0,	STANDARD.LEX.TOKEN_LENGTH_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SUB
+	DUP
+	LId	0, TEXT__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, TEXT__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, TEXT__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, TEXT__u, STANDARD._STRING.COMP_SIZ
@@ -1537,6 +1921,14 @@ L80:
 	Sb
 	La	 0, TEXT_disp				; array data start address on stack
 	Ld 0,	STANDARD.LEX.TOKEN_LENGTH_disp
+	DUP
+	LId	0, TEXT__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, TEXT__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, TEXT__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, TEXT__u, STANDARD._STRING.COMP_SIZ
@@ -1572,6 +1964,14 @@ L85:
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	 0, STANDARD._STRING._FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	 0, STANDARD._STRING._LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	Ld	 0, STANDARD._STRING._FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	Ld	 0, STANDARD._STRING._COMP_SIZ
@@ -1589,6 +1989,14 @@ L85:
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	 0, STANDARD._STRING._FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	 0, STANDARD._STRING._LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	Ld	 0, STANDARD._STRING._FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	Ld	 0, STANDARD._STRING._COMP_SIZ
@@ -1613,6 +2021,14 @@ L82:					; post if
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	W_COL_disp
 					; debut if
 	Ld 1,	W_COL_disp
@@ -1622,6 +2038,14 @@ L82:					; post if
 	LIVA 	1, SL_disp, STANDARD.LEX._LINE_OF_SOURCE.BDY
 ; EXPRESSIONS.CODE_INDEXED adresse component id
 	Ld 1,	W_COL_disp
+	DUP
+	Ld	 0, STANDARD._STRING._FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	 0, STANDARD._STRING._LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	Ld	 0, STANDARD._STRING._FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	Ld	 0, STANDARD._STRING._COMP_SIZ
@@ -1773,9 +2197,25 @@ L95:					; post if
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  0,	TOKEN_LENGTH_disp
 	La	 0, TEXT_disp				; array data start address on stack
 	Ld 0,	STANDARD.LEX.TOKEN_LENGTH_disp
+	DUP
+	LId	0, TEXT__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, TEXT__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, TEXT__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, TEXT__u, STANDARD._STRING.COMP_SIZ
@@ -1789,6 +2229,14 @@ L95:					; post if
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	W_COL_disp
 					; debut if
 	Ld 1,	W_COL_disp
@@ -1798,6 +2246,14 @@ L95:					; post if
 	LIVA 	1, SL_disp, STANDARD.LEX._LINE_OF_SOURCE.BDY
 ; EXPRESSIONS.CODE_INDEXED adresse component id
 	Ld 1,	W_COL_disp
+	DUP
+	Ld	 0, STANDARD._STRING._FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	 0, STANDARD._STRING._LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	Ld	 0, STANDARD._STRING._FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	Ld	 0, STANDARD._STRING._COMP_SIZ
@@ -1818,8 +2274,24 @@ L89:
 	Lb 1,	TOK_TYP_disp
 	SIb  1,	-TTYPE_OUT_ofs
 	Ld 1,	START_COL_disp
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  0,	F_COL_disp
 	Ld 0,	STANDARD.LEX.TOKEN_LENGTH_disp
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	SId  1,	-TOK_LEN_ofs
 ret_lbl:
 	UNLINK 1
@@ -1847,6 +2319,14 @@ begin:					;---------- BDY INSTRUCTIONS
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SUB
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  0,	E_COL_disp
 					; debut if
 	Lb 1,	TOK_TYP_disp
@@ -1990,7 +2470,7 @@ endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-; CODE_RETURN : EXPR TYPE = DN_ARRAY
+; CODE_RETURN : EXPR TYPE = DN_ARRAY  VUE COMPLETE = DN_ARRAY
 	La 0, TEXT_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
@@ -2213,6 +2693,14 @@ begin:					;---------- BDY INSTRUCTIONS
 	La	 2, TEMP_STRING_disp			; array data start address on stack
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	2
+	DUP
+	LId	2, TEMP_STRING__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	2, TEMP_STRING__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	2, TEMP_STRING__u, STANDARD._STRING.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	2, TEMP_STRING__u, STANDARD._STRING.COMP_SIZ
@@ -2224,7 +2712,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	LI	32
 	CEQ
 	BF	L134
-; CODE_RETURN : EXPR TYPE = DN_ARRAY
+; CODE_RETURN : EXPR TYPE = DN_ARRAY  VUE COMPLETE = DN_ARRAY
 	La 2, TEMP_STRING_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
@@ -2278,7 +2766,7 @@ VAR	RET_INFO_L135, q
 	BRA ret_lbl
 	BRA	L133
 L134:
-; CODE_RETURN : EXPR TYPE = DN_ARRAY
+; CODE_RETURN : EXPR TYPE = DN_ARRAY  VUE COMPLETE = DN_ARRAY
 	La 2, TEMP_STRING_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
@@ -2409,7 +2897,7 @@ VAR TRONQ__u, q				; variable array : useinfo pointeur au rec info
 
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-; CODE_RETURN : EXPR TYPE = DN_CONSTRAINED_ARRAY
+; CODE_RETURN : EXPR TYPE = DN_CONSTRAINED_ARRAY  VUE COMPLETE = DN_CONSTRAINED_ARRAY
 	LVA 2,	TRONQ_disp
 VAR	RET_INFO_L139, q
 	DUP
@@ -2431,7 +2919,7 @@ endPRO
 	BRA	L120
 L123:
 	DROP
-; CODE_RETURN : EXPR TYPE = DN_VOID
+; CODE_RETURN : EXPR TYPE = DN_VOID  VUE COMPLETE = DN_VOID
 STR RET_STR_L140, "identifier"		; constante string="identifier"
 	LCA	RET_STR_L140.data_ptr
 VAR	RET_INFO_L141, q
@@ -2451,7 +2939,7 @@ VAR	RET_INFO_L141, q
 	BRA	L120
 L124:
 	DROP
-; CODE_RETURN : EXPR TYPE = DN_VOID
+; CODE_RETURN : EXPR TYPE = DN_VOID  VUE COMPLETE = DN_VOID
 STR RET_STR_L142, "numeric_literal"		; constante string="numeric_literal"
 	LCA	RET_STR_L142.data_ptr
 VAR	RET_INFO_L143, q
@@ -2471,7 +2959,7 @@ VAR	RET_INFO_L143, q
 	BRA	L120
 L125:
 	DROP
-; CODE_RETURN : EXPR TYPE = DN_VOID
+; CODE_RETURN : EXPR TYPE = DN_VOID  VUE COMPLETE = DN_VOID
 STR RET_STR_L144, "string_literal"		; constante string="string_literal"
 	LCA	RET_STR_L144.data_ptr
 VAR	RET_INFO_L145, q
@@ -2491,7 +2979,7 @@ VAR	RET_INFO_L145, q
 	BRA	L120
 L126:
 	DROP
-; CODE_RETURN : EXPR TYPE = DN_VOID
+; CODE_RETURN : EXPR TYPE = DN_VOID  VUE COMPLETE = DN_VOID
 STR RET_STR_L146, "character_literal"		; constante string="character_literal"
 	LCA	RET_STR_L146.data_ptr
 VAR	RET_INFO_L147, q
@@ -2511,7 +2999,7 @@ VAR	RET_INFO_L147, q
 	BRA	L120
 L127:
 	DROP
-; CODE_RETURN : EXPR TYPE = DN_VOID
+; CODE_RETURN : EXPR TYPE = DN_VOID  VUE COMPLETE = DN_VOID
 STR RET_STR_L148, "*end*"			; constante string="*end*"
 	LCA	RET_STR_L148.data_ptr
 VAR	RET_INFO_L149, q
@@ -2531,7 +3019,7 @@ VAR	RET_INFO_L149, q
 	BRA	L120
 L128:
 	DROP
-; CODE_RETURN : EXPR TYPE = DN_VOID
+; CODE_RETURN : EXPR TYPE = DN_VOID  VUE COMPLETE = DN_VOID
 STR RET_STR_L150, "*error*"			; constante string="*error*"
 	LCA	RET_STR_L150.data_ptr
 VAR	RET_INFO_L151, q
@@ -2585,6 +3073,14 @@ end namespace
 	Lb  0,	LTL155_disp
 	CALL	STANDARD.LEX. ,LEX_IMAGE_L3
 	CALL	STANDARD.LEX. ,HASH_POS_L3
+	DUP
+	LId	0, HASH_TABLE__u, STANDARD.LEX._HASH_TABLE.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, HASH_TABLE__u, STANDARD.LEX._HASH_TABLE.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, HASH_TABLE__u, STANDARD.LEX._HASH_TABLE.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, HASH_TABLE__u, STANDARD.LEX._HASH_TABLE.COMP_SIZ

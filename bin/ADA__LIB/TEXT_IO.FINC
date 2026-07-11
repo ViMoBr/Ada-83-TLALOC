@@ -278,16 +278,40 @@ VAR STDOUT_LINE_LENGTH_disp, d		; variable entiere
 VAR STDOUT_PAGE_disp, d			; variable entiere
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
+	DUP
+	Ld	0, STANDARD.TEXT_IO._POSITIVE_COUNT.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD.TEXT_IO._POSITIVE_COUNT.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  0,	STDOUT_PAGE_disp
 
 VAR STDOUT_LINE_disp, d			; variable entiere
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
+	DUP
+	Ld	0, STANDARD.TEXT_IO._POSITIVE_COUNT.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD.TEXT_IO._POSITIVE_COUNT.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  0,	STDOUT_LINE_disp
 
 VAR STDOUT_COL_disp, d			; variable entiere
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
+	DUP
+	Ld	0, STANDARD.TEXT_IO._POSITIVE_COUNT.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD.TEXT_IO._POSITIVE_COUNT.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  0,	STDOUT_COL_disp
 
 VAR DEFAULT_INPUT_disp, q			; variable record : pointeur aux data record
@@ -1059,7 +1083,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	BRA	L46
 L47:
 L46:					; post if
-; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
+; CODE_RETURN : EXPR TYPE = DN_ENUMERATION  VUE COMPLETE = DN_ENUMERATION
 	La 1, -FILE_ofs
 	LIb	, 0, STANDARD.TEXT_IO._FILE_TYPE.MODE
 	Sb  1,	-result__ofs
@@ -1092,7 +1116,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	BRA	L50
 L51:
 L50:					; post if
-; CODE_RETURN : EXPR TYPE = DN_ARRAY
+; CODE_RETURN : EXPR TYPE = DN_ARRAY  VUE COMPLETE = DN_ARRAY
 	La 1, -FILE_ofs
 	LIVA 	, 0, STANDARD.TEXT_IO._FILE_TYPE.NAME
 namespace ANON_229_12			; ensemble doublet @data/@info pour slice anonyme source
@@ -1165,7 +1189,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	BRA	L55
 L56:
 L55:					; post if
-; CODE_RETURN : EXPR TYPE = DN_VOID
+; CODE_RETURN : EXPR TYPE = DN_VOID  VUE COMPLETE = DN_VOID
 STR RET_STR_L57, ""				; constante string=""
 	LCA	RET_STR_L57.data_ptr
 VAR	RET_INFO_L58, q
@@ -1198,7 +1222,7 @@ endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
+; CODE_RETURN : EXPR TYPE = DN_ENUMERATION  VUE COMPLETE = DN_ENUMERATION
 	La 1, -FILE_ofs
 	LIb	, 0, STANDARD.TEXT_IO._FILE_TYPE.IS_OPENED
 	Sb  1,	-result__ofs
@@ -1308,7 +1332,7 @@ endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-; CODE_RETURN : EXPR TYPE = DN_RECORD
+; CODE_RETURN : EXPR TYPE = DN_RECORD  VUE COMPLETE = DN_RECORD
 	La   1,	-result__ofs
 	La  ,  0
 	LI	STANDARD.TEXT_IO._FILE_TYPE.size
@@ -1331,7 +1355,7 @@ endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-; CODE_RETURN : EXPR TYPE = DN_RECORD
+; CODE_RETURN : EXPR TYPE = DN_RECORD  VUE COMPLETE = DN_RECORD
 	La   1,	-result__ofs
 	La  ,  0
 	LI	STANDARD.TEXT_IO._FILE_TYPE.size
@@ -1354,7 +1378,7 @@ endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-; CODE_RETURN : EXPR TYPE = DN_RECORD
+; CODE_RETURN : EXPR TYPE = DN_RECORD  VUE COMPLETE = DN_RECORD
 	La   1,	-result__ofs
 	La  ,  0
 	LI	STANDARD.TEXT_IO._FILE_TYPE.size
@@ -1377,7 +1401,7 @@ endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-; CODE_RETURN : EXPR TYPE = DN_RECORD
+; CODE_RETURN : EXPR TYPE = DN_RECORD  VUE COMPLETE = DN_RECORD
 	La   1,	-result__ofs
 	La  ,  0
 	LI	STANDARD.TEXT_IO._FILE_TYPE.size
@@ -1606,6 +1630,14 @@ L109:
 	SUB
 	INC
 	CLAMP0
+	DUP
+	Ld	0, STANDARD._POSITIVE.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._POSITIVE.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	La 1, -FILE_ofs
 	LId	, 0, STANDARD.TEXT_IO._FILE_TYPE.ID
 	CALL	STANDARD.TEXT_IO.PUT_RAW_L100. ,WRITE_SYSTEM_CALL_L101
@@ -1775,7 +1807,7 @@ L128:					; post if
 	BRA	L130
 L131:
 L130:					; post if
-; CODE_RETURN : EXPR TYPE = DN_INTEGER
+; CODE_RETURN : EXPR TYPE = DN_INTEGER  VUE COMPLETE = DN_INTEGER
 	La 1, -FILE_ofs
 	LId	, 0, STANDARD.TEXT_IO._FILE_TYPE.LINE_LENGTH
 	Sd  1,	-result__ofs
@@ -1795,7 +1827,7 @@ endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-; CODE_RETURN : EXPR TYPE = DN_INTEGER
+; CODE_RETURN : EXPR TYPE = DN_INTEGER  VUE COMPLETE = DN_INTEGER
 	LI	0					; lieu resultat sur pile
 	LVA 0,	STANDARD.TEXT_IO.DEFAULT_OUTPUT_disp
 	CALL	STANDARD.TEXT_IO. ,LINE_LENGTH_L21
@@ -1841,7 +1873,7 @@ L136:					; post if
 	BRA	L138
 L139:
 L138:					; post if
-; CODE_RETURN : EXPR TYPE = DN_INTEGER
+; CODE_RETURN : EXPR TYPE = DN_INTEGER  VUE COMPLETE = DN_INTEGER
 	La 1, -FILE_ofs
 	LId	, 0, STANDARD.TEXT_IO._FILE_TYPE.PAGE_LENGTH
 	Sd  1,	-result__ofs
@@ -1861,7 +1893,7 @@ endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-; CODE_RETURN : EXPR TYPE = DN_INTEGER
+; CODE_RETURN : EXPR TYPE = DN_INTEGER  VUE COMPLETE = DN_INTEGER
 	LI	0					; lieu resultat sur pile
 	LVA 0,	STANDARD.TEXT_IO.DEFAULT_OUTPUT_disp
 	CALL	STANDARD.TEXT_IO. ,PAGE_LENGTH_L23
@@ -1997,6 +2029,14 @@ ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 	Ld  1,	-SPACING_ofs
+	DUP
+	Ld	0, STANDARD.TEXT_IO._POSITIVE_COUNT.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD.TEXT_IO._POSITIVE_COUNT.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	LVA 0,	STANDARD.TEXT_IO.DEFAULT_OUTPUT_disp
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L25
 ret_lbl:
@@ -2140,6 +2180,14 @@ ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 	Ld  1,	-SPACING_ofs
+	DUP
+	Ld	0, STANDARD.TEXT_IO._POSITIVE_COUNT.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD.TEXT_IO._POSITIVE_COUNT.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	LVA 0,	STANDARD.TEXT_IO.DEFAULT_INPUT_disp
 	CALL	STANDARD.TEXT_IO. ,SKIP_LINE_L27
 ret_lbl:
@@ -2188,7 +2236,7 @@ L177:					; post if
 	La 1, -FILE_ofs
 	LIb	, 0, STANDARD.TEXT_IO._FILE_TYPE.AT_END_OF_FILE
 	BF	L180
-; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
+; CODE_RETURN : EXPR TYPE = DN_ENUMERATION  VUE COMPLETE = DN_ENUMERATION
 	LI	1
 	Sb  1,	-result__ofs
 	BRA ret_lbl
@@ -2199,7 +2247,7 @@ L179:					; post if
 	La 1, -FILE_ofs
 	LIb	, 0, STANDARD.TEXT_IO._FILE_TYPE.HAS_LOOK_AHEAD
 	BF	L182
-; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
+; CODE_RETURN : EXPR TYPE = DN_ENUMERATION  VUE COMPLETE = DN_ENUMERATION
 	La 1, -FILE_ofs
 	LIb	, 0, STANDARD.TEXT_IO._FILE_TYPE.LOOK_AHEAD
 	LI	 10
@@ -2232,7 +2280,7 @@ L181:					; post if
 	La 1, -FILE_ofs
 	LIb	, 0, STANDARD.TEXT_IO._FILE_TYPE.AT_END_OF_FILE
 	BF	L186
-; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
+; CODE_RETURN : EXPR TYPE = DN_ENUMERATION  VUE COMPLETE = DN_ENUMERATION
 	LI	1
 	Sb  1,	-result__ofs
 	BRA ret_lbl
@@ -2246,7 +2294,7 @@ L186:
 	LIVA 	, 0, STANDARD.TEXT_IO._FILE_TYPE.HAS_LOOK_AHEAD
 	LI	1
 	Sb
-; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
+; CODE_RETURN : EXPR TYPE = DN_ENUMERATION  VUE COMPLETE = DN_ENUMERATION
 	Lb 1,	CH_disp
 	LI	 10
 	CEQ
@@ -2282,7 +2330,7 @@ endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
+; CODE_RETURN : EXPR TYPE = DN_ENUMERATION  VUE COMPLETE = DN_ENUMERATION
 	LI	0					; lieu resultat sur pile
 	LVA 0,	STANDARD.TEXT_IO.DEFAULT_INPUT_disp
 	CALL	STANDARD.TEXT_IO. ,END_OF_LINE_L29
@@ -2336,6 +2384,14 @@ L195:					; post if
 	BF	L198
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
+	DUP
+	Ld	0, STANDARD.TEXT_IO._POSITIVE_COUNT.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD.TEXT_IO._POSITIVE_COUNT.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	La  1,	-FILE_ofs
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L25
 	BRA	L197
@@ -2537,7 +2593,7 @@ L221:					; post if
 	La 1, -FILE_ofs
 	LIb	, 0, STANDARD.TEXT_IO._FILE_TYPE.AT_END_OF_FILE
 	BF	L224
-; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
+; CODE_RETURN : EXPR TYPE = DN_ENUMERATION  VUE COMPLETE = DN_ENUMERATION
 	LI	1
 	Sb  1,	-result__ofs
 	BRA ret_lbl
@@ -2548,7 +2604,7 @@ L223:					; post if
 	La 1, -FILE_ofs
 	LIb	, 0, STANDARD.TEXT_IO._FILE_TYPE.HAS_LOOK_AHEAD
 	BF	L226
-; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
+; CODE_RETURN : EXPR TYPE = DN_ENUMERATION  VUE COMPLETE = DN_ENUMERATION
 	La 1, -FILE_ofs
 	LIb	, 0, STANDARD.TEXT_IO._FILE_TYPE.LOOK_AHEAD
 	LI	 12
@@ -2565,7 +2621,7 @@ L225:					; post if
 	La 1, -FILE_ofs
 	LIb	, 0, STANDARD.TEXT_IO._FILE_TYPE.AT_END_OF_FILE
 	BF	L228
-; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
+; CODE_RETURN : EXPR TYPE = DN_ENUMERATION  VUE COMPLETE = DN_ENUMERATION
 	LI	1
 	Sb  1,	-result__ofs
 	BRA ret_lbl
@@ -2579,7 +2635,7 @@ L228:
 	LIVA 	, 0, STANDARD.TEXT_IO._FILE_TYPE.HAS_LOOK_AHEAD
 	LI	1
 	Sb
-; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
+; CODE_RETURN : EXPR TYPE = DN_ENUMERATION  VUE COMPLETE = DN_ENUMERATION
 	Lb 1,	CH_disp
 	LI	 12
 	CEQ
@@ -2601,7 +2657,7 @@ endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
+; CODE_RETURN : EXPR TYPE = DN_ENUMERATION  VUE COMPLETE = DN_ENUMERATION
 	LI	0					; lieu resultat sur pile
 	LVA 0,	STANDARD.TEXT_IO.DEFAULT_INPUT_disp
 	CALL	STANDARD.TEXT_IO. ,END_OF_PAGE_L35
@@ -2653,7 +2709,7 @@ L235:					; post if
 	La 1, -FILE_ofs
 	LIb	, 0, STANDARD.TEXT_IO._FILE_TYPE.AT_END_OF_FILE
 	BF	L238
-; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
+; CODE_RETURN : EXPR TYPE = DN_ENUMERATION  VUE COMPLETE = DN_ENUMERATION
 	LI	1
 	Sb  1,	-result__ofs
 	BRA ret_lbl
@@ -2664,7 +2720,7 @@ L237:					; post if
 	La 1, -FILE_ofs
 	LIb	, 0, STANDARD.TEXT_IO._FILE_TYPE.HAS_LOOK_AHEAD
 	BF	L240
-; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
+; CODE_RETURN : EXPR TYPE = DN_ENUMERATION  VUE COMPLETE = DN_ENUMERATION
 	LI	0
 	Sb  1,	-result__ofs
 	BRA ret_lbl
@@ -2678,7 +2734,7 @@ L239:					; post if
 	La 1, -FILE_ofs
 	LIb	, 0, STANDARD.TEXT_IO._FILE_TYPE.AT_END_OF_FILE
 	BF	L242
-; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
+; CODE_RETURN : EXPR TYPE = DN_ENUMERATION  VUE COMPLETE = DN_ENUMERATION
 	LI	1
 	Sb  1,	-result__ofs
 	BRA ret_lbl
@@ -2692,7 +2748,7 @@ L242:
 	LIVA 	, 0, STANDARD.TEXT_IO._FILE_TYPE.HAS_LOOK_AHEAD
 	LI	1
 	Sb
-; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
+; CODE_RETURN : EXPR TYPE = DN_ENUMERATION  VUE COMPLETE = DN_ENUMERATION
 	LI	0
 	Sb  1,	-result__ofs
 	BRA ret_lbl
@@ -2712,7 +2768,7 @@ endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
+; CODE_RETURN : EXPR TYPE = DN_ENUMERATION  VUE COMPLETE = DN_ENUMERATION
 	LI	0					; lieu resultat sur pile
 	LVA 0,	STANDARD.TEXT_IO.DEFAULT_INPUT_disp
 	CALL	STANDARD.TEXT_IO. ,END_OF_FILE_L37
@@ -2781,6 +2837,14 @@ L251:					; post if
 	BF	L255
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
+	DUP
+	Ld	0, STANDARD.TEXT_IO._POSITIVE_COUNT.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD.TEXT_IO._POSITIVE_COUNT.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	La  1,	-FILE_ofs
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L25
 	BRA	L254
@@ -2828,6 +2892,14 @@ ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 	Ld  1,	-TO_ofs
+	DUP
+	Ld	0, STANDARD.TEXT_IO._POSITIVE_COUNT.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD.TEXT_IO._POSITIVE_COUNT.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	LVA 0,	STANDARD.TEXT_IO.DEFAULT_OUTPUT_disp
 	CALL	STANDARD.TEXT_IO. ,SET_COL_L39
 ret_lbl:
@@ -2904,6 +2976,14 @@ LOOP__5:
 	BF	L270
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
+	DUP
+	Ld	0, STANDARD.TEXT_IO._POSITIVE_COUNT.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD.TEXT_IO._POSITIVE_COUNT.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	La  1,	-FILE_ofs
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L25
 	BRA	LOOP__5
@@ -2931,6 +3011,14 @@ ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 	Ld  1,	-TO_ofs
+	DUP
+	Ld	0, STANDARD.TEXT_IO._POSITIVE_COUNT.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD.TEXT_IO._POSITIVE_COUNT.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	LVA 0,	STANDARD.TEXT_IO.DEFAULT_OUTPUT_disp
 	CALL	STANDARD.TEXT_IO. ,SET_LINE_L41
 ret_lbl:
@@ -2961,9 +3049,17 @@ begin:					;---------- BDY INSTRUCTIONS
 	BRA	L275
 L276:
 L275:					; post if
-; CODE_RETURN : EXPR TYPE = DN_INTEGER
+; CODE_RETURN : EXPR TYPE = DN_INTEGER  VUE COMPLETE = DN_INTEGER
 	La 1, -FILE_ofs
 	LId	, 0, STANDARD.TEXT_IO._FILE_TYPE.COL
+	DUP
+	Ld	0, STANDARD.TEXT_IO._POSITIVE_COUNT.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD.TEXT_IO._POSITIVE_COUNT.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	-result__ofs
 	BRA ret_lbl
 ret_lbl:
@@ -2981,10 +3077,18 @@ endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-; CODE_RETURN : EXPR TYPE = DN_INTEGER
+; CODE_RETURN : EXPR TYPE = DN_INTEGER  VUE COMPLETE = DN_INTEGER
 	LI	0					; lieu resultat sur pile
 	LVA 0,	STANDARD.TEXT_IO.DEFAULT_OUTPUT_disp
 	CALL	STANDARD.TEXT_IO. ,COL_L43
+	DUP
+	Ld	0, STANDARD.TEXT_IO._POSITIVE_COUNT.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD.TEXT_IO._POSITIVE_COUNT.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	-result__ofs
 	BRA ret_lbl
 ret_lbl:
@@ -3015,9 +3119,17 @@ begin:					;---------- BDY INSTRUCTIONS
 	BRA	L281
 L282:
 L281:					; post if
-; CODE_RETURN : EXPR TYPE = DN_INTEGER
+; CODE_RETURN : EXPR TYPE = DN_INTEGER  VUE COMPLETE = DN_INTEGER
 	La 1, -FILE_ofs
 	LId	, 0, STANDARD.TEXT_IO._FILE_TYPE.LINE
+	DUP
+	Ld	0, STANDARD.TEXT_IO._POSITIVE_COUNT.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD.TEXT_IO._POSITIVE_COUNT.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	-result__ofs
 	BRA ret_lbl
 ret_lbl:
@@ -3035,10 +3147,18 @@ endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-; CODE_RETURN : EXPR TYPE = DN_INTEGER
+; CODE_RETURN : EXPR TYPE = DN_INTEGER  VUE COMPLETE = DN_INTEGER
 	LI	0					; lieu resultat sur pile
 	LVA 0,	STANDARD.TEXT_IO.DEFAULT_OUTPUT_disp
 	CALL	STANDARD.TEXT_IO. ,LINE_L45
+	DUP
+	Ld	0, STANDARD.TEXT_IO._POSITIVE_COUNT.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD.TEXT_IO._POSITIVE_COUNT.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	-result__ofs
 	BRA ret_lbl
 ret_lbl:
@@ -3069,9 +3189,17 @@ begin:					;---------- BDY INSTRUCTIONS
 	BRA	L287
 L288:
 L287:					; post if
-; CODE_RETURN : EXPR TYPE = DN_INTEGER
+; CODE_RETURN : EXPR TYPE = DN_INTEGER  VUE COMPLETE = DN_INTEGER
 	La 1, -FILE_ofs
 	LId	, 0, STANDARD.TEXT_IO._FILE_TYPE.PAGE
+	DUP
+	Ld	0, STANDARD.TEXT_IO._POSITIVE_COUNT.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD.TEXT_IO._POSITIVE_COUNT.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	-result__ofs
 	BRA ret_lbl
 ret_lbl:
@@ -3089,10 +3217,18 @@ endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-; CODE_RETURN : EXPR TYPE = DN_INTEGER
+; CODE_RETURN : EXPR TYPE = DN_INTEGER  VUE COMPLETE = DN_INTEGER
 	LI	0					; lieu resultat sur pile
 	LVA 0,	STANDARD.TEXT_IO.DEFAULT_OUTPUT_disp
 	CALL	STANDARD.TEXT_IO. ,PAGE_L47
+	DUP
+	Ld	0, STANDARD.TEXT_IO._POSITIVE_COUNT.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD.TEXT_IO._POSITIVE_COUNT.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	-result__ofs
 	BRA ret_lbl
 ret_lbl:
@@ -3301,6 +3437,14 @@ L316:
 	BF	L315
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
+	DUP
+	Ld	0, STANDARD.TEXT_IO._POSITIVE_COUNT.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD.TEXT_IO._POSITIVE_COUNT.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	La  1,	-FILE_ofs
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L25
 	BRA	L314
@@ -3369,6 +3513,18 @@ LOOP__7:					; corps boucle LOOP__7
 	LVA	1, -ITEM_ofs
 	LIa	, , 0				; array data start address on stack
 	Ld	1, IL322_disp
+	DUP
+	LVA	1, -ITEM_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LVA	1, -ITEM_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LVA	1, -ITEM_ofs
 	LIa	, 0,  8
 	Ld	, STANDARD._STRING.FST_1			; (index - FST_1) * SIZ_1
@@ -3474,6 +3630,18 @@ LOOP__8:					; corps boucle LOOP__8
 	LVA	1, -ITEM_ofs
 	LIa	, , 0				; array data start address on stack
 	Ld	1, IL334_disp
+	DUP
+	LVA	1, -ITEM_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LVA	1, -ITEM_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LVA	1, -ITEM_ofs
 	LIa	, 0,  8
 	Ld	, STANDARD._STRING.FST_1			; (index - FST_1) * SIZ_1
@@ -3558,6 +3726,14 @@ VAR POS_disp, d				; variable entiere
 	LVA	1, -ITEM_ofs
 	LIa	, , 8
 	Ld	, _STRING.FST_1
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	POS_disp
 
 					;    end elab
@@ -3615,6 +3791,14 @@ L345:					; post if
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SUB
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	SId  1,	-LAST_ofs
 LOOP__9:
 	Ld 1,	POS_disp
@@ -3689,6 +3873,18 @@ L354:					; post if
 	LVA	1, -ITEM_ofs
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	POS_disp
+	DUP
+	LVA	1, -ITEM_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LVA	1, -ITEM_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LVA	1, -ITEM_ofs
 	LIa	, 0,  8
 	Ld	, STANDARD._STRING.FST_1			; (index - FST_1) * SIZ_1
@@ -3703,11 +3899,27 @@ L354:					; post if
 	Lb 1,	CH_disp
 	Sb
 	Ld 1,	POS_disp
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	SId  1,	-LAST_ofs
 	Ld 1,	POS_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	POS_disp
 	La 1, -FILE_ofs
 	LIVA 	, 0, STANDARD.TEXT_IO._FILE_TYPE.COL
@@ -3764,6 +3976,14 @@ begin:					;---------- BDY INSTRUCTIONS
 	CALL	STANDARD.TEXT_IO. ,PUT_L55
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
+	DUP
+	Ld	0, STANDARD.TEXT_IO._POSITIVE_COUNT.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD.TEXT_IO._POSITIVE_COUNT.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	La  1,	-FILE_ofs
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L25
 ret_lbl:
@@ -3786,6 +4006,14 @@ begin:					;---------- BDY INSTRUCTIONS
 	CALL	STANDARD.TEXT_IO. ,PUT_L55
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
+	DUP
+	Ld	0, STANDARD.TEXT_IO._POSITIVE_COUNT.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD.TEXT_IO._POSITIVE_COUNT.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	LVA 0,	STANDARD.TEXT_IO.DEFAULT_OUTPUT_disp
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L25
 ret_lbl:
@@ -3843,6 +4071,14 @@ VAR NEG_disp, d				; variable bool char enum
 VAR CHARS_READ_disp, d			; variable entiere
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	CHARS_READ_disp
 
 VAR DONE_disp, d				; variable bool char enum
@@ -3947,6 +4183,14 @@ L372:
 	CALL	STANDARD.TEXT_IO. ,GET_RAW_L81
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	CHARS_READ_disp
 L371:					; post if
 					; debut if
@@ -3984,6 +4228,14 @@ L385:
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	CHARS_READ_disp
 					; debut if
 	Ld 1,	CHARS_READ_disp
@@ -4028,6 +4280,14 @@ L391:
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	CHARS_READ_disp
 					; debut if
 	Ld 1,	CHARS_READ_disp
@@ -4128,6 +4388,14 @@ L406:					; post if
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	CHARS_READ_disp
 					; debut if
 	Ld 1,	CHARS_READ_disp
@@ -4289,6 +4557,14 @@ L428:					; post if
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	CHARS_READ_disp
 					; debut if
 	Ld 1,	CHARS_READ_disp
@@ -4339,6 +4615,14 @@ L435:
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	CHARS_READ_disp
 					; debut if
 	Ld 1,	CHARS_READ_disp
@@ -4380,6 +4664,14 @@ L441:
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	CHARS_READ_disp
 	BRA	L442
 L443:
@@ -4461,6 +4753,14 @@ ELB 1					;    BODY ELAB
 begin:					;---------- BDY INSTRUCTIONS
 	La  1,	-GFP_ofs				; propagation GFP generique
 	Ld  1,	-WIDTH_ofs
+	DUP
+	Ld	0, STANDARD.TEXT_IO._FIELD.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD.TEXT_IO._FIELD.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	La  1,	-ITEM_ofs
 	LVA 0,	STANDARD.TEXT_IO.DEFAULT_INPUT_disp
 	CALL	STANDARD.TEXT_IO.INTEGER_IO. ,GET_L61
@@ -4534,6 +4834,14 @@ VAR STR__u, q				; variable array : useinfo pointeur au rec info
 
 VAR POS_disp, d				; variable entiere
 	LId	1, STANDARD.TEXT_IO.INTEGER_IO.PUT_L63.STR__u, STANDARD._STRING.LST_1
+	DUP
+	Ld	0, STANDARD._POSITIVE.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._POSITIVE.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	POS_disp
 
 VAR IS_NEGATIVE_disp, d			; variable bool char enum
@@ -4585,6 +4893,10 @@ L454:					; post if
 LOOP__12:
 	Lq 1,	AVAL_disp
 	Lq 1,	LBASE_disp
+	DUP
+	LI	0
+	CEQ
+	BT	STANDARD.ne_raise_
 	MODI
 ; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
 	Sd  1,	DIGIT_disp
@@ -4596,6 +4908,14 @@ LOOP__12:
 	BF	L458
 	La	 1, STR_disp				; array data start address on stack
 	Ld 1,	POS_disp
+	DUP
+	LId	1, STR__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	1, STR__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	1, STR__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	1, STR__u, STANDARD._STRING.COMP_SIZ
@@ -4611,6 +4931,14 @@ LOOP__12:
 L458:
 	La	 1, STR_disp				; array data start address on stack
 	Ld 1,	POS_disp
+	DUP
+	LId	1, STR__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	1, STR__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	1, STR__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	1, STR__u, STANDARD._STRING.COMP_SIZ
@@ -4628,6 +4956,10 @@ L458:
 L457:					; post if
 	Lq 1,	AVAL_disp
 	Lq 1,	LBASE_disp
+	DUP
+	LI	0
+	CEQ
+	BT	STANDARD.ne_raise_
 	DIV
 	Sq  1,	AVAL_disp
 	Lq 1,	AVAL_disp
@@ -4639,6 +4971,14 @@ L457:					; post if
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SUB
+	DUP
+	Ld	0, STANDARD._POSITIVE.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._POSITIVE.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	POS_disp
 	BRA	LOOP__12
 L456:					; post loop LOOP__12
@@ -4648,8 +4988,24 @@ L456:					; post loop LOOP__12
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	DLEN_disp
 	Ld 1,	DLEN_disp
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	TLEN_disp
 					; debut if
 	Lb 1,	IS_NEGATIVE_disp
@@ -4658,6 +5014,14 @@ L456:					; post loop LOOP__12
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	TLEN_disp
 	BRA	L460
 L461:
@@ -4678,6 +5042,14 @@ L460:					; post if
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	4
 	ADD
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	TLEN_disp
 	BRA	L464
 L465:
@@ -4685,6 +5057,14 @@ L465:
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	3
 	ADD
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	TLEN_disp
 L464:					; post if
 	BRA	L462
@@ -4837,7 +5217,23 @@ ELB 1					;    BODY ELAB
 begin:					;---------- BDY INSTRUCTIONS
 	La  1,	-GFP_ofs				; propagation GFP generique
 	Ld  1,	-BASE_ofs
+	DUP
+	Ld	0, STANDARD.TEXT_IO._NUMBER_BASE.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD.TEXT_IO._NUMBER_BASE.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Ld  1,	-WIDTH_ofs
+	DUP
+	Ld	0, STANDARD.TEXT_IO._FIELD.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD.TEXT_IO._FIELD.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	LVA 1,	-ITEM_ofs
 	La 1,	-GFP_ofs
 	La ,	-NUM__ld_ofs
@@ -4864,6 +5260,14 @@ VAR POS_disp, d				; variable entiere
 	LVA	1, -FROM_ofs
 	LIa	, , 8
 	Ld	, _STRING.FST_1
+	DUP
+	Ld	0, STANDARD._POSITIVE.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._POSITIVE.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	POS_disp
 
 VAR VAL_disp, d				; variable entiere
@@ -4910,6 +5314,18 @@ LOOP__14:
 	LVA	1, -FROM_ofs
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	POS_disp
+	DUP
+	LVA	1, -FROM_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LVA	1, -FROM_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LVA	1, -FROM_ofs
 	LIa	, 0,  8
 	Ld	, STANDARD._STRING.FST_1			; (index - FST_1) * SIZ_1
@@ -4930,6 +5346,18 @@ LOOP__14:
 	LVA	1, -FROM_ofs
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	POS_disp
+	DUP
+	LVA	1, -FROM_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LVA	1, -FROM_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LVA	1, -FROM_ofs
 	LIa	, 0,  8
 	Ld	, STANDARD._STRING.FST_1			; (index - FST_1) * SIZ_1
@@ -4951,6 +5379,14 @@ L483:
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._POSITIVE.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._POSITIVE.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	POS_disp
 	BRA	LOOP__14
 L482:					; post loop LOOP__14
@@ -4964,6 +5400,18 @@ L482:					; post loop LOOP__14
 	LVA	1, -FROM_ofs
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	POS_disp
+	DUP
+	LVA	1, -FROM_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LVA	1, -FROM_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LVA	1, -FROM_ofs
 	LIa	, 0,  8
 	Ld	, STANDARD._STRING.FST_1			; (index - FST_1) * SIZ_1
@@ -4988,6 +5436,14 @@ L482:					; post loop LOOP__14
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._POSITIVE.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._POSITIVE.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	POS_disp
 	BRA	L487
 L488:
@@ -4999,6 +5455,14 @@ L488:
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._POSITIVE.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._POSITIVE.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	POS_disp
 	BRA	L487
 L489:
@@ -5021,6 +5485,18 @@ L492:
 	LVA	1, -FROM_ofs
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	POS_disp
+	DUP
+	LVA	1, -FROM_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LVA	1, -FROM_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LVA	1, -FROM_ofs
 	LIa	, 0,  8
 	Ld	, STANDARD._STRING.FST_1			; (index - FST_1) * SIZ_1
@@ -5075,14 +5551,28 @@ L496:					; post if
 	Sd  1,	VAL_disp
 	LI	1
 	Sb  1,	HAVE_DIGIT_disp
-	LVA  1,	-LAST_ofs
-	La
 	Ld 1,	POS_disp
+	DUP
+	Ld	0, STANDARD._POSITIVE.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._POSITIVE.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	SId  1,	-LAST_ofs
 	Ld 1,	POS_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._POSITIVE.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._POSITIVE.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	POS_disp
 	BRA	L493
 L494:
@@ -5215,14 +5705,28 @@ L514:					; post if
 	Sd  1,	VAL_disp
 	LI	1
 	Sb  1,	HAVE_DIGIT_disp
-	LVA  1,	-LAST_ofs
-	La
 	Ld 1,	POS_disp
+	DUP
+	Ld	0, STANDARD._POSITIVE.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._POSITIVE.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	SId  1,	-LAST_ofs
 	Ld 1,	POS_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._POSITIVE.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._POSITIVE.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	POS_disp
 	BRA	L493
 L499:
@@ -5244,14 +5748,28 @@ L517:
 	Sd  1,	VAL_disp
 	LI	1
 	Sb  1,	IN_BASED_disp
-	LVA  1,	-LAST_ofs
-	La
 	Ld 1,	POS_disp
+	DUP
+	Ld	0, STANDARD._POSITIVE.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._POSITIVE.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	SId  1,	-LAST_ofs
 	Ld 1,	POS_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._POSITIVE.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._POSITIVE.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	POS_disp
 	BRA	L493
 L516:
@@ -5264,9 +5782,15 @@ L516:
 	Lb 1,	IN_BASED_disp
 L519:
 	BF	L518
-	LVA  1,	-LAST_ofs
-	La
 	Ld 1,	POS_disp
+	DUP
+	Ld	0, STANDARD._POSITIVE.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._POSITIVE.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	SId  1,	-LAST_ofs
 	LI	1
 	Sb  1,	DONE_disp
@@ -5378,6 +5902,14 @@ VAR STR__u, q				; variable array : useinfo pointeur au rec info
 
 VAR POS_disp, d				; variable entiere
 	LId	1, STANDARD.TEXT_IO.INTEGER_IO.PUT_L66.STR__u, STANDARD._STRING.LST_1
+	DUP
+	Ld	0, STANDARD._POSITIVE.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._POSITIVE.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	POS_disp
 
 VAR IS_NEGATIVE_disp, d			; variable bool char enum
@@ -5431,6 +5963,10 @@ L526:					; post if
 LOOP__16:
 	Lq 1,	AVAL_disp
 	Lq 1,	LBASE_disp
+	DUP
+	LI	0
+	CEQ
+	BT	STANDARD.ne_raise_
 	MODI
 ; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
 	Sd  1,	DIGIT_disp
@@ -5442,6 +5978,14 @@ LOOP__16:
 	BF	L530
 	La	 1, STR_disp				; array data start address on stack
 	Ld 1,	POS_disp
+	DUP
+	LId	1, STR__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	1, STR__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	1, STR__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	1, STR__u, STANDARD._STRING.COMP_SIZ
@@ -5457,6 +6001,14 @@ LOOP__16:
 L530:
 	La	 1, STR_disp				; array data start address on stack
 	Ld 1,	POS_disp
+	DUP
+	LId	1, STR__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	1, STR__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	1, STR__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	1, STR__u, STANDARD._STRING.COMP_SIZ
@@ -5474,6 +6026,10 @@ L530:
 L529:					; post if
 	Lq 1,	AVAL_disp
 	Lq 1,	LBASE_disp
+	DUP
+	LI	0
+	CEQ
+	BT	STANDARD.ne_raise_
 	DIV
 	Sq  1,	AVAL_disp
 	Lq 1,	AVAL_disp
@@ -5485,6 +6041,14 @@ L529:					; post if
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SUB
+	DUP
+	Ld	0, STANDARD._POSITIVE.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._POSITIVE.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	POS_disp
 	BRA	LOOP__16
 L528:					; post loop LOOP__16
@@ -5494,8 +6058,24 @@ L528:					; post loop LOOP__16
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	DLEN_disp
 	Ld 1,	DLEN_disp
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	TLEN_disp
 					; debut if
 	Lb 1,	IS_NEGATIVE_disp
@@ -5504,6 +6084,14 @@ L528:					; post loop LOOP__16
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	TLEN_disp
 	BRA	L532
 L533:
@@ -5524,6 +6112,14 @@ L532:					; post if
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	4
 	ADD
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	TLEN_disp
 	BRA	L536
 L537:
@@ -5531,6 +6127,14 @@ L537:
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	3
 	ADD
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	TLEN_disp
 L536:					; post if
 	BRA	L534
@@ -5558,6 +6162,14 @@ L538:					; post if
 	LVA	1, -TO_ofs
 	LIa	, , 8
 	Ld	, _STRING.FST_1
+	DUP
+	Ld	0, STANDARD._POSITIVE.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._POSITIVE.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	DST_disp
 					; debut if
 	LVA	1, -TO_ofs
@@ -5597,6 +6209,18 @@ LOOP__17:					; corps boucle LOOP__17
 	LVA	1, -TO_ofs
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	DST_disp
+	DUP
+	LVA	1, -TO_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LVA	1, -TO_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LVA	1, -TO_ofs
 	LIa	, 0,  8
 	Ld	, STANDARD._STRING.FST_1			; (index - FST_1) * SIZ_1
@@ -5614,6 +6238,14 @@ LOOP__17:					; corps boucle LOOP__17
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._POSITIVE.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._POSITIVE.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	DST_disp
 	Ld  1,	IL543_disp				; test de sortie LOOP__17
 	Ld  1,	LMT_IL543_disp
@@ -5633,6 +6265,18 @@ L540:					; post if
 	LVA	1, -TO_ofs
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	DST_disp
+	DUP
+	LVA	1, -TO_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LVA	1, -TO_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LVA	1, -TO_ofs
 	LIa	, 0,  8
 	Ld	, STANDARD._STRING.FST_1			; (index - FST_1) * SIZ_1
@@ -5650,6 +6294,14 @@ L540:					; post if
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._POSITIVE.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._POSITIVE.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	DST_disp
 	BRA	L544
 L545:
@@ -5669,6 +6321,18 @@ L544:					; post if
 	LVA	1, -TO_ofs
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	DST_disp
+	DUP
+	LVA	1, -TO_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LVA	1, -TO_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LVA	1, -TO_ofs
 	LIa	, 0,  8
 	Ld	, STANDARD._STRING.FST_1			; (index - FST_1) * SIZ_1
@@ -5686,10 +6350,30 @@ L544:					; post if
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._POSITIVE.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._POSITIVE.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	DST_disp
 	LVA	1, -TO_ofs
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	DST_disp
+	DUP
+	LVA	1, -TO_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LVA	1, -TO_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LVA	1, -TO_ofs
 	LIa	, 0,  8
 	Ld	, STANDARD._STRING.FST_1			; (index - FST_1) * SIZ_1
@@ -5712,12 +6396,32 @@ L544:					; post if
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._POSITIVE.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._POSITIVE.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	DST_disp
 	BRA	L548
 L549:
 	LVA	1, -TO_ofs
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	DST_disp
+	DUP
+	LVA	1, -TO_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LVA	1, -TO_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LVA	1, -TO_ofs
 	LIa	, 0,  8
 	Ld	, STANDARD._STRING.FST_1			; (index - FST_1) * SIZ_1
@@ -5737,11 +6441,31 @@ L549:
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._POSITIVE.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._POSITIVE.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	DST_disp
 L548:					; post if
 	LVA	1, -TO_ofs
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	DST_disp
+	DUP
+	LVA	1, -TO_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LVA	1, -TO_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LVA	1, -TO_ofs
 	LIa	, 0,  8
 	Ld	, STANDARD._STRING.FST_1			; (index - FST_1) * SIZ_1
@@ -5759,6 +6483,14 @@ L548:					; post if
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._POSITIVE.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._POSITIVE.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	DST_disp
 	BRA	L546
 L547:
@@ -5777,6 +6509,18 @@ LOOP__18:					; corps boucle LOOP__18
 	LVA	1, -TO_ofs
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	DST_disp
+	DUP
+	LVA	1, -TO_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LVA	1, -TO_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LVA	1, -TO_ofs
 	LIa	, 0,  8
 	Ld	, STANDARD._STRING.FST_1			; (index - FST_1) * SIZ_1
@@ -5790,6 +6534,14 @@ LOOP__18:					; corps boucle LOOP__18
 	ADD					; add offset to start address
 	La	 1, STR_disp				; array data start address on stack
 	Ld	1, IL551_disp
+	DUP
+	LId	1, STR__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	1, STR__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	1, STR__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	1, STR__u, STANDARD._STRING.COMP_SIZ
@@ -5803,6 +6555,14 @@ LOOP__18:					; corps boucle LOOP__18
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._POSITIVE.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._POSITIVE.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	DST_disp
 	Ld  1,	IL551_disp				; test de sortie LOOP__18
 	Ld  1,	LMT_IL551_disp
@@ -5822,6 +6582,18 @@ L550:					; post loop LOOP__18
 	LVA	1, -TO_ofs
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	DST_disp
+	DUP
+	LVA	1, -TO_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LVA	1, -TO_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LVA	1, -TO_ofs
 	LIa	, 0,  8
 	Ld	, STANDARD._STRING.FST_1			; (index - FST_1) * SIZ_1
@@ -5913,6 +6685,14 @@ VAR EXP_NEG_disp, d				; variable bool char enum
 VAR CHARS_READ_disp, d			; variable entiere
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	CHARS_READ_disp
 
 VAR DONE_disp, d				; variable bool char enum
@@ -6006,6 +6786,14 @@ L563:
 	CALL	STANDARD.TEXT_IO. ,GET_RAW_L81
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	CHARS_READ_disp
 L562:					; post if
 					; debut if
@@ -6043,6 +6831,14 @@ L576:
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	CHARS_READ_disp
 					; debut if
 	Ld 1,	CHARS_READ_disp
@@ -6087,6 +6883,14 @@ L582:
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	CHARS_READ_disp
 					; debut if
 	Ld 1,	CHARS_READ_disp
@@ -6153,6 +6957,14 @@ L590:					; post if
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	CHARS_READ_disp
 					; debut if
 	Ld 1,	CHARS_READ_disp
@@ -6196,6 +7008,14 @@ L601:
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	CHARS_READ_disp
 					; debut if
 	Ld 1,	CHARS_READ_disp
@@ -6246,6 +7066,14 @@ L608:
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	CHARS_READ_disp
 					; debut if
 	Ld 1,	CHARS_READ_disp
@@ -6282,6 +7110,14 @@ L610:
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	CHARS_READ_disp
 					; debut if
 	Ld 1,	CHARS_READ_disp
@@ -6347,6 +7183,14 @@ L624:
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	CHARS_READ_disp
 					; debut if
 	Ld 1,	CHARS_READ_disp
@@ -6426,17 +7270,16 @@ L635:
 					; debut if
 	Lb 1,	IN_FRAC_disp
 	BF	L637
-	LVA  1,	VAL_disp
 	LVA 1,	VAL_disp
 	La 1,	-GFP_ofs
-	La ,	-NUM__outadr_ofs
+	La ,	-NUM__inadr_ofs
 	CALLI
 	La 1,	-GFP_ofs
 	La ,	-NUM__ld_ofs
 	CALLI
 	LVA 1,	FRAC_disp
 	La 1,	-GFP_ofs
-	La ,	-NUM__outadr_ofs
+	La ,	-NUM__inadr_ofs
 	CALLI
 	La 1,	-GFP_ofs
 	La ,	-NUM__ld_ofs
@@ -6449,10 +7292,9 @@ L635:
 	FMUL
 	FADD
 	Sq  1,	VAL_disp
-	LVA  1,	FRAC_disp
 	LVA 1,	FRAC_disp
 	La 1,	-GFP_ofs
-	La ,	-NUM__outadr_ofs
+	La ,	-NUM__inadr_ofs
 	CALLI
 	La 1,	-GFP_ofs
 	La ,	-NUM__ld_ofs
@@ -6463,12 +7305,11 @@ L635:
 	Sq  1,	FRAC_disp
 	BRA	L636
 L637:
-	LVA  1,	VAL_disp
 ; CODE_NUMERIC_LITERAL DN_FLOAT
 	LIF	10.0
 	LVA 1,	VAL_disp
 	La 1,	-GFP_ofs
-	La ,	-NUM__outadr_ofs
+	La ,	-NUM__inadr_ofs
 	CALLI
 	La 1,	-GFP_ofs
 	La ,	-NUM__ld_ofs
@@ -6494,6 +7335,14 @@ L636:					; post if
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	CHARS_READ_disp
 					; debut if
 	Ld 1,	CHARS_READ_disp
@@ -6564,10 +7413,9 @@ VAR	LMT_JL649_disp, d			; limite boucle LOOP__22
 	CGT
 	BT	L648
 LOOP__22:					; corps boucle LOOP__22
-	LVA  1,	VAL_disp
 	LVA 1,	VAL_disp
 	La 1,	-GFP_ofs
-	La ,	-NUM__outadr_ofs
+	La ,	-NUM__inadr_ofs
 	CALLI
 	La 1,	-GFP_ofs
 	La ,	-NUM__ld_ofs
@@ -6599,10 +7447,9 @@ VAR	LMT_JL651_disp, d			; limite boucle LOOP__23
 	CGT
 	BT	L650
 LOOP__23:					; corps boucle LOOP__23
-	LVA  1,	VAL_disp
 	LVA 1,	VAL_disp
 	La 1,	-GFP_ofs
-	La ,	-NUM__outadr_ofs
+	La ,	-NUM__inadr_ofs
 	CALLI
 	La 1,	-GFP_ofs
 	La ,	-NUM__ld_ofs
@@ -6628,7 +7475,7 @@ L646:					; post if
 	La
 	LVA 1,	VAL_disp
 	La 1,	-GFP_ofs
-	La ,	-NUM__outadr_ofs
+	La ,	-NUM__inadr_ofs
 	CALLI
 	La 1,	-GFP_ofs
 	La ,	-NUM__ld_ofs
@@ -6643,7 +7490,7 @@ L653:
 	La
 	LVA 1,	VAL_disp
 	La 1,	-GFP_ofs
-	La ,	-NUM__outadr_ofs
+	La ,	-NUM__inadr_ofs
 	CALLI
 	La 1,	-GFP_ofs
 	La ,	-NUM__ld_ofs
@@ -6671,6 +7518,14 @@ ELB 1					;    BODY ELAB
 begin:					;---------- BDY INSTRUCTIONS
 	La  1,	-GFP_ofs				; propagation GFP generique
 	Ld  1,	-WIDTH_ofs
+	DUP
+	Ld	0, STANDARD.TEXT_IO._FIELD.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD.TEXT_IO._FIELD.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	La  1,	-ITEM_ofs
 	LVA 0,	STANDARD.TEXT_IO.DEFAULT_INPUT_disp
 	CALL	STANDARD.TEXT_IO.FLOAT_IO. ,GET_L67
@@ -6729,7 +7584,6 @@ begin:					;---------- BDY INSTRUCTIONS
 					; debut if
 	Lb 1,	IS_NEGATIVE_disp
 	BF	L659
-	LVA  1,	VAL_disp
 	LVA  1,	-ITEM_ofs
 	La 1,	-GFP_ofs
 	La ,	-NUM__inadr_ofs
@@ -6745,7 +7599,7 @@ L658:					; post if
 					; debut if
 	LVA 1,	VAL_disp
 	La 1,	-GFP_ofs
-	La ,	-NUM__outadr_ofs
+	La ,	-NUM__inadr_ofs
 	CALLI
 	La 1,	-GFP_ofs
 	La ,	-NUM__ld_ofs
@@ -6757,7 +7611,7 @@ L658:					; post if
 LOOP__24:
 	LVA 1,	VAL_disp
 	La 1,	-GFP_ofs
-	La ,	-NUM__outadr_ofs
+	La ,	-NUM__inadr_ofs
 	CALLI
 	La 1,	-GFP_ofs
 	La ,	-NUM__ld_ofs
@@ -6766,10 +7620,9 @@ LOOP__24:
 	LIF	10.0
 	FCGE
 	BF	L662
-	LVA  1,	VAL_disp
 	LVA 1,	VAL_disp
 	La 1,	-GFP_ofs
-	La ,	-NUM__outadr_ofs
+	La ,	-NUM__inadr_ofs
 	CALLI
 	La 1,	-GFP_ofs
 	La ,	-NUM__ld_ofs
@@ -6788,7 +7641,7 @@ L662:					; post loop LOOP__24
 LOOP__25:
 	LVA 1,	VAL_disp
 	La 1,	-GFP_ofs
-	La ,	-NUM__outadr_ofs
+	La ,	-NUM__inadr_ofs
 	CALLI
 	La 1,	-GFP_ofs
 	La ,	-NUM__ld_ofs
@@ -6797,10 +7650,9 @@ LOOP__25:
 	LIF	1.0
 	FCLT
 	BF	L663
-	LVA  1,	VAL_disp
 	LVA 1,	VAL_disp
 	La 1,	-GFP_ofs
-	La ,	-NUM__outadr_ofs
+	La ,	-NUM__inadr_ofs
 	CALLI
 	La 1,	-GFP_ofs
 	La ,	-NUM__ld_ofs
@@ -6840,10 +7692,9 @@ VAR	LMT_IL667_disp, d			; limite boucle LOOP__30
 	CGT
 	BT	L666
 LOOP__30:					; corps boucle LOOP__30
-	LVA  2,	ROUNDING_disp
 	LVA 2,	ROUNDING_disp
 	La 1,	-GFP_ofs
-	La ,	-NUM__outadr_ofs
+	La ,	-NUM__inadr_ofs
 	CALLI
 	La 1,	-GFP_ofs
 	La ,	-NUM__ld_ofs
@@ -6861,17 +7712,16 @@ LOOP__30:					; corps boucle LOOP__30
 	Sd  2,	IL667_disp
 	BRA	LOOP__30				; iteration suivante LOOP__30
 L666:					; post loop LOOP__30
-	LVA  1,	VAL_disp
 	LVA 1,	STANDARD.TEXT_IO.FLOAT_IO.PUT_L69.VAL_disp
 	La 1,	-GFP_ofs
-	La ,	-NUM__outadr_ofs
+	La ,	-NUM__inadr_ofs
 	CALLI
 	La 1,	-GFP_ofs
 	La ,	-NUM__ld_ofs
 	CALLI
 	LVA 2,	ROUNDING_disp
 	La 1,	-GFP_ofs
-	La ,	-NUM__outadr_ofs
+	La ,	-NUM__inadr_ofs
 	CALLI
 	La 1,	-GFP_ofs
 	La ,	-NUM__ld_ofs
@@ -6883,7 +7733,7 @@ endPRO
 					; debut if
 	LVA 1,	VAL_disp
 	La 1,	-GFP_ofs
-	La ,	-NUM__outadr_ofs
+	La ,	-NUM__inadr_ofs
 	CALLI
 	La 1,	-GFP_ofs
 	La ,	-NUM__ld_ofs
@@ -6892,10 +7742,9 @@ endPRO
 	LIF	10.0
 	FCGE
 	BF	L669
-	LVA  1,	VAL_disp
 	LVA 1,	VAL_disp
 	La 1,	-GFP_ofs
-	La ,	-NUM__outadr_ofs
+	La ,	-NUM__inadr_ofs
 	CALLI
 	La 1,	-GFP_ofs
 	La ,	-NUM__ld_ofs
@@ -6914,12 +7763,28 @@ L669:
 L668:					; post if
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	FORE_LEN_disp
 					; debut if
 	Lb 1,	IS_NEGATIVE_disp
 	BF	L671
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	2
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	FORE_LEN_disp
 	BRA	L670
 L671:
@@ -6969,7 +7834,7 @@ L677:
 L676:					; post if
 	LVA 1,	VAL_disp
 	La 1,	-GFP_ofs
-	La ,	-NUM__outadr_ofs
+	La ,	-NUM__inadr_ofs
 	CALLI
 	La 1,	-GFP_ofs
 	La ,	-NUM__ld_ofs
@@ -7006,10 +7871,9 @@ L680:					; post if
 	ADD
 	La  1,	-FILE_ofs
 	CALL	STANDARD.TEXT_IO. ,PUT_L51
-	LVA  1,	VAL_disp
 	LVA 1,	VAL_disp
 	La 1,	-GFP_ofs
-	La ,	-NUM__outadr_ofs
+	La ,	-NUM__inadr_ofs
 	CALLI
 	La 1,	-GFP_ofs
 	La ,	-NUM__ld_ofs
@@ -7039,7 +7903,7 @@ VAR	LMT_IL683_disp, d			; limite boucle LOOP__28
 LOOP__28:					; corps boucle LOOP__28
 	LVA 1,	VAL_disp
 	La 1,	-GFP_ofs
-	La ,	-NUM__outadr_ofs
+	La ,	-NUM__inadr_ofs
 	CALLI
 	La 1,	-GFP_ofs
 	La ,	-NUM__ld_ofs
@@ -7076,10 +7940,9 @@ L686:					; post if
 	ADD
 	La  1,	-FILE_ofs
 	CALL	STANDARD.TEXT_IO. ,PUT_L51
-	LVA  1,	VAL_disp
 	LVA 1,	VAL_disp
 	La 1,	-GFP_ofs
-	La ,	-NUM__outadr_ofs
+	La ,	-NUM__inadr_ofs
 	CALLI
 	La 1,	-GFP_ofs
 	La ,	-NUM__ld_ofs
@@ -7175,6 +8038,14 @@ VAR EXP_STR__u, q				; variable array : useinfo pointeur au rec info
 
 VAR POS_disp, d				; variable entiere
 	Ld  1,	-EXP_ofs
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  2,	POS_disp
 
 VAR EVAL_disp, d				; variable entiere
@@ -7201,6 +8072,14 @@ VAR	LMT_IL695_disp, d			; limite boucle LOOP__31
 LOOP__31:					; corps boucle LOOP__31
 	La	 2, EXP_STR_disp			; array data start address on stack
 	Ld	2, IL695_disp
+	DUP
+	LId	2, EXP_STR__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	2, EXP_STR__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	2, EXP_STR__u, STANDARD._STRING.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	2, EXP_STR__u, STANDARD._STRING.COMP_SIZ
@@ -7212,12 +8091,20 @@ LOOP__31:					; corps boucle LOOP__31
 	Ld 2,	EVAL_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	10
+	DUP
+	LI	0
+	CEQ
+	BT	STANDARD.ne_raise_
 	MODI
 	ADD
 	Sb
 	Ld 2,	EVAL_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	10
+	DUP
+	LI	0
+	CEQ
+	BT	STANDARD.ne_raise_
 	DIV
 	Sd  2,	EVAL_disp
 	Ld  2,	IL695_disp				; test de sortie LOOP__31
@@ -7258,8 +8145,32 @@ ELB 1					;    BODY ELAB
 begin:					;---------- BDY INSTRUCTIONS
 	La  1,	-GFP_ofs				; propagation GFP generique
 	Ld  1,	-EXP_ofs
+	DUP
+	Ld	0, STANDARD.TEXT_IO._FIELD.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD.TEXT_IO._FIELD.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Ld  1,	-AFT_ofs
+	DUP
+	Ld	0, STANDARD.TEXT_IO._FIELD.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD.TEXT_IO._FIELD.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Ld  1,	-FORE_ofs
+	DUP
+	Ld	0, STANDARD.TEXT_IO._FIELD.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD.TEXT_IO._FIELD.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	LVA 1,	-ITEM_ofs
 	La 1,	-GFP_ofs
 	La ,	-NUM__ld_ofs
@@ -7286,6 +8197,14 @@ VAR POS_disp, d				; variable entiere
 	LVA	1, -FROM_ofs
 	LIa	, , 8
 	Ld	, _STRING.FST_1
+	DUP
+	Ld	0, STANDARD._POSITIVE.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._POSITIVE.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	POS_disp
 
 VAR VAL_disp, q				; variable flottante
@@ -7339,6 +8258,18 @@ LOOP__32:
 	LVA	1, -FROM_ofs
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	POS_disp
+	DUP
+	LVA	1, -FROM_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LVA	1, -FROM_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LVA	1, -FROM_ofs
 	LIa	, 0,  8
 	Ld	, STANDARD._STRING.FST_1			; (index - FST_1) * SIZ_1
@@ -7359,6 +8290,18 @@ LOOP__32:
 	LVA	1, -FROM_ofs
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	POS_disp
+	DUP
+	LVA	1, -FROM_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LVA	1, -FROM_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LVA	1, -FROM_ofs
 	LIa	, 0,  8
 	Ld	, STANDARD._STRING.FST_1			; (index - FST_1) * SIZ_1
@@ -7380,6 +8323,14 @@ L701:
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._POSITIVE.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._POSITIVE.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	POS_disp
 	BRA	LOOP__32
 L700:					; post loop LOOP__32
@@ -7393,6 +8344,18 @@ L700:					; post loop LOOP__32
 	LVA	1, -FROM_ofs
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	POS_disp
+	DUP
+	LVA	1, -FROM_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LVA	1, -FROM_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LVA	1, -FROM_ofs
 	LIa	, 0,  8
 	Ld	, STANDARD._STRING.FST_1			; (index - FST_1) * SIZ_1
@@ -7417,6 +8380,14 @@ L700:					; post loop LOOP__32
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._POSITIVE.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._POSITIVE.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	POS_disp
 	BRA	L705
 L706:
@@ -7428,6 +8399,14 @@ L706:
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._POSITIVE.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._POSITIVE.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	POS_disp
 	BRA	L705
 L707:
@@ -7450,6 +8429,18 @@ L710:
 	LVA	1, -FROM_ofs
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	POS_disp
+	DUP
+	LVA	1, -FROM_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LVA	1, -FROM_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LVA	1, -FROM_ofs
 	LIa	, 0,  8
 	Ld	, STANDARD._STRING.FST_1			; (index - FST_1) * SIZ_1
@@ -7470,14 +8461,28 @@ L710:
 	BF	L712
 	LI	1
 	Sb  1,	IN_FRAC_disp
-	LVA  1,	-LAST_ofs
-	La
 	Ld 1,	POS_disp
+	DUP
+	Ld	0, STANDARD._POSITIVE.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._POSITIVE.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	SId  1,	-LAST_ofs
 	Ld 1,	POS_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._POSITIVE.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._POSITIVE.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	POS_disp
 	BRA	L711
 L712:
@@ -7492,14 +8497,28 @@ L712:
 	CEQ
 L714:
 	BF	L713
-	LVA  1,	-LAST_ofs
-	La
 	Ld 1,	POS_disp
+	DUP
+	Ld	0, STANDARD._POSITIVE.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._POSITIVE.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	SId  1,	-LAST_ofs
 	Ld 1,	POS_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._POSITIVE.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._POSITIVE.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	POS_disp
 					; debut if
 	Ld 1,	POS_disp
@@ -7511,6 +8530,18 @@ L714:
 	LVA	1, -FROM_ofs
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	POS_disp
+	DUP
+	LVA	1, -FROM_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LVA	1, -FROM_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LVA	1, -FROM_ofs
 	LIa	, 0,  8
 	Ld	, STANDARD._STRING.FST_1			; (index - FST_1) * SIZ_1
@@ -7531,14 +8562,28 @@ L714:
 	BF	L718
 	LI	1
 	Sb  1,	EXP_NEG_disp
-	LVA  1,	-LAST_ofs
-	La
 	Ld 1,	POS_disp
+	DUP
+	Ld	0, STANDARD._POSITIVE.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._POSITIVE.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	SId  1,	-LAST_ofs
 	Ld 1,	POS_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._POSITIVE.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._POSITIVE.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	POS_disp
 	BRA	L717
 L718:
@@ -7546,14 +8591,28 @@ L718:
 	LI	43
 	CEQ
 	BF	L719
-	LVA  1,	-LAST_ofs
-	La
 	Ld 1,	POS_disp
+	DUP
+	Ld	0, STANDARD._POSITIVE.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._POSITIVE.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	SId  1,	-LAST_ofs
 	Ld 1,	POS_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._POSITIVE.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._POSITIVE.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	POS_disp
 	BRA	L717
 L719:
@@ -7571,6 +8630,18 @@ LOOP__34:
 	LVA	1, -FROM_ofs
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	POS_disp
+	DUP
+	LVA	1, -FROM_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LVA	1, -FROM_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LVA	1, -FROM_ofs
 	LIa	, 0,  8
 	Ld	, STANDARD._STRING.FST_1			; (index - FST_1) * SIZ_1
@@ -7604,14 +8675,28 @@ L723:
 	LI	48
 	SUB
 	Sd  1,	EXP_VAL_disp
-	LVA  1,	-LAST_ofs
-	La
 	Ld 1,	POS_disp
+	DUP
+	Ld	0, STANDARD._POSITIVE.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._POSITIVE.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	SId  1,	-LAST_ofs
 	Ld 1,	POS_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._POSITIVE.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._POSITIVE.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	POS_disp
 	BRA	LOOP__34
 L720:					; post loop LOOP__34
@@ -7633,17 +8718,16 @@ L725:
 					; debut if
 	Lb 1,	IN_FRAC_disp
 	BF	L727
-	LVA  1,	VAL_disp
 	LVA 1,	VAL_disp
 	La 1,	-GFP_ofs
-	La ,	-NUM__outadr_ofs
+	La ,	-NUM__inadr_ofs
 	CALLI
 	La 1,	-GFP_ofs
 	La ,	-NUM__ld_ofs
 	CALLI
 	LVA 1,	FRAC_disp
 	La 1,	-GFP_ofs
-	La ,	-NUM__outadr_ofs
+	La ,	-NUM__inadr_ofs
 	CALLI
 	La 1,	-GFP_ofs
 	La ,	-NUM__ld_ofs
@@ -7656,10 +8740,9 @@ L725:
 	FMUL
 	FADD
 	Sq  1,	VAL_disp
-	LVA  1,	FRAC_disp
 	LVA 1,	FRAC_disp
 	La 1,	-GFP_ofs
-	La ,	-NUM__outadr_ofs
+	La ,	-NUM__inadr_ofs
 	CALLI
 	La 1,	-GFP_ofs
 	La ,	-NUM__ld_ofs
@@ -7670,12 +8753,11 @@ L725:
 	Sq  1,	FRAC_disp
 	BRA	L726
 L727:
-	LVA  1,	VAL_disp
 ; CODE_NUMERIC_LITERAL DN_FLOAT
 	LIF	10.0
 	LVA 1,	VAL_disp
 	La 1,	-GFP_ofs
-	La ,	-NUM__outadr_ofs
+	La ,	-NUM__inadr_ofs
 	CALLI
 	La 1,	-GFP_ofs
 	La ,	-NUM__ld_ofs
@@ -7691,14 +8773,28 @@ L727:
 L726:					; post if
 	LI	1
 	Sb  1,	HAVE_DIGIT_disp
-	LVA  1,	-LAST_ofs
-	La
 	Ld 1,	POS_disp
+	DUP
+	Ld	0, STANDARD._POSITIVE.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._POSITIVE.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	SId  1,	-LAST_ofs
 	Ld 1,	POS_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._POSITIVE.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._POSITIVE.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	POS_disp
 	BRA	L711
 L724:
@@ -7733,10 +8829,9 @@ VAR	LMT_JL733_disp, d			; limite boucle LOOP__35
 	CGT
 	BT	L732
 LOOP__35:					; corps boucle LOOP__35
-	LVA  1,	VAL_disp
 	LVA 1,	VAL_disp
 	La 1,	-GFP_ofs
-	La ,	-NUM__outadr_ofs
+	La ,	-NUM__inadr_ofs
 	CALLI
 	La 1,	-GFP_ofs
 	La ,	-NUM__ld_ofs
@@ -7768,10 +8863,9 @@ VAR	LMT_JL735_disp, d			; limite boucle LOOP__36
 	CGT
 	BT	L734
 LOOP__36:					; corps boucle LOOP__36
-	LVA  1,	VAL_disp
 	LVA 1,	VAL_disp
 	La 1,	-GFP_ofs
-	La ,	-NUM__outadr_ofs
+	La ,	-NUM__inadr_ofs
 	CALLI
 	La 1,	-GFP_ofs
 	La ,	-NUM__ld_ofs
@@ -7797,7 +8891,7 @@ L730:					; post if
 	La
 	LVA 1,	VAL_disp
 	La 1,	-GFP_ofs
-	La ,	-NUM__outadr_ofs
+	La ,	-NUM__inadr_ofs
 	CALLI
 	La 1,	-GFP_ofs
 	La ,	-NUM__ld_ofs
@@ -7812,7 +8906,7 @@ L737:
 	La
 	LVA 1,	VAL_disp
 	La 1,	-GFP_ofs
-	La ,	-NUM__outadr_ofs
+	La ,	-NUM__inadr_ofs
 	CALLI
 	La 1,	-GFP_ofs
 	La ,	-NUM__ld_ofs
@@ -7885,6 +8979,14 @@ VAR IMAGE__u, q				; variable array : useinfo pointeur au rec info
 VAR LEN_disp, d				; variable entiere
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	LEN_disp
 
 VAR POS_disp, d				; variable entiere
@@ -7973,6 +9075,14 @@ VAR IBUF__u, q				; variable array : useinfo pointeur au rec info
 VAR NB_disp, d				; variable entiere
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	NB_disp
 
 VAR E_disp, d				; variable entiere
@@ -8012,7 +9122,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	BRA	L741
 L742:
 L741:					; post if
-; CODE_RETURN : EXPR TYPE = DN_INTEGER
+; CODE_RETURN : EXPR TYPE = DN_INTEGER  VUE COMPLETE = DN_INTEGER
 	Lq 2,	R_disp
 	Sq  2,	-result__ofs
 	BRA ret_lbl
@@ -8041,9 +9151,25 @@ begin:					;---------- BDY INSTRUCTIONS
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	LEN_disp
 	La	 1, IMAGE_disp				; array data start address on stack
 	Ld 1,	STANDARD.TEXT_IO.FLOAT_IO.PUT_L72.LEN_disp
+	DUP
+	LId	1, IMAGE__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	1, IMAGE__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	1, IMAGE__u, STANDARD._STRING.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	1, IMAGE__u, STANDARD._STRING.COMP_SIZ
@@ -8242,10 +9368,26 @@ L766:					; post if
 	BF	L769
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	NB_disp
 	La	 1, IBUF_disp				; array data start address on stack
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
+	DUP
+	LId	1, IBUF__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	1, IBUF__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	1, IBUF__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	1, IBUF__u, STANDARD._STRING.COMP_SIZ
@@ -8267,9 +9409,25 @@ LOOP__39:
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	NB_disp
 	La	 1, IBUF_disp				; array data start address on stack
 	Ld 1,	NB_disp
+	DUP
+	LId	1, IBUF__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	1, IBUF__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	1, IBUF__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	1, IBUF__u, STANDARD._STRING.COMP_SIZ
@@ -8281,6 +9439,10 @@ LOOP__39:
 	Lq 1,	IPART_WORK_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	10
+	DUP
+	LI	0
+	CEQ
+	BT	STANDARD.ne_raise_
 	MODI
 ; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
 	ADD
@@ -8288,6 +9450,10 @@ LOOP__39:
 	Lq 1,	IPART_WORK_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	10
+	DUP
+	LI	0
+	CEQ
+	BT	STANDARD.ne_raise_
 	DIV
 	Sq  1,	IPART_WORK_disp
 	BRA	LOOP__39
@@ -8312,6 +9478,14 @@ LOOP__40:					; corps boucle LOOP__40
 	La  1,	-GFP_ofs				; propagation GFP generique
 	La	 1, IBUF_disp				; array data start address on stack
 	Ld	1, KL772_disp
+	DUP
+	LId	1, IBUF__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	1, IBUF__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	1, IBUF__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	1, IBUF__u, STANDARD._STRING.COMP_SIZ
@@ -8580,6 +9754,10 @@ LOOP__47:					; corps boucle LOOP__47
 	Ld 2,	CHECK_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	10
+	DUP
+	LI	0
+	CEQ
+	BT	STANDARD.ne_raise_
 	DIV
 	Sd  2,	CHECK_disp
 	Ld  2,	KL791_disp				; test de sortie LOOP__47
@@ -8620,6 +9798,14 @@ VAR	LMT_KL795_disp, d			; limite boucle LOOP__48
 LOOP__48:					; corps boucle LOOP__48
 	La	 2, EXP_STR_disp			; array data start address on stack
 	Ld	2, KL795_disp
+	DUP
+	LId	2, EXP_STR__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	2, EXP_STR__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	2, EXP_STR__u, STANDARD._STRING.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	2, EXP_STR__u, STANDARD._STRING.COMP_SIZ
@@ -8631,12 +9817,20 @@ LOOP__48:					; corps boucle LOOP__48
 	Ld 2,	EVAL_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	10
+	DUP
+	LI	0
+	CEQ
+	BT	STANDARD.ne_raise_
 	MODI
 	ADD
 	Sb
 	Ld 2,	EVAL_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	10
+	DUP
+	LI	0
+	CEQ
+	BT	STANDARD.ne_raise_
 	DIV
 	Sd  2,	EVAL_disp
 	Ld  2,	KL795_disp				; test de sortie LOOP__48
@@ -8663,6 +9857,14 @@ LOOP__49:					; corps boucle LOOP__49
 	La  1,	-GFP_ofs				; propagation GFP generique
 	La	 2, EXP_STR_disp			; array data start address on stack
 	Ld	2, KL797_disp
+	DUP
+	LId	2, EXP_STR__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	2, EXP_STR__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	2, EXP_STR__u, STANDARD._STRING.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	2, EXP_STR__u, STANDARD._STRING.COMP_SIZ
@@ -8738,6 +9940,18 @@ LOOP__45:					; corps boucle LOOP__45
 	LVA	1, -TO_ofs
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	POS_disp
+	DUP
+	LVA	1, -TO_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LVA	1, -TO_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LVA	1, -TO_ofs
 	LIa	, 0,  8
 	Ld	, STANDARD._STRING.FST_1			; (index - FST_1) * SIZ_1
@@ -8780,6 +9994,18 @@ LOOP__46:					; corps boucle LOOP__46
 	LVA	1, -TO_ofs
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	POS_disp
+	DUP
+	LVA	1, -TO_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LVA	1, -TO_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LVA	1, -TO_ofs
 	LIa	, 0,  8
 	Ld	, STANDARD._STRING.FST_1			; (index - FST_1) * SIZ_1
@@ -8793,6 +10019,14 @@ LOOP__46:					; corps boucle LOOP__46
 	ADD					; add offset to start address
 	La	 1, IMAGE_disp				; array data start address on stack
 	Ld	1, KL804_disp
+	DUP
+	LId	1, IMAGE__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	1, IMAGE__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	1, IMAGE__u, STANDARD._STRING.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	1, IMAGE__u, STANDARD._STRING.COMP_SIZ
@@ -8892,6 +10126,14 @@ VAR EXP_NEG_disp, d				; variable bool char enum
 VAR CHARS_READ_disp, d			; variable entiere
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	CHARS_READ_disp
 
 VAR DONE_disp, d				; variable bool char enum
@@ -8985,6 +10227,14 @@ L814:
 	CALL	STANDARD.TEXT_IO. ,GET_RAW_L81
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	CHARS_READ_disp
 L813:					; post if
 					; debut if
@@ -9022,6 +10272,14 @@ L827:
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	CHARS_READ_disp
 					; debut if
 	Ld 1,	CHARS_READ_disp
@@ -9066,6 +10324,14 @@ L833:
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	CHARS_READ_disp
 					; debut if
 	Ld 1,	CHARS_READ_disp
@@ -9132,6 +10398,14 @@ L841:					; post if
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	CHARS_READ_disp
 					; debut if
 	Ld 1,	CHARS_READ_disp
@@ -9175,6 +10449,14 @@ L852:
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	CHARS_READ_disp
 					; debut if
 	Ld 1,	CHARS_READ_disp
@@ -9225,6 +10507,14 @@ L859:
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	CHARS_READ_disp
 					; debut if
 	Ld 1,	CHARS_READ_disp
@@ -9261,6 +10551,14 @@ L861:
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	CHARS_READ_disp
 					; debut if
 	Ld 1,	CHARS_READ_disp
@@ -9326,6 +10624,14 @@ L875:
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	CHARS_READ_disp
 					; debut if
 	Ld 1,	CHARS_READ_disp
@@ -9446,6 +10752,14 @@ L887:					; post if
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	CHARS_READ_disp
 					; debut if
 	Ld 1,	CHARS_READ_disp
@@ -9617,6 +10931,14 @@ ELB 1					;    BODY ELAB
 begin:					;---------- BDY INSTRUCTIONS
 	La  1,	-GFP_ofs				; propagation GFP generique
 	Ld  1,	-WIDTH_ofs
+	DUP
+	Ld	0, STANDARD.TEXT_IO._FIELD.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD.TEXT_IO._FIELD.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	La  1,	-ITEM_ofs
 	LVA 0,	STANDARD.TEXT_IO.DEFAULT_INPUT_disp
 	CALL	STANDARD.TEXT_IO.FIXED_IO. ,GET_L73
@@ -9747,6 +11069,14 @@ VAR IBUF__u, q				; variable array : useinfo pointeur au rec info
 VAR NB_disp, d				; variable entiere
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	NB_disp
 
 VAR E_disp, d				; variable entiere
@@ -9786,7 +11116,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	BRA	L910
 L911:
 L910:					; post if
-; CODE_RETURN : EXPR TYPE = DN_INTEGER
+; CODE_RETURN : EXPR TYPE = DN_INTEGER  VUE COMPLETE = DN_INTEGER
 	Lq 2,	R_disp
 	Sq  2,	-result__ofs
 	BRA ret_lbl
@@ -9990,6 +11320,14 @@ VAR IBUF__u, q				; variable array : useinfo pointeur au rec info
 VAR NB_disp, d				; variable entiere
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  2,	NB_disp
 
 VAR IPART_disp, q				; variable entiere
@@ -10010,10 +11348,26 @@ begin:					;---------- BDY INSTRUCTIONS
 	BF	L931
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  2,	NB_disp
 	La	 2, IBUF_disp				; array data start address on stack
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
+	DUP
+	LId	2, IBUF__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	2, IBUF__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	2, IBUF__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	2, IBUF__u, STANDARD._STRING.COMP_SIZ
@@ -10035,9 +11389,25 @@ LOOP__63:
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  2,	NB_disp
 	La	 2, IBUF_disp				; array data start address on stack
 	Ld 2,	NB_disp
+	DUP
+	LId	2, IBUF__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	2, IBUF__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	2, IBUF__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	2, IBUF__u, STANDARD._STRING.COMP_SIZ
@@ -10049,18 +11419,34 @@ LOOP__63:
 	Lq 2,	IPART_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	10
+	DUP
+	LI	0
+	CEQ
+	BT	STANDARD.ne_raise_
 	MODI
 	ADD
 	Sb
 	Lq 2,	IPART_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	10
+	DUP
+	LI	0
+	CEQ
+	BT	STANDARD.ne_raise_
 	DIV
 	Sq  2,	IPART_disp
 	BRA	LOOP__63
 L932:					; post loop LOOP__63
 L930:					; post if
 	Ld 2,	NB_disp
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  2,	FLEN_disp
 					; debut if
 	Lb 1,	STANDARD.TEXT_IO.FIXED_IO.PUT_L75.IS_NEGATIVE_disp
@@ -10069,6 +11455,14 @@ L930:					; post if
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  2,	FLEN_disp
 	BRA	L933
 L934:
@@ -10134,6 +11528,14 @@ VAR	LMT_KL942_disp, d			; limite boucle LOOP__65
 LOOP__65:					; corps boucle LOOP__65
 	La	 2, IBUF_disp				; array data start address on stack
 	Ld	2, KL942_disp
+	DUP
+	LId	2, IBUF__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	2, IBUF__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	2, IBUF__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	2, IBUF__u, STANDARD._STRING.COMP_SIZ
@@ -10469,6 +11871,10 @@ LOOP__66:					; corps boucle LOOP__66
 	Ld 2,	CHECK_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	10
+	DUP
+	LI	0
+	CEQ
+	BT	STANDARD.ne_raise_
 	DIV
 	Sd  2,	CHECK_disp
 	Ld  2,	KL967_disp				; test de sortie LOOP__66
@@ -10509,6 +11915,14 @@ VAR	LMT_KL971_disp, d			; limite boucle LOOP__67
 LOOP__67:					; corps boucle LOOP__67
 	La	 2, EXP_STR_disp			; array data start address on stack
 	Ld	2, KL971_disp
+	DUP
+	LId	2, EXP_STR__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	2, EXP_STR__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	2, EXP_STR__u, STANDARD._STRING.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	2, EXP_STR__u, STANDARD._STRING.COMP_SIZ
@@ -10520,12 +11934,20 @@ LOOP__67:					; corps boucle LOOP__67
 	Ld 2,	EVAL_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	10
+	DUP
+	LI	0
+	CEQ
+	BT	STANDARD.ne_raise_
 	MODI
 	ADD
 	Sb
 	Ld 2,	EVAL_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	10
+	DUP
+	LI	0
+	CEQ
+	BT	STANDARD.ne_raise_
 	DIV
 	Sd  2,	EVAL_disp
 	Ld  2,	KL971_disp				; test de sortie LOOP__67
@@ -10551,6 +11973,14 @@ VAR	LMT_KL973_disp, d			; limite boucle LOOP__68
 LOOP__68:					; corps boucle LOOP__68
 	La	 2, EXP_STR_disp			; array data start address on stack
 	Ld	2, KL973_disp
+	DUP
+	LId	2, EXP_STR__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	2, EXP_STR__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	2, EXP_STR__u, STANDARD._STRING.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	2, EXP_STR__u, STANDARD._STRING.COMP_SIZ
@@ -10594,8 +12024,32 @@ ELB 1					;    BODY ELAB
 begin:					;---------- BDY INSTRUCTIONS
 	La  1,	-GFP_ofs				; propagation GFP generique
 	Ld  1,	-EXP_ofs
+	DUP
+	Ld	0, STANDARD.TEXT_IO._FIELD.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD.TEXT_IO._FIELD.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Ld  1,	-AFT_ofs
+	DUP
+	Ld	0, STANDARD.TEXT_IO._FIELD.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD.TEXT_IO._FIELD.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Ld  1,	-FORE_ofs
+	DUP
+	Ld	0, STANDARD.TEXT_IO._FIELD.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD.TEXT_IO._FIELD.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	LVA 1,	-ITEM_ofs
 	La 1,	-GFP_ofs
 	La ,	-NUM__ld_ofs
@@ -10685,6 +12139,18 @@ LOOP__69:
 	LVA	1, -FROM_ofs
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	I_disp
+	DUP
+	LVA	1, -FROM_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LVA	1, -FROM_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LVA	1, -FROM_ofs
 	LIa	, 0,  8
 	Ld	, STANDARD._STRING.FST_1			; (index - FST_1) * SIZ_1
@@ -10705,6 +12171,18 @@ LOOP__69:
 	LVA	1, -FROM_ofs
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	I_disp
+	DUP
+	LVA	1, -FROM_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LVA	1, -FROM_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LVA	1, -FROM_ofs
 	LIa	, 0,  8
 	Ld	, STANDARD._STRING.FST_1			; (index - FST_1) * SIZ_1
@@ -10741,6 +12219,18 @@ L978:					; post loop LOOP__69
 	LVA	1, -FROM_ofs
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	I_disp
+	DUP
+	LVA	1, -FROM_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LVA	1, -FROM_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LVA	1, -FROM_ofs
 	LIa	, 0,  8
 	Ld	, STANDARD._STRING.FST_1			; (index - FST_1) * SIZ_1
@@ -10777,6 +12267,18 @@ L982:
 	LVA	1, -FROM_ofs
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	I_disp
+	DUP
+	LVA	1, -FROM_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LVA	1, -FROM_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LVA	1, -FROM_ofs
 	LIa	, 0,  8
 	Ld	, STANDARD._STRING.FST_1			; (index - FST_1) * SIZ_1
@@ -10812,6 +12314,18 @@ LOOP__70:
 	LVA	1, -FROM_ofs
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	I_disp
+	DUP
+	LVA	1, -FROM_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LVA	1, -FROM_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LVA	1, -FROM_ofs
 	LIa	, 0,  8
 	Ld	, STANDARD._STRING.FST_1			; (index - FST_1) * SIZ_1
@@ -10832,6 +12346,18 @@ LOOP__70:
 	LVA	1, -FROM_ofs
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	I_disp
+	DUP
+	LVA	1, -FROM_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LVA	1, -FROM_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LVA	1, -FROM_ofs
 	LIa	, 0,  8
 	Ld	, STANDARD._STRING.FST_1			; (index - FST_1) * SIZ_1
@@ -10860,6 +12386,18 @@ L989:
 	LVA	1, -FROM_ofs
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	I_disp
+	DUP
+	LVA	1, -FROM_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LVA	1, -FROM_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LVA	1, -FROM_ofs
 	LIa	, 0,  8
 	Ld	, STANDARD._STRING.FST_1			; (index - FST_1) * SIZ_1
@@ -10893,6 +12431,18 @@ L991:
 	LVA	1, -FROM_ofs
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	I_disp
+	DUP
+	LVA	1, -FROM_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LVA	1, -FROM_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LVA	1, -FROM_ofs
 	LIa	, 0,  8
 	Ld	, STANDARD._STRING.FST_1			; (index - FST_1) * SIZ_1
@@ -10922,6 +12472,18 @@ L988:
 	LVA	1, -FROM_ofs
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	I_disp
+	DUP
+	LVA	1, -FROM_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LVA	1, -FROM_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LVA	1, -FROM_ofs
 	LIa	, 0,  8
 	Ld	, STANDARD._STRING.FST_1			; (index - FST_1) * SIZ_1
@@ -10956,6 +12518,18 @@ L992:
 	LVA	1, -FROM_ofs
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	I_disp
+	DUP
+	LVA	1, -FROM_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LVA	1, -FROM_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LVA	1, -FROM_ofs
 	LIa	, 0,  8
 	Ld	, STANDARD._STRING.FST_1			; (index - FST_1) * SIZ_1
@@ -10976,6 +12550,18 @@ L992:
 	LVA	1, -FROM_ofs
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	I_disp
+	DUP
+	LVA	1, -FROM_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LVA	1, -FROM_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LVA	1, -FROM_ofs
 	LIa	, 0,  8
 	Ld	, STANDARD._STRING.FST_1			; (index - FST_1) * SIZ_1
@@ -11016,6 +12602,18 @@ L995:
 	LVA	1, -FROM_ofs
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	I_disp
+	DUP
+	LVA	1, -FROM_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LVA	1, -FROM_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LVA	1, -FROM_ofs
 	LIa	, 0,  8
 	Ld	, STANDARD._STRING.FST_1			; (index - FST_1) * SIZ_1
@@ -11052,6 +12650,18 @@ L998:
 	LVA	1, -FROM_ofs
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	I_disp
+	DUP
+	LVA	1, -FROM_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LVA	1, -FROM_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LVA	1, -FROM_ofs
 	LIa	, 0,  8
 	Ld	, STANDARD._STRING.FST_1			; (index - FST_1) * SIZ_1
@@ -11088,6 +12698,18 @@ LOOP__71:
 	LVA	1, -FROM_ofs
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	I_disp
+	DUP
+	LVA	1, -FROM_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LVA	1, -FROM_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LVA	1, -FROM_ofs
 	LIa	, 0,  8
 	Ld	, STANDARD._STRING.FST_1			; (index - FST_1) * SIZ_1
@@ -11109,6 +12731,18 @@ L1004:
 	LVA	1, -FROM_ofs
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	I_disp
+	DUP
+	LVA	1, -FROM_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LVA	1, -FROM_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LVA	1, -FROM_ofs
 	LIa	, 0,  8
 	Ld	, STANDARD._STRING.FST_1			; (index - FST_1) * SIZ_1
@@ -11134,6 +12768,18 @@ L1003:
 	LVA	1, -FROM_ofs
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	I_disp
+	DUP
+	LVA	1, -FROM_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LVA	1, -FROM_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LVA	1, -FROM_ofs
 	LIa	, 0,  8
 	Ld	, STANDARD._STRING.FST_1			; (index - FST_1) * SIZ_1
@@ -11259,13 +12905,27 @@ LOOP__73:					; corps boucle LOOP__73
 	BRA	LOOP__73				; iteration suivante LOOP__73
 L1017:					; post loop LOOP__73
 L1013:					; post if
-	LVA  1,	-LAST_ofs
-	La
 	Ld 1,	I_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SUB
 ; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
+	DUP
+	Ld	0, STANDARD._POSITIVE.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._POSITIVE.LST
+	CGT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._POSITIVE.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._POSITIVE.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	SId  1,	-LAST_ofs
 					; debut if
 	Lb 1,	NEG_disp
@@ -11370,6 +13030,14 @@ VAR IMAGE__u, q				; variable array : useinfo pointeur au rec info
 VAR LEN_disp, d				; variable entiere
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	LEN_disp
 
 VAR POS_disp, d				; variable entiere
@@ -11467,6 +13135,14 @@ VAR IBUF__u, q				; variable array : useinfo pointeur au rec info
 VAR NB_disp, d				; variable entiere
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	NB_disp
 
 VAR E_disp, d				; variable entiere
@@ -11506,7 +13182,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	BRA	L1024
 L1025:
 L1024:					; post if
-; CODE_RETURN : EXPR TYPE = DN_INTEGER
+; CODE_RETURN : EXPR TYPE = DN_INTEGER  VUE COMPLETE = DN_INTEGER
 	Lq 2,	R_disp
 	Sq  2,	-result__ofs
 	BRA ret_lbl
@@ -11535,9 +13211,25 @@ begin:					;---------- BDY INSTRUCTIONS
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	LEN_disp
 	La	 1, IMAGE_disp				; array data start address on stack
 	Ld 1,	STANDARD.TEXT_IO.FIXED_IO.PUT_L78.LEN_disp
+	DUP
+	LId	1, IMAGE__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	1, IMAGE__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	1, IMAGE__u, STANDARD._STRING.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	1, IMAGE__u, STANDARD._STRING.COMP_SIZ
@@ -11736,10 +13428,26 @@ L1049:					; post if
 	BF	L1052
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	NB_disp
 	La	 1, IBUF_disp				; array data start address on stack
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
+	DUP
+	LId	1, IBUF__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	1, IBUF__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	1, IBUF__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	1, IBUF__u, STANDARD._STRING.COMP_SIZ
@@ -11761,9 +13469,25 @@ LOOP__76:
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	NB_disp
 	La	 1, IBUF_disp				; array data start address on stack
 	Ld 1,	NB_disp
+	DUP
+	LId	1, IBUF__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	1, IBUF__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	1, IBUF__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	1, IBUF__u, STANDARD._STRING.COMP_SIZ
@@ -11775,6 +13499,10 @@ LOOP__76:
 	Lq 1,	IPART_WORK_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	10
+	DUP
+	LI	0
+	CEQ
+	BT	STANDARD.ne_raise_
 	MODI
 ; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
 	ADD
@@ -11782,6 +13510,10 @@ LOOP__76:
 	Lq 1,	IPART_WORK_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	10
+	DUP
+	LI	0
+	CEQ
+	BT	STANDARD.ne_raise_
 	DIV
 	Sq  1,	IPART_WORK_disp
 	BRA	LOOP__76
@@ -11806,6 +13538,14 @@ LOOP__77:					; corps boucle LOOP__77
 	La  1,	-GFP_ofs				; propagation GFP generique
 	La	 1, IBUF_disp				; array data start address on stack
 	Ld	1, KL1055_disp
+	DUP
+	LId	1, IBUF__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	1, IBUF__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	1, IBUF__u, STANDARD._STRING.FST_1		; (index - FST_1) * SIZ_1
 	SUB
 	LId	1, IBUF__u, STANDARD._STRING.COMP_SIZ
@@ -12074,6 +13814,10 @@ LOOP__84:					; corps boucle LOOP__84
 	Ld 2,	CHECK_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	10
+	DUP
+	LI	0
+	CEQ
+	BT	STANDARD.ne_raise_
 	DIV
 	Sd  2,	CHECK_disp
 	Ld  2,	KL1074_disp				; test de sortie LOOP__84
@@ -12114,6 +13858,14 @@ VAR	LMT_KL1078_disp, d			; limite boucle LOOP__85
 LOOP__85:					; corps boucle LOOP__85
 	La	 2, EXP_STR_disp			; array data start address on stack
 	Ld	2, KL1078_disp
+	DUP
+	LId	2, EXP_STR__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	2, EXP_STR__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	2, EXP_STR__u, STANDARD._STRING.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	2, EXP_STR__u, STANDARD._STRING.COMP_SIZ
@@ -12125,12 +13877,20 @@ LOOP__85:					; corps boucle LOOP__85
 	Ld 2,	EVAL_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	10
+	DUP
+	LI	0
+	CEQ
+	BT	STANDARD.ne_raise_
 	MODI
 	ADD
 	Sb
 	Ld 2,	EVAL_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	10
+	DUP
+	LI	0
+	CEQ
+	BT	STANDARD.ne_raise_
 	DIV
 	Sd  2,	EVAL_disp
 	Ld  2,	KL1078_disp				; test de sortie LOOP__85
@@ -12157,6 +13917,14 @@ LOOP__86:					; corps boucle LOOP__86
 	La  1,	-GFP_ofs				; propagation GFP generique
 	La	 2, EXP_STR_disp			; array data start address on stack
 	Ld	2, KL1080_disp
+	DUP
+	LId	2, EXP_STR__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	2, EXP_STR__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	2, EXP_STR__u, STANDARD._STRING.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	2, EXP_STR__u, STANDARD._STRING.COMP_SIZ
@@ -12232,6 +14000,18 @@ LOOP__82:					; corps boucle LOOP__82
 	LVA	1, -TO_ofs
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	POS_disp
+	DUP
+	LVA	1, -TO_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LVA	1, -TO_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LVA	1, -TO_ofs
 	LIa	, 0,  8
 	Ld	, STANDARD._STRING.FST_1			; (index - FST_1) * SIZ_1
@@ -12274,6 +14054,18 @@ LOOP__83:					; corps boucle LOOP__83
 	LVA	1, -TO_ofs
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	POS_disp
+	DUP
+	LVA	1, -TO_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LVA	1, -TO_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LVA	1, -TO_ofs
 	LIa	, 0,  8
 	Ld	, STANDARD._STRING.FST_1			; (index - FST_1) * SIZ_1
@@ -12287,6 +14079,14 @@ LOOP__83:					; corps boucle LOOP__83
 	ADD					; add offset to start address
 	La	 1, IMAGE_disp				; array data start address on stack
 	Ld	1, KL1087_disp
+	DUP
+	LId	1, IMAGE__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	1, IMAGE__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	1, IMAGE__u, STANDARD._STRING.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	1, IMAGE__u, STANDARD._STRING.COMP_SIZ
@@ -12413,6 +14213,14 @@ VAR POS_VAL_disp, d				; variable entiere
 
 VAR I_disp, d				; variable entiere
 	LId	2, STANDARD.TEXT_IO.ENUMERATION_IO.PUT_L81.BLOCK__87.IMAGES_STR__u, STANDARD._STRING.FST_1
+	DUP
+	Ld	0, STANDARD._POSITIVE.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._POSITIVE.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  2,	I_disp
 
 VAR REP_disp, d				; variable entiere
@@ -12432,6 +14240,14 @@ LOOP__88:
 	BF	L1097
 	La	 2, IMAGES_STR_disp			; array data start address on stack
 	Ld 2,	I_disp
+	DUP
+	LId	2, IMAGES_STR__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	2, IMAGES_STR__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	2, IMAGES_STR__u, STANDARD._STRING.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	2, IMAGES_STR__u, STANDARD._STRING.COMP_SIZ
@@ -12446,6 +14262,14 @@ LOOP__88:
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	LId	2, IMAGES_STR__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	2, IMAGES_STR__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	2, IMAGES_STR__u, STANDARD._STRING.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	2, IMAGES_STR__u, STANDARD._STRING.COMP_SIZ
@@ -12464,6 +14288,14 @@ LOOP__88:
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	2
 	ADD
+	DUP
+	Ld	0, STANDARD._POSITIVE.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._POSITIVE.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  2,	IMG_START_disp
 VAR	JL1101_disp, d				; compteur boucle LOOP__89
 ; CODE_NUMERIC_LITERAL DN_INTEGER
@@ -12492,6 +14324,14 @@ VAR CH_disp, d				; variable bool char enum
 	Ld 2,	STANDARD.TEXT_IO.ENUMERATION_IO.PUT_L81.BLOCK__87.IMG_START_disp
 	Ld	2, JL1101_disp
 	ADD
+	DUP
+	LId	2, IMAGES_STR__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	2, IMAGES_STR__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	2, IMAGES_STR__u, STANDARD._STRING.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	2, IMAGES_STR__u, STANDARD._STRING.COMP_SIZ
@@ -12535,6 +14375,14 @@ L1103:
 	Ld 2,	IMG_START_disp
 	Ld	2, JL1101_disp
 	ADD
+	DUP
+	LId	2, IMAGES_STR__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	2, IMAGES_STR__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	2, IMAGES_STR__u, STANDARD._STRING.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	2, IMAGES_STR__u, STANDARD._STRING.COMP_SIZ
@@ -12603,6 +14451,14 @@ L1098:					; post if
 	ADD
 	Ld 2,	LEN_disp
 	ADD
+	DUP
+	Ld	0, STANDARD._POSITIVE.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._POSITIVE.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  2,	I_disp
 	BRA	LOOP__88
 L1097:					; post loop LOOP__88
@@ -12629,6 +14485,14 @@ begin:					;---------- BDY INSTRUCTIONS
 	La  1,	-GFP_ofs				; propagation GFP generique
 	Lb  1,	-SET_ofs
 	Ld  1,	-WIDTH_ofs
+	DUP
+	Ld	0, STANDARD.TEXT_IO._FIELD.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD.TEXT_IO._FIELD.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	LVA 1,	-ITEM_ofs
 	La 1,	-GFP_ofs
 	La ,	-ENUM__ld_ofs
@@ -12697,6 +14561,14 @@ VAR TOKEN__u, q				; variable array : useinfo pointeur au rec info
 VAR TOK_LEN_disp, d				; variable entiere
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	TOK_LEN_disp
 
 VAR TOK_TOO_LONG_disp, d			; variable bool char enum
@@ -12771,7 +14643,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	CLE
 L1123:
 	BF	L1122
-; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
+; CODE_RETURN : EXPR TYPE = DN_ENUMERATION  VUE COMPLETE = DN_ENUMERATION
 	Lb  2,	-CH_ofs
 ; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
 	LI	32
@@ -12780,7 +14652,7 @@ L1123:
 	BRA ret_lbl
 	BRA	L1121
 L1122:
-; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
+; CODE_RETURN : EXPR TYPE = DN_ENUMERATION  VUE COMPLETE = DN_ENUMERATION
 	Lb  2,	-CH_ofs
 	Sb  2,	-result__ofs
 	BRA ret_lbl
@@ -12802,7 +14674,7 @@ endPRMS					;    fin parametrage
 ELB 2					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
+; CODE_RETURN : EXPR TYPE = DN_ENUMERATION  VUE COMPLETE = DN_ENUMERATION
 	Lb  2,	-CH_ofs
 	LI	32
 	CEQ
@@ -12853,7 +14725,7 @@ endPRMS					;    fin parametrage
 ELB 2					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
+; CODE_RETURN : EXPR TYPE = DN_ENUMERATION  VUE COMPLETE = DN_ENUMERATION
 	Lb  2,	-CH_ofs
 	LI	65
 	CGE
@@ -13020,10 +14892,26 @@ L1155:					; post if
 	BF	L1158
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	TOK_LEN_disp
 	La	 1, TOKEN_disp				; array data start address on stack
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
+	DUP
+	LId	1, TOKEN__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	1, TOKEN__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	1, TOKEN__u, STANDARD._STRING.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	1, TOKEN__u, STANDARD._STRING.COMP_SIZ
@@ -13046,9 +14934,25 @@ LOOP__93:
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	TOK_LEN_disp
 	La	 1, TOKEN_disp				; array data start address on stack
 	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L79.TOK_LEN_disp
+	DUP
+	LId	1, TOKEN__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	1, TOKEN__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	1, TOKEN__u, STANDARD._STRING.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	1, TOKEN__u, STANDARD._STRING.COMP_SIZ
@@ -13087,9 +14991,25 @@ LOOP__94:
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	TOK_LEN_disp
 	La	 1, TOKEN_disp				; array data start address on stack
 	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L79.TOK_LEN_disp
+	DUP
+	LId	1, TOKEN__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	1, TOKEN__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	1, TOKEN__u, STANDARD._STRING.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	1, TOKEN__u, STANDARD._STRING.COMP_SIZ
@@ -13138,6 +15058,14 @@ L1171:
 L1170:
 L1169:					; post if
 	LId	2, STANDARD.TEXT_IO.ENUMERATION_IO.GET_L79.BLOCK__92.IMAGES_STR__u, STANDARD._STRING.FST_1
+	DUP
+	Ld	0, STANDARD._POSITIVE.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._POSITIVE.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	I_disp
 LOOP__95:
 	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L79.I_disp
@@ -13146,6 +15074,14 @@ LOOP__95:
 	BF	L1172
 	La	 2, IMAGES_STR_disp			; array data start address on stack
 	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L79.I_disp
+	DUP
+	LId	2, IMAGES_STR__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	2, IMAGES_STR__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	2, IMAGES_STR__u, STANDARD._STRING.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	2, IMAGES_STR__u, STANDARD._STRING.COMP_SIZ
@@ -13160,6 +15096,14 @@ LOOP__95:
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	LId	2, IMAGES_STR__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	2, IMAGES_STR__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	2, IMAGES_STR__u, STANDARD._STRING.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	2, IMAGES_STR__u, STANDARD._STRING.COMP_SIZ
@@ -13173,6 +15117,14 @@ LOOP__95:
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	2
 	ADD
+	DUP
+	Ld	0, STANDARD._POSITIVE.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._POSITIVE.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	IMG_START_disp
 					; debut if
 	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L79.IMG_LEN_disp
@@ -13201,6 +15153,14 @@ LOOP__96:					; corps boucle LOOP__96
 	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L79.IMG_START_disp
 	Ld	2, JL1176_disp
 	ADD
+	DUP
+	LId	2, IMAGES_STR__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	2, IMAGES_STR__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	2, IMAGES_STR__u, STANDARD._STRING.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	2, IMAGES_STR__u, STANDARD._STRING.COMP_SIZ
@@ -13247,6 +15207,14 @@ LOOP__97:					; corps boucle LOOP__97
 	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L79.IMG_START_disp
 	Ld	2, JL1180_disp
 	ADD
+	DUP
+	LId	2, IMAGES_STR__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	2, IMAGES_STR__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	2, IMAGES_STR__u, STANDARD._STRING.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	2, IMAGES_STR__u, STANDARD._STRING.COMP_SIZ
@@ -13261,6 +15229,14 @@ LOOP__97:					; corps boucle LOOP__97
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	LId	1, TOKEN__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	1, TOKEN__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	1, TOKEN__u, STANDARD._STRING.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	1, TOKEN__u, STANDARD._STRING.COMP_SIZ
@@ -13334,6 +15310,14 @@ L1173:					; post if
 	ADD
 	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L79.IMG_LEN_disp
 	ADD
+	DUP
+	Ld	0, STANDARD._POSITIVE.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._POSITIVE.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	I_disp
 	BRA	LOOP__95
 L1172:					; post loop LOOP__95
@@ -13450,7 +15434,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	CLE
 L1199:
 	BF	L1198
-; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
+; CODE_RETURN : EXPR TYPE = DN_ENUMERATION  VUE COMPLETE = DN_ENUMERATION
 	Lb  2,	-CH_ofs
 ; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
 	LI	32
@@ -13459,7 +15443,7 @@ L1199:
 	BRA ret_lbl
 	BRA	L1197
 L1198:
-; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
+; CODE_RETURN : EXPR TYPE = DN_ENUMERATION  VUE COMPLETE = DN_ENUMERATION
 	Lb  2,	-CH_ofs
 	Sb  2,	-result__ofs
 	BRA ret_lbl
@@ -13482,7 +15466,7 @@ endPRMS					;    fin parametrage
 ELB 2					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
+; CODE_RETURN : EXPR TYPE = DN_ENUMERATION  VUE COMPLETE = DN_ENUMERATION
 	LI	0					; lieu resultat sur pile
 	La  1,	-GFP_ofs				; propagation GFP generique
 	Lb  2,	-LEFT_ofs
@@ -13541,6 +15525,18 @@ IGNORE_BLANKS:
 	LVA	1, -FROM_ofs
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L83.I_disp
+	DUP
+	LVA	1, -FROM_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LVA	1, -FROM_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LVA	1, -FROM_ofs
 	LIa	, 0,  8
 	Ld	, STANDARD._STRING.FST_1			; (index - FST_1) * SIZ_1
@@ -13561,6 +15557,18 @@ IGNORE_BLANKS:
 	LVA	1, -FROM_ofs
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L83.I_disp
+	DUP
+	LVA	1, -FROM_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LVA	1, -FROM_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LVA	1, -FROM_ofs
 	LIa	, 0,  8
 	Ld	, STANDARD._STRING.FST_1			; (index - FST_1) * SIZ_1
@@ -13582,6 +15590,18 @@ L1211:
 	LVA	1, -FROM_ofs
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L83.I_disp
+	DUP
+	LVA	1, -FROM_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LVA	1, -FROM_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LVA	1, -FROM_ofs
 	LIa	, 0,  8
 	Ld	, STANDARD._STRING.FST_1			; (index - FST_1) * SIZ_1
@@ -13603,6 +15623,18 @@ L1210:
 	LVA	1, -FROM_ofs
 	LIa	, , 0				; array data start address on stack
 	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L83.I_disp
+	DUP
+	LVA	1, -FROM_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LVA	1, -FROM_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LVA	1, -FROM_ofs
 	LIa	, 0,  8
 	Ld	, STANDARD._STRING.FST_1			; (index - FST_1) * SIZ_1
@@ -13636,6 +15668,14 @@ LOOP__99:
 	BF	L1212
 	La	 2, IMAGES_STR_disp			; array data start address on stack
 	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L83.P_disp
+	DUP
+	LId	2, IMAGES_STR__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	2, IMAGES_STR__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	2, IMAGES_STR__u, STANDARD._STRING.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	2, IMAGES_STR__u, STANDARD._STRING.COMP_SIZ
@@ -13650,6 +15690,14 @@ LOOP__99:
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	LId	2, IMAGES_STR__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	2, IMAGES_STR__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	2, IMAGES_STR__u, STANDARD._STRING.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	2, IMAGES_STR__u, STANDARD._STRING.COMP_SIZ
@@ -13700,6 +15748,14 @@ LOOP__100:				; corps boucle LOOP__100
 	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L83.IMG_START_disp
 	Ld	2, JL1216_disp
 	ADD
+	DUP
+	LId	2, IMAGES_STR__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	2, IMAGES_STR__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	2, IMAGES_STR__u, STANDARD._STRING.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	2, IMAGES_STR__u, STANDARD._STRING.COMP_SIZ
@@ -13713,6 +15769,18 @@ LOOP__100:				; corps boucle LOOP__100
 	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L83.I_disp
 	Ld	2, JL1216_disp
 	ADD
+	DUP
+	LVA	1, -FROM_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LVA	1, -FROM_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LVA	1, -FROM_ofs
 	LIa	, 0,  8
 	Ld	, STANDARD._STRING.FST_1			; (index - FST_1) * SIZ_1
@@ -13791,8 +15859,6 @@ L1212:					; post loop LOOP__99
 	La  1,	-GFP_ofs
 	La ,	-ENUM__st_ofs
 	CALLI
-	LVA  1,	-LAST_ofs
-	La
 	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L83.I_disp
 	Ld 1,	STANDARD.TEXT_IO.ENUMERATION_IO.GET_L83.MATCH_LEN_disp
 	ADD
@@ -13800,6 +15866,22 @@ L1212:					; post loop LOOP__99
 	LI	1
 	SUB
 ; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
+	DUP
+	Ld	0, STANDARD._POSITIVE.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._POSITIVE.LST
+	CGT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._POSITIVE.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._POSITIVE.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	SId  1,	-LAST_ofs
 	BRA	L1224
 L1225:
@@ -13883,6 +15965,14 @@ VAR POS_VAL_disp, d				; variable entiere
 
 VAR I_disp, d				; variable entiere
 	LId	2, STANDARD.TEXT_IO.ENUMERATION_IO.PUT_L84.BLOCK__101.IMAGES_STR__u, STANDARD._STRING.FST_1
+	DUP
+	Ld	0, STANDARD._POSITIVE.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._POSITIVE.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  2,	I_disp
 
 VAR REP_disp, d				; variable entiere
@@ -13917,6 +16007,18 @@ LOOP__102:				; corps boucle LOOP__102
 	LVA	1, -TO_ofs
 	LIa	, , 0				; array data start address on stack
 	Ld	2, KL1234_disp
+	DUP
+	LVA	1, -TO_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LVA	1, -TO_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LVA	1, -TO_ofs
 	LIa	, 0,  8
 	Ld	, STANDARD._STRING.FST_1			; (index - FST_1) * SIZ_1
@@ -13946,6 +16048,14 @@ LOOP__103:
 	BF	L1235
 	La	 2, IMAGES_STR_disp			; array data start address on stack
 	Ld 2,	I_disp
+	DUP
+	LId	2, IMAGES_STR__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	2, IMAGES_STR__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	2, IMAGES_STR__u, STANDARD._STRING.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	2, IMAGES_STR__u, STANDARD._STRING.COMP_SIZ
@@ -13960,6 +16070,14 @@ LOOP__103:
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
+	DUP
+	LId	2, IMAGES_STR__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	2, IMAGES_STR__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	2, IMAGES_STR__u, STANDARD._STRING.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	2, IMAGES_STR__u, STANDARD._STRING.COMP_SIZ
@@ -13978,6 +16096,14 @@ LOOP__103:
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	2
 	ADD
+	DUP
+	Ld	0, STANDARD._POSITIVE.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._POSITIVE.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  2,	IMG_START_disp
 					; debut if
 	Ld 2,	LEN_disp
@@ -14021,6 +16147,14 @@ LOOP__104:				; corps boucle LOOP__104
 	Ld 2,	IMG_START_disp
 	Ld	2, JL1241_disp
 	ADD
+	DUP
+	LId	2, IMAGES_STR__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	2, IMAGES_STR__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	2, IMAGES_STR__u, STANDARD._STRING.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	2, IMAGES_STR__u, STANDARD._STRING.COMP_SIZ
@@ -14063,6 +16197,18 @@ L1242:					; post if
 	Ld 2,	DST_disp
 	Ld	2, JL1241_disp
 	ADD
+	DUP
+	LVA	1, -TO_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LVA	1, -TO_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LVA	1, -TO_ofs
 	LIa	, 0,  8
 	Ld	, STANDARD._STRING.FST_1			; (index - FST_1) * SIZ_1
@@ -14096,6 +16242,14 @@ L1236:					; post if
 	ADD
 	Ld 2,	LEN_disp
 	ADD
+	DUP
+	Ld	0, STANDARD._POSITIVE.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._POSITIVE.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  2,	I_disp
 	BRA	LOOP__103
 L1235:					; post loop LOOP__103

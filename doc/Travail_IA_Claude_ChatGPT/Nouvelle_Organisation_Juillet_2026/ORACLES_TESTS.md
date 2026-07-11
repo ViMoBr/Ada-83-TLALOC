@@ -30,6 +30,8 @@ son témoin. Filet complet = modules du compilateur + ACVC A2..A8 + ces témoins
 === FIN ===                          22 tests validés
 ```
 
+11/7/2026 FLOAT_TEST réintègre le filet — c'était le seul témoin relisant des locales de type formel dans un corps partagé, absent depuis avril ; INTEGER_IO ne peut pas jouer ce rôle (zéro occurrence, preuve par le grep).
+
 ### ENUM_TEST (pilier 3.7 → refonte auto-jugeante, 5 juillet 2026, 41 assertions)
 
 Témoin converti au format auto-jugeant : chaque valeur produite est vérifiée
@@ -259,3 +261,30 @@ Oracle du filet = la ligne `OUTARG1 PASSE`.
 Sonde de bisection à marqueurs séquentiels P00..P20 sur la séquence
 écriture → CLOSE → OPEN → relecture. Pas d'oracle : outil de diagnostic à
 ressortir quand un chemin d'E/S neuf s'ouvre (piège n° 78).
+
+## Témoins du pilier CHECKS (permanents au filet, checks ON)
+
+CHK_TEST0  — gamme d'affectation (E-A) : 1..5 OK, 6 sentinelle
+             CONSTRAINT_ERROR, $? = 1. Contre-épreuve OFF : 2,3,4 KO.
+CHK_LEN0   — LEN_G=LEN_D (E-B) : 1..4 OK (dont tranches et tableaux
+             nuls), 5 sentinelle CONSTRAINT_ERROR, $? = 1.
+CHK_IDX0   — index (E-C) : 1..9 OK (quatre variantes, multi-dim,
+             négatif, descripteur), 10 sentinelle, $? = 1.
+CHK_TEST1  — gamme six sites (E-D) : 1..5 OK, 6a OK T = 9, 7 OK,
+             8 sentinelle CONSTRAINT_ERROR, $? = 1. 6b consigne : la
+             violation générique hors bornes reste à outiller.
+CHK_DIV0   — division par zéro (E-E) : 1..4 OK (NUMERIC_ERROR et PAS
+             CONSTRAINT_ERROR — juge de Q7), 5 sentinelle
+             NUMERIC_ERROR, $? = 1.
+CHK_ANON0  — piège n° 80 : 1..4 OK, 5 OK-dette (violation anonyme
+             SILENCIEUSE — si cette section change, dette soldée ou
+             régression : mettre à jour témoin et note).
+CHK_CSTPRM0/1/2 — fossile n° 81 (scalaires/composites/privés en
+             actuel) : toutes lignes OK, $? = 0.
+CHK_PREDEF0 — bornes prédéfinies via use-info + BOOLEAN'IMAGE
+             (pièges n° 80-rectif et n° 83) :
+             INTEGER -2147483648/2147483647, CHARACTER 0/127,
+             BOOLEAN 0/1, IMAGE TRUE FALSE, $? = 0.
+
+Sondes RETIRÉES du filet (diagnostic une-fois, archivées) :
+CHK_ANON1/2/2B/3, CHK_DUMP0.

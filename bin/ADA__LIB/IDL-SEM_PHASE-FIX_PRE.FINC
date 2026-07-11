@@ -32,7 +32,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	CEQ
 	OU
 	BF	L5
-; CODE_RETURN : EXPR TYPE = DN_RECORD
+; CODE_RETURN : EXPR TYPE = DN_RECORD  VUE COMPLETE = DN_RECORD
 	La   2,	-result__ofs
 	La  ,  0
 	LI	STANDARD.IDL._TREE.size
@@ -45,6 +45,14 @@ L5:
 namespace	BLOCK__1
 ELB 3					;    BODY ELAB
 VAR LEN_disp, w				; variable entiere
+	DUP
+	Lw	0, STANDARD.IDL._ATTR_NBR.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Lw	0, STANDARD.IDL._ATTR_NBR.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sw  3,	LEN_disp
 
 VAR RESULT_disp, q				; variable record : pointeur aux data record
@@ -67,6 +75,14 @@ VAR	ANON_22_27__dat, STANDARD.IDL._TREE.size
 	LVA 3, ANON_22_27_disp
 					; doublet resultat record anonyme
 	Lw 3,	LEN_disp
+	DUP
+	Lw	0, STANDARD.IDL._ATTR_NBR.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Lw	0, STANDARD.IDL._ATTR_NBR.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	La 2, -NODE_ofs
 	La	-1, 0
 	Ld
@@ -102,9 +118,25 @@ VAR	ANON_25_19__dat, STANDARD.IDL._TREE.size
 					; doublet resultat record anonyme
 	La  2,	-NODE_ofs
 	Lb  3,	IL9_disp
+	DUP
+	Lw	0, STANDARD.IDL._ATTR_NBR.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Lw	0, STANDARD.IDL._ATTR_NBR.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	CALL	STANDARD.IDL.IDL_MAN. ,DABS_L38
 	LVA 3,	RESULT_disp
 	Lb  3,	IL9_disp
+	DUP
+	Lw	0, STANDARD.IDL._ATTR_NBR.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Lw	0, STANDARD.IDL._ATTR_NBR.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	CALL	STANDARD.IDL.IDL_MAN. ,DABS_L37
 	Lb  3,	IL9_disp				; test de sortie LOOP__2
 	Lb  3,	LMT_IL9_disp
@@ -115,7 +147,7 @@ VAR	ANON_25_19__dat, STANDARD.IDL._TREE.size
 	Sb  3,	IL9_disp
 	BRA	LOOP__2				; iteration suivante LOOP__2
 L8:					; post loop LOOP__2
-; CODE_RETURN : EXPR TYPE = DN_RECORD
+; CODE_RETURN : EXPR TYPE = DN_RECORD  VUE COMPLETE = DN_RECORD
 	La   3,	-result__ofs
 	La  ,  0
 	LI	STANDARD.IDL._TREE.size
@@ -346,7 +378,7 @@ end namespace
 	LVA 2,	SYMREP_disp
 	CALL	STANDARD.IDL. ,PRINT_NAME_L25
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-; CODE_RETURN : EXPR TYPE = DN_RECORD
+; CODE_RETURN : EXPR TYPE = DN_RECORD  VUE COMPLETE = DN_RECORD
 	La   2,	-result__ofs
 	La  ,  0
 	LI	STANDARD.IDL._TREE.size
@@ -356,7 +388,7 @@ end namespace
 	BRA ret_lbl
 	BRA	L25
 L26:
-; CODE_RETURN : EXPR TYPE = DN_RECORD
+; CODE_RETURN : EXPR TYPE = DN_RECORD  VUE COMPLETE = DN_RECORD
 	La   2,	-result__ofs
 	La  ,  0
 	LI	STANDARD.IDL._TREE.size
@@ -393,7 +425,7 @@ ELB 2					;    BODY ELAB
 begin:					;---------- BDY INSTRUCTIONS
 					; debut if
 	BF	L32
-; CODE_RETURN : EXPR TYPE = DN_RECORD
+; CODE_RETURN : EXPR TYPE = DN_RECORD  VUE COMPLETE = DN_RECORD
 	La   2,	-result__ofs
 	La  ,  0
 	LI	STANDARD.IDL._TREE.size
@@ -414,7 +446,7 @@ VAR	ANON_72_16__dat, STANDARD.IDL._TREE.size
 	BRA ret_lbl
 	BRA	L31
 L32:
-; CODE_RETURN : EXPR TYPE = DN_RECORD
+; CODE_RETURN : EXPR TYPE = DN_RECORD  VUE COMPLETE = DN_RECORD
 	La   2,	-result__ofs
 	La  ,  0
 	LI	STANDARD.IDL._TREE.size
@@ -637,7 +669,7 @@ L43:
 L44:
 L41:
 	BF	L39
-; CODE_RETURN : EXPR TYPE = DN_RECORD
+; CODE_RETURN : EXPR TYPE = DN_RECORD  VUE COMPLETE = DN_RECORD
 	La   2,	-result__ofs
 	La  ,  0
 	LI	STANDARD.IDL._TREE.size
@@ -689,7 +721,7 @@ VAR	ANON_99_25__dat, STANDARD.IDL._TREE.size
 	CALL	STANDARD.IDL. ,D_L17
 	LI  87
 	CALL	STANDARD.IDL. ,D_L16
-; CODE_RETURN : EXPR TYPE = DN_RECORD
+; CODE_RETURN : EXPR TYPE = DN_RECORD  VUE COMPLETE = DN_RECORD
 	La   2,	-result__ofs
 	La  ,  0
 	LI	STANDARD.IDL._TREE.size
@@ -5536,6 +5568,14 @@ begin:					;---------- BDY INSTRUCTIONS
 	SUB
 	INC
 	CLAMP0
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  2,	ITEM_LENGTH_disp
 					; debut if
 ; CODE composite "=" _STRING
@@ -5632,6 +5672,14 @@ L216:
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	2
 	SUB
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  2,	ITEM_LENGTH_disp
 	BRA	L213
 L214:
@@ -5791,10 +5839,26 @@ VAR SYM__dat, STANDARD.IDL._TREE.size
 begin:					;---------- BDY INSTRUCTIONS
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	3
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  2,	ITEM_LENGTH_disp
 LOOP__42:
 	La	 3, ITEM_NAME_disp			; array data start address on stack
 	Ld 2,	STANDARD.IDL.SEM_PHASE_L11.FIX_PRE_L651.MAKE_PREDEF_IDS_L189.ITEM_LENGTH_disp
+	DUP
+	LId	3, ITEM_NAME__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	3, ITEM_NAME__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	3, ITEM_NAME__u, STANDARD._STRING.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	3, ITEM_NAME__u, STANDARD._STRING.COMP_SIZ
@@ -5810,6 +5874,14 @@ LOOP__42:
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SUB
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  2,	ITEM_LENGTH_disp
 	BRA	LOOP__42
 L221:					; post loop LOOP__42

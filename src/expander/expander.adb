@@ -92,6 +92,8 @@ is
     procedure INC_LEVEL;
     procedure DEC_LEVEL;
     function  TYPE_SIZE		( TYPE_SPEC :TREE )			return NATURAL;
+    function  FULL_VIEW		( T : TREE )			return TREE;
+
     function  CODE_DATA_TYPE_OF	( EXP_OR_TYPE_SPEC :TREE )		return CHARACTER;
     procedure LOAD_MEM		( DEFN :TREE );
     procedure STORE			( DEST_DEFN :TREE );

@@ -23,7 +23,7 @@ Dernière entrée : n° 66 (5 juillet 2026).
     utiliser `movsd` (F2 0F 10/11) pour pile↔xmm.
 16. **FCLT/FCLE encodage** : ucomisd xmm1,xmm0 = ModRM 0xC8 pas 0xC9.
 17. **CODE_CONVERSION statique** : un LI suivi de CVTIF si cible DN_FLOAT.
-18. **OPER_SIZ_CHAR DN_FLOAT** : forcer 'q' (CD_IMPL_SIZE=32 dans STANDARD
+18. **OPER_SIZ_CHAR DN_FLOAT** : forcer 'q' (CD_IMPL_SIZE=32 dans 
     mais on stocke toujours en double 64 bits).
 19. **CODE_SHORT_CIRCUIT** : était un stub `null`, causait des BF/BT sans
     condition évaluée. Corrigé session 12 avril.
@@ -121,7 +121,7 @@ Dernière entrée : n° 66 (5 juillet 2026).
     existant. (session 10 mai (3))
 __DÉSAMORCÉ le 8 juillet 2026__: OPEN → NAME_ERROR, CREATE → USE_ERROR (TEXT14/U6.4). »
 
-46. **Sous-type tableau anonyme partagé + `CD_COMPILED`** : deux objets de contrainte identique (p. ex. deux `STRING(1..6)`) peuvent partager le **même** nœud `DN_CONSTRAINED_ARRAY` en DIANA (vérifiable par le dump : `SM_OBJ_TYPE` identique). Le drapeau `CD_COMPILED` posé par `PROCESS_CONSTRAINED_ARRAY_TYPE_SPEC` fait alors sauter la génération du descripteur local pour le second objet, qui retombe sur le type de base non contraint (`STANDARD._STRING`) via `XD_SOURCE_NAME` → `use__info` invalide → segfault au déréférencement. Matérialiser un type-info local par objet dès qu’il existe une contrainte anonyme, sans dépendre de `CD_COMPILED`. (session 4 juillet)
+46. **Sous-type tableau anonyme partagé + `CD_COMPILED`** : deux objets de contrainte identique (p. ex. deux `STRING(1..6)`) peuvent partager le **même** nœud `DN_CONSTRAINED_ARRAY` en DIANA (vérifiable par le dump : `SM_OBJ_TYPE` identique). Le drapeau `CD_COMPILED` posé par `PROCESS_CONSTRAINED_ARRAY_TYPE_SPEC` fait alors sauter la génération du descripteur local pour le second objet, qui retombe sur le type de base non contraint (`._STRING`) via `XD_SOURCE_NAME` → `use__info` invalide → segfault au déréférencement. Matérialiser un type-info local par objet dès qu’il existe une contrainte anonyme, sans dépendre de `CD_COMPILED`. (session 4 juillet)
 
 47. **Niveau d’émission de la table de thunks générique** : `CODE_GENERIC_ACTUALS` est appelé **après** `INC_LEVEL` sur le chemin d’instanciation de sous-programme ; émettre les `Sa` des thunks et de `GFP_disp` à `CUR_LEVEL` écrit dans le frame du corps de l’instance (niveau N), alors que la relecture se fait à `CUR_LEVEL − 1` (le bloc, niveau N−1) et que le frame N n’existe pas encore / plus au moment de l’élaboration du bloc → écriture dans un frame mort → segfault. Passer un niveau cible explicite : `CUR_LEVEL − 1` pour l’instanciation de sous-programme, `CUR_LEVEL` (défaut historique) pour l’instanciation de package, dont le site d’appel n’est pas précédé d’`INC_LEVEL`. (session 4 juillet)
 
@@ -255,6 +255,12 @@ __DÉSAMORCÉ le 8 juillet 2026__: OPEN → NAME_ERROR, CREATE → USE_ERROR (TE
     le design EXL/CD_LABEL fantôme. Toute modélisation d'attribut passe par
     un dump du témoin AVANT le code ; les deux fois où la règle a été
     suivie, le dump a contredit l'hypothèse. (session 7 juillet)
+    Appendice n° 71 (11 juillet, E-D6) : la règle vaut aussi pour les
+  IDIOMES : un idiome LLIR donné DE MÉMOIRE ou en paraphrase au lieu
+  d'une citation de l'émetteur a coûté une session de débogage (le
+  « La GFP » de GENERIC_FIRST_LAST perdu dans le résumé — pile
+  décalée d'un cran). Citer l'émetteur, jamais le résumer. Corollaire
+  du n° 71 : quatre sur quatre.
 
 72. **Renames d'exception = identité PARTAGÉE, jamais de nouvelle STR.**
     LRM 8.5 : même entité. Émettre une STR au rename crée une identité
@@ -279,12 +285,12 @@ __DÉSAMORCÉ le 8 juillet 2026__: OPEN → NAME_ERROR, CREATE → USE_ERROR (TE
 74. **Fossiles réveillés : tout raise de bibliothèque était un no-op avant
     le pilier 11.** L'ancien CODE_RAISE (`null;`) faisait tomber
     l'exécution À TRAVERS les gardes — TEXT_IO a tourné depuis l'origine
-    avec des fichiers standard jamais ouverts (IS_OPENED jamais posé,
+    avec des fichiers  jamais ouverts (IS_OPENED jamais posé,
     DEFAULT_IN/OUTPUT jamais affectés) et des gardes en décoration. Règle
     de tri : tout `EXCEPTION NON RATTRAPEE : X` du filet est une DETTE DE
     BIBLIOTHÈQUE rendue visible, pas une régression du pilier — la
     sentinelle nomme l'exception, le grep des gardes localise. Précédents :
-    fichiers standard TEXT_IO (corrigé), END_ERROR DIRECT_IO/SEQUENTIAL_IO (session 7 juillet témoins à l'ancien contrat, cf. piège n° 79 — reprise planifiée).
+    fichiers  TEXT_IO (corrigé), END_ERROR DIRECT_IO/SEQUENTIAL_IO (session 7 juillet témoins à l'ancien contrat, cf. piège n° 79 — reprise planifiée).
  
 75. **`raise;` nu ≠ la globale (LRM 11.3) — sauvegarde par ACTIVATION.**
     Le re-raise relève l'exception qui a causé le transfert AU handler
@@ -450,3 +456,66 @@ __DÉSAMORCÉ le 8 juillet 2026__: OPEN → NAME_ERROR, CREATE → USE_ERROR (TE
     runtime Ada (ASM_OP_x). Le contrat est désormais posé en clair et
     d'un seul tenant par END_BLOC_DEF siz,fst,lst ; gardien :
     ENUM_TEST. (session 9 juillet)
+    
+88. **L'oscillation rel8/rel32 sous alignements  (non-convergence
+  fasmg A54B01A/02A/A35801E, déclenchée par le correctif n° 81). Les
+  macros de branchement qui re-décident leur taille à chaque passe sur
+  le `disp` de la passe précédente convergent tant que le système est
+  monotone ; les ALIGNEMENTS introduisent une dépendance anti-monotone
+  (du code en plus peut faire tomber du padding) et ouvrent des cycles
+  sans point fixe. Symptôme : « could not generate code within the
+  allowed number of passes » sur quelques exécutables seulement, après
+  une modification anodine. BRA avait déjà été forcé rel32 pour cette
+  raison (branche rel8 commentée — la trace était dans codi) ; BT/BF
+  ont suivi quand le pilier checks a multiplié leur population près de
+  la frontière ±127. Règle : toute décision de taille inter-passes doit
+  être MONOTONE (verrou qui ne fait que s'élargir) ou supprimée.
+
+88. **L'actuel constant scalaire fantôme (fossile A54B02A, exhumé
+  par le check E-A). Dans CODE_PROCEDURE_CALL, la branche
+  DEFN = DN_CONSTANT_ID ne traitait qu'énuméré et tableau : une
+  CONSTANTE INTEGER/FIXED/FLOAT en position d'actuel direct n'était PAS
+  ÉMISE — retombée silencieuse (violation type du n° 53). Le callee
+  lisait ses paramètres un cran trop profond et RTD rendait une cellule
+  périmée. Conséquence historique : REPORT.EQUAL(REC_LIMIT, …) faux →
+  IDENT_INT ≡ 0 depuis l'origine — invisible car la série A de l'ACVC ne
+  vérifie aucune valeur et les CASE à couverture totale absorbent tout.
+  Leçons : (a) chaque retombée silencieuse restante est un n° 81 en
+  puissance — le else bruyant n'est pas du confort, c'est du diagnostic ;
+  (b) un harnais de test dont on ne vérifie jamais les valeurs (IDENT_*)
+  peut être inerte sans bruit ; (c) le même objet peut être émis
+  correctement comme opérande et perdu comme actuel — les chemins
+  d'émission diffèrent, tester les DEUX positions.
+   
+89. ** (11 juillet, mainteneur) : la sous-hypothèse
+  « bornes des prédéfinis de  jamais élaborées » était FAUSSE —
+  _STANDRD.FINC les élabore (stores SHL/NEG/SUB vers FST/LST, exécutés
+  en tête de flux, avant le LINK 0 mais avec FP(0) déjà posé par
+  l'init). Elle reposait sur l'attribution de la levée A54B02A au site
+  I contre _INTEGER ; le n° 81 a montré que la levée venait du site J
+  (IDENT_INT ≡ 0 → 0 < FST). La garde d'élision du n° 80 et la dette
+  (a) — contraintes anonymes non contrôlées — restent valides.
+  LEÇON DE TRIAGE : quand une cause plus profonde est découverte,
+  ré-auditer systématiquement quelles observations les hypothèses
+  antérieures expliquent ENCORE. Ici : plus aucune. Une dette fantôme
+  a vécu un jour de trop faute de ce ré-audit.
+  
+ 90. ** La pile d'évaluation pré-LINK piétine la VARzone** (trouvé
+  par CHK_PREDEF0 : BOOLEAN'LAST = débris via use-info, INTEGER et
+  CHARACTER justes). L'élaboration de _STANDRD s'exécutait avant le
+  LINK 0 : RBP = FP(0), les poussées d'évaluation écrivent sur les
+  premières cases de la VARzone — tout store précoce (~2 premiers
+  qwords) est écrasé par les élaborations suivantes. _BOOLEAN.use__info
+  était dans la zone ; la sentinelle du pilier 11, réinitialisée après
+  le LINK par le wrapper, était guérie sans le savoir — ce qui a masqué
+  le piège. Correctif : LINK 0 AVANT l'include de _STANDRD. Leçons :
+  (a) un invariant de machine à pile (« les poussées vont au-dessus des
+  frames ») ne vaut que si le frame est ALLOUÉ ; (b) la signature
+  « premiers éléments faux, suivants justes » désigne une zone de
+  recouvrement, pas une donnée fausse ; (c) le témoin qui imprime les
+  VALEURS (CHK_PREDEF0) a trouvé en trois lignes ce qu'aucun test de
+  déroulement ne pouvait voir — même famille de leçon que le n° 81.
+  
+ 91. ** Adaptateur OUTADR sur locale de corps partagé — la double déréférence lit la valeur comme adresse ; le test VC_ID.TY = DN_IN_ID copié d'un site paramètre était toujours faux sur un VC ». Corollaire d'invariant : push d'adresse destination ⇔ CALLI-ST, un seul prédicat (ST_VIA_CALLI).
+  
+ 92. **  double émission 'DIGITS (le CODE_FLOAT_DIGITS résiduel après le bloc declare) — fuite de pile par attribut, bénigne en élaboration, fatale en corps.

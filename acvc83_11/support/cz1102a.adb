@@ -1,0 +1,49 @@
+-- CZ1102A.ADA
+
+-- CHECK THAT THE DYNAMIC VALUE ROUTINES OF THE REPORT PACKAGE WORK
+--   CORRECTLY.
+
+-- JRK 8/7/81
+-- JRK 10/27/82
+
+WITH REPORT;
+USE REPORT;
+
+PROCEDURE CZ1102A IS
+
+BEGIN
+
+     TEST ("CZ1102A", "CHECK THAT THE DYNAMIC VALUE ROUTINES OF " &
+                         "THE REPORT PACKAGE WORK CORRECTLY");
+
+     IF NOT EQUAL (0, 0) OR
+        EQUAL (0, 1) OR
+        NOT EQUAL (1, 1) OR
+        NOT EQUAL (3, 3) OR
+        NOT EQUAL (4, 4) OR
+        NOT EQUAL (-1, -1) OR
+        EQUAL (-1, 0) THEN
+          FAILED ("'EQUAL' NOT WORKING");
+     END IF;
+
+     IF IDENT_INT (5) /= 5 THEN
+          FAILED ("'IDENT_INT' NOT WORKING");
+     END IF;
+
+     IF IDENT_CHAR ('E') /= 'E' THEN
+          FAILED ("'IDENT_CHAR' NOT WORKING");
+     END IF;
+
+     IF IDENT_BOOL (TRUE) /= TRUE THEN
+          FAILED ("'IDENT_BOOL' NOT WORKING");
+     END IF;
+
+     IF IDENT_STR ("") /= "" OR
+        IDENT_STR ("K") /= "K" OR
+        IDENT_STR ("PQRS") /= "PQRS" THEN
+          FAILED ("'IDENT_STR' NOT WORKING");
+     END IF;
+
+     RESULT;
+
+END CZ1102A;

@@ -30,3 +30,22 @@ __u+16. Supprimés : struc `BYTES_BLOC`, instanciation `IMAGES
 BYTES_BLOC`, les trois `CST` et le triplet `postpone align_q` dans ce
 chemin. Macros ordinaires (ni « ! », ni capture, ni postpone) : saines
 sous `if defined` (pièges n° 86-87). Gardien : ENUM_TEST.
+
+## Pilier checks (11 juillet 2026)
+
+- ce_raise_ / ne_raise_ : trampolines uniques par exécutable (wrapper,
+  région inatteignable) — posent l'identité prédéfinie et BRA
+  exc_raise_. Sites : BT/BF STANDARD.ce_raise_ (ou ne_raise_).
+- Idiome de check scalaire (valeur PRÉSERVÉE au sommet) :
+  DUP ; <borne FST> ; CLT ; BT ce_raise_ ; DUP ; <borne LST> ; CGT ;
+  BT ce_raise_ — effet de pile net nul, insérable entre évaluation et
+  consommation. Bornes par la MÊME séquence que l'usage voisin
+  (frame _SUBTYPE.FST/LST, descripteur .FST_n, use-info via GFP).
+- Division par zéro : DUP ; LI 0 ; CEQ ; BT ne_raise_ avant DIV/MODI/
+  REMI utilisateur.
+- BT et BF : rel32 SYSTÉMATIQUE (comme BRA) — piège n° 82. Le retour
+  du rel8 appartient à un futur optimiseur MONOTONE.
+- Ordre wrapper : LINK 0, loc_siz AVANT include _STANDRD.FINC
+  (piège n° 83).
+- Règle générale (arbitrage Q2) : LLIR EXPLICITE maximale dans les
+  FINC, pas de macro d'abréviation — matériau de l'optimiseur futur.

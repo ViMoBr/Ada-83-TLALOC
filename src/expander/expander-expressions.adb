@@ -1535,6 +1535,31 @@ null;--	     declare
       PUT_LINE( tab & "LIF" & tab & S );
     end PUSH_FLOAT_LITERAL;
 
+		---------------------
+    procedure	CODE_FOLDED_ATTRIBUTE
+    is		---------------------
+	-- Attribut PLIE par sem (dump F-1) : SM_VALUE porte la valeur,
+	-- SM_EXP_TYPE le type du CONTEXTE. Emettre le litteral, rien d'autre.
+	-- Regle post-'DIGITS : exactement UNE valeur emise, sinon ANOMALIE.
+      VAL		: TREE	:= D( SM_VALUE,    ATTRIBUTE );
+      EXP_TYPE	: TREE	:= D( SM_EXP_TYPE, ATTRIBUTE );
+    begin
+      if  VAL = TREE_VOID  then
+        PUT_LINE( "; ANOMALIE CODE_ATTRIBUTE : " & CHN_ATTR & " non plie par sem" );
+        raise PROGRAM_ERROR;
+      end if;
+
+      if  VAL.PT = HI  then							-- entier plie (AFT, FORE)
+        PUT_LINE( tab & "LI" & tab & IMAGE( NATURAL( VAL.ABSS ) ) );
+      elsif  EXP_TYPE /= TREE_VOID  and then  EXP_TYPE.TY = DN_FIXED  then	-- rationnel, contexte fixed
+        CODE_STATIC_FIXED_VALUE( VAL, EXP_TYPE );
+      else
+        PUT_LINE( "; ANOMALIE CODE_ATTRIBUTE : " & CHN_ATTR & " contexte non traite" );
+        raise PROGRAM_ERROR;
+      end if;
+
+    end	CODE_FOLDED_ATTRIBUTE;
+	---------------------
 
     procedure CODE_FLOAT_DIGITS
     is
@@ -2413,7 +2438,7 @@ end;
 
     when	'A' =>
       if	CHN_ATTR(	2 ) = 'D'	 then CODE_ADDRESS;					-- ADDRESS
-      else PUT_LINE( tab & "LI" & tab & '3' );					-- AFT a revoir
+      else CODE_FOLDED_ATTRIBUTE;						-- AFT
       end	if;
 
     when	'B' => null;							-- BASE
@@ -2425,50 +2450,33 @@ end;
       end	if;
 
     when	'D' =>
-      if	CHN_ATTR(	2 ) = 'E'	 then null;					-- DELTA
+      if	CHN_ATTR(	2 ) = 'E'	 then CODE_FOLDED_ATTRIBUTE;				-- DELTA
       else								-- DIGITS
-        if PREFIX_HAS_BASE then
+        if  PREFIX_HAS_BASE  then
           CODE_FLOAT_DIGITS;
         else
-
-	declare
-	  PREFIX_DEFN	: TREE	:= D( SM_DEFN, PREFIX_NAME );
-	  TYPE_SPEC	: TREE	:= TREE_VOID;
-	  ACCURACY	: TREE;
-	begin
-	-- Chercher le TYPE_SPEC du prefix, quel que soit	le type de noeud
-	  if  PREFIX_DEFN.TY = DN_TYPE_ID
-	      or  PREFIX_DEFN.TY = DN_SUBTYPE_ID
-	  then
-	    TYPE_SPEC := D( SM_TYPE_SPEC, PREFIX_DEFN );
-	  end if;
-
-	-- Traverser private/constrained vers le type reel
-	  if  TYPE_SPEC /= TREE_VOID  then
-	    if  TYPE_SPEC.TY = DN_L_PRIVATE  or  TYPE_SPEC.TY = DN_PRIVATE  then
-	      TYPE_SPEC := D( SM_TYPE_SPEC, TYPE_SPEC );
-	    end if;
-	  end if;
-
-	-- Extraire SM_ACCURACY du DN_FLOAT
-	  if  TYPE_SPEC /= TREE_VOID  and then  TYPE_SPEC.TY = DN_FLOAT  then
-	    ACCURACY := D( SM_ACCURACY, TYPE_SPEC );
-	    if  ACCURACY /= TREE_VOID  then
-	      if  ACCURACY.PT = HI  then
-	        PUT_LINE( tab & "LI" & tab & IMAGE( NATURAL( ACCURACY.ABSS ) ) );
-	      else
-	        PUT_LINE( tab & "LI" & tab & PRINT_NUM( ACCURACY ) );
-	      end if;
-	    else
-	      PUT_LINE( tab & "LI" & tab & "6" );							-- defaut	Ada 83 pour FLOAT
-	    end if;
-	  else
-	    PUT_LINE( tab & "LI" & tab & "6" );								-- defaut	Ada 83 pour FLOAT
-	  end if;
+          declare
+            TYPE_SPEC   : TREE  := PREFIX_TYPE_SPEC;
+            ACCURACY    : TREE;
+          begin
+            if  TYPE_SPEC /= TREE_VOID  and then  TYPE_SPEC.TY = DN_FLOAT  then
+              ACCURACY := D( SM_ACCURACY, TYPE_SPEC );
+              if  ACCURACY /= TREE_VOID  then
+                if  ACCURACY.PT = HI  then
+                  PUT_LINE( tab & "LI" & tab & IMAGE( NATURAL( ACCURACY.ABSS ) ) );
+                else
+                  PUT_LINE( tab & "LI" & tab & PRINT_NUM( ACCURACY ) );
+                end if;
+              else
+                CODE_FLOAT_DIGITS;                              -- pas d'accuracy : valeur machine
+              end if;
+            else
+              CODE_FLOAT_DIGITS;              -- type formel / non resolu : valeur machine (comportement historique)
+            end if;
           end;
-	CODE_FLOAT_DIGITS;
         end if;
       end if;
+
     when	'E' =>
       if	CHN_ATTR(	2 ) = 'M'	 then
         CODE_FLOAT_EMAX;										-- EMAX
@@ -2479,7 +2487,7 @@ end;
     when	'F' =>
       if	CHN_ATTR(	2 ) = 'I'	 then						-- FIRST
         CODE_FIRST_LAST( IS_LAST => FALSE );
-      else PUT_LINE( tab & "LI" & tab & '1' );					-- FORE a revoir
+      else CODE_FOLDED_ATTRIBUTE;						-- FORE
       end	if;
 
     when	'I' => CODE_IMAGE;							-- IMAGE
@@ -2529,15 +2537,21 @@ end;
     when	'S' =>
       if	CHN_ATTR(	2 ) = 'I'		then CODE_SIZE;				-- SIZE
       elsif  CHN_ATTR( 2 ) = 'M'	then					-- SMALL
+
         declare
 	T	: TREE	:= PREFIX_TYPE_SPEC;
         begin
           if T /= TREE_VOID and then T.TY = DN_FLOAT then
             CODE_FLOAT_SMALL;							-- FLOAT'SMALL
           else
-            CODE_SMALL;							-- FIXED'SMALL, ancien chemin
+	  if  D( SM_VALUE, ATTRIBUTE ) /= TREE_VOID  then
+	    CODE_FOLDED_ATTRIBUTE;						-- FIXED'SMALL plie (cas normal)
+	  else
+	    CODE_SMALL;							-- corps generique : via use__info
+	  end if;
           end if;
         end;
+
       elsif  CHN_ATTR( 2 ) = 'T'  then	 null;					-- STORAGE
       elsif  CHN_ATTR( 2 ) = 'U'  then						-- SUCC
         -- T'SUCC(X) : retourne X+1
@@ -2575,20 +2589,22 @@ end;
 
     SMALL		: TREE		:= D( CD_IMPL_SMALL, FIXED_TYPE );
     NUMER_SMALL	: LONG_INTEGER	:= LONG_INTEGER'VALUE( PRINT_NUM( D( XD_NUMER, SMALL ) ) );
+    DENOM_VALUE	: LONG_INTEGER	:= LONG_INTEGER'VALUE( PRINT_NUM( D( XD_DENOM, VALUE ) ) );
 
   begin
-    if NUMER_SMALL /= 1 then
-      PUT_LINE( "; CODE_STATIC_FIXED_VALUE: SMALL.NUMER /= 1 A FAIRE" );
-      return;
-    end if;
-
-    PUT_LINE( tab & "LI" & tab & PRINT_NUM( D( XD_NUMER, VALUE ) ) );
-    PUT_LINE( tab & "LI" & tab & PRINT_NUM( D( XD_DENOM, SMALL ) ) );
-    PUT_LINE( tab & "LI" & tab & PRINT_NUM( D( XD_DENOM, VALUE ) ) );
+	-- repr = Nv.Ds / (Dv.Ns) -- FORMULE UNIQUE du pilier fixed (note v1.1 §1).
+	-- CVTIX recoit I.D.N et calcule I*D/N en 128 bits intermediaires ;
+	-- le produit Dv.Ns est fait statiquement ici. Fossile F-1 : l'ancien
+	-- bail Ns /= 1 rendait la main a un appelant emetteur de Sq -> store
+	-- depuis une pile jamais alimentee (_T34.FST/LST corrompus).
+    PUT_LINE( tab & "LI" & tab & PRINT_NUM( D( XD_NUMER, VALUE ) ) );			-- I = Nv
+    PUT_LINE( tab & "LI" & tab & PRINT_NUM( D( XD_DENOM, SMALL ) ) );			-- D = Ds
+    PUT_LINE( tab & "LI" & tab & LONG_INTEGER'IMAGE( DENOM_VALUE * NUMER_SMALL ) );	-- N = Dv.Ns
     PUT_LINE( tab & "CVTIX" );
 
   end	CODE_STATIC_FIXED_VALUE;
 	-----------------------
+
 
 		---------
   function	FULL_VIEW	( T : TREE )	return TREE
@@ -3432,6 +3448,54 @@ end;
         end if;
 
         POP( PRM_S, PRM_2 );
+
+
+       ------------------------------------------------------------
+        -- F-A : garde anti-trou-silencieux FIXED * FIXED, FIXED / FIXED
+        --
+        -- LRM 4.5.5 : FIX*FIX et FIX/FIX rendent universal_fixed, qui ne
+        -- peut etre consomme que sous CONVERSION EXPLICITE ( T(X*Y) ).
+        -- Le pilotage de ces deux operateurs appartient donc a
+        -- CODE_CONVERSION (cible DN_FIXED), seul detenteur du SMALL cible
+        -- (dump F-0, Q1 : le DN_FUNCTION_CALL ne porte PAS de SM_EXP_TYPE,
+        -- sem ne materialise pas universal_fixed -- RES_TYPE = TREE_VOID).
+        --
+        -- Atteindre ce point signifie donc l'un des deux cas :
+        --   (a) F-D pas encore livree : la conversion n'intercepte pas
+        --       encore, et la branche entiere en aval emettrait un MUL/DIV
+        --       CRU sur les representations -- FAUX d'un facteur SMALL,
+        --       et SILENCIEUSEMENT (piege n 53).
+        --   (b) F-D livree : un X*Y fixed apparait HORS conversion, ce que
+        --       le LRM interdit -- sem aurait du le rejeter.
+        -- Dans les deux cas : se signaler, ne jamais corrompre en silence.
+        --
+        -- PORTEE (dump F-0, 9.6) : FIX*INTEGER TOMBE AUSSI ICI. Sem insere
+        -- une CONVERSION IMPLICITE de l'entier vers le type fixed, donc les
+        -- DEUX operandes du "*" sont DN_FIXED dans l'arbre :
+        --     "*" { A : DN_FIXED(T8) ; DN_CONVERSION -> DN_FIXED(T8)
+        --                                | AS_EXP: N : DN_INTEGER }
+        -- C'est VOULU : si cette conversion emet son CVTIX, elle SCALE N
+        -- (3 -> 48 avec SMALL 1/16) et A*N calcule rA*48 au lieu de rA*3 --
+        -- FAUX d'un facteur SMALL. Le FIX*INTEGER n'est donc PAS acquis,
+        -- contrairement a ce qu'on supposait avant le dump. La garde le
+        -- REVELE au lieu de le laisser passer : c'est sa raison d'etre.
+        -- (F-B tranchera : le cas FIX*INT doit-il elider la conversion de
+        --  l'entier, ou la conserver et diviser par le SMALL ensuite ?)
+        declare
+          PRM1_TYPE	: TREE	:= D( SM_EXP_TYPE, PRM_1 );
+          PRM2_TYPE	: TREE	:= D( SM_EXP_TYPE, PRM_2 );
+        begin
+          if  ( OP_STR = """*"""  or else  OP_STR = """/""" )
+            and then  PRM1_TYPE /= TREE_VOID
+            and then  PRM2_TYPE /= TREE_VOID
+            and then  PRM1_TYPE.TY = DN_FIXED
+            and then  PRM2_TYPE.TY = DN_FIXED
+          then
+            PUT_LINE( "; CODE_DN_BLTN_OPERATOR_ID : " & OP_STR
+                    & " FIXED*FIXED HORS CONVERSION -- A FAIRE (pilier fixed, F-D)" );
+            raise PROGRAM_ERROR;
+          end if;
+        end;
 
         if  OP_STR = """&"""  then
 				----------------------
@@ -5169,15 +5233,15 @@ SCAN_IDS:
 	    TYPE_NAME	: TREE		:= D( XD_SOURCE_NAME, NUM_LIT_TYPE );
 	    TYPE_STR	: constant STRING	:= PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
 
-	  begin											-- ATTENTION HYPOTHESE NUMER_SMALL = 1
-	    PUT_LINE( tab & "LI" & tab & PRINT_NUM( D( XD_NUMER, VALUE ) ) );					-- Numerateur valeur NV
-
-	    PUT_LINE( tab & "La " & IMAGE( GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );			-- Adresse de frame generique
-	    PUT_LINE( tab & "LIq , -" & TYPE_STR & "__u_ofs, STANDARD._FIXED_USE_INFO.DENOM" );			-- Charge l'entier DENOM small
-
-	    PUT_LINE( tab & "LI" & tab & PRINT_NUM( D( XD_DENOM, VALUE ) ) );					-- Denominateur valeur DV
-
-	    PUT_LINE( tab & "CVTIX" );								-- (NV DS) / (DV NS)
+	  begin		-- repr = Nv.Ds / (Dv.Ns), Ds et Ns via le use__info (formule unique)
+	    PUT_LINE( tab & "LI" & tab & PRINT_NUM( D( XD_NUMER, VALUE ) ) );					-- Nv
+	    PUT_LINE( tab & "La " & IMAGE( GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );
+	    PUT_LINE( tab & "LIq , -" & TYPE_STR & "__u_ofs, STANDARD._FIXED_USE_INFO.DENOM" );			-- Ds
+	    PUT_LINE( tab & "LI" & tab & PRINT_NUM( D( XD_DENOM, VALUE ) ) );					-- Dv
+	    PUT_LINE( tab & "La " & IMAGE( GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );
+	    PUT_LINE( tab & "LIq , -" & TYPE_STR & "__u_ofs, STANDARD._FIXED_USE_INFO.NUMER" );			-- Ns
+	    PUT_LINE( tab & "MUL" );									-- Dv.Ns
+	    PUT_LINE( tab & "CVTIX" );
 	  end;
 
 	else
@@ -5186,12 +5250,14 @@ SCAN_IDS:
 	    NUMER_SMALL	: LONG_INTEGER	:= LONG_INTEGER'VALUE( PRINT_NUM( D( XD_NUMER, TARGET_SMALL ) ) );
 	    DENOM_SMALL	: LONG_INTEGER	:= LONG_INTEGER'VALUE( PRINT_NUM( D( XD_DENOM, TARGET_SMALL ) ) );
 
-	  begin											-- ATTENTION HYPOTHESE NUMER_SMALL = 1
-	    PUT_LINE( tab & "LI" & tab & PRINT_NUM( D( XD_NUMER, VALUE ) ) );					-- NV
-	    PUT_LINE( tab & "LI" & tab & PRINT_NUM( D( XD_DENOM, TARGET_SMALL ) ) );				-- DS
-	    PUT_LINE( tab & "LI" & tab & PRINT_NUM( D( XD_DENOM, VALUE ) ) );					-- DV
-	    PUT_LINE( tab & "CVTIX" );								-- NV * DS / DV
+	  begin		-- repr = Nv.Ds / (Dv.Ns) -- formule unique (note v1.1 §1)
+	    PUT_LINE( tab & "LI" & tab & PRINT_NUM( D( XD_NUMER, VALUE ) ) );		-- Nv
+	    PUT_LINE( tab & "LI" & tab & PRINT_NUM( D( XD_DENOM, TARGET_SMALL ) ) );	-- Ds
+	    PUT_LINE( tab & "LI" & tab & LONG_INTEGER'IMAGE(
+			LONG_INTEGER'VALUE( PRINT_NUM( D( XD_DENOM, VALUE ) ) ) * NUMER_SMALL ) );	-- Dv.Ns
+	    PUT_LINE( tab & "CVTIX" );
 	  end;
+
 	end if;
 
         else											-- Valeur flottante
@@ -5262,6 +5328,167 @@ SCAN_IDS:
 	------------------
 
 
+		---
+  function	GCD	( A, B : LONG_INTEGER )	return LONG_INTEGER
+  is		---
+    X : LONG_INTEGER := abs A;
+    Y : LONG_INTEGER := abs B;
+    T : LONG_INTEGER;
+  begin
+    while  Y /= 0  loop
+      T := Y;  Y := X mod Y;  X := T;
+    end loop;
+    return X;
+  end	GCD;
+
+		-----------------
+  procedure	EMIT_FIXED_RESCALE	( MULT, DIV : LONG_INTEGER )
+  is		-----------------
+	-- Multiplie la representation au sommet de pile par le rationnel
+	-- MULT/DIV, REDUIT ici. Identite si 1/1. CVTIX (I.D.N) fait le
+	-- produit en 128 bits intermediaires puis la division (troncature
+	-- vers zero -- Q3). FORMULE UNIQUE, note v1.1 §1.
+    G	: LONG_INTEGER	:= GCD( MULT, DIV );
+    M	: LONG_INTEGER	:= MULT / G;
+    D	: LONG_INTEGER	:= DIV  / G;
+  begin
+    if  M = 1  and then  D = 1  then
+      return;								-- identite (cas TEQ)
+    end if;
+    PUT_LINE( tab & "LI" & tab & LONG_INTEGER'IMAGE( M ) );		-- role DENOM = multiplicateur
+    PUT_LINE( tab & "LI" & tab & LONG_INTEGER'IMAGE( D ) );		-- role NUMER = diviseur
+    PUT_LINE( tab & "CVTIX" );
+  end	EMIT_FIXED_RESCALE;
+
+		------------------------------
+  procedure	CODE_FIXED_MUL_DIV_CONVERSION	( CONVERSION : TREE )
+  is		------------------------------
+	-- F-D : T(X*Y) et T(X/Y). La conversion est le SEUL detenteur du
+	-- SMALL cible (le DN_FUNCTION_CALL ne porte pas de SM_EXP_TYPE --
+	-- dumps F-0/F-1). Elision FIX.INT integree (ex F-B) : l'idiome
+	-- impose par sem est T( A * T(N) ) ; l'operande DN_CONVERSION->FIXED
+	-- d'un INTEGER est code NU (rA * N exact, meme small, zero perte).
+
+    TARGET_TYPE	: TREE		:= FULL_VIEW( D( SM_EXP_TYPE, CONVERSION ) );
+    FUNCTION_CALL	: TREE		:= D( AS_EXP, CONVERSION );
+    OP_STR	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, D( AS_NAME, FUNCTION_CALL ) ) );
+    PRM_S	: SEQ_TYPE	:= LIST( D( SM_NORMALIZED_PARAM_S, FUNCTION_CALL ) );
+    PRM_1, PRM_2	: TREE;
+
+    TS	: TREE		:= D( CD_IMPL_SMALL, TARGET_TYPE );
+    NT	: LONG_INTEGER	:= LONG_INTEGER'VALUE( PRINT_NUM( D( XD_NUMER, TS ) ) );
+    DT	: LONG_INTEGER	:= LONG_INTEGER'VALUE( PRINT_NUM( D( XD_DENOM, TS ) ) );
+
+    NX, DX, NY, DY	: LONG_INTEGER;
+    INT_1, INT_2	: TREE;
+
+		---------------
+    function	INTEGER_OPERAND	( PRM : TREE )	return TREE
+    is		---------------
+	-- Rend l'expression ENTIERE nue si PRM est la conversion-idiome
+	-- FIXED( <entier> ), TREE_VOID sinon.
+      INNER	: TREE;
+    begin
+      if  PRM.TY = DN_CONVERSION  then
+        INNER := D( AS_EXP, PRM );
+        if  D( SM_EXP_TYPE, INNER ) /= TREE_VOID
+        and then  ( D( SM_EXP_TYPE, INNER ).TY = DN_INTEGER
+	   or else  D( SM_EXP_TYPE, INNER ).TY = DN_UNIVERSAL_INTEGER )
+        then
+          return INNER;
+        end if;
+      end if;
+      return TREE_VOID;
+    end	INTEGER_OPERAND;
+
+		-----------
+    procedure	SMALL_OF	( PRM : TREE;  N, D_OUT : out LONG_INTEGER )
+    is		-----------
+      SP	: TREE	:= D( CD_IMPL_SMALL, FULL_VIEW( D( SM_EXP_TYPE, PRM ) ) );
+    begin
+      N     := LONG_INTEGER'VALUE( PRINT_NUM( D( XD_NUMER, SP ) ) );
+      D_OUT := LONG_INTEGER'VALUE( PRINT_NUM( D( XD_DENOM, SP ) ) );
+    end	SMALL_OF;
+
+		---------------
+    procedure	EMIT_ZERO_CHECK
+    is		---------------
+    begin
+      if  CODI.CHECKS_ENABLED  then					-- idiome CHK_DIV0, Q7 : NUMERIC_ERROR
+        PUT_LINE( tab & "DUP" );
+        PUT_LINE( tab & "LI" & tab & "0" );
+        PUT_LINE( tab & "CEQ" );
+        PUT_LINE( tab & "BT" & tab & "STANDARD.ne_raise_" );
+      end if;
+    end	EMIT_ZERO_CHECK;
+
+  begin
+    if  CODI.IN_GENERIC_BODY
+    and then  IS_GENERIC_FORMAL_TYPE( D( XD_SOURCE_NAME, TARGET_TYPE ) )
+    then
+      PUT_LINE( "; ANOMALIE F-D : T(X*Y) sur formel generique -- F-4/Q2" );
+      raise PROGRAM_ERROR;						-- bruyant, jamais silencieux
+    end if;
+
+    POP( PRM_S, PRM_1 );
+    POP( PRM_S, PRM_2 );
+    INT_1 := INTEGER_OPERAND( PRM_1 );
+    INT_2 := INTEGER_OPERAND( PRM_2 );
+
+    if  OP_STR = """*"""  then
+
+      if  INT_2 /= TREE_VOID  then					-- FIX * INT (elision)
+        SMALL_OF( PRM_1, NX, DX );
+        CODE_EXP( PRM_1 );						-- rX
+        CODE_EXP( INT_2 );						-- K nu
+        PUT_LINE( tab & "MUL" );					-- rX.K : exact en small source
+        EMIT_FIXED_RESCALE( NX * DT, DX * NT );				-- source -> cible (souvent identite)
+
+      elsif  INT_1 /= TREE_VOID  then					-- INT * FIX (symetrie)
+        SMALL_OF( PRM_2, NY, DY );
+        CODE_EXP( PRM_2 );
+        CODE_EXP( INT_1 );
+        PUT_LINE( tab & "MUL" );
+        EMIT_FIXED_RESCALE( NY * DT, DY * NT );
+
+      else								-- FIX * FIX
+        SMALL_OF( PRM_1, NX, DX );
+        SMALL_OF( PRM_2, NY, DY );
+        CODE_EXP( PRM_1 );						-- rX
+        CODE_EXP( PRM_2 );						-- rY
+        PUT_LINE( tab & "MUL" );					-- rX.rY (64 bits -- dette overflow P2)
+        EMIT_FIXED_RESCALE( NX * NY * DT, DX * DY * NT );
+      end if;
+
+    elsif  OP_STR = """/"""  then
+
+      if  INT_2 /= TREE_VOID  then					-- FIX / INT (elision)
+        SMALL_OF( PRM_1, NX, DX );
+        CODE_EXP( PRM_1 );
+        EMIT_FIXED_RESCALE( NX * DT, DX * NT );				-- pre-scale (Q4)
+        CODE_EXP( INT_2 );
+        EMIT_ZERO_CHECK;
+        PUT_LINE( tab & "DIV" );					-- troncature (Q3)
+
+      else								-- FIX / FIX
+        SMALL_OF( PRM_1, NX, DX );
+        SMALL_OF( PRM_2, NY, DY );
+        CODE_EXP( PRM_1 );
+        EMIT_FIXED_RESCALE( NX * DY * DT, DX * NY * NT );		-- pre-multiplication (Q4)
+        CODE_EXP( PRM_2 );
+        EMIT_ZERO_CHECK;
+        PUT_LINE( tab & "DIV" );
+      end if;
+
+    else
+      PUT_LINE( "; ANOMALIE F-D : operateur " & OP_STR & " inattendu" );
+      raise PROGRAM_ERROR;
+    end if;
+
+  end	CODE_FIXED_MUL_DIV_CONVERSION;
+	-----------------------------
+
+
 				---------------
   procedure			CODE_CONVERSION		( CONVERSION :TREE )
   is				---------------
@@ -5287,6 +5514,38 @@ SCAN_IDS:
       end	if;
 
     else
+	-- F-D : le multiplicatif fixed n'a QUE la conversion comme
+	-- consommateur (universal_fixed jamais materialise). Intercepter
+	-- AVANT de coder la source, sinon garde F-A. Critere IDENTIQUE a
+	-- celui de la garde (operandes DN_FIXED) : interception >= garde
+	-- par construction. NB : SM_EXP_TYPE ABSENT sur le FUNCTION_CALL
+	-- ne se teste PAS (sentinelle VOID/NIL incertaine -- lecon F-3).
+      if  FULL_VIEW( TARGET_TYPE ).TY = DN_FIXED
+      and then  SRC_EXP.TY = DN_FUNCTION_CALL
+      and then  D( SM_DEFN, D( AS_NAME, SRC_EXP ) ).TY = DN_BLTN_OPERATOR_ID	-- pas un "*" utilisateur
+      then
+        declare
+          OP	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, D( AS_NAME, SRC_EXP ) ) );
+          PRM_S	: SEQ_TYPE	:= LIST( D( SM_NORMALIZED_PARAM_S, SRC_EXP ) );
+          PRM_1, PRM_2	: TREE;
+          T1, T2	: TREE;
+        begin
+          if  OP = """*"""  or else  OP = """/"""  then
+            POP( PRM_S, PRM_1 );
+            POP( PRM_S, PRM_2 );
+            T1 := D( SM_EXP_TYPE, PRM_1 );
+            T2 := D( SM_EXP_TYPE, PRM_2 );
+            if  T1 /= TREE_VOID  and then  T2 /= TREE_VOID
+            and then  FULL_VIEW( T1 ).TY = DN_FIXED
+            and then  FULL_VIEW( T2 ).TY = DN_FIXED
+            then
+              CODE_FIXED_MUL_DIV_CONVERSION( CONVERSION );
+              return;
+            end if;
+          end if;
+        end;
+      end if;
+
       CODE_EXP( SRC_EXP );
 
       if  not( CODI.IN_GENERIC_BODY )
@@ -5522,7 +5781,15 @@ SCAN_IDS:
 		--------------------
 
 	    elsif  SRC_TYPE.TY = DN_FIXED  and then  TARGET_TYPE /= SRC_TYPE  then
-	      PUT_LINE( "; FIXED to FIXED a faire" );
+	      declare							-- rX deja empile
+	        SS	: TREE		:= D( CD_IMPL_SMALL, SRC_TYPE );
+	        NS	: LONG_INTEGER	:= LONG_INTEGER'VALUE( PRINT_NUM( D( XD_NUMER, SS ) ) );
+	        DS	: LONG_INTEGER	:= LONG_INTEGER'VALUE( PRINT_NUM( D( XD_DENOM, SS ) ) );
+	        NT	: LONG_INTEGER	:= LONG_INTEGER'VALUE( PRINT_NUM( D( XD_NUMER, TARGET_SMALL ) ) );
+	        DT	: LONG_INTEGER	:= LONG_INTEGER'VALUE( PRINT_NUM( D( XD_DENOM, TARGET_SMALL ) ) );
+	      begin
+	        EMIT_FIXED_RESCALE( NS * DT, DS * NT );			-- identite si rationnels reduits egaux
+	      end;
 	    end if;
 	  end if;
 								-- A COMPLETER pour FIXED vers FIXED
@@ -5937,16 +6204,23 @@ put_line( "; CODE_QUALIFIED : DN_QUALIFIED" & NODE_NAME'IMAGE( SRC_EXP.TY ) );
 	PUT_LINE(	PRINT_NAME( D( LX_SYMREP, VC_ID ) )  & "_disp" );
 
 
+	PUT_LINE( tab & "La " & IMAGE( GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );
 -----
-        PUT_LINE( tab & "La " & IMAGE( GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );
+--        if  VC_ID.TY = DN_IN_ID  then
+--	PUT_LINE( tab & "La ," & tab & '-' & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, D( SM_OBJ_TYPE, VC_ID ) ) ) ) & "__inadr_ofs" );
+--        else
+--	PUT_LINE( tab & "La ," & tab & '-' & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, D( SM_OBJ_TYPE, VC_ID ) ) ) ) & "__outadr_ofs" );
+--        end if;
+--        PUT_LINE( tab & "CALLI" );
 
-        if  VC_ID.TY = DN_IN_ID  then
+-- VC = variable ou constante LOCALE du corps partage : son slot porte
+	-- la VALEUR (meme situation qu'un parametre in). Adaptateur INADR
+	-- (no-op), JAMAIS outadr, qui ajouterait une dereference et lirait la
+	-- valeur comme une adresse (segfault FLOAT_IO.PUT, lecture de VAL).
+	-- L'ancien test VC_ID.TY = DN_IN_ID, copie du site parametre de
+	-- CODE_USED_OBJECT_ID, etait toujours faux ici.
 	PUT_LINE( tab & "La ," & tab & '-' & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, D( SM_OBJ_TYPE, VC_ID ) ) ) ) & "__inadr_ofs" );
-        else
-	PUT_LINE( tab & "La ," & tab & '-' & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, D( SM_OBJ_TYPE, VC_ID ) ) ) ) & "__outadr_ofs" );
-        end if;
-        PUT_LINE( tab & "CALLI" );
------
+	PUT_LINE( tab & "CALLI" );
 
 
 	PUT_LINE( tab & "La " & IMAGE( GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );

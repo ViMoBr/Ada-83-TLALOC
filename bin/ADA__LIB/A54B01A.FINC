@@ -370,6 +370,14 @@ begin:					;---------- BDY INSTRUCTIONS
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	2
 	CALL	STANDARD.REPORT. ,IDENT_INT_L7
+	DUP
+	Ld	2, _STAT.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	2, _STAT.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  2,	J_disp
 					; debut case
 	Ld 2,	I_disp
@@ -431,6 +439,14 @@ L24:
 					; debut case
 	LI	2
 	DUP
+	Ld	2, _STAT.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	2, _STAT.LST
+	CGT
+	BT	STANDARD.ce_raise_
+	DUP
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	5
 	CEQ
@@ -464,6 +480,14 @@ L27:
 					; debut case
 	Ld 2,	J_disp
 ; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
+	DUP
+	Ld	2, _STAT.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	2, _STAT.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	DUP
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	5

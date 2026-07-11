@@ -1,9 +1,12 @@
-# NOTE DE MODÈLE D'EXÉCUTION — CHECKS RUNTIME (LRM 11.1) — v1.3 : E-A/E-B/E-C TELLES QUE CONSTRUITES
+# NOTE DE MODÈLE D'EXÉCUTION — CHECKS RUNTIME (LRM 11.1) — v1.4 FINALE : PÉRIMÈTRE 1 CLOS
 
-**9–11 juillet 2026 — étapes E-0 à E-C CLOSES, jugées (CHK_TEST0,
-CHK_LEN0, CHK_IDX0), filet et ACVC verts checks ON.** Reste Q7 (avant
-E-E) ; l'arbitrage n° 80-b est ANNULÉ (rectificatif §7 bis) — E-D est
-débloquée sans préalable. La
+**9–11 juillet 2026 — TOUTES étapes closes et jugées** : E-0 (dump),
+E-A (CHK_TEST0 6/6), E-B (CHK_LEN0 5/5), E-C (CHK_IDX0 12/12),
+E-D (CHK_TEST1 8/8, six sites), E-E (CHK_DIV0 5/5, Q7 figée :
+NUMERIC_ERROR, fidélité 83), E-F (filet + ACVC verts checks ON **et**
+OFF — checks ON devient le régime permanent). Toutes questions Q1–Q7
+closes. Fossiles de campagne : n° 80 (rectifié), 81+bis+ter, 82, 83,
+84 — §7 bis. Restes du périmètre 2 : §8. La
 campagne de fossiles de cette phase est consignée en §7 bis.
 
 ## 1. Stratégie : comparer-et-brancher vers UN trampoline par prédéfinie
@@ -150,13 +153,18 @@ LLIR explicite — cohérent avec Q2).
   D3-contrôle SOLDÉE (ETAT_PILIERS mis à jour).
 - **E-C — FAITE (10 juillet, CHK_IDX0 12/12)** : index check dans les
   QUATRE variantes de CODE_INDEXED, sans élision (consigné).
-- **E-D** : gamme scalaire, UN site à la fois dans l'ordre : affectation →
-  init de déclaration → param in → return → conversion → qualification.
-  Témoin par site (CHK_TEST1 auto-jugeant, sections numérotées façon
-  exc_test1) ; témoin SIGNÉ obligatoire (valeur négative vers sous-type
-  positif — l'analogue du témoin (-5,2,3) du lot D2).
-- **E-E** : division par zéro (trampoline ne_raise_, trois opcodes à garder).
-- **E-F** : filet complet checks ON — y compris AUTO-COMPILATION (§7).
+- **E-D — FAITE (11 juillet, CHK_TEST1 8/8)** : init de déclaration,
+  param in (mode in seul, copy-back consigné), return (sous-type via
+  AS_HEADER→AS_NAME→SM_DEFN→SM_TYPE_SPEC), conversion, qualification,
+  et corps générique partagé (bornes du formel via GFP/_ENUM_USE_INFO —
+  seul site hors CODE_RANGE_CHECK, aucune élision). A exhumé le
+  fossile n° 84 (adaptateur INADR/OUTADR jamais appelé côté lecture).
+- **E-E — FAITE (11 juillet, CHK_DIV0 5/5)** : /, mod, rem utilisateur
+  → NUMERIC_ERROR via ne_raise_ (premier exercice du trampoline).
+  Q7 figée : fidélité LRM 83, NUMERIC_ERROR ≠ CONSTRAINT_ERROR.
+- **E-F — FAITE (11 juillet)** : filet + ACVC complets verts checks ON
+  ET checks OFF ; auto-compilation (production FINC) verte. Checks ON
+  = régime permanent.
 
 Méthode inchangée : livraisons en instructions ligne par ligne ; tag git.
 
@@ -248,10 +256,9 @@ l'instance via __u (Q6, dump E-0).
   passent par le chemin normal sans rien savoir du générique. CLOS.
 
 **Restante :**
-- **Q7 — NUMERIC_ERROR vs CONSTRAINT_ERROR.** LRM 83 les distingue (11.1) ;
-  l'AI-00387 (adopté ensuite) les confond. ACVC 1.11 accepte les deux pour
-  la division. Proposé : distinguer (fidélité 83), coût nul (deuxième
-  trampoline). À figer avant E-E.
+- Q7 — CLOSE (E-E, 11 juillet) : NUMERIC_ERROR distincte, fidélité
+  LRM 83, jugée par CHK_DIV0 §2-4 (discrimination explicite des deux
+  handlers) et §5 (sentinelle nomme NUMERIC_ERROR).
 
 ## 10. Ce que ce pilier NE construit PAS
 

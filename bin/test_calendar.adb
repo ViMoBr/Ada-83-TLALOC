@@ -82,19 +82,35 @@ begin
   SPLIT( T2, Y, M, D, S );
   AFFICHE_DATE;
 
-  PUT_LINE( "----- ANNEE NON BISEXTILE (28/2/1900 86399.75sec + 0.25 -----" );
+--  PUT_LINE( "----- ANNEE NON BISEXTILE (28/2/1900 86399.75sec + 0.25 -----" );
 
-  T  := TIME_OF( 1900, 2, 28, 86399.75 );
-  T2 := T + 0.25;
-  SPLIT( T2, Y, M, D, S );
-  AFFICHE_DATE;
+--  T  := TIME_OF( 1900, 2, 28, 86399.75 );
+--  T2 := T + 0.25;
+--  SPLIT( T2, Y, M, D, S );
+--  AFFICHE_DATE;
 
-  PUT_LINE( "----- ANNEE NON BISEXTILE (28/2/2100 86399.75sec + 0.25 -----" );
+--  PUT_LINE( "----- ANNEE NON BISEXTILE (28/2/2100 86399.75sec + 0.25 -----" );
 
-  T  := TIME_OF( 2100, 2, 28, 86399.75 );
-  T2 := T + 0.25;
-  SPLIT( T2, Y, M, D, S );
-  AFFICHE_DATE;
+--  T  := TIME_OF( 2100, 2, 28, 86399.75 );
+--  T2 := T + 0.25;
+--  SPLIT( T2, Y, M, D, S );
+--  AFFICHE_DATE;
+
+  PUT_LINE( "----- HORS GAMME YEAR_NUMBER (1900 et 2100 exclus par le LRM) -----" );
+
+  begin
+    T := TIME_OF( 1900, 2, 28, 86399.75 );
+    PUT_LINE( "1900 : ERREUR, pas d'exception" );
+  exception
+    when CONSTRAINT_ERROR => PUT_LINE( "1900 -> CONSTRAINT_ERROR OK" );
+  end;
+
+  begin
+    T := TIME_OF( 2100, 2, 28, 86399.75 );
+    PUT_LINE( "2100 : ERREUR, pas d'exception" );
+  exception
+    when CONSTRAINT_ERROR => PUT_LINE( "2100 -> CONSTRAINT_ERROR OK" );
+  end;
 
   PUT_LINE( "----- ANNEE NON BISEXTILE (28/2/2001 86399.75sec + 0.25 -----" );
 

@@ -643,7 +643,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	BRA	L38
 L39:
 L38:					; post if
-; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
+; CODE_RETURN : EXPR TYPE = DN_ENUMERATION  VUE COMPLETE = DN_ENUMERATION
 	La 1, -FILE_ofs
 	LIb	, 0, STANDARD.DIRECT_IO._FILE_TYPE.MODE
 	Sb  1,	-result__ofs
@@ -677,7 +677,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	BRA	L42
 L43:
 L42:					; post if
-; CODE_RETURN : EXPR TYPE = DN_ARRAY
+; CODE_RETURN : EXPR TYPE = DN_ARRAY  VUE COMPLETE = DN_ARRAY
 	La 1, -FILE_ofs
 	LIVA 	, 0, STANDARD.DIRECT_IO._FILE_TYPE.NAME
 namespace ANON_191_12			; ensemble doublet @data/@info pour slice anonyme source
@@ -751,7 +751,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	BRA	L47
 L48:
 L47:					; post if
-; CODE_RETURN : EXPR TYPE = DN_VOID
+; CODE_RETURN : EXPR TYPE = DN_VOID  VUE COMPLETE = DN_VOID
 STR RET_STR_L49, ""				; constante string=""
 	LCA	RET_STR_L49.data_ptr
 VAR	RET_INFO_L50, q
@@ -785,7 +785,7 @@ endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
+; CODE_RETURN : EXPR TYPE = DN_ENUMERATION  VUE COMPLETE = DN_ENUMERATION
 	La 1, -FILE_ofs
 	LIb	, 0, STANDARD.DIRECT_IO._FILE_TYPE.IS_OPENED
 	Sb  1,	-result__ofs
@@ -812,6 +812,10 @@ VAR SIZE_BYTES_disp, d			; variable entiere
 	La  1,	-GFP_ofs
 	LId , -ELEMENT_TYPE__u_ofs
 	LI	 8
+	DUP
+	LI	0
+	CEQ
+	BT	STANDARD.ne_raise_
 	DIV
 	Sd  1,	SIZE_BYTES_disp
 
@@ -958,6 +962,10 @@ VAR SIZE_BYTES_disp, d			; variable entiere
 	La  1,	-GFP_ofs
 	LId , -ELEMENT_TYPE__u_ofs
 	LI	 8
+	DUP
+	LI	0
+	CEQ
+	BT	STANDARD.ne_raise_
 	DIV
 	Sd  1,	SIZE_BYTES_disp
 
@@ -1055,6 +1063,10 @@ VAR SIZE_BYTES_disp, d			; variable entiere
 	La  1,	-GFP_ofs
 	LId , -ELEMENT_TYPE__u_ofs
 	LI	 8
+	DUP
+	LI	0
+	CEQ
+	BT	STANDARD.ne_raise_
 	DIV
 	Sd  1,	SIZE_BYTES_disp
 
@@ -1190,6 +1202,10 @@ VAR SIZE_BYTES_disp, d			; variable entiere
 	La  1,	-GFP_ofs
 	LId , -ELEMENT_TYPE__u_ofs
 	LI	 8
+	DUP
+	LI	0
+	CEQ
+	BT	STANDARD.ne_raise_
 	DIV
 	Sd  1,	SIZE_BYTES_disp
 
@@ -1275,6 +1291,10 @@ VAR SIZE_BYTES_disp, d			; variable entiere
 	La  1,	-GFP_ofs
 	LId , -ELEMENT_TYPE__u_ofs
 	LI	 8
+	DUP
+	LI	0
+	CEQ
+	BT	STANDARD.ne_raise_
 	DIV
 	Sd  1,	SIZE_BYTES_disp
 
@@ -1361,6 +1381,10 @@ VAR SIZE_BYTES_disp, d			; variable entiere
 	La  1,	-GFP_ofs
 	LId , -ELEMENT_TYPE__u_ofs
 	LI	 8
+	DUP
+	LI	0
+	CEQ
+	BT	STANDARD.ne_raise_
 	DIV
 	Sd  1,	SIZE_BYTES_disp
 
@@ -1404,14 +1428,34 @@ L117:					; post if
 	LId	, 0, STANDARD.DIRECT_IO._FILE_TYPE.ID
 	CALL	STANDARD.DIRECT_IO.INDEX_L16. ,GET_POS_SYSTEM_CALL_L112
 	Sd  1,	BYTES_disp
-; CODE_RETURN : EXPR TYPE = DN_INTEGER
+; CODE_RETURN : EXPR TYPE = DN_INTEGER  VUE COMPLETE = DN_INTEGER
 	Ld 1,	BYTES_disp
 	Ld 1,	SIZE_BYTES_disp
+	DUP
+	LI	0
+	CEQ
+	BT	STANDARD.ne_raise_
 	DIV
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
 ; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
+	DUP
+	Ld	0, STANDARD.DIRECT_IO._POSITIVE_COUNT.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD.DIRECT_IO._POSITIVE_COUNT.LST
+	CGT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD.DIRECT_IO._POSITIVE_COUNT.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD.DIRECT_IO._POSITIVE_COUNT.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	-result__ofs
 	BRA ret_lbl
 ret_lbl:
@@ -1435,6 +1479,10 @@ VAR SIZE_BYTES_disp, d			; variable entiere
 	La  1,	-GFP_ofs
 	LId , -ELEMENT_TYPE__u_ofs
 	LI	 8
+	DUP
+	LI	0
+	CEQ
+	BT	STANDARD.ne_raise_
 	DIV
 	Sd  1,	SIZE_BYTES_disp
 
@@ -1478,9 +1526,13 @@ L124:					; post if
 	LId	, 0, STANDARD.DIRECT_IO._FILE_TYPE.ID
 	CALL	STANDARD.DIRECT_IO.SIZE_L17. ,GET_SIZE_SYSTEM_CALL_L119
 	Sd  1,	BYTES_disp
-; CODE_RETURN : EXPR TYPE = DN_INTEGER
+; CODE_RETURN : EXPR TYPE = DN_INTEGER  VUE COMPLETE = DN_INTEGER
 	Ld 1,	BYTES_disp
 	Ld 1,	SIZE_BYTES_disp
+	DUP
+	LI	0
+	CEQ
+	BT	STANDARD.ne_raise_
 	DIV
 ; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
 	Sd  1,	-result__ofs
@@ -1582,7 +1634,7 @@ L136:					; post if
 	LId	, 0, STANDARD.DIRECT_IO._FILE_TYPE.ID
 	CALL	STANDARD.DIRECT_IO.END_OF_FILE_L18. ,GET_SIZE_SYSTEM_CALL_L129
 	Sd  1,	SIZ_BYTES_disp
-; CODE_RETURN : EXPR TYPE = DN_ENUMERATION
+; CODE_RETURN : EXPR TYPE = DN_ENUMERATION  VUE COMPLETE = DN_ENUMERATION
 	Ld 1,	POS_BYTES_disp
 	Ld 1,	SIZ_BYTES_disp
 	CGE

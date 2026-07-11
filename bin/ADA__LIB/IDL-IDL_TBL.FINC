@@ -56,11 +56,27 @@ VAR GFP_disp, q				; Lieu du Generic Frame Pointer
 					; CODE_PACKAGE_SPEC
 VAR DEFAULT_WIDTH_disp, d			; variable entiere
 	LI	 11
+	DUP
+	Ld	0, STANDARD.TEXT_IO._FIELD.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD.TEXT_IO._FIELD.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	DEFAULT_WIDTH_disp
 
 VAR DEFAULT_BASE_disp, d			; variable entiere
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	10
+	DUP
+	Ld	0, STANDARD.TEXT_IO._NUMBER_BASE.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD.TEXT_IO._NUMBER_BASE.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	DEFAULT_BASE_disp
 
 					; sub program entry decl (in instantiation TRUE )
@@ -394,6 +410,14 @@ LOOP__1:
 	BF	L13
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
+	DUP
+	Ld	0, STANDARD.TEXT_IO._FIELD.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD.TEXT_IO._FIELD.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	LVA  1,	T_INT_disp
 	LVA 1,	SFILE_disp
 	CALL	STANDARD.IDL.IDL_TBL.INIT_SPEC_L53.INT_IO. ,GET_L61
@@ -428,6 +452,14 @@ LOOP__3:					; corps boucle LOOP__3
 					; debut if
 	La	 1, T_TXT_disp				; array data start address on stack
 	Ld	2, SL17_disp
+	DUP
+	LId	1, T_TXT__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	1, T_TXT__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	1, T_TXT__u, STANDARD._STRING.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	1, T_TXT__u, STANDARD._STRING.COMP_SIZ
@@ -440,6 +472,14 @@ LOOP__3:					; corps boucle LOOP__3
 	CNE
 	La	 1, T_TXT_disp				; array data start address on stack
 	Ld	2, SL17_disp
+	DUP
+	LId	1, T_TXT__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	1, T_TXT__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	1, T_TXT__u, STANDARD._STRING.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	1, T_TXT__u, STANDARD._STRING.COMP_SIZ
@@ -459,6 +499,14 @@ LOOP__3:					; corps boucle LOOP__3
 	Sd  2,	D_disp
 	La	 1, T_TXT_disp				; array data start address on stack
 	Ld 2,	D_disp
+	DUP
+	LId	1, T_TXT__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	1, T_TXT__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	1, T_TXT__u, STANDARD._STRING.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	1, T_TXT__u, STANDARD._STRING.COMP_SIZ
@@ -468,6 +516,14 @@ LOOP__3:					; corps boucle LOOP__3
 	ADD					; add offset to start address
 	La	 1, T_TXT_disp				; array data start address on stack
 	Ld	2, SL17_disp
+	DUP
+	LId	1, T_TXT__u, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	1, T_TXT__u, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	1, T_TXT__u, STANDARD._STRING.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	1, T_TXT__u, STANDARD._STRING.COMP_SIZ
@@ -490,6 +546,14 @@ L18:					; post if
 	BRA	LOOP__3				; iteration suivante LOOP__3
 L16:					; post loop LOOP__3
 	Ld 2,	D_disp
+	DUP
+	Ld	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
 	Sd  1,	T_LAST_disp
 	UNLINK 2
 endPRO
@@ -519,6 +583,14 @@ L23:
 L22:					; post if
 	La	 0, N_SPEC_disp				; array data start address on stack
 	LId	0, LAST_NODE_disp, 0
+	DUP
+	LId	0, N_SPEC__u, STANDARD.IDL.IDL_TBL._NODE_SPECIF_TABLE.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, N_SPEC__u, STANDARD.IDL.IDL_TBL._NODE_SPECIF_TABLE.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, N_SPEC__u, STANDARD.IDL.IDL_TBL._NODE_SPECIF_TABLE.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, N_SPEC__u, STANDARD.IDL.IDL_TBL._NODE_SPECIF_TABLE.COMP_SIZ
@@ -578,6 +650,14 @@ begin:					;---------- BDY INSTRUCTIONS
 					; debut if
 	La	 0, N_SPEC_disp				; array data start address on stack
 	Lb 2,	NN_disp
+	DUP
+	LId	0, N_SPEC__u, STANDARD.IDL.IDL_TBL._NODE_SPECIF_TABLE.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, N_SPEC__u, STANDARD.IDL.IDL_TBL._NODE_SPECIF_TABLE.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, N_SPEC__u, STANDARD.IDL.IDL_TBL._NODE_SPECIF_TABLE.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, N_SPEC__u, STANDARD.IDL.IDL_TBL._NODE_SPECIF_TABLE.COMP_SIZ
@@ -592,6 +672,14 @@ begin:					;---------- BDY INSTRUCTIONS
 	BF	L29
 	La	 0, N_SPEC_disp				; array data start address on stack
 	Lb 2,	NN_disp
+	DUP
+	LId	0, N_SPEC__u, STANDARD.IDL.IDL_TBL._NODE_SPECIF_TABLE.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, N_SPEC__u, STANDARD.IDL.IDL_TBL._NODE_SPECIF_TABLE.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, N_SPEC__u, STANDARD.IDL.IDL_TBL._NODE_SPECIF_TABLE.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, N_SPEC__u, STANDARD.IDL.IDL_TBL._NODE_SPECIF_TABLE.COMP_SIZ
@@ -607,6 +695,14 @@ L29:
 L28:					; post if
 	La	 0, N_SPEC_disp				; array data start address on stack
 	Lb 2,	NN_disp
+	DUP
+	LId	0, N_SPEC__u, STANDARD.IDL.IDL_TBL._NODE_SPECIF_TABLE.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, N_SPEC__u, STANDARD.IDL.IDL_TBL._NODE_SPECIF_TABLE.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, N_SPEC__u, STANDARD.IDL.IDL_TBL._NODE_SPECIF_TABLE.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, N_SPEC__u, STANDARD.IDL.IDL_TBL._NODE_SPECIF_TABLE.COMP_SIZ
@@ -617,6 +713,14 @@ L28:					; post if
 	LVA	, STANDARD.IDL.IDL_TBL._NODE_SPECIF.NS_SIZE
 	La	 0, N_SPEC_disp				; array data start address on stack
 	Lb 2,	NN_disp
+	DUP
+	LId	0, N_SPEC__u, STANDARD.IDL.IDL_TBL._NODE_SPECIF_TABLE.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, N_SPEC__u, STANDARD.IDL.IDL_TBL._NODE_SPECIF_TABLE.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, N_SPEC__u, STANDARD.IDL.IDL_TBL._NODE_SPECIF_TABLE.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, N_SPEC__u, STANDARD.IDL.IDL_TBL._NODE_SPECIF_TABLE.COMP_SIZ
@@ -860,6 +964,14 @@ L37:					; post if
 	Sb  1,	AS_LIST_SEEN_disp
 	La	 0, N_SPEC_disp				; array data start address on stack
 	Lb 2,	NN_disp
+	DUP
+	LId	0, N_SPEC__u, STANDARD.IDL.IDL_TBL._NODE_SPECIF_TABLE.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, N_SPEC__u, STANDARD.IDL.IDL_TBL._NODE_SPECIF_TABLE.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, N_SPEC__u, STANDARD.IDL.IDL_TBL._NODE_SPECIF_TABLE.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, N_SPEC__u, STANDARD.IDL.IDL_TBL._NODE_SPECIF_TABLE.COMP_SIZ
@@ -870,6 +982,14 @@ L37:					; post if
 	LVA	, STANDARD.IDL.IDL_TBL._NODE_SPECIF.NS_ARITY
 	La	 0, N_SPEC_disp				; array data start address on stack
 	Lb 2,	NN_disp
+	DUP
+	LId	0, N_SPEC__u, STANDARD.IDL.IDL_TBL._NODE_SPECIF_TABLE.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, N_SPEC__u, STANDARD.IDL.IDL_TBL._NODE_SPECIF_TABLE.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, N_SPEC__u, STANDARD.IDL.IDL_TBL._NODE_SPECIF_TABLE.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, N_SPEC__u, STANDARD.IDL.IDL_TBL._NODE_SPECIF_TABLE.COMP_SIZ
@@ -1011,6 +1131,14 @@ L40:					; post if
 	Sb  1,	AS_SEEN_disp
 	La	 0, N_SPEC_disp				; array data start address on stack
 	Lb 2,	NN_disp
+	DUP
+	LId	0, N_SPEC__u, STANDARD.IDL.IDL_TBL._NODE_SPECIF_TABLE.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, N_SPEC__u, STANDARD.IDL.IDL_TBL._NODE_SPECIF_TABLE.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, N_SPEC__u, STANDARD.IDL.IDL_TBL._NODE_SPECIF_TABLE.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, N_SPEC__u, STANDARD.IDL.IDL_TBL._NODE_SPECIF_TABLE.COMP_SIZ
@@ -1021,6 +1149,14 @@ L40:					; post if
 	LVA	, STANDARD.IDL.IDL_TBL._NODE_SPECIF.NS_ARITY
 	La	 0, N_SPEC_disp				; array data start address on stack
 	Lb 2,	NN_disp
+	DUP
+	LId	0, N_SPEC__u, STANDARD.IDL.IDL_TBL._NODE_SPECIF_TABLE.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, N_SPEC__u, STANDARD.IDL.IDL_TBL._NODE_SPECIF_TABLE.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, N_SPEC__u, STANDARD.IDL.IDL_TBL._NODE_SPECIF_TABLE.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, N_SPEC__u, STANDARD.IDL.IDL_TBL._NODE_SPECIF_TABLE.COMP_SIZ
@@ -1043,6 +1179,14 @@ L30:					; post if
 endPRO
 	La	 0, A_SPEC_disp				; array data start address on stack
 	LId	0, LAST_NODE_ATTR_disp, 0
+	DUP
+	LId	0, A_SPEC__u, STANDARD.IDL.IDL_TBL._ATTR_ID_TABLE.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, A_SPEC__u, STANDARD.IDL.IDL_TBL._ATTR_ID_TABLE.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, A_SPEC__u, STANDARD.IDL.IDL_TBL._ATTR_ID_TABLE.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, A_SPEC__u, STANDARD.IDL.IDL_TBL._ATTR_ID_TABLE.COMP_SIZ
@@ -1061,6 +1205,14 @@ endPRO
 	Sd  1,	T_INT_disp
 	La	 0, A_SPEC_disp				; array data start address on stack
 	LId	0, LAST_NODE_ATTR_disp, 0
+	DUP
+	LId	0, A_SPEC__u, STANDARD.IDL.IDL_TBL._ATTR_ID_TABLE.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, A_SPEC__u, STANDARD.IDL.IDL_TBL._ATTR_ID_TABLE.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
 	LId	0, A_SPEC__u, STANDARD.IDL.IDL_TBL._ATTR_ID_TABLE.FST_1	; (index - FST_1) * SIZ_1
 	SUB
 	LId	0, A_SPEC__u, STANDARD.IDL.IDL_TBL._ATTR_ID_TABLE.COMP_SIZ

@@ -142,6 +142,25 @@ is					-----
   end	  TYPE_SIZE;
 	--=========--
 
+			--^^^^^--
+  function		FULL_VIEW		( T : TREE )	return TREE
+  is			---------
+    R : TREE := T;
+  begin
+    loop
+      if R.TY = DN_PRIVATE or else R.TY = DN_L_PRIVATE then
+        R := D( SM_TYPE_SPEC, R );
+
+      elsif R.TY = DN_INCOMPLETE then
+        R := D( XD_FULL_TYPE_SPEC, R );
+
+      else
+        return R;
+      end if;
+    end loop;
+
+  end	FULL_VIEW;
+	---------
 
 
 			--=================--
@@ -291,7 +310,7 @@ is					-----
   function		  EXP_TYPE_CHAR		( EXP :TREE )	return CHARACTER
   is			--=============--
 
-    EXP_TYPE	: TREE		:= D( SM_EXP_TYPE, EXP );
+    EXP_TYPE	: TREE		:= FULL_VIEW( D( SM_EXP_TYPE, EXP ) );
 
   begin
     -- Les flottants sont toujours en double IEEE	754 = 64 bits = qword

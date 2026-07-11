@@ -1,0 +1,461 @@
+if ~ definite TEXT_IO
+include 'TEXT_IO.FINC'
+end if
+if ~ definite IO_EXCEPTIONS
+include 'IO_EXCEPTIONS.FINC'
+end if
+if ~ definite TEXT_IO
+include 'TEXT_IO.FINC'
+end if
+PRO	FLOAT_FIXED_IO_TEST_L1			;---------- PRO FLOAT_FIXED_IO_TEST
+ELB 1					;    BODY ELAB
+LF_IO = 'LF_IO'
+namespace LF_IO				;---------- GENERIC PACKAGE INSTANTIATION
+elab_spec:				;    SPEC ELAB
+
+BRA post_LD_NUM
+LD_NUM.elab:
+	Lq -1, 0
+	RTD 0
+post_LD_NUM:
+BRA post_ST_NUM
+ST_NUM.elab:
+	Sq -1, 0
+	RTD 0
+post_ST_NUM:
+BRA post_INADR_NUM
+INADR_NUM.elab:
+	RTD 0
+post_INADR_NUM:
+BRA post_OUTADR_NUM
+OUTADR_NUM.elab:
+	La
+	RTD 0
+post_OUTADR_NUM:
+VAR NUM__outadr_ofs, q
+	LCA OUTADR_NUM.elab
+	Sa	 1, NUM__outadr_ofs
+VAR NUM__inadr_ofs, q
+	LCA INADR_NUM.elab
+	Sa	 1, NUM__inadr_ofs
+VAR NUM__st_ofs, q
+	LCA ST_NUM.elab
+	Sa	 1, NUM__st_ofs
+VAR NUM__ld_ofs, q
+	LCA LD_NUM.elab
+	Sa	 1, NUM__ld_ofs
+VAR NUM__u_ofs, q
+	La	 0, STANDARD._LONG_FLOAT.use__info
+	Sa	 1, NUM__u_ofs
+VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
+					; CODE_PACKAGE_SPEC
+VAR DEFAULT_FORE_disp, d			; variable entiere
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	2
+	DUP
+	Ld	0, STANDARD.TEXT_IO._FIELD.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD.TEXT_IO._FIELD.LST
+	CGT
+	BT	STANDARD.ce_raise_
+	Sd  1,	DEFAULT_FORE_disp
+
+VAR DEFAULT_AFT_disp, d			; variable entiere
+	LI	15
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	SUB
+	DUP
+	Ld	0, STANDARD.TEXT_IO._FIELD.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD.TEXT_IO._FIELD.LST
+	CGT
+	BT	STANDARD.ce_raise_
+	Sd  1,	DEFAULT_AFT_disp
+
+VAR DEFAULT_EXP_disp, d			; variable entiere
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	3
+	DUP
+	Ld	0, STANDARD.TEXT_IO._FIELD.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD.TEXT_IO._FIELD.LST
+	CGT
+	BT	STANDARD.ce_raise_
+	Sd  1,	DEFAULT_EXP_disp
+
+					; sub program entry decl (in instantiation TRUE )
+if defined GET_L67_
+PRO	GET_L67				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM ITEM_ofs				; out
+	PRM WIDTH_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Ld	 2, -WIDTH_ofs
+	La 	 2, -ITEM_ofs
+	La 	 2, -FILE_ofs
+	CALL	STANDARD.TEXT_IO.FLOAT_IO. ,GET_L67
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO GET
+end if
+					; sub program entry decl (in instantiation TRUE )
+if defined GET_L68_
+PRO	GET_L68				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM ITEM_ofs				; out
+	PRM WIDTH_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Ld	 2, -WIDTH_ofs
+	La 	 2, -ITEM_ofs
+	CALL	STANDARD.TEXT_IO.FLOAT_IO. ,GET_L68
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO GET
+end if
+					; sub program entry decl (in instantiation TRUE )
+if defined PUT_L69_
+PRO	PUT_L69				;---------- PRO PUT
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM ITEM_ofs				; in
+	PRM FORE_ofs				; in
+	PRM AFT_ofs				; in
+	PRM EXP_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Ld	 2, -EXP_ofs
+	Ld	 2, -AFT_ofs
+	Ld	 2, -FORE_ofs
+	Lq	 2, -ITEM_ofs
+	La 	 2, -FILE_ofs
+	CALL	STANDARD.TEXT_IO.FLOAT_IO. ,PUT_L69
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO PUT
+end if
+					; sub program entry decl (in instantiation TRUE )
+if defined PUT_L70_
+PRO	PUT_L70				;---------- PRO PUT
+PRMS					;    debut parametrage
+	PRM ITEM_ofs				; in
+	PRM FORE_ofs				; in
+	PRM AFT_ofs				; in
+	PRM EXP_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Ld	 2, -EXP_ofs
+	Ld	 2, -AFT_ofs
+	Ld	 2, -FORE_ofs
+	Lq	 2, -ITEM_ofs
+	CALL	STANDARD.TEXT_IO.FLOAT_IO. ,PUT_L70
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO PUT
+end if
+					; sub program entry decl (in instantiation TRUE )
+if defined GET_L71_
+PRO	GET_L71				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM FROM_ofs				; in
+	PRM ITEM_ofs				; out
+	PRM LAST_ofs				; out
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	La 	 2, -LAST_ofs
+	La 	 2, -ITEM_ofs
+	La 	 2, -FROM_ofs
+	CALL	STANDARD.TEXT_IO.FLOAT_IO. ,GET_L71
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO GET
+end if
+					; sub program entry decl (in instantiation TRUE )
+if defined PUT_L72_
+PRO	PUT_L72				;---------- PRO PUT
+PRMS					;    debut parametrage
+	PRM TO_ofs				; out
+	PRM ITEM_ofs				; in
+	PRM AFT_ofs				; in
+	PRM EXP_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Ld	 2, -EXP_ofs
+	Ld	 2, -AFT_ofs
+	Lq	 2, -ITEM_ofs
+	La 	 2, -TO_ofs
+	CALL	STANDARD.TEXT_IO.FLOAT_IO. ,PUT_L72
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO PUT
+end if
+					;---------- end generic package instantiation LF_IO
+end namespace
+
+F_IO = 'F_IO'
+namespace F_IO				;---------- GENERIC PACKAGE INSTANTIATION
+elab_spec:				;    SPEC ELAB
+
+BRA post_LD_NUM
+LD_NUM.elab:
+	Lq -1, 0
+	RTD 0
+post_LD_NUM:
+BRA post_ST_NUM
+ST_NUM.elab:
+	Sq -1, 0
+	RTD 0
+post_ST_NUM:
+BRA post_INADR_NUM
+INADR_NUM.elab:
+	RTD 0
+post_INADR_NUM:
+BRA post_OUTADR_NUM
+OUTADR_NUM.elab:
+	La
+	RTD 0
+post_OUTADR_NUM:
+VAR NUM__outadr_ofs, q
+	LCA OUTADR_NUM.elab
+	Sa	 1, NUM__outadr_ofs
+VAR NUM__inadr_ofs, q
+	LCA INADR_NUM.elab
+	Sa	 1, NUM__inadr_ofs
+VAR NUM__st_ofs, q
+	LCA ST_NUM.elab
+	Sa	 1, NUM__st_ofs
+VAR NUM__ld_ofs, q
+	LCA LD_NUM.elab
+	Sa	 1, NUM__ld_ofs
+VAR NUM__u_ofs, q
+	La	 0, STANDARD._FLOAT.use__info
+	Sa	 1, NUM__u_ofs
+VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
+					; CODE_PACKAGE_SPEC
+VAR DEFAULT_FORE_disp, d			; variable entiere
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	2
+	DUP
+	Ld	0, STANDARD.TEXT_IO._FIELD.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD.TEXT_IO._FIELD.LST
+	CGT
+	BT	STANDARD.ce_raise_
+	Sd  1,	DEFAULT_FORE_disp
+
+VAR DEFAULT_AFT_disp, d			; variable entiere
+	LI	6
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	SUB
+	DUP
+	Ld	0, STANDARD.TEXT_IO._FIELD.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD.TEXT_IO._FIELD.LST
+	CGT
+	BT	STANDARD.ce_raise_
+	Sd  1,	DEFAULT_AFT_disp
+
+VAR DEFAULT_EXP_disp, d			; variable entiere
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	3
+	DUP
+	Ld	0, STANDARD.TEXT_IO._FIELD.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD.TEXT_IO._FIELD.LST
+	CGT
+	BT	STANDARD.ce_raise_
+	Sd  1,	DEFAULT_EXP_disp
+
+					; sub program entry decl (in instantiation TRUE )
+if defined GET_L67_
+PRO	GET_L67				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM ITEM_ofs				; out
+	PRM WIDTH_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Ld	 2, -WIDTH_ofs
+	La 	 2, -ITEM_ofs
+	La 	 2, -FILE_ofs
+	CALL	STANDARD.TEXT_IO.FLOAT_IO. ,GET_L67
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO GET
+end if
+					; sub program entry decl (in instantiation TRUE )
+if defined GET_L68_
+PRO	GET_L68				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM ITEM_ofs				; out
+	PRM WIDTH_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Ld	 2, -WIDTH_ofs
+	La 	 2, -ITEM_ofs
+	CALL	STANDARD.TEXT_IO.FLOAT_IO. ,GET_L68
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO GET
+end if
+					; sub program entry decl (in instantiation TRUE )
+if defined PUT_L69_
+PRO	PUT_L69				;---------- PRO PUT
+PRMS					;    debut parametrage
+	PRM FILE_ofs				; in
+	PRM ITEM_ofs				; in
+	PRM FORE_ofs				; in
+	PRM AFT_ofs				; in
+	PRM EXP_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Ld	 2, -EXP_ofs
+	Ld	 2, -AFT_ofs
+	Ld	 2, -FORE_ofs
+	Lq	 2, -ITEM_ofs
+	La 	 2, -FILE_ofs
+	CALL	STANDARD.TEXT_IO.FLOAT_IO. ,PUT_L69
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO PUT
+end if
+					; sub program entry decl (in instantiation TRUE )
+if defined PUT_L70_
+PRO	PUT_L70				;---------- PRO PUT
+PRMS					;    debut parametrage
+	PRM ITEM_ofs				; in
+	PRM FORE_ofs				; in
+	PRM AFT_ofs				; in
+	PRM EXP_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Ld	 2, -EXP_ofs
+	Ld	 2, -AFT_ofs
+	Ld	 2, -FORE_ofs
+	Lq	 2, -ITEM_ofs
+	CALL	STANDARD.TEXT_IO.FLOAT_IO. ,PUT_L70
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO PUT
+end if
+					; sub program entry decl (in instantiation TRUE )
+if defined GET_L71_
+PRO	GET_L71				;---------- PRO GET
+PRMS					;    debut parametrage
+	PRM FROM_ofs				; in
+	PRM ITEM_ofs				; out
+	PRM LAST_ofs				; out
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	La 	 2, -LAST_ofs
+	La 	 2, -ITEM_ofs
+	La 	 2, -FROM_ofs
+	CALL	STANDARD.TEXT_IO.FLOAT_IO. ,GET_L71
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO GET
+end if
+					; sub program entry decl (in instantiation TRUE )
+if defined PUT_L72_
+PRO	PUT_L72				;---------- PRO PUT
+PRMS					;    debut parametrage
+	PRM TO_ofs				; out
+	PRM ITEM_ofs				; in
+	PRM AFT_ofs				; in
+	PRM EXP_ofs				; in
+endPRMS					;    fin parametrage
+ELB 2
+begin:
+	LVA	 1, GFP_disp
+	Ld	 2, -EXP_ofs
+	Ld	 2, -AFT_ofs
+	Lq	 2, -ITEM_ofs
+	La 	 2, -TO_ofs
+	CALL	STANDARD.TEXT_IO.FLOAT_IO. ,PUT_L72
+	UNLINK	 2
+	RTD	prm_siz
+endPRO					;---------- end PRO PUT
+end if
+					;---------- end generic package instantiation F_IO
+end namespace
+
+DUR_IO = 'DUR_IO'
+namespace DUR_IO				;---------- GENERIC PACKAGE INSTANTIATION
+elab_spec:				;    SPEC ELAB
+
+BRA post_LD_NUM
+LD_NUM.elab:
+	Lq -1, 0
+	RTD 0
+post_LD_NUM:
+BRA post_ST_NUM
+ST_NUM.elab:
+	Sq -1, 0
+	RTD 0
+post_ST_NUM:
+BRA post_INADR_NUM
+INADR_NUM.elab:
+	RTD 0
+post_INADR_NUM:
+BRA post_OUTADR_NUM
+OUTADR_NUM.elab:
+	La
+	RTD 0
+post_OUTADR_NUM:
+VAR NUM__outadr_ofs, q
+	LCA OUTADR_NUM.elab
+	Sa	 1, NUM__outadr_ofs
+VAR NUM__inadr_ofs, q
+	LCA INADR_NUM.elab
+	Sa	 1, NUM__inadr_ofs
+VAR NUM__st_ofs, q
+	LCA ST_NUM.elab
+	Sa	 1, NUM__st_ofs
+VAR NUM__ld_ofs, q
+	LCA LD_NUM.elab
+	Sa	 1, NUM__ld_ofs
+VAR NUM__u_ofs, q
+	La	 0, STANDARD._DURATION.use__info
+	Sa	 1, NUM__u_ofs
+VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
+					; CODE_PACKAGE_SPEC
+VAR DEFAULT_FORE_disp, d			; variable entiere
+; ANOMALIE CODE_ATTRIBUTE : FORE non plie par sem

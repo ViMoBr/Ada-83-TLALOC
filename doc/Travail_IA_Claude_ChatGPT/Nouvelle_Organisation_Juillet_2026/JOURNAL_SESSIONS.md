@@ -748,3 +748,34 @@ non-régression complète. Patchs : expander-structures,
 expander-instructions, expander-expressions, expander-utils,
 expander-declarations, types_decls, codi_x86_64.finc, _STANDRD.FINC
 régénéré.
+
+## Sessions 9–11 juillet 2026 — Pilier CHECKS RUNTIME : ouvert, CLOS
+
+Méthode intégrale : note d'arbitrage AVANT code (v1 → v1.4), dump
+E-0 (piège 71 : 3/3 — bornes fixed rationnelles non scalées,
+placeholder DN_ENUMERATION même pour actuel entier), étapes-témoins
+E-A..E-F, livraisons ancrées, règle de tri des fossiles appliquée en
+vraie grandeur.
+
+Construit : trampolines ce_raise_/ne_raise_, CODE_RANGE_CHECK
+(élisions par nœuds), CHECKS_ENABLED (régime permanent ON), checks
+gamme (7 sites), LEN composites (dette D3 soldée), index (4
+variantes), division par zéro (Q7 : NUMERIC_ERROR, fidélité 83).
+
+Campagne de fossiles (5, tous par témoins à VALEURS) :
+n° 80 sous-type anonyme → base (garde d'élision ; dette 80-b
+RECTIFIÉE — leçon de ré-audit) ; n° 81+bis+ter actuels constants
+fantômes (scalaires, composites, privés — IDENT_* de l'ACVC inertes
+depuis l'origine, ressuscités ; else bruyant : deux prises en 24 h) ;
+n° 82 oscillation rel8/rel32 BT/BF sous alignements (tous sauts
+rel32, le « 4 octets de NOP » historique expliqué) ; n° 83 pile
+d'évaluation pré-LINK sur la VARzone (LINK 0 avant _STANDRD ;
+BOOLEAN'LAST et 'IMAGE guéris) ; n° 84 adaptateurs INADR/OUTADR
+jamais appelés côté lecture (génériques in-out réellement
+fonctionnels pour la première fois).
+
+État final : filet complet + ACVC A2–A8 verts checks ON ET OFF,
+auto-compilation verte (FINC ; assemblage bootstrap rendu viable par
+n° 81). Le pilier a coûté ~15 livraisons et payé cinq fossiles que
+rien d'autre ne pouvait voir : « la sécurité Ada n'était pas une
+lourdeur, c'était un révélateur ».

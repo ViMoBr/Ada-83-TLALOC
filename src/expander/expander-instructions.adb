@@ -890,7 +890,7 @@ separate ( EXPANDER )
 
 				-----------
   procedure			CODE_RETURN		( ADA_RETURN :TREE )
-  is
+  is				-----------
   begin
     declare
       EXP			: TREE		:= D( AS_EXP, ADA_RETURN );
@@ -898,25 +898,29 @@ separate ( EXPANDER )
       ENCLOSING_LEVEL	: INTEGER		:= DI( CD_LEVEL, BLOCK_BODY );
     begin
       if  EXP /= TREE_VOID  then
-    		---------------------
-		STORE_FUNCTION_RESULT:
+    			---------------------
+			STORE_FUNCTION_RESULT:
         declare
           EXPR_TYPE		: TREE		:= D ( SM_EXP_TYPE, EXP );
+	FULL_TYPE		: TREE		:= CODI.FULL_VIEW( EXPR_TYPE );
         begin
 
-	if  CODI.DEBUG  then PUT_LINE( "; CODE_RETURN : EXPR TYPE = " & NODE_NAME'IMAGE( EXPR_TYPE.TY ) ); end if;
+	if  CODI.DEBUG  then
+	  PUT_LINE( "; CODE_RETURN : EXPR TYPE = " & NODE_NAME'IMAGE( EXPR_TYPE.TY )
+		& "  VUE COMPLETE = " & NODE_NAME'IMAGE( FULL_TYPE.TY ));
+	end if;
 
-	if  EXPR_TYPE.TY in CLASS_SCALAR  or else  EXPR_TYPE.TY = DN_ACCESS  then
+	if  FULL_TYPE.TY in CLASS_SCALAR  or else  FULL_TYPE.TY = DN_ACCESS  then
 	  EXPRESSIONS.CODE_EXP( EXP );
-	  if  EXPR_TYPE.TY /= DN_ACCESS  then							-- E-D3 : gamme du SOUS-TYPE DE RETOUR --
-	    EXPRESSIONS.CODE_RANGE_CHECK(							-- l'expression porte le type de BASE
-	      D( SM_TYPE_SPEC, D( SM_DEFN, D( AS_NAME,						-- (dump CHK_DUMP0), le sous-type vit dans
-	        D( AS_HEADER, CODI.ENCLOSING_BODY ) ) ) ) );					-- le FUNCTION_SPEC (dump REPORT).
+	  if  FULL_TYPE.TY /= DN_ACCESS  then								-- E-D3 : gamme du SOUS-TYPE DE RETOUR --
+	    EXPRESSIONS.CODE_RANGE_CHECK(								-- l'expression porte le type de BASE
+	      D( SM_TYPE_SPEC, D( SM_DEFN, D( AS_NAME,							-- (dump CHK_DUMP0), le sous-type vit dans
+	        D( AS_HEADER, CODI.ENCLOSING_BODY ) ) ) ) );						-- le FUNCTION_SPEC (dump REPORT).
 	  end if;
 	  PUT_LINE( tab & "S" & CODI.EXP_TYPE_CHAR( EXP ) & ' ' & INTEGER'IMAGE( CODI.CUR_LEVEL ) & ',' & tab & "-result__ofs" );
 
-	elsif  EXPR_TYPE.TY = DN_ARRAY  or  EXPR_TYPE.TY = DN_CONSTRAINED_ARRAY
-	or     EXP.TY = DN_STRING_LITERAL							-- return "..." : SM_EXP_TYPE est DN_VOID
+	elsif  FULL_TYPE.TY = DN_ARRAY  or  FULL_TYPE.TY = DN_CONSTRAINED_ARRAY
+	or     EXP.TY = DN_STRING_LITERAL								-- return "..." : SM_EXP_TYPE est DN_VOID
 	then
 	  declare
 	    SRC_LVL_STR : constant STRING := INTEGER'IMAGE( CODI.CUR_LEVEL );
@@ -974,22 +978,22 @@ separate ( EXPANDER )
 	    end;
 	  end;
 
-          elsif  EXPR_TYPE.TY = DN_ENUM_LITERAL_S  then
+          elsif  FULL_TYPE.TY = DN_ENUM_LITERAL_S  then
             EXPRESSIONS.CODE_EXP( EXP );
 	  raise PROGRAM_ERROR;
 
-	elsif  EXPR_TYPE.TY = DN_RECORD
-	or     EXPR_TYPE.TY = DN_CONSTRAINED_RECORD
-	or     EXPR_TYPE.TY = DN_L_PRIVATE
-	or     EXPR_TYPE.TY = DN_PRIVATE
+	elsif  FULL_TYPE.TY = DN_RECORD
+	or     FULL_TYPE.TY = DN_CONSTRAINED_RECORD
+	or     FULL_TYPE.TY = DN_L_PRIVATE
+	or     FULL_TYPE.TY = DN_PRIVATE
 	then
 				-- Copier les donnees dans le doublet alloue par l appelant (adresse dans result__ofs)
 	  declare
-	    TYPE_SPEC	: TREE	:= EXPR_TYPE;
+	    TYPE_SPEC	: TREE	:= FULL_TYPE;
 	  begin
-	    while  TYPE_SPEC.TY = DN_L_PRIVATE  or  TYPE_SPEC.TY = DN_PRIVATE  loop
-	      TYPE_SPEC := D( SM_TYPE_SPEC, TYPE_SPEC );
-	    end loop;
+--	    while  TYPE_SPEC.TY = DN_L_PRIVATE  or  TYPE_SPEC.TY = DN_PRIVATE  loop
+--	      TYPE_SPEC := D( SM_TYPE_SPEC, TYPE_SPEC );
+--	    end loop;
 
 	    if  TYPE_SPEC.TY = DN_CONSTRAINED_RECORD  then						-- pilier 3.7 : vue contrainte -> base
 	      TYPE_SPEC := D( SM_BASE_TYPE, TYPE_SPEC );						-- (symbole .size de la vue anonyme inexistant)
@@ -1032,6 +1036,7 @@ separate ( EXPANDER )
 		& NODE_NAME'IMAGE( EXPR_TYPE.TY ) );
 	  raise PROGRAM_ERROR;
           end if;
+
         end	STORE_FUNCTION_RESULT;
         		---------------------
       end if;
@@ -1605,7 +1610,7 @@ separate ( EXPANDER )
 
 	  if  SRC_EXP.TY = DN_USED_OBJECT_ID
 	   or else  SRC_EXP.TY = DN_FUNCTION_CALL
-	   or else  SRC_EXP.TY = DN_QUALIFIED							-- pilier 3.7 : sources laissant @doublet
+	   or else  SRC_EXP.TY = DN_QUALIFIED								-- pilier 3.7 : sources laissant @doublet
 	  then
 	    PUT_LINE( tab & "La" );									-- @doublet -> data_ptr
 	  end if;
@@ -1627,6 +1632,21 @@ separate ( EXPANDER )
 	NAME_TYPE	: TREE		:= D( SM_EXP_TYPE, DST_NAME );
 	DEFN	: TREE		:= D( SM_DEFN, DST_NAME );
 
+			------------
+	function		ST_VIA_CALLI	return BOOLEAN
+	is		------------
+	    -- Invariant (lot n° 84) : l'adresse destination n'est empilee AVANT
+	    -- l'expression source que si STORE_OR_CALLI la consommera par le
+	    -- thunk ST -- MEME PREDICAT des deux cotes, sinon adresse orpheline
+	    -- sur la pile d'evaluation.
+	begin
+	  return  CODI.IN_GENERIC_BODY
+	    and then  EXPRESSIONS.IS_GENERIC_FORMAL_TYPE( D( XD_SOURCE_NAME, NAME_TYPE ) )
+	    and then  ( DEFN.TY = DN_OUT_ID  or  DEFN.TY = DN_IN_OUT_ID );
+
+	end	ST_VIA_CALLI;
+		------------
+
 			--------------
 	procedure		STORE_OR_CALLI
 	is		--------------
@@ -1635,10 +1655,7 @@ separate ( EXPANDER )
 	    -- Convention: pile = [..., @param_out, valeur]  (valeur en sommet, empilee par l'appelant)
 	    -- ST fait SIb -1,0 : POP_RBX (valeur), INDIRECT_BASE_IN_RAX (deref @param → @dest), STORE
 	begin
-	  if  CODI.IN_GENERIC_BODY
-	      and then  EXPRESSIONS.IS_GENERIC_FORMAL_TYPE( D( XD_SOURCE_NAME, NAME_TYPE ) )
-	      and then  ( DEFN.TY = DN_OUT_ID  or  DEFN.TY = DN_IN_OUT_ID )
-	  then
+	  if  ST_VIA_CALLI  then
 	    declare
 	      FORMAL_TYPE_NAME :constant STRING := PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, NAME_TYPE ) ) );
 	    begin
@@ -1735,7 +1752,7 @@ separate ( EXPANDER )
 
 
 	elsif  NAME_TYPE.TY = DN_ENUMERATION  then							-- OBJET ASSIGNE ENUMERATION (DONT BOOLEAN, CHARACTER)
-	  if  CODI.IN_GENERIC_BODY  and then  ( DEFN.TY = DN_OUT_ID  or  DEFN.TY = DN_IN_OUT_ID )  then
+	  if  ST_VIA_CALLI  then
 	    PUT_LINE( tab & "LVA " & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ','
 		    & tab & '-' & PRINT_NAME( D( LX_SYMREP, DEFN ) ) & "_ofs" );
 	    PUT_LINE( tab & "La" );
@@ -1746,17 +1763,17 @@ separate ( EXPANDER )
 
 	elsif  NAME_TYPE.TY = DN_INTEGER  or  NAME_TYPE.TY = DN_FIXED  or  NAME_TYPE.TY = DN_FLOAT  then		-- OBJET ASSIGNE SCALAIRE
 
-	  if  CODI.IN_GENERIC_BODY  then
+	  if  ST_VIA_CALLI  then
 
-	    if  DEFN.TY = DN_OUT_ID  or  DEFN.TY = DN_IN_OUT_ID  then
+--	    if  DEFN.TY = DN_OUT_ID  or  DEFN.TY = DN_IN_OUT_ID  then
 	      PUT_LINE( tab & "LVA " & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ','
 		    & tab & '-' & PRINT_NAME( D( LX_SYMREP, DEFN ) ) & "_ofs" );
 	      PUT_LINE( tab & "La" );
 
-	    elsif  EXPRESSIONS.IS_GENERIC_FORMAL_TYPE( D( XD_SOURCE_NAME, NAME_TYPE ) )  then
-	      PUT_LINE( tab & "LVA " & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ','
-		    & tab & PRINT_NAME( D( LX_SYMREP, DEFN ) ) & "_disp" );
-	    end if;
+--	    elsif  EXPRESSIONS.IS_GENERIC_FORMAL_TYPE( D( XD_SOURCE_NAME, NAME_TYPE ) )  then
+--	      PUT_LINE( tab & "LVA " & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ','
+--		    & tab & PRINT_NAME( D( LX_SYMREP, DEFN ) ) & "_disp" );
+--	    end if;
 
 	  end if;
 
@@ -1795,8 +1812,8 @@ separate ( EXPANDER )
 	  end;
 
 	else											-- AUTRE TYPE SCALAIRE (type formel generique, etc.)
-	  if  CODI.IN_GENERIC_BODY  and then  ( DEFN.TY = DN_OUT_ID  or  DEFN.TY = DN_IN_OUT_ID )  then
-	    PUT_LINE( tab & "LVa " & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' & tab & '-' & PRINT_NAME( D( LX_SYMREP, DEFN ) ) & "_ofs" );
+	  if  ST_VIA_CALLI  then
+	    PUT_LINE( tab & "LVA " & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' & tab & '-' & PRINT_NAME( D( LX_SYMREP, DEFN ) ) & "_ofs" );
 	    PUT_LINE( tab & "La" );
 	  end if;
 	  EXPRESSIONS.CODE_EXP( SRC_EXP );

@@ -1,6 +1,6 @@
 # ÉTAT DES PILIERS — tableau de bord TLALOC
 
-**Dernière mise à jour : 9 juillet 2026** (fossile n° 80 DIRECT_IO/SEQUENTIAL_IO ; témoins v2 auto-jugeants)
+**Dernière mise à jour : 11 juillet 2026** (fossile n° 80 DIRECT_IO/SEQUENTIAL_IO ; témoins v2 auto-jugeants)
 
 **Régime** : ce fichier est RÉÉCRIT à chaque clôture ; il est la seule source de
 vérité sur « où on en est ». Le récit des sessions est dans JOURNAL_SESSIONS.md,
@@ -38,7 +38,9 @@ La sémantique n'est protégée que par les programmes-témoins à sortie attend
 | 12 Génériques (packages, sous-programmes, thunks LD/ST CALLI) | acquis | avril + 4 juillet (piège 47) |
 | **14.3 TEXT_IO** | **CLOS** (conforme LRM sous restrictions consignées) : architecture deux niveaux RAW/public (GET_RAW/PUT_RAW hors spec ; scanners et lecteurs de structure sur RAW, NEW_LINE/NEW_PAGE émettent en RAW) ; GET public saute les terminateurs et tient LINE/COL/PAGE ; PUT tient COL, coupure implicite à LINE_LENGTH bornée ; SET_COL/SET_LINE sortie ; longueurs COUNT := UNBOUNDED (bombe POSITIVE_COUNT := 0 désamorcée) ; exceptions toutes armées (STATUS/MODE/NAME/USE/END/DATA/LAYOUT, 14.2.1 complet, piège n° 45 désamorcé) ; cadrage énuméré WIDTH en blancs de queue (RM 14.3.9, déviation supprimée) ; FF séparateur des scanners et terminateur de ligne. Restrictions consignées : SET_COL/SET_LINE en entrée différés ; END_OF_FILE/END_OF_PAGE mono-anticipation (piège n° 79) ; copies FILE_TYPE non partagées (état COL/look-ahead divergent entre handles) | **8 juillet 2026** — oracles TEXT14 (42), OUTARG1, IO_TEST |
 | 14.2.3 / 14.2.5 SEQUENTIAL_IO, DIRECT_IO | validés tous types ; **témoins DIRECT_IO_TEST et SEQ_IO_TEST repris auto jugeant ** |
-| 9.6 CALENDAR | opérationnel (cas normaux) | 5 juin |
+| 9.6 CALENDAR | clos avec témoin | 11 juillet 2026 |
+|CHECKS RUNTIME|PÉRIMÈTRE 1 CLOS Amont du pilier 11 : comparer-et-brancher vers deux trampolines uniques (ce_raise_/ne_raise_, wrapper FAS). Checks livrés et jugés : gamme scalaire aux SEPT sites (affectation, init de déclaration, param in, return, conversion, qualification, corps générique partagé via GFP/_ENUM_USE_INFO), longueurs des logiques composites (dette D3-contrôle SOLDÉE), index (quatre variantes de CODE_INDEXED), division par zéro (/, mod, rem → NUMERIC_ERROR, fidélité LRM 83). Commutateur global CODI.CHECKS_ENABLED — défaut TRUE, RÉGIME PERMANENT ; OFF réservé au tri des fossiles. Élision : sous-type = type de base (comparaison de nœuds) + garde n° 80 (sous-types anonymes) + statique prouvé. Témoins : CHK_TEST0/1, CHK_LEN0, CHK_IDX0, CHK_DIV0, CHK_ANON0, CHK_CSTPRM0/1/2, CHK_PREDEF0. Filet + ACVC verts checks ON et OFF. Note : NOTE_MODELE_CHECKS v1.4. Campagne de fossiles associée (voir PIEGES n° 80–84) : IDENT_* de l'ACVC ressuscités (n° 81, actuels constants fantômes — trois familles), oscillation fasmg BT/BF soldée (n° 82, tous sauts rel32), amorçage STANDARD réparé (n° 83, LINK 0 avant _STANDRD), lecture des formels génériques in-out réparée (n° 84, adaptateurs INADR/OUTADR branchés côté lecture). DETTES PÉRIMÈTRE 2 (consignées, note §8) : overflow (NUMERIC_ERROR après chaque op — coût), STORAGE_ERROR (bump allocator), gamme fixed/float (bornes fixed élaborées SCALÉES : comparaison directe possible), discriminants (avec pilier 3.7 bis), null access sur .all, checks d'élaboration (PROGRAM_ERROR), copy-back des out (6.4.1 côté retour), contraintes ANONYMES d'objet (n° 80-a), pragma SUPPRESS, élision d'index statique (affaire de l'optimiseur futur).
+|11 juillet 2026|
 
 ## Fondations absentes (piliers non ouverts)
 
@@ -150,10 +152,11 @@ La sémantique n'est protégée que par les programmes-témoins à sortie attend
 - **REGIONS_PATH et sous-unités** : corps générique `is separate`
   (xd_stub / XD_BODY) non vérifié au dump (piège n° 84).
   
+ - **conformité TIME_ERROR de TIME_OF**  (le 31/2 passe et se normalise en silence) ; NUM'DIGITS instance-dépendant en corps partagé (aujourd'hui figé à la valeur machine — un champ DIGITS dans le use__info flottant le jour venu).
+ 
 ## Prochaine séquence (à arbitrer à l'ouverture de la prochaine session)
 
-1- Option A — **checks runtime** (contraintes scalaires, index, LEN_G=LEN_D  des logiques composites en dette D3-contrôle) : le mécanisme les attend.
-- Option B — points fixes : mul/div générales (reliquat 3.5.9).
+1- Option A — points fixes : mul/div générales (reliquat 3.5.9).
 
 4. Rédiger la note de modèle d'exécution du pilier retenu AVANT de coder.
 5. Filet complet + tag git à chaque clôture.
