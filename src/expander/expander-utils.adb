@@ -17,38 +17,50 @@ is					-----
   FS		: FILE_TYPE;
 
 
-			--================--
+			-- GENERIC ACTUALS MANAGEMENT
+
+  MAX_FORMAL_NAME_LEN	: constant	:= 32;
+
+  GA_NAME		: array( 1 .. MAX_GENERIC_FORMALS ) of STRING( 1 .. MAX_FORMAL_NAME_LEN );
+  GA_LEN		: array( 1 .. MAX_GENERIC_FORMALS ) of NATURAL;
+  GA_ACTUAL	: array( 1 .. MAX_GENERIC_FORMALS ) of TREE;
+  GA_COUNT	: NATURAL	:= 0;
+
+--  GA_FORMAL	: array( 1 .. MAX_GENERIC_FORMALS ) of TREE;
+--  GA_ACTUAL	: array( 1 .. MAX_GENERIC_FORMALS ) of TREE;
+
+			--^^^^^^^^^^^^^^^^--
   procedure		  OPEN_OUTPUT_FILE		( FILE_NAME :STRING	)
-  is			--================--
+  is			--------------------
 
   begin
     CREATE ( FS, OUT_FILE, FILE_NAME( FILE_NAME'FIRST .. FILE_NAME'LAST-4 ) & ".FINC" );				-- FASM INCLUDE
     SET_OUTPUT ( FS	);										-- CODAGE	SUR SORTIE STANDARD
     INT_LABEL := 1;
 
-  end	  OPEN_OUTPUT_FILE;
-	--================--
+  end	OPEN_OUTPUT_FILE;
+	----------------
 
 
-			--=================--
+			--^^^^^^^^^^^^^^^^^--
   procedure		  CLOSE_OUTPUT_FILE
-  is			--=================--
+  is			---------------------
 
   begin
     SET_OUTPUT ( STANDARD_OUTPUT );
     CLOSE	( FS );
 
-  end	  CLOSE_OUTPUT_FILE;
-	--=================--
+  end	CLOSE_OUTPUT_FILE;
+	-----------------
 
 
   package	INT_IO	is new INTEGER_IO (	INTEGER ); use INT_IO;
   package	LBL_IO	is new INTEGER_IO (	LABEL_TYPE ); use LBL_IO;
 
 
-			--=========--
+			--^^^^^^^^^--
   function		  NEW_LABEL						return LABEL_TYPE
-  is			--=========--
+  is			-------------
 
     LBL	: LABEL_TYPE	:= INT_LABEL;
 
@@ -56,13 +68,13 @@ is					-----
     INT_LABEL := INT_LABEL + 1;
     return LBL;
 
-  end	  NEW_LABEL;
-	--=========--
+  end	NEW_LABEL;
+	---------
 
 
-			--=========--
+			--^^^^^^^^^--
   function		  NEW_LABEL						return STRING
-  is			--=========--
+  is			-------------
 
     LSTR	:constant	STRING	:= LABEL_TYPE'IMAGE( INT_LABEL );
 
@@ -70,26 +82,26 @@ is					-----
     INT_LABEL := INT_LABEL + 1;
     return 'L' & LSTR( LSTR'FIRST+1 .. LSTR'LAST );
 
-  end	  NEW_LABEL;
-	--=========--
+  end	NEW_LABEL;
+	---------
 
 
-			--=========--
+			--^^^^^^^^^--
   function		  LABEL_STR			( LBL : LABEL_TYPE )	return STRING
-  is			--=========--
+  is			-------------
 
     LSTR	:constant	STRING	:= LABEL_TYPE'IMAGE( LBL );
 
   begin
     return 'L' & LSTR( LSTR'FIRST+1 .. LSTR'LAST );
 
-  end	  LABEL_STR;
-	--=========--
+  end	LABEL_STR;
+	---------
 
 
-			--=========--
+			--^^^^^^^^^--
   procedure		  INC_LEVEL
-  is			--=========--
+  is			-------------
   begin
     CUR_LEVEL := CUR_LEVEL + 1;
 
@@ -98,13 +110,13 @@ is					-----
 --   exception
 --     when CONSTRAINT_ERROR => raise STATIC_LEVEL_OVERFLOW;
 
-  end	  INC_LEVEL;
-	--=========--
+  end	INC_LEVEL;
+	---------
 
 
-			--=========--
+			--^^^^^^^^^--
   procedure		  DEC_LEVEL
-  is			--=========--
+  is			-------------
 
   begin
     CUR_LEVEL := CUR_LEVEL - 1;
@@ -114,13 +126,13 @@ is					-----
 --   exception
 --     when CONSTRAINT_ERROR => raise STATIC_LEVEL_UNDERFLOW;
 --
-  end	  DEC_LEVEL;
-	--=========--
+  end	DEC_LEVEL;
+	---------
 
 
-			--=========--
+			--^^^^^^^^^--
   function		  TYPE_SIZE		( TYPE_SPEC :TREE )		return NATURAL
-  is			--=========--
+  is			-------------
 
   begin
     case TYPE_SPEC.TY is
@@ -139,12 +151,12 @@ is					-----
     end case;
     return 0;
 
-  end	  TYPE_SIZE;
-	--=========--
+  end	TYPE_SIZE;
+	---------
 
-			--^^^^^--
-  function		FULL_VIEW		( T : TREE )	return TREE
-  is			---------
+			--^^^^^^^^^--
+  function		  FULL_VIEW		( T : TREE )	return TREE
+  is			-------------
     R : TREE := T;
   begin
     loop
@@ -163,9 +175,9 @@ is					-----
 	---------
 
 
-			--=================--
+			--^^^^^^^^^^^^^^^^^--
   function		  CODE_DATA_TYPE_OF		( EXP_OR_TYPE_SPEC :TREE )	return CHARACTER
-  is			--=================--
+  is			---------------------
 
   begin
     if  EXP_OR_TYPE_SPEC.TY in CLASS_EXP  then
@@ -223,8 +235,8 @@ is					-----
       raise PROGRAM_ERROR;
     end if;
 
-  end	  CODE_DATA_TYPE_OF;
-	--=================--
+  end	CODE_DATA_TYPE_OF;
+	-----------------
 
 
 			--====================--
@@ -544,6 +556,55 @@ is					-----
 
 end	SUBPROGRAM_ORIGIN;
 	-----------------
+
+
+			--^^^^^^^^^^^^^^^^^^^^^^^--
+  procedure		  SET_GENERIC_ACTUAL_TYPE	( FORMAL_NAME : STRING; ACTUAL_SPEC :TREE )
+  is			---------------------------
+  begin
+    if  CODI.DEBUG  then
+      PUT_LINE( "; F4A SET  cle=" & FORMAL_NAME & "  actuel=" & NODE_NAME'IMAGE( ACTUAL_SPEC.TY ) );
+    end if;
+
+    if  GA_COUNT = MAX_GENERIC_FORMALS  or else  FORMAL_NAME'LENGTH > MAX_FORMAL_NAME_LEN  then
+      PUT_LINE( "; ANOMALIE SET_GENERIC_ACTUAL_TYPE : table pleine ou nom trop long" );
+      raise PROGRAM_ERROR;
+    end if;
+    GA_COUNT := GA_COUNT + 1;
+    GA_NAME( GA_COUNT )( 1 .. FORMAL_NAME'LENGTH ) := FORMAL_NAME;
+    GA_LEN(  GA_COUNT ) := FORMAL_NAME'LENGTH;
+    GA_ACTUAL( GA_COUNT ) := ACTUAL_SPEC;
+
+  end	SET_GENERIC_ACTUAL_TYPE;
+	-----------------------
+
+
+			--^^^^^^^^^^^^^^^^^^^^^^--
+  function		  GENERIC_ACTUAL_TYPE_OF	( FORMAL_NAME : STRING ) return TREE
+  is			--------------------------
+  begin
+
+   for  I  in  1 .. GA_COUNT  loop
+      if  GA_LEN( I ) = FORMAL_NAME'LENGTH
+      and then  GA_NAME( I )( 1 .. GA_LEN( I ) ) = FORMAL_NAME
+      then
+        return GA_ACTUAL( I );
+      end if;
+    end loop;    return TREE_VOID;
+
+  end	GENERIC_ACTUAL_TYPE_OF;
+	----------------------
+
+
+			--^^^^^^^^^^^^^^^^^^^^^^^^^^--
+  procedure		  CLEAR_GENERIC_ACTUAL_TYPES
+  is			------------------------------
+  begin
+    GA_COUNT := 0;
+
+  end	CLEAR_GENERIC_ACTUAL_TYPES;
+	--------------------------
+
 
 			--^^^--
   procedure		EXC_POP

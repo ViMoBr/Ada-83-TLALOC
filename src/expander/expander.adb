@@ -44,12 +44,17 @@ is
     type LOOP_CODE			is (DEC, GT, INC, LT);
 
     OUTPUT_CODE			: BOOLEAN			:= TRUE;					-- Dans le traitement de spécif on désactive le	codage
+
+
+			-- GENERICS MANAGEMENT
+
     IN_GENERIC_INSTANTIATION		: BOOLEAN			:= FALSE;					-- Traitement special pour les spec d instantiation
     INSTANTIATION_MODEL_NAME		: TREE;
     GENERIC_MODEL_DECL_SEQ		: SEQ_TYPE;
     IN_GENERIC_BODY			: BOOLEAN			:= FALSE;					-- Traitement special pour les corps de	generique
     ENCLOSING_GENERIC		: TREE;
     GENERIC_BASE_LEVEL		: LEVEL_NUM		:= 0;
+    MAX_GENERIC_FORMALS		: constant		:= 8;
 
     IN_SPEC_UNIT			: BOOLEAN;
 
@@ -91,14 +96,19 @@ is
 
     procedure INC_LEVEL;
     procedure DEC_LEVEL;
+
     function  TYPE_SIZE		( TYPE_SPEC :TREE )			return NATURAL;
     function  FULL_VIEW		( T : TREE )			return TREE;
-
     function  CODE_DATA_TYPE_OF	( EXP_OR_TYPE_SPEC :TREE )		return CHARACTER;
+
     procedure LOAD_MEM		( DEFN :TREE );
     procedure STORE			( DEST_DEFN :TREE );
 
     function  SUBPROGRAM_ORIGIN	( DEFN :TREE )			return TREE;
+
+    procedure SET_GENERIC_ACTUAL_TYPE	( FORMAL_NAME : STRING; ACTUAL_SPEC : TREE );
+    function  GENERIC_ACTUAL_TYPE_OF	( FORMAL_NAME : STRING )		return TREE;			-- TREE_VOID si absent
+    procedure CLEAR_GENERIC_ACTUAL_TYPES;
 
     procedure EXC_POP;
     function  EXCEPTION_ID_OF		( NAME :TREE )			return TREE;			--| PILIER 11 : SM_DEFN a travers DN_SELECTED, puis chaine des renommages (LRM 8.5)

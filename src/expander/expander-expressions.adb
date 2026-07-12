@@ -1528,12 +1528,67 @@ null;--	     declare
       PUT_LINE( tab & "LI" & tab & INTEGER'IMAGE( I ) );
     end PUSH_INT;
 
-
-    procedure PUSH_FLOAT_LITERAL ( S : STRING )
-    is
+		------------------
+    procedure	PUSH_FLOAT_LITERAL	( S : STRING )
+    is		------------------
     begin
       PUT_LINE( tab & "LIF" & tab & S );
-    end PUSH_FLOAT_LITERAL;
+
+    end	PUSH_FLOAT_LITERAL;
+	------------------
+
+		---------
+    function	FIXED_AFT		( FIXED_SPEC : TREE )	return INTEGER
+    is		---------
+
+	-- F-4a -- RM 14.3.8 : AFT = plus petit N >= 1 tel que
+	-- 10**N * DELTA >= 1. Avec DELTA = Na/Da : 10**N * Na >= Da.
+	-- Valeurs VRAIES, calculees de l'ACTUEL -- pas le 3 de sem-3.
+
+      ACCURACY	: TREE		:= D( SM_ACCURACY, FIXED_SPEC );
+      NA	: LONG_INTEGER	:= LONG_INTEGER'VALUE( PRINT_NUM( D( XD_NUMER, ACCURACY ) ) );
+      DA	: LONG_INTEGER	:= LONG_INTEGER'VALUE( PRINT_NUM( D( XD_DENOM, ACCURACY ) ) );
+      P		: LONG_INTEGER	:= 10 * NA;
+      N		: INTEGER	:= 1;
+    begin
+      while  P < DA  loop
+        P := P * 10;
+        N := N + 1;
+      end loop;
+      return N;
+
+    end	FIXED_AFT;
+	---------
+
+		----------
+    function	FIXED_FORE	( FIXED_SPEC : TREE )	return INTEGER
+    is		----------
+
+	-- F-4a -- RM 14.3.8 : FORE = nombre de chiffres de la partie
+	-- entiere de la plus grande borne en valeur absolue, PLUS UN
+	-- (signe ou espace) ; minimum 2, garanti par N >= 1 ci-dessous.
+	-- Bornes lues sur SM_RANGE du spec RESOLU : pour un actuel
+	-- sous-type contraint, c'est bien le FORE de la contrainte.
+
+      R	: TREE		:= D( SM_RANGE, FIXED_SPEC );
+      FN	: LONG_INTEGER	:= abs LONG_INTEGER'VALUE( PRINT_NUM( D( XD_NUMER, D( SM_VALUE, D( AS_EXP1, R ) ) ) ) );
+      FD	: LONG_INTEGER	:=     LONG_INTEGER'VALUE( PRINT_NUM( D( XD_DENOM, D( SM_VALUE, D( AS_EXP1, R ) ) ) ) );
+      LN	: LONG_INTEGER	:= abs LONG_INTEGER'VALUE( PRINT_NUM( D( XD_NUMER, D( SM_VALUE, D( AS_EXP2, R ) ) ) ) );
+      LD	: LONG_INTEGER	:=     LONG_INTEGER'VALUE( PRINT_NUM( D( XD_DENOM, D( SM_VALUE, D( AS_EXP2, R ) ) ) ) );
+      M		: LONG_INTEGER;
+      N		: INTEGER	:= 1;
+    begin
+      FN := FN / FD;										-- partie entiere de |FST|
+      LN := LN / LD;										-- partie entiere de |LST|
+      if  FN > LN  then M := FN;  else M := LN;  end if;							-- pas de 'MAX : hote Ada 83
+      while  M >= 10  loop
+        M := M / 10;
+        N := N + 1;
+      end loop;
+      return N + 1;
+
+    end	FIXED_FORE;
+	----------
 
 		---------------------
     procedure	CODE_FOLDED_ATTRIBUTE
@@ -1545,14 +1600,56 @@ null;--	     declare
       EXP_TYPE	: TREE	:= D( SM_EXP_TYPE, ATTRIBUTE );
     begin
       if  VAL = TREE_VOID  then
-        PUT_LINE( "; ANOMALIE CODE_ATTRIBUTE : " & CHN_ATTR & " non plie par sem" );
+	-- Noeud PARTAGE de spec generique : sem ne peut pas plier par
+	-- instance. A l'instanciation, resoudre le formel vers l'ACTUEL
+	-- (table F-4a) et calculer statiquement. Valeurs VRAIES (RM
+	-- 14.3.8), a la difference du pliage sem-3 (3 en dur) -- deux
+	-- chemins, deux verites : CONSIGNE, argument pour corriger sem-3.
+        if  CODI.IN_GENERIC_INSTANTIATION  then
+
+	PUT_LINE( "; F4A GET  cle=" & PRINT_NAME( D( LX_SYMREP, PREFIX_NAME ) )
+	            & "  ty=" & NODE_NAME'IMAGE( D( LX_SYMREP, PREFIX_NAME ).TY ) );
+
+          declare
+            ACTUAL	: TREE	:= CODI.GENERIC_ACTUAL_TYPE_OF( PRINT_NAME( D( LX_SYMREP, PREFIX_NAME ) ) );
+          begin
+            if  ACTUAL /= TREE_VOID  and then  ACTUAL.TY = DN_FIXED  then
+              if     CHN_ATTR( 1 ) = 'A'  and then  CHN_ATTR( 2 ) = 'F'  then	-- AFT
+                PUT_LINE( tab & "LI" & tab & IMAGE( FIXED_AFT( ACTUAL ) ) );
+                return;
+              elsif  CHN_ATTR( 1 ) = 'F'  and then  CHN_ATTR( 2 ) = 'O'  then	-- FORE
+                PUT_LINE( tab & "LI" & tab & IMAGE( FIXED_FORE( ACTUAL ) ) );
+                return;
+              end if;
+              -- DELTA/SMALL de formel en instanciation : pas encore vus en
+              -- contexte reel -- l'ANOMALIE ci-dessous les revelera.
+            end if;
+          end;
+        end if;
+        PUT_LINE( "; ANOMALIE CODE_ATTRIBUTE : " & CHN_ATTR & " non plie par sem"
+		& " ( instanciation = " & BOOLEAN'IMAGE( CODI.IN_GENERIC_INSTANTIATION )
+		& ", actuel trouve = " & BOOLEAN'IMAGE(
+		CODI.GENERIC_ACTUAL_TYPE_OF( PRINT_NAME( D( LX_SYMREP, PREFIX_NAME ) ) ) /= TREE_VOID ) & " )" );
         raise PROGRAM_ERROR;
       end if;
 
-      if  VAL.PT = HI  then							-- entier plie (AFT, FORE)
+      if  VAL.PT = HI  then										-- entier plie (AFT, FORE)
         PUT_LINE( tab & "LI" & tab & IMAGE( NATURAL( VAL.ABSS ) ) );
-      elsif  EXP_TYPE /= TREE_VOID  and then  EXP_TYPE.TY = DN_FIXED  then	-- rationnel, contexte fixed
+
+      elsif  EXP_TYPE /= TREE_VOID  and then  EXP_TYPE.TY = DN_FIXED  then					-- rationnel, contexte fixed
         CODE_STATIC_FIXED_VALUE( VAL, EXP_TYPE );
+
+      elsif  EXP_TYPE /= TREE_VOID  and then  EXP_TYPE.TY = DN_FLOAT  then					-- rationnel, contexte FLOTTANT
+	-- A83041C : FLT := D'DELTA -- l'attribut fixed consomme en flottant.
+	-- Meme idiome que CODE_SMALL (rationnel -> LONG_FLOAT -> LIF).
+        declare
+          NV	: LONG_FLOAT	:= LONG_FLOAT( LONG_INTEGER'VALUE( PRINT_NUM( D( XD_NUMER, VAL ) ) ) );
+          DV	: LONG_FLOAT	:= LONG_FLOAT( LONG_INTEGER'VALUE( PRINT_NUM( D( XD_DENOM, VAL ) ) ) );
+          package LF_IO	is new FLOAT_IO( LONG_FLOAT );
+        begin
+          PUT( tab & "LIF" & tab ); LF_IO.PUT( NV / DV ); NEW_LINE;
+        end;
+
       else
         PUT_LINE( "; ANOMALIE CODE_ATTRIBUTE : " & CHN_ATTR & " contexte non traite" );
         raise PROGRAM_ERROR;

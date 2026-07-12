@@ -1613,6 +1613,7 @@ put_line( "; CODE_VC_NAME " & NODE_NAME'IMAGE( VC_NAME.TY ) );
 	  FORMAL_ID	: TREE		:= D( AS_SOURCE_NAME, FORMAL );
 	  FORMAL_STR	:constant STRING	:= ACTUALS_PREFIX & PRINT_NAME( D( LX_SYMREP, FORMAL_ID ) );
 	begin
+	  CODI.SET_GENERIC_ACTUAL_TYPE( PRINT_NAME( D( LX_SYMREP, FORMAL_ID ) ), DEFN_TYPE_SPEC );		-- F-4a
 
 	  if  DEFN_TYPE_SPEC.TY  in  CLASS_SCALAR  then
 	        -- Micro-procedures LD et ST pour le type	actuel (contournees	par BRA)
@@ -1828,6 +1829,8 @@ end if;
 
     if  IS_AN_INSTANTIATION  then                -- ce decl EST une instanciation (a8)
       CODI.IN_GENERIC_INSTANTIATION := TRUE;
+      CODI.CLEAR_GENERIC_ACTUAL_TYPES;									-- F-4a : table de l'instanciation courante
+
       CODI.INSTANTIATION_MODEL_NAME := D( AS_NAME, D( AS_UNIT_KIND, SUBPROG_ENTRY_DECL ) );
       while  CODI.INSTANTIATION_MODEL_NAME.TY = DN_SELECTED  loop     -- cas TEXT_IO.xxx
         CODI.INSTANTIATION_MODEL_NAME := D( AS_DESIGNATOR, CODI.INSTANTIATION_MODEL_NAME );
@@ -2244,6 +2247,7 @@ then
       NEW_LINE;
 
       CODI.IN_GENERIC_INSTANTIATION := TRUE;
+      CODI.CLEAR_GENERIC_ACTUAL_TYPES;									-- F-4a : table de l'instanciation courante
 
       CODI.INSTANTIATION_MODEL_NAME := D( AS_NAME, UNIT_KIND );
       while  CODI.INSTANTIATION_MODEL_NAME.TY = DN_SELECTED  loop
