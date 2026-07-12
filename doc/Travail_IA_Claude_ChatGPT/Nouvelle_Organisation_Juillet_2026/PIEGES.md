@@ -519,3 +519,52 @@ __DÉSAMORCÉ le 8 juillet 2026__: OPEN → NAME_ERROR, CREATE → USE_ERROR (TE
  91. ** Adaptateur OUTADR sur locale de corps partagé — la double déréférence lit la valeur comme adresse ; le test VC_ID.TY = DN_IN_ID copié d'un site paramètre était toujours faux sur un VC ». Corollaire d'invariant : push d'adresse destination ⇔ CALLI-ST, un seul prédicat (ST_VIA_CALLI).
   
  92. **  double émission 'DIGITS (le CODE_FLOAT_DIGITS résiduel après le bloc declare) — fuite de pile par attribut, bénigne en élaboration, fatale en corps.
+ 
+ 93. **La double émission d'attribut** (segfault FLOAT_IO.PUT, 11
+  juillet). Le bloc declare ajouté pour 'DIGITS (SM_ACCURACY) avait
+  laissé le CODE_FLOAT_DIGITS historique APRÈS le end : chaque T'DIGITS
+  poussait DEUX valeurs, une consommée, une orpheline. En élaboration
+  la fuite est bénigne (fond de pile, tout le relatif reste cohérent —
+  le filet ne voit RIEN) ; dans un corps, le premier appariement
+  adresse/valeur qui suit (SIq, CALLI) est décalé d'un slot → store à
+  travers un motif de bits → segfault loin de la cause. Règle : un
+  chemin d'attribut émet EXACTEMENT une valeur ; symétriquement, un
+  chemin muet (le null de 'DELTA) est le même bug en sens inverse.
+
+ 94. **OUTADR sur locale de corps partagé** (le segfault, cause
+  racine ; lot n° 84 incomplet). Dans CODE_VC_ID, le sélecteur
+  d'adaptateur testait VC_ID.TY = DN_IN_ID — copie d'un site
+  PARAMÈTRE, toujours faux sur un VC (VARIABLE/CONSTANT_ID) : toutes
+  les locales de type formel prenaient OUTADR (une déréférence de
+  trop) ; la valeur flottante était lue comme une adresse. INTEGER_IO
+  n'a aucune locale NUM relue (preuve par zéro au grep) — les témoins
+  du n° 84 ne pouvaient pas le voir ; FLOAT_TEST (avril, hors filet
+  depuis) le voyait en trois lignes. Correctif systémique : prédicat
+  unique ST_VIA_CALLI = IN_GENERIC_BODY et FORMEL et (OUT ou IN_OUT),
+  partagé entre les pushes d'adresse destination et STORE_OR_CALLI —
+  l'adresse n'est empilée QUE si elle sera consommée. Leçon : quand
+  un idiome a deux moitiés (préparer/consommer), UNE condition, pas
+  deux copies.
+
+ 95. **L'identité en DIANA ne se teste pas par égalité de nœuds**
+  (famille, trois membres, pilier fixed). (a) L'ABSENCE d'un attribut
+  ne se compare pas à UNE sentinelle : TREE_VOID et TREE_NIL
+  coexistent — tester la propriété visée (ici : opérandes DN_FIXED),
+  pas le vide. (b) Un même NOM vit sous DEUX espèces : DN_SYMBOL_REP
+  (déclaration du formel) et DN_TXTREP (préfixe d'attribut) — même
+  graphie NUM, nœuds jamais égaux ; l'identité nominale se juge par
+  PRINT_NAME (clés-chaînes de la table formel→actuel). (c)
+  SM_IS_ANONYMOUS vaut TRUE sur un sous-type NOMMÉ — le drapeau ne
+  discrimine pas l'anonymat, XD_SOURCE_NAME fait foi (cohérent n° 80).
+
+ 96. **Le « A FAIRE » qui rend la main corrompt** (élaboration _T34,
+  dump F-1). CODE_STATIC_FIXED_VALUE sur small à NUMER≠1 : commentaire
+  + return — mais l'APPELANT émettait quand même son Sq FST : store
+  depuis une pile jamais alimentée, FST/LST = débris. Doublé d'un trou
+  SILENCIEUX voisin : CODE_NUMERIC_LITERAL lisait NUMER_SMALL puis
+  l'IGNORAIT (« HYPOTHESE NUMER_SMALL = 1 ») — D := 6.0 sur small 3/4
+  donnait 24 au lieu de 8, sans un mot. Règle : un chemin incomplet
+  COMPLÈTE ou LÈVE (la garde F-A est le modèle) ; un commentaire
+  d'hypothèse dans le source est un n° 53 en sursis — le transformer
+  en ANOMALIE exécutable ou le solder.
+

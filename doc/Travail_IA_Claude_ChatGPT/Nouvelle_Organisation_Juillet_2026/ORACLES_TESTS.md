@@ -288,3 +288,53 @@ CHK_PREDEF0 — bornes prédéfinies via use-info + BOOLEAN'IMAGE
 
 Sondes RETIRÉES du filet (diagnostic une-fois, archivées) :
 CHK_ANON1/2/2B/3, CHK_DUMP0.
+
+### FIX_TEST1 (12 juillet, pilier fixed — 15 assertions)
+
+```
+=== S1. Multiplicatif T(X*Y), T(X/Y), elision FIX.INT ===
+=== S2. fixed -> fixed (rescale, identite, troncature) ===
+=== S3. Attributs plies, sous-type ===
+ T8'AFT (sem-3, attendu 3) =          3        <- AFFICHE non asserte (dette sem-3)
+ T8'FORE (sem-3, attendu 3) =          3       <- idem
+=== S4. Division fixed par zero -> NUMERIC_ERROR (Q7) ===
+RESULTAT :          15 OK,           0 ECHECS
+FIX_TEST1 PASSE
+```
+Oracle : la ligne « FIX_TEST1 PASSE ». Gardiens de troncature vers
+zéro : tests 3 (1.59375), 10 (3.75), 11 (-2.25 — un plancher donnerait
+-3.0). DÉPEND du régime sem-1 (small = delta/2) : si sem change,
+toutes les représentations attendues changent.
+
+### FLOAT_FIXED_IO_TEST (12 juillet — 11 sections, FLOAT_IO + FIXED_IO)
+
+```
+=== 1. FLOAT_IO PUT LONG_FLOAT — formats ===   pi 3.141593E+00, grand 1.2346E+15,
+                                               petit -4.5679E-08, zero, un, negatif,
+                                               FORE pad "   2.50E+00"
+=== 2. FLOAT_IO PUT FLOAT ===                  e 2.7183E+00, -1.000E-03
+=== 3. FIXED_IO PUT DURATION ===               1.500 / 0.020 / -3.14 / 0.000 / "  12.50"
+=== 4-6. FLOAT_IO GET (fichier, WIDTH, console) ===
+=== 7-10. FIXED_IO GET (fichier, exposants 2.5E-1 -> 0.2500, WIDTH, console) ===
+=== 11. GET roundtrip — deux valeurs sur une ligne ===
+=== FIN ===
+```
+Oracle : sortie complète ci-dessus. Sections 6 et 10 interactives
+(entrées : -1.5E+2 et 1.5). Gardien du contrat GFP/adaptateurs
+(n° 92) et du calcul FIXED_AFT/FORE d'instanciation (F-4a).
+
+### FLOAT_TEST — RÉINTÉGRÉ AU FILET (12 juillet)
+
+Témoin d'avril, seul à relire des locales de type formel en corps
+partagé — son absence du filet a laissé vivre le n° 92 de fin avril à
+juillet. Ne plus jamais retirer un témoin sans vérifier qui d'autre
+couvre ses chemins.
+
+### TEST_CALENDAR (12 juillet — témoin d'exception 1900/2100 ajouté)
+
+Sections TIME_OF/SPLIT, sélecteurs, rollover minuit, opérateurs
+(DELTA_T = 2.500000E-01), journée ordinaire, passage année, HORS GAMME
+(1900 -> CONSTRAINT_ERROR OK, 2100 -> CONSTRAINT_ERROR OK), non
+bissextile, passage arrière, CLOCK (visuel), cohérence. Conversion au
+format CHECK/RESULTAT : à faire à l'occasion (dette de confort, pas de
+couverture).

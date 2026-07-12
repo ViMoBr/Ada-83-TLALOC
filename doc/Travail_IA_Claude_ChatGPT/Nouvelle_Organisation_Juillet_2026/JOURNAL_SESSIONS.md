@@ -779,3 +779,74 @@ auto-compilation verte (FINC ; assemblage bootstrap rendu viable par
 n° 81). Le pilier a coûté ~15 livraisons et payé cinq fossiles que
 rien d'autre ne pouvait voir : « la sécurité Ada n'était pas une
 lourdeur, c'était un révélateur ».
+
+## Sessions 11–12 juillet 2026 — Segfault CALENDAR → pilier FIXED (3.5.9) : ouvert, CLOS
+
+Entrée par un segfault de TEST_CALENDAR qui n'était pas CALENDAR :
+deux fossiles d'expander débusqués par lecture de FINC. N° 91 : double
+émission 'DIGITS (CODE_FLOAT_DIGITS résiduel après le bloc declare —
+fuite d'un slot par attribut, bénigne en élaboration, fatale en corps).
+N° 92 : sélecteur OUTADR sur locale de corps partagé (test
+VC_ID.TY = DN_IN_ID copié d'un site paramètre, toujours faux sur un
+VC — double déréférence, la valeur flottante lue comme adresse).
+Correctif systémique : prédicat unique ST_VIA_CALLI (push d'adresse
+destination ⇔ CALLI-ST), quatre sites alignés. Leçon de couverture :
+FLOAT_TEST (avril) était le seul témoin relisant des locales de type
+formel — absent du filet depuis avril, réintégré ; INTEGER_IO ne peut
+pas jouer ce rôle (zéro occurrence au grep). TEST_CALENDAR converti :
+les cas 1900/2100 devenaient des témoins d'exception (le check E-A
+avait raison contre le test — YEAR_NUMBER 1901..2099 exclut les
+séculaires par construction du LRM).
+
+Pilier FIXED ensuite, méthode intégrale. **F-1** : deux dumps
+FIX_DUMP0, Q1 fermée. SM_ACCURACY = delta déclaré / CD_IMPL_SMALL =
+small implémenté, tous deux rationnels sur le TYPE_SPEC ; clause
+'SMALL repliée par sem (nœud DN_LENGTH_ENUM_REP à ignorer) ; sous-type
+fixed = nouveau DN_FIXED héritant ACCURACY/SMALL, bornes pliées
+rationnelles non scalées (piège 71 confirmé partout). RECTIFICATION
+DE F-0 : la « conversion implicite de l'entier » n'existe pas — sem
+REJETTE la forme nue A*N (dette sem-2, RM 4.5.5(9-10)) ; l'idiome
+imposé T(A*T(N)) fait que TOUT le multiplicatif entre par
+DN_CONVERSION : F-B rétrogradé en élision interne de F-D. Trois
+dettes sem consignées : sem-1 small défaut = delta/2 (lecture « juste
+inférieure » à vérifier au LRM papier), sem-2 rejet FIX*INT nu,
+sem-3 'AFT/'FORE pliés à 3 en dur. Butin de sonde : littéral fixed à
+Ns≠1 silencieusement faux + bail corrompant de CODE_STATIC_FIXED_VALUE
+(n° 94).
+
+**F-2** : formule unique repr = Nv·Ds/(Dv·Ns) posée à trois sites
+(littéral statique, littéral générique via _FIXED_USE_INFO,
+CODE_STATIC_FIXED_VALUE — factorisation EMIT_FIXED_TYPE_INFO
+type/sous-type) ; CODE_SUBTYPE_DECL DN_FIXED (le PAS FAIT de
+DAY_DURATION) ; attributs pliés via CODE_FOLDED_ATTRIBUTE (le null
+muet de 'DELTA supprimé — règle : un attribut émet exactement UNE
+valeur ou ANOMALIE).
+
+**F-3** : révision Q5 — ZÉRO macro codi : CVTIX est déjà le noyau
+« ·N/D en 128 bits », MUL/DIV complètent. F-D : interception dans
+CODE_CONVERSION (critère = celui de la garde F-A : opérandes DN_FIXED,
+prédéfinie seulement), élision FIX·INT intégrée, fixed→fixed statique
+par rationnels réduits (identité TEQ), zero-check ne_raise_ sur les
+divisions. Q3 tranchée : troncature vers zéro (gardien : -2.5 en
+small 3/4 → -2.25). Témoin FIX_TEST1 : 15/15 premier passage.
+
+**F-4a** : NUM'FORE à l'instanciation — nœud de spec générique
+PARTAGÉ entre instances, sem ne peut pas plier ; table
+formel→actuel dans UTILS (CLEAR par instanciation — indispensable,
+FLOAT_IO et FIXED_IO nomment tous deux leur formel NUM). Deux ratés
+de clé instructifs : SM_DEFN ≠ AS_SOURCE_NAME, puis DN_SYMBOL_REP ≠
+DN_TXTREP pour la même graphie (n° 93) — clés-chaînes finales.
+FIXED_AFT/FIXED_FORE calculés VRAIS de l'actuel (divergence sem-3
+documentée : attribut d'instanciation juste, attribut direct = 3).
+FLOAT_FIXED_IO_TEST : 11 sections vertes, FIXED_IO(DURATION) complet
+(PUT cadré, GET avec exposants). A83041C a révélé le troisième
+consommateur : 'DELTA en contexte FLOTTANT (idiome CODE_SMALL
+réutilisé : rationnel → LIF).
+
+**Clôture** : filet complet + ACVC (A83041C compris) + FIX_TEST1 +
+FLOAT_TEST + FLOAT_FIXED_IO_TEST + TEST_CALENDAR + auto-compilation,
+tout vert. Patchs : expander-expressions, expander-instructions,
+expander-declarations, expander-utils, expander.adb, types_decls ;
+TEXT_IO.FINC et prédéfinis régénérés. Zéro modification codi, zéro
+modification sem (trois dettes consignées à la place). Tag git
+recommandé : pilier-fixed-clos.

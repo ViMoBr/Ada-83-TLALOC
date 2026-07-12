@@ -1,6 +1,6 @@
 # ÉTAT DES PILIERS — tableau de bord TLALOC
 
-**Dernière mise à jour : 11 juillet 2026** (fossile n° 80 DIRECT_IO/SEQUENTIAL_IO ; témoins v2 auto-jugeants)
+**Dernière mise à jour : 12 juillet 2026** (pilier FIXED 3.5.9 CLOS ; fossiles n° 91–94 ; dettes sem-1/2/3)
 
 **Régime** : ce fichier est RÉÉCRIT à chaque clôture ; il est la seule source de
 vérité sur « où on en est ». Le récit des sessions est dans JOURNAL_SESSIONS.md,
@@ -27,7 +27,8 @@ La sémantique n'est protégée que par les programmes-témoins à sortie attend
 |---|---|---|
 | 3.5.1–3.5.4 Scalaires : entiers, énumérés, sous-types | acquis | sessions ≤ avril |
 | 3.5.7 Flottants (IEEE 754 double sur pile, SSE2) | acquis | 11 avril |
-| 3.5.9 Points fixes | partiel : DURATION/CALENDAR OK ; mul/div générales incomplètes | 15 mai–5 juin |
+| 3.5.9 Points fixes | CLOS : mul/div/conversions (F-D, élision FIX·INT, troncature vers zéro), attributs DELTA/SMALL/AFT/FORE (pliés + instanciation), sous-types, littéraux Ns≠1, FIXED_IO complet | 12 juillet |
+
 | **3.6 Tableaux (formes contraintes, opérateurs complets)** | **CLOS** : affectation complète, égalité, ordre lexicographique, logiques booléens composites, caténation toutes formes, tranches (lecture/écriture/paramètre/retour), intervalles nuls, agrégats (positionnel/nommé/others/2D/qualifiés), conversions, attributs dimensionnés, 'RANGE (objet et marque de sous-type) | **5 juillet 2026** — oracles ARRAY_TEST1/2 |
 | **3.6 reliquat non contraint** | **CLOS** objets non contraints par agrégat (bornes déduites, trou n°3), attributs sur marque, STRING dynamique, formels/retours,  conversion — ARRAY_TEST3 37/37 | **6 juillet 2026**   (ARRAY_TEST1/2, RECORD_TEST1/2, A2–A8, auto-compilation) + tag git |
 | **3.7 Records à discriminants et variantes** | **CLOS** : discriminants (déclaration, contrainte, défauts, lecture, contrôle de flux), variantes statiques (layout ADDITIF), agrégats canoniques (positionnel/nommé/mixte/variantes/imbriqués), vues contraintes nommées et anonymes (objets, composants, éléments de tableau, formels, retours, qualifiés), égalité (BLKCMP sans variantes ; cascade statique à variantes), 'CONSTRAINED par objet, mutables, changement de variante | **5 juillet 2026** — oracles RECORD_TEST1/2 |
@@ -38,7 +39,7 @@ La sémantique n'est protégée que par les programmes-témoins à sortie attend
 | 12 Génériques (packages, sous-programmes, thunks LD/ST CALLI) | acquis | avril + 4 juillet (piège 47) |
 | **14.3 TEXT_IO** | **CLOS** (conforme LRM sous restrictions consignées) : architecture deux niveaux RAW/public (GET_RAW/PUT_RAW hors spec ; scanners et lecteurs de structure sur RAW, NEW_LINE/NEW_PAGE émettent en RAW) ; GET public saute les terminateurs et tient LINE/COL/PAGE ; PUT tient COL, coupure implicite à LINE_LENGTH bornée ; SET_COL/SET_LINE sortie ; longueurs COUNT := UNBOUNDED (bombe POSITIVE_COUNT := 0 désamorcée) ; exceptions toutes armées (STATUS/MODE/NAME/USE/END/DATA/LAYOUT, 14.2.1 complet, piège n° 45 désamorcé) ; cadrage énuméré WIDTH en blancs de queue (RM 14.3.9, déviation supprimée) ; FF séparateur des scanners et terminateur de ligne. Restrictions consignées : SET_COL/SET_LINE en entrée différés ; END_OF_FILE/END_OF_PAGE mono-anticipation (piège n° 79) ; copies FILE_TYPE non partagées (état COL/look-ahead divergent entre handles) | **8 juillet 2026** — oracles TEXT14 (42), OUTARG1, IO_TEST |
 | 14.2.3 / 14.2.5 SEQUENTIAL_IO, DIRECT_IO | validés tous types ; **témoins DIRECT_IO_TEST et SEQ_IO_TEST repris auto jugeant ** |
-| 9.6 CALENDAR | clos avec témoin | 11 juillet 2026 |
+| 9.6 CALENDAR | CLOS avec témoin (TIME_OF/SPLIT/opérateurs/rollover/CLOCK ; 1900/2100 → CONSTRAINT_ERROR attendus) | 12 juillet |
 |CHECKS RUNTIME|PÉRIMÈTRE 1 CLOS Amont du pilier 11 : comparer-et-brancher vers deux trampolines uniques (ce_raise_/ne_raise_, wrapper FAS). Checks livrés et jugés : gamme scalaire aux SEPT sites (affectation, init de déclaration, param in, return, conversion, qualification, corps générique partagé via GFP/_ENUM_USE_INFO), longueurs des logiques composites (dette D3-contrôle SOLDÉE), index (quatre variantes de CODE_INDEXED), division par zéro (/, mod, rem → NUMERIC_ERROR, fidélité LRM 83). Commutateur global CODI.CHECKS_ENABLED — défaut TRUE, RÉGIME PERMANENT ; OFF réservé au tri des fossiles. Élision : sous-type = type de base (comparaison de nœuds) + garde n° 80 (sous-types anonymes) + statique prouvé. Témoins : CHK_TEST0/1, CHK_LEN0, CHK_IDX0, CHK_DIV0, CHK_ANON0, CHK_CSTPRM0/1/2, CHK_PREDEF0. Filet + ACVC verts checks ON et OFF. Note : NOTE_MODELE_CHECKS v1.4. Campagne de fossiles associée (voir PIEGES n° 80–84) : IDENT_* de l'ACVC ressuscités (n° 81, actuels constants fantômes — trois familles), oscillation fasmg BT/BF soldée (n° 82, tous sauts rel32), amorçage STANDARD réparé (n° 83, LINK 0 avant _STANDRD), lecture des formels génériques in-out réparée (n° 84, adaptateurs INADR/OUTADR branchés côté lecture). DETTES PÉRIMÈTRE 2 (consignées, note §8) : overflow (NUMERIC_ERROR après chaque op — coût), STORAGE_ERROR (bump allocator), gamme fixed/float (bornes fixed élaborées SCALÉES : comparaison directe possible), discriminants (avec pilier 3.7 bis), null access sur .all, checks d'élaboration (PROGRAM_ERROR), copy-back des out (6.4.1 côté retour), contraintes ANONYMES d'objet (n° 80-a), pragma SUPPRESS, élision d'index statique (affaire de l'optimiseur futur).
 |11 juillet 2026|
 
@@ -154,9 +155,30 @@ La sémantique n'est protégée que par les programmes-témoins à sortie attend
   
  - **conformité TIME_ERROR de TIME_OF**  (le 31/2 passe et se normalise en silence) ; NUM'DIGITS instance-dépendant en corps partagé (aujourd'hui figé à la valeur machine — un champ DIGITS dans le use__info flottant le jour venu).
  
+ **Dettes du pilier fixed (frontières tenues par ANOMALIE) :**
+- F-D générique : T(X*Y) sur formels en corps partagé (ANOMALIE posée) ;
+  fixed→fixed générique encore par comparaison de chaînes ; Q2 use__info
+  étendu (AFT/FORE/DELTA runtime) différé — aucun consommateur réel.
+- 'DELTA/'SMALL de formel à l'instanciation : AFT/FORE servis, les deux
+  autres sur ANOMALIE en attendant un cas réel.
+- Overflow des opérations fixed (dont MUL 64 bits de rX·rY avant
+  rescale) : Périmètre 2 des checks, avec la gamme fixed/float.
+- CALENDAR : TIME_OF ne lève pas TIME_ERROR (31/2 normalisé en silence).
+- NUM'DIGITS en corps partagé : valeur machine figée (champ DIGITS du
+  use__info flottant le jour venu).
+**Dettes sem (front-end intact, décision mainteneur) :**
+- sem-1 : small défaut = delta/2 (RM 3.5.9(6) dit « ≤ delta » ; VF
+  « juste inférieure » à vérifier au papier) — les oracles fixed en
+  DÉPENDENT tous.
+- sem-2 : rejet de A*N nu (RM 4.5.5(9-10) le prédéfinit) — les C45x
+  ACVC échoueront à la compilation ; instruire aussi A*2.0.
+- sem-3 : 'AFT/'FORE pliés à 3 en dur (vrais : AFT=1, FORE=4 pour T8) —
+  divergence documentée : attribut d'instanciation JUSTE (calcul
+  expander), attribut direct FAUX (pliage sem).
+
 ## Prochaine séquence (à arbitrer à l'ouverture de la prochaine session)
 
-1- Option A — points fixes : mul/div générales (reliquat 3.5.9).
+A discuter
 
 4. Rédiger la note de modèle d'exécution du pilier retenu AVANT de coder.
 5. Filet complet + tag git à chaque clôture.
