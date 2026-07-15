@@ -97,13 +97,12 @@ secondesC=$((dureeC % 60))
 
 printf "Durée de compilation : %02dh %02dmin %02dsec\n" "$heuresC" "$minutesC" "$secondesC"
 
-if $1='A'
-then
+if [ $1="A" ]; then
 
 cd ./ADA__LIB
 debutA=$(date +%s)
 
-./fasmg ADA_COMP.fas ADA_COMP
+./fasmg -v 2 ADA_COMP.fas ADA_COMP
 
 finA=$(date +%s)
 dureeA=$((finA - debutA))

@@ -76,9 +76,14 @@ is
     is
     begin
       if  EMIT_INCLUDES  then
-        PUT_LINE( "if ~ definite " & PRINT_NAME( D( LX_SYMREP, DEFN ) ) );
-        PUT_LINE( "include '" & PRINT_NAME( D( LX_SYMREP, DEFN ) ) & ".FINC'" );
-        PUT_LINE( "end if" );
+        declare
+	UNIT_NAME	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, DEFN ) );
+        begin
+	PUT_LINE( "if ~ definite " & PRINT_NAME( D( LX_SYMREP, DEFN ) ) );
+	PUT_LINE( "include '" & UNIT_NAME & ".FINC'" );
+	if  CODI.DEBUG  then PUT_LINE( "display 'including withed unit " & UNIT_NAME & ".FINC'" & ", 10"  ); end if;
+	PUT_LINE( "end if" );
+        end;
       end if;
 
     end	INSERT_WITHED_UNIT;
@@ -150,7 +155,6 @@ is
 		:= PRINT_NAME( D( LX_SYMREP, D( AS_SOURCE_NAME, D( AS_ALL_DECL, COMPILATION_UNIT ) ) ) );
 
   begin
-
     while  not IS_EMPTY( TW_SEQ )  loop
       POP( TW_SEQ, TW );
 
@@ -167,6 +171,9 @@ is
         then
 	  PUT_LINE( "if ~ definite " & UNIT_NAME );
 	  PUT_LINE( "include '" & UNIT_NAME & ".FINC'" );
+	  if  CODI.DEBUG  then
+	    PUT_LINE( "display 'including trans withed unit " & UNIT_NAME & ".FINC'" & ", 10" );
+	  end if;
 	  PUT_LINE( "end if" );
         end if;
       end;
@@ -340,9 +347,11 @@ is
     if  SUB_BODY.TY = DN_STUB  then
       declare
         UNIT_FILE_NAME	:constant STRING	:= PRINT_NAME( D( XD_LIB_NAME, THE_COMPILATION_UNIT ) );
+        FULL_NAME		:constant STRING	:= UNIT_FILE_NAME( UNIT_FILE_NAME'FIRST .. UNIT_FILE_NAME'LAST-4 )
+						& '-' & SUB_NAME & ".FINC";
       begin
-        PUT_LINE( "include '" & UNIT_FILE_NAME( UNIT_FILE_NAME'FIRST .. UNIT_FILE_NAME'LAST-4 )
-			& '-' & SUB_NAME & ".FINC'" );
+        PUT_LINE( "include '" & FULL_NAME & ''' );
+        if  CODI.DEBUG  then PUT_LINE( "display 'including sub body " & FULL_NAME & ''' & ", 10" ); end if;
       end;
 
     else
@@ -480,9 +489,11 @@ is
       if  PACK_BODY.TY = DN_STUB  then
         declare
 	UNIT_FILE_NAME	:constant STRING	:= PRINT_NAME( D( XD_LIB_NAME, THE_COMPILATION_UNIT ) );
+	FULL_UNIT_NAME	:constant STRING	:= UNIT_FILE_NAME( UNIT_FILE_NAME'FIRST .. UNIT_FILE_NAME'LAST-4 )
+						& '-' & PACK_NAME & ".FINC";
         begin
-	PUT_LINE( "include '" & UNIT_FILE_NAME( UNIT_FILE_NAME'FIRST .. UNIT_FILE_NAME'LAST-4 )
-		& '-' & PACK_NAME & ".FINC'" );
+	PUT_LINE( "include '" & FULL_UNIT_NAME & ''' );
+	if  CODI.DEBUG  then PUT_LINE( "display 'including sub unit " & FULL_UNIT_NAME & ''' & ", 10" ); end if;
         end;
 
       else

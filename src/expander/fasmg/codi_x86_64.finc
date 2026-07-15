@@ -31,10 +31,6 @@ macro show description, value				; pour debogage
   end repeat
 end macro
 
-; PAS INDISPENSABLE : exploration d'optimisation
-optim_RAX_ON_TOP		= 0			; pour exploration peephole
-optim_PUSH_POP_RAX_COUNT	= 0
-
 ;			-------------------------------------------------------------------
 ;			S P E C I	F I Q U E	  P R O C	E S S E U	R   I N T	E L   x 8	6   6 4
 ;			-------------------------------------------------------------------
@@ -82,7 +78,6 @@ macro			PUSH_RAX
   db 0x48, 0x89, 0x45, 0x08				; mov QWORD PTR [rbp+8], rax		(ecrire RAX a l'emplacement libre en haut de pile, au dessus du rbp)
   db 0x48, 0x8D, 0x6D, 0x08				; lea rbp, [rbp+0x8]		(puis MONTER le rbp	sur la valeur ecrite car pile	croissante vers adresses hautes)
 
-optim_RAX_ON_TOP = 1
 end macro
 
 ;			........
@@ -91,7 +86,6 @@ macro			PUSH_RDX
   db 0x48, 0x89, 0x55, 0x08				; mov QWORD PTR [rbp+8], rdx		(ecrire RDX a l'emplacement libre en haut de pile, au dessus du rbp)
   db 0x48, 0x8D, 0x6D, 0x08				; lea rbp, [rbp+0x8]		(puis MONTER le rbp	sur la valeur ecrite car pile	croissante vers adresses hautes)
 
-optim_RAX_ON_TOP = 0
 end macro
 
 ;			.......
@@ -100,12 +94,6 @@ macro			POP_RAX
   db 0x48, 0x8B, 0x45, 0x00				; mov rax, QWORD PTR [rbp]		(lire dans RAX la valeur top sur le rbp)
   db 0x48, 0x8D, 0x6D, 0xF8				; lea rbp, [rbp-0x8]		(puis DESCENDRE le rbp car pile croissante vers adresses hautes)
 
-if optim_RAX_ON_TOP = 1
-postpone
-  optim_PUSH_POP_RAX_COUNT = optim_PUSH_POP_RAX_COUNT + 1
-end postpone
-  optim_RAX_ON_TOP = 0
-end if
 end macro
 
 ;			.......
@@ -114,7 +102,6 @@ macro			POP_RBX
   db 0x48, 0x8B, 0x5D, 0x00				; mov rbx, QWORD PTR [rbp]		(lire dans RBX la valeur top sur le rbp)
   db 0x48, 0x8D, 0x6D, 0xF8				; lea rbp, [rbp-0x8]		(puis DESCENDRE le rbp car pile croissante vers adresses hautes)
 
-optim_RAX_ON_TOP = 0
 end macro
 
 ;			.......
@@ -123,7 +110,6 @@ macro			POP_RCX
   db 0x48, 0x8B, 0x4D, 0x00				; mov rcx, QWORD PTR [rbp]		(lire dans RCX la valeur top sur le rbp)
   db 0x48, 0x8D, 0x6D, 0xF8				; lea rbp, [rbp-0x8]		(puis DESCENDRE le rbp car pile croissante vers adresses hautes)
 
-optim_RAX_ON_TOP = 0
 end macro
 
 ;			.......
@@ -132,7 +118,6 @@ macro			POP_RDX
   db 0x48, 0x8B, 0x55, 0x00				; mov rdx, QWORD PTR [rbp]		(lire dans RDX la valeur top sur le rbp)
   db 0x48, 0x8D, 0x6D, 0xF8				; lea rbp, [rbp-0x8]		(puis DESCENDRE le rbp car pile croissante vers adresses hautes)
 
-optim_RAX_ON_TOP = 0
 end macro
 
 ;			.......
@@ -141,7 +126,6 @@ macro			POP_RSI
   db 0x48, 0x8B, 0x75, 0x00				; mov rsi, QWORD PTR [rbp]		(lire dans RSI la valeur top sur le rbp)
   db 0x48, 0x8D, 0x6D, 0xF8				; lea rbp, [rbp-0x8]		(puis DESCENDRE le rbp car pile croissante vers adresses hautes)
 
-optim_RAX_ON_TOP = 0
 end macro
 
 ;			.......
@@ -150,7 +134,6 @@ macro			POP_RDI
   db 0x48, 0x8B, 0x7D, 0x00				; mov rdi, QWORD PTR [rbp]		(lire dans RDI la valeur top sur le rbp)
   db 0x48, 0x8D, 0x6D, 0xF8				; lea rbp, [rbp-0x8]		(puis DESCENDRE le rbp car pile croissante vers adresses hautes)
 
-optim_RAX_ON_TOP = 0
 end macro
 
 ;			....
@@ -158,7 +141,6 @@ macro			DROP
 ;			....
   db 0x48, 0x8D, 0x6D, 0xF8				; lea rbp, [rbp-0x8]		(DESCENDRE le rbp car pile croissante vers adresses hautes)
 
-optim_RAX_ON_TOP = 0
 end macro
 
 ;			...
@@ -231,7 +213,7 @@ macro			FP_IN_RAX		lvl
     dd 8*lvl
   end if
 
-optim_RAX_ON_TOP = 0
+; optim_RAX_ON_TOP = 0
 end macro
 
 ;			.......................
@@ -306,7 +288,6 @@ macro			FETCH_BYTE	disp
     dd disp
   end if
 
-optim_RAX_ON_TOP = 0
 end macro
 
 ;			........................
@@ -321,7 +302,6 @@ macro			FETCH_WORD	disp
     dd disp
   end if
 
-optim_RAX_ON_TOP = 0
 end macro
 
 ;			........................
@@ -336,7 +316,6 @@ macro			FETCH_DWORD	disp
     dd disp
   end if
 
-optim_RAX_ON_TOP = 0
 end macro
 
 ;			........................
@@ -351,7 +330,6 @@ macro			FETCH_QWORD	disp
     dd disp
   end if
 
-optim_RAX_ON_TOP = 0
 end macro
 
 ;			........................
@@ -2078,11 +2056,6 @@ Elf64_Phdr:
   db 0x4D, 0x89, 0x36						; mov [r14], r14			(empiler le premier	"frame" de co-pile)
   db 0x4D, 0x89, 0xF5						; mov r13, r14			(R13 est le "frame pointer" de co-pile)
   db 0x4D, 0x8D, 0x76, 0x08						; lea r14, [r14 + 8]		(monter le haut de co-pile sur le premier lieu libre)
-
-; PAS INDISPENSABLE : exploration d'optimisation
-postpone
-  show 'optim push_pop_rax_count (8 octets/unité) = ', optim_PUSH_POP_RAX_COUNT
-end postpone
 
 ;-----------------------------------------------------------------------------------------------------------------------
 ;	1	2	3	4	5	6	7	8	9	0	1	2
