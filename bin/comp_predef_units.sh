@@ -18,5 +18,5 @@ rm ./ADA__LIB/*.SUB
 ./a83.sh ./ text_io.adb W
 ./a83.sh ./ direct_io.adb W
 ./a83.sh ./ sequential_io.adb W
-./a83.sh ./ unchecked_conversion.adb W
-./a83.sh ./ unchecked_deallocation.ads W
+#./a83.sh ./ unchecked_conversion.adb W		intrinsèque expander ne pas compiler !
+#./a83.sh ./ unchecked_deallocation.adb W	A VOIR

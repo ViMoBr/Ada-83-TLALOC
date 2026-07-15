@@ -568,3 +568,26 @@ __DÉSAMORCÉ le 8 juillet 2026__: OPEN → NAME_ERROR, CREATE → USE_ERROR (TE
   d'hypothèse dans le source est un n° 53 en sursis — le transformer
   en ANOMALIE exécutable ou le solder.
 
+ 97. **La garde d'inclusion asymétrique** (conflit PRMzone, premier
+assemblage d'ADA_COMP, 12 juillet). Les with émettent
+if ~ definite X / include X.FINC — mais qui définit X ? Les
+packages, oui (PACK_NAME = 'PACK_NAME' en tête de FINC) ; les
+unités génériques, NON : leur FINC restait indéfiniment
+« ~ definite », donc ré-inclus à chaque with — et même deux fois
+dans la MÊME unité (CODE_WITH_CONTEXT puis fermeture transitive).
+Aggravant : le FINC d'UNCHECKED_CONVERSION contenait un corps
+compilé du MODÈLE (PRO UNCHECKED_CONVERSION_L1), code mort
+depuis l'expansion inline des instances, et NON gardé — le
+if defined name_lbl_ de CODE_SUBPROGRAM_BODY n'est émis que si
+ENCLOSING_BODY /= VOID, jamais au niveau bibliothèque. Deuxième
+inclusion → réouverture du namespace → redéfinition de
+PRMzone:: (un label d'espace d'adressage ne se définit qu'une
+fois). Règle : toute unité incluse via if ~ definite X DÉFINIT
+X en première ligne de son FINC — la garde et sa clé sont les
+deux moitiés d'UN idiome (même famille que le n° 94 : une
+condition, pas deux copies). Corollaire : le FINC d'un modèle
+générique de sous-programme ne contient JAMAIS de corps — les
+instances sont expansées sur site.
+
+ 98. **Garde d'inclusion asymétrique** (UNCHECKED_CONVERSION) 
+ 99. **La staticité des bornes vit en UN exemplaire** (STATIC_BOUND_VALUE), le test de propriété ne vaut que là où la lecture est licite (l'espèce fixe ses attributs, USED_NAME ≠ USED_OBJECT), un cache de taille se teste par « connue et positive », et le pliage statique appartient à sem (LRM 4.9) — le filet expander est une dette localisée, pas une architecture.

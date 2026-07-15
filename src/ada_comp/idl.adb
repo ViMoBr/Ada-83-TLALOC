@@ -516,7 +516,8 @@ is					---
 
     if  T.PT = HI  then										--| VALEUR COURTE 16 BITS
       if	T.NOTY /=	DN_NUM_VAL  then									--| SI CE	N'EST PAS	UN NUMVAL
-        return "PRINT_NUM : LE HI N EST PAS UN DN_NUM_VAL ("& NODE_NAME'IMAGE( T.NOTY ) & " PAS DE CHAINE !";		--| CHAINE PAS DE NOM
+        PUT_LINE( "; IDL.PRINT_NUM : LE HI N EST PAS UN DN_NUM_VAL ("& NODE_NAME'IMAGE( T.NOTY ) & " PAS DE CHAINE !" );--| CHAINE PAS DE NOM
+        raise PROGRAM_ERROR;
       end	if;
 
       if	T.NSIZ = 1  then										--| VALEUR NEGATIVE
@@ -532,7 +533,8 @@ is					---
       end if;
 
       if	T.TY /= DN_NUM_VAL	then									--| SI CE	N'EST PAS	UN NUMVAL
-        return "PRINT_NUM : LE HI N EST PAS UN DN_NUM_VAL ("& NODE_NAME'IMAGE( T.TY ) & " PAS DE CHAINE !";		--| CHAINE PAS DE NOM
+        PUT_LINE( "; IDL.PRINT_NUM : LE HI N EST PAS UN DN_NUM_VAL ("& NODE_NAME'IMAGE( T.TY ) & " PAS DE CHAINE !" );	--| CHAINE PAS DE NOM
+        raise PROGRAM_ERROR;
       end	if;
 
       declare											--| UN VRAI DN_NUM_VAL
@@ -581,7 +583,8 @@ is					---
       end;
     end if;
 
-    return "PRINT_NUM T.PT INCORRECT ???";
+    PUT_LINE( "IDL.PRINT_NUM T.PT INCORRECT ???" );
+    raise PROGRAM_ERROR;
 
   end	PRINT_NUM;
 	---------

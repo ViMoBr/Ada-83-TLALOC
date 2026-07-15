@@ -154,6 +154,28 @@ is					-----
   end	TYPE_SIZE;
 	---------
 
+
+		--^^^^^^^^^^^^^--
+  function	  TYPE_INFO_STR	( TYPE_SPEC :TREE )	return STRING
+  is		-----------------
+	-- Nom du namespace d'info d'un type dans le FINC. Convention
+	-- UNIQUE (piege n 99) : type nomme -> '_' & nom_du_type ;
+	-- type ANONYME (XD_SOURCE_NAME = l'OBJET, espece CLASS_VC_NAME,
+	-- cf n 80/95c) -> '_' & nom_de_l_objet & "__type", comme au site
+	-- de declaration. Toute fabrication manuelle de ce nom est un
+	-- bug en attente.
+    SRC		: TREE		:= D( XD_SOURCE_NAME, TYPE_SPEC );
+    NAME_STR	:constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, SRC ) );
+  begin
+    if  SRC.TY in CLASS_VC_NAME  then
+      return  NAME_STR & "__type";
+    else
+      return  NAME_STR;
+    end if;
+
+  end	TYPE_INFO_STR;
+	-------------
+
 			--^^^^^^^^^--
   function		  FULL_VIEW		( T : TREE )	return TREE
   is			-------------
@@ -310,7 +332,10 @@ is					-----
       elsif SIZ <= 16	then return 'w';
       elsif SIZ <= 32	then return 'd';
       elsif SIZ <= 64	then return 'q';
-      else return 'v';
+      else
+        PUT_LINE( "'; EXPANDER.UTILS.OPER_SIZ_CHAR : taille > 64 bits -- operande non scalaire ? "
+	  & NODE_NAME'IMAGE( DEFN.TY ) );
+        raise  PROGRAM_ERROR;										-- n 96 : un S'v'/L'v' est TOUJOURS un bug amont
       end if;
     end;
 
@@ -375,10 +400,10 @@ is					-----
 	PUT_LINE( tab & "La " & IMAGE( CODI.GENERIC_BASE_LEVEL + 1 ) & "," & tab & "-GFP_ofs" );
 
 	if  OBJ_TYPE.TY in CLASS_SCALAR  or else  OBJ_TYPE.TY = DN_ACCESS  then
-	  PUT_LINE( tab & "L" & OPER_SIZ_CHAR( OBJ_TYPE ) & " ," & tab & "-" & DEFN_STR & "_disp" );
+	  PUT_LINE( tab & "L" & OPER_SIZ_CHAR( OBJ_TYPE ) & " ," & tab & "-" & DEFN_STR & "_ofs" );
 
 	else
-	  PUT_LINE( tab & "LVA ," & tab & "-" & DEFN_STR & "_disp" );
+	  PUT_LINE( tab & "LVA ," & tab & "-" & DEFN_STR & "_ofs" );
 	end if;
         end if;
         return;
@@ -408,7 +433,7 @@ is					-----
 	SIZ_CHAR	: CHARACTER	:= OPER_SIZ_CHAR( D( SM_OBJ_TYPE, DEFN ) );
 
         begin
-	PUT( tab & "LI" & SIZ_CHAR & ' ' & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' &	tab );
+	PUT( tab & "LI" & SIZ_CHAR & ' ' & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' & tab );
 	PUT( '-' & PRINT_NAME( D( LX_SYMREP, DEFN ) ) );
 	PUT_LINE(	"_ofs" );
         end	SCALAR_REF_PARAMETER;
@@ -421,7 +446,7 @@ is					-----
 
       end	if;
 
-    else
+    else												-- NON PARAM
       declare
         OBJ_TYPE	:TREE	:= D( SM_OBJ_TYPE, DEFN );
       begin
@@ -438,8 +463,9 @@ is					-----
 	begin
 
 	  if  OBJ_TYPE.TY in CLASS_SCALAR  or else OBJ_TYPE.TY = DN_ACCESS  then
-	    PUT_LINE( tab & "LI" & OPER_SIZ_CHAR( OBJ_TYPE ) & tab & IMAGE( OBJ_LEVEL ) & ", "
-			& OBJ_STR & "_disp, 0" );
+	    PUT( tab & "LI" & OPER_SIZ_CHAR( OBJ_TYPE ) & tab & IMAGE( OBJ_LEVEL ) & ", " );
+	    REGIONS_PATH( DEFN );
+	    PUT_LINE( OBJ_STR & "_disp, 0" );
 	  else
 	    PUT_LINE( tab & "LVA" & tab & IMAGE( OBJ_LEVEL ) & ", " & OBJ_STR & "_disp" );
 	  end if;
@@ -450,34 +476,30 @@ is					-----
         end if;
 
         if  OBJ_TYPE.TY in CLASS_SCALAR  or else OBJ_TYPE.TY = DN_ACCESS  then
-        declare
-	SIZ_CHAR	: CHARACTER	:= OPER_SIZ_CHAR( OBJ_TYPE );
-	DEFN_LVL	: INTEGER		:= DI( CD_LEVEL, DEFN );
+	declare
+	  SIZ_CHAR	: CHARACTER	:= OPER_SIZ_CHAR( OBJ_TYPE );
+	  DEFN_LVL	: INTEGER		:= DI( CD_LEVEL, DEFN );
 
-        begin
-	PUT( tab & "L" & SIZ_CHAR & ' ' & IMAGE( DEFN_LVL	) & ',' &	tab );
-	if  DEFN_LVL /= INTEGER( CUR_LEVEL )
-	or else	D( XD_REGION, DEFN ).TY = DN_PACKAGE_ID
-	then
-	  REGIONS_PATH( DEFN );
-	end if;
-	PUT_LINE(	PRINT_NAME( D( LX_SYMREP, DEFN ) ) & "_disp" );
-        end;
+	begin
+	  PUT( tab & "L" & SIZ_CHAR & ' ' & IMAGE( DEFN_LVL	) & ',' &	tab );
+	  if  DEFN_LVL /= INTEGER( CUR_LEVEL )  or else  D( XD_REGION, DEFN ).TY = DN_PACKAGE_ID  then
+	    REGIONS_PATH( DEFN );
+	  end if;
+	  PUT_LINE( PRINT_NAME( D( LX_SYMREP, DEFN ) ) & "_disp" );
+	end;
 
-     else												-- variable non scalaire
-        declare
-	DEFN_LVL	: INTEGER		:= DI( CD_LEVEL, DEFN );
-        begin
-	PUT( tab & "LVA " &	IMAGE( DEFN_LVL ) &	',' & tab	);
-	if  DEFN_LVL /= INTEGER( CUR_LEVEL )
-	or else	D( XD_REGION, DEFN ).TY = DN_PACKAGE_ID
-	then
-	  REGIONS_PATH( DEFN );
-	end if;
-	PUT_LINE(	PRINT_NAME( D( LX_SYMREP, DEFN ) )  & "_disp" );
-        end;
+        else											-- variable non scalaire
+	declare
+	  DEFN_LVL	: INTEGER		:= DI( CD_LEVEL, DEFN );
+	begin
+	  PUT( tab & "LVA " & IMAGE( DEFN_LVL ) & ',' & tab );
+	  if  DEFN_LVL /= INTEGER( CUR_LEVEL )  or else  D( XD_REGION, DEFN ).TY = DN_PACKAGE_ID  then
+	    REGIONS_PATH( DEFN );
+	  end if;
+	  PUT_LINE( PRINT_NAME( D( LX_SYMREP, DEFN ) ) & "_disp" );
+	end;
 
-     end if;
+        end if;
       end;
     end if;
 
@@ -516,8 +538,12 @@ is					-----
 	& ',' & tab & '-' & DEST_DEFN_STR & "_ofs" );
 
     else
-      PUT_LINE( tab & "S" & SIZ_CHAR & ' ' & INTEGER'IMAGE( STORE_LEVEL )
-	& ',' & tab & DEST_DEFN_STR & "_disp" );
+      PUT( tab & "S" & SIZ_CHAR & ' ' & INTEGER'IMAGE( STORE_LEVEL ) & ',' & tab );
+      if  STORE_LEVEL /= INTEGER( CUR_LEVEL )  or else  D( XD_REGION, DEST_DEFN ).TY = DN_PACKAGE_ID  then
+        REGIONS_PATH( DEST_DEFN );
+      end if;
+      PUT_LINE( DEST_DEFN_STR & "_disp" );
+
     end if;
 
   end	STORE;
@@ -744,7 +770,20 @@ end	SUBPROGRAM_ORIGIN;
       elsif SUB_NAME = """+"""  then return "_PLUS_";
       elsif SUB_NAME = """-"""  then return "_MINUS_";
       elsif SUB_NAME = """&"""  then return "_CONC_";
+      elsif SUB_NAME = """=\"""   then return "_EQ_";
+      elsif SUB_NAME = """AND"""  then return "_AND_";
+      elsif SUB_NAME = """OR"""   then return "_OR_";
+      elsif SUB_NAME = """XOR"""  then return "_XOR_";
+      elsif SUB_NAME = """NOT"""  then return "_NOT_";
+      elsif SUB_NAME = """*"""    then return "_MUL_";
+      elsif SUB_NAME = """/"""    then return "_DIV_";
+      elsif SUB_NAME = """**"""   then return "_POW_";
+      elsif SUB_NAME = """MOD"""  then return "_MOD_";
+      elsif SUB_NAME = """REM"""  then return "_REM_";
+      elsif SUB_NAME = """ABS"""  then return "_ABS_";
       end if;
+      PUT_LINE( "'; LETTERED_SUBNAME : operateur non mappe " & SUB_NAME );
+      raise  PROGRAM_ERROR;					-- n 96 : plus JAMAIS de guillemets en sortie      end if;
       return  SUB_NAME;
     else
       return  SUB_NAME;

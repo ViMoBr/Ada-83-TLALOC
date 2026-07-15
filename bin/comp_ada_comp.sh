@@ -1,4 +1,7 @@
 #!/bin/bash
+debutC=$(date +%s)
+
+
 ./comp_predef_units.sh
 #--------------------------------------------------
 #	IDL
@@ -10,6 +13,8 @@
 ./a83.sh ./ ../src/communs/idl-page_man.adb W
 ./a83.sh ./ ../src/communs/idl-idl_tbl.adb W
 ./a83.sh ./ ../src/communs/idl-idl_man.adb W
+./a83.sh ./ ../src/communs/idl-print_nod.adb W
+./a83.sh ./ ../src/pretty/idl-pretty_diana.adb W
 #--------------------------------------------------
 #	PAR_PHASE
 #--------------------------------------------------
@@ -49,7 +54,7 @@
 ./a83.sh ./ ../src/sem_phase/idl-sem_phase-pre_fcns.adb W
 ./a83.sh ./ ../src/sem_phase/idl-sem_phase-red_subp.adb W
 ./a83.sh ./ ../src/sem_phase/idl-sem_phase-rep_clau.adb W
-./a83.sh ./ ../src/sem_phase/idl-sem_phase-req_util.adb w
+./a83.sh ./ ../src/sem_phase/idl-sem_phase-req_util.adb W
 ./a83.sh ./ ../src/sem_phase/idl-sem_phase-sem_glob.adb W
 ./a83.sh ./ ../src/sem_phase/idl-sem_phase-set_util.adb W
 ./a83.sh ./ ../src/sem_phase/idl-sem_phase-stm_walk.adb W
@@ -69,10 +74,11 @@
 #--------------------------------------------------
 ./a83.sh ./ ../src/expander/expander.ads W
 ./a83.sh ./ ../src/expander/expander.adb W
-./a83.sh ./ ../src/expander/expander-utils.adb w
+./a83.sh ./ ../src/expander/expander-utils.adb W
 ./a83.sh ./ ../src/expander/expander-expressions.adb W
 ./a83.sh ./ ../src/expander/expander-declarations.adb W
 ./a83.sh ./ ../src/expander/expander-declarations-types_decls.adb W
+./a83.sh ./ ../src/expander/expander-represented_items.adb W
 ./a83.sh ./ ../src/expander/expander-instructions.adb W
 ./a83.sh ./ ../src/expander/expander-structures.adb W
 #--------------------------------------------------
@@ -81,3 +87,30 @@
 ./a83.sh ./ ../src/ada_comp/ada_comp.ads W
 ./a83.sh ./ ../src/ada_comp/ada_comp.adb W
 
+
+finC=$(date +%s)
+dureeC=$((finC - debutC))
+
+heuresC=$((dureeC / 3600))
+minutesC=$(((dureeC % 3600) / 60))
+secondesC=$((dureeC % 60))
+
+printf "Durée de compilation : %02dh %02dmin %02dsec\n" "$heuresC" "$minutesC" "$secondesC"
+
+if $1='A'
+then
+
+cd ./ADA__LIB
+debutA=$(date +%s)
+
+./fasmg ADA_COMP.fas ADA_COMP
+
+finA=$(date +%s)
+dureeA=$((finA - debutA))
+
+heuresA=$((dureeA / 3600))
+minuteA=$(((dureeA % 3600) / 60))
+secondesA=$((dureeA % 60))
+
+printf "Durée d assemblage : %02dh %02dmin %02dsec\n" "$heuresA" "$minutesA" "$secondesA"
+fi

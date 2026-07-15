@@ -356,10 +356,12 @@ null;
 			------------
   procedure		CODE_VC_NAME		( VC_NAME	:TREE; OBJECT_DECL :TREE := TREE_VOID )
   is			------------
+
+        VC_ADDRESS		: TREE			:= D( SM_ADDRESS, VC_NAME );				-- adresse eventuelle
+
   begin
     declare
       TYPE_SPEC	: TREE	:= D( SM_OBJ_TYPE, VC_NAME );
-
 
 		-----------------------
       procedure	COMPILE_VC_NAME_INTEGER	( VC_NAME	:TREE )
@@ -369,6 +371,11 @@ null;
         INIT_EXP		: TREE		:= D( SM_INIT_EXP, VC_NAME );
 
       begin
+        if  VC_ADDRESS /= TREE_VOID  then								-- Clause	adressage	présente
+	PUT_LINE( "; COMPILE_VC_NAME_INTEGER ADDRESS CLAUSE non geree" );
+	raise  PROGRAM_ERROR;
+        end if;
+
         PUT( "VAR "	& PRINT_NAME( D( LX_SYMREP, VC_NAME ) )	& "_disp, " & OPER_TYPE );
         if  CODI.DEBUG  then PUT( tab50	& "; variable entiere" ); end	if;
         NEW_LINE;
@@ -376,7 +383,7 @@ null;
 
 	if  INIT_EXP /= TREE_VOID  then
 	  EXPRESSIONS.CODE_EXP( INIT_EXP );
-	  EXPRESSIONS.CODE_RANGE_CHECK( TYPE_SPEC );						-- E-D1 : gamme du sous-type de l'objet
+	  EXPRESSIONS.CODE_RANGE_CHECK( TYPE_SPEC );							-- E-D1 : gamme du sous-type de l'objet
 	  CODI.STORE( VC_NAME );
 	end if;
 
@@ -393,6 +400,11 @@ null;
         IS_GENERIC_FORMAL	: BOOLEAN		:= FALSE;
         VAR_NAME		:constant STRING	:= PRINT_NAME( D( LX_SYMREP, VC_NAME ) );
       begin
+        if  VC_ADDRESS /= TREE_VOID  then								-- Clause	adressage	presente
+	PUT_LINE( "; COMPILE_VC_NAME_FIXED ADDRESS CLAUSE non geree" );
+	raise  PROGRAM_ERROR;
+        end if;
+
         if  not CODI.IN_GENERIC_BODY  then
 	OPER_TYPE := OPER_SIZ_CHAR( TYPE_SPEC );
 
@@ -443,6 +455,11 @@ null;
         INIT_EXP		: TREE		:= D( SM_INIT_EXP, VC_NAME );
 
       begin
+        if  VC_ADDRESS /= TREE_VOID  then								-- Clause	adressage	présente
+	PUT_LINE( "; COMPILE_VC_NAME_FLOAT ADDRESS CLAUSE non geree" );
+	raise  PROGRAM_ERROR;
+        end if;
+
         PUT( "VAR "	& PRINT_NAME( D( LX_SYMREP, VC_NAME ) )	& "_disp, " & OPER_TYPE );
         if  CODI.DEBUG  then PUT( tab50	& "; variable flottante" ); end if;
         NEW_LINE;
@@ -472,7 +489,8 @@ null;
 	INIT_EXP		: TREE		:= D( SM_INIT_EXP, VC_NAME );
 
         begin
-	PUT( "VAR " & PRINT_NAME( D( LX_SYMREP,	VC_NAME )	) & "_disp, d" );
+--	PUT( "VAR " & PRINT_NAME( D( LX_SYMREP,	VC_NAME )	) & "_disp, d" );
+	PUT( "VAR " & PRINT_NAME( D( LX_SYMREP,	VC_NAME )	) & "_disp, " & OPER_TYPE );
 	if  CODI.DEBUG  then PUT( tab50 & "; variable bool char enum" ); end if;
 	NEW_LINE;
 
@@ -489,6 +507,11 @@ null;
 		-------------------------
 
       begin
+        if  VC_ADDRESS /= TREE_VOID  then								-- Clause	adressage	présente
+	PUT_LINE( "; COMPILE_VC_NAME_ENUMERATION ADDRESS CLAUSE non geree" );
+	raise  PROGRAM_ERROR;
+        end if;
+
         if  NAME = "BOOLEAN"
         then  COMPILE_VC_NAME_BOOL_CHAR( VC_NAME );
 
@@ -511,6 +534,11 @@ null;
         VAR_STR		: constant STRING := PRINT_NAME( D( LX_SYMREP, VAR_ID ) );
 
       begin
+        if  VC_ADDRESS /= TREE_VOID  then								-- Clause	adressage	présente
+	PUT_LINE( "; COMPILE_ACCESS_VAR ADDRESS CLAUSE non geree" );
+	raise  PROGRAM_ERROR;
+        end if;
+
         DI( CD_LEVEL,     VAR_ID, INTEGER( LVL ) );
         DB( CD_COMPILED,  VAR_ID, TRUE );
 
@@ -530,8 +558,6 @@ null;
 
       end	COMPILE_ACCESS_VAR;
 	------------------
-
-
 
 
 		-----------------
@@ -580,7 +606,7 @@ null;
 		--------------
 
 
-------------------------------
+		------------------------------
       procedure	UNCONSTRAINED_AGGREGATE_OBJECT	( AGG :TREE )
       is		------------------------------
 	-- Objet non contraint initialise par agregat (RM83 4.3.2) :
@@ -616,26 +642,26 @@ null;
         end	EMIT_LI;
 	-------
 
-			----------------------
+		----------------------
         function	IS_STATIC_CHOICE_EXP	( EXP :TREE ) return BOOLEAN
-        is		----------------------
+        is	----------------------
         begin
 	return  EXP /= TREE_VOID  and then  EXP.TY = DN_NUMERIC_LITERAL;
         end	IS_STATIC_CHOICE_EXP;
-	----------------------
+		----------------------
 
-			-----------------
+		-----------------
         procedure	NOTE_CHOICE_VALUE	( VALUE :INTEGER )
-        is		-----------------
+        is	-----------------
         begin
 	if  VALUE < MIN_CHOICE  then  MIN_CHOICE := VALUE;  end if;
 	if  VALUE > MAX_CHOICE  then  MAX_CHOICE := VALUE;  end if;
         end	NOTE_CHOICE_VALUE;
-	-----------------
+		-----------------
 
-			-----------------
+		-----------------
         procedure	ANALYSE_AGGREGATE
-        is		-----------------
+        is	-----------------
 	NORM_SEQ	: SEQ_TYPE	:= LIST( D( SM_NORMALIZED_COMP_S, AGG ) );
 	ASSOC	: TREE;
         begin
@@ -683,18 +709,18 @@ null;
 	        end if;
 	      end loop;
 	    end	ANALYSE_CHOICE_LIST;
-				-------------------
+		-------------------
 	  else								-- expression nue
 	    SEEN_POSITIONAL := TRUE;
 	    NB_ELEMENTS := NB_ELEMENTS + 1;
 	  end if;
 	end loop;
         end	ANALYSE_AGGREGATE;
-	-----------------
+		-----------------
 
-			-----------------
+		-----------------
         function	FIRST_INDEX_RANGE	return TREE
-        is		-----------------
+        is	-----------------
 	-- Range du sous-type d'index (idiome ADD_INDEX_DIMENSION) ;
 	-- verifie au passage que le type est MONO-dimensionnel.
 	IDX_S	: SEQ_TYPE	:= LIST( D( SM_INDEX_S, BASE_TYPE ) );
@@ -713,7 +739,7 @@ null;
 	  return D( SM_RANGE, IDX );
 	end if;
         end	FIRST_INDEX_RANGE;
-	-----------------
+		-----------------
 
       begin									-- UNCONSTRAINED_AGGREGATE_OBJECT
 
@@ -746,7 +772,7 @@ null;
         if  SEEN_POSITIONAL  then
 				-- RM83 4.3.2 : FST = INDEX'FIRST,
 				-- LST = FST + n - 1 (n statique).
-				---------------
+				-----------------
 				POSITIONAL_BOUNDS:
 	declare
 	  RNG	: TREE	:= FIRST_INDEX_RANGE;
@@ -759,7 +785,7 @@ null;
 	  PUT_LINE( tab & "Sd  " & LVL_STR & ", " & INFO_STR & "._LST_1" );
 	  EMIT_LI( INTEGER( NB_ELEMENTS ) );				-- COUNT
 	end	POSITIONAL_BOUNDS;
-				---------------
+		-----------------
         else								-- nomme statique
 				-- RM83 4.3.2 : bornes = min/max des choix
 				-- (couverture contigue garantie par sem).
@@ -804,6 +830,18 @@ null;
 	------------------------------
 
       begin
+        if  VC_ADDRESS /= TREE_VOID  then								-- Clause	adressage	présente
+	declare
+	  SV	: TREE	:= D( SM_VALUE, VC_ADDRESS );
+	begin
+	  if  ((SV.PT = HI)  and then  ( SV.NOTY = DN_NUM_VAL ))  or else  (SV.TY = DN_NUM_VAL)
+	  then
+	    PUT_LINE( tab & "LI" & tab & PRINT_NUM( SV ) );						-- use at 16#...# : adresse statique
+	  else
+	    EXPRESSIONS.CODE_EXP( VC_ADDRESS );								-- use at V'ADDRESS : adresse dynamique
+	  end if;
+	end;
+        end if;
 
         declare
 	SOURCE_CONSTRAINT		: TREE		:= TREE_VOID;
@@ -962,7 +1000,6 @@ null;
       is		------------------
 
         VC_STR		:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, VC_NAME ) );
-        VC_ADDRESS		: TREE		:= D( SM_ADDRESS, VC_NAME );					-- adresse éventuelle
         INIT_EXP		: TREE		:= D( SM_INIT_EXP, VC_NAME );
         LVL		: LEVEL_NUM	renames CODI.CUR_LEVEL;
         LVL_STR		:constant	STRING	:= IMAGE(	LVL );
@@ -978,8 +1015,16 @@ null;
         NEW_LINE;
 
         if  VC_ADDRESS /= TREE_VOID  then								-- Clause	adressage	présente
-	PUT_LINE(	tab & "LI" & tab & PRINT_NUM(	D( SM_VALUE, VC_ADDRESS ) ) );
-	PUT_LINE(	tab & "Sa" & tab & LVL_STR & ", " & VC_STR & "_disp" );					-- Stocker l'adresse du rec dans le ptr
+	declare
+	  SV	: TREE	:= D( SM_VALUE, VC_ADDRESS );
+	begin
+	  if  ((SV.PT = HI)  and then  ( SV.NOTY = DN_NUM_VAL ))  or else  (SV.TY = DN_NUM_VAL)
+	  then
+	    PUT_LINE( tab & "LI" & tab & PRINT_NUM( SV ) );						-- use at 16#...# : adresse statique
+	  else
+	    EXPRESSIONS.CODE_EXP( VC_ADDRESS );								-- use at V'ADDRESS : adresse dynamique
+	  end if;
+	end;
 
         else
 	PUT( "VAR " & VC_STR & "__dat, " );								-- Espace	data
@@ -1029,6 +1074,7 @@ put_line( "; CODE_VC_NAME " & NODE_NAME'IMAGE( VC_NAME.TY ) );
           PUT_LINE( tab & "La  ,  0" );                                    -- @SRC = data_ptr source
 
           PUT_LINE( tab & "BLKMOV" );
+
         else
 				-- Pilier 3.7 : elaboration des VALEURS de discriminants.
 				-- Vue contrainte : SM_NORMALIZED_DSCRMT_S (expressions dans
@@ -1075,15 +1121,25 @@ put_line( "; CODE_VC_NAME " & NODE_NAME'IMAGE( VC_NAME.TY ) );
 	            end if;
 
 	            if  DSCRMT_EXP /= TREE_VOID  and then  DSCRMT_EXP /= TREE_NIL  then
-	              PUT( tab & "LIVA "
-	                & LVL_STR & ", "
-	                & VC_STR & "_disp, " );
-	              CODI.REGIONS_PATH( BASE_NAME );
-	              PUT_LINE( BASE_STR & "."
-	                & PRINT_NAME( D( LX_SYMREP, DISCR_ID ) ) );
-	              EXPRESSIONS.CODE_EXP( DSCRMT_EXP );
-	              PUT_LINE( tab & "S"
-	                & CODI.OPER_SIZ_CHAR( D( SM_OBJ_TYPE, DISCR_ID ) ) );
+
+		    if  REPRESENTED_ITEMS.HAS_COMPONENT_REP( DISCR_ID )  then
+		      PUT_LINE( tab & "La  " & LVL_STR & ", " & VC_STR & "_disp" );				-- @data du record (meme idiome que BLKMOV)
+		      REPRESENTED_ITEMS.CODE_STORE_REP_COMPONENT( DISCR_ID, DSCRMT_EXP );
+
+		    elsif  REPRESENTED_ITEMS.HAS_RECORD_REP( BASE_REC )  then
+		      PUT_LINE( "; COMPILE_RECORD_VAR : composant sans comp_rep dans un record represente" );
+		      raise PROGRAM_ERROR;
+
+		    else
+		      PUT( tab & "LIVA " & LVL_STR & ", " );
+		      CODI.REGIONS_PATH( VC_NAME );
+		      PUT( VC_STR & "_disp, " );
+
+		      CODI.REGIONS_PATH( BASE_NAME );
+		      PUT_LINE( BASE_STR & "." & PRINT_NAME( D( LX_SYMREP, DISCR_ID ) ) );
+		      EXPRESSIONS.CODE_EXP( DSCRMT_EXP );
+		      PUT_LINE( tab & "S" & CODI.OPER_SIZ_CHAR( D( SM_OBJ_TYPE, DISCR_ID ) ) );
+		    end if;
 	            end if;
 	          end loop;
 	        end;
@@ -1123,26 +1179,36 @@ put_line( "; CODE_VC_NAME " & NODE_NAME'IMAGE( VC_NAME.TY ) );
 		COMP_STR		:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, COMP_ID ) );
 	        begin
 		if  FIELD_INIT /= TREE_VOID  then
+
 		  if  FIELD_INIT.TY = DN_AGGREGATE  then						-- composant composite : descente recursive
-		    PUT( tab & "LIVa "
-		      & LVL_STR & ", "
-		      & VC_STR & "_disp, " );
+		    if  REPRESENTED_ITEMS.HAS_COMPONENT_REP( COMP_ID )  then
+		      PUT_LINE( "; COMPILE_RECORD_VAR : composant composite d'un record represente non gere" );
+		      raise PROGRAM_ERROR;
+		    end if;
+		    PUT( tab & "LIVa " & LVL_STR & ", " );
+		    CODI.REGIONS_PATH( VC_NAME );
+		    PUT( VC_STR & "_disp, " );
 		    CODI.REGIONS_PATH( TYPE_NAME );
 		    PUT_LINE( TYPE_NAME_STR & "."
 		      & COMP_STR );
 		    EXPRESSIONS.CODE_AGGREGATE( FIELD_INIT, COMP_TYPE );					-- l'adresse du champ est sur la pile, CODE_AGGREGATE la consomme
 
 		  else										-- composant scalaire : store direct
-		    PUT( tab & "LIVa "
-		      & LVL_STR & ", "
-		      & VC_STR & "_disp, " );
-		    CODI.REGIONS_PATH( TYPE_NAME );
-		    PUT_LINE( TYPE_NAME_STR & "."
-		      & COMP_STR );
-		    EXPRESSIONS.CODE_EXP( FIELD_INIT );
-		    PUT_LINE( tab & "S"
-		      & CODI.OPER_SIZ_CHAR( COMP_TYPE ) );
+		    if  REPRESENTED_ITEMS.HAS_COMPONENT_REP( COMP_ID )  then
+		      PUT_LINE( tab & "La  " & LVL_STR & ", " & VC_STR & "_disp" );   -- @data du record
+		      REPRESENTED_ITEMS.CODE_STORE_REP_COMPONENT( COMP_ID, FIELD_INIT );
+
+		    else
+		      PUT( tab & "LIVa " & LVL_STR & ", " );
+		      CODI.REGIONS_PATH( VC_NAME );
+		      PUT( VC_STR & "_disp, " );
+		      CODI.REGIONS_PATH( TYPE_NAME );
+		      PUT_LINE( TYPE_NAME_STR & "." & COMP_STR );
+		      EXPRESSIONS.CODE_EXP( FIELD_INIT );
+		      PUT_LINE( tab & "S" & CODI.OPER_SIZ_CHAR( COMP_TYPE ) );
+		    end if;
 		  end if;
+
 		end if;
 	        end;
 	      end	loop;
@@ -1154,24 +1220,6 @@ put_line( "; CODE_VC_NAME " & NODE_NAME'IMAGE( VC_NAME.TY ) );
       end	COMPILE_RECORD_VAR;
 	------------------
 
-
- --     function FULL_VIEW ( TYPE_SPEC : TREE ) return TREE is
- --       TS	: TREE	:= TYPE_SPEC;
- --     begin
- --       loop
---	if  TS.TY = DN_L_PRIVATE  or  TS.TY = DN_PRIVATE  then
---	  TS := D( SM_TYPE_SPEC, TS );
-
---	elsif  TS.TY = DN_INCOMPLETE  then
---	  TS := D( XD_FULL_TYPE_SPEC, TS );
-
---	else
---	  return  TS;
---	end if;
---        end loop;
-
---      end	FULL_VIEW;
-	---------
 
     begin
       TYPE_SPEC := CODI.FULL_VIEW( TYPE_SPEC );
@@ -1408,17 +1456,26 @@ put_line( "; CODE_VC_NAME " & NODE_NAME'IMAGE( VC_NAME.TY ) );
 
 
 
-			--=============--
-  procedure		CODE_GENERIC_DECL		( GENERIC_DECL :TREE )
-  is			--=============--
+			--^^^^^^^^^^^^^^^^^--
+  procedure		  CODE_GENERIC_DECL		( GENERIC_DECL :TREE )
+  is			---------------------
 
     GENERIC_ID	: TREE		:= D( AS_SOURCE_NAME, GENERIC_DECL );
+    GEN_NAME	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, GENERIC_ID ) );
     G_PARAMS	: SEQ_TYPE	:= LIST( D( SM_GENERIC_PARAM_S, GENERIC_ID ) );
     G_PARAM	: TREE;
     G_SPEC	: TREE		:= D( SM_SPEC, GENERIC_ID);
 
   begin
-
+	-- Garde d'inclusion (piege n 97) : toute unite incluse via
+		-- "if ~ definite X" doit definir X en tete de son FINC --
+		-- convention deja suivie par CODE_PACKAGE_DECL. Sans elle,
+		-- le FINC du modele est re-inclus a chaque with (et meme
+		-- DEUX fois dans la meme unite : CODE_WITH_CONTEXT puis
+		-- CODE_TRANS_WITH_INCLUDES). NB : "=" fasmg est une
+		-- affectation redefinissable -- inoffensive par construction
+		-- meme en cas de double emission.
+    PUT_LINE( GEN_NAME & " = '" & GEN_NAME & "'" );
 				------------------------
 				TRAITE_FORMAL_PARAMETERS:
     while	 not IS_EMPTY( G_PARAMS )  loop

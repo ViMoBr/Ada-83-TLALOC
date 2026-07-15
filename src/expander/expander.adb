@@ -98,6 +98,7 @@ is
     procedure DEC_LEVEL;
 
     function  TYPE_SIZE		( TYPE_SPEC :TREE )			return NATURAL;
+    function  TYPE_INFO_STR		( TYPE_SPEC :TREE )			return STRING;
     function  FULL_VIEW		( T : TREE )			return TREE;
     function  CODE_DATA_TYPE_OF	( EXP_OR_TYPE_SPEC :TREE )		return CHARACTER;
 
@@ -117,6 +118,7 @@ is
     function  IMAGE			( I : NATURAL )			return STRING;
 
     procedure REGIONS_PATH		( ID : TREE; WITH_DOT :BOOLEAN := TRUE );
+
     function  LETTERED_SUBNAME	( SUB_NAME : STRING )		return STRING;
 
     function  LAST_OF_SELECTED	( NAME_ID :TREE )			return TREE;
@@ -195,6 +197,8 @@ is
   package			REPRESENTED_ITEMS
 			-----------------
   is
+
+    function  REP_RECORD_USED_BITS		( TYPE_SPEC :TREE )		return INTEGER;
 
     function  REPRESENTED_RECORD_SIZE_BITS	( TYPE_SPEC :TREE )		return INTEGER;
     function  HAS_RECORD_REP			( TYPE_SPEC :TREE )		return BOOLEAN;
@@ -330,7 +334,7 @@ is
 
   private
 
-    procedure CODE_WITH_CONTEXT	( CONTEXT_ELEM_S  :TREE );
+    procedure CODE_WITH_CONTEXT	( CONTEXT_ELEM_S  :TREE; EMIT_INCLUDES :BOOLEAN := TRUE );
     procedure CODE_SUBPROGRAM_BODY	( SUBPROGRAM_BODY :TREE );
     procedure CODE_PACKAGE_BODY	( PACKAGE_BODY :TREE );
     procedure CODE_SUBUNIT_BODY	( SUBUNIT_BODY :TREE );

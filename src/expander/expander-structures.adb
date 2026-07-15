@@ -27,7 +27,8 @@ is
     CODI.ENCLOSING_BODY := TREE_VOID;
     THE_COMPILATION_UNIT := COMPILATION_UNIT;
 
-    CODE_WITH_CONTEXT( D( AS_CONTEXT_ELEM_S, COMPILATION_UNIT ) );
+    CODE_WITH_CONTEXT( D( AS_CONTEXT_ELEM_S, COMPILATION_UNIT ),
+			EMIT_INCLUDES => UNIT_ALL_DECL.TY /= DN_SUBUNIT );
     if  UNIT_ALL_DECL.TY /= DN_SUBUNIT  then
       CODE_TRANS_WITH_INCLUDES( COMPILATION_UNIT );
     end if;
@@ -65,22 +66,23 @@ is
 
 
 			-----------------
-  procedure		CODE_WITH_CONTEXT		( CONTEXT_ELEM_S :TREE )
+  procedure		CODE_WITH_CONTEXT		( CONTEXT_ELEM_S :TREE; EMIT_INCLUDES :BOOLEAN := TRUE )
   is			-----------------
 
     CONTEXT_ELEM_SEQ	: SEQ_TYPE	:= LIST( CONTEXT_ELEM_S );
     CONTEXT_ELEM		: TREE;
-		-----------------
-    procedure	INSERT_WITHED_PKG	( DEFN :TREE )
+		------------------
+    procedure	INSERT_WITHED_UNIT	( DEFN :TREE )
     is
     begin
-      PUT_LINE( "if ~ definite " & PRINT_NAME( D( LX_SYMREP, DEFN ) ) );
-      PUT_LINE( "include '" & PRINT_NAME( D( LX_SYMREP, DEFN ) ) & ".FINC'" );
-      PUT_LINE( "end if" );
+      if  EMIT_INCLUDES  then
+        PUT_LINE( "if ~ definite " & PRINT_NAME( D( LX_SYMREP, DEFN ) ) );
+        PUT_LINE( "include '" & PRINT_NAME( D( LX_SYMREP, DEFN ) ) & ".FINC'" );
+        PUT_LINE( "end if" );
+      end if;
 
-      DB( CD_COMPILED, DEFN, TRUE );
-    end	INSERT_WITHED_PKG;
-	-----------------
+    end	INSERT_WITHED_UNIT;
+	------------------
   begin
 
     while  not IS_EMPTY( CONTEXT_ELEM_SEQ )  loop
@@ -98,16 +100,16 @@ is
 	  declare
 	    DEFN	: TREE	:= D( SM_DEFN, NAME );
 	  begin
-	    if  DEFN.TY = DN_PACKAGE_ID
-	    then  INSERT_WITHED_PKG( DEFN );
+	    if  DEFN.TY = DN_PACKAGE_ID  then
+	      INSERT_WITHED_UNIT( DEFN );
+	      DB( CD_COMPILED, DEFN, TRUE );
 
-	    elsif  DEFN.TY = DN_GENERIC_ID
-	    then
-	      PUT_LINE( "if ~ definite " & PRINT_NAME( D( LX_SYMREP, DEFN ) ) );
-	      PUT_LINE( "include '" & PRINT_NAME( D( LX_SYMREP, DEFN ) ) & ".FINC'" );
-	      PUT_LINE( "end if" );
+	    elsif  DEFN.TY = DN_GENERIC_ID  then
+	      INSERT_WITHED_UNIT( DEFN );
 
-	    elsif  DEFN.TY = DN_PROCEDURE_ID  then
+	    elsif  DEFN.TY = DN_PROCEDURE_ID  or  DEFN.TY = DN_FUNCTION_ID  then
+	      INSERT_WITHED_UNIT( DEFN );
+
 	      if  not DB( CD_COMPILED, DEFN )  then
 	        DI( CD_LEVEL,      DEFN,  1 );
 	        DI( CD_PARAM_SIZE, DEFN,  0 );
@@ -157,7 +159,8 @@ is
         DEFN		: TREE	:= D( AS_SOURCE_NAME, D( AS_ALL_DECL, TW_UNIT ) );
         UNIT_NAME	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, DEFN ) );
       begin
-        if  ( DEFN.TY = DN_PACKAGE_ID  or  DEFN.TY = DN_GENERIC_ID )
+        if  ( DEFN.TY = DN_PACKAGE_ID  or  DEFN.TY = DN_GENERIC_ID
+	or  DEFN.TY = DN_PROCEDURE_ID  or  DEFN.TY = DN_FUNCTION_ID)
 	  and then  UNIT_NAME /= "_STANDRD"  and then  UNIT_NAME /= "STANDARD"
 	  and then  UNIT_NAME /= OWN_NAME
 	  and then  TW_UNIT /= OWN_SPEC
@@ -343,6 +346,10 @@ is
       end;
 
     else
+      if  ENCLOSING_BODY = TREE_VOID  then								-- unite de bibliotheque : garde n 97
+        PUT_LINE( SUB_NAME & " = '" & SUB_NAME & "'" );
+      end if;
+
       PUT( "PRO" & tab & SUB_NAME & '_' & LABEL_STR( LBL ) );
       if  CODI.DEBUG  then PUT( tab50 & ";---------- PRO " & SUB_NAME ); end if;
       NEW_LINE;

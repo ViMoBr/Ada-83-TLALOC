@@ -201,6 +201,11 @@ is
     end if;
 
     REP := D( SM_COMP_REP, COMP_ID );
+
+    if  REP = TREE_VOID  or else  REP = TREE_NIL  or else  REP.TY /= DN_COMP_REP  then
+      REP := FIND_COMP_REP_ELEM_FROM_COMPONENT( COMP_ID );	-- copie derivee : via la clause partagee
+    end if;
+
     GET_COMP_REP_ELEM( REP, DUMMY_ID, BYTE_OFFSET, FIRST_BIT, LAST_BIT, WIDTH );
 
   end	GET_COMPONENT_REP;
@@ -392,7 +397,6 @@ is
       BYTE_OFFSET		: NATURAL;
       FIRST_BIT, LAST_BIT	: NATURAL;
       WIDTH		: NATURAL;
-      MASK		: NATURAL;
 
     begin
       REP_ELEM := FIND_COMP_REP_ELEM( COMP_ID );
@@ -418,8 +422,6 @@ is
         PUT_LINE( "; CODE_REPRESENTED_RECORD_AGGREGATE : largeur non geree " & INTEGER'IMAGE( WIDTH ) );
         raise  PROGRAM_ERROR;
       end if;
-
-      MASK := 2 ** WIDTH - 1;
 
       if  CODI.DEBUG  then
         PUT_LINE( tab50 & "; pack " & PRINT_NAME( D( LX_SYMREP, COMP_ID ) )
@@ -620,10 +622,10 @@ is
     DEFN			: TREE;
 
   begin
-    if  OWNER = TREE_VOID  then  return  TREE_VOID;  end if;
+    if  OWNER = TREE_VOID  then return  TREE_VOID;  end if;
 
-    if  OWNER.TY = DN_TYPE_ID  then
-      TYPE_SPEC := D( SM_TYPE_SPEC, OWNER );
+    if  OWNER.TY = DN_TYPE_ID  or else  OWNER.TY = DN_PRIVATE_TYPE_ID  or else  OWNER.TY = DN_L_PRIVATE_TYPE_ID  then
+      TYPE_SPEC := CODI.FULL_VIEW( D( SM_TYPE_SPEC, OWNER ) );
     else
       return  TREE_VOID;
     end if;
@@ -636,10 +638,15 @@ is
     while  not IS_EMPTY( REP_S )  loop
       POP( REP_S, REP_ELEM );
 
-      if  REP_ELEM.TY = DN_COMP_REP  then
-        DEFN := D( SM_DEFN, D( AS_NAME, REP_ELEM ) );
-        if  DEFN = COMP_ID  then  return  REP_ELEM;  end if;
-      end if;
+      DEFN := D( SM_DEFN, D( AS_NAME, REP_ELEM ) );
+      if  DEFN = COMP_ID  or else  PRINT_NAME( D( LX_SYMREP, DEFN ) ) = PRINT_NAME( D( LX_SYMREP, COMP_ID ) )	 then	-- n 95b : composant COPIE par derivation (new TREE) -- la clause
+        return  REP_ELEM;										-- designe les composants du PARENT.
+      end if;											-- Noms uniques dans un record : sur.
+
+--      if  REP_ELEM.TY = DN_COMP_REP  then
+--        DEFN := D( SM_DEFN, D( AS_NAME, REP_ELEM ) );
+--        if  DEFN = COMP_ID  then  return  REP_ELEM;  end if;
+--      end if;
     end loop;
 
     return  TREE_VOID;
@@ -719,8 +726,10 @@ is
 
     OWNER := D( XD_REGION, COMP_ID );
 
-    if  OWNER /= TREE_VOID  and then  OWNER /= TREE_NIL  and then  OWNER.TY = DN_TYPE_ID  then
-      TYPE_SPEC := D( SM_TYPE_SPEC, OWNER );
+    if  OWNER /= TREE_VOID  and then  OWNER /= TREE_NIL  and then
+	(OWNER.TY = DN_TYPE_ID   or else  OWNER.TY = DN_PRIVATE_TYPE_ID  or else  OWNER.TY = DN_L_PRIVATE_TYPE_ID)
+    then
+      TYPE_SPEC := CODI.FULL_VIEW( D( SM_TYPE_SPEC, OWNER ) );
     else
       PUT_LINE( "; CODE_STORE_REP_COMPONENT : region du composant non DN_TYPE_ID "
         & PRINT_NAME( D( LX_SYMREP, COMP_ID ) ) );

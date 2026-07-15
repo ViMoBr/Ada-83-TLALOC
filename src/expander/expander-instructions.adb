@@ -673,9 +673,14 @@ separate ( EXPANDER )
 	      LOAD_MEM( DEFN );
 	    else
 	      if  D( SM_OBJ_TYPE, DEFN ).TY in CLASS_SCALAR  then
-	        PUT_LINE( tab & "LVA" & ' ' & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' & tab & DEFN_STR & "_disp" );
+	        PUT( tab & "LVA" & ' ' & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' & tab );
+	        REGIONS_PATH( DEFN );
+	        PUT_LINE( DEFN_STR & "_disp" );
+
 	      else
-	        PUT_LINE( tab & "LVA" & ' ' & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' & tab & DEFN_STR & "_disp" );
+	        PUT( tab & "LVA" & ' ' & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' & tab );
+	        REGIONS_PATH( DEFN );
+ 	        PUT_LINE(  DEFN_STR & "_disp" );
 	      end if;
 	    end if;
 
@@ -903,21 +908,29 @@ separate ( EXPANDER )
         declare
           EXPR_TYPE		: TREE		:= D ( SM_EXP_TYPE, EXP );
 	FULL_TYPE		: TREE		:= CODI.FULL_VIEW( EXPR_TYPE );
+	RETURN_SUBTYPE	: TREE	:= D( SM_TYPE_SPEC,
+					D( SM_DEFN, D( AS_NAME, D( AS_HEADER, CODI.ENCLOSING_BODY ) ) ) );
         begin
-
 	if  CODI.DEBUG  then
 	  PUT_LINE( "; CODE_RETURN : EXPR TYPE = " & NODE_NAME'IMAGE( EXPR_TYPE.TY )
 		& "  VUE COMPLETE = " & NODE_NAME'IMAGE( FULL_TYPE.TY ));
 	end if;
 
+	if  FULL_TYPE.TY = DN_UNIVERSAL_INTEGER  or  FULL_TYPE.TY = DN_UNIVERSAL_REAL  then
+	  FULL_TYPE := CODI.FULL_VIEW( RETURN_SUBTYPE );							-- LRM 83 : conversion implicite
+	end if;
+
 	if  FULL_TYPE.TY in CLASS_SCALAR  or else  FULL_TYPE.TY = DN_ACCESS  then
 	  EXPRESSIONS.CODE_EXP( EXP );
 	  if  FULL_TYPE.TY /= DN_ACCESS  then								-- E-D3 : gamme du SOUS-TYPE DE RETOUR --
-	    EXPRESSIONS.CODE_RANGE_CHECK(								-- l'expression porte le type de BASE
-	      D( SM_TYPE_SPEC, D( SM_DEFN, D( AS_NAME,							-- (dump CHK_DUMP0), le sous-type vit dans
-	        D( AS_HEADER, CODI.ENCLOSING_BODY ) ) ) ) );						-- le FUNCTION_SPEC (dump REPORT).
+	    EXPRESSIONS.CODE_RANGE_CHECK( RETURN_SUBTYPE );
 	  end if;
-	  PUT_LINE( tab & "S" & CODI.EXP_TYPE_CHAR( EXP ) & ' ' & INTEGER'IMAGE( CODI.CUR_LEVEL ) & ',' & tab & "-result__ofs" );
+
+	  PUT_LINE( tab & "S" & CODI.OPER_SIZ_CHAR( FULL_TYPE ) & ' ' & INTEGER'IMAGE( CODI.CUR_LEVEL )
+			& ',' & tab & "-result__ofs" );
+
+--	  PUT_LINE( tab & "S" & CODI.EXP_TYPE_CHAR( EXP ) & ' ' & INTEGER'IMAGE( CODI.CUR_LEVEL )
+--			& ',' & tab & "-result__ofs" );
 
 	elsif  FULL_TYPE.TY = DN_ARRAY  or  FULL_TYPE.TY = DN_CONSTRAINED_ARRAY
 	or     EXP.TY = DN_STRING_LITERAL								-- return "..." : SM_EXP_TYPE est DN_VOID
@@ -990,14 +1003,12 @@ separate ( EXPANDER )
 				-- Copier les donnees dans le doublet alloue par l appelant (adresse dans result__ofs)
 	  declare
 	    TYPE_SPEC	: TREE	:= FULL_TYPE;
-	  begin
---	    while  TYPE_SPEC.TY = DN_L_PRIVATE  or  TYPE_SPEC.TY = DN_PRIVATE  loop
---	      TYPE_SPEC := D( SM_TYPE_SPEC, TYPE_SPEC );
---	    end loop;
 
+	  begin
 	    if  TYPE_SPEC.TY = DN_CONSTRAINED_RECORD  then						-- pilier 3.7 : vue contrainte -> base
 	      TYPE_SPEC := D( SM_BASE_TYPE, TYPE_SPEC );						-- (symbole .size de la vue anonyme inexistant)
 	    end if;
+
 	    declare
 	      TYPE_NAME	: TREE		:= D( XD_SOURCE_NAME, TYPE_SPEC );
 	      TN_STR	: constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
@@ -1686,8 +1697,9 @@ separate ( EXPANDER )
 	  begin
 	    if  NAME_TYPE.TY in CLASS_SCALAR  then
 	      EXPRESSIONS.CODE_EXP( SRC_EXP );
-	      PUT_LINE( tab & "SI" & CODI.OPER_SIZ_CHAR( NAME_TYPE ) & tab & IMAGE( DEFN_LVL ) & ", "
-			& DEFN_STR & "_disp, 0" );
+	      PUT( tab & "SI" & CODI.OPER_SIZ_CHAR( NAME_TYPE ) & tab & IMAGE( DEFN_LVL ) & ", " & tab );
+	      REGIONS_PATH( DEFN );
+	      PUT_LINE( DEFN_STR & "_disp, 0" );
 	      return;
 	    end if;
 	  end	MANAGE_RENAMES;
