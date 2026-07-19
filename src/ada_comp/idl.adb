@@ -310,7 +310,7 @@ is					---
       end	if;
       APOS := APOS + 1;										--| MONTER AU CHAMP	SUIVANT
     end loop;
-    PUT_LINE( "!! PROCEDURE D : PAS D ATTRIBUT " & ATTR_IMAGE( AN ) &	" DANS " & NODE_REP( T ) );			--| L'ATTRIBUT N'A PAS ETE TROUVE POUR LE NOEUD
+    PUT_LINE( "; !! PROCEDURE D : PAS D ATTRIBUT " & ATTR_IMAGE( AN ) & " DANS " & NODE_REP( T ) );			--| L'ATTRIBUT N'A PAS ETE TROUVE POUR LE NOEUD
     raise	PROGRAM_ERROR;										--| ERREUR
   end	D;
 	---
@@ -328,8 +328,9 @@ is					---
       end	if;
       APOS := APOS + 1;										--| MONTER AU CHAMP	SUIVANT
     end loop;
-    PUT_LINE( "!! FUNCTION D : PAS D ATTRIBUT " &	ATTR_IMAGE( AN ) & " DANS " &	NODE_REP(	T ) );			--| L'ATTRIBUT N'A PAS ETE TROUVE POUR LE NOEUD
+    PUT_LINE( "; !! FUNCTION D : PAS D ATTRIBUT " & ATTR_IMAGE( AN ) & " DANS " & NODE_REP( T ) );			--| L'ATTRIBUT N'A PAS ETE TROUVE POUR LE NOEUD
     raise	PROGRAM_ERROR;										--| ERREUR
+
   end	 D;
 	---
 
@@ -354,7 +355,7 @@ is					---
     if A = TREE_TRUE then return TRUE;
     elsif	A = TREE_FALSE then	return FALSE;
     else
-      PUT_LINE( "!! L ATTRIBUT " & ATTR_IMAGE( AN	) & " DU NOEUD " & NODE_REP( T ) & " N EST PAS UN BOOLEEN");
+      PUT_LINE( "; !! L ATTRIBUT " & ATTR_IMAGE( AN ) & " DU NOEUD " & NODE_REP( T ) & " N EST PAS UN BOOLEEN");
       raise PROGRAM_ERROR;
     end if;
   end	DB;

@@ -798,20 +798,20 @@ is					--------
     D( DA.LX_SRCPOS, NODE, LX_SRCPOS );
          return NODE;
   end	MAKE_NULL_COMP_DECL;
-   
-  function	MAKE_LENGTH_ENUM_REP
-		    ( AS_NAME :TREE := TREE_VOID;
-		    AS_EXP :TREE := TREE_VOID;
-		    LX_SRCPOS :TREE := TREE_VOID )
-		    return TREE is
-         NODE :TREE := MAKE( DN_LENGTH_ENUM_REP );
+
+		--------------------
+  function	MAKE_LENGTH_ENUM_REP	( AS_NAME, AS_EXP, LX_SRCPOS :TREE := TREE_VOID )	return TREE
+  is		--------------------
+    NODE	:TREE	:= MAKE( DN_LENGTH_ENUM_REP );
   begin
     D( DA.AS_NAME, NODE, AS_NAME );
     D( DA.AS_EXP, NODE, AS_EXP );
     D( DA.LX_SRCPOS, NODE, LX_SRCPOS );
          return NODE;
+
   end	MAKE_LENGTH_ENUM_REP;
-   
+	--------------------
+
   function	MAKE_ADDRESS
 		    ( AS_NAME :TREE := TREE_VOID;
 		    AS_EXP :TREE := TREE_VOID;

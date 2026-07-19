@@ -19,7 +19,8 @@ is
 			-----
   is
 
-    DEBUG				: BOOLEAN	:= TRUE;
+    DEBUG				: BOOLEAN		:= TRUE;
+    GENERATE_BINARY_MAP		: BOOLEAN		:= FALSE;
 
     tab				: CHARACTER	renames ASCII.HT;
 
@@ -89,6 +90,9 @@ is
 
     function  OPER_SIZ_CHAR		( DEFN :TREE )			return CHARACTER;
     function  EXP_TYPE_CHAR		( EXP :TREE )			return CHARACTER;
+    function  IS_UNSIGNED_TYPE	( DEFN :TREE )			return BOOLEAN;			--| borne basse statique du type de BASE >= 0
+    function  OPER_LOAD_STR		( DEFN :TREE )			return STRING;			--| "Lb".."Lq" ou "ULb".."ULd" selon le signe
+    function  OPER_LOADI_STR		( DEFN :TREE )			return STRING;			--| "LIb".."LIq" ou "ULIb".."ULId" idem
 
     function  NEW_LABEL						return LABEL_TYPE;
     function  NEW_LABEL						return STRING;

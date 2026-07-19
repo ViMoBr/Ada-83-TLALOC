@@ -470,10 +470,10 @@ VAR	LMT_IL18_disp, b			; limite boucle LOOP__2
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lw	, STANDARD.IDL.IDL_TBL._NODE_SPECIF.NS_SIZE
+	ULb	, STANDARD.IDL.IDL_TBL._NODE_SPECIF.NS_SIZE
 	Sb  1,	LMT_IL18_disp
-	Lb  1,	IL18_disp				; test null range LOOP__2
-	Lb  1,	LMT_IL18_disp
+	ULb  1,	IL18_disp				; test null range LOOP__2
+	ULb  1,	LMT_IL18_disp
 	CGT
 	BT	L17
 LOOP__2:					; corps boucle LOOP__2
@@ -490,13 +490,13 @@ VAR	ANON_99_20__dat, STANDARD.IDL._TREE.size
 	LVA 1, ANON_99_20_disp
 					; doublet resultat record anonyme
 	La  1,	-NODE_ofs
-	Lb  1,	IL18_disp
+	ULb  1,	IL18_disp
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.FST
+	ULb	0, STANDARD.IDL._ATTR_NBR.FST
 	CLT
 	BT	STANDARD.ce_raise_
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.LST
+	ULb	0, STANDARD.IDL._ATTR_NBR.LST
 	CGT
 	BT	STANDARD.ce_raise_
 	CALL	STANDARD.IDL.IDL_MAN. ,DABS_L38
@@ -526,24 +526,24 @@ VAR	ANON_99_20__dat, STANDARD.IDL._TREE.size
 	BF	L20
 	LVA 1,	ATTRIBUTE_disp
 	La  1,	-NODE_ofs
-	Lb  1,	IL18_disp
+	ULb  1,	IL18_disp
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.FST
+	ULb	0, STANDARD.IDL._ATTR_NBR.FST
 	CLT
 	BT	STANDARD.ce_raise_
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.LST
+	ULb	0, STANDARD.IDL._ATTR_NBR.LST
 	CGT
 	BT	STANDARD.ce_raise_
 	CALL	STANDARD.IDL.IDL_MAN. ,DABS_L37
 	BRA	L19
 L20:
 L19:					; post if
-	Lb  1,	IL18_disp				; test de sortie LOOP__2
-	Lb  1,	LMT_IL18_disp
+	ULb  1,	IL18_disp				; test de sortie LOOP__2
+	ULb  1,	LMT_IL18_disp
 	CEQ
 	BT	L17
-	Lb  1,	IL18_disp				; mise a jour compteur LOOP__2
+	ULb  1,	IL18_disp				; mise a jour compteur LOOP__2
 	INC
 	Sb  1,	IL18_disp
 	BRA	LOOP__2				; iteration suivante LOOP__2
@@ -642,10 +642,10 @@ VAR	LMT_IL25_disp, b			; limite boucle LOOP__3
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lw	, STANDARD.IDL.IDL_TBL._NODE_SPECIF.NS_SIZE
+	ULb	, STANDARD.IDL.IDL_TBL._NODE_SPECIF.NS_SIZE
 	Sb  1,	LMT_IL25_disp
-	Lb  1,	IL25_disp				; test null range LOOP__3
-	Lb  1,	LMT_IL25_disp
+	ULb  1,	IL25_disp				; test null range LOOP__3
+	ULb  1,	LMT_IL25_disp
 	CGT
 	BT	L24
 LOOP__3:					; corps boucle LOOP__3
@@ -662,13 +662,13 @@ VAR	ANON_128_20__dat, STANDARD.IDL._TREE.size
 	LVA 1, ANON_128_20_disp
 					; doublet resultat record anonyme
 	La  1,	-NODE_ofs
-	Lb  1,	IL25_disp
+	ULb  1,	IL25_disp
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.FST
+	ULb	0, STANDARD.IDL._ATTR_NBR.FST
 	CLT
 	BT	STANDARD.ce_raise_
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.LST
+	ULb	0, STANDARD.IDL._ATTR_NBR.LST
 	CGT
 	BT	STANDARD.ce_raise_
 	CALL	STANDARD.IDL.IDL_MAN. ,DABS_L38
@@ -727,24 +727,24 @@ L29:
 L28:					; post if
 	LVA 1,	ATTRIBUTE_disp
 	La  1,	-NODE_ofs
-	Lb  1,	IL25_disp
+	ULb  1,	IL25_disp
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.FST
+	ULb	0, STANDARD.IDL._ATTR_NBR.FST
 	CLT
 	BT	STANDARD.ce_raise_
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.LST
+	ULb	0, STANDARD.IDL._ATTR_NBR.LST
 	CGT
 	BT	STANDARD.ce_raise_
 	CALL	STANDARD.IDL.IDL_MAN. ,DABS_L37
 	BRA	L26
 L27:
 L26:					; post if
-	Lb  1,	IL25_disp				; test de sortie LOOP__3
-	Lb  1,	LMT_IL25_disp
+	ULb  1,	IL25_disp				; test de sortie LOOP__3
+	ULb  1,	LMT_IL25_disp
 	CEQ
 	BT	L24
-	Lb  1,	IL25_disp				; mise a jour compteur LOOP__3
+	ULb  1,	IL25_disp				; mise a jour compteur LOOP__3
 	INC
 	Sb  1,	IL25_disp
 	BRA	LOOP__3				; iteration suivante LOOP__3
@@ -1803,7 +1803,10 @@ end namespace
 	LI	24
 	LI	8
 	UBFX
-	CALL	STANDARD. ,INTEGER_IMAGE_L11
+	La 0, STANDARD.DIANA_NODE_ATTR_CLASS_NAMES._NODE_NAME.use__info
+	LI	16
+	ADD
+	CALL	STANDARD. ,ENUM_IMAGE_L31
 	DUP
 	La  ,  0
 	Sa  1, ANON_299_73_L111_D_data

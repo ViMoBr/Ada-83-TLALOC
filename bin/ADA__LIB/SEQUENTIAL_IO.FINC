@@ -1,30 +1,23 @@
 if ~ definite TEXT_IO
 include 'TEXT_IO.FINC'
-display 'including withed unit TEXT_IO.FINC', 10
 end if
 if ~ definite SYSTEM
 include 'SYSTEM.FINC'
-display 'including withed unit SYSTEM.FINC', 10
 end if
 if ~ definite MACHINE_CODE
 include 'MACHINE_CODE.FINC'
-display 'including withed unit MACHINE_CODE.FINC', 10
 end if
 if ~ definite IO_EXCEPTIONS
 include 'IO_EXCEPTIONS.FINC'
-display 'including trans withed unit IO_EXCEPTIONS.FINC', 10
 end if
 if ~ definite TEXT_IO
 include 'TEXT_IO.FINC'
-display 'including trans withed unit TEXT_IO.FINC', 10
 end if
 if ~ definite SYSTEM
 include 'SYSTEM.FINC'
-display 'including trans withed unit SYSTEM.FINC', 10
 end if
 if ~ definite MACHINE_CODE
 include 'MACHINE_CODE.FINC'
-display 'including trans withed unit MACHINE_CODE.FINC', 10
 end if
 SEQUENTIAL_IO = 'SEQUENTIAL_IO'
 namespace SEQUENTIAL_IO
@@ -112,19 +105,17 @@ VAR SIZ, d
 	Sa	0, use__info
 USEINFO 0, ID, 	La 0, STANDARD._INTEGER.use__info
 USEINFO 0, NAME, 	La 0, STANDARD.SEQUENTIAL_IO._FILE_NAME_BUFFER.use__info
-; SCASB : cis pt HI
 USEINFO 0, NAME_LEN, 	La 0, STANDARD._POSITIVE.use__info
 USEINFO 0, IS_OPENED, 	La 0, STANDARD._BOOLEAN.use__info
 USEINFO 0, MODE, 	La 0, STANDARD.SEQUENTIAL_IO._FILE_MODE.use__info
 USEINFO 0, AT_END_OF_FILE, 	La 0, STANDARD._BOOLEAN.use__info
 virtual at 0				; calcul des offsets statiques
-STATOFS ID, 4
-; SCASB : cis pt HI
-STATOFS NAME, 256
-STATOFS NAME_LEN, 4
-STATOFS IS_OPENED, 1
-STATOFS MODE, 1
-STATOFS AT_END_OF_FILE, 1
+STATOFS ID, 4, 4
+STATOFS NAME, 256, 8
+STATOFS NAME_LEN, 4, 4
+STATOFS IS_OPENED, 1, 1
+STATOFS MODE, 1, 1
+STATOFS AT_END_OF_FILE, 1, 1
 size = $
 end virtual
 	LI	 size*8
@@ -169,6 +160,16 @@ endPRO					;---------- end PRO CREATE_SYSTEM_CALL
 end if
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
+					; debut if
+	La 1, -FILE_ofs
+	LIb	, 0, STANDARD.SEQUENTIAL_IO._FILE_TYPE.IS_OPENED
+	BF	L7
+	LCA	STANDARD.IO_EXCEPTIONS.STATUS_ERROR__exc.data_ptr
+	Sa	0, STANDARD.EXCEPTIONS_CURRENT_disp
+	BRA	STANDARD.exc_raise_
+	BRA	L6
+L7:
+L6:					; post if
 	LI	0					; lieu resultat sur pile
 	La  1,	-GFP_ofs				; propagation GFP generique
 	La  1,	-NAME_ofs
@@ -179,7 +180,7 @@ begin:					;---------- BDY INSTRUCTIONS
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	CGE
-	BF	L7
+	BF	L9
 	La 1, -FILE_ofs
 	LIVA 	, 0, STANDARD.SEQUENTIAL_IO._FILE_TYPE.ID
 	Ld 1,	ERR_OR_ID_disp
@@ -229,9 +230,9 @@ begin:					;---------- BDY INSTRUCTIONS
 	LIVA 	, 0, STANDARD.SEQUENTIAL_IO._FILE_TYPE.AT_END_OF_FILE
 	LI	0
 	Sb
-	BRA	L6
-L7:
-L6:					; post if
+	BRA	L8
+L9:
+L8:					; post if
 ret_lbl:
 	UNLINK 1
 	RTD	prm_siz
@@ -252,8 +253,8 @@ ELB 1					;    BODY ELAB
 VAR ERR_OR_ID_disp, d			; variable entiere
 
 
-if defined OPEN_SYSTEM_CALL_L8_
-PRO	OPEN_SYSTEM_CALL_L8			;---------- PRO OPEN_SYSTEM_CALL
+if defined OPEN_SYSTEM_CALL_L10_
+PRO	OPEN_SYSTEM_CALL_L10			;---------- PRO OPEN_SYSTEM_CALL
 PRMS					;    debut parametrage
 	PRM NAME_ofs				; in
 	PRM GFP_ofs
@@ -273,17 +274,27 @@ endPRO					;---------- end PRO OPEN_SYSTEM_CALL
 end if
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
+					; debut if
+	La 1, -FILE_ofs
+	LIb	, 0, STANDARD.SEQUENTIAL_IO._FILE_TYPE.IS_OPENED
+	BF	L16
+	LCA	STANDARD.IO_EXCEPTIONS.STATUS_ERROR__exc.data_ptr
+	Sa	0, STANDARD.EXCEPTIONS_CURRENT_disp
+	BRA	STANDARD.exc_raise_
+	BRA	L15
+L16:
+L15:					; post if
 	LI	0					; lieu resultat sur pile
 	La  1,	-GFP_ofs				; propagation GFP generique
 	La  1,	-NAME_ofs
-	CALL	STANDARD.SEQUENTIAL_IO.OPEN_L2. ,OPEN_SYSTEM_CALL_L8
+	CALL	STANDARD.SEQUENTIAL_IO.OPEN_L2. ,OPEN_SYSTEM_CALL_L10
 	Sd  1,	ERR_OR_ID_disp
 					; debut if
 	Ld 1,	ERR_OR_ID_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	CGE
-	BF	L14
+	BF	L18
 	La 1, -FILE_ofs
 	LIVA 	, 0, STANDARD.SEQUENTIAL_IO._FILE_TYPE.ID
 	Ld 1,	ERR_OR_ID_disp
@@ -333,9 +344,12 @@ begin:					;---------- BDY INSTRUCTIONS
 	LIVA 	, 0, STANDARD.SEQUENTIAL_IO._FILE_TYPE.AT_END_OF_FILE
 	LI	0
 	Sb
-	BRA	L13
-L14:
-L13:					; post if
+	BRA	L17
+L18:
+	LCA	STANDARD.IO_EXCEPTIONS.NAME_ERROR__exc.data_ptr
+	Sa	0, STANDARD.EXCEPTIONS_CURRENT_disp
+	BRA	STANDARD.exc_raise_
+L17:					; post if
 ret_lbl:
 	UNLINK 1
 	RTD	prm_siz
@@ -353,8 +367,8 @@ ELB 1					;    BODY ELAB
 VAR ERR_CODE_disp, d			; variable entiere
 
 
-if defined CLOSE_SYSTEM_CALL_L15_
-PRO	CLOSE_SYSTEM_CALL_L15			;---------- PRO CLOSE_SYSTEM_CALL
+if defined CLOSE_SYSTEM_CALL_L19_
+PRO	CLOSE_SYSTEM_CALL_L19			;---------- PRO CLOSE_SYSTEM_CALL
 PRMS					;    debut parametrage
 	PRM FILE_ID_ofs				; in
 	PRM GFP_ofs
@@ -378,7 +392,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	La  1,	-GFP_ofs				; propagation GFP generique
 	La 1, -FILE_ofs
 	LId	, 0, STANDARD.SEQUENTIAL_IO._FILE_TYPE.ID
-	CALL	STANDARD.SEQUENTIAL_IO.CLOSE_L3. ,CLOSE_SYSTEM_CALL_L15
+	CALL	STANDARD.SEQUENTIAL_IO.CLOSE_L3. ,CLOSE_SYSTEM_CALL_L19
 	Sd  1,	ERR_CODE_disp
 	La 1, -FILE_ofs
 	LIVA 	, 0, STANDARD.SEQUENTIAL_IO._FILE_TYPE.ID
@@ -407,8 +421,8 @@ ELB 1					;    BODY ELAB
 VAR ERR_CODE_disp, d			; variable entiere
 
 
-if defined DELETE_SYSTEM_CALL_L20_
-PRO	DELETE_SYSTEM_CALL_L20			;---------- PRO DELETE_SYSTEM_CALL
+if defined DELETE_SYSTEM_CALL_L24_
+PRO	DELETE_SYSTEM_CALL_L24			;---------- PRO DELETE_SYSTEM_CALL
 PRMS					;    debut parametrage
 	PRM NAME_ofs				; in
 	PRM GFP_ofs
@@ -432,16 +446,16 @@ begin:					;---------- BDY INSTRUCTIONS
 	La  1,	-GFP_ofs				; propagation GFP generique
 	La 1, -FILE_ofs
 	LIVA 	, 0, STANDARD.SEQUENTIAL_IO._FILE_TYPE.NAME
-namespace ANON_126_37			; ensemble doublet @data/@info pour slice anonyme source
-VAR ANON_126_37_disp, q
-VAR ANON_126_37__u, q
+namespace ANON_131_37			; ensemble doublet @data/@info pour slice anonyme source
+VAR ANON_131_37_disp, q
+VAR ANON_131_37__u, q
 VAR SIZ, d
 VAR COMP_SIZ, d
 VAR _FST_1, d
 VAR _LST_1, d
-	Sa	1, ANON_126_37_disp
+	Sa	1, ANON_131_37_disp
 	LVA	1, SIZ
-	Sa	1, ANON_126_37__u
+	Sa	1, ANON_131_37__u
 	LI	8
 	Sd	1, COMP_SIZ
 ; CODE_NUMERIC_LITERAL DN_INTEGER
@@ -458,9 +472,9 @@ VAR _LST_1, d
 	LI	8
 	MUL
 	Sd	1, SIZ
-	LVA	1, ANON_126_37_disp
+	LVA	1, ANON_131_37_disp
 end namespace
-	CALL	STANDARD.SEQUENTIAL_IO.DELETE_L4. ,DELETE_SYSTEM_CALL_L20
+	CALL	STANDARD.SEQUENTIAL_IO.DELETE_L4. ,DELETE_SYSTEM_CALL_L24
 	Sd  1,	ERR_CODE_disp
 	La 1, -FILE_ofs
 	LIVA 	, 0, STANDARD.SEQUENTIAL_IO._FILE_TYPE.IS_OPENED
@@ -484,8 +498,8 @@ ELB 1					;    BODY ELAB
 VAR ERR_CODE_disp, d			; variable entiere
 
 
-if defined SEEK_SYSTEM_CALL_L25_
-PRO	SEEK_SYSTEM_CALL_L25			;---------- PRO SEEK_SYSTEM_CALL
+if defined SEEK_SYSTEM_CALL_L29_
+PRO	SEEK_SYSTEM_CALL_L29			;---------- PRO SEEK_SYSTEM_CALL
 PRMS					;    debut parametrage
 	PRM FILE_ID_ofs				; in
 	PRM GFP_ofs
@@ -511,18 +525,18 @@ begin:					;---------- BDY INSTRUCTIONS
 	LIb	, 0, STANDARD.SEQUENTIAL_IO._FILE_TYPE.IS_OPENED
 	LI	0
 	CEQ
-	BF	L31
+	BF	L35
 	LCA	STANDARD.IO_EXCEPTIONS.STATUS_ERROR__exc.data_ptr
 	Sa	0, STANDARD.EXCEPTIONS_CURRENT_disp
 	BRA	STANDARD.exc_raise_
-	BRA	L30
-L31:
-L30:					; post if
+	BRA	L34
+L35:
+L34:					; post if
 	LI	0					; lieu resultat sur pile
 	La  1,	-GFP_ofs				; propagation GFP generique
 	La 1, -FILE_ofs
 	LId	, 0, STANDARD.SEQUENTIAL_IO._FILE_TYPE.ID
-	CALL	STANDARD.SEQUENTIAL_IO.RESET_L5. ,SEEK_SYSTEM_CALL_L25
+	CALL	STANDARD.SEQUENTIAL_IO.RESET_L5. ,SEEK_SYSTEM_CALL_L29
 	Sd  1,	ERR_CODE_disp
 	La 1, -FILE_ofs
 	LIVA 	, 0, STANDARD.SEQUENTIAL_IO._FILE_TYPE.MODE
@@ -553,13 +567,13 @@ begin:					;---------- BDY INSTRUCTIONS
 	LIb	, 0, STANDARD.SEQUENTIAL_IO._FILE_TYPE.IS_OPENED
 	LI	0
 	CEQ
-	BF	L35
+	BF	L39
 	LCA	STANDARD.IO_EXCEPTIONS.STATUS_ERROR__exc.data_ptr
 	Sa	0, STANDARD.EXCEPTIONS_CURRENT_disp
 	BRA	STANDARD.exc_raise_
-	BRA	L34
-L35:
-L34:					; post if
+	BRA	L38
+L39:
+L38:					; post if
 	La  1,	-GFP_ofs				; propagation GFP generique
 	La 1, -FILE_ofs
 	LIb	, 0, STANDARD.SEQUENTIAL_IO._FILE_TYPE.MODE
@@ -587,13 +601,13 @@ begin:					;---------- BDY INSTRUCTIONS
 	LIb	, 0, STANDARD.SEQUENTIAL_IO._FILE_TYPE.IS_OPENED
 	LI	0
 	CEQ
-	BF	L39
+	BF	L43
 	LCA	STANDARD.IO_EXCEPTIONS.STATUS_ERROR__exc.data_ptr
 	Sa	0, STANDARD.EXCEPTIONS_CURRENT_disp
 	BRA	STANDARD.exc_raise_
-	BRA	L38
-L39:
-L38:					; post if
+	BRA	L42
+L43:
+L42:					; post if
 ; CODE_RETURN : EXPR TYPE = DN_ENUMERATION  VUE COMPLETE = DN_ENUMERATION
 	La 1, -FILE_ofs
 	LIb	, 0, STANDARD.SEQUENTIAL_IO._FILE_TYPE.MODE
@@ -621,26 +635,26 @@ begin:					;---------- BDY INSTRUCTIONS
 	LIb	, 0, STANDARD.SEQUENTIAL_IO._FILE_TYPE.IS_OPENED
 	LI	0
 	CEQ
-	BF	L43
+	BF	L47
 	LCA	STANDARD.IO_EXCEPTIONS.STATUS_ERROR__exc.data_ptr
 	Sa	0, STANDARD.EXCEPTIONS_CURRENT_disp
 	BRA	STANDARD.exc_raise_
-	BRA	L42
-L43:
-L42:					; post if
+	BRA	L46
+L47:
+L46:					; post if
 ; CODE_RETURN : EXPR TYPE = DN_ARRAY  VUE COMPLETE = DN_ARRAY
 	La 1, -FILE_ofs
 	LIVA 	, 0, STANDARD.SEQUENTIAL_IO._FILE_TYPE.NAME
-namespace ANON_188_12			; ensemble doublet @data/@info pour slice anonyme source
-VAR ANON_188_12_disp, q
-VAR ANON_188_12__u, q
+namespace ANON_193_12			; ensemble doublet @data/@info pour slice anonyme source
+VAR ANON_193_12_disp, q
+VAR ANON_193_12__u, q
 VAR SIZ, d
 VAR COMP_SIZ, d
 VAR _FST_1, d
 VAR _LST_1, d
-	Sa	1, ANON_188_12_disp
+	Sa	1, ANON_193_12_disp
 	LVA	1, SIZ
-	Sa	1, ANON_188_12__u
+	Sa	1, ANON_193_12__u
 	LI	8
 	Sd	1, COMP_SIZ
 ; CODE_NUMERIC_LITERAL DN_INTEGER
@@ -657,20 +671,20 @@ VAR _LST_1, d
 	LI	8
 	MUL
 	Sd	1, SIZ
-	LVA	1, ANON_188_12_disp
+	LVA	1, ANON_193_12_disp
 end namespace
-VAR	RET_INFO_L44, q
+VAR	RET_INFO_L48, q
 	DUP
 	La  ,  0
 	SIq   1, -result__ofs,  0
 	DUP
 	La  ,  8
-	Sa   1, RET_INFO_L44
+	Sa   1, RET_INFO_L48
 	DROP
 	La   1, -result__ofs
 	La  ,  8
 	LI	16
-	La   1, RET_INFO_L44
+	La   1, RET_INFO_L48
 	BLKMOV
 	BRA ret_lbl
 ret_lbl:
@@ -695,28 +709,28 @@ begin:					;---------- BDY INSTRUCTIONS
 	LIb	, 0, STANDARD.SEQUENTIAL_IO._FILE_TYPE.IS_OPENED
 	LI	0
 	CEQ
-	BF	L48
+	BF	L52
 	LCA	STANDARD.IO_EXCEPTIONS.STATUS_ERROR__exc.data_ptr
 	Sa	0, STANDARD.EXCEPTIONS_CURRENT_disp
 	BRA	STANDARD.exc_raise_
-	BRA	L47
-L48:
-L47:					; post if
+	BRA	L51
+L52:
+L51:					; post if
 ; CODE_RETURN : EXPR TYPE = DN_VOID  VUE COMPLETE = DN_VOID
-STR RET_STR_L49, ""				; constante string=""
-	LCA	RET_STR_L49.data_ptr
-VAR	RET_INFO_L50, q
+STR RET_STR_L53, ""				; constante string=""
+	LCA	RET_STR_L53.data_ptr
+VAR	RET_INFO_L54, q
 	DUP
 	La  ,  0
 	SIq   1, -result__ofs,  0
 	DUP
 	La  ,  8
-	Sa   1, RET_INFO_L50
+	Sa   1, RET_INFO_L54
 	DROP
 	La   1, -result__ofs
 	La  ,  8
 	LI	16
-	La   1, RET_INFO_L50
+	La   1, RET_INFO_L54
 	BLKMOV
 	BRA ret_lbl
 ret_lbl:
@@ -770,8 +784,8 @@ VAR SIZE_BYTES_disp, d			; variable entiere
 	Sd  1,	SIZE_BYTES_disp
 
 
-if defined READ_SYSTEM_CALL_L53_
-PRO	READ_SYSTEM_CALL_L53			;---------- PRO READ_SYSTEM_CALL
+if defined READ_SYSTEM_CALL_L57_
+PRO	READ_SYSTEM_CALL_L57			;---------- PRO READ_SYSTEM_CALL
 PRMS					;    debut parametrage
 	PRM FILE_ID_ofs				; in
 	PRM LENGTH_ofs				; in
@@ -800,35 +814,35 @@ begin:					;---------- BDY INSTRUCTIONS
 	LIb	, 0, STANDARD.SEQUENTIAL_IO._FILE_TYPE.IS_OPENED
 	LI	0
 	CEQ
-	BF	L59
-	LCA	STANDARD.IO_EXCEPTIONS.STATUS_ERROR__exc.data_ptr
-	Sa	0, STANDARD.EXCEPTIONS_CURRENT_disp
-	BRA	STANDARD.exc_raise_
-	BRA	L58
-L59:
-L58:					; post if
-					; debut if
-	La 1, -FILE_ofs
-	LIb	, 0, STANDARD.SEQUENTIAL_IO._FILE_TYPE.MODE
-	LI	1
-	CEQ
-	BF	L61
-	LCA	STANDARD.IO_EXCEPTIONS.MODE_ERROR__exc.data_ptr
-	Sa	0, STANDARD.EXCEPTIONS_CURRENT_disp
-	BRA	STANDARD.exc_raise_
-	BRA	L60
-L61:
-L60:					; post if
-					; debut if
-	La 1, -FILE_ofs
-	LIb	, 0, STANDARD.SEQUENTIAL_IO._FILE_TYPE.AT_END_OF_FILE
 	BF	L63
-	LCA	STANDARD.IO_EXCEPTIONS.END_ERROR__exc.data_ptr
+	LCA	STANDARD.IO_EXCEPTIONS.STATUS_ERROR__exc.data_ptr
 	Sa	0, STANDARD.EXCEPTIONS_CURRENT_disp
 	BRA	STANDARD.exc_raise_
 	BRA	L62
 L63:
 L62:					; post if
+					; debut if
+	La 1, -FILE_ofs
+	LIb	, 0, STANDARD.SEQUENTIAL_IO._FILE_TYPE.MODE
+	LI	1
+	CEQ
+	BF	L65
+	LCA	STANDARD.IO_EXCEPTIONS.MODE_ERROR__exc.data_ptr
+	Sa	0, STANDARD.EXCEPTIONS_CURRENT_disp
+	BRA	STANDARD.exc_raise_
+	BRA	L64
+L65:
+L64:					; post if
+					; debut if
+	La 1, -FILE_ofs
+	LIb	, 0, STANDARD.SEQUENTIAL_IO._FILE_TYPE.AT_END_OF_FILE
+	BF	L67
+	LCA	STANDARD.IO_EXCEPTIONS.END_ERROR__exc.data_ptr
+	Sa	0, STANDARD.EXCEPTIONS_CURRENT_disp
+	BRA	STANDARD.exc_raise_
+	BRA	L66
+L67:
+L66:					; post if
 	LI	0					; lieu resultat sur pile
 	La  1,	-GFP_ofs				; propagation GFP generique
 	LVA	1, -ITEM_ofs
@@ -838,19 +852,19 @@ L62:					; post if
 	Ld 1,	SIZE_BYTES_disp
 	La 1, -FILE_ofs
 	LId	, 0, STANDARD.SEQUENTIAL_IO._FILE_TYPE.ID
-	CALL	STANDARD.SEQUENTIAL_IO.READ_L11. ,READ_SYSTEM_CALL_L53
+	CALL	STANDARD.SEQUENTIAL_IO.READ_L11. ,READ_SYSTEM_CALL_L57
 	Sd  1,	BYTES_READ_disp
 					; debut if
 	Ld 1,	BYTES_READ_disp
 	Ld 1,	SIZE_BYTES_disp
 	CLT
-	BF	L65
+	BF	L69
 	LCA	STANDARD.IO_EXCEPTIONS.END_ERROR__exc.data_ptr
 	Sa	0, STANDARD.EXCEPTIONS_CURRENT_disp
 	BRA	STANDARD.exc_raise_
-	BRA	L64
-L65:
-L64:					; post if
+	BRA	L68
+L69:
+L68:					; post if
 ret_lbl:
 	UNLINK 1
 	RTD	prm_siz
@@ -880,8 +894,8 @@ VAR SIZE_BYTES_disp, d			; variable entiere
 	Sd  1,	SIZE_BYTES_disp
 
 
-if defined WRITE_SYSTEM_CALL_L66_
-PRO	WRITE_SYSTEM_CALL_L66			;---------- PRO WRITE_SYSTEM_CALL
+if defined WRITE_SYSTEM_CALL_L70_
+PRO	WRITE_SYSTEM_CALL_L70			;---------- PRO WRITE_SYSTEM_CALL
 PRMS					;    debut parametrage
 	PRM FILE_ID_ofs				; in
 	PRM LENGTH_ofs				; in
@@ -910,25 +924,25 @@ begin:					;---------- BDY INSTRUCTIONS
 	LIb	, 0, STANDARD.SEQUENTIAL_IO._FILE_TYPE.IS_OPENED
 	LI	0
 	CEQ
-	BF	L72
+	BF	L76
 	LCA	STANDARD.IO_EXCEPTIONS.STATUS_ERROR__exc.data_ptr
 	Sa	0, STANDARD.EXCEPTIONS_CURRENT_disp
 	BRA	STANDARD.exc_raise_
-	BRA	L71
-L72:
-L71:					; post if
+	BRA	L75
+L76:
+L75:					; post if
 					; debut if
 	La 1, -FILE_ofs
 	LIb	, 0, STANDARD.SEQUENTIAL_IO._FILE_TYPE.MODE
 	LI	0
 	CEQ
-	BF	L74
+	BF	L78
 	LCA	STANDARD.IO_EXCEPTIONS.MODE_ERROR__exc.data_ptr
 	Sa	0, STANDARD.EXCEPTIONS_CURRENT_disp
 	BRA	STANDARD.exc_raise_
-	BRA	L73
-L74:
-L73:					; post if
+	BRA	L77
+L78:
+L77:					; post if
 	LI	0					; lieu resultat sur pile
 	La  1,	-GFP_ofs				; propagation GFP generique
 	LVA	1, -ITEM_ofs
@@ -938,7 +952,7 @@ L73:					; post if
 	Ld 1,	SIZE_BYTES_disp
 	La 1, -FILE_ofs
 	LId	, 0, STANDARD.SEQUENTIAL_IO._FILE_TYPE.ID
-	CALL	STANDARD.SEQUENTIAL_IO.WRITE_L12. ,WRITE_SYSTEM_CALL_L66
+	CALL	STANDARD.SEQUENTIAL_IO.WRITE_L12. ,WRITE_SYSTEM_CALL_L70
 	Sd  1,	ERR_CODE_disp
 ret_lbl:
 	UNLINK 1
@@ -960,8 +974,8 @@ VAR POS_BYTES_disp, d			; variable entiere
 VAR SIZ_BYTES_disp, d			; variable entiere
 
 
-if defined GET_POS_SYSTEM_CALL_L75_
-PRO	GET_POS_SYSTEM_CALL_L75			;---------- PRO GET_POS_SYSTEM_CALL
+if defined GET_POS_SYSTEM_CALL_L79_
+PRO	GET_POS_SYSTEM_CALL_L79			;---------- PRO GET_POS_SYSTEM_CALL
 PRMS					;    debut parametrage
 	PRM FILE_ID_ofs				; in
 	PRM GFP_ofs
@@ -980,8 +994,8 @@ excep:
 endPRO					;---------- end PRO GET_POS_SYSTEM_CALL
 end if
 
-if defined GET_SIZE_SYSTEM_CALL_L78_
-PRO	GET_SIZE_SYSTEM_CALL_L78			;---------- PRO GET_SIZE_SYSTEM_CALL
+if defined GET_SIZE_SYSTEM_CALL_L82_
+PRO	GET_SIZE_SYSTEM_CALL_L82			;---------- PRO GET_SIZE_SYSTEM_CALL
 PRMS					;    debut parametrage
 	PRM FILE_ID_ofs				; in
 	PRM GFP_ofs
@@ -1006,36 +1020,36 @@ begin:					;---------- BDY INSTRUCTIONS
 	LIb	, 0, STANDARD.SEQUENTIAL_IO._FILE_TYPE.IS_OPENED
 	LI	0
 	CEQ
-	BF	L84
+	BF	L88
 	LCA	STANDARD.IO_EXCEPTIONS.STATUS_ERROR__exc.data_ptr
 	Sa	0, STANDARD.EXCEPTIONS_CURRENT_disp
 	BRA	STANDARD.exc_raise_
-	BRA	L83
-L84:
-L83:					; post if
+	BRA	L87
+L88:
+L87:					; post if
 					; debut if
 	La 1, -FILE_ofs
 	LIb	, 0, STANDARD.SEQUENTIAL_IO._FILE_TYPE.MODE
 	LI	1
 	CEQ
-	BF	L86
+	BF	L90
 	LCA	STANDARD.IO_EXCEPTIONS.MODE_ERROR__exc.data_ptr
 	Sa	0, STANDARD.EXCEPTIONS_CURRENT_disp
 	BRA	STANDARD.exc_raise_
-	BRA	L85
-L86:
-L85:					; post if
+	BRA	L89
+L90:
+L89:					; post if
 	LI	0					; lieu resultat sur pile
 	La  1,	-GFP_ofs				; propagation GFP generique
 	La 1, -FILE_ofs
 	LId	, 0, STANDARD.SEQUENTIAL_IO._FILE_TYPE.ID
-	CALL	STANDARD.SEQUENTIAL_IO.END_OF_FILE_L13. ,GET_POS_SYSTEM_CALL_L75
+	CALL	STANDARD.SEQUENTIAL_IO.END_OF_FILE_L13. ,GET_POS_SYSTEM_CALL_L79
 	Sd  1,	POS_BYTES_disp
 	LI	0					; lieu resultat sur pile
 	La  1,	-GFP_ofs				; propagation GFP generique
 	La 1, -FILE_ofs
 	LId	, 0, STANDARD.SEQUENTIAL_IO._FILE_TYPE.ID
-	CALL	STANDARD.SEQUENTIAL_IO.END_OF_FILE_L13. ,GET_SIZE_SYSTEM_CALL_L78
+	CALL	STANDARD.SEQUENTIAL_IO.END_OF_FILE_L13. ,GET_SIZE_SYSTEM_CALL_L82
 	Sd  1,	SIZ_BYTES_disp
 ; CODE_RETURN : EXPR TYPE = DN_ENUMERATION  VUE COMPLETE = DN_ENUMERATION
 	Ld 1,	POS_BYTES_disp

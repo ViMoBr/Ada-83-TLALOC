@@ -1245,7 +1245,53 @@ VAR RESULT_disp, q				; variable array : pointeur aux data
 VAR RESULT__u, q				; variable array : useinfo pointeur au rec info
 	La 2, _RESULT__type.use__info
 	Sa	2, RESULT__u				; array info ptr at __u
-; COMPILE_ARRAY_VAR ASSOC.TY non gere DN_SLICE
+	Ld	2, _RESULT__type.SIZ
+	LI	8
+	DIV
+	CO_VAR
+	Sa	2, RESULT_disp				; array data ptr at _disp
+	La	2, RESULT_disp
+	Ld	2, _RESULT__type.SIZ
+	LI	8
+	DIV
+	LVA	1, -A_ofs
+	LIa	, , 0
+	Ld 1,	STANDARD.IDL.SEM_PHASE_L11.STM_WALK.TRIM_L3.FIRST_disp
+	LVA	1, -A_ofs
+	LIa	, , 8
+	Ld	, STANDARD._STRING.FST_1
+	SUB
+	LI	1
+	MUL
+	ADD
+namespace ANON_214_50			; ensemble doublet @data/@info pour slice anonyme source
+VAR ANON_214_50_disp, q
+VAR ANON_214_50__u, q
+VAR SIZ, d
+VAR COMP_SIZ, d
+VAR _FST_1, d
+VAR _LST_1, d
+	Sa	2, ANON_214_50_disp
+	LVA	2, SIZ
+	Sa	2, ANON_214_50__u
+	LI	8
+	Sd	2, COMP_SIZ
+	Ld 1,	STANDARD.IDL.SEM_PHASE_L11.STM_WALK.TRIM_L3.FIRST_disp
+	Sd	2, _FST_1
+	Ld 1,	STANDARD.IDL.SEM_PHASE_L11.STM_WALK.TRIM_L3.LAST_disp
+	Sd	2, _LST_1
+	Ld	2, _LST_1
+	Ld	2, _FST_1
+	SUB
+	INC
+	CLAMP0
+	LI	8
+	MUL
+	Sd	2, SIZ
+	LVA	2, ANON_214_50_disp
+end namespace
+	La	, 0
+	BLKMOV
 
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS

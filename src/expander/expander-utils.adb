@@ -319,9 +319,25 @@ is					-----
   is			--=============--
   begin
     if  DEFN.TY = DN_FLOAT  or  DEFN.TY = DN_ACCESS  then return 'q'; end if;
+
     declare
-      SIZ		: NATURAL		:= DI( CD_IMPL_SIZE, DEFN );
+      TS		: TREE		:= DEFN;
+      SIZ		: NATURAL;
     begin
+      if  TS.TY = DN_INTEGER  or else  TS.TY = DN_ENUMERATION  then						-- la representation vit sur la BASE (RM83) ;
+        declare											-- un sous-type suit sa base, toujours
+	BASE	: TREE	:= D( SM_BASE_TYPE, TS );
+        begin
+	if  BASE /= TREE_VOID  and then  BASE /= TREE_NIL  then
+	  TS := BASE;
+	end if;
+        end;
+      end if;
+      SIZ := DI( CD_IMPL_SIZE, TS );
+
+--    declare
+--      SIZ		: NATURAL		:= DI( CD_IMPL_SIZE, DEFN );
+--    begin
       if  SIZ <= 0  then PUT_LINE( "'; EXPANDER.UTILS.OPER_SIZ_CHAR SIZ = 0 ! "
 	& NODE_NAME'IMAGE( DEFN.TY )
 	& ' ' & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, DEFN ) ) )
@@ -343,9 +359,9 @@ is					-----
 	--=============--
 
 
-			--=============--
+			--^^^^^^^^^^^^^--
   function		  EXP_TYPE_CHAR		( EXP :TREE )	return CHARACTER
-  is			--=============--
+  is			-----------------
 
     EXP_TYPE	: TREE		:= FULL_VIEW( D( SM_EXP_TYPE, EXP ) );
 
@@ -363,13 +379,127 @@ is					-----
     end if;
     end;
 
-  end	  EXP_TYPE_CHAR;
-	--=============--
+  end	EXP_TYPE_CHAR;
+	-------------
 
 
-			--========--
+			--^^^^^^^^^^^^^^^^--
+  function		  IS_UNSIGNED_TYPE		( DEFN :TREE )		return BOOLEAN
+  is			--------------------
+  -- Non signe ssi la borne basse STATIQUE du type de BASE est >= 0 : c'est le
+  -- type de base qui porte la representation du conteneur (CD_IMPL_SIZE).
+  -- CONSERVATEUR : tout cas non prouvable statiquement rend FALSE (load signe,
+  -- toujours correct aujourd'hui). Enumere : 'POS >= 0, donc TRUE, SAUF clause
+  -- de representation (codes internes negatifs possibles, RM83 13.3) -> FALSE.
+
+    TS	: TREE	:= FULL_VIEW( DEFN );
+
+  begin
+    if  TS = TREE_VOID  or else  TS = TREE_NIL  then
+      PUT_LINE( "; UTILS.IS_UNSIGNED_TYPE TS VOID" );
+      raise PROGRAM_ERROR;
+    end if;
+
+--    if  TS.TY = DN_ENUMERATION  then
+--      declare
+--        REP	: TREE	:= D( SM_REPRESENTATION, TS );
+--      begin
+--        return  REP = TREE_VOID  or else  REP = TREE_NIL;
+--      end;
+--    end if;
+
+    if  TS.TY /= DN_INTEGER  then									-- FLOAT/ACCESS : chemin qword, hors sujet
+      return FALSE;
+    end if;
+
+    declare
+      BASE	: TREE	:= FULL_VIEW( D( SM_BASE_TYPE, TS ) );
+      NAMED	: TREE;
+      RNG		: TREE;
+      FST		: TREE;
+    begin
+      if  BASE = TREE_VOID  or else  BASE = TREE_NIL  then
+        BASE := TS;
+      end if;
+
+      -- Gamme decisive : celle du PREMIER SOUS-TYPE NOMME, pas celle de la
+      -- base anonyme (RM83 3.5.4 : la base herite de la gamme du predéfini
+      -- parent — temoin DIANA du 18/07, SM_RANGE de la base en region STANDRD).
+      -- Aucun objet n'est du type de base, et tout sous-type nommable est
+      -- contraint dans la gamme du premier nomme : le conteneur ne recoit
+      -- jamais d'autre valeur.
+      NAMED := BASE;
+      if       D( XD_SOURCE_NAME, BASE ) /= TREE_VOID
+      and then D( XD_SOURCE_NAME, BASE ) /= TREE_NIL  then
+        declare
+	SPEC	: TREE	:= FULL_VIEW( D( SM_TYPE_SPEC, D( XD_SOURCE_NAME, BASE ) ) );
+        begin
+	if  SPEC /= TREE_VOID  and then  SPEC /= TREE_NIL  then
+	  NAMED := SPEC;
+	end if;
+        end;
+      end if;
+
+      RNG := D( SM_RANGE, NAMED );
+      if  RNG = TREE_VOID  or else  RNG = TREE_NIL  then
+        RNG := D( SM_RANGE, TS );									-- repli : gamme du spec recu
+      end if;
+
+      if  RNG = TREE_VOID  or else  RNG = TREE_NIL  then
+        return FALSE;
+      end if;
+
+      FST := D( AS_EXP1, RNG );
+
+      while  FST.TY = DN_PARENTHESIZED  or else  FST.TY = DN_CONVERSION  loop					-- meme deshabillage que STATIC_BOUND_VALUE
+        FST := D( AS_EXP, FST );
+      end loop;
+
+      if  FST.TY = DN_NUMERIC_LITERAL  then
+        return  DI( SM_VALUE, FST ) >= 0;								-- -32768 arrive en NEG( literal ), donc PAS
+      end if;											-- DN_NUMERIC_LITERAL ici : tombe en FALSE
+
+      return FALSE;
+
+    end;
+
+  end	IS_UNSIGNED_TYPE;
+	----------------
+
+
+			--^^^^^^^^^^^^^--
+  function		  OPER_LOAD_STR	( DEFN :TREE )		return STRING
+  is			-----------------
+    C	: CHARACTER	:= OPER_SIZ_CHAR( DEFN );
+  begin
+    if  C /= 'q'  and then  IS_UNSIGNED_TYPE( DEFN )  then
+      return "UL" & C;
+    else
+      return "L" & C;
+    end if;
+
+  end	OPER_LOAD_STR;
+	-------------
+
+
+			--^^^^^^^^^^^^^^--
+  function		  OPER_LOADI_STR	( DEFN :TREE )		return STRING
+  is			------------------
+    C	: CHARACTER	:= OPER_SIZ_CHAR( DEFN );
+  begin
+    if  C /= 'q'  and then  IS_UNSIGNED_TYPE( DEFN )  then
+      return "ULI" & C;
+    else
+      return "LI" & C;
+    end if;
+
+  end	OPER_LOADI_STR;
+	--------------
+
+
+			--^^^^^^^^--
   procedure		  LOAD_MEM			( DEFN :TREE )
-  is			--========--
+  is			------------
 
   begin
     if  CODI.IN_GENERIC_BODY
@@ -400,7 +530,8 @@ is					-----
 	PUT_LINE( tab & "La " & IMAGE( CODI.GENERIC_BASE_LEVEL + 1 ) & "," & tab & "-GFP_ofs" );
 
 	if  OBJ_TYPE.TY in CLASS_SCALAR  or else  OBJ_TYPE.TY = DN_ACCESS  then
-	  PUT_LINE( tab & "L" & OPER_SIZ_CHAR( OBJ_TYPE ) & " ," & tab & "-" & DEFN_STR & "_ofs" );
+	  PUT_LINE( tab & OPER_LOAD_STR( OBJ_TYPE ) & " ," & tab & "-" & DEFN_STR & "_ofs" );
+--	  PUT_LINE( tab & "L" & OPER_SIZ_CHAR( OBJ_TYPE ) & " ," & tab & "-" & DEFN_STR & "_ofs" );
 
 	else
 	  PUT_LINE( tab & "LVA ," & tab & "-" & DEFN_STR & "_ofs" );
@@ -415,12 +546,13 @@ is					-----
 			or else D( SM_OBJ_TYPE, DEFN ).TY = DN_ACCESS)	then
 				-------------------
 				SCALAR_IN_PARAMETER:
-        declare
-	SIZ_CHAR	: CHARACTER	:= OPER_SIZ_CHAR( D( SM_OBJ_TYPE, DEFN ) );
+--        declare
+--	SIZ_CHAR	: CHARACTER	:= OPER_SIZ_CHAR( D( SM_OBJ_TYPE, DEFN ) );
 
         begin
-	PUT( tab & "L" & SIZ_CHAR & ' ' & INTEGER'IMAGE( DI( CD_LEVEL, DEFN )	) & ',' &	tab );
-	PUT( '-' & PRINT_NAME( D( LX_SYMREP, DEFN ) ) );							-- ATTENTION signe offset de params opposé aux vars
+--	PUT( tab & "L" & SIZ_CHAR & ' ' & INTEGER'IMAGE( DI( CD_LEVEL, DEFN )	) & ',' );
+	PUT( tab & OPER_LOAD_STR( D( SM_OBJ_TYPE, DEFN ) ) & ' ' & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' );
+	PUT( tab & '-' & PRINT_NAME( D( LX_SYMREP, DEFN ) ) );							-- ATTENTION signe offset de params opposé aux vars
 	PUT_LINE(	"_ofs" );										-- offset	de parametre scalaire
         end	SCALAR_IN_PARAMETER;
 		-------------------
@@ -429,12 +561,13 @@ is					-----
 	or else  D( SM_OBJ_TYPE, DEFN ).TY = DN_ACCESS  then						-- out/in_out SCALAIRE lu en expression :
 			----------------------								-- le slot contient l'ADRESSE, dereferencer
 			SCALAR_REF_PARAMETER:								-- (meme geste que la re-passe out->in de
-        declare											-- CODE_PROCEDURE_CALL). Piege n° 80.
-	SIZ_CHAR	: CHARACTER	:= OPER_SIZ_CHAR( D( SM_OBJ_TYPE, DEFN ) );
+--        declare											-- CODE_PROCEDURE_CALL). Piege n° 80.
+--	SIZ_CHAR	: CHARACTER	:= OPER_SIZ_CHAR( D( SM_OBJ_TYPE, DEFN ) );
 
         begin
-	PUT( tab & "LI" & SIZ_CHAR & ' ' & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' & tab );
-	PUT( '-' & PRINT_NAME( D( LX_SYMREP, DEFN ) ) );
+--	PUT( tab & "LI" & SIZ_CHAR & ' ' & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' );
+	PUT( tab & OPER_LOADI_STR( D( SM_OBJ_TYPE, DEFN ) ) & ' ' & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' );
+	PUT( tab & '-' & PRINT_NAME( D( LX_SYMREP, DEFN ) ) );
 	PUT_LINE(	"_ofs" );
         end	SCALAR_REF_PARAMETER;
 		----------------------
@@ -463,7 +596,8 @@ is					-----
 	begin
 
 	  if  OBJ_TYPE.TY in CLASS_SCALAR  or else OBJ_TYPE.TY = DN_ACCESS  then
-	    PUT( tab & "LI" & OPER_SIZ_CHAR( OBJ_TYPE ) & tab & IMAGE( OBJ_LEVEL ) & ", " );
+--	    PUT( tab & "LI" & OPER_SIZ_CHAR( OBJ_TYPE ) & tab & IMAGE( OBJ_LEVEL ) & ", " );
+	    PUT( tab & OPER_LOADI_STR( OBJ_TYPE ) & tab & IMAGE( OBJ_LEVEL ) & ", " );
 	    REGIONS_PATH( DEFN );
 	    PUT_LINE( OBJ_STR & "_disp, 0" );
 	  else
@@ -477,11 +611,12 @@ is					-----
 
         if  OBJ_TYPE.TY in CLASS_SCALAR  or else OBJ_TYPE.TY = DN_ACCESS  then
 	declare
-	  SIZ_CHAR	: CHARACTER	:= OPER_SIZ_CHAR( OBJ_TYPE );
+--	  SIZ_CHAR	: CHARACTER	:= OPER_SIZ_CHAR( OBJ_TYPE );
 	  DEFN_LVL	: INTEGER		:= DI( CD_LEVEL, DEFN );
 
 	begin
-	  PUT( tab & "L" & SIZ_CHAR & ' ' & IMAGE( DEFN_LVL	) & ',' &	tab );
+--	  PUT( tab & "L" & SIZ_CHAR & ' ' & IMAGE( DEFN_LVL ) & ',' & tab );
+	  PUT( tab & OPER_LOAD_STR( OBJ_TYPE ) & ' ' & IMAGE( DEFN_LVL ) & ',' & tab );
 	  if  DEFN_LVL /= INTEGER( CUR_LEVEL )  or else  D( XD_REGION, DEFN ).TY = DN_PACKAGE_ID  then
 	    REGIONS_PATH( DEFN );
 	  end if;
@@ -503,8 +638,8 @@ is					-----
       end;
     end if;
 
-  end	  LOAD_MEM;
-	--========--
+  end	LOAD_MEM;
+	--------
 
 
 			--^^^^^--

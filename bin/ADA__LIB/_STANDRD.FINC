@@ -755,9 +755,9 @@ USEINFO 0, SIZ, 	La 0, STANDARD._NATURAL.use__info
 USEINFO 0, FST, 	La 0, STANDARD._INTEGER.use__info
 USEINFO 0, LST, 	La 0, STANDARD._INTEGER.use__info
 virtual at 0				; calcul des offsets statiques
-STATOFS SIZ, 4
-STATOFS FST, 4
-STATOFS LST, 4
+STATOFS SIZ, 4, 4
+STATOFS FST, 4, 4
+STATOFS LST, 4, 4
 size = $
 end virtual
 	LI	 size*8
@@ -777,11 +777,11 @@ USEINFO 0, LST, 	La 0, STANDARD._LONG_INTEGER.use__info
 USEINFO 0, NUMER, 	La 0, STANDARD._LONG_INTEGER.use__info
 USEINFO 0, DENOM, 	La 0, STANDARD._LONG_INTEGER.use__info
 virtual at 0				; calcul des offsets statiques
-STATOFS SIZ, 4
-STATOFS FST, 8
-STATOFS LST, 8
-STATOFS NUMER, 8
-STATOFS DENOM, 8
+STATOFS SIZ, 4, 4
+STATOFS FST, 8, 8
+STATOFS LST, 8, 8
+STATOFS NUMER, 8, 8
+STATOFS DENOM, 8, 8
 size = $
 end virtual
 	LI	 size*8
@@ -843,17 +843,15 @@ USEINFO 0, R13, 	La 0, STANDARD._LONG_INTEGER.use__info
 USEINFO 0, R14, 	La 0, STANDARD._LONG_INTEGER.use__info
 USEINFO 0, NXT_LVL, 	La 0, STANDARD._LONG_INTEGER.use__info
 USEINFO 0, FRAME_POINTERS, 	La 0, STANDARD._FP_ARRAY.use__info
-; SCASB : cis pt HI
 virtual at 0				; calcul des offsets statiques
-STATOFS PREV_CTX, 8
-STATOFS DISPATCH, 8
-STATOFS RBP, 8
-STATOFS RSP, 8
-STATOFS R13, 8
-STATOFS R14, 8
-STATOFS NXT_LVL, 8
-; SCASB : cis pt HI
-STATOFS FRAME_POINTERS, 256
+STATOFS PREV_CTX, 8, 8
+STATOFS DISPATCH, 8, 8
+STATOFS RBP, 8, 8
+STATOFS RSP, 8, 8
+STATOFS R13, 8, 8
+STATOFS R14, 8, 8
+STATOFS NXT_LVL, 8, 8
+STATOFS FRAME_POINTERS, 256, 8
 size = $
 end virtual
 	LI	 size*8
@@ -1236,6 +1234,254 @@ ret_lbl:
 	RTD	prm_siz-8
 excep:
 endPRO					;---------- end PRO INTEGER_IMAGE
+end if
+
+if defined ENUM_IMAGE_L31_
+PRO	ENUM_IMAGE_L31				;---------- PRO ENUM_IMAGE
+PRMS					;    debut parametrage
+	PRM IMAGES_ofs				; in
+	PRM REP_ofs				; in
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 1					;    BODY ELAB
+VAR I_disp, d				; variable entiere
+	LVA	1, -IMAGES_ofs
+	LIa	, , 8
+	Ld	, _STRING.FST_1
+	DUP
+	Ld	0, STANDARD._POSITIVE.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._POSITIVE.LST
+	CGT
+	BT	STANDARD.ce_raise_
+	Sd  1,	I_disp
+
+VAR ITEM_REP_disp, d			; variable entiere
+
+VAR LEN_disp, d				; variable entiere
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+LOOP__4:
+	Ld 1,	I_disp
+	LVA	1, -IMAGES_ofs
+	LIa	, , 8
+	Ld	, _STRING.LST_1
+	CLE
+	BF	L34
+	LVA	1, -IMAGES_ofs
+	LIa	, , 0				; array data start address on stack
+	Ld 1,	I_disp
+	DUP
+	LVA	1, -IMAGES_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LVA	1, -IMAGES_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
+	LVA	1, -IMAGES_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.FST_1			; (index - FST_1) * SIZ_1
+	SUB
+	LVA	1, -IMAGES_ofs
+	LIa	, , 8
+	Ld	, STANDARD._STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb
+	Sd  1,	ITEM_REP_disp
+	LVA	1, -IMAGES_ofs
+	LIa	, , 0				; array data start address on stack
+	Ld 1,	I_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	DUP
+	LVA	1, -IMAGES_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LVA	1, -IMAGES_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
+	LVA	1, -IMAGES_ofs
+	LIa	, 0,  8
+	Ld	, STANDARD._STRING.FST_1			; (index - FST_1) * SIZ_1
+	SUB
+	LVA	1, -IMAGES_ofs
+	LIa	, , 8
+	Ld	, STANDARD._STRING.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	Lb
+	Sd  1,	LEN_disp
+					; debut if
+	Ld 1,	ITEM_REP_disp
+	Ld  1,	-REP_ofs
+	CEQ
+	BF	L36
+namespace	BLOCK__5
+ELB 2					;    BODY ELAB
+_IMG__type = '_IMG__type'
+namespace _IMG__type			; array var constrained array type info
+VAR use__info, q
+VAR SIZ, d
+	LVA	2, SIZ
+	Sa	2, use__info
+VAR _COMP_SIZ, d
+VAR _FST_1, d
+VAR _LST_1, d
+	LI	8
+	Sd	2, _COMP_SIZ
+	Ld	2, _COMP_SIZ
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd	2, _FST_1
+	Ld 1,	STANDARD.ENUM_IMAGE_L31.LEN_disp
+	Sd	2, _LST_1
+	Ld	2, _LST_1
+	Ld	2, _FST_1
+	SUB
+	INC
+	CLAMP0
+	MUL
+	Sd	2, SIZ
+  virtual at 4
+COMP_SIZ = $
+	rd 1 
+FST_1 = $
+	rd 1 
+LST_1 = $
+	rd 1 
+  end virtual
+end namespace
+VAR IMG_disp, q				; variable array : pointeur aux data
+VAR IMG__u, q				; variable array : useinfo pointeur au rec info
+	La 2, _IMG__type.use__info
+	Sa	2, IMG__u				; array info ptr at __u
+	Ld	2, _IMG__type.SIZ
+	LI	8
+	DIV
+	CO_VAR
+	Sa	2, IMG_disp				; array data ptr at _disp
+	La	2, IMG_disp
+	Ld	2, _IMG__type.SIZ
+	LI	8
+	DIV
+	LVA	1, -IMAGES_ofs
+	LIa	, , 0
+	Ld 1,	STANDARD.ENUM_IMAGE_L31.I_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	2
+	ADD
+	LVA	1, -IMAGES_ofs
+	LIa	, , 8
+	Ld	, STANDARD._STRING.FST_1
+	SUB
+	LI	1
+	MUL
+	ADD
+namespace ANON_141_48			; ensemble doublet @data/@info pour slice anonyme source
+VAR ANON_141_48_disp, q
+VAR ANON_141_48__u, q
+VAR SIZ, d
+VAR COMP_SIZ, d
+VAR _FST_1, d
+VAR _LST_1, d
+	Sa	2, ANON_141_48_disp
+	LVA	2, SIZ
+	Sa	2, ANON_141_48__u
+	LI	8
+	Sd	2, COMP_SIZ
+	Ld 1,	STANDARD.ENUM_IMAGE_L31.I_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	2
+	ADD
+	Sd	2, _FST_1
+	Ld 1,	STANDARD.ENUM_IMAGE_L31.I_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Ld 1,	STANDARD.ENUM_IMAGE_L31.LEN_disp
+	ADD
+	Sd	2, _LST_1
+	Ld	2, _LST_1
+	Ld	2, _FST_1
+	SUB
+	INC
+	CLAMP0
+	LI	8
+	MUL
+	Sd	2, SIZ
+	LVA	2, ANON_141_48_disp
+end namespace
+	La	, 0
+	BLKMOV
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+; CODE_RETURN : EXPR TYPE = DN_CONSTRAINED_ARRAY  VUE COMPLETE = DN_CONSTRAINED_ARRAY
+	LVA 2,	IMG_disp
+VAR	RET_INFO_L39, q
+	DUP
+	La  ,  0
+	SIq   1, -result__ofs,  0
+	DUP
+	La  ,  8
+	Sa   2, RET_INFO_L39
+	DROP
+	La   1, -result__ofs
+	La  ,  8
+	LI	16
+	La   2, RET_INFO_L39
+	BLKMOV
+	UNLINK 2
+	BRA ret_lbl
+	UNLINK 2
+endPRO
+	BRA	L35
+L36:
+L35:					; post if
+	Ld 1,	I_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	2
+	ADD
+	Ld 1,	LEN_disp
+	ADD
+	DUP
+	Ld	0, STANDARD._POSITIVE.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD._POSITIVE.LST
+	CGT
+	BT	STANDARD.ce_raise_
+	Sd  1,	I_disp
+	BRA	LOOP__4
+L34:					; post loop LOOP__4
+	LCA	STANDARD.PROGRAM_ERROR__exc.data_ptr
+	Sa	0, STANDARD.EXCEPTIONS_CURRENT_disp
+	BRA	STANDARD.exc_raise_
+ret_lbl:
+	UNLINK 1
+	RTD	prm_siz-8
+excep:
+endPRO					;---------- end PRO ENUM_IMAGE
 end if
 begin:					;---------- package BDY INSTRUCTIONS
 

@@ -29,13 +29,19 @@ begin
     PUT_LINE ( "ANALYSE LALR ............ L" );
     PUT_LINE ( "VERIFICATION ............ V" );
     PUT_LINE ( "IMPRIME LES TABLES ...... P" );
-    PUT_LINE ( "BINARISE LES TABLES ..... B" );
+    PUT_LINE ( "BINARISE LES TABLES ..... B (only: b" );
     NEW_LINE;
     PUT_LINE ( "QUITTER ................. Q" );
     NEW_LINE;
     PUT (	"     CHOIX : " ); GET_LINE (	CMD, L );
     C := CMD( 1 );
     NEW_LINE;
+
+    if C = 'b' then
+      PUT_LINE ( "---------- BINARISE parse.tbl -> parse.bin ----------" );
+      IDL.LOAD_GRMR( "binarise" );
+      return;
+    end if;
 
     case C is
     when 'R' | 'O' | 'I' | 'E' | 'L' | 'V' | 'B' | 'P' =>
@@ -47,6 +53,7 @@ begin
       PUT	( " ?! COMMANDE INCOMPRISE" );
       goto FIN_TRAITEMENT;
     end case;
+
 
     if C = 'P' then
       PUT_LINE ( "---------- PRINT_STAT ----------" );  IDL.PRINT_STAT ( CMD( 1..L ) );

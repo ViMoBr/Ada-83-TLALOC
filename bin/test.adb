@@ -1,18 +1,17 @@
 PROCEDURE TEST IS
---  I	: INTEGER	:= 0;
---  J	: INTEGER := 1;
 
-  type REC is record
-	  CHAMP_1	:NATURAL;
-	end record;
+  type OCTET	is range 0 .. 255;
+  type GROS_OCTET	is range 0 .. 255; for GROS_OCTET'SIZE use 16;
 
-  type ACC is access REC;
+  O1		: OCTET	:= 255;
+  O2		: OCTET;
 
-  A_1	: ACC;
+  GO1		: GROS_OCTET;
 
 BEGIN
-  if A_1 /= null then
-    null;
-  end if;
---  I := J + 1;
+  O1 := 128;
+  O2 := 255;
+  O1 :=  O2 - O1;
+  GO1 := 300;
+
 END	TEST;

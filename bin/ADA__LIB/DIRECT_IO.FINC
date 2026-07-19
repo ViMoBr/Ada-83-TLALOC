@@ -1,22 +1,17 @@
 if ~ definite SYSTEM
 include 'SYSTEM.FINC'
-display 'including withed unit SYSTEM.FINC', 10
 end if
 if ~ definite MACHINE_CODE
 include 'MACHINE_CODE.FINC'
-display 'including withed unit MACHINE_CODE.FINC', 10
 end if
 if ~ definite IO_EXCEPTIONS
 include 'IO_EXCEPTIONS.FINC'
-display 'including trans withed unit IO_EXCEPTIONS.FINC', 10
 end if
 if ~ definite SYSTEM
 include 'SYSTEM.FINC'
-display 'including trans withed unit SYSTEM.FINC', 10
 end if
 if ~ definite MACHINE_CODE
 include 'MACHINE_CODE.FINC'
-display 'including trans withed unit MACHINE_CODE.FINC', 10
 end if
 DIRECT_IO = 'DIRECT_IO'
 namespace DIRECT_IO
@@ -149,21 +144,19 @@ VAR SIZ, d
 	Sa	0, use__info
 USEINFO 0, ID, 	La 0, STANDARD._INTEGER.use__info
 USEINFO 0, NAME, 	La 0, STANDARD.DIRECT_IO._FILE_NAME_BUFFER.use__info
-; SCASB : cis pt HI
 USEINFO 0, NAME_LEN, 	La 0, STANDARD._POSITIVE.use__info
 USEINFO 0, IS_OPENED, 	La 0, STANDARD._BOOLEAN.use__info
 USEINFO 0, MODE, 	La 0, STANDARD.DIRECT_IO._FILE_MODE.use__info
 USEINFO 0, INDEX, 	La 0, STANDARD.DIRECT_IO._POSITIVE_COUNT.use__info
 USEINFO 0, AT_END_OF_FILE, 	La 0, STANDARD._BOOLEAN.use__info
 virtual at 0				; calcul des offsets statiques
-STATOFS ID, 4
-; SCASB : cis pt HI
-STATOFS NAME, 256
-STATOFS NAME_LEN, 4
-STATOFS IS_OPENED, 1
-STATOFS MODE, 1
-STATOFS INDEX, 4
-STATOFS AT_END_OF_FILE, 1
+STATOFS ID, 4, 4
+STATOFS NAME, 256, 8
+STATOFS NAME_LEN, 4, 4
+STATOFS IS_OPENED, 1, 1
+STATOFS MODE, 1, 1
+STATOFS INDEX, 4, 4
+STATOFS AT_END_OF_FILE, 1, 1
 size = $
 end virtual
 	LI	 size*8
@@ -899,7 +892,7 @@ L61:					; post if
 L64:
 L63:					; post if
 					; debut if
-	Ld  1,	-FROM_ofs
+	ULd  1,	-FROM_ofs
 ; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
@@ -913,7 +906,7 @@ L66:
 L65:					; post if
 	LI	0					; lieu resultat sur pile
 	La  1,	-GFP_ofs				; propagation GFP generique
-	Ld  1,	-FROM_ofs
+	ULd  1,	-FROM_ofs
 ; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
@@ -1150,7 +1143,7 @@ L88:					; post if
 L91:
 L90:					; post if
 					; debut if
-	Ld  1,	-TO_ofs
+	ULd  1,	-TO_ofs
 ; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
@@ -1164,7 +1157,7 @@ L93:
 L92:					; post if
 	LI	0					; lieu resultat sur pile
 	La  1,	-GFP_ofs				; propagation GFP generique
-	Ld  1,	-TO_ofs
+	ULd  1,	-TO_ofs
 ; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
@@ -1340,7 +1333,7 @@ begin:					;---------- BDY INSTRUCTIONS
 L109:
 L108:					; post if
 					; debut if
-	Ld  1,	-TO_ofs
+	ULd  1,	-TO_ofs
 ; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
@@ -1354,7 +1347,7 @@ L111:
 L110:					; post if
 	LI	0					; lieu resultat sur pile
 	La  1,	-GFP_ofs				; propagation GFP generique
-	Ld  1,	-TO_ofs
+	ULd  1,	-TO_ofs
 ; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
@@ -1446,19 +1439,19 @@ L117:					; post if
 	ADD
 ; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
 	DUP
-	Ld	0, STANDARD.DIRECT_IO._POSITIVE_COUNT.FST
+	ULd	0, STANDARD.DIRECT_IO._POSITIVE_COUNT.FST
 	CLT
 	BT	STANDARD.ce_raise_
 	DUP
-	Ld	0, STANDARD.DIRECT_IO._POSITIVE_COUNT.LST
+	ULd	0, STANDARD.DIRECT_IO._POSITIVE_COUNT.LST
 	CGT
 	BT	STANDARD.ce_raise_
 	DUP
-	Ld	0, STANDARD.DIRECT_IO._POSITIVE_COUNT.FST
+	ULd	0, STANDARD.DIRECT_IO._POSITIVE_COUNT.FST
 	CLT
 	BT	STANDARD.ce_raise_
 	DUP
-	Ld	0, STANDARD.DIRECT_IO._POSITIVE_COUNT.LST
+	ULd	0, STANDARD.DIRECT_IO._POSITIVE_COUNT.LST
 	CGT
 	BT	STANDARD.ce_raise_
 	Sd  1,	-result__ofs

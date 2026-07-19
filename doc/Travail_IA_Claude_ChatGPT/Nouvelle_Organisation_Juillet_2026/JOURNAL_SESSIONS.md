@@ -850,3 +850,6 @@ expander-declarations, expander-utils, expander.adb, types_decls ;
 TEXT_IO.FINC et prédéfinis régénérés. Zéro modification codi, zéro
 modification sem (trois dettes consignées à la place). Tag git
 recommandé : pilier-fixed-clos.
+
+## Sessions 14–17 juillet 2026 — Bootstrap compilateur
+*D10 partiellement soldée (volet appel, FIRST/LAST/LENGTH, 1-dim), volets indexé/tranche et 'RANGE toujours ouverts.

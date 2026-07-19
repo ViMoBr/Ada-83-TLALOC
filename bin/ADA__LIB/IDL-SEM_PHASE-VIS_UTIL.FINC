@@ -392,7 +392,10 @@ end namespace
 	LVA 1,	REGION_disp
 	LI  172
 	CALL	STANDARD.IDL. ,DB_L19
-	CALL	STANDARD. ,INTEGER_IMAGE_L11
+	La 0, STANDARD._BOOLEAN.use__info
+	LI	16
+	ADD
+	CALL	STANDARD. ,ENUM_IMAGE_L31
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
 					; debut if
 	BF	L28
@@ -637,11 +640,11 @@ L34:					; post if
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	DUP
-	Ld	0, STANDARD.TEXT_IO._POSITIVE_COUNT.FST
+	ULd	0, STANDARD.TEXT_IO._POSITIVE_COUNT.FST
 	CLT
 	BT	STANDARD.ce_raise_
 	DUP
-	Ld	0, STANDARD.TEXT_IO._POSITIVE_COUNT.LST
+	ULd	0, STANDARD.TEXT_IO._POSITIVE_COUNT.LST
 	CGT
 	BT	STANDARD.ce_raise_
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
@@ -1506,7 +1509,10 @@ end namespace
 	LI	0
 	LI	2
 	UBFX
-	CALL	STANDARD. ,INTEGER_IMAGE_L11
+	La 0, STANDARD.IDL._VPTR_TYPE.use__info
+	LI	16
+	ADD
+	CALL	STANDARD. ,ENUM_IMAGE_L31
 	DUP
 	La  ,  0
 	Sa  3, ANON_239_19_L87_D_data
@@ -4745,7 +4751,7 @@ VAR	LMT_IL258_disp, d			; limite boucle LOOP__21
 LOOP__21:					; corps boucle LOOP__21
 					; debut if
 	La	 2, STANDARD.IDL.SEM_PHASE_L11.VIS_UTIL.MAKE_USED_OP_FROM_STRING_L174.MAKE_UPPER_CASE_L254.A_WORK_disp	; array data start address on stack
-	Ld	2, IL258_disp
+	Ld 2,	IL258_disp
 	DUP
 	LId	2, STANDARD.IDL.SEM_PHASE_L11.VIS_UTIL.MAKE_USED_OP_FROM_STRING_L174.MAKE_UPPER_CASE_L254.A_WORK__u, STANDARD._STRING.FST_1
 	CLT
@@ -4766,7 +4772,7 @@ LOOP__21:					; corps boucle LOOP__21
 	CGE
 	LI	90
 	La	 2, STANDARD.IDL.SEM_PHASE_L11.VIS_UTIL.MAKE_USED_OP_FROM_STRING_L174.MAKE_UPPER_CASE_L254.A_WORK_disp	; array data start address on stack
-	Ld	2, IL258_disp
+	Ld 2,	IL258_disp
 	DUP
 	LId	2, STANDARD.IDL.SEM_PHASE_L11.VIS_UTIL.MAKE_USED_OP_FROM_STRING_L174.MAKE_UPPER_CASE_L254.A_WORK__u, STANDARD._STRING.FST_1
 	CLT
@@ -4787,7 +4793,7 @@ LOOP__21:					; corps boucle LOOP__21
 	ET
 	BF	L260
 	La	 2, STANDARD.IDL.SEM_PHASE_L11.VIS_UTIL.MAKE_USED_OP_FROM_STRING_L174.MAKE_UPPER_CASE_L254.A_WORK_disp	; array data start address on stack
-	Ld	2, IL258_disp
+	Ld 2,	IL258_disp
 	DUP
 	LId	2, STANDARD.IDL.SEM_PHASE_L11.VIS_UTIL.MAKE_USED_OP_FROM_STRING_L174.MAKE_UPPER_CASE_L254.A_WORK__u, STANDARD._STRING.FST_1
 	CLT
@@ -4804,7 +4810,7 @@ LOOP__21:					; corps boucle LOOP__21
 	MUL
 	ADD					; add offset to start address
 	La	 2, STANDARD.IDL.SEM_PHASE_L11.VIS_UTIL.MAKE_USED_OP_FROM_STRING_L174.MAKE_UPPER_CASE_L254.A_WORK_disp	; array data start address on stack
-	Ld	2, IL258_disp
+	Ld 2,	IL258_disp
 	DUP
 	LId	2, STANDARD.IDL.SEM_PHASE_L11.VIS_UTIL.MAKE_USED_OP_FROM_STRING_L174.MAKE_UPPER_CASE_L254.A_WORK__u, STANDARD._STRING.FST_1
 	CLT
@@ -5685,16 +5691,16 @@ begin:					;---------- BDY INSTRUCTIONS
 L296:
 namespace	BLOCK__24
 ELB 2					;    BODY ELAB
-VAR LENGTH_disp, w				; variable entiere
+VAR LENGTH_disp, b				; variable entiere
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.FST
+	ULb	0, STANDARD.IDL._ATTR_NBR.FST
 	CLT
 	BT	STANDARD.ce_raise_
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.LST
+	ULb	0, STANDARD.IDL._ATTR_NBR.LST
 	CGT
 	BT	STANDARD.ce_raise_
-	Sw  2,	LENGTH_disp
+	Sb  2,	LENGTH_disp
 
 VAR RESULT_disp, q				; variable record : pointeur aux data record
 VAR RESULT__u, q				; variable record : pointeur aux useinfo
@@ -5715,13 +5721,13 @@ VAR	ANON_821_27__dat, STANDARD.IDL._TREE.size
 	Sa  2, ANON_821_27__u
 	LVA 2, ANON_821_27_disp
 					; doublet resultat record anonyme
-	Lw 2,	LENGTH_disp
+	ULb 2,	LENGTH_disp
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.FST
+	ULb	0, STANDARD.IDL._ATTR_NBR.FST
 	CLT
 	BT	STANDARD.ce_raise_
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.LST
+	ULb	0, STANDARD.IDL._ATTR_NBR.LST
 	CGT
 	BT	STANDARD.ce_raise_
 	La 1, -T_ofs
@@ -5741,10 +5747,10 @@ VAR	IL300_disp, b				; compteur boucle LOOP__25
 	LI	1
 	Sb  2,	IL300_disp
 VAR	LMT_IL300_disp, b			; limite boucle LOOP__25
-	Lw 2,	LENGTH_disp
+	ULb 2,	LENGTH_disp
 	Sb  2,	LMT_IL300_disp
-	Lb  2,	IL300_disp				; test null range LOOP__25
-	Lb  2,	LMT_IL300_disp
+	ULb  2,	IL300_disp				; test null range LOOP__25
+	ULb  2,	LMT_IL300_disp
 	CGT
 	BT	L299
 LOOP__25:					; corps boucle LOOP__25
@@ -5758,32 +5764,32 @@ VAR	ANON_824_19__dat, STANDARD.IDL._TREE.size
 	LVA 2, ANON_824_19_disp
 					; doublet resultat record anonyme
 	La  1,	-T_ofs
-	Lb  2,	IL300_disp
+	ULb  2,	IL300_disp
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.FST
+	ULb	0, STANDARD.IDL._ATTR_NBR.FST
 	CLT
 	BT	STANDARD.ce_raise_
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.LST
+	ULb	0, STANDARD.IDL._ATTR_NBR.LST
 	CGT
 	BT	STANDARD.ce_raise_
 	CALL	STANDARD.IDL.IDL_MAN. ,DABS_L38
 	LVA 2,	RESULT_disp
-	Lb  2,	IL300_disp
+	ULb  2,	IL300_disp
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.FST
+	ULb	0, STANDARD.IDL._ATTR_NBR.FST
 	CLT
 	BT	STANDARD.ce_raise_
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.LST
+	ULb	0, STANDARD.IDL._ATTR_NBR.LST
 	CGT
 	BT	STANDARD.ce_raise_
 	CALL	STANDARD.IDL.IDL_MAN. ,DABS_L37
-	Lb  2,	IL300_disp				; test de sortie LOOP__25
-	Lb  2,	LMT_IL300_disp
+	ULb  2,	IL300_disp				; test de sortie LOOP__25
+	ULb  2,	LMT_IL300_disp
 	CEQ
 	BT	L299
-	Lb  2,	IL300_disp				; mise a jour compteur LOOP__25
+	ULb  2,	IL300_disp				; mise a jour compteur LOOP__25
 	INC
 	Sb  2,	IL300_disp
 	BRA	LOOP__25				; iteration suivante LOOP__25

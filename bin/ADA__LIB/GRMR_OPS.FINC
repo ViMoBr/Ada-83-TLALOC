@@ -213,16 +213,16 @@ VAR use__info, q
 VAR SIZ, d
 	LVA	0, SIZ
 	Sa	0, use__info
-VAR FST, w
-VAR LST, w
-	LI	16
+VAR FST, b
+VAR LST, b
+	LI	8
 	Sd	0, SIZ
 ; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
 	LI	0
-	Sw	0, FST
+	Sb	0, FST
 ; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
 	LI	255
-	Sw	0, LST
+	Sb	0, LST
 end namespace
 VAR HCODE_disp, d				; variable entiere
 
@@ -269,12 +269,10 @@ LST_1 = $
   end virtual
 end namespace
 USEINFO 0, HN, 	La 0, STANDARD._STRING.use__info
-; SCASB : cis pt HI
 USEINFO 0, HP, 	La 0, STANDARD.GRMR_OPS._GRMR_OP.use__info
 virtual at 0				; calcul des offsets statiques
-; SCASB : cis pt HI
-STATOFS HN, 17
-STATOFS HP, 1
+STATOFS HN, 17, 8
+STATOFS HP, 1, 1
 size = $
 end virtual
 	LI	 size*8
@@ -337,7 +335,7 @@ VAR SIZ, d
 VAR _COMP_SIZ, d
 VAR _FST_1, d
 VAR _LST_1, d
-	LI	16
+	LI	8
 	Sd	0, _COMP_SIZ
 	Ld	0, _COMP_SIZ
 	LI	0
@@ -589,6 +587,14 @@ VAR	ANON_39_12_L10_G_len,  q
 VAR	ANON_39_20_L10_D_data, q
 VAR	ANON_39_20_L10_D_info, q
 VAR	ANON_39_20_L10_D_len,  q
+VAR	ANON_39_20_L10_D_disp, q
+VAR	ANON_39_20_L10_D__u,   q
+namespace ANON_39_20_L10_D_info
+  VAR SIZ,      d
+  VAR _COMP_SIZ, d
+  VAR _FST_1,    d
+  VAR _LST_1,    d
+end namespace
 	La	 0, STANDARD.GRMR_OPS.HTABLE_disp		; array data start address on stack
 	Ld 0,	STANDARD.GRMR_OPS.HCODE_disp
 	DUP
@@ -607,6 +613,26 @@ VAR	ANON_39_20_L10_D_len,  q
 	MUL
 	ADD					; add offset to start address
 	LVA	, STANDARD.GRMR_OPS._HTABLE_TYPE.HN
+	Sa  1, ANON_39_20_L10_D_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	Sd  1, ANON_39_20_L10_D_info._FST_1
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	17
+	Sd  1, ANON_39_20_L10_D_info._LST_1
+	LI	8
+	Sd  1, ANON_39_20_L10_D_info._COMP_SIZ
+	Ld  1, ANON_39_20_L10_D_info._LST_1
+	Ld  1, ANON_39_20_L10_D_info._FST_1
+	SUB
+	INC
+	CLAMP0
+	LI	8
+	MUL
+	Sd  1, ANON_39_20_L10_D_info.SIZ
+	LVA 1, ANON_39_20_L10_D_info.SIZ
+	Sa  1, ANON_39_20_L10_D__u
+	LVA 1, ANON_39_20_L10_D_disp
 	DUP
 	La  ,  0
 	Sa  1, ANON_39_20_L10_D_data
@@ -766,7 +792,52 @@ VAR TXT_disp, q				; variable array : pointeur aux data
 VAR TXT__u, q				; variable array : useinfo pointeur au rec info
 	La 1, _TXT__type.use__info
 	Sa	1, TXT__u				; array info ptr at __u
-; COMPILE_ARRAY_VAR ASSOC.TY non gere DN_SELECTED
+	Ld	1, _TXT__type.SIZ
+	LI	8
+	DIV
+	CO_VAR
+	Sa	1, TXT_disp				; array data ptr at _disp
+	La	1, TXT_disp
+	Ld	1, _TXT__type.SIZ
+	LI	8
+	DIV
+	La	 0, STANDARD.GRMR_OPS.HTABLE_disp		; array data start address on stack
+	La	 0, STANDARD.GRMR_OPS.ITABLE_disp		; array data start address on stack
+	Lb  1,	-GO_ofs
+	DUP
+	LId	0, STANDARD.GRMR_OPS.ITABLE__u, STANDARD.GRMR_OPS._ITABLE__type.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, STANDARD.GRMR_OPS.ITABLE__u, STANDARD.GRMR_OPS._ITABLE__type.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
+	LId	0, STANDARD.GRMR_OPS.ITABLE__u, STANDARD.GRMR_OPS._ITABLE__type.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	0, STANDARD.GRMR_OPS.ITABLE__u, STANDARD.GRMR_OPS._ITABLE__type.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	ULb
+; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
+	DUP
+	LId	0, STANDARD.GRMR_OPS.HTABLE__u, STANDARD.GRMR_OPS._HTABLE__type.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LId	0, STANDARD.GRMR_OPS.HTABLE__u, STANDARD.GRMR_OPS._HTABLE__type.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
+	LId	0, STANDARD.GRMR_OPS.HTABLE__u, STANDARD.GRMR_OPS._HTABLE__type.FST_1	; (index - FST_1) * SIZ_1
+	SUB
+	LId	0, STANDARD.GRMR_OPS.HTABLE__u, STANDARD.GRMR_OPS._HTABLE__type.COMP_SIZ
+	LI	8
+	DIV
+	MUL
+	ADD					; add offset to start address
+	LVA	, STANDARD.GRMR_OPS._HTABLE_TYPE.HN
+	BLKMOV
 
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
@@ -1044,7 +1115,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	ADD					; add offset to start address
 	Ld 0,	STANDARD.GRMR_OPS.HCODE_disp
 ; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
-	Sw
+	Sb
 ret_lbl:
 	UNLINK 2
 	RTD	prm_siz

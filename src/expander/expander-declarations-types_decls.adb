@@ -176,6 +176,7 @@ is
     EXP_LST		: TREE		:= D( AS_EXP2, INT_RANGE );
     LVL_STR		:constant	STRING	:= IMAGE(	CODI.CUR_LEVEL );
     SIZE_CHAR		: CHARACTER	:= OPER_SIZ_CHAR( INTEGER_SPEC );
+
   begin
     DI( CD_LEVEL,	  INTEGER_SPEC, INTEGER( CODI.CUR_LEVEL	) );
     DI( CD_LEVEL,	  D( SM_BASE_TYPE, INTEGER_SPEC ), INTEGER( CODI.CUR_LEVEL	) );
@@ -956,6 +957,7 @@ is
 
 
     function  STATIC_TYPE_SIZE_BITS	( T :TREE )	return NATURAL;
+    function  STATIC_TYPE_ALIGN_BYTES	( T :TREE )	return NATURAL;					--| alignement du composant elementaire : 1/2/4/8
     function  STATIC_RECORD_SIZE_BITS	( REC :TREE )	return NATURAL;
 
 			------------------
@@ -1244,10 +1246,7 @@ put_line( "; SIL : idx_spec inattendu " & NODE_NAME'IMAGE( IDX_SPEC.TY ) );
       if  ARR_SPEC = TREE_VOID  or else  ARR_SPEC = TREE_NIL
       or else  ARR_SPEC.TY /= DN_CONSTRAINED_ARRAY
       then
-
-put_line( "; SCASB : arr_spec " & NODE_NAME'IMAGE( ARR_SPEC.TY ) );
-
-	return 0;
+        return 0;
       end if;
 
 -- Cache : une taille N'EST en cache que si elle est CONNUE et
@@ -1256,10 +1255,8 @@ put_line( "; SCASB : arr_spec " & NODE_NAME'IMAGE( ARR_SPEC.TY ) );
 	-- un tableau vide se recalcule pour rien, c'est sans danger.
       declare
         CIS	: TREE	:= D( CD_IMPL_SIZE, ARR_SPEC );
+
       begin
-
-put_line( "; SCASB : cis pt " & VPTR_TYPE'IMAGE( CIS.PT ) );
-
         if  CIS /= TREE_VOID  and then  CIS /= TREE_NIL
 		and then  DI( CD_IMPL_SIZE, ARR_SPEC ) > 0
         then
@@ -1267,20 +1264,11 @@ put_line( "; SCASB : cis pt " & VPTR_TYPE'IMAGE( CIS.PT ) );
         end if;
       end;
 
---      if  D( CD_IMPL_SIZE, ARR_SPEC ) /= TREE_VOID  then
-
-
---	return NATURAL( DI( CD_IMPL_SIZE, ARR_SPEC ) );
---      end if;
-
       BASE_TYPE := D( SM_BASE_TYPE, ARR_SPEC );
       COMP_TYPE := FULL_TYPE_VIEW( D( SM_COMP_TYPE, BASE_TYPE ) );
       COMP_SIZE := STATIC_TYPE_SIZE_BITS( COMP_TYPE );
 
       if  COMP_SIZE = 0  then
-
-put_line( "; SCASB : comp non statique " & NODE_NAME'IMAGE( COMP_TYPE.TY ) );
-
         return 0;
       end if;
 
@@ -1292,9 +1280,6 @@ put_line( "; SCASB : comp non statique " & NODE_NAME'IMAGE( COMP_TYPE.TY ) );
 	LEN := STATIC_INDEX_LENGTH( IDX_TYPE );
 
 	if  LEN = 0  then
-
-put_line( "; SCASB : index non statique " & NODE_NAME'IMAGE( IDX_TYPE.TY ) );
-
 	  return 0;
 	end if;
 
@@ -1346,6 +1331,37 @@ put_line( "; SCASB : index non statique " & NODE_NAME'IMAGE( IDX_TYPE.TY ) );
       end if;
 
     end	STATIC_TYPE_SIZE_BITS;
+	-----------------------
+
+			------------------------
+    function		STATIC_TYPE_ALIGN_BYTES	( T : TREE )	return NATURAL
+    is			-----------------------
+    -- Alignement naturel du composant ELEMENTAIRE d'un type, en octets.
+    -- Scalaire : la taille de son conteneur. Tableau : l'alignement de son
+    -- composant (recursif : tableau de tableaux d'octets -> 1). Record,
+    -- access, inconnu : 8, conservateur (= comportement STATOFS historique).
+      TS	: TREE	:= FULL_TYPE_VIEW( T );
+    begin
+      if  TS = TREE_VOID  or else  TS = TREE_NIL  then
+        return 8;
+      end if;
+
+      if  TS.TY = DN_INTEGER  or else  TS.TY = DN_ENUMERATION  or else  TS.TY = DN_FIXED  then
+        case  OPER_SIZ_CHAR( TS )  is
+	when 'b'	=>  return 1;
+	when 'w'	=>  return 2;
+	when 'd'	=>  return 4;
+	when others	=>  return 8;
+        end case;
+      end if;
+
+      if  TS.TY = DN_ARRAY  then
+        return  STATIC_TYPE_ALIGN_BYTES( D( SM_COMP_TYPE, TS ) );
+      end if;
+
+      return 8;								-- DN_FLOAT, DN_ACCESS, DN_RECORD, autres
+
+    end	STATIC_TYPE_ALIGN_BYTES;
 	-----------------------
 
   begin
@@ -1469,29 +1485,7 @@ put_line( "; SCASB : index non statique " & NODE_NAME'IMAGE( IDX_TYPE.TY ) );
 		PUT_LINE( COMP_TYPE_STR & ".use__info" );
 	        end if;
 
-
-
-                  -- calcul IS_STATIC
---	        if  COMP_TYPE.TY in CLASS_SCALAR  or else  COMP_TYPE.TY in CLASS_CONSTRAINED  then
---		if  D( CD_IMPL_SIZE, COMP_TYPE ) = TREE_VOID  then
---		  IS_STATIC := FALSE;
---		end if;
-
---	        elsif  COMP_TYPE.TY = DN_RECORD  then
---		if  not IS_EMPTY( LIST( D( SM_DISCRIMINANT_S, COMP_TYPE ) ) )
---		  and then  D( SM_SIZE, COMP_TYPE ) = TREE_VOID
---		then
---		  IS_STATIC := FALSE;
---		end if;
---	        elsif  COMP_TYPE.TY = DN_ACCESS  then
---		null;
-
---	        else
---		IS_STATIC := FALSE;
---	        end if;
-
 	        if  STATIC_TYPE_SIZE_BITS( COMP_TYPE ) = 0  then
-put_line( "; NON STATIQUE " & NODE_NAME'IMAGE( COMP_TYPE.TY ) );
 		IS_STATIC := FALSE;
 	        end if;
 
@@ -1573,7 +1567,8 @@ put_line( "; NON STATIQUE " & NODE_NAME'IMAGE( COMP_TYPE.TY ) );
 	    end if;
 
 	    PUT_LINE( "STATOFS " & PRINT_NAME( D( LX_SYMREP, DISCRIMINANT_ID ) ) & ','
-			& INTEGER'IMAGE( ( DISCR_SIZE + CODI.STORAGE_UNIT - 1 ) / CODI.STORAGE_UNIT ) );
+			& INTEGER'IMAGE( ( DISCR_SIZE + CODI.STORAGE_UNIT - 1 ) / CODI.STORAGE_UNIT ) & ','
+			& INTEGER'IMAGE( STATIC_TYPE_ALIGN_BYTES( DISCR_TYPE ) ) );
 
 	    STATIC_SIZE := STATIC_SIZE
 		+ CODI.STORAGE_UNIT * ( ( DISCR_SIZE + CODI.STORAGE_UNIT - 1 ) / CODI.STORAGE_UNIT );
@@ -1624,12 +1619,6 @@ put_line( "; NON STATIQUE " & NODE_NAME'IMAGE( COMP_TYPE.TY ) );
 
 	      begin
 	        if  IS_STATIC  then
---	          if  COMP_TYPE.TY = DN_ACCESS  then
---		  COMP_SIZE := CODI.ADDR_SIZE * CODI.STORAGE_UNIT;  -- bits : 8 octets sur x86_64
---	          else
---		  COMP_SIZE := DI( CD_IMPL_SIZE, COMP_TYPE );
---	          end if;
-
 		COMP_SIZE := STATIC_TYPE_SIZE_BITS( COMP_TYPE );
 		if  COMP_SIZE = 0  then
 		  PUT_LINE( "; OFFSET NON STATIQUE A FAIRE ; taille inconnue pour " & COMP_ID_STR );
@@ -1640,8 +1629,11 @@ put_line( "; NON STATIQUE " & NODE_NAME'IMAGE( COMP_TYPE.TY ) );
 	          if  COMP_SIZE < CODI.STORAGE_UNIT  then
 		  COMP_SIZE := CODI.STORAGE_UNIT;
 	          end if;
+
 	          PUT_LINE( "STATOFS " & COMP_ID_STR & ','
-			& INTEGER'IMAGE( ( COMP_SIZE + CODI.STORAGE_UNIT - 1 ) / CODI.STORAGE_UNIT ) );
+			& INTEGER'IMAGE( ( COMP_SIZE + CODI.STORAGE_UNIT - 1 ) / CODI.STORAGE_UNIT ) & ','
+			& INTEGER'IMAGE( STATIC_TYPE_ALIGN_BYTES( COMP_TYPE ) ) );
+
 	          STATIC_SIZE := STATIC_SIZE
 			   + CODI.STORAGE_UNIT * ( ( COMP_SIZE + CODI.STORAGE_UNIT - 1 ) / CODI.STORAGE_UNIT );
 
@@ -2001,6 +1993,16 @@ put_line( "; CODE_ACCESS_DECL cd_level rempli" );
 
     DI( CD_LEVEL,	  TYPE_SPEC, INTEGER( CODI.CUR_LEVEL ) );
     DB( CD_COMPILED,  TYPE_SPEC, TRUE );
+
+    if  TYPE_SPEC.TY = DN_INTEGER  or else  TYPE_SPEC.TY = DN_ENUMERATION  then
+      declare									-- representation = celle de la base :
+        BASE	: TREE	:= D( SM_BASE_TYPE, TYPE_SPEC );				-- recopier pour les lecteurs directs
+      begin									-- de CD_IMPL_SIZE (COMP_SIZE_BITS...)
+        if  BASE /= TREE_VOID  and then  BASE /= TREE_NIL  then
+	DI( CD_IMPL_SIZE, TYPE_SPEC, DI( CD_IMPL_SIZE, BASE ) );
+        end if;
+      end;
+    end if;
 
     if  TYPE_SPEC.TY = DN_INTEGER  then
 				---------------

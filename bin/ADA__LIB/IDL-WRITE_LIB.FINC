@@ -16,7 +16,7 @@ VAR _LST_1, d
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	Sd	1, _FST_1
-	Lw 0,	STANDARD.IDL.PAGE_MAN.MAX_VPG_disp
+	ULw 0,	STANDARD.IDL.PAGE_MAN.MAX_VPG_disp
 	Sd	1, _LST_1
 	Ld	1, _LST_1
 	Ld	1, _FST_1
@@ -99,7 +99,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	LI	0
 	MUL
 	ADD
-	Lw 2,	HIGH_BLOCK_disp
+	ULw 2,	HIGH_BLOCK_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SUB
@@ -121,7 +121,7 @@ end namespace
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	Sd  2, ANON_54_40_aga._FST_1
-	Lw 0,	STANDARD.IDL.PAGE_MAN.MAX_VPG_disp
+	ULw 0,	STANDARD.IDL.PAGE_MAN.MAX_VPG_disp
 	Sd  2, ANON_54_40_aga._LST_1
 	Ld  2, ANON_54_40_aga._LST_1
 	Ld  2, ANON_54_40_aga._FST_1
@@ -161,7 +161,7 @@ L4:
 	BT  L4
 L5:
 	La 1, STANDARD.IDL.WRITE_LIB_L13.DONT_MOVE_disp
-	Lw 2,	HIGH_BLOCK_disp
+	ULw 2,	HIGH_BLOCK_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
@@ -170,8 +170,8 @@ L5:
 	LI	0
 	MUL
 	ADD
-	Lw 0,	STANDARD.IDL.PAGE_MAN.MAX_VPG_disp
-	Lw 2,	HIGH_BLOCK_disp
+	ULw 0,	STANDARD.IDL.PAGE_MAN.MAX_VPG_disp
+	ULw 2,	HIGH_BLOCK_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
@@ -194,7 +194,7 @@ end namespace
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	Sd  2, ANON_55_47_aga._FST_1
-	Lw 0,	STANDARD.IDL.PAGE_MAN.MAX_VPG_disp
+	ULw 0,	STANDARD.IDL.PAGE_MAN.MAX_VPG_disp
 	Sd  2, ANON_55_47_aga._LST_1
 	Ld  2, ANON_55_47_aga._LST_1
 	Ld  2, ANON_55_47_aga._FST_1
@@ -311,23 +311,23 @@ begin:					;---------- BDY INSTRUCTIONS
 ; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
 	Sw  4,	NBR_PAGES_WITHED_disp
 VAR	IL14_disp, w				; compteur boucle LOOP__2
-	Lw 4,	FIRST_PAGE_disp
+	ULw 4,	FIRST_PAGE_disp
 	Sw  4,	IL14_disp
 VAR	LMT_IL14_disp, w			; limite boucle LOOP__2
-	Lw 4,	FIRST_PAGE_disp
-	Lw 4,	NBR_PAGES_WITHED_disp
+	ULw 4,	FIRST_PAGE_disp
+	ULw 4,	NBR_PAGES_WITHED_disp
 	ADD
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SUB
 	Sw  4,	LMT_IL14_disp
-	Lw  4,	IL14_disp				; test null range LOOP__2
-	Lw  4,	LMT_IL14_disp
+	ULw  4,	IL14_disp				; test null range LOOP__2
+	ULw  4,	LMT_IL14_disp
 	CGT
 	BT	L13
 LOOP__2:					; corps boucle LOOP__2
 	La	 1, STANDARD.IDL.WRITE_LIB_L13.DONT_MOVE_disp	; array data start address on stack
-	Lw	4, IL14_disp
+	ULw 4,	IL14_disp
 	DUP
 	LId	1, STANDARD.IDL.WRITE_LIB_L13.DONT_MOVE__u, STANDARD.IDL.WRITE_LIB_L13._DONT_MOVE__type.FST_1
 	CLT
@@ -345,11 +345,11 @@ LOOP__2:					; corps boucle LOOP__2
 	ADD					; add offset to start address
 	LI	1
 	Sb
-	Lw  4,	IL14_disp				; test de sortie LOOP__2
-	Lw  4,	LMT_IL14_disp
+	ULw  4,	IL14_disp				; test de sortie LOOP__2
+	ULw  4,	LMT_IL14_disp
 	CEQ
 	BT	L13
-	Lw  4,	IL14_disp				; mise a jour compteur LOOP__2
+	ULw  4,	IL14_disp				; mise a jour compteur LOOP__2
 	INC
 	Sw  4,	IL14_disp
 	BRA	LOOP__2				; iteration suivante LOOP__2
@@ -701,19 +701,17 @@ VAR SIZ, d
 	Sa	2, use__info
 USEINFO 2, ID, 	La 0, STANDARD._INTEGER.use__info
 USEINFO 2, NAME, 	La 2, STANDARD.IDL.WRITE_LIB_L13.WRITE_UNIT_L15.SEQ_IO._FILE_NAME_BUFFER.use__info
-; SCASB : cis pt HI
 USEINFO 2, NAME_LEN, 	La 0, STANDARD._POSITIVE.use__info
 USEINFO 2, IS_OPENED, 	La 0, STANDARD._BOOLEAN.use__info
 USEINFO 2, MODE, 	La 2, STANDARD.IDL.WRITE_LIB_L13.WRITE_UNIT_L15.SEQ_IO._FILE_MODE.use__info
 USEINFO 2, AT_END_OF_FILE, 	La 0, STANDARD._BOOLEAN.use__info
 virtual at 0				; calcul des offsets statiques
-STATOFS ID, 4
-; SCASB : cis pt HI
-STATOFS NAME, 256
-STATOFS NAME_LEN, 4
-STATOFS IS_OPENED, 1
-STATOFS MODE, 1
-STATOFS AT_END_OF_FILE, 1
+STATOFS ID, 4, 4
+STATOFS NAME, 256, 8
+STATOFS NAME_LEN, 4, 4
+STATOFS IS_OPENED, 1, 1
+STATOFS MODE, 1, 1
+STATOFS AT_END_OF_FILE, 1, 1
 size = $
 end virtual
 	LI	 size*8
@@ -954,11 +952,11 @@ VAR	ANON_132_23__dat, STANDARD.IDL._TREE.size
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.FST
+	ULb	0, STANDARD.IDL._ATTR_NBR.FST
 	CLT
 	BT	STANDARD.ce_raise_
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.LST
+	ULb	0, STANDARD.IDL._ATTR_NBR.LST
 	CGT
 	BT	STANDARD.ce_raise_
 	CALL	STANDARD.IDL.IDL_MAN. ,DABS_L38
@@ -1062,21 +1060,21 @@ L42:
 					; fin case
 namespace	RECOPIE_ET_MARQUAGE
 ELB 5					;    BODY ELAB
-VAR LENGTH_disp, w				; variable entiere
+VAR LENGTH_disp, b				; variable entiere
 	La	4, STANDARD.IDL.WRITE_LIB_L13.WRITE_UNIT_L15.RECOPIE_POUR_COMPACTION_L29.BLOCK__3.WORD_ZERO_disp
 	Ld
 	LI	2
 	LI	7
 	UBFX
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.FST
+	ULb	0, STANDARD.IDL._ATTR_NBR.FST
 	CLT
 	BT	STANDARD.ce_raise_
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.LST
+	ULb	0, STANDARD.IDL._ATTR_NBR.LST
 	CGT
 	BT	STANDARD.ce_raise_
-	Sw  5,	LENGTH_disp
+	Sb  5,	LENGTH_disp
 
 VAR COPIED_T_disp, q			; variable record : pointeur aux data record
 VAR COPIED_T__u, q				; variable record : pointeur aux useinfo
@@ -1097,13 +1095,13 @@ VAR	ANON_157_27__dat, STANDARD.IDL._TREE.size
 	Sa  5, ANON_157_27__u
 	LVA 5, ANON_157_27_disp
 					; doublet resultat record anonyme
-	Lw 5,	LENGTH_disp
+	ULb 5,	LENGTH_disp
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.FST
+	ULb	0, STANDARD.IDL._ATTR_NBR.FST
 	CLT
 	BT	STANDARD.ce_raise_
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.LST
+	ULb	0, STANDARD.IDL._ATTR_NBR.LST
 	CGT
 	BT	STANDARD.ce_raise_
 	La 3, -T_ofs
@@ -1206,11 +1204,11 @@ VAR	ANON_163_27__dat, STANDARD.IDL._TREE.size
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.FST
+	ULb	0, STANDARD.IDL._ATTR_NBR.FST
 	CLT
 	BT	STANDARD.ce_raise_
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.LST
+	ULb	0, STANDARD.IDL._ATTR_NBR.LST
 	CGT
 	BT	STANDARD.ce_raise_
 	CALL	STANDARD.IDL.IDL_MAN. ,DABS_L38
@@ -1218,11 +1216,11 @@ VAR	ANON_163_27__dat, STANDARD.IDL._TREE.size
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.FST
+	ULb	0, STANDARD.IDL._ATTR_NBR.FST
 	CLT
 	BT	STANDARD.ce_raise_
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.LST
+	ULb	0, STANDARD.IDL._ATTR_NBR.LST
 	CGT
 	BT	STANDARD.ce_raise_
 	CALL	STANDARD.IDL.IDL_MAN. ,DABS_L37
@@ -1234,11 +1232,11 @@ L49:					; post if
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.FST
+	ULb	0, STANDARD.IDL._ATTR_NBR.FST
 	CLT
 	BT	STANDARD.ce_raise_
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.LST
+	ULb	0, STANDARD.IDL._ATTR_NBR.LST
 	CGT
 	BT	STANDARD.ce_raise_
 	CALL	STANDARD.IDL.IDL_MAN. ,DABS_L37
@@ -1266,10 +1264,10 @@ VAR	IL54_disp, b				; compteur boucle LOOP__4
 	LI	1
 	Sb  5,	IL54_disp
 VAR	LMT_IL54_disp, b			; limite boucle LOOP__4
-	Lw 5,	LENGTH_disp
+	ULb 5,	LENGTH_disp
 	Sb  5,	LMT_IL54_disp
-	Lb  5,	IL54_disp				; test null range LOOP__4
-	Lb  5,	LMT_IL54_disp
+	ULb  5,	IL54_disp				; test null range LOOP__4
+	ULb  5,	LMT_IL54_disp
 	CGT
 	BT	L53
 LOOP__4:					; corps boucle LOOP__4
@@ -1283,32 +1281,32 @@ VAR	ANON_170_29__dat, STANDARD.IDL._TREE.size
 	LVA 5, ANON_170_29_disp
 					; doublet resultat record anonyme
 	La  3,	-T_ofs
-	Lb  5,	IL54_disp
+	ULb  5,	IL54_disp
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.FST
+	ULb	0, STANDARD.IDL._ATTR_NBR.FST
 	CLT
 	BT	STANDARD.ce_raise_
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.LST
+	ULb	0, STANDARD.IDL._ATTR_NBR.LST
 	CGT
 	BT	STANDARD.ce_raise_
 	CALL	STANDARD.IDL.IDL_MAN. ,DABS_L38
 	LVA 5,	COPIED_T_disp
-	Lb  5,	IL54_disp
+	ULb  5,	IL54_disp
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.FST
+	ULb	0, STANDARD.IDL._ATTR_NBR.FST
 	CLT
 	BT	STANDARD.ce_raise_
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.LST
+	ULb	0, STANDARD.IDL._ATTR_NBR.LST
 	CGT
 	BT	STANDARD.ce_raise_
 	CALL	STANDARD.IDL.IDL_MAN. ,DABS_L37
-	Lb  5,	IL54_disp				; test de sortie LOOP__4
-	Lb  5,	LMT_IL54_disp
+	ULb  5,	IL54_disp				; test de sortie LOOP__4
+	ULb  5,	LMT_IL54_disp
 	CEQ
 	BT	L53
-	Lb  5,	IL54_disp				; mise a jour compteur LOOP__4
+	ULb  5,	IL54_disp				; mise a jour compteur LOOP__4
 	INC
 	Sb  5,	IL54_disp
 	BRA	LOOP__4				; iteration suivante LOOP__4
@@ -1360,10 +1358,10 @@ VAR	IL58_disp, b				; compteur boucle PROPAGER_RECOPIE
 	LI	1
 	Sb  5,	IL58_disp
 VAR	LMT_IL58_disp, b			; limite boucle PROPAGER_RECOPIE
-	Lw 5,	LENGTH_disp
+	ULb 5,	LENGTH_disp
 	Sb  5,	LMT_IL58_disp
-	Lb  5,	IL58_disp				; test null range PROPAGER_RECOPIE
-	Lb  5,	LMT_IL58_disp
+	ULb  5,	IL58_disp				; test null range PROPAGER_RECOPIE
+	ULb  5,	LMT_IL58_disp
 	CGT
 	BT	L57
 PROPAGER_RECOPIE:				; corps boucle PROPAGER_RECOPIE
@@ -1386,33 +1384,33 @@ VAR	ANON_179_54__dat, STANDARD.IDL._TREE.size
 	LVA 5, ANON_179_54_disp
 					; doublet resultat record anonyme
 	La  3,	-T_ofs
-	Lb  5,	IL58_disp
+	ULb  5,	IL58_disp
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.FST
+	ULb	0, STANDARD.IDL._ATTR_NBR.FST
 	CLT
 	BT	STANDARD.ce_raise_
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.LST
+	ULb	0, STANDARD.IDL._ATTR_NBR.LST
 	CGT
 	BT	STANDARD.ce_raise_
 	CALL	STANDARD.IDL.IDL_MAN. ,DABS_L38
 	CALL	STANDARD.IDL.WRITE_LIB_L13.WRITE_UNIT_L15. ,RECOPIE_POUR_COMPACTION_L29
 	LVA 5,	COPIED_T_disp
-	Lb  5,	IL58_disp
+	ULb  5,	IL58_disp
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.FST
+	ULb	0, STANDARD.IDL._ATTR_NBR.FST
 	CLT
 	BT	STANDARD.ce_raise_
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.LST
+	ULb	0, STANDARD.IDL._ATTR_NBR.LST
 	CGT
 	BT	STANDARD.ce_raise_
 	CALL	STANDARD.IDL.IDL_MAN. ,DABS_L37
-	Lb  5,	IL58_disp				; test de sortie PROPAGER_RECOPIE
-	Lb  5,	LMT_IL58_disp
+	ULb  5,	IL58_disp				; test de sortie PROPAGER_RECOPIE
+	ULb  5,	LMT_IL58_disp
 	CEQ
 	BT	L57
-	Lb  5,	IL58_disp				; mise a jour compteur PROPAGER_RECOPIE
+	ULb  5,	IL58_disp				; mise a jour compteur PROPAGER_RECOPIE
 	INC
 	Sb  5,	IL58_disp
 	BRA	PROPAGER_RECOPIE			; iteration suivante PROPAGER_RECOPIE
@@ -1632,11 +1630,11 @@ VAR FIRST_PAGE_disp, w			; variable entiere
 	LI	15
 	UBFX
 	DUP
-	Lw	0, STANDARD.IDL.PAGE_MAN._VPG_IDX.FST
+	ULw	0, STANDARD.IDL.PAGE_MAN._VPG_IDX.FST
 	CLT
 	BT	STANDARD.ce_raise_
 	DUP
-	Lw	0, STANDARD.IDL.PAGE_MAN._VPG_IDX.LST
+	ULw	0, STANDARD.IDL.PAGE_MAN._VPG_IDX.LST
 	CGT
 	BT	STANDARD.ce_raise_
 	Sw  3,	FIRST_PAGE_disp
@@ -1644,7 +1642,7 @@ VAR FIRST_PAGE_disp, w			; variable entiere
 VAR NBR_PAGES_disp, d			; variable entiere
 	LI	0					; lieu resultat sur pile
 	CALL	STANDARD.IDL.IDL_MAN. ,LAST_BLOCK_L49
-	Lw 3,	FIRST_PAGE_disp
+	ULw 3,	FIRST_PAGE_disp
 	SUB
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
@@ -1691,7 +1689,7 @@ VAR POINTER__dat, STANDARD.IDL._TREE.size
 	LI	8
 	BFI
 					; pack PG range 9 .. 23 width 15
-	Lw 3,	FIRST_PAGE_disp
+	ULw 3,	FIRST_PAGE_disp
 	LI	9
 	LI	15
 	BFI
@@ -1756,11 +1754,11 @@ VAR	ANON_218_20__dat, STANDARD.IDL._TREE.size
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.FST
+	ULb	0, STANDARD.IDL._ATTR_NBR.FST
 	CLT
 	BT	STANDARD.ce_raise_
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.LST
+	ULb	0, STANDARD.IDL._ATTR_NBR.LST
 	CGT
 	BT	STANDARD.ce_raise_
 	CALL	STANDARD.IDL.IDL_MAN. ,DABS_L38
@@ -1790,7 +1788,7 @@ VAR	ANON_218_20__dat, STANDARD.IDL._TREE.size
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Ld
+	ULd
 	DUP
 	LId	0, STANDARD.IDL.PAGE_MAN.PAG__u, STANDARD.IDL.PAGE_MAN._PAG__type.FST_1
 	CLT

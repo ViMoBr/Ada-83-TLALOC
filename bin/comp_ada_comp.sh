@@ -97,7 +97,8 @@ secondesC=$((dureeC % 60))
 
 printf "Durée de compilation : %02dh %02dmin %02dsec\n" "$heuresC" "$minutesC" "$secondesC"
 
-if [ $1="A" ]; then
+if [ $1="A" ]
+then
 
 cd ./ADA__LIB
 debutA=$(date +%s)
@@ -113,3 +114,4 @@ secondesA=$((dureeA % 60))
 
 printf "Durée d assemblage : %02dh %02dmin %02dsec\n" "$heuresA" "$minutesA" "$secondesA"
 fi
+

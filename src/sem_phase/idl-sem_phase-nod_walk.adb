@@ -948,19 +948,17 @@ is					--------
 	null;
         end;
 
-      when DN_LENGTH_ENUM_REP	=>
+      when  DN_LENGTH_ENUM_REP =>
         declare
 	NAME : TREE := D (AS_NAME, NODE);
 	EXP  : TREE := D (AS_EXP, NODE);
-        begin
-				-- IF IT IS A LENGTH CLAUSE
-	if NAME.TY = DN_ATTRIBUTE then
-	  REP_CLAU.RESOLVE_LENGTH_REP	(NAME, EXP, H);
-	  D (AS_EXP, NODE, EXP);
 
-				        -- ELSE -- IT IS AN ENUMERATION	REPRESENTATION CLAUSE
-				        -- ... (BY SYNTAX -- NAME IS USED_OBJECT_ID, EXP IS	AGGREGATE)
-	else
+        begin
+	if  NAME.TY = DN_ATTRIBUTE  then								-- IF IT IS A LENGTH CLAUSE
+	  REP_CLAU.RESOLVE_LENGTH_REP( NAME, EXP, H );
+	  D( AS_EXP, NODE, EXP );
+
+	else											-- IT IS AN ENUMERATION REPRESENTATION CLAUSE
 	  REP_CLAU.RESOLVE_ENUM_REP (NAME, EXP,	H);
 	  D (AS_NAME, NODE,	NAME);
 	end if;

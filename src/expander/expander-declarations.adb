@@ -251,6 +251,9 @@ null;
   begin
     if  CODI.DEBUG  then PUT( tab50 & "; CODE_PACKAGE_SPEC" ); end if;
     NEW_LINE;
+    if  CODI.GENERATE_BINARY_MAP  then
+      PUT_LINE( " hexa_show '" & " spec ', $" );
+    end if;
 
     CODE_DECL_S( D(	AS_DECL_S1, PACKAGE_SPEC ) );
     CODE_DECL_S( D(	AS_DECL_S2, PACKAGE_SPEC ) );
@@ -977,6 +980,50 @@ null;
 	  elsif  INIT_EXP.TY = DN_FUNCTION_CALL  then
 	    EXPRESSIONS.CODE_EXP( INIT_EXP );
 
+	  elsif  ( INIT_EXP.TY = DN_SELECTED
+	            and then  D( SM_DEFN, D( AS_DESIGNATOR, INIT_EXP ) ).TY /= DN_FUNCTION_ID )
+	    or else  INIT_EXP.TY = DN_INDEXED
+	  then
+	  -- Initialiseur composant tableau INLINE (TXT := HTABLE(I).HN) : le
+	  -- composant n'a pas de doublet {_disp,__u} propre, et la retombee
+	  -- "non gere" ci-dessous laissait VC_disp NON ALLOUE -- deuxieme
+	  -- segfault du bootstrap (GRMR_OPS.GRMR_OP_IMAGE), frere de celui de
+	  -- HASH_SEARCH corrige dans CODE_ARRAY_OPERAND.  Allouer la destination
+	  -- puis BLKMOV depuis l'@data du composant, obtenue directement par
+	  -- CODE_OBJECT_ADDRESS (pas de doublet a dereferencer : PAS de "La ,0",
+	  -- contrairement au repli defensif de la branche DN_QUALIFIED).
+	  -- Le designator fonction (P.F sans parametre) reste hors perimetre :
+	  -- il retombe comme avant dans la branche bruyante.
+	    COVAR_ALLOCATE;
+	    PUT_LINE( tab & "La" & tab & LVL_STR & ", " & VC_STR & "_disp" );					-- @DST
+	    PUT( tab & "Ld" & tab & IMAGE( TYPE_LEVEL ) & ", " );						-- LEN en octets : SIZ destination / 8
+	    PUT_TYPE_INFO_PREFIX;
+	    PUT_LINE( ".SIZ" );
+	    PUT_LINE( tab & "LI" & tab & '8' );
+	    PUT_LINE( tab & "DIV" );
+	    EXPRESSIONS.CODE_OBJECT_ADDRESS( INIT_EXP );							-- @SRC = @data du composant
+	    PUT_LINE( tab & "BLKMOV" );
+
+	  elsif  INIT_EXP.TY = DN_SLICE  then
+	  -- Initialiseur TRANCHE (TEMP_STRING := OP_TEXT(II..II+1), TRONQ :=
+	  -- IMAGE(4..IMAGE'LENGTH) dans LEX.LEX_IMAGE) : troisieme membre de la
+	  -- famille "operande sans doublet propre" -- la retombee "non gere"
+	  -- laissait la aussi VC_disp NON ALLOUE (defaillance differee au premier
+	  -- usage : CE ou segfault chez l'appelant, cf. HASH_POS).  CODE_SLICE en
+	  -- mode SOURCE fabrique le doublet anonyme de la tranche (bornes de la
+	  -- slice) ; ensuite meme copie que le repli defensif DN_QUALIFIED :
+	  -- extraction du data_ptr par "La ,0" puis BLKMOV vers la destination.
+	    COVAR_ALLOCATE;
+	    PUT_LINE( tab & "La" & tab & LVL_STR & ", " & VC_STR & "_disp" );					-- @DST
+	    PUT( tab & "Ld" & tab & IMAGE( TYPE_LEVEL ) & ", " );						-- LEN en octets : SIZ destination / 8
+	    PUT_TYPE_INFO_PREFIX;
+	    PUT_LINE( ".SIZ" );
+	    PUT_LINE( tab & "LI" & tab & '8' );
+	    PUT_LINE( tab & "DIV" );
+	    EXPRESSIONS.CODE_SLICE( INIT_EXP, IS_DESTINATION => FALSE );					-- @doublet de la tranche
+	    PUT_LINE( tab & "La" & tab & ", 0" );							-- @SRC = data_ptr du doublet
+	    PUT_LINE( tab & "BLKMOV" );
+
 	  else
 	    PUT_LINE( "; COMPILE_ARRAY_VAR ASSOC.TY non gere " & NODE_NAME'IMAGE( INIT_EXP.TY ) );
 	  end if;
@@ -1223,6 +1270,11 @@ put_line( "; CODE_VC_NAME " & NODE_NAME'IMAGE( VC_NAME.TY ) );
 
     begin
       TYPE_SPEC := CODI.FULL_VIEW( TYPE_SPEC );
+
+      if  CODI.GENERATE_BINARY_MAP  then
+        PUT_LINE( " hexa_show 'var elab " & PRINT_NAME( D( LX_SYMREP, VC_NAME ) ) & " ', $" );
+        PUT_LINE( " hexa_show ' disp ', " & PRINT_NAME( D( LX_SYMREP, VC_NAME ) ) & "_disp" );
+      end if;
 
       case TYPE_SPEC.TY is
       when DN_ENUMERATION		=> TYPE_SYMREP := D( XD_SOURCE_NAME, TYPE_SPEC );
@@ -1680,7 +1732,8 @@ put_line( "; CODE_VC_NAME " & NODE_NAME'IMAGE( VC_NAME.TY ) );
 		-- LD : pile = [adresse] → pile = [valeur]
 	      PUT_LINE(	"BRA post_LD_" & FORMAL_STR );
 	      PUT_LINE(	"LD_" & FORMAL_STR & ".elab:" );
-	      PUT_LINE(	tab & "L"	& SIZ_CHAR & " -1, 0" );
+	      PUT_LINE(	tab & OPER_LOAD_STR( DEFN_TYPE_SPEC ) & " -1, 0" );
+--	      PUT_LINE(	tab & "L"	& SIZ_CHAR & " -1, 0" );
 	      PUT_LINE(	tab & "RTD 0" );
 	      PUT_LINE(	"post_LD_" & FORMAL_STR & ":" );
 
@@ -1742,7 +1795,6 @@ put_line( "; CODE_VC_NAME " & NODE_NAME'IMAGE( VC_NAME.TY ) );
 	      PUT_LINE(	tab & "RTD 0" );
 	      PUT_LINE(	"post_ST_" & FORMAL_STR & ":" );
 
-		-- ADR : pile = [@param_out, valeur] → pile = []
 	      PUT_LINE(	"BRA post_INADR_" &	FORMAL_STR );
 	      PUT_LINE(	"INADR_" & FORMAL_STR	& ".elab:" );
 	      PUT_LINE(	tab & "LIa" );								-- Indirection
@@ -1931,6 +1983,9 @@ end if;
 	PUT( "PRO" & tab & LABELED_SUB_STR );
 	if  CODI.DEBUG  then PUT( tab50 & ";---------- PRO " & SUB_NAME ); end if;
 	NEW_LINE;
+	if  CODI.GENERATE_BINARY_MAP  then
+	  PUT_LINE( " hexa_show '" & SUB_NAME & '_' & LABEL_STR( LBL ) & " ', $" );
+	end if;
 
 	CODE_HEADER( HEADER	);
 
@@ -2130,7 +2185,8 @@ then
   PUT_LINE( tab & "La" & tab & ", 0" );
 
   -- Lire les octets bruts avec la taille du type cible.
-  PUT_LINE( tab & "L" & OPER_SIZ_CHAR( DST_TYPE ) );
+  PUT_LINE( tab & OPER_LOAD_STR( DST_TYPE ) );
+--  PUT_LINE( tab & "L" & OPER_SIZ_CHAR( DST_TYPE ) );
 
   -- Stocker dans le slot résultat.
   PUT_LINE( tab & "S" & OPER_SIZ_CHAR( DST_TYPE )

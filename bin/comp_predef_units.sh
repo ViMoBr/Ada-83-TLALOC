@@ -12,6 +12,7 @@ rm ./ADA__LIB/*.SUB
 ./a83.sh ./ direct_io.ads W
 ./a83.sh ./ sequential_io.ads W
 ./a83.sh ./ unchecked_conversion.ads W
+./a83.sh ./ unchecked_deallocation.ads W
 
 ./a83.sh ./ _standrd.adb W
 ./a83.sh ./ calendar.adb W

@@ -345,7 +345,7 @@ VAR SIZ, d
 	Sa	0, use__info
 VAR FST, w
 VAR LST, w
-	LI	16
+	LI	15
 	Sd	0, SIZ
 ; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
 	LI	0
@@ -364,7 +364,7 @@ VAR SIZ, d
 	Sa	0, use__info
 VAR FST, w
 VAR LST, w
-	LI	16
+	LI	15
 	Sd	0, SIZ
 ; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
 	LI	0
@@ -381,16 +381,16 @@ VAR use__info, q
 VAR SIZ, d
 	LVA	0, SIZ
 	Sa	0, use__info
-VAR FST, w
-VAR LST, w
-	LI	16
+VAR FST, b
+VAR LST, b
+	LI	7
 	Sd	0, SIZ
 ; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
 	LI	0
-	Sw	0, FST
+	Sb	0, FST
 ; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
 	LI	127
-	Sw	0, LST
+	Sb	0, LST
 end namespace
 
 					; _ATTR_NBR INTEGER SUBTYPE INFO
@@ -400,16 +400,16 @@ VAR use__info, q
 VAR SIZ, d
 	LVA	0, SIZ
 	Sa	0, use__info
-VAR FST, w
-VAR LST, w
-	LI	16
+VAR FST, b
+VAR LST, b
+	LI	7
 	Sd	0, SIZ
 ; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
 	LI	0
-	Sw	0, FST
+	Sb	0, FST
 ; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
 	LI	127
-	Sw	0, LST
+	Sb	0, LST
 VAR PARENT__u, q
 	La	0, STANDARD.IDL._LINE_IDX.use__info
 	Sa	0, PARENT__u
@@ -441,16 +441,16 @@ VAR use__info, q
 VAR SIZ, d
 	LVA	0, SIZ
 	Sa	0, use__info
-VAR FST, w
-VAR LST, w
-	LI	16
+VAR FST, b
+VAR LST, b
+	LI	8
 	Sd	0, SIZ
 ; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
 	LI	0
-	Sw	0, FST
+	Sb	0, FST
 ; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
 	LI	255
-	Sw	0, LST
+	Sb	0, LST
 end namespace
 
 					; _VPTR_TYPE ENUMERATION TYPE INFO
@@ -648,8 +648,8 @@ VAR SIZ, d
 USEINFO 0, FIRST, 	La 0, STANDARD.IDL._TREE.use__info
 USEINFO 0, NEXT, 	La 0, STANDARD.IDL._TREE.use__info
 virtual at 0				; calcul des offsets statiques
-STATOFS FIRST, 4
-STATOFS NEXT, 4
+STATOFS FIRST, 4, 8
+STATOFS NEXT, 4, 8
 size = $
 end virtual
 	LI	 size*8
@@ -891,7 +891,7 @@ VAR LST, w
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	Sw	0, FST
-	Lw 0,	STANDARD.IDL.PAGE_MAN.MAX_VPG_disp
+	ULw 0,	STANDARD.IDL.PAGE_MAN.MAX_VPG_disp
 	Sw	0, LST
 VAR PARENT__u, q
 	La	0, STANDARD.IDL._PAGE_IDX.use__info
@@ -912,7 +912,7 @@ VAR LST, w
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	Sw	0, FST
-	Lw 0,	STANDARD.IDL.PAGE_MAN.MAX_VPG_disp
+	ULw 0,	STANDARD.IDL.PAGE_MAN.MAX_VPG_disp
 	Sw	0, LST
 VAR PARENT__u, q
 	La	0, STANDARD.IDL._PAGE_IDX.use__info
@@ -1015,7 +1015,7 @@ VAR _LST_1, d
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	Sd	0, _FST_1
-	Lw 0,	STANDARD.IDL.PAGE_MAN.MAX_VPG_disp
+	ULw 0,	STANDARD.IDL.PAGE_MAN.MAX_VPG_disp
 	Sd	0, _LST_1
 	Ld	0, _LST_1
 	Ld	0, _FST_1
@@ -1057,7 +1057,7 @@ end namespace
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	Sd  0, ANON_36_52_aga._FST_1
-	Lw 0,	STANDARD.IDL.PAGE_MAN.MAX_VPG_disp
+	ULw 0,	STANDARD.IDL.PAGE_MAN.MAX_VPG_disp
 	Sd  0, ANON_36_52_aga._LST_1
 	Ld  0, ANON_36_52_aga._LST_1
 	Ld  0, ANON_36_52_aga._FST_1
@@ -1176,11 +1176,11 @@ USEINFO 0, CHANGED, 	La 0, STANDARD._BOOLEAN.use__info
 USEINFO 0, RECUPERABLE, 	La 0, STANDARD._BOOLEAN.use__info
 USEINFO 0, DATA, 	La 0, STANDARD.IDL.PAGE_MAN._A_SECTOR.use__info
 virtual at 0				; calcul des offsets statiques
-STATOFS VP, 2
-STATOFS AREA, 4
-STATOFS CHANGED, 1
-STATOFS RECUPERABLE, 1
-STATOFS DATA, 8
+STATOFS VP, 2, 2
+STATOFS AREA, 4, 4
+STATOFS CHANGED, 1, 1
+STATOFS RECUPERABLE, 1, 1
+STATOFS DATA, 8, 8
 size = $
 end virtual
 	LI	 size*8
@@ -1241,8 +1241,8 @@ VAR SIZ, d
 USEINFO 0, VP, 	La 0, STANDARD.IDL.PAGE_MAN._VPG_IDX.use__info
 USEINFO 0, FREE_LINE, 	La 0, STANDARD.IDL._LINE_NBR.use__info
 virtual at 0				; calcul des offsets statiques
-STATOFS VP, 2
-STATOFS FREE_LINE, 2
+STATOFS VP, 2, 2
+STATOFS FREE_LINE, 2, 2
 size = $
 end virtual
 	LI	 size*8
@@ -1551,9 +1551,9 @@ USEINFO 0, NS_SIZE, 	La 0, STANDARD.IDL._ATTR_NBR.use__info
 USEINFO 0, NS_FIRST_A, 	La 0, STANDARD._INTEGER.use__info
 USEINFO 0, NS_ARITY, 	La 0, STANDARD.IDL.IDL_MAN._ARITIES.use__info
 virtual at 0				; calcul des offsets statiques
-STATOFS NS_SIZE, 2
-STATOFS NS_FIRST_A, 4
-STATOFS NS_ARITY, 1
+STATOFS NS_SIZE, 1, 1
+STATOFS NS_FIRST_A, 4, 4
+STATOFS NS_ARITY, 1, 1
 size = $
 end virtual
 	LI	 size*8
@@ -1570,7 +1570,7 @@ VAR SIZ, d
 VAR _COMP_SIZ, d
 VAR _FST_1, d
 VAR _LST_1, d
-	LI	56
+	LI	48
 	Sd	0, _COMP_SIZ
 	Ld	0, _COMP_SIZ
 ; PROCESS_CONSTRAINED_ARRAY_TYPE_SPEC : index type non integer non traite DN_ENUMERATION
@@ -1601,8 +1601,8 @@ VAR SIZ, d
 USEINFO 0, ATTR, 	La 0, STANDARD.DIANA_NODE_ATTR_CLASS_NAMES._ATTRIBUTE_NAME.use__info
 USEINFO 0, IS_LIST, 	La 0, STANDARD._BOOLEAN.use__info
 virtual at 0				; calcul des offsets statiques
-STATOFS ATTR, 1
-STATOFS IS_LIST, 1
+STATOFS ATTR, 1, 1
+STATOFS IS_LIST, 1, 1
 size = $
 end virtual
 	LI	 size*8
@@ -1656,17 +1656,13 @@ USEINFO 0, TB_LAST_NODE, 	La 0, STANDARD._INTEGER.use__info
 USEINFO 0, TB_LAST_ATTR, 	La 0, STANDARD._INTEGER.use__info
 USEINFO 0, TB_LAST_NODE_ATTR, 	La 0, STANDARD._INTEGER.use__info
 USEINFO 0, TB_N_SPEC, 	La 0, STANDARD.IDL.IDL_TBL._NODE_SPECIF_TABLE.use__info
-; SCASB : cis pt HI
 USEINFO 0, TB_A_SPEC, 	La 0, STANDARD.IDL.IDL_TBL._ATTR_ID_TABLE.use__info
-; SCASB : cis pt HI
 virtual at 0				; calcul des offsets statiques
-STATOFS TB_LAST_NODE, 4
-STATOFS TB_LAST_ATTR, 4
-STATOFS TB_LAST_NODE_ATTR, 4
-; SCASB : cis pt HI
-STATOFS TB_N_SPEC, 1624
-; SCASB : cis pt HI
-STATOFS TB_A_SPEC, 2048
+STATOFS TB_LAST_NODE, 4, 4
+STATOFS TB_LAST_ATTR, 4, 4
+STATOFS TB_LAST_NODE_ATTR, 4, 4
+STATOFS TB_N_SPEC, 1392, 8
+STATOFS TB_A_SPEC, 2048, 8
 size = $
 end virtual
 	LI	 size*8
@@ -1792,11 +1788,11 @@ VAR	ANON_205_22__dat, STANDARD.IDL._TREE.size
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	5
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.FST
+	ULb	0, STANDARD.IDL._ATTR_NBR.FST
 	CLT
 	BT	STANDARD.ce_raise_
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.LST
+	ULb	0, STANDARD.IDL._ATTR_NBR.LST
 	CGT
 	BT	STANDARD.ce_raise_
 	LI  0
@@ -1824,17 +1820,17 @@ begin:					;---------- BDY INSTRUCTIONS
 endPRO
 namespace	BLOCK__3
 ELB 2					;    BODY ELAB
-VAR NB_disp, w				; variable entiere
+VAR NB_disp, b				; variable entiere
 	LI	 127
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.FST
+	ULb	0, STANDARD.IDL._ATTR_NBR.FST
 	CLT
 	BT	STANDARD.ce_raise_
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.LST
+	ULb	0, STANDARD.IDL._ATTR_NBR.LST
 	CGT
 	BT	STANDARD.ce_raise_
-	Sw  2,	NB_disp
+	Sb  2,	NB_disp
 
 VAR T_disp, q				; variable record : pointeur aux data record
 VAR T__u, q				; variable record : pointeur aux useinfo
@@ -1857,13 +1853,13 @@ VAR	ANON_216_21__dat, STANDARD.IDL._TREE.size
 					; doublet resultat record anonyme
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	2
-	Lw 2,	NB_disp
+	ULb 2,	NB_disp
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.FST
+	ULb	0, STANDARD.IDL._ATTR_NBR.FST
 	CLT
 	BT	STANDARD.ce_raise_
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.LST
+	ULb	0, STANDARD.IDL._ATTR_NBR.LST
 	CGT
 	BT	STANDARD.ce_raise_
 	LI  10
@@ -1880,28 +1876,28 @@ VAR	IL72_disp, b				; compteur boucle LOOP__5
 VAR	LMT_IL72_disp, b			; limite boucle LOOP__5
 	LI	 127
 	Sb  2,	LMT_IL72_disp
-	Lb  2,	IL72_disp				; test null range LOOP__5
-	Lb  2,	LMT_IL72_disp
+	ULb  2,	IL72_disp				; test null range LOOP__5
+	ULb  2,	LMT_IL72_disp
 	CGT
 	BT	L71
 LOOP__5:					; corps boucle LOOP__5
 	LVA  0,	STANDARD.IDL.TREE_NIL_disp		; array actual
 	LVA 2,	T_disp
-	Lb  2,	IL72_disp
+	ULb  2,	IL72_disp
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.FST
+	ULb	0, STANDARD.IDL._ATTR_NBR.FST
 	CLT
 	BT	STANDARD.ce_raise_
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.LST
+	ULb	0, STANDARD.IDL._ATTR_NBR.LST
 	CGT
 	BT	STANDARD.ce_raise_
 	CALL	STANDARD.IDL.IDL_MAN. ,DABS_L37
-	Lb  2,	IL72_disp				; test de sortie LOOP__5
-	Lb  2,	LMT_IL72_disp
+	ULb  2,	IL72_disp				; test de sortie LOOP__5
+	ULb  2,	LMT_IL72_disp
 	CEQ
 	BT	L71
-	Lb  2,	IL72_disp				; mise a jour compteur LOOP__5
+	ULb  2,	IL72_disp				; mise a jour compteur LOOP__5
 	INC
 	Sb  2,	IL72_disp
 	BRA	LOOP__5				; iteration suivante LOOP__5
@@ -2374,7 +2370,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lw	, STANDARD.IDL.IDL_TBL._NODE_SPECIF.NS_SIZE
+	ULb	, STANDARD.IDL.IDL_TBL._NODE_SPECIF.NS_SIZE
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	CEQ
@@ -2444,13 +2440,13 @@ VAR	ANON_294_14__dat, STANDARD.IDL._TREE.size
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lw	, STANDARD.IDL.IDL_TBL._NODE_SPECIF.NS_SIZE
+	ULb	, STANDARD.IDL.IDL_TBL._NODE_SPECIF.NS_SIZE
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.FST
+	ULb	0, STANDARD.IDL._ATTR_NBR.FST
 	CLT
 	BT	STANDARD.ce_raise_
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.LST
+	ULb	0, STANDARD.IDL._ATTR_NBR.LST
 	CGT
 	BT	STANDARD.ce_raise_
 	Lb  1,	-NN_ofs
@@ -2529,10 +2525,10 @@ VAR	LMT_IL114_disp, b			; limite boucle LOOP__7
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lw	, STANDARD.IDL.IDL_TBL._NODE_SPECIF.NS_SIZE
+	ULb	, STANDARD.IDL.IDL_TBL._NODE_SPECIF.NS_SIZE
 	Sb  1,	LMT_IL114_disp
-	Lb  1,	IL114_disp				; test null range LOOP__7
-	Lb  1,	LMT_IL114_disp
+	ULb  1,	IL114_disp				; test null range LOOP__7
+	ULb  1,	LMT_IL114_disp
 	CGT
 	BT	L113
 LOOP__7:					; corps boucle LOOP__7
@@ -2560,13 +2556,13 @@ LOOP__7:					; corps boucle LOOP__7
 	BF	L116
 	La  1,	-V_ofs
 	La  1,	-T_ofs
-	Lb  1,	IL114_disp
+	ULb  1,	IL114_disp
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.FST
+	ULb	0, STANDARD.IDL._ATTR_NBR.FST
 	CLT
 	BT	STANDARD.ce_raise_
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.LST
+	ULb	0, STANDARD.IDL._ATTR_NBR.LST
 	CGT
 	BT	STANDARD.ce_raise_
 	CALL	STANDARD.IDL.IDL_MAN. ,DABS_L37
@@ -2579,11 +2575,11 @@ L115:					; post if
 	LI	1
 	ADD
 	Sd  1,	APOS_disp
-	Lb  1,	IL114_disp				; test de sortie LOOP__7
-	Lb  1,	LMT_IL114_disp
+	ULb  1,	IL114_disp				; test de sortie LOOP__7
+	ULb  1,	LMT_IL114_disp
 	CEQ
 	BT	L113
-	Lb  1,	IL114_disp				; mise a jour compteur LOOP__7
+	ULb  1,	IL114_disp				; mise a jour compteur LOOP__7
 	INC
 	Sb  1,	IL114_disp
 	BRA	LOOP__7				; iteration suivante LOOP__7
@@ -2591,10 +2587,10 @@ L113:					; post loop LOOP__7
 ; CODE & concat _STRING
 VAR	ANON_313_15_L117_G_data, q
 VAR	ANON_313_15_L117_G_info, q
-VAR	ANON_313_82_L117_D_data, q
-VAR	ANON_313_82_L117_D_info, q
+VAR	ANON_313_84_L117_D_data, q
+VAR	ANON_313_84_L117_D_info, q
 VAR	ANON_313_15_L117_G_len,  q
-VAR	ANON_313_82_L117_D_len,  q
+VAR	ANON_313_84_L117_D_len,  q
 VAR	ANON_313_15_L117_R_disp, q
 VAR	ANON_313_15_L117_R__u,   q
 namespace ANON_313_15_L117_R_info
@@ -2606,10 +2602,10 @@ end namespace
 ; CODE & concat _STRING
 VAR	ANON_313_15_L118_G_data, q
 VAR	ANON_313_15_L118_G_info, q
-VAR	ANON_313_71_L118_D_data, q
-VAR	ANON_313_71_L118_D_info, q
+VAR	ANON_313_73_L118_D_data, q
+VAR	ANON_313_73_L118_D_info, q
 VAR	ANON_313_15_L118_G_len,  q
-VAR	ANON_313_71_L118_D_len,  q
+VAR	ANON_313_73_L118_D_len,  q
 VAR	ANON_313_15_L118_R_disp, q
 VAR	ANON_313_15_L118_R__u,   q
 namespace ANON_313_15_L118_R_info
@@ -2621,10 +2617,10 @@ end namespace
 ; CODE & concat _STRING
 VAR	ANON_313_15_L119_G_data, q
 VAR	ANON_313_15_L119_G_info, q
-VAR	ANON_313_52_L119_D_data, q
-VAR	ANON_313_52_L119_D_info, q
+VAR	ANON_313_54_L119_D_data, q
+VAR	ANON_313_54_L119_D_info, q
 VAR	ANON_313_15_L119_G_len,  q
-VAR	ANON_313_52_L119_D_len,  q
+VAR	ANON_313_54_L119_D_len,  q
 VAR	ANON_313_15_L119_R_disp, q
 VAR	ANON_313_15_L119_R__u,   q
 namespace ANON_313_15_L119_R_info
@@ -2633,7 +2629,7 @@ namespace ANON_313_15_L119_R_info
   VAR _FST_1,    d
   VAR _LST_1,    d
 end namespace
-STR ANON_313_15_L119_G, "!! PROCEDURE D : PAS D ATTRIBUT "	; constante string="!! PROCEDURE D : PAS D ATTRIBUT "
+STR ANON_313_15_L119_G, "; !! PROCEDURE D : PAS D ATTRIBUT "	; constante string="; !! PROCEDURE D : PAS D ATTRIBUT "
 	LCA	ANON_313_15_L119_G.data_ptr
 	DUP
 	La  ,  0
@@ -2646,45 +2642,45 @@ STR ANON_313_15_L119_G, "!! PROCEDURE D : PAS D ATTRIBUT "	; constante string="!
 	INC
 	CLAMP0
 	Sa  1, ANON_313_15_L119_G_len
-VAR	ANON_313_52_disp, q
-VAR	ANON_313_52__u,   q
-namespace ANON_313_52_info
+VAR	ANON_313_54_disp, q
+VAR	ANON_313_54__u,   q
+namespace ANON_313_54_info
   VAR SIZ, d
   VAR _COMP_SIZ, d
   VAR _FST_1, d
   VAR _LST_1, d
 end namespace
-	LVA 1, ANON_313_52_info.SIZ
-	Sa  1, ANON_313_52__u
-	LVA 1, ANON_313_52_disp
+	LVA 1, ANON_313_54_info.SIZ
+	Sa  1, ANON_313_54__u
+	LVA 1, ANON_313_54_disp
 	Lb  1,	-AN_ofs
 	CALL	STANDARD.IDL. ,ATTR_IMAGE_L28
 	DUP
 	La  ,  0
-	Sa  1, ANON_313_52_L119_D_data
+	Sa  1, ANON_313_54_L119_D_data
 	La  ,  8
-	Sa  1, ANON_313_52_L119_D_info
-	LId 1, ANON_313_52_L119_D_info, _STRING.LST_1
-	LId 1, ANON_313_52_L119_D_info, _STRING.FST_1
+	Sa  1, ANON_313_54_L119_D_info
+	LId 1, ANON_313_54_L119_D_info, _STRING.LST_1
+	LId 1, ANON_313_54_L119_D_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  1, ANON_313_52_L119_D_len
+	Sa  1, ANON_313_54_L119_D_len
 	La  1, ANON_313_15_L119_G_len
-	La  1, ANON_313_52_L119_D_len
+	La  1, ANON_313_54_L119_D_len
 	ADD
 	CO_VAR
 	Sa  1, ANON_313_15_L119_R_disp
 	LI	1
 	Sd  1, ANON_313_15_L119_R_info._FST_1
 	La  1, ANON_313_15_L119_G_len
-	La  1, ANON_313_52_L119_D_len
+	La  1, ANON_313_54_L119_D_len
 	ADD
 	Sd  1, ANON_313_15_L119_R_info._LST_1
 	LI	8
 	Sd  1, ANON_313_15_L119_R_info._COMP_SIZ
 	La  1, ANON_313_15_L119_G_len
-	La  1, ANON_313_52_L119_D_len
+	La  1, ANON_313_54_L119_D_len
 	ADD
 	LI	8
 	MUL
@@ -2698,8 +2694,8 @@ end namespace
 	La  1, ANON_313_15_L119_R_disp
 	La  1, ANON_313_15_L119_G_len
 	ADD
-	La  1, ANON_313_52_L119_D_len
-	La  1, ANON_313_52_L119_D_data
+	La  1, ANON_313_54_L119_D_len
+	La  1, ANON_313_54_L119_D_data
 	BLKMOV
 	LVA 1, ANON_313_15_L119_R_disp
 	DUP
@@ -2713,34 +2709,34 @@ end namespace
 	INC
 	CLAMP0
 	Sa  1, ANON_313_15_L118_G_len
-STR ANON_313_71_L118_D, " DANS "		; constante string=" DANS "
-	LCA	ANON_313_71_L118_D.data_ptr
+STR ANON_313_73_L118_D, " DANS "		; constante string=" DANS "
+	LCA	ANON_313_73_L118_D.data_ptr
 	DUP
 	La  ,  0
-	Sa  1, ANON_313_71_L118_D_data
+	Sa  1, ANON_313_73_L118_D_data
 	La  ,  8
-	Sa  1, ANON_313_71_L118_D_info
-	LId 1, ANON_313_71_L118_D_info, _STRING.LST_1
-	LId 1, ANON_313_71_L118_D_info, _STRING.FST_1
+	Sa  1, ANON_313_73_L118_D_info
+	LId 1, ANON_313_73_L118_D_info, _STRING.LST_1
+	LId 1, ANON_313_73_L118_D_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  1, ANON_313_71_L118_D_len
+	Sa  1, ANON_313_73_L118_D_len
 	La  1, ANON_313_15_L118_G_len
-	La  1, ANON_313_71_L118_D_len
+	La  1, ANON_313_73_L118_D_len
 	ADD
 	CO_VAR
 	Sa  1, ANON_313_15_L118_R_disp
 	LI	1
 	Sd  1, ANON_313_15_L118_R_info._FST_1
 	La  1, ANON_313_15_L118_G_len
-	La  1, ANON_313_71_L118_D_len
+	La  1, ANON_313_73_L118_D_len
 	ADD
 	Sd  1, ANON_313_15_L118_R_info._LST_1
 	LI	8
 	Sd  1, ANON_313_15_L118_R_info._COMP_SIZ
 	La  1, ANON_313_15_L118_G_len
-	La  1, ANON_313_71_L118_D_len
+	La  1, ANON_313_73_L118_D_len
 	ADD
 	LI	8
 	MUL
@@ -2754,8 +2750,8 @@ STR ANON_313_71_L118_D, " DANS "		; constante string=" DANS "
 	La  1, ANON_313_15_L118_R_disp
 	La  1, ANON_313_15_L118_G_len
 	ADD
-	La  1, ANON_313_71_L118_D_len
-	La  1, ANON_313_71_L118_D_data
+	La  1, ANON_313_73_L118_D_len
+	La  1, ANON_313_73_L118_D_data
 	BLKMOV
 	LVA 1, ANON_313_15_L118_R_disp
 	DUP
@@ -2769,45 +2765,45 @@ STR ANON_313_71_L118_D, " DANS "		; constante string=" DANS "
 	INC
 	CLAMP0
 	Sa  1, ANON_313_15_L117_G_len
-VAR	ANON_313_82_disp, q
-VAR	ANON_313_82__u,   q
-namespace ANON_313_82_info
+VAR	ANON_313_84_disp, q
+VAR	ANON_313_84__u,   q
+namespace ANON_313_84_info
   VAR SIZ, d
   VAR _COMP_SIZ, d
   VAR _FST_1, d
   VAR _LST_1, d
 end namespace
-	LVA 1, ANON_313_82_info.SIZ
-	Sa  1, ANON_313_82__u
-	LVA 1, ANON_313_82_disp
+	LVA 1, ANON_313_84_info.SIZ
+	Sa  1, ANON_313_84__u
+	LVA 1, ANON_313_84_disp
 	La  1,	-T_ofs
 	CALL	STANDARD.IDL.IDL_MAN. ,NODE_REP_L51
 	DUP
 	La  ,  0
-	Sa  1, ANON_313_82_L117_D_data
+	Sa  1, ANON_313_84_L117_D_data
 	La  ,  8
-	Sa  1, ANON_313_82_L117_D_info
-	LId 1, ANON_313_82_L117_D_info, _STRING.LST_1
-	LId 1, ANON_313_82_L117_D_info, _STRING.FST_1
+	Sa  1, ANON_313_84_L117_D_info
+	LId 1, ANON_313_84_L117_D_info, _STRING.LST_1
+	LId 1, ANON_313_84_L117_D_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  1, ANON_313_82_L117_D_len
+	Sa  1, ANON_313_84_L117_D_len
 	La  1, ANON_313_15_L117_G_len
-	La  1, ANON_313_82_L117_D_len
+	La  1, ANON_313_84_L117_D_len
 	ADD
 	CO_VAR
 	Sa  1, ANON_313_15_L117_R_disp
 	LI	1
 	Sd  1, ANON_313_15_L117_R_info._FST_1
 	La  1, ANON_313_15_L117_G_len
-	La  1, ANON_313_82_L117_D_len
+	La  1, ANON_313_84_L117_D_len
 	ADD
 	Sd  1, ANON_313_15_L117_R_info._LST_1
 	LI	8
 	Sd  1, ANON_313_15_L117_R_info._COMP_SIZ
 	La  1, ANON_313_15_L117_G_len
-	La  1, ANON_313_82_L117_D_len
+	La  1, ANON_313_84_L117_D_len
 	ADD
 	LI	8
 	MUL
@@ -2821,8 +2817,8 @@ end namespace
 	La  1, ANON_313_15_L117_R_disp
 	La  1, ANON_313_15_L117_G_len
 	ADD
-	La  1, ANON_313_82_L117_D_len
-	La  1, ANON_313_82_L117_D_data
+	La  1, ANON_313_84_L117_D_len
+	La  1, ANON_313_84_L117_D_data
 	BLKMOV
 	LVA 1, ANON_313_15_L117_R_disp
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
@@ -2899,10 +2895,10 @@ VAR	LMT_IL123_disp, b			; limite boucle LOOP__8
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lw	, STANDARD.IDL.IDL_TBL._NODE_SPECIF.NS_SIZE
+	ULb	, STANDARD.IDL.IDL_TBL._NODE_SPECIF.NS_SIZE
 	Sb  1,	LMT_IL123_disp
-	Lb  1,	IL123_disp				; test null range LOOP__8
-	Lb  1,	LMT_IL123_disp
+	ULb  1,	IL123_disp				; test null range LOOP__8
+	ULb  1,	LMT_IL123_disp
 	CGT
 	BT	L122
 LOOP__8:					; corps boucle LOOP__8
@@ -2942,13 +2938,13 @@ VAR	ANON_327_16__dat, STANDARD.IDL._TREE.size
 	LVA 1, ANON_327_16_disp
 					; doublet resultat record anonyme
 	La  1,	-T_ofs
-	Lb  1,	IL123_disp
+	ULb  1,	IL123_disp
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.FST
+	ULb	0, STANDARD.IDL._ATTR_NBR.FST
 	CLT
 	BT	STANDARD.ce_raise_
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.LST
+	ULb	0, STANDARD.IDL._ATTR_NBR.LST
 	CGT
 	BT	STANDARD.ce_raise_
 	CALL	STANDARD.IDL.IDL_MAN. ,DABS_L38
@@ -2963,11 +2959,11 @@ L124:					; post if
 	LI	1
 	ADD
 	Sd  1,	APOS_disp
-	Lb  1,	IL123_disp				; test de sortie LOOP__8
-	Lb  1,	LMT_IL123_disp
+	ULb  1,	IL123_disp				; test de sortie LOOP__8
+	ULb  1,	LMT_IL123_disp
 	CEQ
 	BT	L122
-	Lb  1,	IL123_disp				; mise a jour compteur LOOP__8
+	ULb  1,	IL123_disp				; mise a jour compteur LOOP__8
 	INC
 	Sb  1,	IL123_disp
 	BRA	LOOP__8				; iteration suivante LOOP__8
@@ -2975,10 +2971,10 @@ L122:					; post loop LOOP__8
 ; CODE & concat _STRING
 VAR	ANON_331_15_L126_G_data, q
 VAR	ANON_331_15_L126_G_info, q
-VAR	ANON_331_81_L126_D_data, q
-VAR	ANON_331_81_L126_D_info, q
+VAR	ANON_331_83_L126_D_data, q
+VAR	ANON_331_83_L126_D_info, q
 VAR	ANON_331_15_L126_G_len,  q
-VAR	ANON_331_81_L126_D_len,  q
+VAR	ANON_331_83_L126_D_len,  q
 VAR	ANON_331_15_L126_R_disp, q
 VAR	ANON_331_15_L126_R__u,   q
 namespace ANON_331_15_L126_R_info
@@ -2990,10 +2986,10 @@ end namespace
 ; CODE & concat _STRING
 VAR	ANON_331_15_L127_G_data, q
 VAR	ANON_331_15_L127_G_info, q
-VAR	ANON_331_70_L127_D_data, q
-VAR	ANON_331_70_L127_D_info, q
+VAR	ANON_331_72_L127_D_data, q
+VAR	ANON_331_72_L127_D_info, q
 VAR	ANON_331_15_L127_G_len,  q
-VAR	ANON_331_70_L127_D_len,  q
+VAR	ANON_331_72_L127_D_len,  q
 VAR	ANON_331_15_L127_R_disp, q
 VAR	ANON_331_15_L127_R__u,   q
 namespace ANON_331_15_L127_R_info
@@ -3005,10 +3001,10 @@ end namespace
 ; CODE & concat _STRING
 VAR	ANON_331_15_L128_G_data, q
 VAR	ANON_331_15_L128_G_info, q
-VAR	ANON_331_51_L128_D_data, q
-VAR	ANON_331_51_L128_D_info, q
+VAR	ANON_331_53_L128_D_data, q
+VAR	ANON_331_53_L128_D_info, q
 VAR	ANON_331_15_L128_G_len,  q
-VAR	ANON_331_51_L128_D_len,  q
+VAR	ANON_331_53_L128_D_len,  q
 VAR	ANON_331_15_L128_R_disp, q
 VAR	ANON_331_15_L128_R__u,   q
 namespace ANON_331_15_L128_R_info
@@ -3017,7 +3013,7 @@ namespace ANON_331_15_L128_R_info
   VAR _FST_1,    d
   VAR _LST_1,    d
 end namespace
-STR ANON_331_15_L128_G, "!! FUNCTION D : PAS D ATTRIBUT "	; constante string="!! FUNCTION D : PAS D ATTRIBUT "
+STR ANON_331_15_L128_G, "; !! FUNCTION D : PAS D ATTRIBUT "	; constante string="; !! FUNCTION D : PAS D ATTRIBUT "
 	LCA	ANON_331_15_L128_G.data_ptr
 	DUP
 	La  ,  0
@@ -3030,45 +3026,45 @@ STR ANON_331_15_L128_G, "!! FUNCTION D : PAS D ATTRIBUT "	; constante string="!!
 	INC
 	CLAMP0
 	Sa  1, ANON_331_15_L128_G_len
-VAR	ANON_331_51_disp, q
-VAR	ANON_331_51__u,   q
-namespace ANON_331_51_info
+VAR	ANON_331_53_disp, q
+VAR	ANON_331_53__u,   q
+namespace ANON_331_53_info
   VAR SIZ, d
   VAR _COMP_SIZ, d
   VAR _FST_1, d
   VAR _LST_1, d
 end namespace
-	LVA 1, ANON_331_51_info.SIZ
-	Sa  1, ANON_331_51__u
-	LVA 1, ANON_331_51_disp
+	LVA 1, ANON_331_53_info.SIZ
+	Sa  1, ANON_331_53__u
+	LVA 1, ANON_331_53_disp
 	Lb  1,	-AN_ofs
 	CALL	STANDARD.IDL. ,ATTR_IMAGE_L28
 	DUP
 	La  ,  0
-	Sa  1, ANON_331_51_L128_D_data
+	Sa  1, ANON_331_53_L128_D_data
 	La  ,  8
-	Sa  1, ANON_331_51_L128_D_info
-	LId 1, ANON_331_51_L128_D_info, _STRING.LST_1
-	LId 1, ANON_331_51_L128_D_info, _STRING.FST_1
+	Sa  1, ANON_331_53_L128_D_info
+	LId 1, ANON_331_53_L128_D_info, _STRING.LST_1
+	LId 1, ANON_331_53_L128_D_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  1, ANON_331_51_L128_D_len
+	Sa  1, ANON_331_53_L128_D_len
 	La  1, ANON_331_15_L128_G_len
-	La  1, ANON_331_51_L128_D_len
+	La  1, ANON_331_53_L128_D_len
 	ADD
 	CO_VAR
 	Sa  1, ANON_331_15_L128_R_disp
 	LI	1
 	Sd  1, ANON_331_15_L128_R_info._FST_1
 	La  1, ANON_331_15_L128_G_len
-	La  1, ANON_331_51_L128_D_len
+	La  1, ANON_331_53_L128_D_len
 	ADD
 	Sd  1, ANON_331_15_L128_R_info._LST_1
 	LI	8
 	Sd  1, ANON_331_15_L128_R_info._COMP_SIZ
 	La  1, ANON_331_15_L128_G_len
-	La  1, ANON_331_51_L128_D_len
+	La  1, ANON_331_53_L128_D_len
 	ADD
 	LI	8
 	MUL
@@ -3082,8 +3078,8 @@ end namespace
 	La  1, ANON_331_15_L128_R_disp
 	La  1, ANON_331_15_L128_G_len
 	ADD
-	La  1, ANON_331_51_L128_D_len
-	La  1, ANON_331_51_L128_D_data
+	La  1, ANON_331_53_L128_D_len
+	La  1, ANON_331_53_L128_D_data
 	BLKMOV
 	LVA 1, ANON_331_15_L128_R_disp
 	DUP
@@ -3097,34 +3093,34 @@ end namespace
 	INC
 	CLAMP0
 	Sa  1, ANON_331_15_L127_G_len
-STR ANON_331_70_L127_D, " DANS "		; constante string=" DANS "
-	LCA	ANON_331_70_L127_D.data_ptr
+STR ANON_331_72_L127_D, " DANS "		; constante string=" DANS "
+	LCA	ANON_331_72_L127_D.data_ptr
 	DUP
 	La  ,  0
-	Sa  1, ANON_331_70_L127_D_data
+	Sa  1, ANON_331_72_L127_D_data
 	La  ,  8
-	Sa  1, ANON_331_70_L127_D_info
-	LId 1, ANON_331_70_L127_D_info, _STRING.LST_1
-	LId 1, ANON_331_70_L127_D_info, _STRING.FST_1
+	Sa  1, ANON_331_72_L127_D_info
+	LId 1, ANON_331_72_L127_D_info, _STRING.LST_1
+	LId 1, ANON_331_72_L127_D_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  1, ANON_331_70_L127_D_len
+	Sa  1, ANON_331_72_L127_D_len
 	La  1, ANON_331_15_L127_G_len
-	La  1, ANON_331_70_L127_D_len
+	La  1, ANON_331_72_L127_D_len
 	ADD
 	CO_VAR
 	Sa  1, ANON_331_15_L127_R_disp
 	LI	1
 	Sd  1, ANON_331_15_L127_R_info._FST_1
 	La  1, ANON_331_15_L127_G_len
-	La  1, ANON_331_70_L127_D_len
+	La  1, ANON_331_72_L127_D_len
 	ADD
 	Sd  1, ANON_331_15_L127_R_info._LST_1
 	LI	8
 	Sd  1, ANON_331_15_L127_R_info._COMP_SIZ
 	La  1, ANON_331_15_L127_G_len
-	La  1, ANON_331_70_L127_D_len
+	La  1, ANON_331_72_L127_D_len
 	ADD
 	LI	8
 	MUL
@@ -3138,8 +3134,8 @@ STR ANON_331_70_L127_D, " DANS "		; constante string=" DANS "
 	La  1, ANON_331_15_L127_R_disp
 	La  1, ANON_331_15_L127_G_len
 	ADD
-	La  1, ANON_331_70_L127_D_len
-	La  1, ANON_331_70_L127_D_data
+	La  1, ANON_331_72_L127_D_len
+	La  1, ANON_331_72_L127_D_data
 	BLKMOV
 	LVA 1, ANON_331_15_L127_R_disp
 	DUP
@@ -3153,45 +3149,45 @@ STR ANON_331_70_L127_D, " DANS "		; constante string=" DANS "
 	INC
 	CLAMP0
 	Sa  1, ANON_331_15_L126_G_len
-VAR	ANON_331_81_disp, q
-VAR	ANON_331_81__u,   q
-namespace ANON_331_81_info
+VAR	ANON_331_83_disp, q
+VAR	ANON_331_83__u,   q
+namespace ANON_331_83_info
   VAR SIZ, d
   VAR _COMP_SIZ, d
   VAR _FST_1, d
   VAR _LST_1, d
 end namespace
-	LVA 1, ANON_331_81_info.SIZ
-	Sa  1, ANON_331_81__u
-	LVA 1, ANON_331_81_disp
+	LVA 1, ANON_331_83_info.SIZ
+	Sa  1, ANON_331_83__u
+	LVA 1, ANON_331_83_disp
 	La  1,	-T_ofs
 	CALL	STANDARD.IDL.IDL_MAN. ,NODE_REP_L51
 	DUP
 	La  ,  0
-	Sa  1, ANON_331_81_L126_D_data
+	Sa  1, ANON_331_83_L126_D_data
 	La  ,  8
-	Sa  1, ANON_331_81_L126_D_info
-	LId 1, ANON_331_81_L126_D_info, _STRING.LST_1
-	LId 1, ANON_331_81_L126_D_info, _STRING.FST_1
+	Sa  1, ANON_331_83_L126_D_info
+	LId 1, ANON_331_83_L126_D_info, _STRING.LST_1
+	LId 1, ANON_331_83_L126_D_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  1, ANON_331_81_L126_D_len
+	Sa  1, ANON_331_83_L126_D_len
 	La  1, ANON_331_15_L126_G_len
-	La  1, ANON_331_81_L126_D_len
+	La  1, ANON_331_83_L126_D_len
 	ADD
 	CO_VAR
 	Sa  1, ANON_331_15_L126_R_disp
 	LI	1
 	Sd  1, ANON_331_15_L126_R_info._FST_1
 	La  1, ANON_331_15_L126_G_len
-	La  1, ANON_331_81_L126_D_len
+	La  1, ANON_331_83_L126_D_len
 	ADD
 	Sd  1, ANON_331_15_L126_R_info._LST_1
 	LI	8
 	Sd  1, ANON_331_15_L126_R_info._COMP_SIZ
 	La  1, ANON_331_15_L126_G_len
-	La  1, ANON_331_81_L126_D_len
+	La  1, ANON_331_83_L126_D_len
 	ADD
 	LI	8
 	MUL
@@ -3205,8 +3201,8 @@ end namespace
 	La  1, ANON_331_15_L126_R_disp
 	La  1, ANON_331_15_L126_G_len
 	ADD
-	La  1, ANON_331_81_L126_D_len
-	La  1, ANON_331_81_L126_D_data
+	La  1, ANON_331_83_L126_D_len
+	La  1, ANON_331_83_L126_D_data
 	BLKMOV
 	LVA 1, ANON_331_15_L126_R_disp
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
@@ -3285,14 +3281,14 @@ VAR A__dat, STANDARD.IDL._TREE.size
 ; CODE_VC_NAME DN_VARIABLE_ID
 	La  1, A_disp
 	LI	STANDARD.IDL._TREE.size
-VAR	ANON_352_17_disp, q
-VAR	ANON_352_17__u,    q
-VAR	ANON_352_17__dat, STANDARD.IDL._TREE.size
-	LVA 1, ANON_352_17__dat
-	Sa  1, ANON_352_17_disp
+VAR	ANON_353_17_disp, q
+VAR	ANON_353_17__u,    q
+VAR	ANON_353_17__dat, STANDARD.IDL._TREE.size
+	LVA 1, ANON_353_17__dat
+	Sa  1, ANON_353_17_disp
 	La  0, STANDARD.IDL._TREE.use__info
-	Sa  1, ANON_352_17__u
-	LVA 1, ANON_352_17_disp
+	Sa  1, ANON_353_17__u
+	LVA 1, ANON_353_17_disp
 					; doublet resultat record anonyme
 	La  1,	-T_ofs
 	Lb  1,	-AN_ofs
@@ -3334,313 +3330,313 @@ L136:
 	BRA	L135
 L137:
 ; CODE & concat _STRING
-VAR	ANON_357_17_L138_G_data, q
-VAR	ANON_357_17_L138_G_info, q
-VAR	ANON_357_86_L138_D_data, q
-VAR	ANON_357_86_L138_D_info, q
-VAR	ANON_357_17_L138_G_len,  q
-VAR	ANON_357_86_L138_D_len,  q
-VAR	ANON_357_17_L138_R_disp, q
-VAR	ANON_357_17_L138_R__u,   q
-namespace ANON_357_17_L138_R_info
+VAR	ANON_358_17_L138_G_data, q
+VAR	ANON_358_17_L138_G_info, q
+VAR	ANON_358_88_L138_D_data, q
+VAR	ANON_358_88_L138_D_info, q
+VAR	ANON_358_17_L138_G_len,  q
+VAR	ANON_358_88_L138_D_len,  q
+VAR	ANON_358_17_L138_R_disp, q
+VAR	ANON_358_17_L138_R__u,   q
+namespace ANON_358_17_L138_R_info
   VAR SIZ,      d
   VAR _COMP_SIZ, d
   VAR _FST_1,    d
   VAR _LST_1,    d
 end namespace
 ; CODE & concat _STRING
-VAR	ANON_357_17_L139_G_data, q
-VAR	ANON_357_17_L139_G_info, q
-VAR	ANON_357_70_L139_D_data, q
-VAR	ANON_357_70_L139_D_info, q
-VAR	ANON_357_17_L139_G_len,  q
-VAR	ANON_357_70_L139_D_len,  q
-VAR	ANON_357_17_L139_R_disp, q
-VAR	ANON_357_17_L139_R__u,   q
-namespace ANON_357_17_L139_R_info
+VAR	ANON_358_17_L139_G_data, q
+VAR	ANON_358_17_L139_G_info, q
+VAR	ANON_358_72_L139_D_data, q
+VAR	ANON_358_72_L139_D_info, q
+VAR	ANON_358_17_L139_G_len,  q
+VAR	ANON_358_72_L139_D_len,  q
+VAR	ANON_358_17_L139_R_disp, q
+VAR	ANON_358_17_L139_R__u,   q
+namespace ANON_358_17_L139_R_info
   VAR SIZ,      d
   VAR _COMP_SIZ, d
   VAR _FST_1,    d
   VAR _LST_1,    d
 end namespace
 ; CODE & concat _STRING
-VAR	ANON_357_17_L140_G_data, q
-VAR	ANON_357_17_L140_G_info, q
-VAR	ANON_357_55_L140_D_data, q
-VAR	ANON_357_55_L140_D_info, q
-VAR	ANON_357_17_L140_G_len,  q
-VAR	ANON_357_55_L140_D_len,  q
-VAR	ANON_357_17_L140_R_disp, q
-VAR	ANON_357_17_L140_R__u,   q
-namespace ANON_357_17_L140_R_info
+VAR	ANON_358_17_L140_G_data, q
+VAR	ANON_358_17_L140_G_info, q
+VAR	ANON_358_57_L140_D_data, q
+VAR	ANON_358_57_L140_D_info, q
+VAR	ANON_358_17_L140_G_len,  q
+VAR	ANON_358_57_L140_D_len,  q
+VAR	ANON_358_17_L140_R_disp, q
+VAR	ANON_358_17_L140_R__u,   q
+namespace ANON_358_17_L140_R_info
   VAR SIZ,      d
   VAR _COMP_SIZ, d
   VAR _FST_1,    d
   VAR _LST_1,    d
 end namespace
 ; CODE & concat _STRING
-VAR	ANON_357_17_L141_G_data, q
-VAR	ANON_357_17_L141_G_info, q
-VAR	ANON_357_36_L141_D_data, q
-VAR	ANON_357_36_L141_D_info, q
-VAR	ANON_357_17_L141_G_len,  q
-VAR	ANON_357_36_L141_D_len,  q
-VAR	ANON_357_17_L141_R_disp, q
-VAR	ANON_357_17_L141_R__u,   q
-namespace ANON_357_17_L141_R_info
+VAR	ANON_358_17_L141_G_data, q
+VAR	ANON_358_17_L141_G_info, q
+VAR	ANON_358_38_L141_D_data, q
+VAR	ANON_358_38_L141_D_info, q
+VAR	ANON_358_17_L141_G_len,  q
+VAR	ANON_358_38_L141_D_len,  q
+VAR	ANON_358_17_L141_R_disp, q
+VAR	ANON_358_17_L141_R__u,   q
+namespace ANON_358_17_L141_R_info
   VAR SIZ,      d
   VAR _COMP_SIZ, d
   VAR _FST_1,    d
   VAR _LST_1,    d
 end namespace
-STR ANON_357_17_L141_G, "!! L ATTRIBUT "	; constante string="!! L ATTRIBUT "
-	LCA	ANON_357_17_L141_G.data_ptr
+STR ANON_358_17_L141_G, "; !! L ATTRIBUT "	; constante string="; !! L ATTRIBUT "
+	LCA	ANON_358_17_L141_G.data_ptr
 	DUP
 	La  ,  0
-	Sa  1, ANON_357_17_L141_G_data
+	Sa  1, ANON_358_17_L141_G_data
 	La  ,  8
-	Sa  1, ANON_357_17_L141_G_info
-	LId 1, ANON_357_17_L141_G_info, _STRING.LST_1
-	LId 1, ANON_357_17_L141_G_info, _STRING.FST_1
+	Sa  1, ANON_358_17_L141_G_info
+	LId 1, ANON_358_17_L141_G_info, _STRING.LST_1
+	LId 1, ANON_358_17_L141_G_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  1, ANON_357_17_L141_G_len
-VAR	ANON_357_36_disp, q
-VAR	ANON_357_36__u,   q
-namespace ANON_357_36_info
+	Sa  1, ANON_358_17_L141_G_len
+VAR	ANON_358_38_disp, q
+VAR	ANON_358_38__u,   q
+namespace ANON_358_38_info
   VAR SIZ, d
   VAR _COMP_SIZ, d
   VAR _FST_1, d
   VAR _LST_1, d
 end namespace
-	LVA 1, ANON_357_36_info.SIZ
-	Sa  1, ANON_357_36__u
-	LVA 1, ANON_357_36_disp
+	LVA 1, ANON_358_38_info.SIZ
+	Sa  1, ANON_358_38__u
+	LVA 1, ANON_358_38_disp
 	Lb  1,	-AN_ofs
 	CALL	STANDARD.IDL. ,ATTR_IMAGE_L28
 	DUP
 	La  ,  0
-	Sa  1, ANON_357_36_L141_D_data
+	Sa  1, ANON_358_38_L141_D_data
 	La  ,  8
-	Sa  1, ANON_357_36_L141_D_info
-	LId 1, ANON_357_36_L141_D_info, _STRING.LST_1
-	LId 1, ANON_357_36_L141_D_info, _STRING.FST_1
+	Sa  1, ANON_358_38_L141_D_info
+	LId 1, ANON_358_38_L141_D_info, _STRING.LST_1
+	LId 1, ANON_358_38_L141_D_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  1, ANON_357_36_L141_D_len
-	La  1, ANON_357_17_L141_G_len
-	La  1, ANON_357_36_L141_D_len
+	Sa  1, ANON_358_38_L141_D_len
+	La  1, ANON_358_17_L141_G_len
+	La  1, ANON_358_38_L141_D_len
 	ADD
 	CO_VAR
-	Sa  1, ANON_357_17_L141_R_disp
+	Sa  1, ANON_358_17_L141_R_disp
 	LI	1
-	Sd  1, ANON_357_17_L141_R_info._FST_1
-	La  1, ANON_357_17_L141_G_len
-	La  1, ANON_357_36_L141_D_len
+	Sd  1, ANON_358_17_L141_R_info._FST_1
+	La  1, ANON_358_17_L141_G_len
+	La  1, ANON_358_38_L141_D_len
 	ADD
-	Sd  1, ANON_357_17_L141_R_info._LST_1
+	Sd  1, ANON_358_17_L141_R_info._LST_1
 	LI	8
-	Sd  1, ANON_357_17_L141_R_info._COMP_SIZ
-	La  1, ANON_357_17_L141_G_len
-	La  1, ANON_357_36_L141_D_len
+	Sd  1, ANON_358_17_L141_R_info._COMP_SIZ
+	La  1, ANON_358_17_L141_G_len
+	La  1, ANON_358_38_L141_D_len
 	ADD
 	LI	8
 	MUL
-	Sd  1, ANON_357_17_L141_R_info.SIZ
-	LVA 1, ANON_357_17_L141_R_info.SIZ
-	Sa  1, ANON_357_17_L141_R__u
-	La  1, ANON_357_17_L141_R_disp
-	La  1, ANON_357_17_L141_G_len
-	La  1, ANON_357_17_L141_G_data
+	Sd  1, ANON_358_17_L141_R_info.SIZ
+	LVA 1, ANON_358_17_L141_R_info.SIZ
+	Sa  1, ANON_358_17_L141_R__u
+	La  1, ANON_358_17_L141_R_disp
+	La  1, ANON_358_17_L141_G_len
+	La  1, ANON_358_17_L141_G_data
 	BLKMOV
-	La  1, ANON_357_17_L141_R_disp
-	La  1, ANON_357_17_L141_G_len
+	La  1, ANON_358_17_L141_R_disp
+	La  1, ANON_358_17_L141_G_len
 	ADD
-	La  1, ANON_357_36_L141_D_len
-	La  1, ANON_357_36_L141_D_data
+	La  1, ANON_358_38_L141_D_len
+	La  1, ANON_358_38_L141_D_data
 	BLKMOV
-	LVA 1, ANON_357_17_L141_R_disp
+	LVA 1, ANON_358_17_L141_R_disp
 	DUP
 	La  ,  0
-	Sa  1, ANON_357_17_L140_G_data
+	Sa  1, ANON_358_17_L140_G_data
 	La  ,  8
-	Sa  1, ANON_357_17_L140_G_info
-	LId 1, ANON_357_17_L140_G_info, _STRING.LST_1
-	LId 1, ANON_357_17_L140_G_info, _STRING.FST_1
+	Sa  1, ANON_358_17_L140_G_info
+	LId 1, ANON_358_17_L140_G_info, _STRING.LST_1
+	LId 1, ANON_358_17_L140_G_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  1, ANON_357_17_L140_G_len
-STR ANON_357_55_L140_D, " DU NOEUD "		; constante string=" DU NOEUD "
-	LCA	ANON_357_55_L140_D.data_ptr
+	Sa  1, ANON_358_17_L140_G_len
+STR ANON_358_57_L140_D, " DU NOEUD "		; constante string=" DU NOEUD "
+	LCA	ANON_358_57_L140_D.data_ptr
 	DUP
 	La  ,  0
-	Sa  1, ANON_357_55_L140_D_data
+	Sa  1, ANON_358_57_L140_D_data
 	La  ,  8
-	Sa  1, ANON_357_55_L140_D_info
-	LId 1, ANON_357_55_L140_D_info, _STRING.LST_1
-	LId 1, ANON_357_55_L140_D_info, _STRING.FST_1
+	Sa  1, ANON_358_57_L140_D_info
+	LId 1, ANON_358_57_L140_D_info, _STRING.LST_1
+	LId 1, ANON_358_57_L140_D_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  1, ANON_357_55_L140_D_len
-	La  1, ANON_357_17_L140_G_len
-	La  1, ANON_357_55_L140_D_len
+	Sa  1, ANON_358_57_L140_D_len
+	La  1, ANON_358_17_L140_G_len
+	La  1, ANON_358_57_L140_D_len
 	ADD
 	CO_VAR
-	Sa  1, ANON_357_17_L140_R_disp
+	Sa  1, ANON_358_17_L140_R_disp
 	LI	1
-	Sd  1, ANON_357_17_L140_R_info._FST_1
-	La  1, ANON_357_17_L140_G_len
-	La  1, ANON_357_55_L140_D_len
+	Sd  1, ANON_358_17_L140_R_info._FST_1
+	La  1, ANON_358_17_L140_G_len
+	La  1, ANON_358_57_L140_D_len
 	ADD
-	Sd  1, ANON_357_17_L140_R_info._LST_1
+	Sd  1, ANON_358_17_L140_R_info._LST_1
 	LI	8
-	Sd  1, ANON_357_17_L140_R_info._COMP_SIZ
-	La  1, ANON_357_17_L140_G_len
-	La  1, ANON_357_55_L140_D_len
+	Sd  1, ANON_358_17_L140_R_info._COMP_SIZ
+	La  1, ANON_358_17_L140_G_len
+	La  1, ANON_358_57_L140_D_len
 	ADD
 	LI	8
 	MUL
-	Sd  1, ANON_357_17_L140_R_info.SIZ
-	LVA 1, ANON_357_17_L140_R_info.SIZ
-	Sa  1, ANON_357_17_L140_R__u
-	La  1, ANON_357_17_L140_R_disp
-	La  1, ANON_357_17_L140_G_len
-	La  1, ANON_357_17_L140_G_data
+	Sd  1, ANON_358_17_L140_R_info.SIZ
+	LVA 1, ANON_358_17_L140_R_info.SIZ
+	Sa  1, ANON_358_17_L140_R__u
+	La  1, ANON_358_17_L140_R_disp
+	La  1, ANON_358_17_L140_G_len
+	La  1, ANON_358_17_L140_G_data
 	BLKMOV
-	La  1, ANON_357_17_L140_R_disp
-	La  1, ANON_357_17_L140_G_len
+	La  1, ANON_358_17_L140_R_disp
+	La  1, ANON_358_17_L140_G_len
 	ADD
-	La  1, ANON_357_55_L140_D_len
-	La  1, ANON_357_55_L140_D_data
+	La  1, ANON_358_57_L140_D_len
+	La  1, ANON_358_57_L140_D_data
 	BLKMOV
-	LVA 1, ANON_357_17_L140_R_disp
+	LVA 1, ANON_358_17_L140_R_disp
 	DUP
 	La  ,  0
-	Sa  1, ANON_357_17_L139_G_data
+	Sa  1, ANON_358_17_L139_G_data
 	La  ,  8
-	Sa  1, ANON_357_17_L139_G_info
-	LId 1, ANON_357_17_L139_G_info, _STRING.LST_1
-	LId 1, ANON_357_17_L139_G_info, _STRING.FST_1
+	Sa  1, ANON_358_17_L139_G_info
+	LId 1, ANON_358_17_L139_G_info, _STRING.LST_1
+	LId 1, ANON_358_17_L139_G_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  1, ANON_357_17_L139_G_len
-VAR	ANON_357_70_disp, q
-VAR	ANON_357_70__u,   q
-namespace ANON_357_70_info
+	Sa  1, ANON_358_17_L139_G_len
+VAR	ANON_358_72_disp, q
+VAR	ANON_358_72__u,   q
+namespace ANON_358_72_info
   VAR SIZ, d
   VAR _COMP_SIZ, d
   VAR _FST_1, d
   VAR _LST_1, d
 end namespace
-	LVA 1, ANON_357_70_info.SIZ
-	Sa  1, ANON_357_70__u
-	LVA 1, ANON_357_70_disp
+	LVA 1, ANON_358_72_info.SIZ
+	Sa  1, ANON_358_72__u
+	LVA 1, ANON_358_72_disp
 	La  1,	-T_ofs
 	CALL	STANDARD.IDL.IDL_MAN. ,NODE_REP_L51
 	DUP
 	La  ,  0
-	Sa  1, ANON_357_70_L139_D_data
+	Sa  1, ANON_358_72_L139_D_data
 	La  ,  8
-	Sa  1, ANON_357_70_L139_D_info
-	LId 1, ANON_357_70_L139_D_info, _STRING.LST_1
-	LId 1, ANON_357_70_L139_D_info, _STRING.FST_1
+	Sa  1, ANON_358_72_L139_D_info
+	LId 1, ANON_358_72_L139_D_info, _STRING.LST_1
+	LId 1, ANON_358_72_L139_D_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  1, ANON_357_70_L139_D_len
-	La  1, ANON_357_17_L139_G_len
-	La  1, ANON_357_70_L139_D_len
+	Sa  1, ANON_358_72_L139_D_len
+	La  1, ANON_358_17_L139_G_len
+	La  1, ANON_358_72_L139_D_len
 	ADD
 	CO_VAR
-	Sa  1, ANON_357_17_L139_R_disp
+	Sa  1, ANON_358_17_L139_R_disp
 	LI	1
-	Sd  1, ANON_357_17_L139_R_info._FST_1
-	La  1, ANON_357_17_L139_G_len
-	La  1, ANON_357_70_L139_D_len
+	Sd  1, ANON_358_17_L139_R_info._FST_1
+	La  1, ANON_358_17_L139_G_len
+	La  1, ANON_358_72_L139_D_len
 	ADD
-	Sd  1, ANON_357_17_L139_R_info._LST_1
+	Sd  1, ANON_358_17_L139_R_info._LST_1
 	LI	8
-	Sd  1, ANON_357_17_L139_R_info._COMP_SIZ
-	La  1, ANON_357_17_L139_G_len
-	La  1, ANON_357_70_L139_D_len
+	Sd  1, ANON_358_17_L139_R_info._COMP_SIZ
+	La  1, ANON_358_17_L139_G_len
+	La  1, ANON_358_72_L139_D_len
 	ADD
 	LI	8
 	MUL
-	Sd  1, ANON_357_17_L139_R_info.SIZ
-	LVA 1, ANON_357_17_L139_R_info.SIZ
-	Sa  1, ANON_357_17_L139_R__u
-	La  1, ANON_357_17_L139_R_disp
-	La  1, ANON_357_17_L139_G_len
-	La  1, ANON_357_17_L139_G_data
+	Sd  1, ANON_358_17_L139_R_info.SIZ
+	LVA 1, ANON_358_17_L139_R_info.SIZ
+	Sa  1, ANON_358_17_L139_R__u
+	La  1, ANON_358_17_L139_R_disp
+	La  1, ANON_358_17_L139_G_len
+	La  1, ANON_358_17_L139_G_data
 	BLKMOV
-	La  1, ANON_357_17_L139_R_disp
-	La  1, ANON_357_17_L139_G_len
+	La  1, ANON_358_17_L139_R_disp
+	La  1, ANON_358_17_L139_G_len
 	ADD
-	La  1, ANON_357_70_L139_D_len
-	La  1, ANON_357_70_L139_D_data
+	La  1, ANON_358_72_L139_D_len
+	La  1, ANON_358_72_L139_D_data
 	BLKMOV
-	LVA 1, ANON_357_17_L139_R_disp
+	LVA 1, ANON_358_17_L139_R_disp
 	DUP
 	La  ,  0
-	Sa  1, ANON_357_17_L138_G_data
+	Sa  1, ANON_358_17_L138_G_data
 	La  ,  8
-	Sa  1, ANON_357_17_L138_G_info
-	LId 1, ANON_357_17_L138_G_info, _STRING.LST_1
-	LId 1, ANON_357_17_L138_G_info, _STRING.FST_1
+	Sa  1, ANON_358_17_L138_G_info
+	LId 1, ANON_358_17_L138_G_info, _STRING.LST_1
+	LId 1, ANON_358_17_L138_G_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  1, ANON_357_17_L138_G_len
-STR ANON_357_86_L138_D, " N EST PAS UN BOOLEEN"	; constante string=" N EST PAS UN BOOLEEN"
-	LCA	ANON_357_86_L138_D.data_ptr
+	Sa  1, ANON_358_17_L138_G_len
+STR ANON_358_88_L138_D, " N EST PAS UN BOOLEEN"	; constante string=" N EST PAS UN BOOLEEN"
+	LCA	ANON_358_88_L138_D.data_ptr
 	DUP
 	La  ,  0
-	Sa  1, ANON_357_86_L138_D_data
+	Sa  1, ANON_358_88_L138_D_data
 	La  ,  8
-	Sa  1, ANON_357_86_L138_D_info
-	LId 1, ANON_357_86_L138_D_info, _STRING.LST_1
-	LId 1, ANON_357_86_L138_D_info, _STRING.FST_1
+	Sa  1, ANON_358_88_L138_D_info
+	LId 1, ANON_358_88_L138_D_info, _STRING.LST_1
+	LId 1, ANON_358_88_L138_D_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  1, ANON_357_86_L138_D_len
-	La  1, ANON_357_17_L138_G_len
-	La  1, ANON_357_86_L138_D_len
+	Sa  1, ANON_358_88_L138_D_len
+	La  1, ANON_358_17_L138_G_len
+	La  1, ANON_358_88_L138_D_len
 	ADD
 	CO_VAR
-	Sa  1, ANON_357_17_L138_R_disp
+	Sa  1, ANON_358_17_L138_R_disp
 	LI	1
-	Sd  1, ANON_357_17_L138_R_info._FST_1
-	La  1, ANON_357_17_L138_G_len
-	La  1, ANON_357_86_L138_D_len
+	Sd  1, ANON_358_17_L138_R_info._FST_1
+	La  1, ANON_358_17_L138_G_len
+	La  1, ANON_358_88_L138_D_len
 	ADD
-	Sd  1, ANON_357_17_L138_R_info._LST_1
+	Sd  1, ANON_358_17_L138_R_info._LST_1
 	LI	8
-	Sd  1, ANON_357_17_L138_R_info._COMP_SIZ
-	La  1, ANON_357_17_L138_G_len
-	La  1, ANON_357_86_L138_D_len
+	Sd  1, ANON_358_17_L138_R_info._COMP_SIZ
+	La  1, ANON_358_17_L138_G_len
+	La  1, ANON_358_88_L138_D_len
 	ADD
 	LI	8
 	MUL
-	Sd  1, ANON_357_17_L138_R_info.SIZ
-	LVA 1, ANON_357_17_L138_R_info.SIZ
-	Sa  1, ANON_357_17_L138_R__u
-	La  1, ANON_357_17_L138_R_disp
-	La  1, ANON_357_17_L138_G_len
-	La  1, ANON_357_17_L138_G_data
+	Sd  1, ANON_358_17_L138_R_info.SIZ
+	LVA 1, ANON_358_17_L138_R_info.SIZ
+	Sa  1, ANON_358_17_L138_R__u
+	La  1, ANON_358_17_L138_R_disp
+	La  1, ANON_358_17_L138_G_len
+	La  1, ANON_358_17_L138_G_data
 	BLKMOV
-	La  1, ANON_357_17_L138_R_disp
-	La  1, ANON_357_17_L138_G_len
+	La  1, ANON_358_17_L138_R_disp
+	La  1, ANON_358_17_L138_G_len
 	ADD
-	La  1, ANON_357_86_L138_D_len
-	La  1, ANON_357_86_L138_D_data
+	La  1, ANON_358_88_L138_D_len
+	La  1, ANON_358_88_L138_D_data
 	BLKMOV
-	LVA 1, ANON_357_17_L138_R_disp
+	LVA 1, ANON_358_17_L138_R_disp
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
 	LCA	STANDARD.PROGRAM_ERROR__exc.data_ptr
 	Sa	0, STANDARD.EXCEPTIONS_CURRENT_disp
@@ -3663,7 +3659,7 @@ endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
 VAR VAL_POS_disp, w				; variable entiere
 
-VAR COMPLEMENT_DEUX_disp, w			; variable entiere
+VAR COMPLEMENT_DEUX_disp, b			; variable entiere
 
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
@@ -3691,14 +3687,14 @@ begin:					;---------- BDY INSTRUCTIONS
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.FST
+	ULb	0, STANDARD.IDL._ATTR_NBR.FST
 	CLT
 	BT	STANDARD.ce_raise_
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.LST
+	ULb	0, STANDARD.IDL._ATTR_NBR.LST
 	CGT
 	BT	STANDARD.ce_raise_
-	Sw  1,	COMPLEMENT_DEUX_disp
+	Sb  1,	COMPLEMENT_DEUX_disp
 	BRA	L146
 L147:
 	Ld  1,	-V_ofs
@@ -3707,23 +3703,23 @@ L147:
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.FST
+	ULb	0, STANDARD.IDL._ATTR_NBR.FST
 	CLT
 	BT	STANDARD.ce_raise_
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.LST
+	ULb	0, STANDARD.IDL._ATTR_NBR.LST
 	CGT
 	BT	STANDARD.ce_raise_
-	Sw  1,	COMPLEMENT_DEUX_disp
+	Sb  1,	COMPLEMENT_DEUX_disp
 L146:					; post if
-	VAR ANON_378_17_disp, q
-	VAR ANON_378_17__u, q
-	VAR ANON_378_17__dat, STANDARD.IDL._TREE.SIZ
-	LVA 1, ANON_378_17__dat
-	Sa 1, ANON_378_17_disp
+	VAR ANON_379_17_disp, q
+	VAR ANON_379_17__u, q
+	VAR ANON_379_17__dat, STANDARD.IDL._TREE.SIZ
+	LVA 1, ANON_379_17__dat
+	Sa 1, ANON_379_17_disp
 	La 0, STANDARD.IDL._TREE.use__info
-	Sa 1, ANON_378_17__u
-	LVA 1, ANON_378_17__dat
+	Sa 1, ANON_379_17__u
+	LVA 1, ANON_379_17__dat
 					; Assign_represented_record_aggregate size 32 bits
 	DUP
 	LI	0
@@ -3738,18 +3734,18 @@ L146:					; post if
 	LI	8
 	BFI
 					; pack ABSS range 9 .. 23 width 15
-	Lw 1,	VAL_POS_disp
+	ULw 1,	VAL_POS_disp
 	LI	9
 	LI	15
 	BFI
 					; pack NSIZ range 2 .. 8 width 7
-	Lw 1,	COMPLEMENT_DEUX_disp
+	ULb 1,	COMPLEMENT_DEUX_disp
 	LI	2
 	LI	7
 	BFI
 	Sd
 	DROP
-	LVA 1, ANON_378_17_disp
+	LVA 1, ANON_379_17_disp
 	La  1,	-T_ofs
 	Lb  1,	-AN_ofs
 	CALL	STANDARD.IDL. ,D_L16
@@ -3888,7 +3884,7 @@ begin:
 	RTD	prm_siz-8
 endPRO					;---------- end PRO TO_TREE
 end if
-VAR NB_DOUBLETS_disp, w			; variable entiere
+VAR NB_DOUBLETS_disp, b			; variable entiere
 ; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
 	LI	3
 ; CODE_NUMERIC_LITERAL DN_INTEGER
@@ -3902,14 +3898,14 @@ VAR NB_DOUBLETS_disp, w			; variable entiere
 	BT	STANDARD.ne_raise_
 	DIV
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.FST
+	ULb	0, STANDARD.IDL._ATTR_NBR.FST
 	CLT
 	BT	STANDARD.ce_raise_
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.LST
+	ULb	0, STANDARD.IDL._ATTR_NBR.LST
 	CGT
 	BT	STANDARD.ce_raise_
-	Sw  2,	NB_DOUBLETS_disp
+	Sb  2,	NB_DOUBLETS_disp
 
 VAR NUM_VAL_disp, q				; variable record : pointeur aux data record
 VAR NUM_VAL__u, q				; variable record : pointeur aux useinfo
@@ -3921,22 +3917,22 @@ VAR NUM_VAL__dat, STANDARD.IDL._TREE.size
 ; CODE_VC_NAME DN_VARIABLE_ID
 	La  2, NUM_VAL_disp
 	LI	STANDARD.IDL._TREE.size
-VAR	ANON_388_29_disp, q
-VAR	ANON_388_29__u,    q
-VAR	ANON_388_29__dat, STANDARD.IDL._TREE.size
-	LVA 2, ANON_388_29__dat
-	Sa  2, ANON_388_29_disp
+VAR	ANON_389_29_disp, q
+VAR	ANON_389_29__u,    q
+VAR	ANON_389_29__dat, STANDARD.IDL._TREE.size
+	LVA 2, ANON_389_29__dat
+	Sa  2, ANON_389_29_disp
 	La  0, STANDARD.IDL._TREE.use__info
-	Sa  2, ANON_388_29__u
-	LVA 2, ANON_388_29_disp
+	Sa  2, ANON_389_29__u
+	LVA 2, ANON_389_29_disp
 					; doublet resultat record anonyme
-	Lw 2,	NB_DOUBLETS_disp
+	ULb 2,	NB_DOUBLETS_disp
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.FST
+	ULb	0, STANDARD.IDL._ATTR_NBR.FST
 	CLT
 	BT	STANDARD.ce_raise_
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.LST
+	ULb	0, STANDARD.IDL._ATTR_NBR.LST
 	CGT
 	BT	STANDARD.ce_raise_
 	LI  2
@@ -3954,24 +3950,24 @@ VAR ENTETE__dat, STANDARD.IDL._TREE.size
 ; CODE_VC_NAME DN_VARIABLE_ID
 	La  2, ENTETE_disp
 	LI	STANDARD.IDL._TREE.size
-VAR	ANON_389_28_disp, q
-VAR	ANON_389_28__u,    q
-VAR	ANON_389_28__dat, STANDARD.IDL._TREE.size
-	LVA 2, ANON_389_28__dat
-	Sa  2, ANON_389_28_disp
+VAR	ANON_390_28_disp, q
+VAR	ANON_390_28__u,    q
+VAR	ANON_390_28__dat, STANDARD.IDL._TREE.size
+	LVA 2, ANON_390_28__dat
+	Sa  2, ANON_390_28_disp
 	La  0, STANDARD.IDL._TREE.use__info
-	Sa  2, ANON_389_28__u
-	LVA 2, ANON_389_28_disp
+	Sa  2, ANON_390_28__u
+	LVA 2, ANON_390_28_disp
 					; doublet resultat record anonyme
 	LVA 2,	NUM_VAL_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.FST
+	ULb	0, STANDARD.IDL._ATTR_NBR.FST
 	CLT
 	BT	STANDARD.ce_raise_
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.LST
+	ULb	0, STANDARD.IDL._ATTR_NBR.LST
 	CGT
 	BT	STANDARD.ce_raise_
 	CALL	STANDARD.IDL.IDL_MAN. ,DABS_L38
@@ -4020,11 +4016,11 @@ begin:					;---------- BDY INSTRUCTIONS
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.FST
+	ULb	0, STANDARD.IDL._ATTR_NBR.FST
 	CLT
 	BT	STANDARD.ce_raise_
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.LST
+	ULb	0, STANDARD.IDL._ATTR_NBR.LST
 	CGT
 	BT	STANDARD.ce_raise_
 	CALL	STANDARD.IDL.IDL_MAN. ,DABS_L37
@@ -4036,10 +4032,10 @@ VAR	NL154_disp, b				; compteur boucle LOOP__9
 	LI	1
 	Sb  2,	NL154_disp
 VAR	LMT_NL154_disp, b			; limite boucle LOOP__9
-	Lw 2,	NB_DOUBLETS_disp
+	ULb 2,	NB_DOUBLETS_disp
 	Sb  2,	LMT_NL154_disp
-	Lb  2,	NL154_disp				; test null range LOOP__9
-	Lb  2,	LMT_NL154_disp
+	ULb  2,	NL154_disp				; test null range LOOP__9
+	ULb  2,	LMT_NL154_disp
 	CGT
 	BT	L153
 LOOP__9:					; corps boucle LOOP__9
@@ -4117,33 +4113,33 @@ LOOP__9:					; corps boucle LOOP__9
 	BT	STANDARD.ne_raise_
 	DIV
 	Sd  2,	Q_disp
-VAR	ANON_400_20_disp, q
-VAR	ANON_400_20__u,    q
-VAR	ANON_400_20__dat, STANDARD.IDL._TREE.size
-	LVA 2, ANON_400_20__dat
-	Sa  2, ANON_400_20_disp
+VAR	ANON_401_20_disp, q
+VAR	ANON_401_20__u,    q
+VAR	ANON_401_20__dat, STANDARD.IDL._TREE.size
+	LVA 2, ANON_401_20__dat
+	Sa  2, ANON_401_20_disp
 	La  0, STANDARD.IDL._TREE.use__info
-	Sa  2, ANON_400_20__u
-	LVA 2, ANON_400_20_disp
+	Sa  2, ANON_401_20__u
+	LVA 2, ANON_401_20_disp
 					; doublet resultat record anonyme
 	LVA 2,	DD_disp
 	CALL	STANDARD.IDL.DI_L20.INTEGER_OVER_SHORT. ,TO_TREE_L148
 	LVA 2,	NUM_VAL_disp
-	Lb  2,	NL154_disp
+	ULb  2,	NL154_disp
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.FST
+	ULb	0, STANDARD.IDL._ATTR_NBR.FST
 	CLT
 	BT	STANDARD.ce_raise_
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.LST
+	ULb	0, STANDARD.IDL._ATTR_NBR.LST
 	CGT
 	BT	STANDARD.ce_raise_
 	CALL	STANDARD.IDL.IDL_MAN. ,DABS_L37
-	Lb  2,	NL154_disp				; test de sortie LOOP__9
-	Lb  2,	LMT_NL154_disp
+	ULb  2,	NL154_disp				; test de sortie LOOP__9
+	ULb  2,	LMT_NL154_disp
 	CEQ
 	BT	L153
-	Lb  2,	NL154_disp				; mise a jour compteur LOOP__9
+	ULb  2,	NL154_disp				; mise a jour compteur LOOP__9
 	INC
 	Sb  2,	NL154_disp
 	BRA	LOOP__9				; iteration suivante LOOP__9
@@ -4180,14 +4176,14 @@ VAR ATTR__dat, STANDARD.IDL._TREE.size
 ; CODE_VC_NAME DN_VARIABLE_ID
 	La  1, ATTR_disp
 	LI	STANDARD.IDL._TREE.size
-VAR	ANON_416_22_disp, q
-VAR	ANON_416_22__u,    q
-VAR	ANON_416_22__dat, STANDARD.IDL._TREE.size
-	LVA 1, ANON_416_22__dat
-	Sa  1, ANON_416_22_disp
+VAR	ANON_417_22_disp, q
+VAR	ANON_417_22__u,    q
+VAR	ANON_417_22__dat, STANDARD.IDL._TREE.size
+	LVA 1, ANON_417_22__dat
+	Sa  1, ANON_417_22_disp
 	La  0, STANDARD.IDL._TREE.use__info
-	Sa  1, ANON_416_22__u
-	LVA 1, ANON_416_22_disp
+	Sa  1, ANON_417_22__u
+	LVA 1, ANON_417_22_disp
 					; doublet resultat record anonyme
 	La  1,	-T_ofs
 	Lb  1,	-AN_ofs
@@ -4285,17 +4281,17 @@ L158:
 L164:
 	BF	L163
 ; CODE_RETURN : EXPR TYPE = DN_INTEGER  VUE COMPLETE = DN_INTEGER
-VAR	ANON_427_30_disp, q
-VAR	ANON_427_30__u,   q
-namespace ANON_427_30_info
+VAR	ANON_428_30_disp, q
+VAR	ANON_428_30__u,   q
+namespace ANON_428_30_info
   VAR SIZ, d
   VAR _COMP_SIZ, d
   VAR _FST_1, d
   VAR _LST_1, d
 end namespace
-	LVA 1, ANON_427_30_info.SIZ
-	Sa  1, ANON_427_30__u
-	LVA 1, ANON_427_30_disp
+	LVA 1, ANON_428_30_info.SIZ
+	Sa  1, ANON_428_30__u
+	LVA 1, ANON_428_30_disp
 	LVA 1,	ATTR_disp
 	CALL	STANDARD.IDL. ,PRINT_NUM_L26
 	Sd  1,	-result__ofs
@@ -4304,313 +4300,313 @@ end namespace
 L163:
 L157:					; post if
 ; CODE & concat _STRING
-VAR	ANON_430_15_L165_G_data, q
-VAR	ANON_430_15_L165_G_info, q
-VAR	ANON_430_84_L165_D_data, q
-VAR	ANON_430_84_L165_D_info, q
-VAR	ANON_430_15_L165_G_len,  q
-VAR	ANON_430_84_L165_D_len,  q
-VAR	ANON_430_15_L165_R_disp, q
-VAR	ANON_430_15_L165_R__u,   q
-namespace ANON_430_15_L165_R_info
+VAR	ANON_431_15_L165_G_data, q
+VAR	ANON_431_15_L165_G_info, q
+VAR	ANON_431_84_L165_D_data, q
+VAR	ANON_431_84_L165_D_info, q
+VAR	ANON_431_15_L165_G_len,  q
+VAR	ANON_431_84_L165_D_len,  q
+VAR	ANON_431_15_L165_R_disp, q
+VAR	ANON_431_15_L165_R__u,   q
+namespace ANON_431_15_L165_R_info
   VAR SIZ,      d
   VAR _COMP_SIZ, d
   VAR _FST_1,    d
   VAR _LST_1,    d
 end namespace
 ; CODE & concat _STRING
-VAR	ANON_430_15_L166_G_data, q
-VAR	ANON_430_15_L166_G_info, q
-VAR	ANON_430_68_L166_D_data, q
-VAR	ANON_430_68_L166_D_info, q
-VAR	ANON_430_15_L166_G_len,  q
-VAR	ANON_430_68_L166_D_len,  q
-VAR	ANON_430_15_L166_R_disp, q
-VAR	ANON_430_15_L166_R__u,   q
-namespace ANON_430_15_L166_R_info
+VAR	ANON_431_15_L166_G_data, q
+VAR	ANON_431_15_L166_G_info, q
+VAR	ANON_431_68_L166_D_data, q
+VAR	ANON_431_68_L166_D_info, q
+VAR	ANON_431_15_L166_G_len,  q
+VAR	ANON_431_68_L166_D_len,  q
+VAR	ANON_431_15_L166_R_disp, q
+VAR	ANON_431_15_L166_R__u,   q
+namespace ANON_431_15_L166_R_info
   VAR SIZ,      d
   VAR _COMP_SIZ, d
   VAR _FST_1,    d
   VAR _LST_1,    d
 end namespace
 ; CODE & concat _STRING
-VAR	ANON_430_15_L167_G_data, q
-VAR	ANON_430_15_L167_G_info, q
-VAR	ANON_430_53_L167_D_data, q
-VAR	ANON_430_53_L167_D_info, q
-VAR	ANON_430_15_L167_G_len,  q
-VAR	ANON_430_53_L167_D_len,  q
-VAR	ANON_430_15_L167_R_disp, q
-VAR	ANON_430_15_L167_R__u,   q
-namespace ANON_430_15_L167_R_info
+VAR	ANON_431_15_L167_G_data, q
+VAR	ANON_431_15_L167_G_info, q
+VAR	ANON_431_53_L167_D_data, q
+VAR	ANON_431_53_L167_D_info, q
+VAR	ANON_431_15_L167_G_len,  q
+VAR	ANON_431_53_L167_D_len,  q
+VAR	ANON_431_15_L167_R_disp, q
+VAR	ANON_431_15_L167_R__u,   q
+namespace ANON_431_15_L167_R_info
   VAR SIZ,      d
   VAR _COMP_SIZ, d
   VAR _FST_1,    d
   VAR _LST_1,    d
 end namespace
 ; CODE & concat _STRING
-VAR	ANON_430_15_L168_G_data, q
-VAR	ANON_430_15_L168_G_info, q
-VAR	ANON_430_34_L168_D_data, q
-VAR	ANON_430_34_L168_D_info, q
-VAR	ANON_430_15_L168_G_len,  q
-VAR	ANON_430_34_L168_D_len,  q
-VAR	ANON_430_15_L168_R_disp, q
-VAR	ANON_430_15_L168_R__u,   q
-namespace ANON_430_15_L168_R_info
+VAR	ANON_431_15_L168_G_data, q
+VAR	ANON_431_15_L168_G_info, q
+VAR	ANON_431_34_L168_D_data, q
+VAR	ANON_431_34_L168_D_info, q
+VAR	ANON_431_15_L168_G_len,  q
+VAR	ANON_431_34_L168_D_len,  q
+VAR	ANON_431_15_L168_R_disp, q
+VAR	ANON_431_15_L168_R__u,   q
+namespace ANON_431_15_L168_R_info
   VAR SIZ,      d
   VAR _COMP_SIZ, d
   VAR _FST_1,    d
   VAR _LST_1,    d
 end namespace
-STR ANON_430_15_L168_G, "!! L ATTRIBUT "	; constante string="!! L ATTRIBUT "
-	LCA	ANON_430_15_L168_G.data_ptr
+STR ANON_431_15_L168_G, "!! L ATTRIBUT "	; constante string="!! L ATTRIBUT "
+	LCA	ANON_431_15_L168_G.data_ptr
 	DUP
 	La  ,  0
-	Sa  1, ANON_430_15_L168_G_data
+	Sa  1, ANON_431_15_L168_G_data
 	La  ,  8
-	Sa  1, ANON_430_15_L168_G_info
-	LId 1, ANON_430_15_L168_G_info, _STRING.LST_1
-	LId 1, ANON_430_15_L168_G_info, _STRING.FST_1
+	Sa  1, ANON_431_15_L168_G_info
+	LId 1, ANON_431_15_L168_G_info, _STRING.LST_1
+	LId 1, ANON_431_15_L168_G_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  1, ANON_430_15_L168_G_len
-VAR	ANON_430_34_disp, q
-VAR	ANON_430_34__u,   q
-namespace ANON_430_34_info
+	Sa  1, ANON_431_15_L168_G_len
+VAR	ANON_431_34_disp, q
+VAR	ANON_431_34__u,   q
+namespace ANON_431_34_info
   VAR SIZ, d
   VAR _COMP_SIZ, d
   VAR _FST_1, d
   VAR _LST_1, d
 end namespace
-	LVA 1, ANON_430_34_info.SIZ
-	Sa  1, ANON_430_34__u
-	LVA 1, ANON_430_34_disp
+	LVA 1, ANON_431_34_info.SIZ
+	Sa  1, ANON_431_34__u
+	LVA 1, ANON_431_34_disp
 	Lb  1,	-AN_ofs
 	CALL	STANDARD.IDL. ,ATTR_IMAGE_L28
 	DUP
 	La  ,  0
-	Sa  1, ANON_430_34_L168_D_data
+	Sa  1, ANON_431_34_L168_D_data
 	La  ,  8
-	Sa  1, ANON_430_34_L168_D_info
-	LId 1, ANON_430_34_L168_D_info, _STRING.LST_1
-	LId 1, ANON_430_34_L168_D_info, _STRING.FST_1
+	Sa  1, ANON_431_34_L168_D_info
+	LId 1, ANON_431_34_L168_D_info, _STRING.LST_1
+	LId 1, ANON_431_34_L168_D_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  1, ANON_430_34_L168_D_len
-	La  1, ANON_430_15_L168_G_len
-	La  1, ANON_430_34_L168_D_len
+	Sa  1, ANON_431_34_L168_D_len
+	La  1, ANON_431_15_L168_G_len
+	La  1, ANON_431_34_L168_D_len
 	ADD
 	CO_VAR
-	Sa  1, ANON_430_15_L168_R_disp
+	Sa  1, ANON_431_15_L168_R_disp
 	LI	1
-	Sd  1, ANON_430_15_L168_R_info._FST_1
-	La  1, ANON_430_15_L168_G_len
-	La  1, ANON_430_34_L168_D_len
+	Sd  1, ANON_431_15_L168_R_info._FST_1
+	La  1, ANON_431_15_L168_G_len
+	La  1, ANON_431_34_L168_D_len
 	ADD
-	Sd  1, ANON_430_15_L168_R_info._LST_1
+	Sd  1, ANON_431_15_L168_R_info._LST_1
 	LI	8
-	Sd  1, ANON_430_15_L168_R_info._COMP_SIZ
-	La  1, ANON_430_15_L168_G_len
-	La  1, ANON_430_34_L168_D_len
+	Sd  1, ANON_431_15_L168_R_info._COMP_SIZ
+	La  1, ANON_431_15_L168_G_len
+	La  1, ANON_431_34_L168_D_len
 	ADD
 	LI	8
 	MUL
-	Sd  1, ANON_430_15_L168_R_info.SIZ
-	LVA 1, ANON_430_15_L168_R_info.SIZ
-	Sa  1, ANON_430_15_L168_R__u
-	La  1, ANON_430_15_L168_R_disp
-	La  1, ANON_430_15_L168_G_len
-	La  1, ANON_430_15_L168_G_data
+	Sd  1, ANON_431_15_L168_R_info.SIZ
+	LVA 1, ANON_431_15_L168_R_info.SIZ
+	Sa  1, ANON_431_15_L168_R__u
+	La  1, ANON_431_15_L168_R_disp
+	La  1, ANON_431_15_L168_G_len
+	La  1, ANON_431_15_L168_G_data
 	BLKMOV
-	La  1, ANON_430_15_L168_R_disp
-	La  1, ANON_430_15_L168_G_len
+	La  1, ANON_431_15_L168_R_disp
+	La  1, ANON_431_15_L168_G_len
 	ADD
-	La  1, ANON_430_34_L168_D_len
-	La  1, ANON_430_34_L168_D_data
+	La  1, ANON_431_34_L168_D_len
+	La  1, ANON_431_34_L168_D_data
 	BLKMOV
-	LVA 1, ANON_430_15_L168_R_disp
+	LVA 1, ANON_431_15_L168_R_disp
 	DUP
 	La  ,  0
-	Sa  1, ANON_430_15_L167_G_data
+	Sa  1, ANON_431_15_L167_G_data
 	La  ,  8
-	Sa  1, ANON_430_15_L167_G_info
-	LId 1, ANON_430_15_L167_G_info, _STRING.LST_1
-	LId 1, ANON_430_15_L167_G_info, _STRING.FST_1
+	Sa  1, ANON_431_15_L167_G_info
+	LId 1, ANON_431_15_L167_G_info, _STRING.LST_1
+	LId 1, ANON_431_15_L167_G_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  1, ANON_430_15_L167_G_len
-STR ANON_430_53_L167_D, " DU NOEUD "		; constante string=" DU NOEUD "
-	LCA	ANON_430_53_L167_D.data_ptr
+	Sa  1, ANON_431_15_L167_G_len
+STR ANON_431_53_L167_D, " DU NOEUD "		; constante string=" DU NOEUD "
+	LCA	ANON_431_53_L167_D.data_ptr
 	DUP
 	La  ,  0
-	Sa  1, ANON_430_53_L167_D_data
+	Sa  1, ANON_431_53_L167_D_data
 	La  ,  8
-	Sa  1, ANON_430_53_L167_D_info
-	LId 1, ANON_430_53_L167_D_info, _STRING.LST_1
-	LId 1, ANON_430_53_L167_D_info, _STRING.FST_1
+	Sa  1, ANON_431_53_L167_D_info
+	LId 1, ANON_431_53_L167_D_info, _STRING.LST_1
+	LId 1, ANON_431_53_L167_D_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  1, ANON_430_53_L167_D_len
-	La  1, ANON_430_15_L167_G_len
-	La  1, ANON_430_53_L167_D_len
+	Sa  1, ANON_431_53_L167_D_len
+	La  1, ANON_431_15_L167_G_len
+	La  1, ANON_431_53_L167_D_len
 	ADD
 	CO_VAR
-	Sa  1, ANON_430_15_L167_R_disp
+	Sa  1, ANON_431_15_L167_R_disp
 	LI	1
-	Sd  1, ANON_430_15_L167_R_info._FST_1
-	La  1, ANON_430_15_L167_G_len
-	La  1, ANON_430_53_L167_D_len
+	Sd  1, ANON_431_15_L167_R_info._FST_1
+	La  1, ANON_431_15_L167_G_len
+	La  1, ANON_431_53_L167_D_len
 	ADD
-	Sd  1, ANON_430_15_L167_R_info._LST_1
+	Sd  1, ANON_431_15_L167_R_info._LST_1
 	LI	8
-	Sd  1, ANON_430_15_L167_R_info._COMP_SIZ
-	La  1, ANON_430_15_L167_G_len
-	La  1, ANON_430_53_L167_D_len
+	Sd  1, ANON_431_15_L167_R_info._COMP_SIZ
+	La  1, ANON_431_15_L167_G_len
+	La  1, ANON_431_53_L167_D_len
 	ADD
 	LI	8
 	MUL
-	Sd  1, ANON_430_15_L167_R_info.SIZ
-	LVA 1, ANON_430_15_L167_R_info.SIZ
-	Sa  1, ANON_430_15_L167_R__u
-	La  1, ANON_430_15_L167_R_disp
-	La  1, ANON_430_15_L167_G_len
-	La  1, ANON_430_15_L167_G_data
+	Sd  1, ANON_431_15_L167_R_info.SIZ
+	LVA 1, ANON_431_15_L167_R_info.SIZ
+	Sa  1, ANON_431_15_L167_R__u
+	La  1, ANON_431_15_L167_R_disp
+	La  1, ANON_431_15_L167_G_len
+	La  1, ANON_431_15_L167_G_data
 	BLKMOV
-	La  1, ANON_430_15_L167_R_disp
-	La  1, ANON_430_15_L167_G_len
+	La  1, ANON_431_15_L167_R_disp
+	La  1, ANON_431_15_L167_G_len
 	ADD
-	La  1, ANON_430_53_L167_D_len
-	La  1, ANON_430_53_L167_D_data
+	La  1, ANON_431_53_L167_D_len
+	La  1, ANON_431_53_L167_D_data
 	BLKMOV
-	LVA 1, ANON_430_15_L167_R_disp
+	LVA 1, ANON_431_15_L167_R_disp
 	DUP
 	La  ,  0
-	Sa  1, ANON_430_15_L166_G_data
+	Sa  1, ANON_431_15_L166_G_data
 	La  ,  8
-	Sa  1, ANON_430_15_L166_G_info
-	LId 1, ANON_430_15_L166_G_info, _STRING.LST_1
-	LId 1, ANON_430_15_L166_G_info, _STRING.FST_1
+	Sa  1, ANON_431_15_L166_G_info
+	LId 1, ANON_431_15_L166_G_info, _STRING.LST_1
+	LId 1, ANON_431_15_L166_G_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  1, ANON_430_15_L166_G_len
-VAR	ANON_430_68_disp, q
-VAR	ANON_430_68__u,   q
-namespace ANON_430_68_info
+	Sa  1, ANON_431_15_L166_G_len
+VAR	ANON_431_68_disp, q
+VAR	ANON_431_68__u,   q
+namespace ANON_431_68_info
   VAR SIZ, d
   VAR _COMP_SIZ, d
   VAR _FST_1, d
   VAR _LST_1, d
 end namespace
-	LVA 1, ANON_430_68_info.SIZ
-	Sa  1, ANON_430_68__u
-	LVA 1, ANON_430_68_disp
+	LVA 1, ANON_431_68_info.SIZ
+	Sa  1, ANON_431_68__u
+	LVA 1, ANON_431_68_disp
 	La  1,	-T_ofs
 	CALL	STANDARD.IDL.IDL_MAN. ,NODE_REP_L51
 	DUP
 	La  ,  0
-	Sa  1, ANON_430_68_L166_D_data
+	Sa  1, ANON_431_68_L166_D_data
 	La  ,  8
-	Sa  1, ANON_430_68_L166_D_info
-	LId 1, ANON_430_68_L166_D_info, _STRING.LST_1
-	LId 1, ANON_430_68_L166_D_info, _STRING.FST_1
+	Sa  1, ANON_431_68_L166_D_info
+	LId 1, ANON_431_68_L166_D_info, _STRING.LST_1
+	LId 1, ANON_431_68_L166_D_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  1, ANON_430_68_L166_D_len
-	La  1, ANON_430_15_L166_G_len
-	La  1, ANON_430_68_L166_D_len
+	Sa  1, ANON_431_68_L166_D_len
+	La  1, ANON_431_15_L166_G_len
+	La  1, ANON_431_68_L166_D_len
 	ADD
 	CO_VAR
-	Sa  1, ANON_430_15_L166_R_disp
+	Sa  1, ANON_431_15_L166_R_disp
 	LI	1
-	Sd  1, ANON_430_15_L166_R_info._FST_1
-	La  1, ANON_430_15_L166_G_len
-	La  1, ANON_430_68_L166_D_len
+	Sd  1, ANON_431_15_L166_R_info._FST_1
+	La  1, ANON_431_15_L166_G_len
+	La  1, ANON_431_68_L166_D_len
 	ADD
-	Sd  1, ANON_430_15_L166_R_info._LST_1
+	Sd  1, ANON_431_15_L166_R_info._LST_1
 	LI	8
-	Sd  1, ANON_430_15_L166_R_info._COMP_SIZ
-	La  1, ANON_430_15_L166_G_len
-	La  1, ANON_430_68_L166_D_len
+	Sd  1, ANON_431_15_L166_R_info._COMP_SIZ
+	La  1, ANON_431_15_L166_G_len
+	La  1, ANON_431_68_L166_D_len
 	ADD
 	LI	8
 	MUL
-	Sd  1, ANON_430_15_L166_R_info.SIZ
-	LVA 1, ANON_430_15_L166_R_info.SIZ
-	Sa  1, ANON_430_15_L166_R__u
-	La  1, ANON_430_15_L166_R_disp
-	La  1, ANON_430_15_L166_G_len
-	La  1, ANON_430_15_L166_G_data
+	Sd  1, ANON_431_15_L166_R_info.SIZ
+	LVA 1, ANON_431_15_L166_R_info.SIZ
+	Sa  1, ANON_431_15_L166_R__u
+	La  1, ANON_431_15_L166_R_disp
+	La  1, ANON_431_15_L166_G_len
+	La  1, ANON_431_15_L166_G_data
 	BLKMOV
-	La  1, ANON_430_15_L166_R_disp
-	La  1, ANON_430_15_L166_G_len
+	La  1, ANON_431_15_L166_R_disp
+	La  1, ANON_431_15_L166_G_len
 	ADD
-	La  1, ANON_430_68_L166_D_len
-	La  1, ANON_430_68_L166_D_data
+	La  1, ANON_431_68_L166_D_len
+	La  1, ANON_431_68_L166_D_data
 	BLKMOV
-	LVA 1, ANON_430_15_L166_R_disp
+	LVA 1, ANON_431_15_L166_R_disp
 	DUP
 	La  ,  0
-	Sa  1, ANON_430_15_L165_G_data
+	Sa  1, ANON_431_15_L165_G_data
 	La  ,  8
-	Sa  1, ANON_430_15_L165_G_info
-	LId 1, ANON_430_15_L165_G_info, _STRING.LST_1
-	LId 1, ANON_430_15_L165_G_info, _STRING.FST_1
+	Sa  1, ANON_431_15_L165_G_info
+	LId 1, ANON_431_15_L165_G_info, _STRING.LST_1
+	LId 1, ANON_431_15_L165_G_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  1, ANON_430_15_L165_G_len
-STR ANON_430_84_L165_D, " N EST PAS UN ENTIER"	; constante string=" N EST PAS UN ENTIER"
-	LCA	ANON_430_84_L165_D.data_ptr
+	Sa  1, ANON_431_15_L165_G_len
+STR ANON_431_84_L165_D, " N EST PAS UN ENTIER"	; constante string=" N EST PAS UN ENTIER"
+	LCA	ANON_431_84_L165_D.data_ptr
 	DUP
 	La  ,  0
-	Sa  1, ANON_430_84_L165_D_data
+	Sa  1, ANON_431_84_L165_D_data
 	La  ,  8
-	Sa  1, ANON_430_84_L165_D_info
-	LId 1, ANON_430_84_L165_D_info, _STRING.LST_1
-	LId 1, ANON_430_84_L165_D_info, _STRING.FST_1
+	Sa  1, ANON_431_84_L165_D_info
+	LId 1, ANON_431_84_L165_D_info, _STRING.LST_1
+	LId 1, ANON_431_84_L165_D_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  1, ANON_430_84_L165_D_len
-	La  1, ANON_430_15_L165_G_len
-	La  1, ANON_430_84_L165_D_len
+	Sa  1, ANON_431_84_L165_D_len
+	La  1, ANON_431_15_L165_G_len
+	La  1, ANON_431_84_L165_D_len
 	ADD
 	CO_VAR
-	Sa  1, ANON_430_15_L165_R_disp
+	Sa  1, ANON_431_15_L165_R_disp
 	LI	1
-	Sd  1, ANON_430_15_L165_R_info._FST_1
-	La  1, ANON_430_15_L165_G_len
-	La  1, ANON_430_84_L165_D_len
+	Sd  1, ANON_431_15_L165_R_info._FST_1
+	La  1, ANON_431_15_L165_G_len
+	La  1, ANON_431_84_L165_D_len
 	ADD
-	Sd  1, ANON_430_15_L165_R_info._LST_1
+	Sd  1, ANON_431_15_L165_R_info._LST_1
 	LI	8
-	Sd  1, ANON_430_15_L165_R_info._COMP_SIZ
-	La  1, ANON_430_15_L165_G_len
-	La  1, ANON_430_84_L165_D_len
+	Sd  1, ANON_431_15_L165_R_info._COMP_SIZ
+	La  1, ANON_431_15_L165_G_len
+	La  1, ANON_431_84_L165_D_len
 	ADD
 	LI	8
 	MUL
-	Sd  1, ANON_430_15_L165_R_info.SIZ
-	LVA 1, ANON_430_15_L165_R_info.SIZ
-	Sa  1, ANON_430_15_L165_R__u
-	La  1, ANON_430_15_L165_R_disp
-	La  1, ANON_430_15_L165_G_len
-	La  1, ANON_430_15_L165_G_data
+	Sd  1, ANON_431_15_L165_R_info.SIZ
+	LVA 1, ANON_431_15_L165_R_info.SIZ
+	Sa  1, ANON_431_15_L165_R__u
+	La  1, ANON_431_15_L165_R_disp
+	La  1, ANON_431_15_L165_G_len
+	La  1, ANON_431_15_L165_G_data
 	BLKMOV
-	La  1, ANON_430_15_L165_R_disp
-	La  1, ANON_430_15_L165_G_len
+	La  1, ANON_431_15_L165_R_disp
+	La  1, ANON_431_15_L165_G_len
 	ADD
-	La  1, ANON_430_84_L165_D_len
-	La  1, ANON_430_84_L165_D_data
+	La  1, ANON_431_84_L165_D_len
+	La  1, ANON_431_84_L165_D_data
 	BLKMOV
-	LVA 1, ANON_430_15_L165_R_disp
+	LVA 1, ANON_431_15_L165_R_disp
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
 	LCA	STANDARD.PROGRAM_ERROR__exc.data_ptr
 	Sa	0, STANDARD.EXCEPTIONS_CURRENT_disp
@@ -4684,10 +4680,10 @@ VAR	LMT_IL172_disp, b			; limite boucle LOOP__10
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lw	, STANDARD.IDL.IDL_TBL._NODE_SPECIF.NS_SIZE
+	ULb	, STANDARD.IDL.IDL_TBL._NODE_SPECIF.NS_SIZE
 	Sb  1,	LMT_IL172_disp
-	Lb  1,	IL172_disp				; test null range LOOP__10
-	Lb  1,	LMT_IL172_disp
+	ULb  1,	IL172_disp				; test null range LOOP__10
+	ULb  1,	LMT_IL172_disp
 	CGT
 	BT	L171
 LOOP__10:					; corps boucle LOOP__10
@@ -4718,23 +4714,23 @@ LOOP__10:					; corps boucle LOOP__10
 	DUP
 	LVA	, STANDARD.IDL._SEQ_TYPE.FIRST
 	LI	STANDARD.IDL._TREE.size
-VAR	ANON_445_25_disp, q
-VAR	ANON_445_25__u,    q
-VAR	ANON_445_25__dat, STANDARD.IDL._TREE.size
-	LVA 1, ANON_445_25__dat
-	Sa  1, ANON_445_25_disp
+VAR	ANON_446_25_disp, q
+VAR	ANON_446_25__u,    q
+VAR	ANON_446_25__dat, STANDARD.IDL._TREE.size
+	LVA 1, ANON_446_25__dat
+	Sa  1, ANON_446_25_disp
 	La  0, STANDARD.IDL._TREE.use__info
-	Sa  1, ANON_445_25__u
-	LVA 1, ANON_445_25_disp
+	Sa  1, ANON_446_25__u
+	LVA 1, ANON_446_25_disp
 					; doublet resultat record anonyme
 	La  1,	-T_ofs
-	Lb  1,	IL172_disp
+	ULb  1,	IL172_disp
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.FST
+	ULb	0, STANDARD.IDL._ATTR_NBR.FST
 	CLT
 	BT	STANDARD.ce_raise_
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.LST
+	ULb	0, STANDARD.IDL._ATTR_NBR.LST
 	CGT
 	BT	STANDARD.ce_raise_
 	CALL	STANDARD.IDL.IDL_MAN. ,DABS_L38
@@ -4756,99 +4752,99 @@ L173:					; post if
 	LI	1
 	ADD
 	Sd  1,	A_IDX_disp
-	Lb  1,	IL172_disp				; test de sortie LOOP__10
-	Lb  1,	LMT_IL172_disp
+	ULb  1,	IL172_disp				; test de sortie LOOP__10
+	ULb  1,	LMT_IL172_disp
 	CEQ
 	BT	L171
-	Lb  1,	IL172_disp				; mise a jour compteur LOOP__10
+	ULb  1,	IL172_disp				; mise a jour compteur LOOP__10
 	INC
 	Sb  1,	IL172_disp
 	BRA	LOOP__10				; iteration suivante LOOP__10
 L171:					; post loop LOOP__10
 ; CODE & concat _STRING
-VAR	ANON_450_15_L175_G_data, q
-VAR	ANON_450_15_L175_G_info, q
-VAR	ANON_450_63_L175_D_data, q
-VAR	ANON_450_63_L175_D_info, q
-VAR	ANON_450_15_L175_G_len,  q
-VAR	ANON_450_63_L175_D_len,  q
-VAR	ANON_450_15_L175_R_disp, q
-VAR	ANON_450_15_L175_R__u,   q
-namespace ANON_450_15_L175_R_info
+VAR	ANON_451_15_L175_G_data, q
+VAR	ANON_451_15_L175_G_info, q
+VAR	ANON_451_63_L175_D_data, q
+VAR	ANON_451_63_L175_D_info, q
+VAR	ANON_451_15_L175_G_len,  q
+VAR	ANON_451_63_L175_D_len,  q
+VAR	ANON_451_15_L175_R_disp, q
+VAR	ANON_451_15_L175_R__u,   q
+namespace ANON_451_15_L175_R_info
   VAR SIZ,      d
   VAR _COMP_SIZ, d
   VAR _FST_1,    d
   VAR _LST_1,    d
 end namespace
-STR ANON_450_15_L175_G, "!! IL N Y A PAS DE LISTE ASSOCIEE AU NOEUD "	; constante string="!! IL N Y A PAS DE LISTE ASSOCIEE AU NOEUD "
-	LCA	ANON_450_15_L175_G.data_ptr
+STR ANON_451_15_L175_G, "!! IL N Y A PAS DE LISTE ASSOCIEE AU NOEUD "	; constante string="!! IL N Y A PAS DE LISTE ASSOCIEE AU NOEUD "
+	LCA	ANON_451_15_L175_G.data_ptr
 	DUP
 	La  ,  0
-	Sa  1, ANON_450_15_L175_G_data
+	Sa  1, ANON_451_15_L175_G_data
 	La  ,  8
-	Sa  1, ANON_450_15_L175_G_info
-	LId 1, ANON_450_15_L175_G_info, _STRING.LST_1
-	LId 1, ANON_450_15_L175_G_info, _STRING.FST_1
+	Sa  1, ANON_451_15_L175_G_info
+	LId 1, ANON_451_15_L175_G_info, _STRING.LST_1
+	LId 1, ANON_451_15_L175_G_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  1, ANON_450_15_L175_G_len
-VAR	ANON_450_63_disp, q
-VAR	ANON_450_63__u,   q
-namespace ANON_450_63_info
+	Sa  1, ANON_451_15_L175_G_len
+VAR	ANON_451_63_disp, q
+VAR	ANON_451_63__u,   q
+namespace ANON_451_63_info
   VAR SIZ, d
   VAR _COMP_SIZ, d
   VAR _FST_1, d
   VAR _LST_1, d
 end namespace
-	LVA 1, ANON_450_63_info.SIZ
-	Sa  1, ANON_450_63__u
-	LVA 1, ANON_450_63_disp
+	LVA 1, ANON_451_63_info.SIZ
+	Sa  1, ANON_451_63__u
+	LVA 1, ANON_451_63_disp
 	La  1,	-T_ofs
 	CALL	STANDARD.IDL.IDL_MAN. ,NODE_REP_L51
 	DUP
 	La  ,  0
-	Sa  1, ANON_450_63_L175_D_data
+	Sa  1, ANON_451_63_L175_D_data
 	La  ,  8
-	Sa  1, ANON_450_63_L175_D_info
-	LId 1, ANON_450_63_L175_D_info, _STRING.LST_1
-	LId 1, ANON_450_63_L175_D_info, _STRING.FST_1
+	Sa  1, ANON_451_63_L175_D_info
+	LId 1, ANON_451_63_L175_D_info, _STRING.LST_1
+	LId 1, ANON_451_63_L175_D_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  1, ANON_450_63_L175_D_len
-	La  1, ANON_450_15_L175_G_len
-	La  1, ANON_450_63_L175_D_len
+	Sa  1, ANON_451_63_L175_D_len
+	La  1, ANON_451_15_L175_G_len
+	La  1, ANON_451_63_L175_D_len
 	ADD
 	CO_VAR
-	Sa  1, ANON_450_15_L175_R_disp
+	Sa  1, ANON_451_15_L175_R_disp
 	LI	1
-	Sd  1, ANON_450_15_L175_R_info._FST_1
-	La  1, ANON_450_15_L175_G_len
-	La  1, ANON_450_63_L175_D_len
+	Sd  1, ANON_451_15_L175_R_info._FST_1
+	La  1, ANON_451_15_L175_G_len
+	La  1, ANON_451_63_L175_D_len
 	ADD
-	Sd  1, ANON_450_15_L175_R_info._LST_1
+	Sd  1, ANON_451_15_L175_R_info._LST_1
 	LI	8
-	Sd  1, ANON_450_15_L175_R_info._COMP_SIZ
-	La  1, ANON_450_15_L175_G_len
-	La  1, ANON_450_63_L175_D_len
+	Sd  1, ANON_451_15_L175_R_info._COMP_SIZ
+	La  1, ANON_451_15_L175_G_len
+	La  1, ANON_451_63_L175_D_len
 	ADD
 	LI	8
 	MUL
-	Sd  1, ANON_450_15_L175_R_info.SIZ
-	LVA 1, ANON_450_15_L175_R_info.SIZ
-	Sa  1, ANON_450_15_L175_R__u
-	La  1, ANON_450_15_L175_R_disp
-	La  1, ANON_450_15_L175_G_len
-	La  1, ANON_450_15_L175_G_data
+	Sd  1, ANON_451_15_L175_R_info.SIZ
+	LVA 1, ANON_451_15_L175_R_info.SIZ
+	Sa  1, ANON_451_15_L175_R__u
+	La  1, ANON_451_15_L175_R_disp
+	La  1, ANON_451_15_L175_G_len
+	La  1, ANON_451_15_L175_G_data
 	BLKMOV
-	La  1, ANON_450_15_L175_R_disp
-	La  1, ANON_450_15_L175_G_len
+	La  1, ANON_451_15_L175_R_disp
+	La  1, ANON_451_15_L175_G_len
 	ADD
-	La  1, ANON_450_63_L175_D_len
-	La  1, ANON_450_63_L175_D_data
+	La  1, ANON_451_63_L175_D_len
+	La  1, ANON_451_63_L175_D_data
 	BLKMOV
-	LVA 1, ANON_450_15_L175_R_disp
+	LVA 1, ANON_451_15_L175_R_disp
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
 	LCA	STANDARD.PROGRAM_ERROR__exc.data_ptr
 	Sa	0, STANDARD.EXCEPTIONS_CURRENT_disp
@@ -4917,14 +4913,14 @@ begin:					;---------- BDY INSTRUCTIONS
 	La  1,	-T_ofs
 	La
 	LI	STANDARD.IDL._TREE.size
-VAR	ANON_471_10_disp, q
-VAR	ANON_471_10__u,    q
-VAR	ANON_471_10__dat, STANDARD.IDL._TREE.size
-	LVA 1, ANON_471_10__dat
-	Sa  1, ANON_471_10_disp
+VAR	ANON_472_10_disp, q
+VAR	ANON_472_10__u,    q
+VAR	ANON_472_10__dat, STANDARD.IDL._TREE.size
+	LVA 1, ANON_472_10__dat
+	Sa  1, ANON_472_10_disp
 	La  0, STANDARD.IDL._TREE.use__info
-	Sa  1, ANON_471_10__u
-	LVA 1, ANON_471_10_disp
+	Sa  1, ANON_472_10__u
+	LVA 1, ANON_472_10_disp
 					; doublet resultat record anonyme
 	La  1,	-S_ofs
 	CALL	STANDARD.IDL.IDL_MAN. ,HEAD_L31
@@ -4933,14 +4929,14 @@ VAR	ANON_471_10__dat, STANDARD.IDL._TREE.size
 	La  1,	-S_ofs
 	La
 	LI	STANDARD.IDL._SEQ_TYPE.size
-VAR	ANON_472_10_disp, q
-VAR	ANON_472_10__u,    q
-VAR	ANON_472_10__dat, STANDARD.IDL._SEQ_TYPE.size
-	LVA 1, ANON_472_10__dat
-	Sa  1, ANON_472_10_disp
+VAR	ANON_473_10_disp, q
+VAR	ANON_473_10__u,    q
+VAR	ANON_473_10__dat, STANDARD.IDL._SEQ_TYPE.size
+	LVA 1, ANON_473_10__dat
+	Sa  1, ANON_473_10_disp
 	La  0, STANDARD.IDL._SEQ_TYPE.use__info
-	Sa  1, ANON_472_10__u
-	LVA 1, ANON_472_10_disp
+	Sa  1, ANON_473_10__u
+	LVA 1, ANON_473_10_disp
 					; doublet resultat record anonyme
 	La  1,	-S_ofs
 	CALL	STANDARD.IDL.IDL_MAN. ,TAIL_L32
@@ -4988,24 +4984,24 @@ begin:					;---------- BDY INSTRUCTIONS
 	LVA 1,	TR_disp
 	La
 	LI	STANDARD.IDL._TREE.size
-VAR	ANON_484_13_disp, q
-VAR	ANON_484_13__u,    q
-VAR	ANON_484_13__dat, STANDARD.IDL._TREE.size
-	LVA 1, ANON_484_13__dat
-	Sa  1, ANON_484_13_disp
+VAR	ANON_485_13_disp, q
+VAR	ANON_485_13__u,    q
+VAR	ANON_485_13__dat, STANDARD.IDL._TREE.size
+	LVA 1, ANON_485_13__dat
+	Sa  1, ANON_485_13_disp
 	La  0, STANDARD.IDL._TREE.use__info
-	Sa  1, ANON_484_13__u
-	LVA 1, ANON_484_13_disp
+	Sa  1, ANON_485_13__u
+	LVA 1, ANON_485_13_disp
 					; doublet resultat record anonyme
 	LVA 1,	TR_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.FST
+	ULb	0, STANDARD.IDL._ATTR_NBR.FST
 	CLT
 	BT	STANDARD.ce_raise_
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.LST
+	ULb	0, STANDARD.IDL._ATTR_NBR.LST
 	CGT
 	BT	STANDARD.ce_raise_
 	CALL	STANDARD.IDL.IDL_MAN. ,DABS_L38
@@ -5035,31 +5031,31 @@ VAR TXT_HDR__dat, STANDARD.IDL._TREE.size
 ; CODE_VC_NAME DN_VARIABLE_ID
 	La  2, TXT_HDR_disp
 	LI	STANDARD.IDL._TREE.size
-VAR	ANON_489_27_disp, q
-VAR	ANON_489_27__u,    q
-VAR	ANON_489_27__dat, STANDARD.IDL._TREE.size
-	LVA 2, ANON_489_27__dat
-	Sa  2, ANON_489_27_disp
+VAR	ANON_490_27_disp, q
+VAR	ANON_490_27__u,    q
+VAR	ANON_490_27__dat, STANDARD.IDL._TREE.size
+	LVA 2, ANON_490_27__dat
+	Sa  2, ANON_490_27_disp
 	La  0, STANDARD.IDL._TREE.use__info
-	Sa  2, ANON_489_27__u
-	LVA 2, ANON_489_27_disp
+	Sa  2, ANON_490_27__u
+	LVA 2, ANON_490_27_disp
 					; doublet resultat record anonyme
 	LVA 1,	STANDARD.IDL.PRINT_NAME_L25.TR_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.FST
+	ULb	0, STANDARD.IDL._ATTR_NBR.FST
 	CLT
 	BT	STANDARD.ce_raise_
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.LST
+	ULb	0, STANDARD.IDL._ATTR_NBR.LST
 	CGT
 	BT	STANDARD.ce_raise_
 	CALL	STANDARD.IDL.IDL_MAN. ,DABS_L38
 	La  ,  0
 	BLKMOV
 
-VAR START_disp, w				; variable entiere
+VAR START_disp, b				; variable entiere
 	La	1, STANDARD.IDL.PRINT_NAME_L25.TR_disp
 	Ld
 	LI	2
@@ -5069,16 +5065,16 @@ VAR START_disp, w				; variable entiere
 	LI	1
 	ADD
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.FST
+	ULb	0, STANDARD.IDL._ATTR_NBR.FST
 	CLT
 	BT	STANDARD.ce_raise_
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.LST
+	ULb	0, STANDARD.IDL._ATTR_NBR.LST
 	CGT
 	BT	STANDARD.ce_raise_
-	Sw  2,	START_disp
+	Sb  2,	START_disp
 
-VAR NB_TREES_disp, w			; variable entiere
+VAR NB_TREES_disp, b			; variable entiere
 	La	2, STANDARD.IDL.PRINT_NAME_L25.BLOCK__11.TXT_HDR_disp
 	Ld
 	LI	2
@@ -5086,25 +5082,25 @@ VAR NB_TREES_disp, w			; variable entiere
 	UBFX
 ; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.FST
+	ULb	0, STANDARD.IDL._ATTR_NBR.FST
 	CLT
 	BT	STANDARD.ce_raise_
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.LST
+	ULb	0, STANDARD.IDL._ATTR_NBR.LST
 	CGT
 	BT	STANDARD.ce_raise_
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.FST
+	ULb	0, STANDARD.IDL._ATTR_NBR.FST
 	CLT
 	BT	STANDARD.ce_raise_
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.LST
+	ULb	0, STANDARD.IDL._ATTR_NBR.LST
 	CGT
 	BT	STANDARD.ce_raise_
-	Sw  2,	NB_TREES_disp
+	Sb  2,	NB_TREES_disp
 
 VAR NB_CARS_disp, d				; variable entiere
-	Lw 2,	NB_TREES_disp
+	ULb 2,	NB_TREES_disp
 ; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
 	DUP
 	Ld	0, STANDARD._NATURAL.FST
@@ -5153,13 +5149,13 @@ VAR _LST_1, d
 	LI	32
 	Sd	2, _COMP_SIZ
 	Ld	2, _COMP_SIZ
-	Lw 2,	START_disp
+	ULb 2,	START_disp
 	Sd	2, _FST_1
-	Lw 2,	START_disp
+	ULb 2,	START_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SUB
-	Lw 2,	NB_TREES_disp
+	ULb 2,	NB_TREES_disp
 	ADD
 	Sd	2, _LST_1
 	Ld	2, _LST_1
@@ -5327,13 +5323,13 @@ begin:					;---------- BDY INSTRUCTIONS
 	DIV
 	LI	0					; lieu resultat sur pile
 ; CODE_SLICE : NAME.TY A FAIRE : DN_ALL
-	Lw 2,	START_disp
+	ULb 2,	START_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SUB
-	Lw 2,	NB_TREES_disp
+	ULb 2,	NB_TREES_disp
 	ADD
-	Lw 2,	START_disp
+	ULb 2,	START_disp
 	SUB
 	INC
 	CLAMP0
@@ -5353,16 +5349,16 @@ begin:					;---------- BDY INSTRUCTIONS
 	LI	1
 	MUL
 	ADD
-namespace ANON_501_14			; ensemble doublet @data/@info pour slice anonyme source
-VAR ANON_501_14_disp, q
-VAR ANON_501_14__u, q
+namespace ANON_502_14			; ensemble doublet @data/@info pour slice anonyme source
+VAR ANON_502_14_disp, q
+VAR ANON_502_14__u, q
 VAR SIZ, d
 VAR COMP_SIZ, d
 VAR _FST_1, d
 VAR _LST_1, d
-	Sa	2, ANON_501_14_disp
+	Sa	2, ANON_502_14_disp
 	LVA	2, SIZ
-	Sa	2, ANON_501_14__u
+	Sa	2, ANON_502_14__u
 	LI	8
 	Sd	2, COMP_SIZ
 ; CODE_NUMERIC_LITERAL DN_INTEGER
@@ -5408,7 +5404,7 @@ VAR _LST_1, d
 	LI	8
 	MUL
 	Sd	2, SIZ
-	LVA	2, ANON_501_14_disp
+	LVA	2, ANON_502_14_disp
 end namespace
 VAR	RET_INFO_L189, q
 	DUP
@@ -5431,93 +5427,96 @@ endPRO
 L185:
 L184:					; post if
 ; CODE & concat _STRING
-VAR	ANON_505_15_L190_G_data, q
-VAR	ANON_505_15_L190_G_info, q
-VAR	ANON_505_60_L190_D_data, q
-VAR	ANON_505_60_L190_D_info, q
-VAR	ANON_505_15_L190_G_len,  q
-VAR	ANON_505_60_L190_D_len,  q
-VAR	ANON_505_15_L190_R_disp, q
-VAR	ANON_505_15_L190_R__u,   q
-namespace ANON_505_15_L190_R_info
+VAR	ANON_506_15_L190_G_data, q
+VAR	ANON_506_15_L190_G_info, q
+VAR	ANON_506_60_L190_D_data, q
+VAR	ANON_506_60_L190_D_info, q
+VAR	ANON_506_15_L190_G_len,  q
+VAR	ANON_506_60_L190_D_len,  q
+VAR	ANON_506_15_L190_R_disp, q
+VAR	ANON_506_15_L190_R__u,   q
+namespace ANON_506_15_L190_R_info
   VAR SIZ,      d
   VAR _COMP_SIZ, d
   VAR _FST_1,    d
   VAR _LST_1,    d
 end namespace
-STR ANON_505_15_L190_G, "; PAS UN TXTREP/NUM_VAL PAS DE CHAINE ! "	; constante string="; PAS UN TXTREP/NUM_VAL PAS DE CHAINE ! "
-	LCA	ANON_505_15_L190_G.data_ptr
+STR ANON_506_15_L190_G, "; PAS UN TXTREP/NUM_VAL PAS DE CHAINE ! "	; constante string="; PAS UN TXTREP/NUM_VAL PAS DE CHAINE ! "
+	LCA	ANON_506_15_L190_G.data_ptr
 	DUP
 	La  ,  0
-	Sa  1, ANON_505_15_L190_G_data
+	Sa  1, ANON_506_15_L190_G_data
 	La  ,  8
-	Sa  1, ANON_505_15_L190_G_info
-	LId 1, ANON_505_15_L190_G_info, _STRING.LST_1
-	LId 1, ANON_505_15_L190_G_info, _STRING.FST_1
+	Sa  1, ANON_506_15_L190_G_info
+	LId 1, ANON_506_15_L190_G_info, _STRING.LST_1
+	LId 1, ANON_506_15_L190_G_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  1, ANON_505_15_L190_G_len
-VAR	ANON_505_60_disp, q
-VAR	ANON_505_60__u,   q
-namespace ANON_505_60_info
+	Sa  1, ANON_506_15_L190_G_len
+VAR	ANON_506_60_disp, q
+VAR	ANON_506_60__u,   q
+namespace ANON_506_60_info
   VAR SIZ, d
   VAR _COMP_SIZ, d
   VAR _FST_1, d
   VAR _LST_1, d
 end namespace
-	LVA 1, ANON_505_60_info.SIZ
-	Sa  1, ANON_505_60__u
-	LVA 1, ANON_505_60_disp
+	LVA 1, ANON_506_60_info.SIZ
+	Sa  1, ANON_506_60__u
+	LVA 1, ANON_506_60_disp
 	La	1, STANDARD.IDL.PRINT_NAME_L25.TR_disp
 	Ld
 	LI	24
 	LI	8
 	UBFX
-	CALL	STANDARD. ,INTEGER_IMAGE_L11
+	La 0, STANDARD.DIANA_NODE_ATTR_CLASS_NAMES._NODE_NAME.use__info
+	LI	16
+	ADD
+	CALL	STANDARD. ,ENUM_IMAGE_L31
 	DUP
 	La  ,  0
-	Sa  1, ANON_505_60_L190_D_data
+	Sa  1, ANON_506_60_L190_D_data
 	La  ,  8
-	Sa  1, ANON_505_60_L190_D_info
-	LId 1, ANON_505_60_L190_D_info, _STRING.LST_1
-	LId 1, ANON_505_60_L190_D_info, _STRING.FST_1
+	Sa  1, ANON_506_60_L190_D_info
+	LId 1, ANON_506_60_L190_D_info, _STRING.LST_1
+	LId 1, ANON_506_60_L190_D_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  1, ANON_505_60_L190_D_len
-	La  1, ANON_505_15_L190_G_len
-	La  1, ANON_505_60_L190_D_len
+	Sa  1, ANON_506_60_L190_D_len
+	La  1, ANON_506_15_L190_G_len
+	La  1, ANON_506_60_L190_D_len
 	ADD
 	CO_VAR
-	Sa  1, ANON_505_15_L190_R_disp
+	Sa  1, ANON_506_15_L190_R_disp
 	LI	1
-	Sd  1, ANON_505_15_L190_R_info._FST_1
-	La  1, ANON_505_15_L190_G_len
-	La  1, ANON_505_60_L190_D_len
+	Sd  1, ANON_506_15_L190_R_info._FST_1
+	La  1, ANON_506_15_L190_G_len
+	La  1, ANON_506_60_L190_D_len
 	ADD
-	Sd  1, ANON_505_15_L190_R_info._LST_1
+	Sd  1, ANON_506_15_L190_R_info._LST_1
 	LI	8
-	Sd  1, ANON_505_15_L190_R_info._COMP_SIZ
-	La  1, ANON_505_15_L190_G_len
-	La  1, ANON_505_60_L190_D_len
+	Sd  1, ANON_506_15_L190_R_info._COMP_SIZ
+	La  1, ANON_506_15_L190_G_len
+	La  1, ANON_506_60_L190_D_len
 	ADD
 	LI	8
 	MUL
-	Sd  1, ANON_505_15_L190_R_info.SIZ
-	LVA 1, ANON_505_15_L190_R_info.SIZ
-	Sa  1, ANON_505_15_L190_R__u
-	La  1, ANON_505_15_L190_R_disp
-	La  1, ANON_505_15_L190_G_len
-	La  1, ANON_505_15_L190_G_data
+	Sd  1, ANON_506_15_L190_R_info.SIZ
+	LVA 1, ANON_506_15_L190_R_info.SIZ
+	Sa  1, ANON_506_15_L190_R__u
+	La  1, ANON_506_15_L190_R_disp
+	La  1, ANON_506_15_L190_G_len
+	La  1, ANON_506_15_L190_G_data
 	BLKMOV
-	La  1, ANON_505_15_L190_R_disp
-	La  1, ANON_505_15_L190_G_len
+	La  1, ANON_506_15_L190_R_disp
+	La  1, ANON_506_15_L190_G_len
 	ADD
-	La  1, ANON_505_60_L190_D_len
-	La  1, ANON_505_60_L190_D_data
+	La  1, ANON_506_60_L190_D_len
+	La  1, ANON_506_60_L190_D_data
 	BLKMOV
-	LVA 1, ANON_505_15_L190_R_disp
+	LVA 1, ANON_506_15_L190_R_disp
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
 	LCA	STANDARD.PROGRAM_ERROR__exc.data_ptr
 	Sa	0, STANDARD.EXCEPTIONS_CURRENT_disp
@@ -5559,165 +5558,168 @@ begin:					;---------- BDY INSTRUCTIONS
 	CNE
 	BF	L196
 ; CODE & concat _STRING
-VAR	ANON_519_19_L197_G_data, q
-VAR	ANON_519_19_L197_G_info, q
-VAR	ANON_519_100_L197_D_data, q
-VAR	ANON_519_100_L197_D_info, q
-VAR	ANON_519_19_L197_G_len,  q
-VAR	ANON_519_100_L197_D_len,  q
-VAR	ANON_519_19_L197_R_disp, q
-VAR	ANON_519_19_L197_R__u,   q
-namespace ANON_519_19_L197_R_info
+VAR	ANON_520_19_L197_G_data, q
+VAR	ANON_520_19_L197_G_info, q
+VAR	ANON_520_100_L197_D_data, q
+VAR	ANON_520_100_L197_D_info, q
+VAR	ANON_520_19_L197_G_len,  q
+VAR	ANON_520_100_L197_D_len,  q
+VAR	ANON_520_19_L197_R_disp, q
+VAR	ANON_520_19_L197_R__u,   q
+namespace ANON_520_19_L197_R_info
   VAR SIZ,      d
   VAR _COMP_SIZ, d
   VAR _FST_1,    d
   VAR _LST_1,    d
 end namespace
 ; CODE & concat _STRING
-VAR	ANON_519_19_L198_G_data, q
-VAR	ANON_519_19_L198_G_info, q
-VAR	ANON_519_72_L198_D_data, q
-VAR	ANON_519_72_L198_D_info, q
-VAR	ANON_519_19_L198_G_len,  q
-VAR	ANON_519_72_L198_D_len,  q
-VAR	ANON_519_19_L198_R_disp, q
-VAR	ANON_519_19_L198_R__u,   q
-namespace ANON_519_19_L198_R_info
+VAR	ANON_520_19_L198_G_data, q
+VAR	ANON_520_19_L198_G_info, q
+VAR	ANON_520_72_L198_D_data, q
+VAR	ANON_520_72_L198_D_info, q
+VAR	ANON_520_19_L198_G_len,  q
+VAR	ANON_520_72_L198_D_len,  q
+VAR	ANON_520_19_L198_R_disp, q
+VAR	ANON_520_19_L198_R__u,   q
+namespace ANON_520_19_L198_R_info
   VAR SIZ,      d
   VAR _COMP_SIZ, d
   VAR _FST_1,    d
   VAR _LST_1,    d
 end namespace
-STR ANON_519_19_L198_G, "; IDL.PRINT_NUM : LE HI N EST PAS UN DN_NUM_VAL ("	; constante string="; IDL.PRINT_NUM : LE HI N EST PAS UN DN_NUM_VAL ("
-	LCA	ANON_519_19_L198_G.data_ptr
+STR ANON_520_19_L198_G, "; IDL.PRINT_NUM : LE HI N EST PAS UN DN_NUM_VAL ("	; constante string="; IDL.PRINT_NUM : LE HI N EST PAS UN DN_NUM_VAL ("
+	LCA	ANON_520_19_L198_G.data_ptr
 	DUP
 	La  ,  0
-	Sa  1, ANON_519_19_L198_G_data
+	Sa  1, ANON_520_19_L198_G_data
 	La  ,  8
-	Sa  1, ANON_519_19_L198_G_info
-	LId 1, ANON_519_19_L198_G_info, _STRING.LST_1
-	LId 1, ANON_519_19_L198_G_info, _STRING.FST_1
+	Sa  1, ANON_520_19_L198_G_info
+	LId 1, ANON_520_19_L198_G_info, _STRING.LST_1
+	LId 1, ANON_520_19_L198_G_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  1, ANON_519_19_L198_G_len
-VAR	ANON_519_72_disp, q
-VAR	ANON_519_72__u,   q
-namespace ANON_519_72_info
+	Sa  1, ANON_520_19_L198_G_len
+VAR	ANON_520_72_disp, q
+VAR	ANON_520_72__u,   q
+namespace ANON_520_72_info
   VAR SIZ, d
   VAR _COMP_SIZ, d
   VAR _FST_1, d
   VAR _LST_1, d
 end namespace
-	LVA 1, ANON_519_72_info.SIZ
-	Sa  1, ANON_519_72__u
-	LVA 1, ANON_519_72_disp
+	LVA 1, ANON_520_72_info.SIZ
+	Sa  1, ANON_520_72__u
+	LVA 1, ANON_520_72_disp
 	La 1, -T_ofs
 	La	-1, 0
 	Ld
 	LI	24
 	LI	8
 	UBFX
-	CALL	STANDARD. ,INTEGER_IMAGE_L11
+	La 0, STANDARD.DIANA_NODE_ATTR_CLASS_NAMES._NODE_NAME.use__info
+	LI	16
+	ADD
+	CALL	STANDARD. ,ENUM_IMAGE_L31
 	DUP
 	La  ,  0
-	Sa  1, ANON_519_72_L198_D_data
+	Sa  1, ANON_520_72_L198_D_data
 	La  ,  8
-	Sa  1, ANON_519_72_L198_D_info
-	LId 1, ANON_519_72_L198_D_info, _STRING.LST_1
-	LId 1, ANON_519_72_L198_D_info, _STRING.FST_1
+	Sa  1, ANON_520_72_L198_D_info
+	LId 1, ANON_520_72_L198_D_info, _STRING.LST_1
+	LId 1, ANON_520_72_L198_D_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  1, ANON_519_72_L198_D_len
-	La  1, ANON_519_19_L198_G_len
-	La  1, ANON_519_72_L198_D_len
+	Sa  1, ANON_520_72_L198_D_len
+	La  1, ANON_520_19_L198_G_len
+	La  1, ANON_520_72_L198_D_len
 	ADD
 	CO_VAR
-	Sa  1, ANON_519_19_L198_R_disp
+	Sa  1, ANON_520_19_L198_R_disp
 	LI	1
-	Sd  1, ANON_519_19_L198_R_info._FST_1
-	La  1, ANON_519_19_L198_G_len
-	La  1, ANON_519_72_L198_D_len
+	Sd  1, ANON_520_19_L198_R_info._FST_1
+	La  1, ANON_520_19_L198_G_len
+	La  1, ANON_520_72_L198_D_len
 	ADD
-	Sd  1, ANON_519_19_L198_R_info._LST_1
+	Sd  1, ANON_520_19_L198_R_info._LST_1
 	LI	8
-	Sd  1, ANON_519_19_L198_R_info._COMP_SIZ
-	La  1, ANON_519_19_L198_G_len
-	La  1, ANON_519_72_L198_D_len
+	Sd  1, ANON_520_19_L198_R_info._COMP_SIZ
+	La  1, ANON_520_19_L198_G_len
+	La  1, ANON_520_72_L198_D_len
 	ADD
 	LI	8
 	MUL
-	Sd  1, ANON_519_19_L198_R_info.SIZ
-	LVA 1, ANON_519_19_L198_R_info.SIZ
-	Sa  1, ANON_519_19_L198_R__u
-	La  1, ANON_519_19_L198_R_disp
-	La  1, ANON_519_19_L198_G_len
-	La  1, ANON_519_19_L198_G_data
+	Sd  1, ANON_520_19_L198_R_info.SIZ
+	LVA 1, ANON_520_19_L198_R_info.SIZ
+	Sa  1, ANON_520_19_L198_R__u
+	La  1, ANON_520_19_L198_R_disp
+	La  1, ANON_520_19_L198_G_len
+	La  1, ANON_520_19_L198_G_data
 	BLKMOV
-	La  1, ANON_519_19_L198_R_disp
-	La  1, ANON_519_19_L198_G_len
+	La  1, ANON_520_19_L198_R_disp
+	La  1, ANON_520_19_L198_G_len
 	ADD
-	La  1, ANON_519_72_L198_D_len
-	La  1, ANON_519_72_L198_D_data
+	La  1, ANON_520_72_L198_D_len
+	La  1, ANON_520_72_L198_D_data
 	BLKMOV
-	LVA 1, ANON_519_19_L198_R_disp
+	LVA 1, ANON_520_19_L198_R_disp
 	DUP
 	La  ,  0
-	Sa  1, ANON_519_19_L197_G_data
+	Sa  1, ANON_520_19_L197_G_data
 	La  ,  8
-	Sa  1, ANON_519_19_L197_G_info
-	LId 1, ANON_519_19_L197_G_info, _STRING.LST_1
-	LId 1, ANON_519_19_L197_G_info, _STRING.FST_1
+	Sa  1, ANON_520_19_L197_G_info
+	LId 1, ANON_520_19_L197_G_info, _STRING.LST_1
+	LId 1, ANON_520_19_L197_G_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  1, ANON_519_19_L197_G_len
-STR ANON_519_100_L197_D, " PAS DE CHAINE !"	; constante string=" PAS DE CHAINE !"
-	LCA	ANON_519_100_L197_D.data_ptr
+	Sa  1, ANON_520_19_L197_G_len
+STR ANON_520_100_L197_D, " PAS DE CHAINE !"	; constante string=" PAS DE CHAINE !"
+	LCA	ANON_520_100_L197_D.data_ptr
 	DUP
 	La  ,  0
-	Sa  1, ANON_519_100_L197_D_data
+	Sa  1, ANON_520_100_L197_D_data
 	La  ,  8
-	Sa  1, ANON_519_100_L197_D_info
-	LId 1, ANON_519_100_L197_D_info, _STRING.LST_1
-	LId 1, ANON_519_100_L197_D_info, _STRING.FST_1
+	Sa  1, ANON_520_100_L197_D_info
+	LId 1, ANON_520_100_L197_D_info, _STRING.LST_1
+	LId 1, ANON_520_100_L197_D_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  1, ANON_519_100_L197_D_len
-	La  1, ANON_519_19_L197_G_len
-	La  1, ANON_519_100_L197_D_len
+	Sa  1, ANON_520_100_L197_D_len
+	La  1, ANON_520_19_L197_G_len
+	La  1, ANON_520_100_L197_D_len
 	ADD
 	CO_VAR
-	Sa  1, ANON_519_19_L197_R_disp
+	Sa  1, ANON_520_19_L197_R_disp
 	LI	1
-	Sd  1, ANON_519_19_L197_R_info._FST_1
-	La  1, ANON_519_19_L197_G_len
-	La  1, ANON_519_100_L197_D_len
+	Sd  1, ANON_520_19_L197_R_info._FST_1
+	La  1, ANON_520_19_L197_G_len
+	La  1, ANON_520_100_L197_D_len
 	ADD
-	Sd  1, ANON_519_19_L197_R_info._LST_1
+	Sd  1, ANON_520_19_L197_R_info._LST_1
 	LI	8
-	Sd  1, ANON_519_19_L197_R_info._COMP_SIZ
-	La  1, ANON_519_19_L197_G_len
-	La  1, ANON_519_100_L197_D_len
+	Sd  1, ANON_520_19_L197_R_info._COMP_SIZ
+	La  1, ANON_520_19_L197_G_len
+	La  1, ANON_520_100_L197_D_len
 	ADD
 	LI	8
 	MUL
-	Sd  1, ANON_519_19_L197_R_info.SIZ
-	LVA 1, ANON_519_19_L197_R_info.SIZ
-	Sa  1, ANON_519_19_L197_R__u
-	La  1, ANON_519_19_L197_R_disp
-	La  1, ANON_519_19_L197_G_len
-	La  1, ANON_519_19_L197_G_data
+	Sd  1, ANON_520_19_L197_R_info.SIZ
+	LVA 1, ANON_520_19_L197_R_info.SIZ
+	Sa  1, ANON_520_19_L197_R__u
+	La  1, ANON_520_19_L197_R_disp
+	La  1, ANON_520_19_L197_G_len
+	La  1, ANON_520_19_L197_G_data
 	BLKMOV
-	La  1, ANON_519_19_L197_R_disp
-	La  1, ANON_519_19_L197_G_len
+	La  1, ANON_520_19_L197_R_disp
+	La  1, ANON_520_19_L197_G_len
 	ADD
-	La  1, ANON_519_100_L197_D_len
-	La  1, ANON_519_100_L197_D_data
+	La  1, ANON_520_100_L197_D_len
+	La  1, ANON_520_100_L197_D_data
 	BLKMOV
-	LVA 1, ANON_519_19_L197_R_disp
+	LVA 1, ANON_520_19_L197_R_disp
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
 	LCA	STANDARD.PROGRAM_ERROR__exc.data_ptr
 	Sa	0, STANDARD.EXCEPTIONS_CURRENT_disp
@@ -5737,17 +5739,17 @@ L195:					; post if
 	CEQ
 	BF	L200
 ; CODE_RETURN : EXPR TYPE = DN_ARRAY  VUE COMPLETE = DN_ARRAY
-VAR	ANON_524_16_disp, q
-VAR	ANON_524_16__u,   q
-namespace ANON_524_16_info
+VAR	ANON_525_16_disp, q
+VAR	ANON_525_16__u,   q
+namespace ANON_525_16_info
   VAR SIZ, d
   VAR _COMP_SIZ, d
   VAR _FST_1, d
   VAR _LST_1, d
 end namespace
-	LVA 1, ANON_524_16_info.SIZ
-	Sa  1, ANON_524_16__u
-	LVA 1, ANON_524_16_disp
+	LVA 1, ANON_525_16_info.SIZ
+	Sa  1, ANON_525_16__u
+	LVA 1, ANON_525_16_disp
 	La 1, -T_ofs
 	La	-1, 0
 	Ld
@@ -5776,17 +5778,17 @@ VAR	RET_INFO_L201, q
 	BRA	L199
 L200:
 ; CODE_RETURN : EXPR TYPE = DN_ARRAY  VUE COMPLETE = DN_ARRAY
-VAR	ANON_526_16_disp, q
-VAR	ANON_526_16__u,   q
-namespace ANON_526_16_info
+VAR	ANON_527_16_disp, q
+VAR	ANON_527_16__u,   q
+namespace ANON_527_16_info
   VAR SIZ, d
   VAR _COMP_SIZ, d
   VAR _FST_1, d
   VAR _LST_1, d
 end namespace
-	LVA 1, ANON_526_16_info.SIZ
-	Sa  1, ANON_526_16__u
-	LVA 1, ANON_526_16_disp
+	LVA 1, ANON_527_16_info.SIZ
+	Sa  1, ANON_527_16__u
+	LVA 1, ANON_527_16_disp
 	La 1, -T_ofs
 	La	-1, 0
 	Ld
@@ -5832,54 +5834,54 @@ L194:
 	BF	L205
 ; CODE_RETURN : EXPR TYPE = DN_ARRAY  VUE COMPLETE = DN_ARRAY
 ; CODE & concat _STRING
-VAR	ANON_532_17_L206_G_data, q
-VAR	ANON_532_17_L206_G_info, q
-VAR	ANON_532_55_L206_D_data, q
-VAR	ANON_532_55_L206_D_info, q
-VAR	ANON_532_17_L206_G_len,  q
-VAR	ANON_532_55_L206_D_len,  q
-VAR	ANON_532_17_L206_R_disp, q
-VAR	ANON_532_17_L206_R__u,   q
-namespace ANON_532_17_L206_R_info
+VAR	ANON_533_17_L206_G_data, q
+VAR	ANON_533_17_L206_G_info, q
+VAR	ANON_533_55_L206_D_data, q
+VAR	ANON_533_55_L206_D_info, q
+VAR	ANON_533_17_L206_G_len,  q
+VAR	ANON_533_55_L206_D_len,  q
+VAR	ANON_533_17_L206_R_disp, q
+VAR	ANON_533_17_L206_R__u,   q
+namespace ANON_533_17_L206_R_info
   VAR SIZ,      d
   VAR _COMP_SIZ, d
   VAR _FST_1,    d
   VAR _LST_1,    d
 end namespace
 ; CODE & concat _STRING
-VAR	ANON_532_17_L207_G_data, q
-VAR	ANON_532_17_L207_G_info, q
-VAR	ANON_532_49_L207_D_data, q
-VAR	ANON_532_49_L207_D_info, q
-VAR	ANON_532_17_L207_G_len,  q
-VAR	ANON_532_49_L207_D_len,  q
-VAR	ANON_532_17_L207_R_disp, q
-VAR	ANON_532_17_L207_R__u,   q
-namespace ANON_532_17_L207_R_info
+VAR	ANON_533_17_L207_G_data, q
+VAR	ANON_533_17_L207_G_info, q
+VAR	ANON_533_49_L207_D_data, q
+VAR	ANON_533_49_L207_D_info, q
+VAR	ANON_533_17_L207_G_len,  q
+VAR	ANON_533_49_L207_D_len,  q
+VAR	ANON_533_17_L207_R_disp, q
+VAR	ANON_533_17_L207_R__u,   q
+namespace ANON_533_17_L207_R_info
   VAR SIZ,      d
   VAR _COMP_SIZ, d
   VAR _FST_1,    d
   VAR _LST_1,    d
 end namespace
-VAR	ANON_532_17_disp, q
-VAR	ANON_532_17__u,   q
-namespace ANON_532_17_info
+VAR	ANON_533_17_disp, q
+VAR	ANON_533_17__u,   q
+namespace ANON_533_17_info
   VAR SIZ, d
   VAR _COMP_SIZ, d
   VAR _FST_1, d
   VAR _LST_1, d
 end namespace
-	LVA 1, ANON_532_17_info.SIZ
-	Sa  1, ANON_532_17__u
-	LVA 1, ANON_532_17_disp
-VAR	ANON_532_28_disp, q
-VAR	ANON_532_28__u,    q
-VAR	ANON_532_28__dat, STANDARD.IDL._TREE.size
-	LVA 1, ANON_532_28__dat
-	Sa  1, ANON_532_28_disp
+	LVA 1, ANON_533_17_info.SIZ
+	Sa  1, ANON_533_17__u
+	LVA 1, ANON_533_17_disp
+VAR	ANON_533_28_disp, q
+VAR	ANON_533_28__u,    q
+VAR	ANON_533_28__dat, STANDARD.IDL._TREE.size
+	LVA 1, ANON_533_28__dat
+	Sa  1, ANON_533_28_disp
 	La  0, STANDARD.IDL._TREE.use__info
-	Sa  1, ANON_532_28__u
-	LVA 1, ANON_532_28_disp
+	Sa  1, ANON_533_28__u
+	LVA 1, ANON_533_28_disp
 					; doublet resultat record anonyme
 	La  1,	-T_ofs
 	LI  160
@@ -5887,18 +5889,18 @@ VAR	ANON_532_28__dat, STANDARD.IDL._TREE.size
 	CALL	STANDARD.IDL. ,PRINT_NUM_L26
 	DUP
 	La  ,  0
-	Sa  1, ANON_532_17_L207_G_data
+	Sa  1, ANON_533_17_L207_G_data
 	La  ,  8
-	Sa  1, ANON_532_17_L207_G_info
-	LId 1, ANON_532_17_L207_G_info, _STRING.LST_1
-	LId 1, ANON_532_17_L207_G_info, _STRING.FST_1
+	Sa  1, ANON_533_17_L207_G_info
+	LId 1, ANON_533_17_L207_G_info, _STRING.LST_1
+	LId 1, ANON_533_17_L207_G_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  1, ANON_532_17_L207_G_len
-VAR	ANON_532_49_L207_D_disp, q
-VAR	ANON_532_49_L207_D__u,   q
-namespace ANON_532_49_L207_D_info
+	Sa  1, ANON_533_17_L207_G_len
+VAR	ANON_533_49_L207_D_disp, q
+VAR	ANON_533_49_L207_D__u,   q
+namespace ANON_533_49_L207_D_info
   VAR SIZ,      d
   VAR _COMP_SIZ, d
   VAR _FST_1,    d
@@ -5907,92 +5909,92 @@ end namespace
 	LI	47
 	LI	1
 	CO_VAR
-	Sa  1, ANON_532_49_L207_D_disp
-	SIb  1, ANON_532_49_L207_D_disp, 0
+	Sa  1, ANON_533_49_L207_D_disp
+	SIb  1, ANON_533_49_L207_D_disp, 0
 	LI	1
-	Sd  1, ANON_532_49_L207_D_info._FST_1
+	Sd  1, ANON_533_49_L207_D_info._FST_1
 	LI	1
-	Sd  1, ANON_532_49_L207_D_info._LST_1
+	Sd  1, ANON_533_49_L207_D_info._LST_1
 	LI	8
-	Sd  1, ANON_532_49_L207_D_info._COMP_SIZ
+	Sd  1, ANON_533_49_L207_D_info._COMP_SIZ
 	LI	8
-	Sd  1, ANON_532_49_L207_D_info.SIZ
-	LVA 1, ANON_532_49_L207_D_info.SIZ
-	Sa  1, ANON_532_49_L207_D__u
-	LVA 1, ANON_532_49_L207_D_disp
+	Sd  1, ANON_533_49_L207_D_info.SIZ
+	LVA 1, ANON_533_49_L207_D_info.SIZ
+	Sa  1, ANON_533_49_L207_D__u
+	LVA 1, ANON_533_49_L207_D_disp
 	DUP
 	La  ,  0
-	Sa  1, ANON_532_49_L207_D_data
+	Sa  1, ANON_533_49_L207_D_data
 	La  ,  8
-	Sa  1, ANON_532_49_L207_D_info
-	LId 1, ANON_532_49_L207_D_info, _STRING.LST_1
-	LId 1, ANON_532_49_L207_D_info, _STRING.FST_1
+	Sa  1, ANON_533_49_L207_D_info
+	LId 1, ANON_533_49_L207_D_info, _STRING.LST_1
+	LId 1, ANON_533_49_L207_D_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  1, ANON_532_49_L207_D_len
-	La  1, ANON_532_17_L207_G_len
-	La  1, ANON_532_49_L207_D_len
+	Sa  1, ANON_533_49_L207_D_len
+	La  1, ANON_533_17_L207_G_len
+	La  1, ANON_533_49_L207_D_len
 	ADD
 	CO_VAR
-	Sa  1, ANON_532_17_L207_R_disp
+	Sa  1, ANON_533_17_L207_R_disp
 	LI	1
-	Sd  1, ANON_532_17_L207_R_info._FST_1
-	La  1, ANON_532_17_L207_G_len
-	La  1, ANON_532_49_L207_D_len
+	Sd  1, ANON_533_17_L207_R_info._FST_1
+	La  1, ANON_533_17_L207_G_len
+	La  1, ANON_533_49_L207_D_len
 	ADD
-	Sd  1, ANON_532_17_L207_R_info._LST_1
+	Sd  1, ANON_533_17_L207_R_info._LST_1
 	LI	8
-	Sd  1, ANON_532_17_L207_R_info._COMP_SIZ
-	La  1, ANON_532_17_L207_G_len
-	La  1, ANON_532_49_L207_D_len
+	Sd  1, ANON_533_17_L207_R_info._COMP_SIZ
+	La  1, ANON_533_17_L207_G_len
+	La  1, ANON_533_49_L207_D_len
 	ADD
 	LI	8
 	MUL
-	Sd  1, ANON_532_17_L207_R_info.SIZ
-	LVA 1, ANON_532_17_L207_R_info.SIZ
-	Sa  1, ANON_532_17_L207_R__u
-	La  1, ANON_532_17_L207_R_disp
-	La  1, ANON_532_17_L207_G_len
-	La  1, ANON_532_17_L207_G_data
+	Sd  1, ANON_533_17_L207_R_info.SIZ
+	LVA 1, ANON_533_17_L207_R_info.SIZ
+	Sa  1, ANON_533_17_L207_R__u
+	La  1, ANON_533_17_L207_R_disp
+	La  1, ANON_533_17_L207_G_len
+	La  1, ANON_533_17_L207_G_data
 	BLKMOV
-	La  1, ANON_532_17_L207_R_disp
-	La  1, ANON_532_17_L207_G_len
+	La  1, ANON_533_17_L207_R_disp
+	La  1, ANON_533_17_L207_G_len
 	ADD
-	La  1, ANON_532_49_L207_D_len
-	La  1, ANON_532_49_L207_D_data
+	La  1, ANON_533_49_L207_D_len
+	La  1, ANON_533_49_L207_D_data
 	BLKMOV
-	LVA 1, ANON_532_17_L207_R_disp
+	LVA 1, ANON_533_17_L207_R_disp
 	DUP
 	La  ,  0
-	Sa  1, ANON_532_17_L206_G_data
+	Sa  1, ANON_533_17_L206_G_data
 	La  ,  8
-	Sa  1, ANON_532_17_L206_G_info
-	LId 1, ANON_532_17_L206_G_info, _STRING.LST_1
-	LId 1, ANON_532_17_L206_G_info, _STRING.FST_1
+	Sa  1, ANON_533_17_L206_G_info
+	LId 1, ANON_533_17_L206_G_info, _STRING.LST_1
+	LId 1, ANON_533_17_L206_G_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  1, ANON_532_17_L206_G_len
-VAR	ANON_532_55_disp, q
-VAR	ANON_532_55__u,   q
-namespace ANON_532_55_info
+	Sa  1, ANON_533_17_L206_G_len
+VAR	ANON_533_55_disp, q
+VAR	ANON_533_55__u,   q
+namespace ANON_533_55_info
   VAR SIZ, d
   VAR _COMP_SIZ, d
   VAR _FST_1, d
   VAR _LST_1, d
 end namespace
-	LVA 1, ANON_532_55_info.SIZ
-	Sa  1, ANON_532_55__u
-	LVA 1, ANON_532_55_disp
-VAR	ANON_532_66_disp, q
-VAR	ANON_532_66__u,    q
-VAR	ANON_532_66__dat, STANDARD.IDL._TREE.size
-	LVA 1, ANON_532_66__dat
-	Sa  1, ANON_532_66_disp
+	LVA 1, ANON_533_55_info.SIZ
+	Sa  1, ANON_533_55__u
+	LVA 1, ANON_533_55_disp
+VAR	ANON_533_66_disp, q
+VAR	ANON_533_66__u,    q
+VAR	ANON_533_66__dat, STANDARD.IDL._TREE.size
+	LVA 1, ANON_533_66__dat
+	Sa  1, ANON_533_66_disp
 	La  0, STANDARD.IDL._TREE.use__info
-	Sa  1, ANON_532_66__u
-	LVA 1, ANON_532_66_disp
+	Sa  1, ANON_533_66__u
+	LVA 1, ANON_533_66_disp
 					; doublet resultat record anonyme
 	La  1,	-T_ofs
 	LI  161
@@ -6000,47 +6002,47 @@ VAR	ANON_532_66__dat, STANDARD.IDL._TREE.size
 	CALL	STANDARD.IDL. ,PRINT_NUM_L26
 	DUP
 	La  ,  0
-	Sa  1, ANON_532_55_L206_D_data
+	Sa  1, ANON_533_55_L206_D_data
 	La  ,  8
-	Sa  1, ANON_532_55_L206_D_info
-	LId 1, ANON_532_55_L206_D_info, _STRING.LST_1
-	LId 1, ANON_532_55_L206_D_info, _STRING.FST_1
+	Sa  1, ANON_533_55_L206_D_info
+	LId 1, ANON_533_55_L206_D_info, _STRING.LST_1
+	LId 1, ANON_533_55_L206_D_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  1, ANON_532_55_L206_D_len
-	La  1, ANON_532_17_L206_G_len
-	La  1, ANON_532_55_L206_D_len
+	Sa  1, ANON_533_55_L206_D_len
+	La  1, ANON_533_17_L206_G_len
+	La  1, ANON_533_55_L206_D_len
 	ADD
 	CO_VAR
-	Sa  1, ANON_532_17_L206_R_disp
+	Sa  1, ANON_533_17_L206_R_disp
 	LI	1
-	Sd  1, ANON_532_17_L206_R_info._FST_1
-	La  1, ANON_532_17_L206_G_len
-	La  1, ANON_532_55_L206_D_len
+	Sd  1, ANON_533_17_L206_R_info._FST_1
+	La  1, ANON_533_17_L206_G_len
+	La  1, ANON_533_55_L206_D_len
 	ADD
-	Sd  1, ANON_532_17_L206_R_info._LST_1
+	Sd  1, ANON_533_17_L206_R_info._LST_1
 	LI	8
-	Sd  1, ANON_532_17_L206_R_info._COMP_SIZ
-	La  1, ANON_532_17_L206_G_len
-	La  1, ANON_532_55_L206_D_len
+	Sd  1, ANON_533_17_L206_R_info._COMP_SIZ
+	La  1, ANON_533_17_L206_G_len
+	La  1, ANON_533_55_L206_D_len
 	ADD
 	LI	8
 	MUL
-	Sd  1, ANON_532_17_L206_R_info.SIZ
-	LVA 1, ANON_532_17_L206_R_info.SIZ
-	Sa  1, ANON_532_17_L206_R__u
-	La  1, ANON_532_17_L206_R_disp
-	La  1, ANON_532_17_L206_G_len
-	La  1, ANON_532_17_L206_G_data
+	Sd  1, ANON_533_17_L206_R_info.SIZ
+	LVA 1, ANON_533_17_L206_R_info.SIZ
+	Sa  1, ANON_533_17_L206_R__u
+	La  1, ANON_533_17_L206_R_disp
+	La  1, ANON_533_17_L206_G_len
+	La  1, ANON_533_17_L206_G_data
 	BLKMOV
-	La  1, ANON_532_17_L206_R_disp
-	La  1, ANON_532_17_L206_G_len
+	La  1, ANON_533_17_L206_R_disp
+	La  1, ANON_533_17_L206_G_len
 	ADD
-	La  1, ANON_532_55_L206_D_len
-	La  1, ANON_532_55_L206_D_data
+	La  1, ANON_533_55_L206_D_len
+	La  1, ANON_533_55_L206_D_data
 	BLKMOV
-	LVA 1, ANON_532_17_L206_R_disp
+	LVA 1, ANON_533_17_L206_R_disp
 VAR	RET_INFO_L208, q
 	DUP
 	La  ,  0
@@ -6069,165 +6071,168 @@ L204:					; post if
 	CNE
 	BF	L210
 ; CODE & concat _STRING
-VAR	ANON_536_19_L211_G_data, q
-VAR	ANON_536_19_L211_G_info, q
-VAR	ANON_536_98_L211_D_data, q
-VAR	ANON_536_98_L211_D_info, q
-VAR	ANON_536_19_L211_G_len,  q
-VAR	ANON_536_98_L211_D_len,  q
-VAR	ANON_536_19_L211_R_disp, q
-VAR	ANON_536_19_L211_R__u,   q
-namespace ANON_536_19_L211_R_info
+VAR	ANON_537_19_L211_G_data, q
+VAR	ANON_537_19_L211_G_info, q
+VAR	ANON_537_98_L211_D_data, q
+VAR	ANON_537_98_L211_D_info, q
+VAR	ANON_537_19_L211_G_len,  q
+VAR	ANON_537_98_L211_D_len,  q
+VAR	ANON_537_19_L211_R_disp, q
+VAR	ANON_537_19_L211_R__u,   q
+namespace ANON_537_19_L211_R_info
   VAR SIZ,      d
   VAR _COMP_SIZ, d
   VAR _FST_1,    d
   VAR _LST_1,    d
 end namespace
 ; CODE & concat _STRING
-VAR	ANON_536_19_L212_G_data, q
-VAR	ANON_536_19_L212_G_info, q
-VAR	ANON_536_72_L212_D_data, q
-VAR	ANON_536_72_L212_D_info, q
-VAR	ANON_536_19_L212_G_len,  q
-VAR	ANON_536_72_L212_D_len,  q
-VAR	ANON_536_19_L212_R_disp, q
-VAR	ANON_536_19_L212_R__u,   q
-namespace ANON_536_19_L212_R_info
+VAR	ANON_537_19_L212_G_data, q
+VAR	ANON_537_19_L212_G_info, q
+VAR	ANON_537_72_L212_D_data, q
+VAR	ANON_537_72_L212_D_info, q
+VAR	ANON_537_19_L212_G_len,  q
+VAR	ANON_537_72_L212_D_len,  q
+VAR	ANON_537_19_L212_R_disp, q
+VAR	ANON_537_19_L212_R__u,   q
+namespace ANON_537_19_L212_R_info
   VAR SIZ,      d
   VAR _COMP_SIZ, d
   VAR _FST_1,    d
   VAR _LST_1,    d
 end namespace
-STR ANON_536_19_L212_G, "; IDL.PRINT_NUM : LE HI N EST PAS UN DN_NUM_VAL ("	; constante string="; IDL.PRINT_NUM : LE HI N EST PAS UN DN_NUM_VAL ("
-	LCA	ANON_536_19_L212_G.data_ptr
+STR ANON_537_19_L212_G, "; IDL.PRINT_NUM : LE HI N EST PAS UN DN_NUM_VAL ("	; constante string="; IDL.PRINT_NUM : LE HI N EST PAS UN DN_NUM_VAL ("
+	LCA	ANON_537_19_L212_G.data_ptr
 	DUP
 	La  ,  0
-	Sa  1, ANON_536_19_L212_G_data
+	Sa  1, ANON_537_19_L212_G_data
 	La  ,  8
-	Sa  1, ANON_536_19_L212_G_info
-	LId 1, ANON_536_19_L212_G_info, _STRING.LST_1
-	LId 1, ANON_536_19_L212_G_info, _STRING.FST_1
+	Sa  1, ANON_537_19_L212_G_info
+	LId 1, ANON_537_19_L212_G_info, _STRING.LST_1
+	LId 1, ANON_537_19_L212_G_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  1, ANON_536_19_L212_G_len
-VAR	ANON_536_72_disp, q
-VAR	ANON_536_72__u,   q
-namespace ANON_536_72_info
+	Sa  1, ANON_537_19_L212_G_len
+VAR	ANON_537_72_disp, q
+VAR	ANON_537_72__u,   q
+namespace ANON_537_72_info
   VAR SIZ, d
   VAR _COMP_SIZ, d
   VAR _FST_1, d
   VAR _LST_1, d
 end namespace
-	LVA 1, ANON_536_72_info.SIZ
-	Sa  1, ANON_536_72__u
-	LVA 1, ANON_536_72_disp
+	LVA 1, ANON_537_72_info.SIZ
+	Sa  1, ANON_537_72__u
+	LVA 1, ANON_537_72_disp
 	La 1, -T_ofs
 	La	-1, 0
 	Ld
 	LI	24
 	LI	8
 	UBFX
-	CALL	STANDARD. ,INTEGER_IMAGE_L11
+	La 0, STANDARD.DIANA_NODE_ATTR_CLASS_NAMES._NODE_NAME.use__info
+	LI	16
+	ADD
+	CALL	STANDARD. ,ENUM_IMAGE_L31
 	DUP
 	La  ,  0
-	Sa  1, ANON_536_72_L212_D_data
+	Sa  1, ANON_537_72_L212_D_data
 	La  ,  8
-	Sa  1, ANON_536_72_L212_D_info
-	LId 1, ANON_536_72_L212_D_info, _STRING.LST_1
-	LId 1, ANON_536_72_L212_D_info, _STRING.FST_1
+	Sa  1, ANON_537_72_L212_D_info
+	LId 1, ANON_537_72_L212_D_info, _STRING.LST_1
+	LId 1, ANON_537_72_L212_D_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  1, ANON_536_72_L212_D_len
-	La  1, ANON_536_19_L212_G_len
-	La  1, ANON_536_72_L212_D_len
+	Sa  1, ANON_537_72_L212_D_len
+	La  1, ANON_537_19_L212_G_len
+	La  1, ANON_537_72_L212_D_len
 	ADD
 	CO_VAR
-	Sa  1, ANON_536_19_L212_R_disp
+	Sa  1, ANON_537_19_L212_R_disp
 	LI	1
-	Sd  1, ANON_536_19_L212_R_info._FST_1
-	La  1, ANON_536_19_L212_G_len
-	La  1, ANON_536_72_L212_D_len
+	Sd  1, ANON_537_19_L212_R_info._FST_1
+	La  1, ANON_537_19_L212_G_len
+	La  1, ANON_537_72_L212_D_len
 	ADD
-	Sd  1, ANON_536_19_L212_R_info._LST_1
+	Sd  1, ANON_537_19_L212_R_info._LST_1
 	LI	8
-	Sd  1, ANON_536_19_L212_R_info._COMP_SIZ
-	La  1, ANON_536_19_L212_G_len
-	La  1, ANON_536_72_L212_D_len
+	Sd  1, ANON_537_19_L212_R_info._COMP_SIZ
+	La  1, ANON_537_19_L212_G_len
+	La  1, ANON_537_72_L212_D_len
 	ADD
 	LI	8
 	MUL
-	Sd  1, ANON_536_19_L212_R_info.SIZ
-	LVA 1, ANON_536_19_L212_R_info.SIZ
-	Sa  1, ANON_536_19_L212_R__u
-	La  1, ANON_536_19_L212_R_disp
-	La  1, ANON_536_19_L212_G_len
-	La  1, ANON_536_19_L212_G_data
+	Sd  1, ANON_537_19_L212_R_info.SIZ
+	LVA 1, ANON_537_19_L212_R_info.SIZ
+	Sa  1, ANON_537_19_L212_R__u
+	La  1, ANON_537_19_L212_R_disp
+	La  1, ANON_537_19_L212_G_len
+	La  1, ANON_537_19_L212_G_data
 	BLKMOV
-	La  1, ANON_536_19_L212_R_disp
-	La  1, ANON_536_19_L212_G_len
+	La  1, ANON_537_19_L212_R_disp
+	La  1, ANON_537_19_L212_G_len
 	ADD
-	La  1, ANON_536_72_L212_D_len
-	La  1, ANON_536_72_L212_D_data
+	La  1, ANON_537_72_L212_D_len
+	La  1, ANON_537_72_L212_D_data
 	BLKMOV
-	LVA 1, ANON_536_19_L212_R_disp
+	LVA 1, ANON_537_19_L212_R_disp
 	DUP
 	La  ,  0
-	Sa  1, ANON_536_19_L211_G_data
+	Sa  1, ANON_537_19_L211_G_data
 	La  ,  8
-	Sa  1, ANON_536_19_L211_G_info
-	LId 1, ANON_536_19_L211_G_info, _STRING.LST_1
-	LId 1, ANON_536_19_L211_G_info, _STRING.FST_1
+	Sa  1, ANON_537_19_L211_G_info
+	LId 1, ANON_537_19_L211_G_info, _STRING.LST_1
+	LId 1, ANON_537_19_L211_G_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  1, ANON_536_19_L211_G_len
-STR ANON_536_98_L211_D, " PAS DE CHAINE !"	; constante string=" PAS DE CHAINE !"
-	LCA	ANON_536_98_L211_D.data_ptr
+	Sa  1, ANON_537_19_L211_G_len
+STR ANON_537_98_L211_D, " PAS DE CHAINE !"	; constante string=" PAS DE CHAINE !"
+	LCA	ANON_537_98_L211_D.data_ptr
 	DUP
 	La  ,  0
-	Sa  1, ANON_536_98_L211_D_data
+	Sa  1, ANON_537_98_L211_D_data
 	La  ,  8
-	Sa  1, ANON_536_98_L211_D_info
-	LId 1, ANON_536_98_L211_D_info, _STRING.LST_1
-	LId 1, ANON_536_98_L211_D_info, _STRING.FST_1
+	Sa  1, ANON_537_98_L211_D_info
+	LId 1, ANON_537_98_L211_D_info, _STRING.LST_1
+	LId 1, ANON_537_98_L211_D_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  1, ANON_536_98_L211_D_len
-	La  1, ANON_536_19_L211_G_len
-	La  1, ANON_536_98_L211_D_len
+	Sa  1, ANON_537_98_L211_D_len
+	La  1, ANON_537_19_L211_G_len
+	La  1, ANON_537_98_L211_D_len
 	ADD
 	CO_VAR
-	Sa  1, ANON_536_19_L211_R_disp
+	Sa  1, ANON_537_19_L211_R_disp
 	LI	1
-	Sd  1, ANON_536_19_L211_R_info._FST_1
-	La  1, ANON_536_19_L211_G_len
-	La  1, ANON_536_98_L211_D_len
+	Sd  1, ANON_537_19_L211_R_info._FST_1
+	La  1, ANON_537_19_L211_G_len
+	La  1, ANON_537_98_L211_D_len
 	ADD
-	Sd  1, ANON_536_19_L211_R_info._LST_1
+	Sd  1, ANON_537_19_L211_R_info._LST_1
 	LI	8
-	Sd  1, ANON_536_19_L211_R_info._COMP_SIZ
-	La  1, ANON_536_19_L211_G_len
-	La  1, ANON_536_98_L211_D_len
+	Sd  1, ANON_537_19_L211_R_info._COMP_SIZ
+	La  1, ANON_537_19_L211_G_len
+	La  1, ANON_537_98_L211_D_len
 	ADD
 	LI	8
 	MUL
-	Sd  1, ANON_536_19_L211_R_info.SIZ
-	LVA 1, ANON_536_19_L211_R_info.SIZ
-	Sa  1, ANON_536_19_L211_R__u
-	La  1, ANON_536_19_L211_R_disp
-	La  1, ANON_536_19_L211_G_len
-	La  1, ANON_536_19_L211_G_data
+	Sd  1, ANON_537_19_L211_R_info.SIZ
+	LVA 1, ANON_537_19_L211_R_info.SIZ
+	Sa  1, ANON_537_19_L211_R__u
+	La  1, ANON_537_19_L211_R_disp
+	La  1, ANON_537_19_L211_G_len
+	La  1, ANON_537_19_L211_G_data
 	BLKMOV
-	La  1, ANON_536_19_L211_R_disp
-	La  1, ANON_536_19_L211_G_len
+	La  1, ANON_537_19_L211_R_disp
+	La  1, ANON_537_19_L211_G_len
 	ADD
-	La  1, ANON_536_98_L211_D_len
-	La  1, ANON_536_98_L211_D_data
+	La  1, ANON_537_98_L211_D_len
+	La  1, ANON_537_98_L211_D_data
 	BLKMOV
-	LVA 1, ANON_536_19_L211_R_disp
+	LVA 1, ANON_537_19_L211_R_disp
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
 	LCA	STANDARD.PROGRAM_ERROR__exc.data_ptr
 	Sa	0, STANDARD.EXCEPTIONS_CURRENT_disp
@@ -6247,24 +6252,24 @@ VAR ENTETE__dat, STANDARD.IDL._TREE.size
 ; CODE_VC_NAME DN_VARIABLE_ID
 	La  2, ENTETE_disp
 	LI	STANDARD.IDL._TREE.size
-VAR	ANON_541_28_disp, q
-VAR	ANON_541_28__u,    q
-VAR	ANON_541_28__dat, STANDARD.IDL._TREE.size
-	LVA 2, ANON_541_28__dat
-	Sa  2, ANON_541_28_disp
+VAR	ANON_542_28_disp, q
+VAR	ANON_542_28__u,    q
+VAR	ANON_542_28__dat, STANDARD.IDL._TREE.size
+	LVA 2, ANON_542_28__dat
+	Sa  2, ANON_542_28_disp
 	La  0, STANDARD.IDL._TREE.use__info
-	Sa  2, ANON_541_28__u
-	LVA 2, ANON_541_28_disp
+	Sa  2, ANON_542_28__u
+	LVA 2, ANON_542_28_disp
 					; doublet resultat record anonyme
 	La  1,	-T_ofs
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.FST
+	ULb	0, STANDARD.IDL._ATTR_NBR.FST
 	CLT
 	BT	STANDARD.ce_raise_
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.LST
+	ULb	0, STANDARD.IDL._ATTR_NBR.LST
 	CGT
 	BT	STANDARD.ce_raise_
 	CALL	STANDARD.IDL.IDL_MAN. ,DABS_L38
@@ -6341,18 +6346,18 @@ LST_1 = $
 	rd 1 
   end virtual
 end namespace
-VAR ID_disp, w				; variable entiere
+VAR ID_disp, b				; variable entiere
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.FST
+	ULb	0, STANDARD.IDL._ATTR_NBR.FST
 	CLT
 	BT	STANDARD.ce_raise_
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.LST
+	ULb	0, STANDARD.IDL._ATTR_NBR.LST
 	CGT
 	BT	STANDARD.ce_raise_
-	Sw  2,	ID_disp
+	Sb  2,	ID_disp
 
 					; sub program entry decl (in instantiation FALSE )
 if defined TO_DOUBLET_L213_
@@ -6463,17 +6468,17 @@ VAR IMAG_disp, q				; variable array : pointeur aux data
 VAR IMAG__u, q				; variable array : useinfo pointeur au rec info
 	La 0, STANDARD._STRING.use__info
 	Sa	3, IMAG__u				; array info ptr at __u
-VAR	ANON_549_27_disp, q
-VAR	ANON_549_27__u,   q
-namespace ANON_549_27_info
+VAR	ANON_550_27_disp, q
+VAR	ANON_550_27__u,   q
+namespace ANON_550_27_info
   VAR SIZ, d
   VAR _COMP_SIZ, d
   VAR _FST_1, d
   VAR _LST_1, d
 end namespace
-	LVA 3, ANON_549_27_info.SIZ
-	Sa  3, ANON_549_27__u
-	LVA 3, ANON_549_27_disp
+	LVA 3, ANON_550_27_info.SIZ
+	Sa  3, ANON_550_27__u
+	LVA 3, ANON_550_27_disp
 	Lw  3,	-S_ofs
 	CALL	STANDARD. ,INTEGER_IMAGE_L11
 	DUP
@@ -6508,53 +6513,53 @@ VAR COMPL_disp, d				; variable entiere
 begin:					;---------- BDY INSTRUCTIONS
 ; CODE_RETURN : EXPR TYPE = DN_ARRAY  VUE COMPLETE = DN_ARRAY
 ; CODE & concat _STRING
-VAR	ANON_552_9_L217_G_data, q
-VAR	ANON_552_9_L217_G_info, q
-VAR	ANON_552_36_L217_D_data, q
-VAR	ANON_552_36_L217_D_info, q
-VAR	ANON_552_9_L217_G_len,  q
-VAR	ANON_552_36_L217_D_len,  q
-VAR	ANON_552_9_L217_R_disp, q
-VAR	ANON_552_9_L217_R__u,   q
-namespace ANON_552_9_L217_R_info
+VAR	ANON_553_9_L217_G_data, q
+VAR	ANON_553_9_L217_G_info, q
+VAR	ANON_553_36_L217_D_data, q
+VAR	ANON_553_36_L217_D_info, q
+VAR	ANON_553_9_L217_G_len,  q
+VAR	ANON_553_36_L217_D_len,  q
+VAR	ANON_553_9_L217_R_disp, q
+VAR	ANON_553_9_L217_R__u,   q
+namespace ANON_553_9_L217_R_info
   VAR SIZ,      d
   VAR _COMP_SIZ, d
   VAR _FST_1,    d
   VAR _LST_1,    d
 end namespace
 ; CODE_QUALIFIED : DN_QUALIFIEDDN_AGGREGATE
-namespace ANON_552_16_info
+namespace ANON_553_16_info
   VAR SIZ,      d
   VAR _COMP_SIZ, d
   VAR _FST_1,    d
   VAR _LST_1,    d
 end namespace
-VAR	ANON_552_16_disp, q
-VAR	ANON_552_16__u,   q
+VAR	ANON_553_16_disp, q
+VAR	ANON_553_16__u,   q
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
-	Sd  3, ANON_552_16_info._FST_1
+	Sd  3, ANON_553_16_info._FST_1
 	Ld 3,	COMPL_disp
 	DUP
-	Sd  3, ANON_552_16_info._LST_1
+	Sd  3, ANON_553_16_info._LST_1
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SUB
 	INC
 	CLAMP0
 	LI	8
-	Sd  3, ANON_552_16_info._COMP_SIZ
+	Sd  3, ANON_553_16_info._COMP_SIZ
 	DUP
 	LI	8
 	MUL
-	Sd  3, ANON_552_16_info.SIZ
+	Sd  3, ANON_553_16_info.SIZ
 	CO_VAR
-	Sa  3, ANON_552_16_disp
-	LVA 3, ANON_552_16_info.SIZ
-	Sa  3, ANON_552_16__u
-	La  3, ANON_552_16_disp
+	Sa  3, ANON_553_16_disp
+	LVA 3, ANON_553_16_info.SIZ
+	Sa  3, ANON_553_16__u
+	La  3, ANON_553_16_disp
 					; Assign_array_aggregate dynamic type DN_ARRAY
-namespace ANON_552_16_aga
+namespace ANON_553_16_aga
   VAR _FST_1, d
   VAR _LST_1, d
   VAR _LEN_1, d
@@ -6565,66 +6570,66 @@ namespace ANON_552_16_aga
 end namespace
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
-	Sd  3, ANON_552_16_aga._FST_1
+	Sd  3, ANON_553_16_aga._FST_1
 	Ld 3,	COMPL_disp
-	Sd  3, ANON_552_16_aga._LST_1
-	Ld  3, ANON_552_16_aga._LST_1
-	Ld  3, ANON_552_16_aga._FST_1
+	Sd  3, ANON_553_16_aga._LST_1
+	Ld  3, ANON_553_16_aga._LST_1
+	Ld  3, ANON_553_16_aga._FST_1
 	SUB
 	INC
 	CLAMP0
-	Sd  3, ANON_552_16_aga._LEN_1
+	Sd  3, ANON_553_16_aga._LEN_1
 	LI	1
-	Sd  3, ANON_552_16_aga._STR_1
-	Sa  3, ANON_552_16_aga._PTR_1
+	Sd  3, ANON_553_16_aga._STR_1
+	Sa  3, ANON_553_16_aga._PTR_1
 	LI	0
-	Sd  3, ANON_552_16_aga._EMIS_1
+	Sd  3, ANON_553_16_aga._EMIS_1
 	Ld 3,	COMPL_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SUB
 	INC
 	CLAMP0
-	Sd  3, ANON_552_16_aga._CNT_1
-	Ld  3, ANON_552_16_aga._CNT_1
+	Sd  3, ANON_553_16_aga._CNT_1
+	Ld  3, ANON_553_16_aga._CNT_1
 	LI	0
 	CLE
 	BT  L219
 L218:
 	LI	48
-	SIb  3, ANON_552_16_aga._PTR_1, 0
-	La  3, ANON_552_16_aga._PTR_1
-	Ld  3, ANON_552_16_aga._STR_1
+	SIb  3, ANON_553_16_aga._PTR_1, 0
+	La  3, ANON_553_16_aga._PTR_1
+	Ld  3, ANON_553_16_aga._STR_1
 	ADD
-	Sa  3, ANON_552_16_aga._PTR_1
-	Ld  3, ANON_552_16_aga._EMIS_1
+	Sa  3, ANON_553_16_aga._PTR_1
+	Ld  3, ANON_553_16_aga._EMIS_1
 	INC
-	Sd  3, ANON_552_16_aga._EMIS_1
-	Ld  3, ANON_552_16_aga._CNT_1
+	Sd  3, ANON_553_16_aga._EMIS_1
+	Ld  3, ANON_553_16_aga._CNT_1
 	DEC
 	DUP
-	Sd  3, ANON_552_16_aga._CNT_1
+	Sd  3, ANON_553_16_aga._CNT_1
 	LI	0
 	CGT
 	BT  L218
 L219:
-	LVA 3, ANON_552_16_disp
+	LVA 3, ANON_553_16_disp
 	DUP
 	La  ,  0
-	Sa  3, ANON_552_9_L217_G_data
+	Sa  3, ANON_553_9_L217_G_data
 	La  ,  8
-	Sa  3, ANON_552_9_L217_G_info
-	LId 3, ANON_552_9_L217_G_info, _STRING.LST_1
-	LId 3, ANON_552_9_L217_G_info, _STRING.FST_1
+	Sa  3, ANON_553_9_L217_G_info
+	LId 3, ANON_553_9_L217_G_info, _STRING.LST_1
+	LId 3, ANON_553_9_L217_G_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  3, ANON_552_9_L217_G_len
-VAR	ANON_552_36_L217_D_slice_data, q
-VAR	ANON_552_36_L217_D_slice_len,  q
-VAR	ANON_552_36_L217_D_disp, q
-VAR	ANON_552_36_L217_D__u,   q
-namespace ANON_552_36_L217_D_info
+	Sa  3, ANON_553_9_L217_G_len
+VAR	ANON_553_36_L217_D_slice_data, q
+VAR	ANON_553_36_L217_D_slice_len,  q
+VAR	ANON_553_36_L217_D_disp, q
+VAR	ANON_553_36_L217_D__u,   q
+namespace ANON_553_36_L217_D_info
   VAR SIZ,      d
   VAR _COMP_SIZ, d
   VAR _FST_1,    d
@@ -6650,66 +6655,66 @@ end namespace
 	CLAMP0
 	LI	1
 	MUL
-	Sa  3, ANON_552_36_L217_D_slice_len
-	Sa  3, ANON_552_36_L217_D_slice_data
-	La  3, ANON_552_36_L217_D_slice_data
-	Sa  3, ANON_552_36_L217_D_disp
-	LVA 3, ANON_552_36_L217_D_info.SIZ
-	Sa  3, ANON_552_36_L217_D__u
+	Sa  3, ANON_553_36_L217_D_slice_len
+	Sa  3, ANON_553_36_L217_D_slice_data
+	La  3, ANON_553_36_L217_D_slice_data
+	Sa  3, ANON_553_36_L217_D_disp
+	LVA 3, ANON_553_36_L217_D_info.SIZ
+	Sa  3, ANON_553_36_L217_D__u
 	LI	1
-	Sd  3, ANON_552_36_L217_D_info._FST_1
-	La  3, ANON_552_36_L217_D_slice_len
-	Sd  3, ANON_552_36_L217_D_info._LST_1
+	Sd  3, ANON_553_36_L217_D_info._FST_1
+	La  3, ANON_553_36_L217_D_slice_len
+	Sd  3, ANON_553_36_L217_D_info._LST_1
 	LI	8
-	Sd  3, ANON_552_36_L217_D_info._COMP_SIZ
-	La  3, ANON_552_36_L217_D_slice_len
+	Sd  3, ANON_553_36_L217_D_info._COMP_SIZ
+	La  3, ANON_553_36_L217_D_slice_len
 	LI	8
 	MUL
-	Sd  3, ANON_552_36_L217_D_info.SIZ
-	LVA 3, ANON_552_36_L217_D_disp
+	Sd  3, ANON_553_36_L217_D_info.SIZ
+	LVA 3, ANON_553_36_L217_D_disp
 	DUP
 	La  ,  0
-	Sa  3, ANON_552_36_L217_D_data
+	Sa  3, ANON_553_36_L217_D_data
 	La  ,  8
-	Sa  3, ANON_552_36_L217_D_info
-	LId 3, ANON_552_36_L217_D_info, _STRING.LST_1
-	LId 3, ANON_552_36_L217_D_info, _STRING.FST_1
+	Sa  3, ANON_553_36_L217_D_info
+	LId 3, ANON_553_36_L217_D_info, _STRING.LST_1
+	LId 3, ANON_553_36_L217_D_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  3, ANON_552_36_L217_D_len
-	La  3, ANON_552_9_L217_G_len
-	La  3, ANON_552_36_L217_D_len
+	Sa  3, ANON_553_36_L217_D_len
+	La  3, ANON_553_9_L217_G_len
+	La  3, ANON_553_36_L217_D_len
 	ADD
 	CO_VAR
-	Sa  3, ANON_552_9_L217_R_disp
+	Sa  3, ANON_553_9_L217_R_disp
 	LI	1
-	Sd  3, ANON_552_9_L217_R_info._FST_1
-	La  3, ANON_552_9_L217_G_len
-	La  3, ANON_552_36_L217_D_len
+	Sd  3, ANON_553_9_L217_R_info._FST_1
+	La  3, ANON_553_9_L217_G_len
+	La  3, ANON_553_36_L217_D_len
 	ADD
-	Sd  3, ANON_552_9_L217_R_info._LST_1
+	Sd  3, ANON_553_9_L217_R_info._LST_1
 	LI	8
-	Sd  3, ANON_552_9_L217_R_info._COMP_SIZ
-	La  3, ANON_552_9_L217_G_len
-	La  3, ANON_552_36_L217_D_len
+	Sd  3, ANON_553_9_L217_R_info._COMP_SIZ
+	La  3, ANON_553_9_L217_G_len
+	La  3, ANON_553_36_L217_D_len
 	ADD
 	LI	8
 	MUL
-	Sd  3, ANON_552_9_L217_R_info.SIZ
-	LVA 3, ANON_552_9_L217_R_info.SIZ
-	Sa  3, ANON_552_9_L217_R__u
-	La  3, ANON_552_9_L217_R_disp
-	La  3, ANON_552_9_L217_G_len
-	La  3, ANON_552_9_L217_G_data
+	Sd  3, ANON_553_9_L217_R_info.SIZ
+	LVA 3, ANON_553_9_L217_R_info.SIZ
+	Sa  3, ANON_553_9_L217_R__u
+	La  3, ANON_553_9_L217_R_disp
+	La  3, ANON_553_9_L217_G_len
+	La  3, ANON_553_9_L217_G_data
 	BLKMOV
-	La  3, ANON_552_9_L217_R_disp
-	La  3, ANON_552_9_L217_G_len
+	La  3, ANON_553_9_L217_R_disp
+	La  3, ANON_553_9_L217_G_len
 	ADD
-	La  3, ANON_552_36_L217_D_len
-	La  3, ANON_552_36_L217_D_data
+	La  3, ANON_553_36_L217_D_len
+	La  3, ANON_553_36_L217_D_data
 	BLKMOV
-	LVA 3, ANON_552_9_L217_R_disp
+	LVA 3, ANON_553_9_L217_R_disp
 VAR	RET_INFO_L220, q
 	DUP
 	La  ,  0
@@ -6742,23 +6747,23 @@ VAR DD__u, q				; variable array : useinfo pointeur au rec info
 	La 2, STANDARD.IDL.PRINT_NUM_L26.BLOCK__12._DOUBLET.use__info
 	Sa	3, DD__u				; array info ptr at __u
 	LI	0					; lieu resultat sur pile
-VAR	ANON_558_31_disp, q
-VAR	ANON_558_31__u,    q
-VAR	ANON_558_31__dat, STANDARD.IDL._TREE.size
-	LVA 3, ANON_558_31__dat
-	Sa  3, ANON_558_31_disp
+VAR	ANON_559_31_disp, q
+VAR	ANON_559_31__u,    q
+VAR	ANON_559_31__dat, STANDARD.IDL._TREE.size
+	LVA 3, ANON_559_31__dat
+	Sa  3, ANON_559_31_disp
 	La  0, STANDARD.IDL._TREE.use__info
-	Sa  3, ANON_558_31__u
-	LVA 3, ANON_558_31_disp
+	Sa  3, ANON_559_31__u
+	LVA 3, ANON_559_31_disp
 					; doublet resultat record anonyme
 	La  1,	-T_ofs
-	Lw 2,	STANDARD.IDL.PRINT_NUM_L26.BLOCK__12.ID_disp
+	ULb 2,	STANDARD.IDL.PRINT_NUM_L26.BLOCK__12.ID_disp
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.FST
+	ULb	0, STANDARD.IDL._ATTR_NBR.FST
 	CLT
 	BT	STANDARD.ce_raise_
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.LST
+	ULb	0, STANDARD.IDL._ATTR_NBR.LST
 	CGT
 	BT	STANDARD.ce_raise_
 	CALL	STANDARD.IDL.IDL_MAN. ,DABS_L38
@@ -6831,17 +6836,17 @@ VAR STR2_disp, q				; variable array : pointeur aux data
 VAR STR2__u, q				; variable array : useinfo pointeur au rec info
 	La 0, STANDARD._STRING.use__info
 	Sa	3, STR2__u				; array info ptr at __u
-VAR	ANON_561_27_disp, q
-VAR	ANON_561_27__u,   q
-namespace ANON_561_27_info
+VAR	ANON_562_27_disp, q
+VAR	ANON_562_27__u,   q
+namespace ANON_562_27_info
   VAR SIZ, d
   VAR _COMP_SIZ, d
   VAR _FST_1, d
   VAR _LST_1, d
 end namespace
-	LVA 3, ANON_561_27_info.SIZ
-	Sa  3, ANON_561_27__u
-	LVA 3, ANON_561_27_disp
+	LVA 3, ANON_562_27_info.SIZ
+	Sa  3, ANON_562_27__u
+	LVA 3, ANON_562_27_disp
 	Lw 3,	DD2_disp
 	CALL	STANDARD.IDL.PRINT_NUM_L26.BLOCK__12. ,TO_QUAD_DIGITS_L214
 	DUP
@@ -6854,17 +6859,17 @@ VAR STR1_disp, q				; variable array : pointeur aux data
 VAR STR1__u, q				; variable array : useinfo pointeur au rec info
 	La 0, STANDARD._STRING.use__info
 	Sa	3, STR1__u				; array info ptr at __u
-VAR	ANON_562_27_disp, q
-VAR	ANON_562_27__u,   q
-namespace ANON_562_27_info
+VAR	ANON_563_27_disp, q
+VAR	ANON_563_27__u,   q
+namespace ANON_563_27_info
   VAR SIZ, d
   VAR _COMP_SIZ, d
   VAR _FST_1, d
   VAR _LST_1, d
 end namespace
-	LVA 3, ANON_562_27_info.SIZ
-	Sa  3, ANON_562_27__u
-	LVA 3, ANON_562_27_disp
+	LVA 3, ANON_563_27_info.SIZ
+	Sa  3, ANON_563_27__u
+	LVA 3, ANON_563_27_disp
 	Lw 3,	DD1_disp
 	CALL	STANDARD.IDL.PRINT_NUM_L26.BLOCK__12. ,TO_QUAD_DIGITS_L214
 	DUP
@@ -6876,7 +6881,7 @@ end namespace
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 					; debut if
-	Lw 2,	STANDARD.IDL.PRINT_NUM_L26.BLOCK__12.ID_disp
+	ULb 2,	STANDARD.IDL.PRINT_NUM_L26.BLOCK__12.ID_disp
 	La	2, STANDARD.IDL.PRINT_NUM_L26.BLOCK__12.ENTETE_disp
 	Ld
 	LI	2
@@ -6898,16 +6903,16 @@ begin:					;---------- BDY INSTRUCTIONS
 	LI	1
 	MUL
 	ADD
-namespace ANON_566_13			; ensemble doublet @data/@info pour slice anonyme source
-VAR ANON_566_13_disp, q
-VAR ANON_566_13__u, q
+namespace ANON_567_13			; ensemble doublet @data/@info pour slice anonyme source
+VAR ANON_567_13_disp, q
+VAR ANON_567_13__u, q
 VAR SIZ, d
 VAR COMP_SIZ, d
 VAR _FST_1, d
 VAR _LST_1, d
-	Sa	3, ANON_566_13_disp
+	Sa	3, ANON_567_13_disp
 	LVA	3, SIZ
-	Sa	3, ANON_566_13__u
+	Sa	3, ANON_567_13__u
 	LI	8
 	Sd	3, COMP_SIZ
 	LId	3, STANDARD.IDL.PRINT_NUM_L26.BLOCK__12.RECURSE_DOUBLETS_L221.STR1__u, STANDARD._STRING.FST_1
@@ -6922,7 +6927,7 @@ VAR _LST_1, d
 	LI	8
 	MUL
 	Sd	3, SIZ
-	LVA	3, ANON_566_13_disp
+	LVA	3, ANON_567_13_disp
 end namespace
 VAR	RET_INFO_L228, q
 	DUP
@@ -6942,25 +6947,25 @@ VAR	RET_INFO_L228, q
 L227:
 ; CODE_RETURN : EXPR TYPE = DN_ARRAY  VUE COMPLETE = DN_ARRAY
 ; CODE & concat _STRING
-VAR	ANON_568_13_L229_G_data, q
-VAR	ANON_568_13_L229_G_info, q
-VAR	ANON_568_47_L229_D_data, q
-VAR	ANON_568_47_L229_D_info, q
-VAR	ANON_568_13_L229_G_len,  q
-VAR	ANON_568_47_L229_D_len,  q
-VAR	ANON_568_13_L229_R_disp, q
-VAR	ANON_568_13_L229_R__u,   q
-namespace ANON_568_13_L229_R_info
+VAR	ANON_569_13_L229_G_data, q
+VAR	ANON_569_13_L229_G_info, q
+VAR	ANON_569_47_L229_D_data, q
+VAR	ANON_569_47_L229_D_info, q
+VAR	ANON_569_13_L229_G_len,  q
+VAR	ANON_569_47_L229_D_len,  q
+VAR	ANON_569_13_L229_R_disp, q
+VAR	ANON_569_13_L229_R__u,   q
+namespace ANON_569_13_L229_R_info
   VAR SIZ,      d
   VAR _COMP_SIZ, d
   VAR _FST_1,    d
   VAR _LST_1,    d
 end namespace
-VAR	ANON_568_13_L229_G_slice_data, q
-VAR	ANON_568_13_L229_G_slice_len,  q
-VAR	ANON_568_13_L229_G_disp, q
-VAR	ANON_568_13_L229_G__u,   q
-namespace ANON_568_13_L229_G_info
+VAR	ANON_569_13_L229_G_slice_data, q
+VAR	ANON_569_13_L229_G_slice_len,  q
+VAR	ANON_569_13_L229_G_disp, q
+VAR	ANON_569_13_L229_G__u,   q
+namespace ANON_569_13_L229_G_info
   VAR SIZ,      d
   VAR _COMP_SIZ, d
   VAR _FST_1,    d
@@ -6980,39 +6985,39 @@ end namespace
 	CLAMP0
 	LI	1
 	MUL
-	Sa  3, ANON_568_13_L229_G_slice_len
-	Sa  3, ANON_568_13_L229_G_slice_data
-	La  3, ANON_568_13_L229_G_slice_data
-	Sa  3, ANON_568_13_L229_G_disp
-	LVA 3, ANON_568_13_L229_G_info.SIZ
-	Sa  3, ANON_568_13_L229_G__u
+	Sa  3, ANON_569_13_L229_G_slice_len
+	Sa  3, ANON_569_13_L229_G_slice_data
+	La  3, ANON_569_13_L229_G_slice_data
+	Sa  3, ANON_569_13_L229_G_disp
+	LVA 3, ANON_569_13_L229_G_info.SIZ
+	Sa  3, ANON_569_13_L229_G__u
 	LI	1
-	Sd  3, ANON_568_13_L229_G_info._FST_1
-	La  3, ANON_568_13_L229_G_slice_len
-	Sd  3, ANON_568_13_L229_G_info._LST_1
+	Sd  3, ANON_569_13_L229_G_info._FST_1
+	La  3, ANON_569_13_L229_G_slice_len
+	Sd  3, ANON_569_13_L229_G_info._LST_1
 	LI	8
-	Sd  3, ANON_568_13_L229_G_info._COMP_SIZ
-	La  3, ANON_568_13_L229_G_slice_len
+	Sd  3, ANON_569_13_L229_G_info._COMP_SIZ
+	La  3, ANON_569_13_L229_G_slice_len
 	LI	8
 	MUL
-	Sd  3, ANON_568_13_L229_G_info.SIZ
-	LVA 3, ANON_568_13_L229_G_disp
+	Sd  3, ANON_569_13_L229_G_info.SIZ
+	LVA 3, ANON_569_13_L229_G_disp
 	DUP
 	La  ,  0
-	Sa  3, ANON_568_13_L229_G_data
+	Sa  3, ANON_569_13_L229_G_data
 	La  ,  8
-	Sa  3, ANON_568_13_L229_G_info
-	LId 3, ANON_568_13_L229_G_info, _STRING.LST_1
-	LId 3, ANON_568_13_L229_G_info, _STRING.FST_1
+	Sa  3, ANON_569_13_L229_G_info
+	LId 3, ANON_569_13_L229_G_info, _STRING.LST_1
+	LId 3, ANON_569_13_L229_G_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  3, ANON_568_13_L229_G_len
-VAR	ANON_568_47_L229_D_slice_data, q
-VAR	ANON_568_47_L229_D_slice_len,  q
-VAR	ANON_568_47_L229_D_disp, q
-VAR	ANON_568_47_L229_D__u,   q
-namespace ANON_568_47_L229_D_info
+	Sa  3, ANON_569_13_L229_G_len
+VAR	ANON_569_47_L229_D_slice_data, q
+VAR	ANON_569_47_L229_D_slice_len,  q
+VAR	ANON_569_47_L229_D_disp, q
+VAR	ANON_569_47_L229_D__u,   q
+namespace ANON_569_47_L229_D_info
   VAR SIZ,      d
   VAR _COMP_SIZ, d
   VAR _FST_1,    d
@@ -7032,66 +7037,66 @@ end namespace
 	CLAMP0
 	LI	1
 	MUL
-	Sa  3, ANON_568_47_L229_D_slice_len
-	Sa  3, ANON_568_47_L229_D_slice_data
-	La  3, ANON_568_47_L229_D_slice_data
-	Sa  3, ANON_568_47_L229_D_disp
-	LVA 3, ANON_568_47_L229_D_info.SIZ
-	Sa  3, ANON_568_47_L229_D__u
+	Sa  3, ANON_569_47_L229_D_slice_len
+	Sa  3, ANON_569_47_L229_D_slice_data
+	La  3, ANON_569_47_L229_D_slice_data
+	Sa  3, ANON_569_47_L229_D_disp
+	LVA 3, ANON_569_47_L229_D_info.SIZ
+	Sa  3, ANON_569_47_L229_D__u
 	LI	1
-	Sd  3, ANON_568_47_L229_D_info._FST_1
-	La  3, ANON_568_47_L229_D_slice_len
-	Sd  3, ANON_568_47_L229_D_info._LST_1
+	Sd  3, ANON_569_47_L229_D_info._FST_1
+	La  3, ANON_569_47_L229_D_slice_len
+	Sd  3, ANON_569_47_L229_D_info._LST_1
 	LI	8
-	Sd  3, ANON_568_47_L229_D_info._COMP_SIZ
-	La  3, ANON_568_47_L229_D_slice_len
+	Sd  3, ANON_569_47_L229_D_info._COMP_SIZ
+	La  3, ANON_569_47_L229_D_slice_len
 	LI	8
 	MUL
-	Sd  3, ANON_568_47_L229_D_info.SIZ
-	LVA 3, ANON_568_47_L229_D_disp
+	Sd  3, ANON_569_47_L229_D_info.SIZ
+	LVA 3, ANON_569_47_L229_D_disp
 	DUP
 	La  ,  0
-	Sa  3, ANON_568_47_L229_D_data
+	Sa  3, ANON_569_47_L229_D_data
 	La  ,  8
-	Sa  3, ANON_568_47_L229_D_info
-	LId 3, ANON_568_47_L229_D_info, _STRING.LST_1
-	LId 3, ANON_568_47_L229_D_info, _STRING.FST_1
+	Sa  3, ANON_569_47_L229_D_info
+	LId 3, ANON_569_47_L229_D_info, _STRING.LST_1
+	LId 3, ANON_569_47_L229_D_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  3, ANON_568_47_L229_D_len
-	La  3, ANON_568_13_L229_G_len
-	La  3, ANON_568_47_L229_D_len
+	Sa  3, ANON_569_47_L229_D_len
+	La  3, ANON_569_13_L229_G_len
+	La  3, ANON_569_47_L229_D_len
 	ADD
 	CO_VAR
-	Sa  3, ANON_568_13_L229_R_disp
+	Sa  3, ANON_569_13_L229_R_disp
 	LI	1
-	Sd  3, ANON_568_13_L229_R_info._FST_1
-	La  3, ANON_568_13_L229_G_len
-	La  3, ANON_568_47_L229_D_len
+	Sd  3, ANON_569_13_L229_R_info._FST_1
+	La  3, ANON_569_13_L229_G_len
+	La  3, ANON_569_47_L229_D_len
 	ADD
-	Sd  3, ANON_568_13_L229_R_info._LST_1
+	Sd  3, ANON_569_13_L229_R_info._LST_1
 	LI	8
-	Sd  3, ANON_568_13_L229_R_info._COMP_SIZ
-	La  3, ANON_568_13_L229_G_len
-	La  3, ANON_568_47_L229_D_len
+	Sd  3, ANON_569_13_L229_R_info._COMP_SIZ
+	La  3, ANON_569_13_L229_G_len
+	La  3, ANON_569_47_L229_D_len
 	ADD
 	LI	8
 	MUL
-	Sd  3, ANON_568_13_L229_R_info.SIZ
-	LVA 3, ANON_568_13_L229_R_info.SIZ
-	Sa  3, ANON_568_13_L229_R__u
-	La  3, ANON_568_13_L229_R_disp
-	La  3, ANON_568_13_L229_G_len
-	La  3, ANON_568_13_L229_G_data
+	Sd  3, ANON_569_13_L229_R_info.SIZ
+	LVA 3, ANON_569_13_L229_R_info.SIZ
+	Sa  3, ANON_569_13_L229_R__u
+	La  3, ANON_569_13_L229_R_disp
+	La  3, ANON_569_13_L229_G_len
+	La  3, ANON_569_13_L229_G_data
 	BLKMOV
-	La  3, ANON_568_13_L229_R_disp
-	La  3, ANON_568_13_L229_G_len
+	La  3, ANON_569_13_L229_R_disp
+	La  3, ANON_569_13_L229_G_len
 	ADD
-	La  3, ANON_568_47_L229_D_len
-	La  3, ANON_568_47_L229_D_data
+	La  3, ANON_569_47_L229_D_len
+	La  3, ANON_569_47_L229_D_data
 	BLKMOV
-	LVA 3, ANON_568_13_L229_R_disp
+	LVA 3, ANON_569_13_L229_R_disp
 VAR	RET_INFO_L230, q
 	DUP
 	La  ,  0
@@ -7109,78 +7114,78 @@ VAR	RET_INFO_L230, q
 L226:					; post if
 	BRA	L224
 L225:
-	Lw 2,	STANDARD.IDL.PRINT_NUM_L26.BLOCK__12.ID_disp
+	ULb 2,	STANDARD.IDL.PRINT_NUM_L26.BLOCK__12.ID_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.FST
+	ULb	0, STANDARD.IDL._ATTR_NBR.FST
 	CLT
 	BT	STANDARD.ce_raise_
 	DUP
-	Lw	0, STANDARD.IDL._ATTR_NBR.LST
+	ULb	0, STANDARD.IDL._ATTR_NBR.LST
 	CGT
 	BT	STANDARD.ce_raise_
-	Sw  2,	STANDARD.IDL.PRINT_NUM_L26.BLOCK__12.ID_disp
+	Sb  2,	STANDARD.IDL.PRINT_NUM_L26.BLOCK__12.ID_disp
 ; CODE_RETURN : EXPR TYPE = DN_ARRAY  VUE COMPLETE = DN_ARRAY
 ; CODE & concat _STRING
-VAR	ANON_572_11_L231_G_data, q
-VAR	ANON_572_11_L231_G_info, q
-VAR	ANON_572_64_L231_D_data, q
-VAR	ANON_572_64_L231_D_info, q
-VAR	ANON_572_11_L231_G_len,  q
-VAR	ANON_572_64_L231_D_len,  q
-VAR	ANON_572_11_L231_R_disp, q
-VAR	ANON_572_11_L231_R__u,   q
-namespace ANON_572_11_L231_R_info
+VAR	ANON_573_11_L231_G_data, q
+VAR	ANON_573_11_L231_G_info, q
+VAR	ANON_573_64_L231_D_data, q
+VAR	ANON_573_64_L231_D_info, q
+VAR	ANON_573_11_L231_G_len,  q
+VAR	ANON_573_64_L231_D_len,  q
+VAR	ANON_573_11_L231_R_disp, q
+VAR	ANON_573_11_L231_R__u,   q
+namespace ANON_573_11_L231_R_info
   VAR SIZ,      d
   VAR _COMP_SIZ, d
   VAR _FST_1,    d
   VAR _LST_1,    d
 end namespace
 ; CODE & concat _STRING
-VAR	ANON_572_11_L232_G_data, q
-VAR	ANON_572_11_L232_G_info, q
-VAR	ANON_572_30_L232_D_data, q
-VAR	ANON_572_30_L232_D_info, q
-VAR	ANON_572_11_L232_G_len,  q
-VAR	ANON_572_30_L232_D_len,  q
-VAR	ANON_572_11_L232_R_disp, q
-VAR	ANON_572_11_L232_R__u,   q
-namespace ANON_572_11_L232_R_info
+VAR	ANON_573_11_L232_G_data, q
+VAR	ANON_573_11_L232_G_info, q
+VAR	ANON_573_30_L232_D_data, q
+VAR	ANON_573_30_L232_D_info, q
+VAR	ANON_573_11_L232_G_len,  q
+VAR	ANON_573_30_L232_D_len,  q
+VAR	ANON_573_11_L232_R_disp, q
+VAR	ANON_573_11_L232_R__u,   q
+namespace ANON_573_11_L232_R_info
   VAR SIZ,      d
   VAR _COMP_SIZ, d
   VAR _FST_1,    d
   VAR _LST_1,    d
 end namespace
-VAR	ANON_572_11_disp, q
-VAR	ANON_572_11__u,   q
-namespace ANON_572_11_info
+VAR	ANON_573_11_disp, q
+VAR	ANON_573_11__u,   q
+namespace ANON_573_11_info
   VAR SIZ, d
   VAR _COMP_SIZ, d
   VAR _FST_1, d
   VAR _LST_1, d
 end namespace
-	LVA 3, ANON_572_11_info.SIZ
-	Sa  3, ANON_572_11__u
-	LVA 3, ANON_572_11_disp
+	LVA 3, ANON_573_11_info.SIZ
+	Sa  3, ANON_573_11__u
+	LVA 3, ANON_573_11_disp
 	CALL	STANDARD.IDL.PRINT_NUM_L26.BLOCK__12. ,RECURSE_DOUBLETS_L221
 	DUP
 	La  ,  0
-	Sa  3, ANON_572_11_L232_G_data
+	Sa  3, ANON_573_11_L232_G_data
 	La  ,  8
-	Sa  3, ANON_572_11_L232_G_info
-	LId 3, ANON_572_11_L232_G_info, _STRING.LST_1
-	LId 3, ANON_572_11_L232_G_info, _STRING.FST_1
+	Sa  3, ANON_573_11_L232_G_info
+	LId 3, ANON_573_11_L232_G_info, _STRING.LST_1
+	LId 3, ANON_573_11_L232_G_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  3, ANON_572_11_L232_G_len
-VAR	ANON_572_30_L232_D_slice_data, q
-VAR	ANON_572_30_L232_D_slice_len,  q
-VAR	ANON_572_30_L232_D_disp, q
-VAR	ANON_572_30_L232_D__u,   q
-namespace ANON_572_30_L232_D_info
+	Sa  3, ANON_573_11_L232_G_len
+VAR	ANON_573_30_L232_D_slice_data, q
+VAR	ANON_573_30_L232_D_slice_len,  q
+VAR	ANON_573_30_L232_D_disp, q
+VAR	ANON_573_30_L232_D__u,   q
+namespace ANON_573_30_L232_D_info
   VAR SIZ,      d
   VAR _COMP_SIZ, d
   VAR _FST_1,    d
@@ -7200,82 +7205,82 @@ end namespace
 	CLAMP0
 	LI	1
 	MUL
-	Sa  3, ANON_572_30_L232_D_slice_len
-	Sa  3, ANON_572_30_L232_D_slice_data
-	La  3, ANON_572_30_L232_D_slice_data
-	Sa  3, ANON_572_30_L232_D_disp
-	LVA 3, ANON_572_30_L232_D_info.SIZ
-	Sa  3, ANON_572_30_L232_D__u
+	Sa  3, ANON_573_30_L232_D_slice_len
+	Sa  3, ANON_573_30_L232_D_slice_data
+	La  3, ANON_573_30_L232_D_slice_data
+	Sa  3, ANON_573_30_L232_D_disp
+	LVA 3, ANON_573_30_L232_D_info.SIZ
+	Sa  3, ANON_573_30_L232_D__u
 	LI	1
-	Sd  3, ANON_572_30_L232_D_info._FST_1
-	La  3, ANON_572_30_L232_D_slice_len
-	Sd  3, ANON_572_30_L232_D_info._LST_1
+	Sd  3, ANON_573_30_L232_D_info._FST_1
+	La  3, ANON_573_30_L232_D_slice_len
+	Sd  3, ANON_573_30_L232_D_info._LST_1
 	LI	8
-	Sd  3, ANON_572_30_L232_D_info._COMP_SIZ
-	La  3, ANON_572_30_L232_D_slice_len
+	Sd  3, ANON_573_30_L232_D_info._COMP_SIZ
+	La  3, ANON_573_30_L232_D_slice_len
 	LI	8
 	MUL
-	Sd  3, ANON_572_30_L232_D_info.SIZ
-	LVA 3, ANON_572_30_L232_D_disp
+	Sd  3, ANON_573_30_L232_D_info.SIZ
+	LVA 3, ANON_573_30_L232_D_disp
 	DUP
 	La  ,  0
-	Sa  3, ANON_572_30_L232_D_data
+	Sa  3, ANON_573_30_L232_D_data
 	La  ,  8
-	Sa  3, ANON_572_30_L232_D_info
-	LId 3, ANON_572_30_L232_D_info, _STRING.LST_1
-	LId 3, ANON_572_30_L232_D_info, _STRING.FST_1
+	Sa  3, ANON_573_30_L232_D_info
+	LId 3, ANON_573_30_L232_D_info, _STRING.LST_1
+	LId 3, ANON_573_30_L232_D_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  3, ANON_572_30_L232_D_len
-	La  3, ANON_572_11_L232_G_len
-	La  3, ANON_572_30_L232_D_len
+	Sa  3, ANON_573_30_L232_D_len
+	La  3, ANON_573_11_L232_G_len
+	La  3, ANON_573_30_L232_D_len
 	ADD
 	CO_VAR
-	Sa  3, ANON_572_11_L232_R_disp
+	Sa  3, ANON_573_11_L232_R_disp
 	LI	1
-	Sd  3, ANON_572_11_L232_R_info._FST_1
-	La  3, ANON_572_11_L232_G_len
-	La  3, ANON_572_30_L232_D_len
+	Sd  3, ANON_573_11_L232_R_info._FST_1
+	La  3, ANON_573_11_L232_G_len
+	La  3, ANON_573_30_L232_D_len
 	ADD
-	Sd  3, ANON_572_11_L232_R_info._LST_1
+	Sd  3, ANON_573_11_L232_R_info._LST_1
 	LI	8
-	Sd  3, ANON_572_11_L232_R_info._COMP_SIZ
-	La  3, ANON_572_11_L232_G_len
-	La  3, ANON_572_30_L232_D_len
+	Sd  3, ANON_573_11_L232_R_info._COMP_SIZ
+	La  3, ANON_573_11_L232_G_len
+	La  3, ANON_573_30_L232_D_len
 	ADD
 	LI	8
 	MUL
-	Sd  3, ANON_572_11_L232_R_info.SIZ
-	LVA 3, ANON_572_11_L232_R_info.SIZ
-	Sa  3, ANON_572_11_L232_R__u
-	La  3, ANON_572_11_L232_R_disp
-	La  3, ANON_572_11_L232_G_len
-	La  3, ANON_572_11_L232_G_data
+	Sd  3, ANON_573_11_L232_R_info.SIZ
+	LVA 3, ANON_573_11_L232_R_info.SIZ
+	Sa  3, ANON_573_11_L232_R__u
+	La  3, ANON_573_11_L232_R_disp
+	La  3, ANON_573_11_L232_G_len
+	La  3, ANON_573_11_L232_G_data
 	BLKMOV
-	La  3, ANON_572_11_L232_R_disp
-	La  3, ANON_572_11_L232_G_len
+	La  3, ANON_573_11_L232_R_disp
+	La  3, ANON_573_11_L232_G_len
 	ADD
-	La  3, ANON_572_30_L232_D_len
-	La  3, ANON_572_30_L232_D_data
+	La  3, ANON_573_30_L232_D_len
+	La  3, ANON_573_30_L232_D_data
 	BLKMOV
-	LVA 3, ANON_572_11_L232_R_disp
+	LVA 3, ANON_573_11_L232_R_disp
 	DUP
 	La  ,  0
-	Sa  3, ANON_572_11_L231_G_data
+	Sa  3, ANON_573_11_L231_G_data
 	La  ,  8
-	Sa  3, ANON_572_11_L231_G_info
-	LId 3, ANON_572_11_L231_G_info, _STRING.LST_1
-	LId 3, ANON_572_11_L231_G_info, _STRING.FST_1
+	Sa  3, ANON_573_11_L231_G_info
+	LId 3, ANON_573_11_L231_G_info, _STRING.LST_1
+	LId 3, ANON_573_11_L231_G_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  3, ANON_572_11_L231_G_len
-VAR	ANON_572_64_L231_D_slice_data, q
-VAR	ANON_572_64_L231_D_slice_len,  q
-VAR	ANON_572_64_L231_D_disp, q
-VAR	ANON_572_64_L231_D__u,   q
-namespace ANON_572_64_L231_D_info
+	Sa  3, ANON_573_11_L231_G_len
+VAR	ANON_573_64_L231_D_slice_data, q
+VAR	ANON_573_64_L231_D_slice_len,  q
+VAR	ANON_573_64_L231_D_disp, q
+VAR	ANON_573_64_L231_D__u,   q
+namespace ANON_573_64_L231_D_info
   VAR SIZ,      d
   VAR _COMP_SIZ, d
   VAR _FST_1,    d
@@ -7295,66 +7300,66 @@ end namespace
 	CLAMP0
 	LI	1
 	MUL
-	Sa  3, ANON_572_64_L231_D_slice_len
-	Sa  3, ANON_572_64_L231_D_slice_data
-	La  3, ANON_572_64_L231_D_slice_data
-	Sa  3, ANON_572_64_L231_D_disp
-	LVA 3, ANON_572_64_L231_D_info.SIZ
-	Sa  3, ANON_572_64_L231_D__u
+	Sa  3, ANON_573_64_L231_D_slice_len
+	Sa  3, ANON_573_64_L231_D_slice_data
+	La  3, ANON_573_64_L231_D_slice_data
+	Sa  3, ANON_573_64_L231_D_disp
+	LVA 3, ANON_573_64_L231_D_info.SIZ
+	Sa  3, ANON_573_64_L231_D__u
 	LI	1
-	Sd  3, ANON_572_64_L231_D_info._FST_1
-	La  3, ANON_572_64_L231_D_slice_len
-	Sd  3, ANON_572_64_L231_D_info._LST_1
+	Sd  3, ANON_573_64_L231_D_info._FST_1
+	La  3, ANON_573_64_L231_D_slice_len
+	Sd  3, ANON_573_64_L231_D_info._LST_1
 	LI	8
-	Sd  3, ANON_572_64_L231_D_info._COMP_SIZ
-	La  3, ANON_572_64_L231_D_slice_len
+	Sd  3, ANON_573_64_L231_D_info._COMP_SIZ
+	La  3, ANON_573_64_L231_D_slice_len
 	LI	8
 	MUL
-	Sd  3, ANON_572_64_L231_D_info.SIZ
-	LVA 3, ANON_572_64_L231_D_disp
+	Sd  3, ANON_573_64_L231_D_info.SIZ
+	LVA 3, ANON_573_64_L231_D_disp
 	DUP
 	La  ,  0
-	Sa  3, ANON_572_64_L231_D_data
+	Sa  3, ANON_573_64_L231_D_data
 	La  ,  8
-	Sa  3, ANON_572_64_L231_D_info
-	LId 3, ANON_572_64_L231_D_info, _STRING.LST_1
-	LId 3, ANON_572_64_L231_D_info, _STRING.FST_1
+	Sa  3, ANON_573_64_L231_D_info
+	LId 3, ANON_573_64_L231_D_info, _STRING.LST_1
+	LId 3, ANON_573_64_L231_D_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  3, ANON_572_64_L231_D_len
-	La  3, ANON_572_11_L231_G_len
-	La  3, ANON_572_64_L231_D_len
+	Sa  3, ANON_573_64_L231_D_len
+	La  3, ANON_573_11_L231_G_len
+	La  3, ANON_573_64_L231_D_len
 	ADD
 	CO_VAR
-	Sa  3, ANON_572_11_L231_R_disp
+	Sa  3, ANON_573_11_L231_R_disp
 	LI	1
-	Sd  3, ANON_572_11_L231_R_info._FST_1
-	La  3, ANON_572_11_L231_G_len
-	La  3, ANON_572_64_L231_D_len
+	Sd  3, ANON_573_11_L231_R_info._FST_1
+	La  3, ANON_573_11_L231_G_len
+	La  3, ANON_573_64_L231_D_len
 	ADD
-	Sd  3, ANON_572_11_L231_R_info._LST_1
+	Sd  3, ANON_573_11_L231_R_info._LST_1
 	LI	8
-	Sd  3, ANON_572_11_L231_R_info._COMP_SIZ
-	La  3, ANON_572_11_L231_G_len
-	La  3, ANON_572_64_L231_D_len
+	Sd  3, ANON_573_11_L231_R_info._COMP_SIZ
+	La  3, ANON_573_11_L231_G_len
+	La  3, ANON_573_64_L231_D_len
 	ADD
 	LI	8
 	MUL
-	Sd  3, ANON_572_11_L231_R_info.SIZ
-	LVA 3, ANON_572_11_L231_R_info.SIZ
-	Sa  3, ANON_572_11_L231_R__u
-	La  3, ANON_572_11_L231_R_disp
-	La  3, ANON_572_11_L231_G_len
-	La  3, ANON_572_11_L231_G_data
+	Sd  3, ANON_573_11_L231_R_info.SIZ
+	LVA 3, ANON_573_11_L231_R_info.SIZ
+	Sa  3, ANON_573_11_L231_R__u
+	La  3, ANON_573_11_L231_R_disp
+	La  3, ANON_573_11_L231_G_len
+	La  3, ANON_573_11_L231_G_data
 	BLKMOV
-	La  3, ANON_572_11_L231_R_disp
-	La  3, ANON_572_11_L231_G_len
+	La  3, ANON_573_11_L231_R_disp
+	La  3, ANON_573_11_L231_G_len
 	ADD
-	La  3, ANON_572_64_L231_D_len
-	La  3, ANON_572_64_L231_D_data
+	La  3, ANON_573_64_L231_D_len
+	La  3, ANON_573_64_L231_D_data
 	BLKMOV
-	LVA 3, ANON_572_11_L231_R_disp
+	LVA 3, ANON_573_11_L231_R_disp
 VAR	RET_INFO_L233, q
 	DUP
 	La  ,  0
@@ -7390,23 +7395,23 @@ begin:					;---------- BDY INSTRUCTIONS
 	BF	L237
 ; CODE_RETURN : EXPR TYPE = DN_ARRAY  VUE COMPLETE = DN_ARRAY
 ; CODE & concat _STRING
-VAR	ANON_579_9_L238_G_data, q
-VAR	ANON_579_9_L238_G_info, q
-VAR	ANON_579_15_L238_D_data, q
-VAR	ANON_579_15_L238_D_info, q
-VAR	ANON_579_9_L238_G_len,  q
-VAR	ANON_579_15_L238_D_len,  q
-VAR	ANON_579_9_L238_R_disp, q
-VAR	ANON_579_9_L238_R__u,   q
-namespace ANON_579_9_L238_R_info
+VAR	ANON_580_9_L238_G_data, q
+VAR	ANON_580_9_L238_G_info, q
+VAR	ANON_580_15_L238_D_data, q
+VAR	ANON_580_15_L238_D_info, q
+VAR	ANON_580_9_L238_G_len,  q
+VAR	ANON_580_15_L238_D_len,  q
+VAR	ANON_580_9_L238_R_disp, q
+VAR	ANON_580_9_L238_R__u,   q
+namespace ANON_580_9_L238_R_info
   VAR SIZ,      d
   VAR _COMP_SIZ, d
   VAR _FST_1,    d
   VAR _LST_1,    d
 end namespace
-VAR	ANON_579_9_L238_G_disp, q
-VAR	ANON_579_9_L238_G__u,   q
-namespace ANON_579_9_L238_G_info
+VAR	ANON_580_9_L238_G_disp, q
+VAR	ANON_580_9_L238_G__u,   q
+namespace ANON_580_9_L238_G_info
   VAR SIZ,      d
   VAR _COMP_SIZ, d
   VAR _FST_1,    d
@@ -7415,85 +7420,85 @@ end namespace
 	LI	45
 	LI	1
 	CO_VAR
-	Sa  2, ANON_579_9_L238_G_disp
-	SIb  2, ANON_579_9_L238_G_disp, 0
+	Sa  2, ANON_580_9_L238_G_disp
+	SIb  2, ANON_580_9_L238_G_disp, 0
 	LI	1
-	Sd  2, ANON_579_9_L238_G_info._FST_1
+	Sd  2, ANON_580_9_L238_G_info._FST_1
 	LI	1
-	Sd  2, ANON_579_9_L238_G_info._LST_1
+	Sd  2, ANON_580_9_L238_G_info._LST_1
 	LI	8
-	Sd  2, ANON_579_9_L238_G_info._COMP_SIZ
+	Sd  2, ANON_580_9_L238_G_info._COMP_SIZ
 	LI	8
-	Sd  2, ANON_579_9_L238_G_info.SIZ
-	LVA 2, ANON_579_9_L238_G_info.SIZ
-	Sa  2, ANON_579_9_L238_G__u
-	LVA 2, ANON_579_9_L238_G_disp
+	Sd  2, ANON_580_9_L238_G_info.SIZ
+	LVA 2, ANON_580_9_L238_G_info.SIZ
+	Sa  2, ANON_580_9_L238_G__u
+	LVA 2, ANON_580_9_L238_G_disp
 	DUP
 	La  ,  0
-	Sa  2, ANON_579_9_L238_G_data
+	Sa  2, ANON_580_9_L238_G_data
 	La  ,  8
-	Sa  2, ANON_579_9_L238_G_info
-	LId 2, ANON_579_9_L238_G_info, _STRING.LST_1
-	LId 2, ANON_579_9_L238_G_info, _STRING.FST_1
+	Sa  2, ANON_580_9_L238_G_info
+	LId 2, ANON_580_9_L238_G_info, _STRING.LST_1
+	LId 2, ANON_580_9_L238_G_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  2, ANON_579_9_L238_G_len
-VAR	ANON_579_15_disp, q
-VAR	ANON_579_15__u,   q
-namespace ANON_579_15_info
+	Sa  2, ANON_580_9_L238_G_len
+VAR	ANON_580_15_disp, q
+VAR	ANON_580_15__u,   q
+namespace ANON_580_15_info
   VAR SIZ, d
   VAR _COMP_SIZ, d
   VAR _FST_1, d
   VAR _LST_1, d
 end namespace
-	LVA 2, ANON_579_15_info.SIZ
-	Sa  2, ANON_579_15__u
-	LVA 2, ANON_579_15_disp
+	LVA 2, ANON_580_15_info.SIZ
+	Sa  2, ANON_580_15__u
+	LVA 2, ANON_580_15_disp
 	CALL	STANDARD.IDL.PRINT_NUM_L26.BLOCK__12. ,RECURSE_DOUBLETS_L221
 	DUP
 	La  ,  0
-	Sa  2, ANON_579_15_L238_D_data
+	Sa  2, ANON_580_15_L238_D_data
 	La  ,  8
-	Sa  2, ANON_579_15_L238_D_info
-	LId 2, ANON_579_15_L238_D_info, _STRING.LST_1
-	LId 2, ANON_579_15_L238_D_info, _STRING.FST_1
+	Sa  2, ANON_580_15_L238_D_info
+	LId 2, ANON_580_15_L238_D_info, _STRING.LST_1
+	LId 2, ANON_580_15_L238_D_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  2, ANON_579_15_L238_D_len
-	La  2, ANON_579_9_L238_G_len
-	La  2, ANON_579_15_L238_D_len
+	Sa  2, ANON_580_15_L238_D_len
+	La  2, ANON_580_9_L238_G_len
+	La  2, ANON_580_15_L238_D_len
 	ADD
 	CO_VAR
-	Sa  2, ANON_579_9_L238_R_disp
+	Sa  2, ANON_580_9_L238_R_disp
 	LI	1
-	Sd  2, ANON_579_9_L238_R_info._FST_1
-	La  2, ANON_579_9_L238_G_len
-	La  2, ANON_579_15_L238_D_len
+	Sd  2, ANON_580_9_L238_R_info._FST_1
+	La  2, ANON_580_9_L238_G_len
+	La  2, ANON_580_15_L238_D_len
 	ADD
-	Sd  2, ANON_579_9_L238_R_info._LST_1
+	Sd  2, ANON_580_9_L238_R_info._LST_1
 	LI	8
-	Sd  2, ANON_579_9_L238_R_info._COMP_SIZ
-	La  2, ANON_579_9_L238_G_len
-	La  2, ANON_579_15_L238_D_len
+	Sd  2, ANON_580_9_L238_R_info._COMP_SIZ
+	La  2, ANON_580_9_L238_G_len
+	La  2, ANON_580_15_L238_D_len
 	ADD
 	LI	8
 	MUL
-	Sd  2, ANON_579_9_L238_R_info.SIZ
-	LVA 2, ANON_579_9_L238_R_info.SIZ
-	Sa  2, ANON_579_9_L238_R__u
-	La  2, ANON_579_9_L238_R_disp
-	La  2, ANON_579_9_L238_G_len
-	La  2, ANON_579_9_L238_G_data
+	Sd  2, ANON_580_9_L238_R_info.SIZ
+	LVA 2, ANON_580_9_L238_R_info.SIZ
+	Sa  2, ANON_580_9_L238_R__u
+	La  2, ANON_580_9_L238_R_disp
+	La  2, ANON_580_9_L238_G_len
+	La  2, ANON_580_9_L238_G_data
 	BLKMOV
-	La  2, ANON_579_9_L238_R_disp
-	La  2, ANON_579_9_L238_G_len
+	La  2, ANON_580_9_L238_R_disp
+	La  2, ANON_580_9_L238_G_len
 	ADD
-	La  2, ANON_579_15_L238_D_len
-	La  2, ANON_579_15_L238_D_data
+	La  2, ANON_580_15_L238_D_len
+	La  2, ANON_580_15_L238_D_data
 	BLKMOV
-	LVA 2, ANON_579_9_L238_R_disp
+	LVA 2, ANON_580_9_L238_R_disp
 VAR	RET_INFO_L239, q
 	DUP
 	La  ,  0
@@ -7512,17 +7517,17 @@ VAR	RET_INFO_L239, q
 	BRA	L236
 L237:
 ; CODE_RETURN : EXPR TYPE = DN_ARRAY  VUE COMPLETE = DN_ARRAY
-VAR	ANON_581_9_disp, q
-VAR	ANON_581_9__u,   q
-namespace ANON_581_9_info
+VAR	ANON_582_9_disp, q
+VAR	ANON_582_9__u,   q
+namespace ANON_582_9_info
   VAR SIZ, d
   VAR _COMP_SIZ, d
   VAR _FST_1, d
   VAR _LST_1, d
 end namespace
-	LVA 2, ANON_581_9_info.SIZ
-	Sa  2, ANON_581_9__u
-	LVA 2, ANON_581_9_disp
+	LVA 2, ANON_582_9_info.SIZ
+	Sa  2, ANON_582_9__u
+	LVA 2, ANON_582_9_disp
 	CALL	STANDARD.IDL.PRINT_NUM_L26.BLOCK__12. ,RECURSE_DOUBLETS_L221
 VAR	RET_INFO_L240, q
 	DUP
@@ -7568,19 +7573,22 @@ ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 ; CODE_RETURN : EXPR TYPE = DN_ARRAY  VUE COMPLETE = DN_ARRAY
-VAR	ANON_597_12_disp, q
-VAR	ANON_597_12__u,   q
-namespace ANON_597_12_info
+VAR	ANON_598_12_disp, q
+VAR	ANON_598_12__u,   q
+namespace ANON_598_12_info
   VAR SIZ, d
   VAR _COMP_SIZ, d
   VAR _FST_1, d
   VAR _LST_1, d
 end namespace
-	LVA 1, ANON_597_12_info.SIZ
-	Sa  1, ANON_597_12__u
-	LVA 1, ANON_597_12_disp
+	LVA 1, ANON_598_12_info.SIZ
+	Sa  1, ANON_598_12__u
+	LVA 1, ANON_598_12_disp
 	Lb  1,	-NN_ofs
-	CALL	STANDARD. ,INTEGER_IMAGE_L11
+	La 0, STANDARD.DIANA_NODE_ATTR_CLASS_NAMES._NODE_NAME.use__info
+	LI	16
+	ADD
+	CALL	STANDARD. ,ENUM_IMAGE_L31
 VAR	RET_INFO_L244, q
 	DUP
 	La  ,  0
@@ -7612,19 +7620,22 @@ ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 ; CODE_RETURN : EXPR TYPE = DN_ARRAY  VUE COMPLETE = DN_ARRAY
-VAR	ANON_607_12_disp, q
-VAR	ANON_607_12__u,   q
-namespace ANON_607_12_info
+VAR	ANON_608_12_disp, q
+VAR	ANON_608_12__u,   q
+namespace ANON_608_12_info
   VAR SIZ, d
   VAR _COMP_SIZ, d
   VAR _FST_1, d
   VAR _LST_1, d
 end namespace
-	LVA 1, ANON_607_12_info.SIZ
-	Sa  1, ANON_607_12__u
-	LVA 1, ANON_607_12_disp
+	LVA 1, ANON_608_12_info.SIZ
+	Sa  1, ANON_608_12__u
+	LVA 1, ANON_608_12_disp
 	Lb  1,	-AN_ofs
-	CALL	STANDARD. ,INTEGER_IMAGE_L11
+	La 0, STANDARD.DIANA_NODE_ATTR_CLASS_NAMES._ATTRIBUTE_NAME.use__info
+	LI	16
+	ADD
+	CALL	STANDARD. ,ENUM_IMAGE_L31
 VAR	RET_INFO_L247, q
 	DUP
 	La  ,  0
@@ -7665,16 +7676,16 @@ begin:					;---------- BDY INSTRUCTIONS
 	LI	1
 	MUL
 	ADD
-namespace ANON_621_12			; ensemble doublet @data/@info pour slice anonyme source
-VAR ANON_621_12_disp, q
-VAR ANON_621_12__u, q
+namespace ANON_622_12			; ensemble doublet @data/@info pour slice anonyme source
+VAR ANON_622_12_disp, q
+VAR ANON_622_12__u, q
 VAR SIZ, d
 VAR COMP_SIZ, d
 VAR _FST_1, d
 VAR _LST_1, d
-	Sa	1, ANON_621_12_disp
+	Sa	1, ANON_622_12_disp
 	LVA	1, SIZ
-	Sa	1, ANON_621_12__u
+	Sa	1, ANON_622_12__u
 	LI	8
 	Sd	1, COMP_SIZ
 ; CODE_NUMERIC_LITERAL DN_INTEGER
@@ -7690,7 +7701,7 @@ VAR _LST_1, d
 	LI	8
 	MUL
 	Sd	1, SIZ
-	LVA	1, ANON_621_12_disp
+	LVA	1, ANON_622_12_disp
 end namespace
 VAR	RET_INFO_L250, q
 	DUP
@@ -7731,14 +7742,14 @@ VAR SPOS__dat, STANDARD.IDL._TREE.size
 ; CODE_VC_NAME DN_VARIABLE_ID
 	La  1, SPOS_disp
 	LI	STANDARD.IDL._TREE.size
-VAR	ANON_631_22_disp, q
-VAR	ANON_631_22__u,    q
-VAR	ANON_631_22__dat, STANDARD.IDL._TREE.size
-	LVA 1, ANON_631_22__dat
-	Sa  1, ANON_631_22_disp
+VAR	ANON_632_22_disp, q
+VAR	ANON_632_22__u,    q
+VAR	ANON_632_22__dat, STANDARD.IDL._TREE.size
+	LVA 1, ANON_632_22__dat
+	Sa  1, ANON_632_22_disp
 	La  0, STANDARD.IDL._TREE.use__info
-	Sa  1, ANON_631_22__u
-	LVA 1, ANON_631_22_disp
+	Sa  1, ANON_632_22__u
+	LVA 1, ANON_632_22_disp
 					; doublet resultat record anonyme
 	La  1,	-T_ofs
 	LI  154
@@ -7750,26 +7761,26 @@ VAR IML_disp, q				; variable array : pointeur aux data
 VAR IML__u, q				; variable array : useinfo pointeur au rec info
 	La 0, STANDARD._STRING.use__info
 	Sa	1, IML__u				; array info ptr at __u
-VAR	ANON_632_30_disp, q
-VAR	ANON_632_30__u,   q
-namespace ANON_632_30_info
+VAR	ANON_633_30_disp, q
+VAR	ANON_633_30__u,   q
+namespace ANON_633_30_info
   VAR SIZ, d
   VAR _COMP_SIZ, d
   VAR _FST_1, d
   VAR _LST_1, d
 end namespace
-	LVA 1, ANON_632_30_info.SIZ
-	Sa  1, ANON_632_30__u
-	LVA 1, ANON_632_30_disp
+	LVA 1, ANON_633_30_info.SIZ
+	Sa  1, ANON_633_30__u
+	LVA 1, ANON_633_30_disp
 	LI	0					; lieu resultat sur pile
-VAR	ANON_632_60_disp, q
-VAR	ANON_632_60__u,    q
-VAR	ANON_632_60__dat, STANDARD.IDL._TREE.size
-	LVA 1, ANON_632_60__dat
-	Sa  1, ANON_632_60_disp
+VAR	ANON_633_60_disp, q
+VAR	ANON_633_60__u,    q
+VAR	ANON_633_60__dat, STANDARD.IDL._TREE.size
+	LVA 1, ANON_633_60__dat
+	Sa  1, ANON_633_60_disp
 	La  0, STANDARD.IDL._TREE.use__info
-	Sa  1, ANON_632_60__u
-	LVA 1, ANON_632_60_disp
+	Sa  1, ANON_633_60__u
+	LVA 1, ANON_633_60_disp
 					; doublet resultat record anonyme
 	LVA 1,	SPOS_disp
 	CALL	STANDARD.IDL.IDL_MAN. ,GET_SOURCE_LINE_L43
@@ -7786,17 +7797,17 @@ VAR IMC_disp, q				; variable array : pointeur aux data
 VAR IMC__u, q				; variable array : useinfo pointeur au rec info
 	La 0, STANDARD._STRING.use__info
 	Sa	1, IMC__u				; array info ptr at __u
-VAR	ANON_633_30_disp, q
-VAR	ANON_633_30__u,   q
-namespace ANON_633_30_info
+VAR	ANON_634_30_disp, q
+VAR	ANON_634_30__u,   q
+namespace ANON_634_30_info
   VAR SIZ, d
   VAR _COMP_SIZ, d
   VAR _FST_1, d
   VAR _LST_1, d
 end namespace
-	LVA 1, ANON_633_30_info.SIZ
-	Sa  1, ANON_633_30__u
-	LVA 1, ANON_633_30_disp
+	LVA 1, ANON_634_30_info.SIZ
+	Sa  1, ANON_634_30__u
+	LVA 1, ANON_634_30_disp
 	LI	0					; lieu resultat sur pile
 	LVA 1,	SPOS_disp
 	CALL	STANDARD.IDL.IDL_MAN. ,GET_SOURCE_COL_L44
@@ -7811,113 +7822,113 @@ end namespace
 begin:					;---------- BDY INSTRUCTIONS
 					; debut if
 ; CODE composite "=" _STRING
-VAR	ANON_636_9_L255_G_data, q
-VAR	ANON_636_9_L255_G_info, q
-VAR	ANON_636_9_L255_G_len,  q
+VAR	ANON_637_9_L255_G_data, q
+VAR	ANON_637_9_L255_G_info, q
+VAR	ANON_637_9_L255_G_len,  q
 	La  1,	-CUSTOM_PREFIX_ofs
 	DUP
 	La  ,  0
-	Sa  1, ANON_636_9_L255_G_data
+	Sa  1, ANON_637_9_L255_G_data
 	La  ,  8
-	Sa  1, ANON_636_9_L255_G_info
-	LId 1, ANON_636_9_L255_G_info, STANDARD._STRING.LST_1
-	LId 1, ANON_636_9_L255_G_info, STANDARD._STRING.FST_1
+	Sa  1, ANON_637_9_L255_G_info
+	LId 1, ANON_637_9_L255_G_info, STANDARD._STRING.LST_1
+	LId 1, ANON_637_9_L255_G_info, STANDARD._STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  1, ANON_636_9_L255_G_len
-VAR	ANON_636_25_L255_D_data, q
-VAR	ANON_636_25_L255_D_info, q
-VAR	ANON_636_25_L255_D_len,  q
-STR ANON_636_25_L255_D, ""			; constante string=""
-	LCA	ANON_636_25_L255_D.data_ptr
+	Sa  1, ANON_637_9_L255_G_len
+VAR	ANON_637_25_L255_D_data, q
+VAR	ANON_637_25_L255_D_info, q
+VAR	ANON_637_25_L255_D_len,  q
+STR ANON_637_25_L255_D, ""			; constante string=""
+	LCA	ANON_637_25_L255_D.data_ptr
 	DUP
 	La  ,  0
-	Sa  1, ANON_636_25_L255_D_data
+	Sa  1, ANON_637_25_L255_D_data
 	La  ,  8
-	Sa  1, ANON_636_25_L255_D_info
-	LId 1, ANON_636_25_L255_D_info, STANDARD._STRING.LST_1
-	LId 1, ANON_636_25_L255_D_info, STANDARD._STRING.FST_1
+	Sa  1, ANON_637_25_L255_D_info
+	LId 1, ANON_637_25_L255_D_info, STANDARD._STRING.LST_1
+	LId 1, ANON_637_25_L255_D_info, STANDARD._STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  1, ANON_636_25_L255_D_len
-	La  1, ANON_636_9_L255_G_len
-	La  1, ANON_636_25_L255_D_len
+	Sa  1, ANON_637_25_L255_D_len
+	La  1, ANON_637_9_L255_G_len
+	La  1, ANON_637_25_L255_D_len
 	CEQ
 	DUP
 	BF	L256
 	DROP
-	La  1, ANON_636_9_L255_G_data
-	La  1, ANON_636_9_L255_G_len
-	La  1, ANON_636_25_L255_D_data
+	La  1, ANON_637_9_L255_G_data
+	La  1, ANON_637_9_L255_G_len
+	La  1, ANON_637_25_L255_D_data
 	BLKCMP
 L256:
 	BF	L254
 ; CODE_RETURN : EXPR TYPE = DN_ARRAY  VUE COMPLETE = DN_ARRAY
 ; CODE & concat _STRING
-VAR	ANON_637_15_L257_G_data, q
-VAR	ANON_637_15_L257_G_info, q
-VAR	ANON_637_56_L257_D_data, q
-VAR	ANON_637_56_L257_D_info, q
-VAR	ANON_637_15_L257_G_len,  q
-VAR	ANON_637_56_L257_D_len,  q
-VAR	ANON_637_15_L257_R_disp, q
-VAR	ANON_637_15_L257_R__u,   q
-namespace ANON_637_15_L257_R_info
+VAR	ANON_638_15_L257_G_data, q
+VAR	ANON_638_15_L257_G_info, q
+VAR	ANON_638_56_L257_D_data, q
+VAR	ANON_638_56_L257_D_info, q
+VAR	ANON_638_15_L257_G_len,  q
+VAR	ANON_638_56_L257_D_len,  q
+VAR	ANON_638_15_L257_R_disp, q
+VAR	ANON_638_15_L257_R__u,   q
+namespace ANON_638_15_L257_R_info
   VAR SIZ,      d
   VAR _COMP_SIZ, d
   VAR _FST_1,    d
   VAR _LST_1,    d
 end namespace
 ; CODE & concat _STRING
-VAR	ANON_637_15_L258_G_data, q
-VAR	ANON_637_15_L258_G_info, q
-VAR	ANON_637_50_L258_D_data, q
-VAR	ANON_637_50_L258_D_info, q
-VAR	ANON_637_15_L258_G_len,  q
-VAR	ANON_637_50_L258_D_len,  q
-VAR	ANON_637_15_L258_R_disp, q
-VAR	ANON_637_15_L258_R__u,   q
-namespace ANON_637_15_L258_R_info
+VAR	ANON_638_15_L258_G_data, q
+VAR	ANON_638_15_L258_G_info, q
+VAR	ANON_638_50_L258_D_data, q
+VAR	ANON_638_50_L258_D_info, q
+VAR	ANON_638_15_L258_G_len,  q
+VAR	ANON_638_50_L258_D_len,  q
+VAR	ANON_638_15_L258_R_disp, q
+VAR	ANON_638_15_L258_R__u,   q
+namespace ANON_638_15_L258_R_info
   VAR SIZ,      d
   VAR _COMP_SIZ, d
   VAR _FST_1,    d
   VAR _LST_1,    d
 end namespace
 ; CODE & concat _STRING
-VAR	ANON_637_15_L259_G_data, q
-VAR	ANON_637_15_L259_G_info, q
-VAR	ANON_637_25_L259_D_data, q
-VAR	ANON_637_25_L259_D_info, q
-VAR	ANON_637_15_L259_G_len,  q
-VAR	ANON_637_25_L259_D_len,  q
-VAR	ANON_637_15_L259_R_disp, q
-VAR	ANON_637_15_L259_R__u,   q
-namespace ANON_637_15_L259_R_info
+VAR	ANON_638_15_L259_G_data, q
+VAR	ANON_638_15_L259_G_info, q
+VAR	ANON_638_25_L259_D_data, q
+VAR	ANON_638_25_L259_D_info, q
+VAR	ANON_638_15_L259_G_len,  q
+VAR	ANON_638_25_L259_D_len,  q
+VAR	ANON_638_15_L259_R_disp, q
+VAR	ANON_638_15_L259_R__u,   q
+namespace ANON_638_15_L259_R_info
   VAR SIZ,      d
   VAR _COMP_SIZ, d
   VAR _FST_1,    d
   VAR _LST_1,    d
 end namespace
-STR ANON_637_15_L259_G, "ANON_"		; constante string="ANON_"
-	LCA	ANON_637_15_L259_G.data_ptr
+STR ANON_638_15_L259_G, "ANON_"		; constante string="ANON_"
+	LCA	ANON_638_15_L259_G.data_ptr
 	DUP
 	La  ,  0
-	Sa  1, ANON_637_15_L259_G_data
+	Sa  1, ANON_638_15_L259_G_data
 	La  ,  8
-	Sa  1, ANON_637_15_L259_G_info
-	LId 1, ANON_637_15_L259_G_info, _STRING.LST_1
-	LId 1, ANON_637_15_L259_G_info, _STRING.FST_1
+	Sa  1, ANON_638_15_L259_G_info
+	LId 1, ANON_638_15_L259_G_info, _STRING.LST_1
+	LId 1, ANON_638_15_L259_G_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  1, ANON_637_15_L259_G_len
-VAR	ANON_637_25_L259_D_slice_data, q
-VAR	ANON_637_25_L259_D_slice_len,  q
-VAR	ANON_637_25_L259_D_disp, q
-VAR	ANON_637_25_L259_D__u,   q
-namespace ANON_637_25_L259_D_info
+	Sa  1, ANON_638_15_L259_G_len
+VAR	ANON_638_25_L259_D_slice_data, q
+VAR	ANON_638_25_L259_D_slice_len,  q
+VAR	ANON_638_25_L259_D_disp, q
+VAR	ANON_638_25_L259_D__u,   q
+namespace ANON_638_25_L259_D_info
   VAR SIZ,      d
   VAR _COMP_SIZ, d
   VAR _FST_1,    d
@@ -7943,80 +7954,80 @@ end namespace
 	CLAMP0
 	LI	1
 	MUL
-	Sa  1, ANON_637_25_L259_D_slice_len
-	Sa  1, ANON_637_25_L259_D_slice_data
-	La  1, ANON_637_25_L259_D_slice_data
-	Sa  1, ANON_637_25_L259_D_disp
-	LVA 1, ANON_637_25_L259_D_info.SIZ
-	Sa  1, ANON_637_25_L259_D__u
+	Sa  1, ANON_638_25_L259_D_slice_len
+	Sa  1, ANON_638_25_L259_D_slice_data
+	La  1, ANON_638_25_L259_D_slice_data
+	Sa  1, ANON_638_25_L259_D_disp
+	LVA 1, ANON_638_25_L259_D_info.SIZ
+	Sa  1, ANON_638_25_L259_D__u
 	LI	1
-	Sd  1, ANON_637_25_L259_D_info._FST_1
-	La  1, ANON_637_25_L259_D_slice_len
-	Sd  1, ANON_637_25_L259_D_info._LST_1
+	Sd  1, ANON_638_25_L259_D_info._FST_1
+	La  1, ANON_638_25_L259_D_slice_len
+	Sd  1, ANON_638_25_L259_D_info._LST_1
 	LI	8
-	Sd  1, ANON_637_25_L259_D_info._COMP_SIZ
-	La  1, ANON_637_25_L259_D_slice_len
+	Sd  1, ANON_638_25_L259_D_info._COMP_SIZ
+	La  1, ANON_638_25_L259_D_slice_len
 	LI	8
 	MUL
-	Sd  1, ANON_637_25_L259_D_info.SIZ
-	LVA 1, ANON_637_25_L259_D_disp
+	Sd  1, ANON_638_25_L259_D_info.SIZ
+	LVA 1, ANON_638_25_L259_D_disp
 	DUP
 	La  ,  0
-	Sa  1, ANON_637_25_L259_D_data
+	Sa  1, ANON_638_25_L259_D_data
 	La  ,  8
-	Sa  1, ANON_637_25_L259_D_info
-	LId 1, ANON_637_25_L259_D_info, _STRING.LST_1
-	LId 1, ANON_637_25_L259_D_info, _STRING.FST_1
+	Sa  1, ANON_638_25_L259_D_info
+	LId 1, ANON_638_25_L259_D_info, _STRING.LST_1
+	LId 1, ANON_638_25_L259_D_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  1, ANON_637_25_L259_D_len
-	La  1, ANON_637_15_L259_G_len
-	La  1, ANON_637_25_L259_D_len
+	Sa  1, ANON_638_25_L259_D_len
+	La  1, ANON_638_15_L259_G_len
+	La  1, ANON_638_25_L259_D_len
 	ADD
 	CO_VAR
-	Sa  1, ANON_637_15_L259_R_disp
+	Sa  1, ANON_638_15_L259_R_disp
 	LI	1
-	Sd  1, ANON_637_15_L259_R_info._FST_1
-	La  1, ANON_637_15_L259_G_len
-	La  1, ANON_637_25_L259_D_len
+	Sd  1, ANON_638_15_L259_R_info._FST_1
+	La  1, ANON_638_15_L259_G_len
+	La  1, ANON_638_25_L259_D_len
 	ADD
-	Sd  1, ANON_637_15_L259_R_info._LST_1
+	Sd  1, ANON_638_15_L259_R_info._LST_1
 	LI	8
-	Sd  1, ANON_637_15_L259_R_info._COMP_SIZ
-	La  1, ANON_637_15_L259_G_len
-	La  1, ANON_637_25_L259_D_len
+	Sd  1, ANON_638_15_L259_R_info._COMP_SIZ
+	La  1, ANON_638_15_L259_G_len
+	La  1, ANON_638_25_L259_D_len
 	ADD
 	LI	8
 	MUL
-	Sd  1, ANON_637_15_L259_R_info.SIZ
-	LVA 1, ANON_637_15_L259_R_info.SIZ
-	Sa  1, ANON_637_15_L259_R__u
-	La  1, ANON_637_15_L259_R_disp
-	La  1, ANON_637_15_L259_G_len
-	La  1, ANON_637_15_L259_G_data
+	Sd  1, ANON_638_15_L259_R_info.SIZ
+	LVA 1, ANON_638_15_L259_R_info.SIZ
+	Sa  1, ANON_638_15_L259_R__u
+	La  1, ANON_638_15_L259_R_disp
+	La  1, ANON_638_15_L259_G_len
+	La  1, ANON_638_15_L259_G_data
 	BLKMOV
-	La  1, ANON_637_15_L259_R_disp
-	La  1, ANON_637_15_L259_G_len
+	La  1, ANON_638_15_L259_R_disp
+	La  1, ANON_638_15_L259_G_len
 	ADD
-	La  1, ANON_637_25_L259_D_len
-	La  1, ANON_637_25_L259_D_data
+	La  1, ANON_638_25_L259_D_len
+	La  1, ANON_638_25_L259_D_data
 	BLKMOV
-	LVA 1, ANON_637_15_L259_R_disp
+	LVA 1, ANON_638_15_L259_R_disp
 	DUP
 	La  ,  0
-	Sa  1, ANON_637_15_L258_G_data
+	Sa  1, ANON_638_15_L258_G_data
 	La  ,  8
-	Sa  1, ANON_637_15_L258_G_info
-	LId 1, ANON_637_15_L258_G_info, _STRING.LST_1
-	LId 1, ANON_637_15_L258_G_info, _STRING.FST_1
+	Sa  1, ANON_638_15_L258_G_info
+	LId 1, ANON_638_15_L258_G_info, _STRING.LST_1
+	LId 1, ANON_638_15_L258_G_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  1, ANON_637_15_L258_G_len
-VAR	ANON_637_50_L258_D_disp, q
-VAR	ANON_637_50_L258_D__u,   q
-namespace ANON_637_50_L258_D_info
+	Sa  1, ANON_638_15_L258_G_len
+VAR	ANON_638_50_L258_D_disp, q
+VAR	ANON_638_50_L258_D__u,   q
+namespace ANON_638_50_L258_D_info
   VAR SIZ,      d
   VAR _COMP_SIZ, d
   VAR _FST_1,    d
@@ -8025,78 +8036,78 @@ end namespace
 	LI	95
 	LI	1
 	CO_VAR
-	Sa  1, ANON_637_50_L258_D_disp
-	SIb  1, ANON_637_50_L258_D_disp, 0
+	Sa  1, ANON_638_50_L258_D_disp
+	SIb  1, ANON_638_50_L258_D_disp, 0
 	LI	1
-	Sd  1, ANON_637_50_L258_D_info._FST_1
+	Sd  1, ANON_638_50_L258_D_info._FST_1
 	LI	1
-	Sd  1, ANON_637_50_L258_D_info._LST_1
+	Sd  1, ANON_638_50_L258_D_info._LST_1
 	LI	8
-	Sd  1, ANON_637_50_L258_D_info._COMP_SIZ
+	Sd  1, ANON_638_50_L258_D_info._COMP_SIZ
 	LI	8
-	Sd  1, ANON_637_50_L258_D_info.SIZ
-	LVA 1, ANON_637_50_L258_D_info.SIZ
-	Sa  1, ANON_637_50_L258_D__u
-	LVA 1, ANON_637_50_L258_D_disp
+	Sd  1, ANON_638_50_L258_D_info.SIZ
+	LVA 1, ANON_638_50_L258_D_info.SIZ
+	Sa  1, ANON_638_50_L258_D__u
+	LVA 1, ANON_638_50_L258_D_disp
 	DUP
 	La  ,  0
-	Sa  1, ANON_637_50_L258_D_data
+	Sa  1, ANON_638_50_L258_D_data
 	La  ,  8
-	Sa  1, ANON_637_50_L258_D_info
-	LId 1, ANON_637_50_L258_D_info, _STRING.LST_1
-	LId 1, ANON_637_50_L258_D_info, _STRING.FST_1
+	Sa  1, ANON_638_50_L258_D_info
+	LId 1, ANON_638_50_L258_D_info, _STRING.LST_1
+	LId 1, ANON_638_50_L258_D_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  1, ANON_637_50_L258_D_len
-	La  1, ANON_637_15_L258_G_len
-	La  1, ANON_637_50_L258_D_len
+	Sa  1, ANON_638_50_L258_D_len
+	La  1, ANON_638_15_L258_G_len
+	La  1, ANON_638_50_L258_D_len
 	ADD
 	CO_VAR
-	Sa  1, ANON_637_15_L258_R_disp
+	Sa  1, ANON_638_15_L258_R_disp
 	LI	1
-	Sd  1, ANON_637_15_L258_R_info._FST_1
-	La  1, ANON_637_15_L258_G_len
-	La  1, ANON_637_50_L258_D_len
+	Sd  1, ANON_638_15_L258_R_info._FST_1
+	La  1, ANON_638_15_L258_G_len
+	La  1, ANON_638_50_L258_D_len
 	ADD
-	Sd  1, ANON_637_15_L258_R_info._LST_1
+	Sd  1, ANON_638_15_L258_R_info._LST_1
 	LI	8
-	Sd  1, ANON_637_15_L258_R_info._COMP_SIZ
-	La  1, ANON_637_15_L258_G_len
-	La  1, ANON_637_50_L258_D_len
+	Sd  1, ANON_638_15_L258_R_info._COMP_SIZ
+	La  1, ANON_638_15_L258_G_len
+	La  1, ANON_638_50_L258_D_len
 	ADD
 	LI	8
 	MUL
-	Sd  1, ANON_637_15_L258_R_info.SIZ
-	LVA 1, ANON_637_15_L258_R_info.SIZ
-	Sa  1, ANON_637_15_L258_R__u
-	La  1, ANON_637_15_L258_R_disp
-	La  1, ANON_637_15_L258_G_len
-	La  1, ANON_637_15_L258_G_data
+	Sd  1, ANON_638_15_L258_R_info.SIZ
+	LVA 1, ANON_638_15_L258_R_info.SIZ
+	Sa  1, ANON_638_15_L258_R__u
+	La  1, ANON_638_15_L258_R_disp
+	La  1, ANON_638_15_L258_G_len
+	La  1, ANON_638_15_L258_G_data
 	BLKMOV
-	La  1, ANON_637_15_L258_R_disp
-	La  1, ANON_637_15_L258_G_len
+	La  1, ANON_638_15_L258_R_disp
+	La  1, ANON_638_15_L258_G_len
 	ADD
-	La  1, ANON_637_50_L258_D_len
-	La  1, ANON_637_50_L258_D_data
+	La  1, ANON_638_50_L258_D_len
+	La  1, ANON_638_50_L258_D_data
 	BLKMOV
-	LVA 1, ANON_637_15_L258_R_disp
+	LVA 1, ANON_638_15_L258_R_disp
 	DUP
 	La  ,  0
-	Sa  1, ANON_637_15_L257_G_data
+	Sa  1, ANON_638_15_L257_G_data
 	La  ,  8
-	Sa  1, ANON_637_15_L257_G_info
-	LId 1, ANON_637_15_L257_G_info, _STRING.LST_1
-	LId 1, ANON_637_15_L257_G_info, _STRING.FST_1
+	Sa  1, ANON_638_15_L257_G_info
+	LId 1, ANON_638_15_L257_G_info, _STRING.LST_1
+	LId 1, ANON_638_15_L257_G_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  1, ANON_637_15_L257_G_len
-VAR	ANON_637_56_L257_D_slice_data, q
-VAR	ANON_637_56_L257_D_slice_len,  q
-VAR	ANON_637_56_L257_D_disp, q
-VAR	ANON_637_56_L257_D__u,   q
-namespace ANON_637_56_L257_D_info
+	Sa  1, ANON_638_15_L257_G_len
+VAR	ANON_638_56_L257_D_slice_data, q
+VAR	ANON_638_56_L257_D_slice_len,  q
+VAR	ANON_638_56_L257_D_disp, q
+VAR	ANON_638_56_L257_D__u,   q
+namespace ANON_638_56_L257_D_info
   VAR SIZ,      d
   VAR _COMP_SIZ, d
   VAR _FST_1,    d
@@ -8122,66 +8133,66 @@ end namespace
 	CLAMP0
 	LI	1
 	MUL
-	Sa  1, ANON_637_56_L257_D_slice_len
-	Sa  1, ANON_637_56_L257_D_slice_data
-	La  1, ANON_637_56_L257_D_slice_data
-	Sa  1, ANON_637_56_L257_D_disp
-	LVA 1, ANON_637_56_L257_D_info.SIZ
-	Sa  1, ANON_637_56_L257_D__u
+	Sa  1, ANON_638_56_L257_D_slice_len
+	Sa  1, ANON_638_56_L257_D_slice_data
+	La  1, ANON_638_56_L257_D_slice_data
+	Sa  1, ANON_638_56_L257_D_disp
+	LVA 1, ANON_638_56_L257_D_info.SIZ
+	Sa  1, ANON_638_56_L257_D__u
 	LI	1
-	Sd  1, ANON_637_56_L257_D_info._FST_1
-	La  1, ANON_637_56_L257_D_slice_len
-	Sd  1, ANON_637_56_L257_D_info._LST_1
+	Sd  1, ANON_638_56_L257_D_info._FST_1
+	La  1, ANON_638_56_L257_D_slice_len
+	Sd  1, ANON_638_56_L257_D_info._LST_1
 	LI	8
-	Sd  1, ANON_637_56_L257_D_info._COMP_SIZ
-	La  1, ANON_637_56_L257_D_slice_len
+	Sd  1, ANON_638_56_L257_D_info._COMP_SIZ
+	La  1, ANON_638_56_L257_D_slice_len
 	LI	8
 	MUL
-	Sd  1, ANON_637_56_L257_D_info.SIZ
-	LVA 1, ANON_637_56_L257_D_disp
+	Sd  1, ANON_638_56_L257_D_info.SIZ
+	LVA 1, ANON_638_56_L257_D_disp
 	DUP
 	La  ,  0
-	Sa  1, ANON_637_56_L257_D_data
+	Sa  1, ANON_638_56_L257_D_data
 	La  ,  8
-	Sa  1, ANON_637_56_L257_D_info
-	LId 1, ANON_637_56_L257_D_info, _STRING.LST_1
-	LId 1, ANON_637_56_L257_D_info, _STRING.FST_1
+	Sa  1, ANON_638_56_L257_D_info
+	LId 1, ANON_638_56_L257_D_info, _STRING.LST_1
+	LId 1, ANON_638_56_L257_D_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  1, ANON_637_56_L257_D_len
-	La  1, ANON_637_15_L257_G_len
-	La  1, ANON_637_56_L257_D_len
+	Sa  1, ANON_638_56_L257_D_len
+	La  1, ANON_638_15_L257_G_len
+	La  1, ANON_638_56_L257_D_len
 	ADD
 	CO_VAR
-	Sa  1, ANON_637_15_L257_R_disp
+	Sa  1, ANON_638_15_L257_R_disp
 	LI	1
-	Sd  1, ANON_637_15_L257_R_info._FST_1
-	La  1, ANON_637_15_L257_G_len
-	La  1, ANON_637_56_L257_D_len
+	Sd  1, ANON_638_15_L257_R_info._FST_1
+	La  1, ANON_638_15_L257_G_len
+	La  1, ANON_638_56_L257_D_len
 	ADD
-	Sd  1, ANON_637_15_L257_R_info._LST_1
+	Sd  1, ANON_638_15_L257_R_info._LST_1
 	LI	8
-	Sd  1, ANON_637_15_L257_R_info._COMP_SIZ
-	La  1, ANON_637_15_L257_G_len
-	La  1, ANON_637_56_L257_D_len
+	Sd  1, ANON_638_15_L257_R_info._COMP_SIZ
+	La  1, ANON_638_15_L257_G_len
+	La  1, ANON_638_56_L257_D_len
 	ADD
 	LI	8
 	MUL
-	Sd  1, ANON_637_15_L257_R_info.SIZ
-	LVA 1, ANON_637_15_L257_R_info.SIZ
-	Sa  1, ANON_637_15_L257_R__u
-	La  1, ANON_637_15_L257_R_disp
-	La  1, ANON_637_15_L257_G_len
-	La  1, ANON_637_15_L257_G_data
+	Sd  1, ANON_638_15_L257_R_info.SIZ
+	LVA 1, ANON_638_15_L257_R_info.SIZ
+	Sa  1, ANON_638_15_L257_R__u
+	La  1, ANON_638_15_L257_R_disp
+	La  1, ANON_638_15_L257_G_len
+	La  1, ANON_638_15_L257_G_data
 	BLKMOV
-	La  1, ANON_637_15_L257_R_disp
-	La  1, ANON_637_15_L257_G_len
+	La  1, ANON_638_15_L257_R_disp
+	La  1, ANON_638_15_L257_G_len
 	ADD
-	La  1, ANON_637_56_L257_D_len
-	La  1, ANON_637_56_L257_D_data
+	La  1, ANON_638_56_L257_D_len
+	La  1, ANON_638_56_L257_D_data
 	BLKMOV
-	LVA 1, ANON_637_15_L257_R_disp
+	LVA 1, ANON_638_15_L257_R_disp
 VAR	RET_INFO_L260, q
 	DUP
 	La  ,  0
@@ -8200,60 +8211,60 @@ VAR	RET_INFO_L260, q
 L254:
 ; CODE_RETURN : EXPR TYPE = DN_ARRAY  VUE COMPLETE = DN_ARRAY
 ; CODE & concat _STRING
-VAR	ANON_639_15_L261_G_data, q
-VAR	ANON_639_15_L261_G_info, q
-VAR	ANON_639_68_L261_D_data, q
-VAR	ANON_639_68_L261_D_info, q
-VAR	ANON_639_15_L261_G_len,  q
-VAR	ANON_639_68_L261_D_len,  q
-VAR	ANON_639_15_L261_R_disp, q
-VAR	ANON_639_15_L261_R__u,   q
-namespace ANON_639_15_L261_R_info
+VAR	ANON_640_15_L261_G_data, q
+VAR	ANON_640_15_L261_G_info, q
+VAR	ANON_640_68_L261_D_data, q
+VAR	ANON_640_68_L261_D_info, q
+VAR	ANON_640_15_L261_G_len,  q
+VAR	ANON_640_68_L261_D_len,  q
+VAR	ANON_640_15_L261_R_disp, q
+VAR	ANON_640_15_L261_R__u,   q
+namespace ANON_640_15_L261_R_info
   VAR SIZ,      d
   VAR _COMP_SIZ, d
   VAR _FST_1,    d
   VAR _LST_1,    d
 end namespace
 ; CODE & concat _STRING
-VAR	ANON_639_15_L262_G_data, q
-VAR	ANON_639_15_L262_G_info, q
-VAR	ANON_639_62_L262_D_data, q
-VAR	ANON_639_62_L262_D_info, q
-VAR	ANON_639_15_L262_G_len,  q
-VAR	ANON_639_62_L262_D_len,  q
-VAR	ANON_639_15_L262_R_disp, q
-VAR	ANON_639_15_L262_R__u,   q
-namespace ANON_639_15_L262_R_info
+VAR	ANON_640_15_L262_G_data, q
+VAR	ANON_640_15_L262_G_info, q
+VAR	ANON_640_62_L262_D_data, q
+VAR	ANON_640_62_L262_D_info, q
+VAR	ANON_640_15_L262_G_len,  q
+VAR	ANON_640_62_L262_D_len,  q
+VAR	ANON_640_15_L262_R_disp, q
+VAR	ANON_640_15_L262_R__u,   q
+namespace ANON_640_15_L262_R_info
   VAR SIZ,      d
   VAR _COMP_SIZ, d
   VAR _FST_1,    d
   VAR _LST_1,    d
 end namespace
 ; CODE & concat _STRING
-VAR	ANON_639_15_L263_G_data, q
-VAR	ANON_639_15_L263_G_info, q
-VAR	ANON_639_37_L263_D_data, q
-VAR	ANON_639_37_L263_D_info, q
-VAR	ANON_639_15_L263_G_len,  q
-VAR	ANON_639_37_L263_D_len,  q
-VAR	ANON_639_15_L263_R_disp, q
-VAR	ANON_639_15_L263_R__u,   q
-namespace ANON_639_15_L263_R_info
+VAR	ANON_640_15_L263_G_data, q
+VAR	ANON_640_15_L263_G_info, q
+VAR	ANON_640_37_L263_D_data, q
+VAR	ANON_640_37_L263_D_info, q
+VAR	ANON_640_15_L263_G_len,  q
+VAR	ANON_640_37_L263_D_len,  q
+VAR	ANON_640_15_L263_R_disp, q
+VAR	ANON_640_15_L263_R__u,   q
+namespace ANON_640_15_L263_R_info
   VAR SIZ,      d
   VAR _COMP_SIZ, d
   VAR _FST_1,    d
   VAR _LST_1,    d
 end namespace
 ; CODE & concat _STRING
-VAR	ANON_639_15_L264_G_data, q
-VAR	ANON_639_15_L264_G_info, q
-VAR	ANON_639_31_L264_D_data, q
-VAR	ANON_639_31_L264_D_info, q
-VAR	ANON_639_15_L264_G_len,  q
-VAR	ANON_639_31_L264_D_len,  q
-VAR	ANON_639_15_L264_R_disp, q
-VAR	ANON_639_15_L264_R__u,   q
-namespace ANON_639_15_L264_R_info
+VAR	ANON_640_15_L264_G_data, q
+VAR	ANON_640_15_L264_G_info, q
+VAR	ANON_640_31_L264_D_data, q
+VAR	ANON_640_31_L264_D_info, q
+VAR	ANON_640_15_L264_G_len,  q
+VAR	ANON_640_31_L264_D_len,  q
+VAR	ANON_640_15_L264_R_disp, q
+VAR	ANON_640_15_L264_R__u,   q
+namespace ANON_640_15_L264_R_info
   VAR SIZ,      d
   VAR _COMP_SIZ, d
   VAR _FST_1,    d
@@ -8262,18 +8273,18 @@ end namespace
 	La  1,	-CUSTOM_PREFIX_ofs
 	DUP
 	La  ,  0
-	Sa  1, ANON_639_15_L264_G_data
+	Sa  1, ANON_640_15_L264_G_data
 	La  ,  8
-	Sa  1, ANON_639_15_L264_G_info
-	LId 1, ANON_639_15_L264_G_info, _STRING.LST_1
-	LId 1, ANON_639_15_L264_G_info, _STRING.FST_1
+	Sa  1, ANON_640_15_L264_G_info
+	LId 1, ANON_640_15_L264_G_info, _STRING.LST_1
+	LId 1, ANON_640_15_L264_G_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  1, ANON_639_15_L264_G_len
-VAR	ANON_639_31_L264_D_disp, q
-VAR	ANON_639_31_L264_D__u,   q
-namespace ANON_639_31_L264_D_info
+	Sa  1, ANON_640_15_L264_G_len
+VAR	ANON_640_31_L264_D_disp, q
+VAR	ANON_640_31_L264_D__u,   q
+namespace ANON_640_31_L264_D_info
   VAR SIZ,      d
   VAR _COMP_SIZ, d
   VAR _FST_1,    d
@@ -8282,78 +8293,78 @@ end namespace
 	LI	95
 	LI	1
 	CO_VAR
-	Sa  1, ANON_639_31_L264_D_disp
-	SIb  1, ANON_639_31_L264_D_disp, 0
+	Sa  1, ANON_640_31_L264_D_disp
+	SIb  1, ANON_640_31_L264_D_disp, 0
 	LI	1
-	Sd  1, ANON_639_31_L264_D_info._FST_1
+	Sd  1, ANON_640_31_L264_D_info._FST_1
 	LI	1
-	Sd  1, ANON_639_31_L264_D_info._LST_1
+	Sd  1, ANON_640_31_L264_D_info._LST_1
 	LI	8
-	Sd  1, ANON_639_31_L264_D_info._COMP_SIZ
+	Sd  1, ANON_640_31_L264_D_info._COMP_SIZ
 	LI	8
-	Sd  1, ANON_639_31_L264_D_info.SIZ
-	LVA 1, ANON_639_31_L264_D_info.SIZ
-	Sa  1, ANON_639_31_L264_D__u
-	LVA 1, ANON_639_31_L264_D_disp
+	Sd  1, ANON_640_31_L264_D_info.SIZ
+	LVA 1, ANON_640_31_L264_D_info.SIZ
+	Sa  1, ANON_640_31_L264_D__u
+	LVA 1, ANON_640_31_L264_D_disp
 	DUP
 	La  ,  0
-	Sa  1, ANON_639_31_L264_D_data
+	Sa  1, ANON_640_31_L264_D_data
 	La  ,  8
-	Sa  1, ANON_639_31_L264_D_info
-	LId 1, ANON_639_31_L264_D_info, _STRING.LST_1
-	LId 1, ANON_639_31_L264_D_info, _STRING.FST_1
+	Sa  1, ANON_640_31_L264_D_info
+	LId 1, ANON_640_31_L264_D_info, _STRING.LST_1
+	LId 1, ANON_640_31_L264_D_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  1, ANON_639_31_L264_D_len
-	La  1, ANON_639_15_L264_G_len
-	La  1, ANON_639_31_L264_D_len
+	Sa  1, ANON_640_31_L264_D_len
+	La  1, ANON_640_15_L264_G_len
+	La  1, ANON_640_31_L264_D_len
 	ADD
 	CO_VAR
-	Sa  1, ANON_639_15_L264_R_disp
+	Sa  1, ANON_640_15_L264_R_disp
 	LI	1
-	Sd  1, ANON_639_15_L264_R_info._FST_1
-	La  1, ANON_639_15_L264_G_len
-	La  1, ANON_639_31_L264_D_len
+	Sd  1, ANON_640_15_L264_R_info._FST_1
+	La  1, ANON_640_15_L264_G_len
+	La  1, ANON_640_31_L264_D_len
 	ADD
-	Sd  1, ANON_639_15_L264_R_info._LST_1
+	Sd  1, ANON_640_15_L264_R_info._LST_1
 	LI	8
-	Sd  1, ANON_639_15_L264_R_info._COMP_SIZ
-	La  1, ANON_639_15_L264_G_len
-	La  1, ANON_639_31_L264_D_len
+	Sd  1, ANON_640_15_L264_R_info._COMP_SIZ
+	La  1, ANON_640_15_L264_G_len
+	La  1, ANON_640_31_L264_D_len
 	ADD
 	LI	8
 	MUL
-	Sd  1, ANON_639_15_L264_R_info.SIZ
-	LVA 1, ANON_639_15_L264_R_info.SIZ
-	Sa  1, ANON_639_15_L264_R__u
-	La  1, ANON_639_15_L264_R_disp
-	La  1, ANON_639_15_L264_G_len
-	La  1, ANON_639_15_L264_G_data
+	Sd  1, ANON_640_15_L264_R_info.SIZ
+	LVA 1, ANON_640_15_L264_R_info.SIZ
+	Sa  1, ANON_640_15_L264_R__u
+	La  1, ANON_640_15_L264_R_disp
+	La  1, ANON_640_15_L264_G_len
+	La  1, ANON_640_15_L264_G_data
 	BLKMOV
-	La  1, ANON_639_15_L264_R_disp
-	La  1, ANON_639_15_L264_G_len
+	La  1, ANON_640_15_L264_R_disp
+	La  1, ANON_640_15_L264_G_len
 	ADD
-	La  1, ANON_639_31_L264_D_len
-	La  1, ANON_639_31_L264_D_data
+	La  1, ANON_640_31_L264_D_len
+	La  1, ANON_640_31_L264_D_data
 	BLKMOV
-	LVA 1, ANON_639_15_L264_R_disp
+	LVA 1, ANON_640_15_L264_R_disp
 	DUP
 	La  ,  0
-	Sa  1, ANON_639_15_L263_G_data
+	Sa  1, ANON_640_15_L263_G_data
 	La  ,  8
-	Sa  1, ANON_639_15_L263_G_info
-	LId 1, ANON_639_15_L263_G_info, _STRING.LST_1
-	LId 1, ANON_639_15_L263_G_info, _STRING.FST_1
+	Sa  1, ANON_640_15_L263_G_info
+	LId 1, ANON_640_15_L263_G_info, _STRING.LST_1
+	LId 1, ANON_640_15_L263_G_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  1, ANON_639_15_L263_G_len
-VAR	ANON_639_37_L263_D_slice_data, q
-VAR	ANON_639_37_L263_D_slice_len,  q
-VAR	ANON_639_37_L263_D_disp, q
-VAR	ANON_639_37_L263_D__u,   q
-namespace ANON_639_37_L263_D_info
+	Sa  1, ANON_640_15_L263_G_len
+VAR	ANON_640_37_L263_D_slice_data, q
+VAR	ANON_640_37_L263_D_slice_len,  q
+VAR	ANON_640_37_L263_D_disp, q
+VAR	ANON_640_37_L263_D__u,   q
+namespace ANON_640_37_L263_D_info
   VAR SIZ,      d
   VAR _COMP_SIZ, d
   VAR _FST_1,    d
@@ -8379,80 +8390,80 @@ end namespace
 	CLAMP0
 	LI	1
 	MUL
-	Sa  1, ANON_639_37_L263_D_slice_len
-	Sa  1, ANON_639_37_L263_D_slice_data
-	La  1, ANON_639_37_L263_D_slice_data
-	Sa  1, ANON_639_37_L263_D_disp
-	LVA 1, ANON_639_37_L263_D_info.SIZ
-	Sa  1, ANON_639_37_L263_D__u
+	Sa  1, ANON_640_37_L263_D_slice_len
+	Sa  1, ANON_640_37_L263_D_slice_data
+	La  1, ANON_640_37_L263_D_slice_data
+	Sa  1, ANON_640_37_L263_D_disp
+	LVA 1, ANON_640_37_L263_D_info.SIZ
+	Sa  1, ANON_640_37_L263_D__u
 	LI	1
-	Sd  1, ANON_639_37_L263_D_info._FST_1
-	La  1, ANON_639_37_L263_D_slice_len
-	Sd  1, ANON_639_37_L263_D_info._LST_1
+	Sd  1, ANON_640_37_L263_D_info._FST_1
+	La  1, ANON_640_37_L263_D_slice_len
+	Sd  1, ANON_640_37_L263_D_info._LST_1
 	LI	8
-	Sd  1, ANON_639_37_L263_D_info._COMP_SIZ
-	La  1, ANON_639_37_L263_D_slice_len
+	Sd  1, ANON_640_37_L263_D_info._COMP_SIZ
+	La  1, ANON_640_37_L263_D_slice_len
 	LI	8
 	MUL
-	Sd  1, ANON_639_37_L263_D_info.SIZ
-	LVA 1, ANON_639_37_L263_D_disp
+	Sd  1, ANON_640_37_L263_D_info.SIZ
+	LVA 1, ANON_640_37_L263_D_disp
 	DUP
 	La  ,  0
-	Sa  1, ANON_639_37_L263_D_data
+	Sa  1, ANON_640_37_L263_D_data
 	La  ,  8
-	Sa  1, ANON_639_37_L263_D_info
-	LId 1, ANON_639_37_L263_D_info, _STRING.LST_1
-	LId 1, ANON_639_37_L263_D_info, _STRING.FST_1
+	Sa  1, ANON_640_37_L263_D_info
+	LId 1, ANON_640_37_L263_D_info, _STRING.LST_1
+	LId 1, ANON_640_37_L263_D_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  1, ANON_639_37_L263_D_len
-	La  1, ANON_639_15_L263_G_len
-	La  1, ANON_639_37_L263_D_len
+	Sa  1, ANON_640_37_L263_D_len
+	La  1, ANON_640_15_L263_G_len
+	La  1, ANON_640_37_L263_D_len
 	ADD
 	CO_VAR
-	Sa  1, ANON_639_15_L263_R_disp
+	Sa  1, ANON_640_15_L263_R_disp
 	LI	1
-	Sd  1, ANON_639_15_L263_R_info._FST_1
-	La  1, ANON_639_15_L263_G_len
-	La  1, ANON_639_37_L263_D_len
+	Sd  1, ANON_640_15_L263_R_info._FST_1
+	La  1, ANON_640_15_L263_G_len
+	La  1, ANON_640_37_L263_D_len
 	ADD
-	Sd  1, ANON_639_15_L263_R_info._LST_1
+	Sd  1, ANON_640_15_L263_R_info._LST_1
 	LI	8
-	Sd  1, ANON_639_15_L263_R_info._COMP_SIZ
-	La  1, ANON_639_15_L263_G_len
-	La  1, ANON_639_37_L263_D_len
+	Sd  1, ANON_640_15_L263_R_info._COMP_SIZ
+	La  1, ANON_640_15_L263_G_len
+	La  1, ANON_640_37_L263_D_len
 	ADD
 	LI	8
 	MUL
-	Sd  1, ANON_639_15_L263_R_info.SIZ
-	LVA 1, ANON_639_15_L263_R_info.SIZ
-	Sa  1, ANON_639_15_L263_R__u
-	La  1, ANON_639_15_L263_R_disp
-	La  1, ANON_639_15_L263_G_len
-	La  1, ANON_639_15_L263_G_data
+	Sd  1, ANON_640_15_L263_R_info.SIZ
+	LVA 1, ANON_640_15_L263_R_info.SIZ
+	Sa  1, ANON_640_15_L263_R__u
+	La  1, ANON_640_15_L263_R_disp
+	La  1, ANON_640_15_L263_G_len
+	La  1, ANON_640_15_L263_G_data
 	BLKMOV
-	La  1, ANON_639_15_L263_R_disp
-	La  1, ANON_639_15_L263_G_len
+	La  1, ANON_640_15_L263_R_disp
+	La  1, ANON_640_15_L263_G_len
 	ADD
-	La  1, ANON_639_37_L263_D_len
-	La  1, ANON_639_37_L263_D_data
+	La  1, ANON_640_37_L263_D_len
+	La  1, ANON_640_37_L263_D_data
 	BLKMOV
-	LVA 1, ANON_639_15_L263_R_disp
+	LVA 1, ANON_640_15_L263_R_disp
 	DUP
 	La  ,  0
-	Sa  1, ANON_639_15_L262_G_data
+	Sa  1, ANON_640_15_L262_G_data
 	La  ,  8
-	Sa  1, ANON_639_15_L262_G_info
-	LId 1, ANON_639_15_L262_G_info, _STRING.LST_1
-	LId 1, ANON_639_15_L262_G_info, _STRING.FST_1
+	Sa  1, ANON_640_15_L262_G_info
+	LId 1, ANON_640_15_L262_G_info, _STRING.LST_1
+	LId 1, ANON_640_15_L262_G_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  1, ANON_639_15_L262_G_len
-VAR	ANON_639_62_L262_D_disp, q
-VAR	ANON_639_62_L262_D__u,   q
-namespace ANON_639_62_L262_D_info
+	Sa  1, ANON_640_15_L262_G_len
+VAR	ANON_640_62_L262_D_disp, q
+VAR	ANON_640_62_L262_D__u,   q
+namespace ANON_640_62_L262_D_info
   VAR SIZ,      d
   VAR _COMP_SIZ, d
   VAR _FST_1,    d
@@ -8461,78 +8472,78 @@ end namespace
 	LI	95
 	LI	1
 	CO_VAR
-	Sa  1, ANON_639_62_L262_D_disp
-	SIb  1, ANON_639_62_L262_D_disp, 0
+	Sa  1, ANON_640_62_L262_D_disp
+	SIb  1, ANON_640_62_L262_D_disp, 0
 	LI	1
-	Sd  1, ANON_639_62_L262_D_info._FST_1
+	Sd  1, ANON_640_62_L262_D_info._FST_1
 	LI	1
-	Sd  1, ANON_639_62_L262_D_info._LST_1
+	Sd  1, ANON_640_62_L262_D_info._LST_1
 	LI	8
-	Sd  1, ANON_639_62_L262_D_info._COMP_SIZ
+	Sd  1, ANON_640_62_L262_D_info._COMP_SIZ
 	LI	8
-	Sd  1, ANON_639_62_L262_D_info.SIZ
-	LVA 1, ANON_639_62_L262_D_info.SIZ
-	Sa  1, ANON_639_62_L262_D__u
-	LVA 1, ANON_639_62_L262_D_disp
+	Sd  1, ANON_640_62_L262_D_info.SIZ
+	LVA 1, ANON_640_62_L262_D_info.SIZ
+	Sa  1, ANON_640_62_L262_D__u
+	LVA 1, ANON_640_62_L262_D_disp
 	DUP
 	La  ,  0
-	Sa  1, ANON_639_62_L262_D_data
+	Sa  1, ANON_640_62_L262_D_data
 	La  ,  8
-	Sa  1, ANON_639_62_L262_D_info
-	LId 1, ANON_639_62_L262_D_info, _STRING.LST_1
-	LId 1, ANON_639_62_L262_D_info, _STRING.FST_1
+	Sa  1, ANON_640_62_L262_D_info
+	LId 1, ANON_640_62_L262_D_info, _STRING.LST_1
+	LId 1, ANON_640_62_L262_D_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  1, ANON_639_62_L262_D_len
-	La  1, ANON_639_15_L262_G_len
-	La  1, ANON_639_62_L262_D_len
+	Sa  1, ANON_640_62_L262_D_len
+	La  1, ANON_640_15_L262_G_len
+	La  1, ANON_640_62_L262_D_len
 	ADD
 	CO_VAR
-	Sa  1, ANON_639_15_L262_R_disp
+	Sa  1, ANON_640_15_L262_R_disp
 	LI	1
-	Sd  1, ANON_639_15_L262_R_info._FST_1
-	La  1, ANON_639_15_L262_G_len
-	La  1, ANON_639_62_L262_D_len
+	Sd  1, ANON_640_15_L262_R_info._FST_1
+	La  1, ANON_640_15_L262_G_len
+	La  1, ANON_640_62_L262_D_len
 	ADD
-	Sd  1, ANON_639_15_L262_R_info._LST_1
+	Sd  1, ANON_640_15_L262_R_info._LST_1
 	LI	8
-	Sd  1, ANON_639_15_L262_R_info._COMP_SIZ
-	La  1, ANON_639_15_L262_G_len
-	La  1, ANON_639_62_L262_D_len
+	Sd  1, ANON_640_15_L262_R_info._COMP_SIZ
+	La  1, ANON_640_15_L262_G_len
+	La  1, ANON_640_62_L262_D_len
 	ADD
 	LI	8
 	MUL
-	Sd  1, ANON_639_15_L262_R_info.SIZ
-	LVA 1, ANON_639_15_L262_R_info.SIZ
-	Sa  1, ANON_639_15_L262_R__u
-	La  1, ANON_639_15_L262_R_disp
-	La  1, ANON_639_15_L262_G_len
-	La  1, ANON_639_15_L262_G_data
+	Sd  1, ANON_640_15_L262_R_info.SIZ
+	LVA 1, ANON_640_15_L262_R_info.SIZ
+	Sa  1, ANON_640_15_L262_R__u
+	La  1, ANON_640_15_L262_R_disp
+	La  1, ANON_640_15_L262_G_len
+	La  1, ANON_640_15_L262_G_data
 	BLKMOV
-	La  1, ANON_639_15_L262_R_disp
-	La  1, ANON_639_15_L262_G_len
+	La  1, ANON_640_15_L262_R_disp
+	La  1, ANON_640_15_L262_G_len
 	ADD
-	La  1, ANON_639_62_L262_D_len
-	La  1, ANON_639_62_L262_D_data
+	La  1, ANON_640_62_L262_D_len
+	La  1, ANON_640_62_L262_D_data
 	BLKMOV
-	LVA 1, ANON_639_15_L262_R_disp
+	LVA 1, ANON_640_15_L262_R_disp
 	DUP
 	La  ,  0
-	Sa  1, ANON_639_15_L261_G_data
+	Sa  1, ANON_640_15_L261_G_data
 	La  ,  8
-	Sa  1, ANON_639_15_L261_G_info
-	LId 1, ANON_639_15_L261_G_info, _STRING.LST_1
-	LId 1, ANON_639_15_L261_G_info, _STRING.FST_1
+	Sa  1, ANON_640_15_L261_G_info
+	LId 1, ANON_640_15_L261_G_info, _STRING.LST_1
+	LId 1, ANON_640_15_L261_G_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  1, ANON_639_15_L261_G_len
-VAR	ANON_639_68_L261_D_slice_data, q
-VAR	ANON_639_68_L261_D_slice_len,  q
-VAR	ANON_639_68_L261_D_disp, q
-VAR	ANON_639_68_L261_D__u,   q
-namespace ANON_639_68_L261_D_info
+	Sa  1, ANON_640_15_L261_G_len
+VAR	ANON_640_68_L261_D_slice_data, q
+VAR	ANON_640_68_L261_D_slice_len,  q
+VAR	ANON_640_68_L261_D_disp, q
+VAR	ANON_640_68_L261_D__u,   q
+namespace ANON_640_68_L261_D_info
   VAR SIZ,      d
   VAR _COMP_SIZ, d
   VAR _FST_1,    d
@@ -8558,66 +8569,66 @@ end namespace
 	CLAMP0
 	LI	1
 	MUL
-	Sa  1, ANON_639_68_L261_D_slice_len
-	Sa  1, ANON_639_68_L261_D_slice_data
-	La  1, ANON_639_68_L261_D_slice_data
-	Sa  1, ANON_639_68_L261_D_disp
-	LVA 1, ANON_639_68_L261_D_info.SIZ
-	Sa  1, ANON_639_68_L261_D__u
+	Sa  1, ANON_640_68_L261_D_slice_len
+	Sa  1, ANON_640_68_L261_D_slice_data
+	La  1, ANON_640_68_L261_D_slice_data
+	Sa  1, ANON_640_68_L261_D_disp
+	LVA 1, ANON_640_68_L261_D_info.SIZ
+	Sa  1, ANON_640_68_L261_D__u
 	LI	1
-	Sd  1, ANON_639_68_L261_D_info._FST_1
-	La  1, ANON_639_68_L261_D_slice_len
-	Sd  1, ANON_639_68_L261_D_info._LST_1
+	Sd  1, ANON_640_68_L261_D_info._FST_1
+	La  1, ANON_640_68_L261_D_slice_len
+	Sd  1, ANON_640_68_L261_D_info._LST_1
 	LI	8
-	Sd  1, ANON_639_68_L261_D_info._COMP_SIZ
-	La  1, ANON_639_68_L261_D_slice_len
+	Sd  1, ANON_640_68_L261_D_info._COMP_SIZ
+	La  1, ANON_640_68_L261_D_slice_len
 	LI	8
 	MUL
-	Sd  1, ANON_639_68_L261_D_info.SIZ
-	LVA 1, ANON_639_68_L261_D_disp
+	Sd  1, ANON_640_68_L261_D_info.SIZ
+	LVA 1, ANON_640_68_L261_D_disp
 	DUP
 	La  ,  0
-	Sa  1, ANON_639_68_L261_D_data
+	Sa  1, ANON_640_68_L261_D_data
 	La  ,  8
-	Sa  1, ANON_639_68_L261_D_info
-	LId 1, ANON_639_68_L261_D_info, _STRING.LST_1
-	LId 1, ANON_639_68_L261_D_info, _STRING.FST_1
+	Sa  1, ANON_640_68_L261_D_info
+	LId 1, ANON_640_68_L261_D_info, _STRING.LST_1
+	LId 1, ANON_640_68_L261_D_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  1, ANON_639_68_L261_D_len
-	La  1, ANON_639_15_L261_G_len
-	La  1, ANON_639_68_L261_D_len
+	Sa  1, ANON_640_68_L261_D_len
+	La  1, ANON_640_15_L261_G_len
+	La  1, ANON_640_68_L261_D_len
 	ADD
 	CO_VAR
-	Sa  1, ANON_639_15_L261_R_disp
+	Sa  1, ANON_640_15_L261_R_disp
 	LI	1
-	Sd  1, ANON_639_15_L261_R_info._FST_1
-	La  1, ANON_639_15_L261_G_len
-	La  1, ANON_639_68_L261_D_len
+	Sd  1, ANON_640_15_L261_R_info._FST_1
+	La  1, ANON_640_15_L261_G_len
+	La  1, ANON_640_68_L261_D_len
 	ADD
-	Sd  1, ANON_639_15_L261_R_info._LST_1
+	Sd  1, ANON_640_15_L261_R_info._LST_1
 	LI	8
-	Sd  1, ANON_639_15_L261_R_info._COMP_SIZ
-	La  1, ANON_639_15_L261_G_len
-	La  1, ANON_639_68_L261_D_len
+	Sd  1, ANON_640_15_L261_R_info._COMP_SIZ
+	La  1, ANON_640_15_L261_G_len
+	La  1, ANON_640_68_L261_D_len
 	ADD
 	LI	8
 	MUL
-	Sd  1, ANON_639_15_L261_R_info.SIZ
-	LVA 1, ANON_639_15_L261_R_info.SIZ
-	Sa  1, ANON_639_15_L261_R__u
-	La  1, ANON_639_15_L261_R_disp
-	La  1, ANON_639_15_L261_G_len
-	La  1, ANON_639_15_L261_G_data
+	Sd  1, ANON_640_15_L261_R_info.SIZ
+	LVA 1, ANON_640_15_L261_R_info.SIZ
+	Sa  1, ANON_640_15_L261_R__u
+	La  1, ANON_640_15_L261_R_disp
+	La  1, ANON_640_15_L261_G_len
+	La  1, ANON_640_15_L261_G_data
 	BLKMOV
-	La  1, ANON_639_15_L261_R_disp
-	La  1, ANON_639_15_L261_G_len
+	La  1, ANON_640_15_L261_R_disp
+	La  1, ANON_640_15_L261_G_len
 	ADD
-	La  1, ANON_639_68_L261_D_len
-	La  1, ANON_639_68_L261_D_data
+	La  1, ANON_640_68_L261_D_len
+	La  1, ANON_640_68_L261_D_data
 	BLKMOV
-	LVA 1, ANON_639_15_L261_R_disp
+	LVA 1, ANON_640_15_L261_R_disp
 VAR	RET_INFO_L265, q
 	DUP
 	La  ,  0

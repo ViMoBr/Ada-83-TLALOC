@@ -224,11 +224,9 @@ VAR SIZ, d
 	Sa	0, use__info
 USEINFO 0, LEN, 	La 0, STANDARD._NATURAL.use__info
 USEINFO 0, BDY, 	La 0, STANDARD._STRING.use__info
-; SCASB : cis pt HI
 virtual at 0				; calcul des offsets statiques
-STATOFS LEN, 4
-; SCASB : cis pt HI
-STATOFS BDY, 255
+STATOFS LEN, 4, 4
+STATOFS BDY, 255, 8
 size = $
 end virtual
 	LI	 size*8
@@ -1591,7 +1589,7 @@ VAR	LMT_IL64_disp, d			; limite boucle LOOP__3
 LOOP__3:					; corps boucle LOOP__3
 					; debut if
 	La	 0, STANDARD.LEX.TEXT_disp		; array data start address on stack
-	Ld	1, IL64_disp
+	Ld 1,	IL64_disp
 	DUP
 	LId	0, STANDARD.LEX.TEXT__u, STANDARD._STRING.FST_1
 	CLT
@@ -1612,7 +1610,7 @@ LOOP__3:					; corps boucle LOOP__3
 	CGE
 	LI	57
 	La	 0, STANDARD.LEX.TEXT_disp		; array data start address on stack
-	Ld	1, IL64_disp
+	Ld 1,	IL64_disp
 	DUP
 	LId	0, STANDARD.LEX.TEXT__u, STANDARD._STRING.FST_1
 	CLT
@@ -1645,7 +1643,7 @@ L67:
 	LI	10
 	MUL
 	La	 0, STANDARD.LEX.TEXT_disp		; array data start address on stack
-	Ld	1, IL64_disp
+	Ld 1,	IL64_disp
 	DUP
 	LId	0, STANDARD.LEX.TEXT__u, STANDARD._STRING.FST_1
 	CLT
@@ -2693,7 +2691,53 @@ VAR TEMP_STRING_disp, q			; variable array : pointeur aux data
 VAR TEMP_STRING__u, q			; variable array : useinfo pointeur au rec info
 	La 2, _TEMP_STRING__type.use__info
 	Sa	2, TEMP_STRING__u			; array info ptr at __u
-; COMPILE_ARRAY_VAR ASSOC.TY non gere DN_SLICE
+	Ld	2, _TEMP_STRING__type.SIZ
+	LI	8
+	DIV
+	CO_VAR
+	Sa	2, TEMP_STRING_disp			; array data ptr at _disp
+	La	2, TEMP_STRING_disp
+	Ld	2, _TEMP_STRING__type.SIZ
+	LI	8
+	DIV
+	La 2, STANDARD.LEX.LEX_IMAGE_L3.BLOCK__5.OP_TEXT_disp
+	Ld 2,	II_disp
+	LId 2, STANDARD.LEX.LEX_IMAGE_L3.BLOCK__5.OP_TEXT__u, STANDARD._STRING.FST_1
+	SUB
+	LI	1
+	MUL
+	ADD
+namespace ANON_661_42			; ensemble doublet @data/@info pour slice anonyme source
+VAR ANON_661_42_disp, q
+VAR ANON_661_42__u, q
+VAR SIZ, d
+VAR COMP_SIZ, d
+VAR _FST_1, d
+VAR _LST_1, d
+	Sa	2, ANON_661_42_disp
+	LVA	2, SIZ
+	Sa	2, ANON_661_42__u
+	LI	8
+	Sd	2, COMP_SIZ
+	Ld 2,	II_disp
+	Sd	2, _FST_1
+	Ld 2,	II_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd	2, _LST_1
+	Ld	2, _LST_1
+	Ld	2, _FST_1
+	SUB
+	INC
+	CLAMP0
+	LI	8
+	MUL
+	Sd	2, SIZ
+	LVA	2, ANON_661_42_disp
+end namespace
+	La	, 0
+	BLKMOV
 
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
@@ -2850,7 +2894,10 @@ end namespace
 	Sa  2, ANON_671_35__u
 	LVA 2, ANON_671_35_disp
 	Lb  1,	-LT_ofs
-	CALL	STANDARD. ,INTEGER_IMAGE_L11
+	La 0, STANDARD.LEX._LEX_TYPE.use__info
+	LI	16
+	ADD
+	CALL	STANDARD. ,ENUM_IMAGE_L31
 	DUP
 	La
 	Sa	2, IMAGE_disp				; array data ptr from function result
@@ -2901,7 +2948,56 @@ VAR TRONQ_disp, q				; variable array : pointeur aux data
 VAR TRONQ__u, q				; variable array : useinfo pointeur au rec info
 	La 2, _TRONQ__type.use__info
 	Sa	2, TRONQ__u				; array info ptr at __u
-; COMPILE_ARRAY_VAR ASSOC.TY non gere DN_SLICE
+	Ld	2, _TRONQ__type.SIZ
+	LI	8
+	DIV
+	CO_VAR
+	Sa	2, TRONQ_disp				; array data ptr at _disp
+	La	2, TRONQ_disp
+	Ld	2, _TRONQ__type.SIZ
+	LI	8
+	DIV
+	La 2, STANDARD.LEX.LEX_IMAGE_L3.BLOCK__6.IMAGE_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	4
+	LId 2, STANDARD.LEX.LEX_IMAGE_L3.BLOCK__6.IMAGE__u, STANDARD._STRING.FST_1
+	SUB
+	LI	1
+	MUL
+	ADD
+namespace ANON_672_46			; ensemble doublet @data/@info pour slice anonyme source
+VAR ANON_672_46_disp, q
+VAR ANON_672_46__u, q
+VAR SIZ, d
+VAR COMP_SIZ, d
+VAR _FST_1, d
+VAR _LST_1, d
+	Sa	2, ANON_672_46_disp
+	LVA	2, SIZ
+	Sa	2, ANON_672_46__u
+	LI	8
+	Sd	2, COMP_SIZ
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	4
+	Sd	2, _FST_1
+	LId	2, STANDARD.LEX.LEX_IMAGE_L3.BLOCK__6.IMAGE__u, STANDARD._STRING.LST_1
+	LId	2, STANDARD.LEX.LEX_IMAGE_L3.BLOCK__6.IMAGE__u, STANDARD._STRING.FST_1
+	SUB
+	INC
+	CLAMP0
+	Sd	2, _LST_1
+	Ld	2, _LST_1
+	Ld	2, _FST_1
+	SUB
+	INC
+	CLAMP0
+	LI	8
+	MUL
+	Sd	2, SIZ
+	LVA	2, ANON_672_46_disp
+end namespace
+	La	, 0
+	BLKMOV
 
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
@@ -3096,7 +3192,7 @@ end namespace
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb	0, LTL155_disp
+	Lb 0,	LTL155_disp
 	Sb
 	Lb  0,	LTL155_disp				; test de sortie LOOP__7
 	Lb  0,	LMT_LTL155_disp

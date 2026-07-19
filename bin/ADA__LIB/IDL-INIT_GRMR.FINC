@@ -1,0 +1,2255 @@
+INIT_GRMR = 'INIT_GRMR'
+PRO	INIT_GRMR_L6				;---------- PRO INIT_GRMR
+ hexa_show 'INIT_GRMR_L6 ', $
+PRMS					;    debut parametrage
+	PRM NOM_TEXTE_ofs				; in
+endPRMS					;    fin parametrage
+ELB 1					;    BODY ELAB
+ hexa_show 'var elab GRAMMAR ', $
+ hexa_show ' disp ', GRAMMAR_disp
+VAR GRAMMAR_disp, q				; variable record : pointeur aux data record
+VAR GRAMMAR__u, q				; variable record : pointeur aux useinfo
+VAR GRAMMAR__dat, STANDARD.IDL._TREE.size
+	LVA	1, GRAMMAR__dat
+	Sa	1, GRAMMAR_disp				; record fin
+	LVA	1, STANDARD.IDL._TREE.SIZ
+	Sa	1, GRAMMAR__u
+; CODE_VC_NAME DN_VARIABLE_ID
+	La  1, GRAMMAR_disp
+					; store represented component PT range 0 .. 1 width 2
+	DUP
+	Ld
+	LI	0
+	LI	0
+	LI	2
+	BFI
+	Sd
+
+ hexa_show 'var elab GR_RULE_SEQ ', $
+ hexa_show ' disp ', GR_RULE_SEQ_disp
+VAR GR_RULE_SEQ_disp, q			; variable record : pointeur aux data record
+VAR GR_RULE_SEQ__u, q			; variable record : pointeur aux useinfo
+VAR GR_RULE_SEQ__dat, STANDARD.IDL._SEQ_TYPE.size
+	LVA	1, GR_RULE_SEQ__dat
+	Sa	1, GR_RULE_SEQ_disp			; record fin
+	LVA	1, STANDARD.IDL._SEQ_TYPE.SIZ
+	Sa	1, GR_RULE_SEQ__u
+; CODE_VC_NAME DN_VARIABLE_ID
+
+ hexa_show 'var elab MORE_PASSES ', $
+ hexa_show ' disp ', MORE_PASSES_disp
+VAR MORE_PASSES_disp, b			; variable bool char enum
+
+ hexa_show 'var elab PASS ', $
+ hexa_show ' disp ', PASS_disp
+VAR PASS_disp, d				; variable entiere
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	Sd  1,	PASS_disp
+
+
+if defined INITIALIZE_L1_
+PRO	INITIALIZE_L1				;---------- PRO INITIALIZE
+ hexa_show 'INITIALIZE_L1 ', $
+ELB 2					;    BODY ELAB
+ hexa_show 'var elab RULE_SEQ ', $
+ hexa_show ' disp ', RULE_SEQ_disp
+VAR RULE_SEQ_disp, q			; variable record : pointeur aux data record
+VAR RULE_SEQ__u, q				; variable record : pointeur aux useinfo
+VAR RULE_SEQ__dat, STANDARD.IDL._SEQ_TYPE.size
+	LVA	2, RULE_SEQ__dat
+	Sa	2, RULE_SEQ_disp			; record fin
+	LVA	2, STANDARD.IDL._SEQ_TYPE.SIZ
+	Sa	2, RULE_SEQ__u
+; CODE_VC_NAME DN_VARIABLE_ID
+	La  2, RULE_SEQ_disp
+	LI	STANDARD.IDL._SEQ_TYPE.size
+	LVA 1,	STANDARD.IDL.INIT_GRMR_L6.GR_RULE_SEQ_disp
+	La  ,  0
+	BLKMOV
+
+ hexa_show 'var elab RULE ', $
+ hexa_show ' disp ', RULE_disp
+VAR RULE_disp, q				; variable record : pointeur aux data record
+VAR RULE__u, q				; variable record : pointeur aux useinfo
+VAR RULE__dat, STANDARD.IDL._TREE.size
+	LVA	2, RULE__dat
+	Sa	2, RULE_disp				; record fin
+	LVA	2, STANDARD.IDL._TREE.SIZ
+	Sa	2, RULE__u
+; CODE_VC_NAME DN_VARIABLE_ID
+	La  2, RULE_disp
+					; store represented component PT range 0 .. 1 width 2
+	DUP
+	Ld
+	LI	0
+	LI	0
+	LI	2
+	BFI
+	Sd
+
+ hexa_show 'var elab RULE_INIT_LIST ', $
+ hexa_show ' disp ', RULE_INIT_LIST_disp
+VAR RULE_INIT_LIST_disp, q			; variable record : pointeur aux data record
+VAR RULE_INIT_LIST__u, q			; variable record : pointeur aux useinfo
+VAR RULE_INIT_LIST__dat, STANDARD.IDL._SEQ_TYPE.size
+	LVA	2, RULE_INIT_LIST__dat
+	Sa	2, RULE_INIT_LIST_disp			; record fin
+	LVA	2, STANDARD.IDL._SEQ_TYPE.SIZ
+	Sa	2, RULE_INIT_LIST__u
+; CODE_VC_NAME DN_VARIABLE_ID
+
+ hexa_show 'var elab RULEINFO ', $
+ hexa_show ' disp ', RULEINFO_disp
+VAR RULEINFO_disp, q			; variable record : pointeur aux data record
+VAR RULEINFO__u, q				; variable record : pointeur aux useinfo
+VAR RULEINFO__dat, STANDARD.IDL._TREE.size
+	LVA	2, RULEINFO__dat
+	Sa	2, RULEINFO_disp			; record fin
+	LVA	2, STANDARD.IDL._TREE.SIZ
+	Sa	2, RULEINFO__u
+; CODE_VC_NAME DN_VARIABLE_ID
+	La  2, RULEINFO_disp
+					; store represented component PT range 0 .. 1 width 2
+	DUP
+	Ld
+	LI	0
+	LI	0
+	LI	2
+	BFI
+	Sd
+
+ hexa_show 'var elab ALT_SEQ ', $
+ hexa_show ' disp ', ALT_SEQ_disp
+VAR ALT_SEQ_disp, q				; variable record : pointeur aux data record
+VAR ALT_SEQ__u, q				; variable record : pointeur aux useinfo
+VAR ALT_SEQ__dat, STANDARD.IDL._SEQ_TYPE.size
+	LVA	2, ALT_SEQ__dat
+	Sa	2, ALT_SEQ_disp				; record fin
+	LVA	2, STANDARD.IDL._SEQ_TYPE.SIZ
+	Sa	2, ALT_SEQ__u
+; CODE_VC_NAME DN_VARIABLE_ID
+
+ hexa_show 'var elab ALT ', $
+ hexa_show ' disp ', ALT_disp
+VAR ALT_disp, q				; variable record : pointeur aux data record
+VAR ALT__u, q				; variable record : pointeur aux useinfo
+VAR ALT__dat, STANDARD.IDL._TREE.size
+	LVA	2, ALT__dat
+	Sa	2, ALT_disp				; record fin
+	LVA	2, STANDARD.IDL._TREE.SIZ
+	Sa	2, ALT__u
+; CODE_VC_NAME DN_VARIABLE_ID
+	La  2, ALT_disp
+					; store represented component PT range 0 .. 1 width 2
+	DUP
+	Ld
+	LI	0
+	LI	0
+	LI	2
+	BFI
+	Sd
+
+ hexa_show 'var elab SYL_SEQ ', $
+ hexa_show ' disp ', SYL_SEQ_disp
+VAR SYL_SEQ_disp, q				; variable record : pointeur aux data record
+VAR SYL_SEQ__u, q				; variable record : pointeur aux useinfo
+VAR SYL_SEQ__dat, STANDARD.IDL._SEQ_TYPE.size
+	LVA	2, SYL_SEQ__dat
+	Sa	2, SYL_SEQ_disp				; record fin
+	LVA	2, STANDARD.IDL._SEQ_TYPE.SIZ
+	Sa	2, SYL_SEQ__u
+; CODE_VC_NAME DN_VARIABLE_ID
+
+ hexa_show 'var elab SYL ', $
+ hexa_show ' disp ', SYL_disp
+VAR SYL_disp, q				; variable record : pointeur aux data record
+VAR SYL__u, q				; variable record : pointeur aux useinfo
+VAR SYL__dat, STANDARD.IDL._TREE.size
+	LVA	2, SYL__dat
+	Sa	2, SYL_disp				; record fin
+	LVA	2, STANDARD.IDL._TREE.SIZ
+	Sa	2, SYL__u
+; CODE_VC_NAME DN_VARIABLE_ID
+	La  2, SYL_disp
+					; store represented component PT range 0 .. 1 width 2
+	DUP
+	Ld
+	LI	0
+	LI	0
+	LI	2
+	BFI
+	Sd
+
+ hexa_show 'var elab IS_NULLABLE ', $
+ hexa_show ' disp ', IS_NULLABLE_disp
+VAR IS_NULLABLE_disp, b			; variable bool char enum
+
+ hexa_show 'var elab GENS_TER_STR ', $
+ hexa_show ' disp ', GENS_TER_STR_disp
+VAR GENS_TER_STR_disp, b			; variable bool char enum
+
+ hexa_show 'var elab NONTER_NAME ', $
+ hexa_show ' disp ', NONTER_NAME_disp
+VAR NONTER_NAME_disp, q			; variable record : pointeur aux data record
+VAR NONTER_NAME__u, q			; variable record : pointeur aux useinfo
+VAR NONTER_NAME__dat, STANDARD.IDL._TREE.size
+	LVA	2, NONTER_NAME__dat
+	Sa	2, NONTER_NAME_disp			; record fin
+	LVA	2, STANDARD.IDL._TREE.SIZ
+	Sa	2, NONTER_NAME__u
+; CODE_VC_NAME DN_VARIABLE_ID
+	La  2, NONTER_NAME_disp
+					; store represented component PT range 0 .. 1 width 2
+	DUP
+	Ld
+	LI	0
+	LI	0
+	LI	2
+	BFI
+	Sd
+
+ hexa_show 'var elab NONTER_DEF_LIST ', $
+ hexa_show ' disp ', NONTER_DEF_LIST_disp
+VAR NONTER_DEF_LIST_disp, q			; variable record : pointeur aux data record
+VAR NONTER_DEF_LIST__u, q			; variable record : pointeur aux useinfo
+VAR NONTER_DEF_LIST__dat, STANDARD.IDL._SEQ_TYPE.size
+	LVA	2, NONTER_DEF_LIST__dat
+	Sa	2, NONTER_DEF_LIST_disp			; record fin
+	LVA	2, STANDARD.IDL._SEQ_TYPE.SIZ
+	Sa	2, NONTER_DEF_LIST__u
+; CODE_VC_NAME DN_VARIABLE_ID
+
+ hexa_show 'var elab RULE_COUNT ', $
+ hexa_show ' disp ', RULE_COUNT_disp
+VAR RULE_COUNT_disp, d			; variable entiere
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	Sd  2,	RULE_COUNT_disp
+
+ hexa_show 'var elab INIT_NONTER_S ', $
+ hexa_show ' disp ', INIT_NONTER_S_disp
+VAR INIT_NONTER_S_disp, q			; variable record : pointeur aux data record
+VAR INIT_NONTER_S__u, q			; variable record : pointeur aux useinfo
+VAR INIT_NONTER_S__dat, STANDARD.IDL._TREE.size
+	LVA	2, INIT_NONTER_S__dat
+	Sa	2, INIT_NONTER_S_disp			; record fin
+	LVA	2, STANDARD.IDL._TREE.SIZ
+	Sa	2, INIT_NONTER_S__u
+; CODE_VC_NAME DN_VARIABLE_ID
+	La  2, INIT_NONTER_S_disp
+					; store represented component PT range 0 .. 1 width 2
+	DUP
+	Ld
+	LI	0
+	LI	0
+	LI	2
+	BFI
+	Sd
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+LOOP__1:
+	LI	0					; lieu resultat sur pile
+	LVA 2,	RULE_SEQ_disp
+	CALL	STANDARD.IDL. ,IS_EMPTY_L20
+	LI	1
+	OUX
+	BF	L4
+	LVA  2,	STANDARD.IDL.INIT_GRMR_L6.INITIALIZE_L1.RULE_disp
+	LVA  2,	STANDARD.IDL.INIT_GRMR_L6.INITIALIZE_L1.RULE_SEQ_disp
+	CALL	STANDARD.IDL. ,POP_L21
+	Ld 2,	RULE_COUNT_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd  2,	RULE_COUNT_disp
+	LVA 2,	RULE_INIT_LIST_disp
+	La
+					; Assign_record_aggregate type DN_RECORD
+	DUP
+	LVA	, STANDARD.IDL._SEQ_TYPE.FIRST
+	LI	STANDARD.IDL._TREE.size
+	LVA 0,	STANDARD.IDL.TREE_NIL_disp
+	La  ,  0
+	BLKMOV
+	DUP
+	LVA	, STANDARD.IDL._SEQ_TYPE.NEXT
+	LI	STANDARD.IDL._TREE.size
+	LVA 0,	STANDARD.IDL.TREE_NIL_disp
+	La  ,  0
+	BLKMOV
+	DROP
+	LVA 2,	RULEINFO_disp
+	La
+	LI	STANDARD.IDL._TREE.size
+VAR	ANON_43_19_disp, q
+VAR	ANON_43_19__u,    q
+VAR	ANON_43_19__dat, STANDARD.IDL._TREE.size
+	LVA 2, ANON_43_19__dat
+	Sa  2, ANON_43_19_disp
+	La  0, STANDARD.IDL._TREE.use__info
+	Sa  2, ANON_43_19__u
+	LVA 2, ANON_43_19_disp
+					; doublet resultat record anonyme
+	LI  17
+	CALL	STANDARD.IDL. ,MAKE_L12
+	La
+	BLKMOV
+	LVA 2,	INIT_NONTER_S_disp
+	La
+	LI	STANDARD.IDL._TREE.size
+VAR	ANON_44_24_disp, q
+VAR	ANON_44_24__u,    q
+VAR	ANON_44_24__dat, STANDARD.IDL._TREE.size
+	LVA 2, ANON_44_24__dat
+	Sa  2, ANON_44_24_disp
+	La  0, STANDARD.IDL._TREE.use__info
+	Sa  2, ANON_44_24__u
+	LVA 2, ANON_44_24_disp
+					; doublet resultat record anonyme
+	LI  12
+	CALL	STANDARD.IDL. ,MAKE_L12
+	La
+	BLKMOV
+VAR	ANON_45_28_disp, q
+VAR	ANON_45_28__u,    q
+VAR	ANON_45_28__dat, STANDARD.IDL._SEQ_TYPE.size
+	LVA 2, ANON_45_28__dat
+	Sa  2, ANON_45_28_disp
+	La  0, STANDARD.IDL._SEQ_TYPE.use__info
+	Sa  2, ANON_45_28__u
+	LVA 2, ANON_45_28_disp
+					; doublet resultat record anonyme
+	LVA 2,	RULE_disp
+	VAR ANON_45_37_disp, q
+	VAR ANON_45_37__u, q
+	VAR ANON_45_37__dat, STANDARD.IDL._SEQ_TYPE.SIZ
+	LVA 2, ANON_45_37__dat
+	Sa 2, ANON_45_37_disp
+	La 0, STANDARD.IDL._SEQ_TYPE.use__info
+	Sa 2, ANON_45_37__u
+	LVA 2, ANON_45_37__dat
+					; Assign_record_aggregate type DN_RECORD
+	DUP
+	LVA	, STANDARD.IDL._SEQ_TYPE.FIRST
+	LI	STANDARD.IDL._TREE.size
+	LVA 0,	STANDARD.IDL.TREE_NIL_disp
+	La  ,  0
+	BLKMOV
+	DUP
+	LVA	, STANDARD.IDL._SEQ_TYPE.NEXT
+	LI	STANDARD.IDL._TREE.size
+	LVA 0,	STANDARD.IDL.TREE_NIL_disp
+	La  ,  0
+	BLKMOV
+	DROP
+	LVA 2, ANON_45_37_disp
+	CALL	STANDARD.IDL.IDL_MAN. ,INSERT_L28
+	LVA 2,	INIT_NONTER_S_disp
+	CALL	STANDARD.IDL.IDL_MAN. ,LIST_L31
+	LVA 2,	INIT_NONTER_S_disp
+	LVA 2,	RULEINFO_disp
+	LI  34
+	CALL	STANDARD.IDL. ,D_L13
+	LI  0
+	LVA 2,	RULEINFO_disp
+	LI  29
+	CALL	STANDARD.IDL. ,DB_L15
+	Ld 2,	RULE_COUNT_disp
+	LVA 2,	RULEINFO_disp
+	LI  33
+	CALL	STANDARD.IDL. ,DI_L17
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	LVA 2,	RULEINFO_disp
+	LI  32
+	CALL	STANDARD.IDL. ,DI_L17
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	0
+	LVA 2,	RULEINFO_disp
+	LI  31
+	CALL	STANDARD.IDL. ,DI_L17
+	LVA 2,	RULEINFO_disp
+	LVA 2,	RULE_disp
+	LI  21
+	CALL	STANDARD.IDL. ,D_L13
+	LI	0
+	Sb  2,	IS_NULLABLE_disp
+	LI	0
+	Sb  2,	GENS_TER_STR_disp
+	LVA 2,	ALT_SEQ_disp
+	La
+	LI	STANDARD.IDL._SEQ_TYPE.size
+VAR	ANON_55_18_disp, q
+VAR	ANON_55_18__u,    q
+VAR	ANON_55_18__dat, STANDARD.IDL._SEQ_TYPE.size
+	LVA 2, ANON_55_18__dat
+	Sa  2, ANON_55_18_disp
+	La  0, STANDARD.IDL._SEQ_TYPE.use__info
+	Sa  2, ANON_55_18__u
+	LVA 2, ANON_55_18_disp
+					; doublet resultat record anonyme
+	LVA 2,	RULE_disp
+	CALL	STANDARD.IDL. ,LIST_L19
+	La
+	BLKMOV
+LOOP__2:
+	LI	0					; lieu resultat sur pile
+	LVA 2,	ALT_SEQ_disp
+	CALL	STANDARD.IDL. ,IS_EMPTY_L20
+	LI	1
+	OUX
+	BF	L5
+	LVA  2,	STANDARD.IDL.INIT_GRMR_L6.INITIALIZE_L1.ALT_disp
+	LVA  2,	STANDARD.IDL.INIT_GRMR_L6.INITIALIZE_L1.ALT_SEQ_disp
+	CALL	STANDARD.IDL. ,POP_L21
+	LVA 2,	RULE_disp
+	LVA 2,	ALT_disp
+	LI  24
+	CALL	STANDARD.IDL. ,D_L13
+namespace	BLOCK__3
+ELB 3					;    BODY ELAB
+ hexa_show 'var elab ALT_NOT_NULLABLE ', $
+ hexa_show ' disp ', ALT_NOT_NULLABLE_disp
+VAR ALT_NOT_NULLABLE_disp, b			; variable bool char enum
+	LI	0
+	Sb  3,	ALT_NOT_NULLABLE_disp
+
+ hexa_show 'var elab ALT_NOT_GEN_TER_STR ', $
+ hexa_show ' disp ', ALT_NOT_GEN_TER_STR_disp
+VAR ALT_NOT_GEN_TER_STR_disp, b		; variable bool char enum
+	LI	0
+	Sb  3,	ALT_NOT_GEN_TER_STR_disp
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	LVA 2,	STANDARD.IDL.INIT_GRMR_L6.INITIALIZE_L1.SYL_SEQ_disp
+	La
+	LI	STANDARD.IDL._SEQ_TYPE.size
+VAR	ANON_63_13_disp, q
+VAR	ANON_63_13__u,    q
+VAR	ANON_63_13__dat, STANDARD.IDL._SEQ_TYPE.size
+	LVA 3, ANON_63_13__dat
+	Sa  3, ANON_63_13_disp
+	La  0, STANDARD.IDL._SEQ_TYPE.use__info
+	Sa  3, ANON_63_13__u
+	LVA 3, ANON_63_13_disp
+					; doublet resultat record anonyme
+	LVA 2,	STANDARD.IDL.INIT_GRMR_L6.INITIALIZE_L1.ALT_disp
+	CALL	STANDARD.IDL. ,LIST_L19
+	La
+	BLKMOV
+					; debut if
+	LI	0					; lieu resultat sur pile
+	LVA 2,	STANDARD.IDL.INIT_GRMR_L6.INITIALIZE_L1.SYL_SEQ_disp
+	CALL	STANDARD.IDL. ,IS_EMPTY_L20
+	LI	1
+	OUX
+	BF	L9
+	LVA 2,	STANDARD.IDL.INIT_GRMR_L6.INITIALIZE_L1.SYL_disp
+	La
+	LI	STANDARD.IDL._TREE.size
+VAR	ANON_65_11_disp, q
+VAR	ANON_65_11__u,    q
+VAR	ANON_65_11__dat, STANDARD.IDL._TREE.size
+	LVA 3, ANON_65_11__dat
+	Sa  3, ANON_65_11_disp
+	La  0, STANDARD.IDL._TREE.use__info
+	Sa  3, ANON_65_11__u
+	LVA 3, ANON_65_11_disp
+					; doublet resultat record anonyme
+	LVA 2,	STANDARD.IDL.INIT_GRMR_L6.INITIALIZE_L1.SYL_SEQ_disp
+	CALL	STANDARD.IDL.IDL_MAN. ,HEAD_L26
+	La
+	BLKMOV
+					; debut if
+	La	2, STANDARD.IDL.INIT_GRMR_L6.INITIALIZE_L1.SYL_disp
+	Ld
+	LI	24
+	LI	8
+	UBFX
+	LI	15
+	CEQ
+	BF	L11
+	LVA 2,	STANDARD.IDL.INIT_GRMR_L6.INITIALIZE_L1.RULE_INIT_LIST_disp
+	La
+	LI	STANDARD.IDL._SEQ_TYPE.size
+VAR	ANON_67_24_disp, q
+VAR	ANON_67_24__u,    q
+VAR	ANON_67_24__dat, STANDARD.IDL._SEQ_TYPE.size
+	LVA 3, ANON_67_24__dat
+	Sa  3, ANON_67_24_disp
+	La  0, STANDARD.IDL._SEQ_TYPE.use__info
+	Sa  3, ANON_67_24__u
+	LVA 3, ANON_67_24_disp
+					; doublet resultat record anonyme
+	LVA 2,	STANDARD.IDL.INIT_GRMR_L6.INITIALIZE_L1.SYL_disp
+	LVA 2,	STANDARD.IDL.INIT_GRMR_L6.INITIALIZE_L1.RULE_INIT_LIST_disp
+	CALL	STANDARD.IDL.TERM_LIST. ,UNION_L175
+	La
+	BLKMOV
+	BRA	L10
+L11:
+L10:					; post if
+LOOP__4:
+	LI	0					; lieu resultat sur pile
+	LVA 2,	STANDARD.IDL.INIT_GRMR_L6.INITIALIZE_L1.SYL_SEQ_disp
+	CALL	STANDARD.IDL. ,IS_EMPTY_L20
+	LI	1
+	OUX
+	BF	L12
+	LVA  2,	STANDARD.IDL.INIT_GRMR_L6.INITIALIZE_L1.SYL_disp
+	LVA  2,	STANDARD.IDL.INIT_GRMR_L6.INITIALIZE_L1.SYL_SEQ_disp
+	CALL	STANDARD.IDL. ,POP_L21
+					; debut if
+	La	2, STANDARD.IDL.INIT_GRMR_L6.INITIALIZE_L1.SYL_disp
+	Ld
+	LI	24
+	LI	8
+	UBFX
+	LI	15
+	CEQ
+	BF	L14
+	LI	1
+	Sb  3,	ALT_NOT_NULLABLE_disp
+	BRA	L13
+L14:
+	LVA 2,	STANDARD.IDL.INIT_GRMR_L6.INITIALIZE_L1.NONTER_NAME_disp
+	La
+	LI	STANDARD.IDL._TREE.size
+VAR	ANON_74_23_disp, q
+VAR	ANON_74_23__u,    q
+VAR	ANON_74_23__dat, STANDARD.IDL._TREE.size
+	LVA 3, ANON_74_23__dat
+	Sa  3, ANON_74_23_disp
+	La  0, STANDARD.IDL._TREE.use__info
+	Sa  3, ANON_74_23__u
+	LVA 3, ANON_74_23_disp
+					; doublet resultat record anonyme
+	LVA 2,	STANDARD.IDL.INIT_GRMR_L6.INITIALIZE_L1.SYL_disp
+	LI  27
+	CALL	STANDARD.IDL. ,D_L14
+	La
+	BLKMOV
+	LVA 2,	STANDARD.IDL.INIT_GRMR_L6.INITIALIZE_L1.NONTER_DEF_LIST_disp
+	La
+	LI	STANDARD.IDL._SEQ_TYPE.size
+VAR	ANON_75_27_disp, q
+VAR	ANON_75_27__u,    q
+VAR	ANON_75_27__dat, STANDARD.IDL._SEQ_TYPE.size
+	LVA 3, ANON_75_27__dat
+	Sa  3, ANON_75_27_disp
+	La  0, STANDARD.IDL._SEQ_TYPE.use__info
+	Sa  3, ANON_75_27__u
+	LVA 3, ANON_75_27_disp
+					; doublet resultat record anonyme
+	LVA 2,	STANDARD.IDL.INIT_GRMR_L6.INITIALIZE_L1.NONTER_NAME_disp
+	CALL	STANDARD.IDL. ,LIST_L19
+	La
+	BLKMOV
+LOOP__5:
+	LI	0					; lieu resultat sur pile
+	LVA 2,	STANDARD.IDL.INIT_GRMR_L6.INITIALIZE_L1.NONTER_DEF_LIST_disp
+	CALL	STANDARD.IDL. ,IS_EMPTY_L20
+	LI	1
+	OUX
+	DUP
+	BF	L16
+	DROP
+	LI	13
+	CNE
+L16:
+	BF	L15
+	LVA 2,	STANDARD.IDL.INIT_GRMR_L6.INITIALIZE_L1.NONTER_DEF_LIST_disp
+	La
+	LI	STANDARD.IDL._SEQ_TYPE.size
+VAR	ANON_77_29_disp, q
+VAR	ANON_77_29__u,    q
+VAR	ANON_77_29__dat, STANDARD.IDL._SEQ_TYPE.size
+	LVA 3, ANON_77_29__dat
+	Sa  3, ANON_77_29_disp
+	La  0, STANDARD.IDL._SEQ_TYPE.use__info
+	Sa  3, ANON_77_29__u
+	LVA 3, ANON_77_29_disp
+					; doublet resultat record anonyme
+	LVA 2,	STANDARD.IDL.INIT_GRMR_L6.INITIALIZE_L1.NONTER_DEF_LIST_disp
+	CALL	STANDARD.IDL.IDL_MAN. ,TAIL_L27
+	La
+	BLKMOV
+	BRA	LOOP__5
+L15:					; post loop LOOP__5
+					; debut if
+	LI	0					; lieu resultat sur pile
+	LVA 2,	STANDARD.IDL.INIT_GRMR_L6.INITIALIZE_L1.NONTER_DEF_LIST_disp
+	CALL	STANDARD.IDL. ,IS_EMPTY_L20
+	BF	L18
+; CODE & concat _STRING
+VAR	ANON_80_38_L19_G_data, q
+VAR	ANON_80_38_L19_G_info, q
+VAR	ANON_80_70_L19_D_data, q
+VAR	ANON_80_70_L19_D_info, q
+VAR	ANON_80_38_L19_G_len,  q
+VAR	ANON_80_70_L19_D_len,  q
+VAR	ANON_80_38_L19_R_disp, q
+VAR	ANON_80_38_L19_R__u,   q
+namespace ANON_80_38_L19_R_info
+  VAR SIZ,      d
+  VAR _COMP_SIZ, d
+  VAR _FST_1,    d
+  VAR _LST_1,    d
+end namespace
+STR ANON_80_38_L19_G, "NON-TERMINAL NOT DEFINED - "	; constante string="NON-TERMINAL NOT DEFINED - "
+	LCA	ANON_80_38_L19_G.data_ptr
+	DUP
+	La  ,  0
+	Sa  3, ANON_80_38_L19_G_data
+	La  ,  8
+	Sa  3, ANON_80_38_L19_G_info
+	LId 3, ANON_80_38_L19_G_info, _STRING.LST_1
+	LId 3, ANON_80_38_L19_G_info, _STRING.FST_1
+	SUB
+	INC
+	CLAMP0
+	Sa  3, ANON_80_38_L19_G_len
+VAR	ANON_80_70_disp, q
+VAR	ANON_80_70__u,   q
+namespace ANON_80_70_info
+  VAR SIZ, d
+  VAR _COMP_SIZ, d
+  VAR _FST_1, d
+  VAR _LST_1, d
+end namespace
+	LVA 3, ANON_80_70_info.SIZ
+	Sa  3, ANON_80_70__u
+	LVA 3, ANON_80_70_disp
+	LVA 2,	STANDARD.IDL.INIT_GRMR_L6.INITIALIZE_L1.NONTER_NAME_disp
+	CALL	STANDARD.IDL. ,PRINT_NAME_L22
+	DUP
+	La  ,  0
+	Sa  3, ANON_80_70_L19_D_data
+	La  ,  8
+	Sa  3, ANON_80_70_L19_D_info
+	LId 3, ANON_80_70_L19_D_info, _STRING.LST_1
+	LId 3, ANON_80_70_L19_D_info, _STRING.FST_1
+	SUB
+	INC
+	CLAMP0
+	Sa  3, ANON_80_70_L19_D_len
+	La  3, ANON_80_38_L19_G_len
+	La  3, ANON_80_70_L19_D_len
+	ADD
+	CO_VAR
+	Sa  3, ANON_80_38_L19_R_disp
+	LI	1
+	Sd  3, ANON_80_38_L19_R_info._FST_1
+	La  3, ANON_80_38_L19_G_len
+	La  3, ANON_80_70_L19_D_len
+	ADD
+	Sd  3, ANON_80_38_L19_R_info._LST_1
+	LI	8
+	Sd  3, ANON_80_38_L19_R_info._COMP_SIZ
+	La  3, ANON_80_38_L19_G_len
+	La  3, ANON_80_70_L19_D_len
+	ADD
+	LI	8
+	MUL
+	Sd  3, ANON_80_38_L19_R_info.SIZ
+	LVA 3, ANON_80_38_L19_R_info.SIZ
+	Sa  3, ANON_80_38_L19_R__u
+	La  3, ANON_80_38_L19_R_disp
+	La  3, ANON_80_38_L19_G_len
+	La  3, ANON_80_38_L19_G_data
+	BLKMOV
+	La  3, ANON_80_38_L19_R_disp
+	La  3, ANON_80_38_L19_G_len
+	ADD
+	La  3, ANON_80_70_L19_D_len
+	La  3, ANON_80_70_L19_D_data
+	BLKMOV
+	LVA 3, ANON_80_38_L19_R_disp
+VAR	ANON_80_17_disp, q
+VAR	ANON_80_17__u,    q
+VAR	ANON_80_17__dat, STANDARD.IDL._TREE.size
+	LVA 3, ANON_80_17__dat
+	Sa  3, ANON_80_17_disp
+	La  0, STANDARD.IDL._TREE.use__info
+	Sa  3, ANON_80_17__u
+	LVA 3, ANON_80_17_disp
+					; doublet resultat record anonyme
+	LVA 2,	STANDARD.IDL.INIT_GRMR_L6.INITIALIZE_L1.SYL_disp
+	LI  22
+	CALL	STANDARD.IDL. ,D_L14
+	CALL	STANDARD.IDL.IDL_MAN. ,ERROR_L40
+	LVA  0,	STANDARD.IDL.IDL_MAN.TREE_VOID_disp	; array actual
+	LVA 2,	STANDARD.IDL.INIT_GRMR_L6.INITIALIZE_L1.SYL_disp
+	LI  24
+	CALL	STANDARD.IDL. ,D_L13
+	LI	1
+	Sb  3,	ALT_NOT_NULLABLE_disp
+	BRA	L17
+L18:
+VAR	ANON_84_27_disp, q
+VAR	ANON_84_27__u,    q
+VAR	ANON_84_27__dat, STANDARD.IDL._TREE.size
+	LVA 3, ANON_84_27__dat
+	Sa  3, ANON_84_27_disp
+	La  0, STANDARD.IDL._TREE.use__info
+	Sa  3, ANON_84_27__u
+	LVA 3, ANON_84_27_disp
+					; doublet resultat record anonyme
+	LVA 2,	STANDARD.IDL.INIT_GRMR_L6.INITIALIZE_L1.NONTER_DEF_LIST_disp
+	CALL	STANDARD.IDL.IDL_MAN. ,HEAD_L26
+	LVA 2,	STANDARD.IDL.INIT_GRMR_L6.INITIALIZE_L1.SYL_disp
+	LI  24
+	CALL	STANDARD.IDL. ,D_L13
+	LI	1
+	Sb  3,	ALT_NOT_NULLABLE_disp
+	LI	1
+	Sb  3,	ALT_NOT_GEN_TER_STR_disp
+L17:					; post if
+L13:					; post if
+	BRA	LOOP__4
+L12:					; post loop LOOP__4
+	BRA	L8
+L9:
+L8:					; post if
+					; debut if
+	Lb 3,	ALT_NOT_NULLABLE_disp
+	LI	1
+	OUX
+	BF	L21
+	LI	1
+	Sb  2,	STANDARD.IDL.INIT_GRMR_L6.INITIALIZE_L1.IS_NULLABLE_disp
+	BRA	L20
+L21:
+L20:					; post if
+					; debut if
+	Lb 3,	ALT_NOT_GEN_TER_STR_disp
+	LI	1
+	OUX
+	BF	L23
+	LI	1
+	Sb  2,	STANDARD.IDL.INIT_GRMR_L6.INITIALIZE_L1.GENS_TER_STR_disp
+	BRA	L22
+L23:
+L22:					; post if
+	UNLINK 3
+endPRO
+	BRA	LOOP__2
+L5:					; post loop LOOP__2
+	LVA 2,	RULE_INIT_LIST_disp
+	LVA 2,	RULEINFO_disp
+	CALL	STANDARD.IDL.IDL_MAN. ,LIST_L31
+	Lb 2,	GENS_TER_STR_disp
+	LVA 2,	RULEINFO_disp
+	LI  30
+	CALL	STANDARD.IDL. ,DB_L15
+	Lb 2,	IS_NULLABLE_disp
+	LVA 2,	RULE_disp
+	LI  20
+	CALL	STANDARD.IDL. ,DB_L15
+	BRA	LOOP__1
+L4:					; post loop LOOP__1
+	LI  1
+VAR	ANON_105_26_disp, q
+VAR	ANON_105_26__u,    q
+VAR	ANON_105_26__dat, STANDARD.IDL._TREE.size
+	LVA 2, ANON_105_26__dat
+	Sa  2, ANON_105_26_disp
+	La  0, STANDARD.IDL._TREE.use__info
+	Sa  2, ANON_105_26__u
+	LVA 2, ANON_105_26_disp
+					; doublet resultat record anonyme
+VAR	ANON_105_42_disp, q
+VAR	ANON_105_42__u,    q
+VAR	ANON_105_42__dat, STANDARD.IDL._TREE.size
+	LVA 2, ANON_105_42__dat
+	Sa  2, ANON_105_42_disp
+	La  0, STANDARD.IDL._TREE.use__info
+	Sa  2, ANON_105_42__u
+	LVA 2, ANON_105_42_disp
+					; doublet resultat record anonyme
+	LVA 1,	STANDARD.IDL.INIT_GRMR_L6.GR_RULE_SEQ_disp
+	CALL	STANDARD.IDL.IDL_MAN. ,HEAD_L26
+	LI  21
+	CALL	STANDARD.IDL. ,D_L14
+	LI  29
+	CALL	STANDARD.IDL. ,DB_L15
+ret_lbl:
+	UNLINK 2
+	RTD
+excep:
+endPRO					;---------- end PRO INITIALIZE
+end if
+
+if defined TRANS_CLOSE_L24_
+PRO	TRANS_CLOSE_L24				;---------- PRO TRANS_CLOSE
+ hexa_show 'TRANS_CLOSE_L24 ', $
+ELB 2					;    BODY ELAB
+ hexa_show 'var elab RULE_SEQ ', $
+ hexa_show ' disp ', RULE_SEQ_disp
+VAR RULE_SEQ_disp, q			; variable record : pointeur aux data record
+VAR RULE_SEQ__u, q				; variable record : pointeur aux useinfo
+VAR RULE_SEQ__dat, STANDARD.IDL._SEQ_TYPE.size
+	LVA	2, RULE_SEQ__dat
+	Sa	2, RULE_SEQ_disp			; record fin
+	LVA	2, STANDARD.IDL._SEQ_TYPE.SIZ
+	Sa	2, RULE_SEQ__u
+; CODE_VC_NAME DN_VARIABLE_ID
+	La  2, RULE_SEQ_disp
+	LI	STANDARD.IDL._SEQ_TYPE.size
+	LVA 1,	STANDARD.IDL.INIT_GRMR_L6.GR_RULE_SEQ_disp
+	La  ,  0
+	BLKMOV
+
+ hexa_show 'var elab RULE ', $
+ hexa_show ' disp ', RULE_disp
+VAR RULE_disp, q				; variable record : pointeur aux data record
+VAR RULE__u, q				; variable record : pointeur aux useinfo
+VAR RULE__dat, STANDARD.IDL._TREE.size
+	LVA	2, RULE__dat
+	Sa	2, RULE_disp				; record fin
+	LVA	2, STANDARD.IDL._TREE.SIZ
+	Sa	2, RULE__u
+; CODE_VC_NAME DN_VARIABLE_ID
+	La  2, RULE_disp
+					; store represented component PT range 0 .. 1 width 2
+	DUP
+	Ld
+	LI	0
+	LI	0
+	LI	2
+	BFI
+	Sd
+
+ hexa_show 'var elab RULE_INIT_LIST ', $
+ hexa_show ' disp ', RULE_INIT_LIST_disp
+VAR RULE_INIT_LIST_disp, q			; variable record : pointeur aux data record
+VAR RULE_INIT_LIST__u, q			; variable record : pointeur aux useinfo
+VAR RULE_INIT_LIST__dat, STANDARD.IDL._SEQ_TYPE.size
+	LVA	2, RULE_INIT_LIST__dat
+	Sa	2, RULE_INIT_LIST_disp			; record fin
+	LVA	2, STANDARD.IDL._SEQ_TYPE.SIZ
+	Sa	2, RULE_INIT_LIST__u
+; CODE_VC_NAME DN_VARIABLE_ID
+
+ hexa_show 'var elab RULEINFO ', $
+ hexa_show ' disp ', RULEINFO_disp
+VAR RULEINFO_disp, q			; variable record : pointeur aux data record
+VAR RULEINFO__u, q				; variable record : pointeur aux useinfo
+VAR RULEINFO__dat, STANDARD.IDL._TREE.size
+	LVA	2, RULEINFO__dat
+	Sa	2, RULEINFO_disp			; record fin
+	LVA	2, STANDARD.IDL._TREE.SIZ
+	Sa	2, RULEINFO__u
+; CODE_VC_NAME DN_VARIABLE_ID
+	La  2, RULEINFO_disp
+					; store represented component PT range 0 .. 1 width 2
+	DUP
+	Ld
+	LI	0
+	LI	0
+	LI	2
+	BFI
+	Sd
+
+ hexa_show 'var elab ALT_SEQ ', $
+ hexa_show ' disp ', ALT_SEQ_disp
+VAR ALT_SEQ_disp, q				; variable record : pointeur aux data record
+VAR ALT_SEQ__u, q				; variable record : pointeur aux useinfo
+VAR ALT_SEQ__dat, STANDARD.IDL._SEQ_TYPE.size
+	LVA	2, ALT_SEQ__dat
+	Sa	2, ALT_SEQ_disp				; record fin
+	LVA	2, STANDARD.IDL._SEQ_TYPE.SIZ
+	Sa	2, ALT_SEQ__u
+; CODE_VC_NAME DN_VARIABLE_ID
+
+ hexa_show 'var elab ALT ', $
+ hexa_show ' disp ', ALT_disp
+VAR ALT_disp, q				; variable record : pointeur aux data record
+VAR ALT__u, q				; variable record : pointeur aux useinfo
+VAR ALT__dat, STANDARD.IDL._TREE.size
+	LVA	2, ALT__dat
+	Sa	2, ALT_disp				; record fin
+	LVA	2, STANDARD.IDL._TREE.SIZ
+	Sa	2, ALT__u
+; CODE_VC_NAME DN_VARIABLE_ID
+	La  2, ALT_disp
+					; store represented component PT range 0 .. 1 width 2
+	DUP
+	Ld
+	LI	0
+	LI	0
+	LI	2
+	BFI
+	Sd
+
+ hexa_show 'var elab SYL_SEQ ', $
+ hexa_show ' disp ', SYL_SEQ_disp
+VAR SYL_SEQ_disp, q				; variable record : pointeur aux data record
+VAR SYL_SEQ__u, q				; variable record : pointeur aux useinfo
+VAR SYL_SEQ__dat, STANDARD.IDL._SEQ_TYPE.size
+	LVA	2, SYL_SEQ__dat
+	Sa	2, SYL_SEQ_disp				; record fin
+	LVA	2, STANDARD.IDL._SEQ_TYPE.SIZ
+	Sa	2, SYL_SEQ__u
+; CODE_VC_NAME DN_VARIABLE_ID
+
+ hexa_show 'var elab SYL ', $
+ hexa_show ' disp ', SYL_disp
+VAR SYL_disp, q				; variable record : pointeur aux data record
+VAR SYL__u, q				; variable record : pointeur aux useinfo
+VAR SYL__dat, STANDARD.IDL._TREE.size
+	LVA	2, SYL__dat
+	Sa	2, SYL_disp				; record fin
+	LVA	2, STANDARD.IDL._TREE.SIZ
+	Sa	2, SYL__u
+; CODE_VC_NAME DN_VARIABLE_ID
+	La  2, SYL_disp
+					; store represented component PT range 0 .. 1 width 2
+	DUP
+	Ld
+	LI	0
+	LI	0
+	LI	2
+	BFI
+	Sd
+
+ hexa_show 'var elab IS_NULLABLE ', $
+ hexa_show ' disp ', IS_NULLABLE_disp
+VAR IS_NULLABLE_disp, b			; variable bool char enum
+
+ hexa_show 'var elab IS_REACHABLE ', $
+ hexa_show ' disp ', IS_REACHABLE_disp
+VAR IS_REACHABLE_disp, b			; variable bool char enum
+
+ hexa_show 'var elab GENS_TER_STR ', $
+ hexa_show ' disp ', GENS_TER_STR_disp
+VAR GENS_TER_STR_disp, b			; variable bool char enum
+
+ hexa_show 'var elab ALT_NOT_NULLABLE ', $
+ hexa_show ' disp ', ALT_NOT_NULLABLE_disp
+VAR ALT_NOT_NULLABLE_disp, b			; variable bool char enum
+
+ hexa_show 'var elab ALT_NOT_GEN_TER_STR ', $
+ hexa_show ' disp ', ALT_NOT_GEN_TER_STR_disp
+VAR ALT_NOT_GEN_TER_STR_disp, b		; variable bool char enum
+
+ hexa_show 'var elab NONTER_RULE ', $
+ hexa_show ' disp ', NONTER_RULE_disp
+VAR NONTER_RULE_disp, q			; variable record : pointeur aux data record
+VAR NONTER_RULE__u, q			; variable record : pointeur aux useinfo
+VAR NONTER_RULE__dat, STANDARD.IDL._TREE.size
+	LVA	2, NONTER_RULE__dat
+	Sa	2, NONTER_RULE_disp			; record fin
+	LVA	2, STANDARD.IDL._TREE.SIZ
+	Sa	2, NONTER_RULE__u
+; CODE_VC_NAME DN_VARIABLE_ID
+	La  2, NONTER_RULE_disp
+					; store represented component PT range 0 .. 1 width 2
+	DUP
+	Ld
+	LI	0
+	LI	0
+	LI	2
+	BFI
+	Sd
+
+ hexa_show 'var elab NONTER_INFO ', $
+ hexa_show ' disp ', NONTER_INFO_disp
+VAR NONTER_INFO_disp, q			; variable record : pointeur aux data record
+VAR NONTER_INFO__u, q			; variable record : pointeur aux useinfo
+VAR NONTER_INFO__dat, STANDARD.IDL._TREE.size
+	LVA	2, NONTER_INFO__dat
+	Sa	2, NONTER_INFO_disp			; record fin
+	LVA	2, STANDARD.IDL._TREE.SIZ
+	Sa	2, NONTER_INFO__u
+; CODE_VC_NAME DN_VARIABLE_ID
+	La  2, NONTER_INFO_disp
+					; store represented component PT range 0 .. 1 width 2
+	DUP
+	Ld
+	LI	0
+	LI	0
+	LI	2
+	BFI
+	Sd
+
+ hexa_show 'var elab TIMECHANGED ', $
+ hexa_show ' disp ', TIMECHANGED_disp
+VAR TIMECHANGED_disp, d			; variable entiere
+
+ hexa_show 'var elab TIMECHECKED ', $
+ hexa_show ' disp ', TIMECHECKED_disp
+VAR TIMECHECKED_disp, d			; variable entiere
+
+ hexa_show 'var elab NONTER_CHANGED ', $
+ hexa_show ' disp ', NONTER_CHANGED_disp
+VAR NONTER_CHANGED_disp, d			; variable entiere
+
+ hexa_show 'var elab CHANGE_FLAG ', $
+ hexa_show ' disp ', CHANGE_FLAG_disp
+VAR CHANGE_FLAG_disp, b			; variable bool char enum
+
+ hexa_show 'var elab INIT_NONTER_S ', $
+ hexa_show ' disp ', INIT_NONTER_S_disp
+VAR INIT_NONTER_S_disp, q			; variable record : pointeur aux data record
+VAR INIT_NONTER_S__u, q			; variable record : pointeur aux useinfo
+VAR INIT_NONTER_S__dat, STANDARD.IDL._TREE.size
+	LVA	2, INIT_NONTER_S__dat
+	Sa	2, INIT_NONTER_S_disp			; record fin
+	LVA	2, STANDARD.IDL._TREE.SIZ
+	Sa	2, INIT_NONTER_S__u
+; CODE_VC_NAME DN_VARIABLE_ID
+	La  2, INIT_NONTER_S_disp
+					; store represented component PT range 0 .. 1 width 2
+	DUP
+	Ld
+	LI	0
+	LI	0
+	LI	2
+	BFI
+	Sd
+
+ hexa_show 'var elab INIT_NONTER_SEQ ', $
+ hexa_show ' disp ', INIT_NONTER_SEQ_disp
+VAR INIT_NONTER_SEQ_disp, q			; variable record : pointeur aux data record
+VAR INIT_NONTER_SEQ__u, q			; variable record : pointeur aux useinfo
+VAR INIT_NONTER_SEQ__dat, STANDARD.IDL._SEQ_TYPE.size
+	LVA	2, INIT_NONTER_SEQ__dat
+	Sa	2, INIT_NONTER_SEQ_disp			; record fin
+	LVA	2, STANDARD.IDL._SEQ_TYPE.SIZ
+	Sa	2, INIT_NONTER_SEQ__u
+; CODE_VC_NAME DN_VARIABLE_ID
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+LOOP__6:
+	LI	0					; lieu resultat sur pile
+	LVA 2,	RULE_SEQ_disp
+	CALL	STANDARD.IDL. ,IS_EMPTY_L20
+	LI	1
+	OUX
+	BF	L27
+	LVA 2,	RULE_disp
+	La
+	LI	STANDARD.IDL._TREE.size
+VAR	ANON_135_19_disp, q
+VAR	ANON_135_19__u,    q
+VAR	ANON_135_19__dat, STANDARD.IDL._TREE.size
+	LVA 2, ANON_135_19__dat
+	Sa  2, ANON_135_19_disp
+	La  0, STANDARD.IDL._TREE.use__info
+	Sa  2, ANON_135_19__u
+	LVA 2, ANON_135_19_disp
+					; doublet resultat record anonyme
+	LVA 2,	RULE_SEQ_disp
+	CALL	STANDARD.IDL.IDL_MAN. ,HEAD_L26
+	La
+	BLKMOV
+	LVA 2,	RULE_SEQ_disp
+	La
+	LI	STANDARD.IDL._SEQ_TYPE.size
+VAR	ANON_136_19_disp, q
+VAR	ANON_136_19__u,    q
+VAR	ANON_136_19__dat, STANDARD.IDL._SEQ_TYPE.size
+	LVA 2, ANON_136_19__dat
+	Sa  2, ANON_136_19_disp
+	La  0, STANDARD.IDL._SEQ_TYPE.use__info
+	Sa  2, ANON_136_19__u
+	LVA 2, ANON_136_19_disp
+					; doublet resultat record anonyme
+	LVA 2,	RULE_SEQ_disp
+	CALL	STANDARD.IDL.IDL_MAN. ,TAIL_L27
+	La
+	BLKMOV
+	LVA 2,	RULEINFO_disp
+	La
+	LI	STANDARD.IDL._TREE.size
+VAR	ANON_138_19_disp, q
+VAR	ANON_138_19__u,    q
+VAR	ANON_138_19__dat, STANDARD.IDL._TREE.size
+	LVA 2, ANON_138_19__dat
+	Sa  2, ANON_138_19_disp
+	La  0, STANDARD.IDL._TREE.use__info
+	Sa  2, ANON_138_19__u
+	LVA 2, ANON_138_19_disp
+					; doublet resultat record anonyme
+	LVA 2,	RULE_disp
+	LI  21
+	CALL	STANDARD.IDL. ,D_L14
+	La
+	BLKMOV
+	LI	0					; lieu resultat sur pile
+	LVA 2,	RULEINFO_disp
+	LI  32
+	CALL	STANDARD.IDL. ,DI_L18
+	Sd  2,	TIMECHANGED_disp
+	LI	0					; lieu resultat sur pile
+	LVA 2,	RULEINFO_disp
+	LI  31
+	CALL	STANDARD.IDL. ,DI_L18
+	Sd  2,	TIMECHECKED_disp
+	Ld 1,	STANDARD.IDL.INIT_GRMR_L6.PASS_disp
+	LVA 2,	RULEINFO_disp
+	LI  31
+	CALL	STANDARD.IDL. ,DI_L17
+	LVA 2,	RULE_INIT_LIST_disp
+	La
+	LI	STANDARD.IDL._SEQ_TYPE.size
+VAR	ANON_143_25_disp, q
+VAR	ANON_143_25__u,    q
+VAR	ANON_143_25__dat, STANDARD.IDL._SEQ_TYPE.size
+	LVA 2, ANON_143_25__dat
+	Sa  2, ANON_143_25_disp
+	La  0, STANDARD.IDL._SEQ_TYPE.use__info
+	Sa  2, ANON_143_25__u
+	LVA 2, ANON_143_25_disp
+					; doublet resultat record anonyme
+	LVA 2,	RULEINFO_disp
+	CALL	STANDARD.IDL. ,LIST_L19
+	La
+	BLKMOV
+	LI	0					; lieu resultat sur pile
+	LVA 2,	RULEINFO_disp
+	LI  29
+	CALL	STANDARD.IDL. ,DB_L16
+	Sb  2,	IS_REACHABLE_disp
+	LI	0
+	Sb  2,	IS_NULLABLE_disp
+	LI	0					; lieu resultat sur pile
+	LVA 2,	RULEINFO_disp
+	LI  30
+	CALL	STANDARD.IDL. ,DB_L16
+	Sb  2,	GENS_TER_STR_disp
+	LVA 2,	INIT_NONTER_S_disp
+	La
+	LI	STANDARD.IDL._TREE.size
+VAR	ANON_147_25_disp, q
+VAR	ANON_147_25__u,    q
+VAR	ANON_147_25__dat, STANDARD.IDL._TREE.size
+	LVA 2, ANON_147_25__dat
+	Sa  2, ANON_147_25_disp
+	La  0, STANDARD.IDL._TREE.use__info
+	Sa  2, ANON_147_25__u
+	LVA 2, ANON_147_25_disp
+					; doublet resultat record anonyme
+	LVA 2,	RULEINFO_disp
+	LI  34
+	CALL	STANDARD.IDL. ,D_L14
+	La
+	BLKMOV
+	LVA 2,	INIT_NONTER_SEQ_disp
+	La
+	LI	STANDARD.IDL._SEQ_TYPE.size
+VAR	ANON_148_25_disp, q
+VAR	ANON_148_25__u,    q
+VAR	ANON_148_25__dat, STANDARD.IDL._SEQ_TYPE.size
+	LVA 2, ANON_148_25__dat
+	Sa  2, ANON_148_25_disp
+	La  0, STANDARD.IDL._SEQ_TYPE.use__info
+	Sa  2, ANON_148_25__u
+	LVA 2, ANON_148_25_disp
+					; doublet resultat record anonyme
+	LVA 2,	INIT_NONTER_S_disp
+	CALL	STANDARD.IDL. ,LIST_L19
+	La
+	BLKMOV
+	LI	0
+	Sb  2,	CHANGE_FLAG_disp
+	LVA 2,	ALT_SEQ_disp
+	La
+	LI	STANDARD.IDL._SEQ_TYPE.size
+VAR	ANON_151_18_disp, q
+VAR	ANON_151_18__u,    q
+VAR	ANON_151_18__dat, STANDARD.IDL._SEQ_TYPE.size
+	LVA 2, ANON_151_18__dat
+	Sa  2, ANON_151_18_disp
+	La  0, STANDARD.IDL._SEQ_TYPE.use__info
+	Sa  2, ANON_151_18__u
+	LVA 2, ANON_151_18_disp
+					; doublet resultat record anonyme
+	LVA 2,	RULE_disp
+	CALL	STANDARD.IDL. ,LIST_L19
+	La
+	BLKMOV
+LOOP__7:
+	LI	0					; lieu resultat sur pile
+	LVA 2,	ALT_SEQ_disp
+	CALL	STANDARD.IDL. ,IS_EMPTY_L20
+	LI	1
+	OUX
+	BF	L28
+	LVA  2,	STANDARD.IDL.INIT_GRMR_L6.TRANS_CLOSE_L24.ALT_disp
+	LVA  2,	STANDARD.IDL.INIT_GRMR_L6.TRANS_CLOSE_L24.ALT_SEQ_disp
+	CALL	STANDARD.IDL. ,POP_L21
+	LI	0
+	Sb  2,	ALT_NOT_NULLABLE_disp
+	LI	0
+	Sb  2,	ALT_NOT_GEN_TER_STR_disp
+	LVA 2,	SYL_SEQ_disp
+	La
+	LI	STANDARD.IDL._SEQ_TYPE.size
+VAR	ANON_157_27_disp, q
+VAR	ANON_157_27__u,    q
+VAR	ANON_157_27__dat, STANDARD.IDL._SEQ_TYPE.size
+	LVA 2, ANON_157_27__dat
+	Sa  2, ANON_157_27_disp
+	La  0, STANDARD.IDL._SEQ_TYPE.use__info
+	Sa  2, ANON_157_27__u
+	LVA 2, ANON_157_27_disp
+					; doublet resultat record anonyme
+	LVA 2,	ALT_disp
+	CALL	STANDARD.IDL. ,LIST_L19
+	La
+	BLKMOV
+					; debut if
+	LI	0					; lieu resultat sur pile
+	LVA 2,	SYL_SEQ_disp
+	CALL	STANDARD.IDL. ,IS_EMPTY_L20
+	LI	1
+	OUX
+	BF	L30
+	LVA 2,	SYL_disp
+	La
+	LI	STANDARD.IDL._TREE.size
+VAR	ANON_159_9_disp, q
+VAR	ANON_159_9__u,    q
+VAR	ANON_159_9__dat, STANDARD.IDL._TREE.size
+	LVA 2, ANON_159_9__dat
+	Sa  2, ANON_159_9_disp
+	La  0, STANDARD.IDL._TREE.use__info
+	Sa  2, ANON_159_9__u
+	LVA 2, ANON_159_9_disp
+					; doublet resultat record anonyme
+	LVA 2,	SYL_SEQ_disp
+	CALL	STANDARD.IDL.IDL_MAN. ,HEAD_L26
+	La
+	BLKMOV
+					; debut if
+	La	2, STANDARD.IDL.INIT_GRMR_L6.TRANS_CLOSE_L24.SYL_disp
+	Ld
+	LI	24
+	LI	8
+	UBFX
+	LI	16
+	CEQ
+	BF	L32
+	LVA 2,	NONTER_RULE_disp
+	La
+	LI	STANDARD.IDL._TREE.size
+VAR	ANON_161_19_disp, q
+VAR	ANON_161_19__u,    q
+VAR	ANON_161_19__dat, STANDARD.IDL._TREE.size
+	LVA 2, ANON_161_19__dat
+	Sa  2, ANON_161_19_disp
+	La  0, STANDARD.IDL._TREE.use__info
+	Sa  2, ANON_161_19__u
+	LVA 2, ANON_161_19_disp
+					; doublet resultat record anonyme
+	LVA 2,	SYL_disp
+	LI  24
+	CALL	STANDARD.IDL. ,D_L14
+	La
+	BLKMOV
+					; debut if
+	La	2, STANDARD.IDL.INIT_GRMR_L6.TRANS_CLOSE_L24.NONTER_RULE_disp
+	Ld
+	LI	24
+	LI	8
+	UBFX
+	LI	20
+	CNE
+	BF	L34
+	LVA 2,	INIT_NONTER_SEQ_disp
+	La
+	LI	STANDARD.IDL._SEQ_TYPE.size
+VAR	ANON_163_25_disp, q
+VAR	ANON_163_25__u,    q
+VAR	ANON_163_25__dat, STANDARD.IDL._SEQ_TYPE.size
+	LVA 2, ANON_163_25__dat
+	Sa  2, ANON_163_25_disp
+	La  0, STANDARD.IDL._SEQ_TYPE.use__info
+	Sa  2, ANON_163_25__u
+	LVA 2, ANON_163_25_disp
+					; doublet resultat record anonyme
+VAR	ANON_163_51_disp, q
+VAR	ANON_163_51__u,    q
+VAR	ANON_163_51__dat, STANDARD.IDL._SEQ_TYPE.size
+	LVA 2, ANON_163_51__dat
+	Sa  2, ANON_163_51_disp
+	La  0, STANDARD.IDL._SEQ_TYPE.use__info
+	Sa  2, ANON_163_51__u
+	LVA 2, ANON_163_51_disp
+					; doublet resultat record anonyme
+VAR	ANON_163_57_disp, q
+VAR	ANON_163_57__u,    q
+VAR	ANON_163_57__dat, STANDARD.IDL._TREE.size
+	LVA 2, ANON_163_57__dat
+	Sa  2, ANON_163_57_disp
+	La  0, STANDARD.IDL._TREE.use__info
+	Sa  2, ANON_163_57__u
+	LVA 2, ANON_163_57_disp
+					; doublet resultat record anonyme
+VAR	ANON_163_78_disp, q
+VAR	ANON_163_78__u,    q
+VAR	ANON_163_78__dat, STANDARD.IDL._TREE.size
+	LVA 2, ANON_163_78__dat
+	Sa  2, ANON_163_78_disp
+	La  0, STANDARD.IDL._TREE.use__info
+	Sa  2, ANON_163_78__u
+	LVA 2, ANON_163_78_disp
+					; doublet resultat record anonyme
+	LVA 2,	NONTER_RULE_disp
+	LI  21
+	CALL	STANDARD.IDL. ,D_L14
+	LI  34
+	CALL	STANDARD.IDL. ,D_L14
+	CALL	STANDARD.IDL. ,LIST_L19
+	LVA 2,	INIT_NONTER_SEQ_disp
+	CALL	STANDARD.IDL.TERM_LIST. ,R_UNION_L179
+	La
+	BLKMOV
+	BRA	L33
+L34:
+L33:					; post if
+	BRA	L31
+L32:
+L31:					; post if
+	BRA	L29
+L30:
+L29:					; post if
+LOOP__8:
+	LI	0					; lieu resultat sur pile
+	LVA 2,	SYL_SEQ_disp
+	CALL	STANDARD.IDL. ,IS_EMPTY_L20
+	LI	1
+	OUX
+	BF	L35
+	LVA  2,	STANDARD.IDL.INIT_GRMR_L6.TRANS_CLOSE_L24.SYL_disp
+	LVA  2,	STANDARD.IDL.INIT_GRMR_L6.TRANS_CLOSE_L24.SYL_SEQ_disp
+	CALL	STANDARD.IDL. ,POP_L21
+					; debut if
+	La	2, STANDARD.IDL.INIT_GRMR_L6.TRANS_CLOSE_L24.SYL_disp
+	Ld
+	LI	24
+	LI	8
+	UBFX
+	LI	15
+	CEQ
+	BF	L37
+					; debut if
+	Lb 2,	ALT_NOT_NULLABLE_disp
+	LI	1
+	OUX
+	BF	L39
+	LI	1
+	Sb  2,	ALT_NOT_NULLABLE_disp
+					; debut if
+	Ld 2,	TIMECHANGED_disp
+	Ld 2,	TIMECHECKED_disp
+	CGE
+	BF	L41
+	LVA 2,	RULE_INIT_LIST_disp
+	La
+	LI	STANDARD.IDL._SEQ_TYPE.size
+VAR	ANON_174_26_disp, q
+VAR	ANON_174_26__u,    q
+VAR	ANON_174_26__dat, STANDARD.IDL._SEQ_TYPE.size
+	LVA 2, ANON_174_26__dat
+	Sa  2, ANON_174_26_disp
+	La  0, STANDARD.IDL._SEQ_TYPE.use__info
+	Sa  2, ANON_174_26__u
+	LVA 2, ANON_174_26_disp
+					; doublet resultat record anonyme
+	LVA 2,	SYL_disp
+	LVA 2,	RULE_INIT_LIST_disp
+	CALL	STANDARD.IDL.TERM_LIST. ,UNION_L175
+	La
+	BLKMOV
+	BRA	L40
+L41:
+L40:					; post if
+	BRA	L38
+L39:
+L38:					; post if
+	BRA	L36
+L37:
+	LVA 2,	NONTER_RULE_disp
+	La
+	LI	STANDARD.IDL._TREE.size
+VAR	ANON_178_19_disp, q
+VAR	ANON_178_19__u,    q
+VAR	ANON_178_19__dat, STANDARD.IDL._TREE.size
+	LVA 2, ANON_178_19__dat
+	Sa  2, ANON_178_19_disp
+	La  0, STANDARD.IDL._TREE.use__info
+	Sa  2, ANON_178_19__u
+	LVA 2, ANON_178_19_disp
+					; doublet resultat record anonyme
+	LVA 2,	SYL_disp
+	LI  24
+	CALL	STANDARD.IDL. ,D_L14
+	La
+	BLKMOV
+					; debut if
+	La	2, STANDARD.IDL.INIT_GRMR_L6.TRANS_CLOSE_L24.NONTER_RULE_disp
+	Ld
+	LI	24
+	LI	8
+	UBFX
+	LI	20
+	CEQ
+	BF	L43
+	LI	1
+	Sb  2,	ALT_NOT_NULLABLE_disp
+	BRA	L42
+L43:
+	LVA 2,	NONTER_INFO_disp
+	La
+	LI	STANDARD.IDL._TREE.size
+VAR	ANON_182_21_disp, q
+VAR	ANON_182_21__u,    q
+VAR	ANON_182_21__dat, STANDARD.IDL._TREE.size
+	LVA 2, ANON_182_21__dat
+	Sa  2, ANON_182_21_disp
+	La  0, STANDARD.IDL._TREE.use__info
+	Sa  2, ANON_182_21__u
+	LVA 2, ANON_182_21_disp
+					; doublet resultat record anonyme
+	LVA 2,	NONTER_RULE_disp
+	LI  21
+	CALL	STANDARD.IDL. ,D_L14
+	La
+	BLKMOV
+	LI	0					; lieu resultat sur pile
+	LVA 2,	NONTER_INFO_disp
+	LI  32
+	CALL	STANDARD.IDL. ,DI_L18
+	Sd  2,	NONTER_CHANGED_disp
+					; debut if
+	Ld 2,	TIMECHANGED_disp
+	Ld 2,	TIMECHECKED_disp
+	CGE
+	DUP
+	BF	L47
+	DROP
+	Lb 2,	IS_REACHABLE_disp
+L47:
+	DUP
+	BF	L46
+	DROP
+	LI	0					; lieu resultat sur pile
+	LVA 2,	NONTER_INFO_disp
+	LI  29
+	CALL	STANDARD.IDL. ,DB_L16
+	LI	1
+	OUX
+L46:
+	BF	L45
+	LI	1
+	Sb  1,	STANDARD.IDL.INIT_GRMR_L6.MORE_PASSES_disp
+	LI  1
+	LVA 2,	NONTER_INFO_disp
+	LI  29
+	CALL	STANDARD.IDL. ,DB_L15
+	Ld 1,	STANDARD.IDL.INIT_GRMR_L6.PASS_disp
+	LVA 2,	NONTER_INFO_disp
+	LI  32
+	CALL	STANDARD.IDL. ,DI_L17
+	BRA	L44
+L45:
+L44:					; post if
+					; debut if
+	Lb 2,	ALT_NOT_NULLABLE_disp
+	LI	1
+	OUX
+	BF	L49
+					; debut if
+	LI	0					; lieu resultat sur pile
+	LVA 2,	NONTER_RULE_disp
+	LI  20
+	CALL	STANDARD.IDL. ,DB_L16
+	LI	1
+	OUX
+	BF	L51
+	LI	1
+	Sb  2,	ALT_NOT_NULLABLE_disp
+	BRA	L50
+L51:
+					; debut if
+	Ld 2,	NONTER_CHANGED_disp
+	Ld 2,	TIMECHANGED_disp
+	CGT
+	BF	L53
+	Ld 2,	NONTER_CHANGED_disp
+	Sd  2,	TIMECHANGED_disp
+	BRA	L52
+L53:
+L52:					; post if
+L50:					; post if
+					; debut if
+	Ld 2,	NONTER_CHANGED_disp
+	Ld 2,	TIMECHECKED_disp
+	CGE
+	BF	L55
+	LVA 2,	RULE_INIT_LIST_disp
+	La
+	LI	STANDARD.IDL._SEQ_TYPE.size
+VAR	ANON_199_28_disp, q
+VAR	ANON_199_28__u,    q
+VAR	ANON_199_28__dat, STANDARD.IDL._SEQ_TYPE.size
+	LVA 2, ANON_199_28__dat
+	Sa  2, ANON_199_28_disp
+	La  0, STANDARD.IDL._SEQ_TYPE.use__info
+	Sa  2, ANON_199_28__u
+	LVA 2, ANON_199_28_disp
+					; doublet resultat record anonyme
+VAR	ANON_199_52_disp, q
+VAR	ANON_199_52__u,    q
+VAR	ANON_199_52__dat, STANDARD.IDL._SEQ_TYPE.size
+	LVA 2, ANON_199_52__dat
+	Sa  2, ANON_199_52_disp
+	La  0, STANDARD.IDL._SEQ_TYPE.use__info
+	Sa  2, ANON_199_52__u
+	LVA 2, ANON_199_52_disp
+					; doublet resultat record anonyme
+	LVA 2,	NONTER_INFO_disp
+	CALL	STANDARD.IDL. ,LIST_L19
+	LVA 2,	RULE_INIT_LIST_disp
+	CALL	STANDARD.IDL.TERM_LIST. ,UNION_L176
+	La
+	BLKMOV
+	BRA	L54
+L55:
+L54:					; post if
+	BRA	L48
+L49:
+L48:					; post if
+					; debut if
+	Lb 2,	ALT_NOT_GEN_TER_STR_disp
+	LI	1
+	OUX
+	DUP
+	BF	L59
+	DROP
+	Lb 2,	GENS_TER_STR_disp
+	LI	1
+	OUX
+L59:
+	DUP
+	BF	L58
+	DROP
+	LI	0					; lieu resultat sur pile
+	LVA 2,	NONTER_INFO_disp
+	LI  30
+	CALL	STANDARD.IDL. ,DB_L16
+	LI	1
+	OUX
+L58:
+	BF	L57
+	LI	1
+	Sb  2,	ALT_NOT_GEN_TER_STR_disp
+	BRA	L56
+L57:
+L56:					; post if
+L42:					; post if
+L36:					; post if
+	Lb 2,	ALT_NOT_NULLABLE_disp
+	DUP
+	BF	L62
+	DROP
+	Lb 2,	GENS_TER_STR_disp
+L62:
+	DUP
+	BF	L61
+	DROP
+	Ld 2,	TIMECHANGED_disp
+	Ld 2,	TIMECHECKED_disp
+	CLT
+L61:
+	BT	L35
+	BRA	LOOP__8
+L35:					; post loop LOOP__8
+					; debut if
+	Lb 2,	ALT_NOT_NULLABLE_disp
+	LI	1
+	OUX
+	BF	L64
+	LI	1
+	Sb  2,	IS_NULLABLE_disp
+	BRA	L63
+L64:
+L63:					; post if
+					; debut if
+	Lb 2,	ALT_NOT_GEN_TER_STR_disp
+	LI	1
+	OUX
+	BF	L66
+	LI	1
+	Sb  2,	GENS_TER_STR_disp
+	BRA	L65
+L66:
+L65:					; post if
+	BRA	LOOP__7
+L28:					; post loop LOOP__7
+					; debut if
+	LI	0					; lieu resultat sur pile
+	LVA 2,	RULE_INIT_LIST_disp
+VAR	ANON_217_21_disp, q
+VAR	ANON_217_21__u,    q
+VAR	ANON_217_21__dat, STANDARD.IDL._SEQ_TYPE.size
+	LVA 2, ANON_217_21__dat
+	Sa  2, ANON_217_21_disp
+	La  0, STANDARD.IDL._SEQ_TYPE.use__info
+	Sa  2, ANON_217_21__u
+	LVA 2, ANON_217_21_disp
+					; doublet resultat record anonyme
+	LVA 2,	RULEINFO_disp
+	CALL	STANDARD.IDL. ,LIST_L19
+	CALL	STANDARD.IDL.TERM_LIST. ,SAME_L174
+	LI	1
+	OUX
+	BF	L68
+	LVA 2,	RULE_INIT_LIST_disp
+	LVA 2,	RULEINFO_disp
+	CALL	STANDARD.IDL.IDL_MAN. ,LIST_L31
+	LI	1
+	Sb  2,	CHANGE_FLAG_disp
+	BRA	L67
+L68:
+L67:					; post if
+					; debut if
+	LI	0					; lieu resultat sur pile
+	LVA 2,	INIT_NONTER_SEQ_disp
+VAR	ANON_221_21_disp, q
+VAR	ANON_221_21__u,    q
+VAR	ANON_221_21__dat, STANDARD.IDL._SEQ_TYPE.size
+	LVA 2, ANON_221_21__dat
+	Sa  2, ANON_221_21_disp
+	La  0, STANDARD.IDL._SEQ_TYPE.use__info
+	Sa  2, ANON_221_21__u
+	LVA 2, ANON_221_21_disp
+					; doublet resultat record anonyme
+	LVA 2,	INIT_NONTER_S_disp
+	CALL	STANDARD.IDL. ,LIST_L19
+	CALL	STANDARD.IDL.TERM_LIST. ,SAME_L174
+	LI	1
+	OUX
+	BF	L70
+	LVA 2,	INIT_NONTER_SEQ_disp
+	LVA 2,	INIT_NONTER_S_disp
+	CALL	STANDARD.IDL.IDL_MAN. ,LIST_L31
+	LI	1
+	Sb  2,	CHANGE_FLAG_disp
+	BRA	L69
+L70:
+L69:					; post if
+					; debut if
+	Lb 2,	GENS_TER_STR_disp
+	DUP
+	BF	L73
+	DROP
+	LI	0					; lieu resultat sur pile
+	LVA 2,	RULEINFO_disp
+	LI  30
+	CALL	STANDARD.IDL. ,DB_L16
+	LI	1
+	OUX
+L73:
+	BF	L72
+	LI  1
+	LVA 2,	RULEINFO_disp
+	LI  30
+	CALL	STANDARD.IDL. ,DB_L15
+	LI	1
+	Sb  2,	CHANGE_FLAG_disp
+	BRA	L71
+L72:
+L71:					; post if
+					; debut if
+	Lb 2,	IS_NULLABLE_disp
+	DUP
+	BF	L76
+	DROP
+	LI	0					; lieu resultat sur pile
+	LVA 2,	RULE_disp
+	LI  20
+	CALL	STANDARD.IDL. ,DB_L16
+	LI	1
+	OUX
+L76:
+	BF	L75
+	LI  1
+	LVA 2,	RULE_disp
+	LI  20
+	CALL	STANDARD.IDL. ,DB_L15
+	LI	1
+	Sb  2,	CHANGE_FLAG_disp
+	BRA	L74
+L75:
+L74:					; post if
+					; debut if
+	Lb 2,	CHANGE_FLAG_disp
+	BF	L78
+	Ld 1,	STANDARD.IDL.INIT_GRMR_L6.PASS_disp
+	LVA 2,	RULEINFO_disp
+	LI  32
+	CALL	STANDARD.IDL. ,DI_L17
+	LI	1
+	Sb  1,	STANDARD.IDL.INIT_GRMR_L6.MORE_PASSES_disp
+	BRA	L77
+L78:
+L77:					; post if
+	BRA	LOOP__6
+L27:					; post loop LOOP__6
+ret_lbl:
+	UNLINK 2
+	RTD
+excep:
+endPRO					;---------- end PRO TRANS_CLOSE
+end if
+
+if defined CHECK_GRAMMAR_L79_
+PRO	CHECK_GRAMMAR_L79			;---------- PRO CHECK_GRAMMAR
+ hexa_show 'CHECK_GRAMMAR_L79 ', $
+ELB 2					;    BODY ELAB
+ hexa_show 'var elab RULE_SEQ ', $
+ hexa_show ' disp ', RULE_SEQ_disp
+VAR RULE_SEQ_disp, q			; variable record : pointeur aux data record
+VAR RULE_SEQ__u, q				; variable record : pointeur aux useinfo
+VAR RULE_SEQ__dat, STANDARD.IDL._SEQ_TYPE.size
+	LVA	2, RULE_SEQ__dat
+	Sa	2, RULE_SEQ_disp			; record fin
+	LVA	2, STANDARD.IDL._SEQ_TYPE.SIZ
+	Sa	2, RULE_SEQ__u
+; CODE_VC_NAME DN_VARIABLE_ID
+	La  2, RULE_SEQ_disp
+	LI	STANDARD.IDL._SEQ_TYPE.size
+	LVA 1,	STANDARD.IDL.INIT_GRMR_L6.GR_RULE_SEQ_disp
+	La  ,  0
+	BLKMOV
+
+ hexa_show 'var elab RULE ', $
+ hexa_show ' disp ', RULE_disp
+VAR RULE_disp, q				; variable record : pointeur aux data record
+VAR RULE__u, q				; variable record : pointeur aux useinfo
+VAR RULE__dat, STANDARD.IDL._TREE.size
+	LVA	2, RULE__dat
+	Sa	2, RULE_disp				; record fin
+	LVA	2, STANDARD.IDL._TREE.SIZ
+	Sa	2, RULE__u
+; CODE_VC_NAME DN_VARIABLE_ID
+	La  2, RULE_disp
+					; store represented component PT range 0 .. 1 width 2
+	DUP
+	Ld
+	LI	0
+	LI	0
+	LI	2
+	BFI
+	Sd
+
+ hexa_show 'var elab RULEINFO ', $
+ hexa_show ' disp ', RULEINFO_disp
+VAR RULEINFO_disp, q			; variable record : pointeur aux data record
+VAR RULEINFO__u, q				; variable record : pointeur aux useinfo
+VAR RULEINFO__dat, STANDARD.IDL._TREE.size
+	LVA	2, RULEINFO__dat
+	Sa	2, RULEINFO_disp			; record fin
+	LVA	2, STANDARD.IDL._TREE.SIZ
+	Sa	2, RULEINFO__u
+; CODE_VC_NAME DN_VARIABLE_ID
+	La  2, RULEINFO_disp
+					; store represented component PT range 0 .. 1 width 2
+	DUP
+	Ld
+	LI	0
+	LI	0
+	LI	2
+	BFI
+	Sd
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+LOOP__9:
+	LI	0					; lieu resultat sur pile
+	LVA 2,	RULE_SEQ_disp
+	CALL	STANDARD.IDL. ,IS_EMPTY_L20
+	LI	1
+	OUX
+	BF	L82
+	LVA  2,	STANDARD.IDL.INIT_GRMR_L6.CHECK_GRAMMAR_L79.RULE_disp
+	LVA  2,	STANDARD.IDL.INIT_GRMR_L6.CHECK_GRAMMAR_L79.RULE_SEQ_disp
+	CALL	STANDARD.IDL. ,POP_L21
+	LVA 2,	RULEINFO_disp
+	La
+	LI	STANDARD.IDL._TREE.size
+VAR	ANON_248_19_disp, q
+VAR	ANON_248_19__u,    q
+VAR	ANON_248_19__dat, STANDARD.IDL._TREE.size
+	LVA 2, ANON_248_19__dat
+	Sa  2, ANON_248_19_disp
+	La  0, STANDARD.IDL._TREE.use__info
+	Sa  2, ANON_248_19__u
+	LVA 2, ANON_248_19_disp
+					; doublet resultat record anonyme
+	LVA 2,	RULE_disp
+	LI  21
+	CALL	STANDARD.IDL. ,D_L14
+	La
+	BLKMOV
+					; debut if
+	LI	0					; lieu resultat sur pile
+	LVA 2,	RULEINFO_disp
+	LI  29
+	CALL	STANDARD.IDL. ,DB_L16
+	LI	1
+	OUX
+	BF	L84
+; CODE & concat _STRING
+VAR	ANON_250_37_L85_G_data, q
+VAR	ANON_250_37_L85_G_info, q
+VAR	ANON_250_67_L85_D_data, q
+VAR	ANON_250_67_L85_D_info, q
+VAR	ANON_250_37_L85_G_len,  q
+VAR	ANON_250_67_L85_D_len,  q
+VAR	ANON_250_37_L85_R_disp, q
+VAR	ANON_250_37_L85_R__u,   q
+namespace ANON_250_37_L85_R_info
+  VAR SIZ,      d
+  VAR _COMP_SIZ, d
+  VAR _FST_1,    d
+  VAR _LST_1,    d
+end namespace
+STR ANON_250_37_L85_G, "RULE CANNOT BE REACHED - "	; constante string="RULE CANNOT BE REACHED - "
+	LCA	ANON_250_37_L85_G.data_ptr
+	DUP
+	La  ,  0
+	Sa  2, ANON_250_37_L85_G_data
+	La  ,  8
+	Sa  2, ANON_250_37_L85_G_info
+	LId 2, ANON_250_37_L85_G_info, _STRING.LST_1
+	LId 2, ANON_250_37_L85_G_info, _STRING.FST_1
+	SUB
+	INC
+	CLAMP0
+	Sa  2, ANON_250_37_L85_G_len
+VAR	ANON_250_67_disp, q
+VAR	ANON_250_67__u,   q
+namespace ANON_250_67_info
+  VAR SIZ, d
+  VAR _COMP_SIZ, d
+  VAR _FST_1, d
+  VAR _LST_1, d
+end namespace
+	LVA 2, ANON_250_67_info.SIZ
+	Sa  2, ANON_250_67__u
+	LVA 2, ANON_250_67_disp
+VAR	ANON_250_79_disp, q
+VAR	ANON_250_79__u,    q
+VAR	ANON_250_79__dat, STANDARD.IDL._TREE.size
+	LVA 2, ANON_250_79__dat
+	Sa  2, ANON_250_79_disp
+	La  0, STANDARD.IDL._TREE.use__info
+	Sa  2, ANON_250_79__u
+	LVA 2, ANON_250_79_disp
+					; doublet resultat record anonyme
+	LVA 2,	RULE_disp
+	LI  19
+	CALL	STANDARD.IDL. ,D_L14
+	CALL	STANDARD.IDL. ,PRINT_NAME_L22
+	DUP
+	La  ,  0
+	Sa  2, ANON_250_67_L85_D_data
+	La  ,  8
+	Sa  2, ANON_250_67_L85_D_info
+	LId 2, ANON_250_67_L85_D_info, _STRING.LST_1
+	LId 2, ANON_250_67_L85_D_info, _STRING.FST_1
+	SUB
+	INC
+	CLAMP0
+	Sa  2, ANON_250_67_L85_D_len
+	La  2, ANON_250_37_L85_G_len
+	La  2, ANON_250_67_L85_D_len
+	ADD
+	CO_VAR
+	Sa  2, ANON_250_37_L85_R_disp
+	LI	1
+	Sd  2, ANON_250_37_L85_R_info._FST_1
+	La  2, ANON_250_37_L85_G_len
+	La  2, ANON_250_67_L85_D_len
+	ADD
+	Sd  2, ANON_250_37_L85_R_info._LST_1
+	LI	8
+	Sd  2, ANON_250_37_L85_R_info._COMP_SIZ
+	La  2, ANON_250_37_L85_G_len
+	La  2, ANON_250_67_L85_D_len
+	ADD
+	LI	8
+	MUL
+	Sd  2, ANON_250_37_L85_R_info.SIZ
+	LVA 2, ANON_250_37_L85_R_info.SIZ
+	Sa  2, ANON_250_37_L85_R__u
+	La  2, ANON_250_37_L85_R_disp
+	La  2, ANON_250_37_L85_G_len
+	La  2, ANON_250_37_L85_G_data
+	BLKMOV
+	La  2, ANON_250_37_L85_R_disp
+	La  2, ANON_250_37_L85_G_len
+	ADD
+	La  2, ANON_250_67_L85_D_len
+	La  2, ANON_250_67_L85_D_data
+	BLKMOV
+	LVA 2, ANON_250_37_L85_R_disp
+VAR	ANON_250_16_disp, q
+VAR	ANON_250_16__u,    q
+VAR	ANON_250_16__dat, STANDARD.IDL._TREE.size
+	LVA 2, ANON_250_16__dat
+	Sa  2, ANON_250_16_disp
+	La  0, STANDARD.IDL._TREE.use__info
+	Sa  2, ANON_250_16__u
+	LVA 2, ANON_250_16_disp
+					; doublet resultat record anonyme
+	LVA 2,	RULE_disp
+	LI  22
+	CALL	STANDARD.IDL. ,D_L14
+	CALL	STANDARD.IDL.IDL_MAN. ,ERROR_L40
+	BRA	L83
+L84:
+L83:					; post if
+					; debut if
+	LI	0					; lieu resultat sur pile
+	LVA 2,	RULEINFO_disp
+	LI  30
+	CALL	STANDARD.IDL. ,DB_L16
+	LI	1
+	OUX
+	BF	L87
+; CODE & concat _STRING
+VAR	ANON_253_37_L88_G_data, q
+VAR	ANON_253_37_L88_G_info, q
+VAR	ANON_253_73_L88_D_data, q
+VAR	ANON_253_73_L88_D_info, q
+VAR	ANON_253_37_L88_G_len,  q
+VAR	ANON_253_73_L88_D_len,  q
+VAR	ANON_253_37_L88_R_disp, q
+VAR	ANON_253_37_L88_R__u,   q
+namespace ANON_253_37_L88_R_info
+  VAR SIZ,      d
+  VAR _COMP_SIZ, d
+  VAR _FST_1,    d
+  VAR _LST_1,    d
+end namespace
+STR ANON_253_37_L88_G, "DOES NOT GEN TERMINAL STRING - "	; constante string="DOES NOT GEN TERMINAL STRING - "
+	LCA	ANON_253_37_L88_G.data_ptr
+	DUP
+	La  ,  0
+	Sa  2, ANON_253_37_L88_G_data
+	La  ,  8
+	Sa  2, ANON_253_37_L88_G_info
+	LId 2, ANON_253_37_L88_G_info, _STRING.LST_1
+	LId 2, ANON_253_37_L88_G_info, _STRING.FST_1
+	SUB
+	INC
+	CLAMP0
+	Sa  2, ANON_253_37_L88_G_len
+VAR	ANON_253_73_disp, q
+VAR	ANON_253_73__u,   q
+namespace ANON_253_73_info
+  VAR SIZ, d
+  VAR _COMP_SIZ, d
+  VAR _FST_1, d
+  VAR _LST_1, d
+end namespace
+	LVA 2, ANON_253_73_info.SIZ
+	Sa  2, ANON_253_73__u
+	LVA 2, ANON_253_73_disp
+VAR	ANON_253_85_disp, q
+VAR	ANON_253_85__u,    q
+VAR	ANON_253_85__dat, STANDARD.IDL._TREE.size
+	LVA 2, ANON_253_85__dat
+	Sa  2, ANON_253_85_disp
+	La  0, STANDARD.IDL._TREE.use__info
+	Sa  2, ANON_253_85__u
+	LVA 2, ANON_253_85_disp
+					; doublet resultat record anonyme
+	LVA 2,	RULE_disp
+	LI  19
+	CALL	STANDARD.IDL. ,D_L14
+	CALL	STANDARD.IDL. ,PRINT_NAME_L22
+	DUP
+	La  ,  0
+	Sa  2, ANON_253_73_L88_D_data
+	La  ,  8
+	Sa  2, ANON_253_73_L88_D_info
+	LId 2, ANON_253_73_L88_D_info, _STRING.LST_1
+	LId 2, ANON_253_73_L88_D_info, _STRING.FST_1
+	SUB
+	INC
+	CLAMP0
+	Sa  2, ANON_253_73_L88_D_len
+	La  2, ANON_253_37_L88_G_len
+	La  2, ANON_253_73_L88_D_len
+	ADD
+	CO_VAR
+	Sa  2, ANON_253_37_L88_R_disp
+	LI	1
+	Sd  2, ANON_253_37_L88_R_info._FST_1
+	La  2, ANON_253_37_L88_G_len
+	La  2, ANON_253_73_L88_D_len
+	ADD
+	Sd  2, ANON_253_37_L88_R_info._LST_1
+	LI	8
+	Sd  2, ANON_253_37_L88_R_info._COMP_SIZ
+	La  2, ANON_253_37_L88_G_len
+	La  2, ANON_253_73_L88_D_len
+	ADD
+	LI	8
+	MUL
+	Sd  2, ANON_253_37_L88_R_info.SIZ
+	LVA 2, ANON_253_37_L88_R_info.SIZ
+	Sa  2, ANON_253_37_L88_R__u
+	La  2, ANON_253_37_L88_R_disp
+	La  2, ANON_253_37_L88_G_len
+	La  2, ANON_253_37_L88_G_data
+	BLKMOV
+	La  2, ANON_253_37_L88_R_disp
+	La  2, ANON_253_37_L88_G_len
+	ADD
+	La  2, ANON_253_73_L88_D_len
+	La  2, ANON_253_73_L88_D_data
+	BLKMOV
+	LVA 2, ANON_253_37_L88_R_disp
+VAR	ANON_253_16_disp, q
+VAR	ANON_253_16__u,    q
+VAR	ANON_253_16__dat, STANDARD.IDL._TREE.size
+	LVA 2, ANON_253_16__dat
+	Sa  2, ANON_253_16_disp
+	La  0, STANDARD.IDL._TREE.use__info
+	Sa  2, ANON_253_16__u
+	LVA 2, ANON_253_16_disp
+					; doublet resultat record anonyme
+	LVA 2,	RULE_disp
+	LI  22
+	CALL	STANDARD.IDL. ,D_L14
+	CALL	STANDARD.IDL.IDL_MAN. ,ERROR_L40
+	BRA	L86
+L87:
+L86:					; post if
+	BRA	LOOP__9
+L82:					; post loop LOOP__9
+ret_lbl:
+	UNLINK 2
+	RTD
+excep:
+endPRO					;---------- end PRO CHECK_GRAMMAR
+end if
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+STR STR_L91, "INITIALIZE."			; constante string="INITIALIZE."
+	LCA	STR_L91.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+namespace	BLOCK__10
+ELB 2					;    BODY ELAB
+ hexa_show 'var elab USER_ROOT ', $
+ hexa_show ' disp ', USER_ROOT_disp
+VAR USER_ROOT_disp, q			; variable record : pointeur aux data record
+VAR USER_ROOT__u, q				; variable record : pointeur aux useinfo
+VAR USER_ROOT__dat, STANDARD.IDL._TREE.size
+	LVA	2, USER_ROOT__dat
+	Sa	2, USER_ROOT_disp			; record fin
+	LVA	2, STANDARD.IDL._TREE.SIZ
+	Sa	2, USER_ROOT__u
+; CODE_VC_NAME DN_VARIABLE_ID
+	La  2, USER_ROOT_disp
+					; store represented component PT range 0 .. 1 width 2
+	DUP
+	Ld
+	LI	0
+	LI	0
+	LI	2
+	BFI
+	Sd
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+; CODE & concat _STRING
+VAR	ANON_264_25_L94_G_data, q
+VAR	ANON_264_25_L94_G_info, q
+VAR	ANON_264_37_L94_D_data, q
+VAR	ANON_264_37_L94_D_info, q
+VAR	ANON_264_25_L94_G_len,  q
+VAR	ANON_264_37_L94_D_len,  q
+VAR	ANON_264_25_L94_R_disp, q
+VAR	ANON_264_25_L94_R__u,   q
+namespace ANON_264_25_L94_R_info
+  VAR SIZ,      d
+  VAR _COMP_SIZ, d
+  VAR _FST_1,    d
+  VAR _LST_1,    d
+end namespace
+	La  1,	-NOM_TEXTE_ofs
+	DUP
+	La  ,  0
+	Sa  2, ANON_264_25_L94_G_data
+	La  ,  8
+	Sa  2, ANON_264_25_L94_G_info
+	LId 2, ANON_264_25_L94_G_info, _STRING.LST_1
+	LId 2, ANON_264_25_L94_G_info, _STRING.FST_1
+	SUB
+	INC
+	CLAMP0
+	Sa  2, ANON_264_25_L94_G_len
+STR ANON_264_37_L94_D, ".lar"			; constante string=".lar"
+	LCA	ANON_264_37_L94_D.data_ptr
+	DUP
+	La  ,  0
+	Sa  2, ANON_264_37_L94_D_data
+	La  ,  8
+	Sa  2, ANON_264_37_L94_D_info
+	LId 2, ANON_264_37_L94_D_info, _STRING.LST_1
+	LId 2, ANON_264_37_L94_D_info, _STRING.FST_1
+	SUB
+	INC
+	CLAMP0
+	Sa  2, ANON_264_37_L94_D_len
+	La  2, ANON_264_25_L94_G_len
+	La  2, ANON_264_37_L94_D_len
+	ADD
+	CO_VAR
+	Sa  2, ANON_264_25_L94_R_disp
+	LI	1
+	Sd  2, ANON_264_25_L94_R_info._FST_1
+	La  2, ANON_264_25_L94_G_len
+	La  2, ANON_264_37_L94_D_len
+	ADD
+	Sd  2, ANON_264_25_L94_R_info._LST_1
+	LI	8
+	Sd  2, ANON_264_25_L94_R_info._COMP_SIZ
+	La  2, ANON_264_25_L94_G_len
+	La  2, ANON_264_37_L94_D_len
+	ADD
+	LI	8
+	MUL
+	Sd  2, ANON_264_25_L94_R_info.SIZ
+	LVA 2, ANON_264_25_L94_R_info.SIZ
+	Sa  2, ANON_264_25_L94_R__u
+	La  2, ANON_264_25_L94_R_disp
+	La  2, ANON_264_25_L94_G_len
+	La  2, ANON_264_25_L94_G_data
+	BLKMOV
+	La  2, ANON_264_25_L94_R_disp
+	La  2, ANON_264_25_L94_G_len
+	ADD
+	La  2, ANON_264_37_L94_D_len
+	La  2, ANON_264_37_L94_D_data
+	BLKMOV
+	LVA 2, ANON_264_25_L94_R_disp
+	CALL	STANDARD.IDL. ,OPEN_IDL_TREE_FILE_L2
+	LVA 2,	USER_ROOT_disp
+	La
+	LI	STANDARD.IDL._TREE.size
+VAR	ANON_265_18_disp, q
+VAR	ANON_265_18__u,    q
+VAR	ANON_265_18__dat, STANDARD.IDL._TREE.size
+	LVA 2, ANON_265_18__dat
+	Sa  2, ANON_265_18_disp
+	La  0, STANDARD.IDL._TREE.use__info
+	Sa  2, ANON_265_18__u
+	LVA 2, ANON_265_18_disp
+					; doublet resultat record anonyme
+	LVA  0,	STANDARD.IDL.IDL_MAN.TREE_ROOT_disp	; array actual
+	LI  1
+	CALL	STANDARD.IDL. ,D_L14
+	La
+	BLKMOV
+	LVA 1,	STANDARD.IDL.INIT_GRMR_L6.GRAMMAR_disp
+	La
+	LI	STANDARD.IDL._TREE.size
+VAR	ANON_266_18_disp, q
+VAR	ANON_266_18__u,    q
+VAR	ANON_266_18__dat, STANDARD.IDL._TREE.size
+	LVA 2, ANON_266_18__dat
+	Sa  2, ANON_266_18_disp
+	La  0, STANDARD.IDL._TREE.use__info
+	Sa  2, ANON_266_18__u
+	LVA 2, ANON_266_18_disp
+					; doublet resultat record anonyme
+	LVA 2,	USER_ROOT_disp
+	LI  14
+	CALL	STANDARD.IDL. ,D_L14
+	La
+	BLKMOV
+	UNLINK 2
+endPRO
+	LVA 1,	GR_RULE_SEQ_disp
+	La
+	LI	STANDARD.IDL._SEQ_TYPE.size
+VAR	ANON_269_18_disp, q
+VAR	ANON_269_18__u,    q
+VAR	ANON_269_18__dat, STANDARD.IDL._SEQ_TYPE.size
+	LVA 1, ANON_269_18__dat
+	Sa  1, ANON_269_18_disp
+	La  0, STANDARD.IDL._SEQ_TYPE.use__info
+	Sa  1, ANON_269_18__u
+	LVA 1, ANON_269_18_disp
+					; doublet resultat record anonyme
+	LVA 1,	GRAMMAR_disp
+	CALL	STANDARD.IDL. ,LIST_L19
+	La
+	BLKMOV
+	CALL	STANDARD.IDL.INIT_GRMR_L6. ,INITIALIZE_L1
+LOOP__11:
+	Ld 1,	PASS_disp
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	ADD
+	Sd  1,	PASS_disp
+STR STR_L96, "BEGIN TRANS CLOSE PASS "		; constante string="BEGIN TRANS CLOSE PASS "
+	LCA	STR_L96.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_L56
+	Ld 0,	STANDARD.IDL.INT_IO.DEFAULT_BASE_disp
+	DUP
+	Ld	0, STANDARD.TEXT_IO._NUMBER_BASE.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD.TEXT_IO._NUMBER_BASE.LST
+	CGT
+	BT	STANDARD.ce_raise_
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	1
+	DUP
+	Ld	0, STANDARD.TEXT_IO._FIELD.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	Ld	0, STANDARD.TEXT_IO._FIELD.LST
+	CGT
+	BT	STANDARD.ce_raise_
+	Ld 1,	PASS_disp
+	CALL	STANDARD.IDL.INT_IO. ,PUT_L64
+STR STR_L97, "."				; constante string="."
+	LCA	STR_L97.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	LI	0
+	Sb  1,	MORE_PASSES_disp
+	CALL	STANDARD.IDL.INIT_GRMR_L6. ,TRANS_CLOSE_L24
+	Lb 1,	MORE_PASSES_disp
+	LI	1
+	OUX
+	BT	L95
+	BRA	LOOP__11
+L95:					; post loop LOOP__11
+STR STR_L99, "CHECK GRAMMAR."			; constante string="CHECK GRAMMAR."
+	LCA	STR_L99.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	CALL	STANDARD.IDL.INIT_GRMR_L6. ,CHECK_GRAMMAR_L79
+	CALL	STANDARD.IDL. ,CLOSE_IDL_TREE_FILE_L3
+ret_lbl:
+	UNLINK 1
+	RTD	prm_siz
+excep:
+endPRO					;---------- end PRO INIT_GRMR

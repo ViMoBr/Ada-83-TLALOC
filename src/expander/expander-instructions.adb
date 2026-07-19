@@ -291,7 +291,8 @@ separate ( EXPANDER )
       declare
         ITERATION_ID	: TREE		:= D( AS_SOURCE_NAME, ITERATION );
         ITERATION_RANGE	: TREE		:= D( AS_DISCRETE_RANGE, ITERATION );
-        TYPE_CHAR		: CHARACTER	:= OPER_SIZ_CHAR( D( SM_OBJ_TYPE, ITERATION_ID ) );
+        ITERATION_TYPE	: TREE		:= D( SM_OBJ_TYPE, ITERATION_ID );
+        TYPE_CHAR		: CHARACTER	:= OPER_SIZ_CHAR( ITERATION_TYPE );
         ITERATION_ID_STR	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, ITERATION_ID ) );
         ITERATION_ID_TAG	: LABEL_TYPE	:= NEW_LABEL;
         ITERATION_ID_VARSTR	:constant STRING	:= ITERATION_ID_STR & LABEL_STR( ITERATION_ID_TAG ) & "_disp";
@@ -308,37 +309,44 @@ separate ( EXPANDER )
         if  ITERATION_RANGE = TREE_VOID  then
 	ITERATION_RANGE := D( SM_RANGE, D( SM_OBJ_TYPE, ITERATION_ID ) );
         end if;
---        EXPRESSIONS.CODE_EXP( RANGE_LOW );
+
         EXPRESSIONS.CODE_DISCRETE_RANGE_BOUND( ITERATION_RANGE, IS_LAST => FALSE );
         PUT_LINE( tab & "S" & TYPE_CHAR & ' ' & LVL_STR & ',' & tab & ITERATION_ID_VARSTR );
 
         PUT( "VAR" & tab & "LMT_" & ITERATION_ID_VARSTR & ", " & TYPE_CHAR );
         if  CODI.DEBUG  then PUT( tab50 & "; limite boucle " & LOOP_LBL_STR); end if;
         NEW_LINE;
---        EXPRESSIONS.CODE_EXP( RANGE_HIGH );
+
         EXPRESSIONS.CODE_DISCRETE_RANGE_BOUND( ITERATION_RANGE, IS_LAST => TRUE );
         PUT_LINE( tab & "S" & TYPE_CHAR & ' ' & LVL_STR & ',' & tab & "LMT_" & ITERATION_ID_VARSTR );
 
 --			VERIFIER POUR NULL RANGE
 
-        PUT( tab & "L" & TYPE_CHAR & ' ' & LVL_STR & ',' & tab & ITERATION_ID_VARSTR );
+
+
+        PUT( tab & OPER_LOAD_STR( ITERATION_TYPE ) & ' ' & LVL_STR & ',' & tab & ITERATION_ID_VARSTR );
+--        PUT( tab & "L" & TYPE_CHAR & ' ' & LVL_STR & ',' & tab & ITERATION_ID_VARSTR );
         if  CODI.DEBUG  then
 	PUT( tab50 & "; test null range " & LOOP_LBL_STR );
         end if;
         NEW_LINE;
-        PUT_LINE( tab & "L" & TYPE_CHAR & ' ' & LVL_STR & ',' & tab & "LMT_" & ITERATION_ID_VARSTR );
+        PUT_LINE( tab & OPER_LOAD_STR( ITERATION_TYPE ) & ' ' & LVL_STR
+		& ',' & tab & "LMT_" & ITERATION_ID_VARSTR );
+--        PUT_LINE( tab & "L" & TYPE_CHAR & ' ' & LVL_STR & ',' & tab & "LMT_" & ITERATION_ID_VARSTR );
         PUT_LINE( tab & "CGT" );
         PUT_LINE( tab & "BT" & tab & AFTER_LOOP_LBL_STR );
 
 --			INVERSER CNT LMT POUR REVERSE
 
         if  ITERATION.TY = DN_REVERSE  then
-	PUT( tab & "L" & TYPE_CHAR & ' ' & LVL_STR & ',' & tab & ITERATION_ID_VARSTR );
+	PUT( tab & OPER_LOAD_STR( ITERATION_TYPE ) & ' ' & LVL_STR & ',' & tab & ITERATION_ID_VARSTR );
+--	PUT( tab & "L" & TYPE_CHAR & ' ' & LVL_STR & ',' & tab & ITERATION_ID_VARSTR );
 	if  CODI.DEBUG  then
 	  PUT( tab50 & "; inversion range " & LOOP_LBL_STR );
 	end if;
 	NEW_LINE;
-	PUT_LINE( tab & "L" & TYPE_CHAR & ' ' & LVL_STR & ',' & tab & "LMT_" & ITERATION_ID_VARSTR );
+	PUT_LINE( tab & OPER_LOAD_STR( ITERATION_TYPE ) & ' ' & LVL_STR & ',' & tab & "LMT_" & ITERATION_ID_VARSTR );
+--	PUT_LINE( tab & "L" & TYPE_CHAR & ' ' & LVL_STR & ',' & tab & "LMT_" & ITERATION_ID_VARSTR );
 	PUT_LINE( tab & "S" & TYPE_CHAR & ' ' & LVL_STR & ',' & tab & ITERATION_ID_VARSTR );
 	PUT_LINE( tab & "S" & TYPE_CHAR & ' ' & LVL_STR & ',' & tab & "LMT_" & ITERATION_ID_VARSTR );
         end if;
@@ -354,18 +362,22 @@ separate ( EXPANDER )
 
 --			TEST DE SORTIE
 
-        PUT( tab & "L" & TYPE_CHAR & ' ' & LVL_STR & ',' & tab & ITERATION_ID_VARSTR );
+        PUT( tab & OPER_LOAD_STR( ITERATION_TYPE ) & ' ' & LVL_STR & ',' & tab & ITERATION_ID_VARSTR );
+--        PUT( tab & "L" & TYPE_CHAR & ' ' & LVL_STR & ',' & tab & ITERATION_ID_VARSTR );
         if  CODI.DEBUG  then
 	PUT( tab50 & "; test de sortie " & LOOP_LBL_STR );
         end if;
         NEW_LINE;
-        PUT_LINE( tab & "L" & TYPE_CHAR & ' ' & LVL_STR & ',' & tab & "LMT_" & ITERATION_ID_VARSTR );
+        PUT_LINE( tab & OPER_LOAD_STR( ITERATION_TYPE ) & ' ' & LVL_STR
+		& ',' & tab & "LMT_" & ITERATION_ID_VARSTR );
+--        PUT_LINE( tab & "L" & TYPE_CHAR & ' ' & LVL_STR & ',' & tab & "LMT_" & ITERATION_ID_VARSTR );
         PUT_LINE( tab & "CEQ" );
         PUT_LINE( tab & "BT" & tab & AFTER_LOOP_LBL_STR );
 
 --			MISE A JOUR DU COMPTEUR
 
-        PUT( tab & "L" & TYPE_CHAR & ' ' & LVL_STR & ',' & tab & ITERATION_ID_VARSTR );
+        PUT( tab & OPER_LOAD_STR( ITERATION_TYPE ) & ' ' & LVL_STR & ',' & tab & ITERATION_ID_VARSTR );
+--        PUT( tab & "L" & TYPE_CHAR & ' ' & LVL_STR & ',' & tab & ITERATION_ID_VARSTR );
         if  CODI.DEBUG  then
 	PUT( tab50 & "; mise a jour compteur " & LOOP_LBL_STR );
         end if;
@@ -729,12 +741,12 @@ separate ( EXPANDER )
 
 	        if  OBJ_TYPE.TY in CLASS_SCALAR  or else  OBJ_TYPE.TY = DN_ACCESS  then
 	      -- out/inout -> in scalaire : dereferencement, charger la valeur pointee
-		declare
-		  SIZ_CHAR	: CHARACTER	:= CODI.OPER_SIZ_CHAR( OBJ_TYPE );
-		begin
-		  PUT_LINE( tab & "LI" & SIZ_CHAR & ' ' & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' & tab
+--		declare
+--		  SIZ_CHAR	: CHARACTER	:= CODI.OPER_SIZ_CHAR( OBJ_TYPE );
+--		begin
+		  PUT_LINE( tab & OPER_LOADI_STR( OBJ_TYPE ) & ' ' & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' & tab
 			& '-' & DEFN_STR & "_ofs" );
-		end;
+--		end;
 	        else
 	      -- out/inout -> in composite : le slot contient deja l'adresse, la propager
 		PUT_LINE( tab & "La " & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' & tab
@@ -753,9 +765,9 @@ separate ( EXPANDER )
 	      ITERATION_ID_TAG	: LABEL_TYPE	:= LABEL_TYPE( DI( CD_OFFSET, DEFN ) );
 	      ITERATION_ID_VARSTR	: constant STRING	:= ITERATION_ID_STR
 						& LABEL_STR( ITERATION_ID_TAG ) & "_disp";
-	      TYPE_CHAR		: CHARACTER	:= OPER_SIZ_CHAR( D( SM_OBJ_TYPE, DEFN ) );
+--	      TYPE_CHAR		: CHARACTER	:= OPER_SIZ_CHAR( D( SM_OBJ_TYPE, DEFN ) );
 	    begin
-	      PUT_LINE( tab & "L" & TYPE_CHAR & ' '
+	      PUT_LINE( tab & OPER_LOAD_STR( D( SM_OBJ_TYPE, DEFN ) ) & ' '
 			& INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ','
 			& tab & ITERATION_ID_VARSTR );
 	    end;

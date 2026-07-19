@@ -112,6 +112,47 @@ is				--------
   end	INTEGER_IMAGE;
 	-------------
 
+
+			----------
+  function		ENUM_IMAGE	( IMAGES :STRING; REP :INTEGER )	return STRING
+  is			----------
+  -- Primitive Ada cachee de l''IMAGE des ENUMERES, pendant d'INTEGER_IMAGE.
+  -- Appelee par le code genere : CODE_IMAGE empile le descripteur resultat,
+  -- REP (l'argument de l'attribut, deja empile par l'appelant), puis le
+  -- doublet IMAGES du type -- qui est le doublet contractuel pose par
+  -- END_BLOC_DEF a use__info+16 (SIZ@0, FST@4, LST@8, pad, data_ptr@16,
+  -- info_ptr@24 ; pieges n 29 et 87) : directement un doublet STRING,
+  -- zero copie.  Format IMAGES : triplets ( REP, LEN, caracteres... ),
+  -- le meme que celui parcouru par TEXT_IO.ENUMERATION_IO (PUT/GET).
+    I		: POSITIVE	:= IMAGES'FIRST;
+    ITEM_REP	: INTEGER;
+    LEN		: INTEGER;
+  begin
+    while  I <= IMAGES'LAST  loop
+      ITEM_REP := CHARACTER'POS( IMAGES( I ) );
+      LEN      := CHARACTER'POS( IMAGES( I + 1 ) );
+
+      if  ITEM_REP = REP  then
+        declare
+	-- Rebasage OBLIGATOIRE a 1..LEN (LRM 3.5.5 : la borne basse du
+	-- resultat de 'IMAGE est 1) : LEX compte dessus (IMAGE(4..LGR)).
+	-- Initialisation par tranche : c'est le patch n 3 de
+	-- COMPILE_ARRAY_VAR qui rend cette declaration compilable.
+          IMG	: constant STRING( 1 .. LEN )	:= IMAGES( I + 2 .. I + 1 + LEN );
+        begin
+          return IMG;
+        end;
+      end if;
+
+      I := I + 2 + LEN;
+    end loop;
+
+    raise PROGRAM_ERROR;										-- valeur hors table : bruyant (piege n 53)
+
+  end	ENUM_IMAGE;
+	----------
+
+
 	--------
 end	_standrd;
 	--------

@@ -81,7 +81,9 @@ is
         begin
 	PUT_LINE( "if ~ definite " & PRINT_NAME( D( LX_SYMREP, DEFN ) ) );
 	PUT_LINE( "include '" & UNIT_NAME & ".FINC'" );
-	if  CODI.DEBUG  then PUT_LINE( "display 'including withed unit " & UNIT_NAME & ".FINC'" & ", 10"  ); end if;
+	if  CODI.GENERATE_BINARY_MAP  then
+	  PUT_LINE( "display 'including withed unit " & UNIT_NAME & ".FINC'" & ", 10"  );
+	end if;
 	PUT_LINE( "end if" );
         end;
       end if;
@@ -171,7 +173,7 @@ is
         then
 	  PUT_LINE( "if ~ definite " & UNIT_NAME );
 	  PUT_LINE( "include '" & UNIT_NAME & ".FINC'" );
-	  if  CODI.DEBUG  then
+	  if  CODI.GENERATE_BINARY_MAP  then
 	    PUT_LINE( "display 'including trans withed unit " & UNIT_NAME & ".FINC'" & ", 10" );
 	  end if;
 	  PUT_LINE( "end if" );
@@ -351,7 +353,9 @@ is
 						& '-' & SUB_NAME & ".FINC";
       begin
         PUT_LINE( "include '" & FULL_NAME & ''' );
-        if  CODI.DEBUG  then PUT_LINE( "display 'including sub body " & FULL_NAME & ''' & ", 10" ); end if;
+        if  CODI.GENERATE_BINARY_MAP  then
+	PUT_LINE( "display 'including sub body " & FULL_NAME & ''' & ", 10" );
+        end if;
       end;
 
     else
@@ -360,8 +364,13 @@ is
       end if;
 
       PUT( "PRO" & tab & SUB_NAME & '_' & LABEL_STR( LBL ) );
+
       if  CODI.DEBUG  then PUT( tab50 & ";---------- PRO " & SUB_NAME ); end if;
       NEW_LINE;
+      if  CODI.GENERATE_BINARY_MAP  then
+        PUT_LINE( " hexa_show '" & SUB_NAME & '_' & LABEL_STR( LBL ) & " ', $" );
+      end if;
+
 
       if DECL_ID.TY = DN_GENERIC_ID then
         CODE_GENERIC_FRAME_OFFSETS( DECL_ID );
@@ -428,6 +437,9 @@ is
       PUT( "namespace " & PACK_NAME );
       if  CODI.DEBUG  then NEW_LINE; PUT( tab50 & ";---------- GENERIC PACKAGE ----------" ); NEW_LINE; end if;
       NEW_LINE;
+      if  CODI.GENERATE_BINARY_MAP  then
+        PUT_LINE( " hexa_show '" & PACK_NAME & " body ', $" );
+      end if;
 
       PUT_LINE( "PRMS" );
 
@@ -493,7 +505,9 @@ is
 						& '-' & PACK_NAME & ".FINC";
         begin
 	PUT_LINE( "include '" & FULL_UNIT_NAME & ''' );
-	if  CODI.DEBUG  then PUT_LINE( "display 'including sub unit " & FULL_UNIT_NAME & ''' & ", 10" ); end if;
+	if  CODI.GENERATE_BINARY_MAP  then
+	  PUT_LINE( "display 'including sub unit " & FULL_UNIT_NAME & ''' & ", 10" );
+	end if;
         end;
 
       else

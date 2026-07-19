@@ -29,6 +29,7 @@ is					--------------
 	------------------
 
   begin
+    if  FILE.IS_OPENED  then raise STATUS_ERROR; end if;							-- LRM 14.2.1(4)
     ERR_OR_ID := CREATE_SYSTEM_CALL( NAME );
     if  ERR_OR_ID >= 0  then
       FILE.ID := ERR_OR_ID;
@@ -57,14 +58,16 @@ is					--------------
     function	OPEN_SYSTEM_CALL	( NAME :in STRING )		return INTEGER
     is		----------------
     begin
-      ASM_OP_2'( OPCODE => LA, LVL => 2, OFS => -8 );			-- @descripteur de NAME
+      ASM_OP_2'( OPCODE => LA, LVL => 2, OFS => -8 );							-- @descripteur de NAME
       ASM_OP_0'( OPCODE => SYS_FILE_OPEN );
-      ASM_OP_2'( OPCODE => SD, LVL => 2, OFS => -24 );			-- Retour du File ID apres le GFP
+      ASM_OP_2'( OPCODE => SD, LVL => 2, OFS => -24 );							-- Retour du File ID apres le GFP
 
     end	OPEN_SYSTEM_CALL;
 	----------------
 
   begin
+    if  FILE.IS_OPENED  then raise STATUS_ERROR; end if;							-- LRM 14.2.1(4)
+
     ERR_OR_ID := OPEN_SYSTEM_CALL( NAME );
     if  ERR_OR_ID >= 0  then
       FILE.ID := ERR_OR_ID;
@@ -73,6 +76,8 @@ is					--------------
       FILE.IS_OPENED := TRUE;
       FILE.MODE := MODE;
       FILE.AT_END_OF_FILE := FALSE;
+    else
+      raise NAME_ERROR;										-- LRM 14.2.1(7) : ouverture impossible
     end if;
 
   end	OPEN;
