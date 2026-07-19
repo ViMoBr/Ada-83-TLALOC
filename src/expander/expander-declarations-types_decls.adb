@@ -1355,9 +1355,19 @@ put_line( "; SIL : idx_spec inattendu " & NODE_NAME'IMAGE( IDX_SPEC.TY ) );
         end case;
       end if;
 
-      if  TS.TY = DN_ARRAY  then
-        return  STATIC_TYPE_ALIGN_BYTES( D( SM_COMP_TYPE, TS ) );
+       if  TS.TY = DN_CONSTRAINED_ARRAY  or else  TS.TY = DN_ARRAY  then
+        declare
+	BASE	: TREE	:= D( SM_BASE_TYPE, TS );				-- SM_COMP_TYPE vit sur la BASE
+        begin									-- (idiome l.555)
+	if  BASE = TREE_VOID  or else  BASE = TREE_NIL  then
+	  BASE := TS;
+	end if;
+	return  STATIC_TYPE_ALIGN_BYTES( D( SM_COMP_TYPE, BASE ) );
+        end;
       end if;
+--     if  TS.TY = DN_ARRAY  then
+--        return  STATIC_TYPE_ALIGN_BYTES( D( SM_COMP_TYPE, TS ) );
+--      end if;
 
       return 8;								-- DN_FLOAT, DN_ACCESS, DN_RECORD, autres
 

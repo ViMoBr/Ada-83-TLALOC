@@ -3,6 +3,7 @@ namespace GRMR_OPS				;---------- PACKAGE (BDY)
 elab_spec:				;    SPEC ELAB
 
 					; CODE_PACKAGE_SPEC
+ hexa_show ' spec ', $
 
 					; _GRMR_OP ENUMERATION TYPE INFO
 _GRMR_OP = '_GRMR_OP'
@@ -224,6 +225,8 @@ VAR LST, b
 	LI	255
 	Sb	0, LST
 end namespace
+ hexa_show 'var elab HCODE ', $
+ hexa_show ' disp ', HCODE_disp
 VAR HCODE_disp, d				; variable entiere
 
 
@@ -271,13 +274,15 @@ end namespace
 USEINFO 0, HN, 	La 0, STANDARD._STRING.use__info
 USEINFO 0, HP, 	La 0, STANDARD.GRMR_OPS._GRMR_OP.use__info
 virtual at 0				; calcul des offsets statiques
-STATOFS HN, 17, 8
+STATOFS HN, 17, 1
 STATOFS HP, 1, 1
 size = $
 end virtual
 	LI	 size*8
 	Sd	0, SIZ
 end namespace
+ hexa_show 'var elab HTABLE ', $
+ hexa_show ' disp ', HTABLE_disp
 _HTABLE__type = '_HTABLE__type'
 namespace _HTABLE__type			; array var constrained array type info
 VAR use__info, q
@@ -326,6 +331,8 @@ VAR HTABLE__u, q				; variable array : useinfo pointeur au rec info
 	CO_VAR
 	Sa	0, HTABLE_disp				; array data ptr at _disp
 
+ hexa_show 'var elab ITABLE ', $
+ hexa_show ' disp ', ITABLE_disp
 _ITABLE__type = '_ITABLE__type'
 namespace _ITABLE__type			; array var constrained array type info
 VAR use__info, q
@@ -371,10 +378,13 @@ VAR ITABLE__u, q				; variable array : useinfo pointeur au rec info
 
 if defined HASH_SEARCH_L1_
 PRO	HASH_SEARCH_L1				;---------- PRO HASH_SEARCH
+ hexa_show 'HASH_SEARCH_L1 ', $
 PRMS					;    debut parametrage
 	PRM S_ofs				; in
 endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
+ hexa_show 'var elab A_17 ', $
+ hexa_show ' disp ', A_17_disp
 _A_17__type = '_A_17__type'
 namespace _A_17__type			; array var constrained array type info
 VAR use__info, q
@@ -705,6 +715,7 @@ end if
 
 if defined GRMR_OP_VALUE_L1_
 PRO	GRMR_OP_VALUE_L1			;---------- PRO GRMR_OP_VALUE
+ hexa_show 'GRMR_OP_VALUE_L1 ', $
 PRMS					;    debut parametrage
 	PRM S_ofs				; in
 	PRM result__ofs				; resultat de fonction
@@ -744,16 +755,21 @@ end if
 
 if defined GRMR_OP_IMAGE_L2_
 PRO	GRMR_OP_IMAGE_L2			;---------- PRO GRMR_OP_IMAGE
+ hexa_show 'GRMR_OP_IMAGE_L2 ', $
 PRMS					;    debut parametrage
 	PRM GO_ofs				; in
 	PRM result__ofs				; resultat de fonction
 endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
+ hexa_show 'var elab LL ', $
+ hexa_show ' disp ', LL_disp
 VAR LL_disp, d				; variable entiere
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	17
 	Sd  1,	LL_disp
 
+ hexa_show 'var elab TXT ', $
+ hexa_show ' disp ', TXT_disp
 _TXT__type = '_TXT__type'
 namespace _TXT__type			; array var constrained array type info
 VAR use__info, q
@@ -932,11 +948,14 @@ ELB 1					;    BODY ELAB
 
 if defined STASH_L21_
 PRO	STASH_L21				;---------- PRO STASH
+ hexa_show 'STASH_L21 ', $
 PRMS					;    debut parametrage
 	PRM P_ofs				; in
 	PRM S_ofs				; in
 endPRMS					;    fin parametrage
 ELB 2					;    BODY ELAB
+ hexa_show 'var elab A_17 ', $
+ hexa_show ' disp ', A_17_disp
 _A_17__type = '_A_17__type'
 namespace _A_17__type			; array var constrained array type info
 VAR use__info, q

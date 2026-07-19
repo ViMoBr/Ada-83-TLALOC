@@ -28,6 +28,7 @@ display 'including trans withed unit TEXT_IO.FINC', 10
 end if
 EXPANDER = 'EXPANDER'
 PRO	EXPANDER_L1				;---------- PRO EXPANDER
+ hexa_show 'EXPANDER_L1 ', $
 PRMS					;    debut parametrage
 	PRM NOM_TEXTE_ofs				; in
 endPRMS					;    fin parametrage
@@ -36,12 +37,17 @@ ELB 1					;    BODY ELAB
 UTILS = 'UTILS'
 namespace UTILS				;---------- PACKAGE DECLARATION
 					; CODE_PACKAGE_SPEC
+ hexa_show ' spec ', $
+ hexa_show 'var elab DEBUG ', $
+ hexa_show ' disp ', DEBUG_disp
 VAR DEBUG_disp, b				; variable bool char enum
 	LI	1
 	Sb  1,	STANDARD.EXPANDER_L1.UTILS.DEBUG_disp
 
+ hexa_show 'var elab GENERATE_BINARY_MAP ', $
+ hexa_show ' disp ', GENERATE_BINARY_MAP_disp
 VAR GENERATE_BINARY_MAP_disp, b		; variable bool char enum
-	LI	0
+	LI	1
 	Sb  1,	STANDARD.EXPANDER_L1.UTILS.GENERATE_BINARY_MAP_disp
 
 VAR TAB_disp, q
@@ -176,14 +182,20 @@ END_BLOC_DEF 8, 0, 3
 	LCA	SIZ
 	Sa	1, use__info
 end namespace
+ hexa_show 'var elab OUTPUT_CODE ', $
+ hexa_show ' disp ', OUTPUT_CODE_disp
 VAR OUTPUT_CODE_disp, b			; variable bool char enum
 	LI	1
 	Sb  1,	STANDARD.EXPANDER_L1.UTILS.OUTPUT_CODE_disp
 
+ hexa_show 'var elab IN_GENERIC_INSTANTIATION ', $
+ hexa_show ' disp ', IN_GENERIC_INSTANTIATION_disp
 VAR IN_GENERIC_INSTANTIATION_disp, b		; variable bool char enum
 	LI	0
 	Sb  1,	STANDARD.EXPANDER_L1.UTILS.IN_GENERIC_INSTANTIATION_disp
 
+ hexa_show 'var elab INSTANTIATION_MODEL_NAME ', $
+ hexa_show ' disp ', INSTANTIATION_MODEL_NAME_disp
 VAR INSTANTIATION_MODEL_NAME_disp, q		; variable record : pointeur aux data record
 VAR INSTANTIATION_MODEL_NAME__u, q		; variable record : pointeur aux useinfo
 VAR INSTANTIATION_MODEL_NAME__dat, STANDARD.IDL._TREE.size
@@ -202,6 +214,8 @@ VAR INSTANTIATION_MODEL_NAME__dat, STANDARD.IDL._TREE.size
 	BFI
 	Sd
 
+ hexa_show 'var elab GENERIC_MODEL_DECL_SEQ ', $
+ hexa_show ' disp ', GENERIC_MODEL_DECL_SEQ_disp
 VAR GENERIC_MODEL_DECL_SEQ_disp, q		; variable record : pointeur aux data record
 VAR GENERIC_MODEL_DECL_SEQ__u, q		; variable record : pointeur aux useinfo
 VAR GENERIC_MODEL_DECL_SEQ__dat, STANDARD.IDL._SEQ_TYPE.size
@@ -211,10 +225,14 @@ VAR GENERIC_MODEL_DECL_SEQ__dat, STANDARD.IDL._SEQ_TYPE.size
 	Sa	1, GENERIC_MODEL_DECL_SEQ__u
 ; CODE_VC_NAME DN_VARIABLE_ID
 
+ hexa_show 'var elab IN_GENERIC_BODY ', $
+ hexa_show ' disp ', IN_GENERIC_BODY_disp
 VAR IN_GENERIC_BODY_disp, b			; variable bool char enum
 	LI	0
 	Sb  1,	STANDARD.EXPANDER_L1.UTILS.IN_GENERIC_BODY_disp
 
+ hexa_show 'var elab ENCLOSING_GENERIC ', $
+ hexa_show ' disp ', ENCLOSING_GENERIC_disp
 VAR ENCLOSING_GENERIC_disp, q			; variable record : pointeur aux data record
 VAR ENCLOSING_GENERIC__u, q			; variable record : pointeur aux useinfo
 VAR ENCLOSING_GENERIC__dat, STANDARD.IDL._TREE.size
@@ -233,6 +251,8 @@ VAR ENCLOSING_GENERIC__dat, STANDARD.IDL._TREE.size
 	BFI
 	Sd
 
+ hexa_show 'var elab GENERIC_BASE_LEVEL ', $
+ hexa_show ' disp ', GENERIC_BASE_LEVEL_disp
 VAR GENERIC_BASE_LEVEL_disp, d		; variable entiere
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
@@ -246,10 +266,16 @@ VAR GENERIC_BASE_LEVEL_disp, d		; variable entiere
 	BT	STANDARD.ce_raise_
 	Sd  1,	STANDARD.EXPANDER_L1.UTILS.GENERIC_BASE_LEVEL_disp
 
+ hexa_show 'var elab IN_SPEC_UNIT ', $
+ hexa_show ' disp ', IN_SPEC_UNIT_disp
 VAR IN_SPEC_UNIT_disp, b			; variable bool char enum
 
+ hexa_show 'var elab CUR_LEVEL ', $
+ hexa_show ' disp ', CUR_LEVEL_disp
 VAR CUR_LEVEL_disp, d			; variable entiere
 
+ hexa_show 'var elab CUR_OFFSET ', $
+ hexa_show ' disp ', CUR_OFFSET_disp
 VAR CUR_OFFSET_disp, d			; variable entiere
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
@@ -263,6 +289,8 @@ VAR CUR_OFFSET_disp, d			; variable entiere
 	BT	STANDARD.ce_raise_
 	Sd  1,	STANDARD.EXPANDER_L1.UTILS.CUR_OFFSET_disp
 
+ hexa_show 'var elab HANDLER_CTX_AT ', $
+ hexa_show ' disp ', HANDLER_CTX_AT_disp
 _HANDLER_CTX_AT__type = '_HANDLER_CTX_AT__type'
 namespace _HANDLER_CTX_AT__type		; array var constrained array type info
 VAR use__info, q
@@ -376,25 +404,35 @@ L2:
 	BT  L2
 L3:
 
+ hexa_show 'var elab HANDLER_LVL ', $
+ hexa_show ' disp ', HANDLER_LVL_disp
 VAR HANDLER_LVL_disp, d			; variable entiere
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	NEG
 	Sd  1,	STANDARD.EXPANDER_L1.UTILS.HANDLER_LVL_disp
 
+ hexa_show 'var elab HANDLER_CTX_SUF ', $
+ hexa_show ' disp ', HANDLER_CTX_SUF_disp
 VAR HANDLER_CTX_SUF_disp, d			; variable entiere
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	Sd  1,	STANDARD.EXPANDER_L1.UTILS.HANDLER_CTX_SUF_disp
 
+ hexa_show 'var elab CHECKS_ENABLED ', $
+ hexa_show ' disp ', CHECKS_ENABLED_disp
 VAR CHECKS_ENABLED_disp, b			; variable bool char enum
 	LI	1
 	Sb  1,	STANDARD.EXPANDER_L1.UTILS.CHECKS_ENABLED_disp
 
+ hexa_show 'var elab NO_SUBP_PARAMS ', $
+ hexa_show ' disp ', NO_SUBP_PARAMS_disp
 VAR NO_SUBP_PARAMS_disp, b			; variable bool char enum
 	LI	1
 	Sb  1,	STANDARD.EXPANDER_L1.UTILS.NO_SUBP_PARAMS_disp
 
+ hexa_show 'var elab ENCLOSING_BODY ', $
+ hexa_show ' disp ', ENCLOSING_BODY_disp
 VAR ENCLOSING_BODY_disp, q			; variable record : pointeur aux data record
 VAR ENCLOSING_BODY__u, q			; variable record : pointeur aux useinfo
 VAR ENCLOSING_BODY__dat, STANDARD.IDL._TREE.size
@@ -413,10 +451,14 @@ VAR ENCLOSING_BODY__dat, STANDARD.IDL._TREE.size
 	BFI
 	Sd
 
+ hexa_show 'var elab CHOICE_OTHERS_FLAG ', $
+ hexa_show ' disp ', CHOICE_OTHERS_FLAG_disp
 VAR CHOICE_OTHERS_FLAG_disp, b		; variable bool char enum
 	LI	0
 	Sb  1,	STANDARD.EXPANDER_L1.UTILS.CHOICE_OTHERS_FLAG_disp
 
+ hexa_show 'var elab LOOP_STM_S ', $
+ hexa_show ' disp ', LOOP_STM_S_disp
 VAR LOOP_STM_S_disp, q			; variable record : pointeur aux data record
 VAR LOOP_STM_S__u, q			; variable record : pointeur aux useinfo
 VAR LOOP_STM_S__dat, STANDARD.IDL._TREE.size
@@ -435,10 +477,16 @@ VAR LOOP_STM_S__dat, STANDARD.IDL._TREE.size
 	BFI
 	Sd
 
+ hexa_show 'var elab LOOP_OP_INC_DEC ', $
+ hexa_show ' disp ', LOOP_OP_INC_DEC_disp
 VAR LOOP_OP_INC_DEC_disp, b			; variable entiere
 
+ hexa_show 'var elab LOOP_OP_GT_LT ', $
+ hexa_show ' disp ', LOOP_OP_GT_LT_disp
 VAR LOOP_OP_GT_LT_disp, b			; variable entiere
 
+ hexa_show 'var elab TYPE_SYMREP ', $
+ hexa_show ' disp ', TYPE_SYMREP_disp
 VAR TYPE_SYMREP_disp, q			; variable record : pointeur aux data record
 VAR TYPE_SYMREP__u, q			; variable record : pointeur aux useinfo
 VAR TYPE_SYMREP__dat, STANDARD.IDL._TREE.size
@@ -502,6 +550,7 @@ end namespace
 EXPRESSIONS = 'EXPRESSIONS'
 namespace EXPRESSIONS			;---------- PACKAGE DECLARATION
 					; CODE_PACKAGE_SPEC
+ hexa_show ' spec ', $
 					; sub program entry decl (in instantiation FALSE )
 					; sub program entry decl (in instantiation FALSE )
 					; sub program entry decl (in instantiation FALSE )
@@ -544,6 +593,7 @@ display 'including sub unit EXPANDER-UTILS.FINC', 10
 REPRESENTED_ITEMS = 'REPRESENTED_ITEMS'
 namespace REPRESENTED_ITEMS			;---------- PACKAGE DECLARATION
 					; CODE_PACKAGE_SPEC
+ hexa_show ' spec ', $
 					; sub program entry decl (in instantiation FALSE )
 					; sub program entry decl (in instantiation FALSE )
 					; sub program entry decl (in instantiation FALSE )
@@ -562,6 +612,7 @@ display 'including sub unit EXPANDER-REPRESENTED_ITEMS.FINC', 10
 DECLARATIONS = 'DECLARATIONS'
 namespace DECLARATIONS			;---------- PACKAGE DECLARATION
 					; CODE_PACKAGE_SPEC
+ hexa_show ' spec ', $
 					; sub program entry decl (in instantiation FALSE )
 					; sub program entry decl (in instantiation FALSE )
 					; sub program entry decl (in instantiation FALSE )
@@ -595,6 +646,7 @@ display 'including sub unit EXPANDER-DECLARATIONS.FINC', 10
 INSTRUCTIONS = 'INSTRUCTIONS'
 namespace INSTRUCTIONS			;---------- PACKAGE DECLARATION
 					; CODE_PACKAGE_SPEC
+ hexa_show ' spec ', $
 					; sub program entry decl (in instantiation FALSE )
 					; sub program entry decl (in instantiation FALSE )
 					; sub program entry decl (in instantiation FALSE )
@@ -636,6 +688,7 @@ display 'including sub unit EXPANDER-EXPRESSIONS.FINC', 10
 STRUCTURES = 'STRUCTURES'
 namespace STRUCTURES			;---------- PACKAGE DECLARATION
 					; CODE_PACKAGE_SPEC
+ hexa_show ' spec ', $
 					; sub program entry decl (in instantiation FALSE )
 					; sub program entry decl (in instantiation FALSE )
 					; sub program entry decl (in instantiation FALSE )
@@ -654,10 +707,13 @@ display 'including sub unit EXPANDER-INSTRUCTIONS.FINC', 10
 
 if defined CODE_ROOT_L35_
 PRO	CODE_ROOT_L35				;---------- PRO CODE_ROOT
+ hexa_show 'CODE_ROOT_L35 ', $
 PRMS					;    debut parametrage
 	PRM ROOT_ofs				; in
 endPRMS					;    fin parametrage
 ELB 2					;    BODY ELAB
+ hexa_show 'var elab USER_ROOT ', $
+ hexa_show ' disp ', USER_ROOT_disp
 VAR USER_ROOT_disp, q			; variable record : pointeur aux data record
 VAR USER_ROOT__u, q				; variable record : pointeur aux useinfo
 VAR USER_ROOT__dat, STANDARD.IDL._TREE.size
@@ -683,6 +739,8 @@ VAR	ANON_360_33__dat, STANDARD.IDL._TREE.size
 	La  ,  0
 	BLKMOV
 
+ hexa_show 'var elab COMPILATION ', $
+ hexa_show ' disp ', COMPILATION_disp
 VAR COMPILATION_disp, q			; variable record : pointeur aux data record
 VAR COMPILATION__u, q			; variable record : pointeur aux useinfo
 VAR COMPILATION__dat, STANDARD.IDL._TREE.size
@@ -708,6 +766,8 @@ VAR	ANON_361_35__dat, STANDARD.IDL._TREE.size
 	La  ,  0
 	BLKMOV
 
+ hexa_show 'var elab COMPLTN_UNIT_S ', $
+ hexa_show ' disp ', COMPLTN_UNIT_S_disp
 VAR COMPLTN_UNIT_S_disp, q			; variable record : pointeur aux data record
 VAR COMPLTN_UNIT_S__u, q			; variable record : pointeur aux useinfo
 VAR COMPLTN_UNIT_S__dat, STANDARD.IDL._TREE.size
@@ -737,6 +797,8 @@ VAR	ANON_362_38__dat, STANDARD.IDL._TREE.size
 begin:					;---------- BDY INSTRUCTIONS
 namespace	BLOCK__1
 ELB 3					;    BODY ELAB
+ hexa_show 'var elab COMPLTN_UNIT_SEQ ', $
+ hexa_show ' disp ', COMPLTN_UNIT_SEQ_disp
 VAR COMPLTN_UNIT_SEQ_disp, q			; variable record : pointeur aux data record
 VAR COMPLTN_UNIT_SEQ__u, q			; variable record : pointeur aux useinfo
 VAR COMPLTN_UNIT_SEQ__dat, STANDARD.IDL._SEQ_TYPE.size
@@ -761,6 +823,8 @@ VAR	ANON_365_38__dat, STANDARD.IDL._SEQ_TYPE.size
 	La  ,  0
 	BLKMOV
 
+ hexa_show 'var elab COMPLTN_UNIT ', $
+ hexa_show ' disp ', COMPLTN_UNIT_disp
 VAR COMPLTN_UNIT_disp, q			; variable record : pointeur aux data record
 VAR COMPLTN_UNIT__u, q			; variable record : pointeur aux useinfo
 VAR COMPLTN_UNIT__dat, STANDARD.IDL._TREE.size
@@ -913,6 +977,7 @@ end if
 
 if defined CODE_CONTEXT_PRAGMA_L160_
 PRO	CODE_CONTEXT_PRAGMA_L160			;---------- PRO CODE_CONTEXT_PRAGMA
+ hexa_show 'CODE_CONTEXT_PRAGMA_L160 ', $
 PRMS					;    debut parametrage
 	PRM CONTEXT_PRAGMA_ofs			; in
 endPRMS					;    fin parametrage
@@ -928,6 +993,7 @@ end if
 
 if defined CODE_BLOCK_MASTER_L163_
 PRO	CODE_BLOCK_MASTER_L163			;---------- PRO CODE_BLOCK_MASTER
+ hexa_show 'CODE_BLOCK_MASTER_L163 ', $
 PRMS					;    debut parametrage
 	PRM BLOCK_MASTER_ofs			; in
 endPRMS					;    fin parametrage
@@ -943,6 +1009,7 @@ end if
 
 if defined CODE_DERIVED_SUBPROG_L166_
 PRO	CODE_DERIVED_SUBPROG_L166			;---------- PRO CODE_DERIVED_SUBPROG
+ hexa_show 'CODE_DERIVED_SUBPROG_L166 ', $
 PRMS					;    debut parametrage
 	PRM DERIVED_SUBPROG_ofs			; in
 endPRMS					;    fin parametrage
@@ -958,6 +1025,7 @@ end if
 
 if defined CODE_IMPLICIT_NOT_EQ_L169_
 PRO	CODE_IMPLICIT_NOT_EQ_L169			;---------- PRO CODE_IMPLICIT_NOT_EQ
+ hexa_show 'CODE_IMPLICIT_NOT_EQ_L169 ', $
 PRMS					;    debut parametrage
 	PRM IMPLICIT_NOT_EQ_ofs			; in
 endPRMS					;    fin parametrage
@@ -973,11 +1041,14 @@ end if
 
 if defined CODE_SUBTYPE_INDICATION_L172_
 PRO	CODE_SUBTYPE_INDICATION_L172		;---------- PRO CODE_SUBTYPE_INDICATION
+ hexa_show 'CODE_SUBTYPE_INDICATION_L172 ', $
 PRMS					;    debut parametrage
 	PRM SUBTYPE_INDICATION_ofs			; in
 	PRM TYPE_DECL_ofs				; in
 endPRMS					;    fin parametrage
 ELB 2					;    BODY ELAB
+ hexa_show 'var elab TYPE_ID ', $
+ hexa_show ' disp ', TYPE_ID_disp
 VAR TYPE_ID_disp, q				; variable record : pointeur aux data record
 VAR TYPE_ID__u, q				; variable record : pointeur aux useinfo
 VAR TYPE_ID__dat, STANDARD.IDL._TREE.size
@@ -1003,6 +1074,8 @@ VAR	ANON_413_25__dat, STANDARD.IDL._TREE.size
 	La  ,  0
 	BLKMOV
 
+ hexa_show 'var elab INTEGER_SPEC ', $
+ hexa_show ' disp ', INTEGER_SPEC_disp
 VAR INTEGER_SPEC_disp, q			; variable record : pointeur aux data record
 VAR INTEGER_SPEC__u, q			; variable record : pointeur aux useinfo
 VAR INTEGER_SPEC__dat, STANDARD.IDL._TREE.size
@@ -1048,6 +1121,7 @@ end if
 
 if defined CODE_OBJECT_L36_
 PRO	CODE_OBJECT_L36				;---------- PRO CODE_OBJECT
+ hexa_show 'CODE_OBJECT_L36 ', $
 PRMS					;    debut parametrage
 	PRM OBJECT_ofs				; in
 endPRMS					;    fin parametrage
@@ -3215,6 +3289,7 @@ end if
 
 if defined CODE_ADRESSE_L208_
 PRO	CODE_ADRESSE_L208			;---------- PRO CODE_ADRESSE
+ hexa_show 'CODE_ADRESSE_L208 ', $
 PRMS					;    debut parametrage
 	PRM ADRESSE_ofs				; in
 endPRMS					;    fin parametrage
@@ -3393,6 +3468,7 @@ end if
 
 if defined CODE_SELECT_ALT_PRAGMA_L37_
 PRO	CODE_SELECT_ALT_PRAGMA_L37		;---------- PRO CODE_SELECT_ALT_PRAGMA
+ hexa_show 'CODE_SELECT_ALT_PRAGMA_L37 ', $
 PRMS					;    debut parametrage
 	PRM SELECT_ALT_PRAGMA_ofs			; in
 endPRMS					;    fin parametrage
@@ -3408,6 +3484,7 @@ end if
 
 if defined CODE_EXCEPTION_ID_L38_
 PRO	CODE_EXCEPTION_ID_L38			;---------- PRO CODE_EXCEPTION_ID
+ hexa_show 'CODE_EXCEPTION_ID_L38 ', $
 PRMS					;    debut parametrage
 	PRM EXCEPTION_ID_ofs			; in
 endPRMS					;    fin parametrage
@@ -3416,6 +3493,8 @@ ELB 2					;    BODY ELAB
 begin:					;---------- BDY INSTRUCTIONS
 namespace	BLOCK__3
 ELB 3					;    BODY ELAB
+ hexa_show 'var elab LBL ', $
+ hexa_show ' disp ', LBL_disp
 VAR LBL_disp, q				; variable array : pointeur aux data
 VAR LBL__u, q				; variable array : useinfo pointeur au rec info
 	La 0, STANDARD._STRING.use__info
@@ -3617,6 +3696,7 @@ end if
 
 if defined DBGSTOP_L1_
 PRO	DBGSTOP_L1				;---------- PRO DBGSTOP
+ hexa_show 'DBGSTOP_L1 ', $
 ELB 2					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
@@ -3807,6 +3887,8 @@ L236:					; post if
 L232:
 namespace	CREATE_FAS_MAIN_FILE
 ELB 2					;    BODY ELAB
+ hexa_show 'var elab LAST_NAME_CHAR ', $
+ hexa_show ' disp ', LAST_NAME_CHAR_disp
 VAR LAST_NAME_CHAR_disp, d			; variable entiere
 	LVA	1, -NOM_TEXTE_ofs
 	LIa	, , 8
@@ -3821,6 +3903,8 @@ VAR LAST_NAME_CHAR_disp, d			; variable entiere
 	BT	STANDARD.ce_raise_
 	Sd  2,	LAST_NAME_CHAR_disp
 
+ hexa_show 'var elab UPPER_NAME ', $
+ hexa_show ' disp ', UPPER_NAME_disp
 _UPPER_NAME__type = '_UPPER_NAME__type'
 namespace _UPPER_NAME__type			; array var constrained array type info
 VAR use__info, q
@@ -4093,6 +4177,8 @@ L242:					; post if
 L240:					; post loop FIND_DOT_IF_ANY_AND_UPCASE
 namespace	BLOCK__4
 ELB 3					;    BODY ELAB
+ hexa_show 'var elab F ', $
+ hexa_show ' disp ', F_disp
 VAR F_disp, q				; variable record : pointeur aux data record
 VAR F__u, q				; variable record : pointeur aux useinfo
 VAR F__dat, STANDARD.TEXT_IO._FILE_TYPE.size

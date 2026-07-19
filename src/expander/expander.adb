@@ -20,7 +20,7 @@ is
   is
 
     DEBUG				: BOOLEAN		:= TRUE;
-    GENERATE_BINARY_MAP		: BOOLEAN		:= FALSE;
+    GENERATE_BINARY_MAP		: BOOLEAN		:= TRUE;
 
     tab				: CHARACTER	renames ASCII.HT;
 

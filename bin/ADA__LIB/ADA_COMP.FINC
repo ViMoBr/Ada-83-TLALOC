@@ -40,7 +40,10 @@ display 'including trans withed unit EXPANDER.FINC', 10
 end if
 ADA_COMP = 'ADA_COMP'
 PRO	ADA_COMP_L1				;---------- PRO ADA_COMP
+ hexa_show 'ADA_COMP_L1 ', $
 ELB 1					;    BODY ELAB
+ hexa_show 'var elab CMD_FROM_STDIN ', $
+ hexa_show ' disp ', CMD_FROM_STDIN_disp
 _CMD_FROM_STDIN__type = '_CMD_FROM_STDIN__type'
 namespace _CMD_FROM_STDIN__type		; array var constrained array type info
 VAR use__info, q
@@ -85,8 +88,12 @@ VAR CMD_FROM_STDIN__u, q			; variable array : useinfo pointeur au rec info
 	CO_VAR
 	Sa	1, CMD_FROM_STDIN_disp			; array data ptr at _disp
 
+ hexa_show 'var elab CMD_LENGTH ', $
+ hexa_show ' disp ', CMD_LENGTH_disp
 VAR CMD_LENGTH_disp, d			; variable entiere
 
+ hexa_show 'var elab ACCES_TEXTE ', $
+ hexa_show ' disp ', ACCES_TEXTE_disp
 _ACCES_TEXTE__type = '_ACCES_TEXTE__type'
 namespace _ACCES_TEXTE__type			; array var constrained array type info
 VAR use__info, q
@@ -131,16 +138,26 @@ VAR ACCES_TEXTE__u, q			; variable array : useinfo pointeur au rec info
 	CO_VAR
 	Sa	1, ACCES_TEXTE_disp			; array data ptr at _disp
 
+ hexa_show 'var elab ACCES_TEXTE_LENGTH ', $
+ hexa_show ' disp ', ACCES_TEXTE_LENGTH_disp
 VAR ACCES_TEXTE_LENGTH_disp, d		; variable entiere
 
+ hexa_show 'var elab NO_OPTION_GIVEN ', $
+ hexa_show ' disp ', NO_OPTION_GIVEN_disp
 VAR NO_OPTION_GIVEN_disp, b			; variable bool char enum
 	LI	0
 	Sb  1,	NO_OPTION_GIVEN_disp
 
+ hexa_show 'var elab OPTION ', $
+ hexa_show ' disp ', OPTION_disp
 VAR OPTION_disp, b				; variable bool char enum
 
+ hexa_show 'var elab START_TIME ', $
+ hexa_show ' disp ', START_TIME_disp
 VAR START_TIME_disp, q			; variable fixed
 
+ hexa_show 'var elab END_TIME ', $
+ hexa_show ' disp ', END_TIME_disp
 VAR END_TIME_disp, q			; variable fixed
 
 					;    end elab
@@ -150,6 +167,8 @@ begin:					;---------- BDY INSTRUCTIONS
 	CALL	STANDARD.TEXT_IO. ,GET_LINE_L58
 namespace	BLOCK__1
 ELB 2					;    BODY ELAB
+ hexa_show 'var elab CHN_START ', $
+ hexa_show ' disp ', CHN_START_disp
 VAR CHN_START_disp, d			; variable entiere
 	LId	1, STANDARD.ADA_COMP_L1.CMD_FROM_STDIN__u, STANDARD._STRING.FST_1
 	DUP
@@ -162,6 +181,8 @@ VAR CHN_START_disp, d			; variable entiere
 	BT	STANDARD.ce_raise_
 	Sd  2,	CHN_START_disp
 
+ hexa_show 'var elab POST_CHN ', $
+ hexa_show ' disp ', POST_CHN_disp
 VAR POST_CHN_disp, d			; variable entiere
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
@@ -720,6 +741,8 @@ L27:
 L26:					; post if
 namespace	SEPARE_PATH_NOM_EXECUTE
 ELB 2					;    BODY ELAB
+ hexa_show 'var elab POSITION_SEPARATEUR ', $
+ hexa_show ' disp ', POSITION_SEPARATEUR_disp
 VAR POSITION_SEPARATEUR_disp, d		; variable entiere
 	Ld 1,	STANDARD.ADA_COMP_L1.ACCES_TEXTE_LENGTH_disp
 	DUP
@@ -778,6 +801,8 @@ DEBUT_NOM_TEXTE:
 L30:					; post loop DEBUT_NOM_TEXTE
 namespace	BLOCK__2
 ELB 3					;    BODY ELAB
+ hexa_show 'var elab CHEMIN_TEXTE ', $
+ hexa_show ' disp ', CHEMIN_TEXTE_disp
 VAR CHEMIN_TEXTE_disp, q			; variable array : pointeur aux data
 VAR CHEMIN_TEXTE__u, q			; variable array : useinfo pointeur au rec info
 	La 0, STANDARD._STRING.use__info
@@ -936,6 +961,8 @@ end namespace
 	La , 8
 	Sa	3, CHEMIN_TEXTE__u			; array info ptr from function result
 
+ hexa_show 'var elab NOM_TEXTE ', $
+ hexa_show ' disp ', NOM_TEXTE_disp
 VAR NOM_TEXTE_disp, q			; variable array : pointeur aux data
 VAR NOM_TEXTE__u, q				; variable array : useinfo pointeur au rec info
 	La 0, STANDARD._STRING.use__info

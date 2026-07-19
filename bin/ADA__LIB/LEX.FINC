@@ -15,6 +15,7 @@ namespace LEX				;---------- PACKAGE (BDY)
 elab_spec:				;    SPEC ELAB
 
 					; CODE_PACKAGE_SPEC
+ hexa_show ' spec ', $
 
 					; _LEX_TYPE ENUMERATION TYPE INFO
 _LEX_TYPE = '_LEX_TYPE'
@@ -201,6 +202,8 @@ VAR PARENT__u, q
 	La 0	, STANDARD.LEX._LEX_TYPE.use__info
 	Sa	0, PARENT__u
 end namespace
+ hexa_show 'var elab MAX_STRING ', $
+ hexa_show ' disp ', MAX_STRING_disp
 VAR MAX_STRING_disp, d			; variable entiere
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	255
@@ -226,12 +229,14 @@ USEINFO 0, LEN, 	La 0, STANDARD._NATURAL.use__info
 USEINFO 0, BDY, 	La 0, STANDARD._STRING.use__info
 virtual at 0				; calcul des offsets statiques
 STATOFS LEN, 4, 4
-STATOFS BDY, 255, 8
+STATOFS BDY, 255, 1
 size = $
 end virtual
 	LI	 size*8
 	Sd	0, SIZ
 end namespace
+ hexa_show 'var elab SLINE ', $
+ hexa_show ' disp ', SLINE_disp
 VAR SLINE_disp, q				; variable record : pointeur aux data record
 VAR SLINE__u, q				; variable record : pointeur aux useinfo
 VAR SLINE__dat, STANDARD.LEX._LINE_OF_SOURCE.size
@@ -241,24 +246,38 @@ VAR SLINE__dat, STANDARD.LEX._LINE_OF_SOURCE.size
 	Sa	0, SLINE__u
 ; CODE_VC_NAME DN_VARIABLE_ID
 
+ hexa_show 'var elab LAST ', $
+ hexa_show ' disp ', LAST_disp
 VAR LAST_disp, d				; variable entiere
 
+ hexa_show 'var elab COL ', $
+ hexa_show ' disp ', COL_disp
 VAR COL_disp, d				; variable entiere
 
+ hexa_show 'var elab F_COL ', $
+ hexa_show ' disp ', F_COL_disp
 VAR F_COL_disp, d				; variable entiere
 
+ hexa_show 'var elab E_COL ', $
+ hexa_show ' disp ', E_COL_disp
 VAR E_COL_disp, d				; variable entiere
 
+ hexa_show 'var elab LTYPE ', $
+ hexa_show ' disp ', LTYPE_disp
 VAR LTYPE_disp, b				; variable entiere
 
 					; sub program entry decl (in instantiation FALSE )
 					; sub program entry decl (in instantiation FALSE )
 					; sub program entry decl (in instantiation FALSE )
 					;    BODY ELAB
+ hexa_show 'var elab CHAR_CONTEXT ', $
+ hexa_show ' disp ', CHAR_CONTEXT_disp
 VAR CHAR_CONTEXT_disp, b			; variable bool char enum
 	LI	1
 	Sb  0,	STANDARD.LEX.CHAR_CONTEXT_disp
 
+ hexa_show 'var elab ATTRIBUTE_CONTEXT ', $
+ hexa_show ' disp ', ATTRIBUTE_CONTEXT_disp
 VAR ATTRIBUTE_CONTEXT_disp, b			; variable bool char enum
 	LI	0
 	Sb  0,	STANDARD.LEX.ATTRIBUTE_CONTEXT_disp
@@ -282,6 +301,8 @@ END_BLOC_DEF 8, 0, 7
 	LCA	SIZ
 	Sa	0, use__info
 end namespace
+ hexa_show 'var elab TEXT ', $
+ hexa_show ' disp ', TEXT_disp
 _TEXT__type = '_TEXT__type'
 namespace _TEXT__type			; array var constrained array type info
 VAR use__info, q
@@ -326,13 +347,19 @@ VAR TEXT__u, q				; variable array : useinfo pointeur au rec info
 	CO_VAR
 	Sa	0, TEXT_disp				; array data ptr at _disp
 
+ hexa_show 'var elab TOKEN_LENGTH ', $
+ hexa_show ' disp ', TOKEN_LENGTH_disp
 VAR TOKEN_LENGTH_disp, d			; variable entiere
 
+ hexa_show 'var elab HASH_SIZE ', $
+ hexa_show ' disp ', HASH_SIZE_disp
 VAR HASH_SIZE_disp, d			; variable entiere
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	311
 	Sd  0,	STANDARD.LEX.HASH_SIZE_disp
 
+ hexa_show 'var elab HASH_TABLE ', $
+ hexa_show ' disp ', HASH_TABLE_disp
 _HASH_TABLE__type = '_HASH_TABLE__type'
 namespace _HASH_TABLE__type			; array var constrained array type info
 VAR use__info, q
@@ -439,11 +466,14 @@ L2:
 
 if defined HASH_POS_L3_
 PRO	HASH_POS_L3				;---------- PRO HASH_POS
+ hexa_show 'HASH_POS_L3 ', $
 PRMS					;    debut parametrage
 	PRM TXT_ofs				; in
 	PRM result__ofs				; resultat de fonction
 endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
+ hexa_show 'var elab I ', $
+ hexa_show ' disp ', I_disp
 VAR I_disp, d				; variable entiere
 
 					;    end elab
@@ -629,6 +659,7 @@ end if
 
 if defined HASH_SEARCH_L12_
 PRO	HASH_SEARCH_L12				;---------- PRO HASH_SEARCH
+ hexa_show 'HASH_SEARCH_L12 ', $
 PRMS					;    debut parametrage
 	PRM TXT_ofs				; in
 	PRM result__ofs				; resultat de fonction
@@ -668,28 +699,47 @@ end if
 
 if defined NEXT_TOKEN_L15_
 PRO	NEXT_TOKEN_L15				;---------- PRO NEXT_TOKEN
+ hexa_show 'NEXT_TOKEN_L15 ', $
 PRMS					;    debut parametrage
 	PRM CHAR_CONTEXT_ofs			; in
 	PRM TTYPE_OUT_ofs				; out
 	PRM TOK_LEN_ofs				; out
 endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
+ hexa_show 'var elab W_COL ', $
+ hexa_show ' disp ', W_COL_disp
 VAR W_COL_disp, d				; variable entiere
 
+ hexa_show 'var elab START_COL ', $
+ hexa_show ' disp ', START_COL_disp
 VAR START_COL_disp, d			; variable entiere
 
+ hexa_show 'var elab TOK_TYP ', $
+ hexa_show ' disp ', TOK_TYP_disp
 VAR TOK_TYP_disp, b				; variable entiere
 
+ hexa_show 'var elab CHR ', $
+ hexa_show ' disp ', CHR_disp
 VAR CHR_disp, b				; variable bool char enum
 
+ hexa_show 'var elab QUOTE_CHR ', $
+ hexa_show ' disp ', QUOTE_CHR_disp
 VAR QUOTE_CHR_disp, b			; variable bool char enum
 
+ hexa_show 'var elab BASE ', $
+ hexa_show ' disp ', BASE_disp
 VAR BASE_disp, d				; variable entiere
 
+ hexa_show 'var elab BASE_DIGIT ', $
+ hexa_show ' disp ', BASE_DIGIT_disp
 VAR BASE_DIGIT_disp, b			; variable bool char enum
 
+ hexa_show 'var elab BASE_LETTER ', $
+ hexa_show ' disp ', BASE_LETTER_disp
 VAR BASE_LETTER_disp, b			; variable bool char enum
 
+ hexa_show 'var elab LINE_LENGTH ', $
+ hexa_show ' disp ', LINE_LENGTH_disp
 VAR LINE_LENGTH_disp, d			; variable entiere
 
 VAR SL_disp, q
@@ -2308,9 +2358,14 @@ end if
 
 if defined LEX_SCAN_L1_
 PRO	LEX_SCAN_L1				;---------- PRO LEX_SCAN
+ hexa_show 'LEX_SCAN_L1 ', $
 ELB 1					;    BODY ELAB
+ hexa_show 'var elab TOK_TYP ', $
+ hexa_show ' disp ', TOK_TYP_disp
 VAR TOK_TYP_disp, b				; variable entiere
 
+ hexa_show 'var elab TOK_LEN ', $
+ hexa_show ' disp ', TOK_LEN_disp
 VAR TOK_LEN_disp, d				; variable entiere
 
 					;    end elab
@@ -2470,6 +2525,7 @@ end if
 
 if defined TOKEN_STRING_L2_
 PRO	TOKEN_STRING_L2				;---------- PRO TOKEN_STRING
+ hexa_show 'TOKEN_STRING_L2 ', $
 PRMS					;    debut parametrage
 	PRM result__ofs				; resultat de fonction
 endPRMS					;    fin parametrage
@@ -2535,6 +2591,7 @@ end if
 
 if defined LEX_IMAGE_L3_
 PRO	LEX_IMAGE_L3				;---------- PRO LEX_IMAGE
+ hexa_show 'LEX_IMAGE_L3 ', $
 PRMS					;    debut parametrage
 	PRM LT_ofs				; in
 	PRM result__ofs				; resultat de fonction
@@ -2592,6 +2649,8 @@ L121:
 	DROP
 namespace	BLOCK__5
 ELB 2					;    BODY ELAB
+ hexa_show 'var elab OP_TEXT ', $
+ hexa_show ' disp ', OP_TEXT_disp
 _OP_TEXT__type = '_OP_TEXT__type'
 namespace _OP_TEXT__type			; array var constrained array type info
 VAR use__info, q
@@ -2638,6 +2697,8 @@ STR OP_TEXT, "& ' ( ) * + , - . / : ; < = > | =>..**:=/=>=<=<<>><>"	; constante 
 	La
 	Sa	2, OP_TEXT__u				; array info ptr at __u
 
+ hexa_show 'var elab II ', $
+ hexa_show ' disp ', II_disp
 VAR II_disp, d				; variable entiere
 	Lb  1,	-LT_ofs
 ; CODE_NUMERIC_LITERAL DN_INTEGER
@@ -2653,6 +2714,8 @@ VAR II_disp, d				; variable entiere
 	ADD
 	Sd  2,	II_disp
 
+ hexa_show 'var elab TEMP_STRING ', $
+ hexa_show ' disp ', TEMP_STRING_disp
 _TEMP_STRING__type = '_TEMP_STRING__type'
 namespace _TEMP_STRING__type			; array var constrained array type info
 VAR use__info, q
@@ -2878,6 +2941,8 @@ L122:
 	DROP
 namespace	BLOCK__6
 ELB 2					;    BODY ELAB
+ hexa_show 'var elab IMAGE ', $
+ hexa_show ' disp ', IMAGE_disp
 VAR IMAGE_disp, q				; variable array : pointeur aux data
 VAR IMAGE__u, q				; variable array : useinfo pointeur au rec info
 	La 0, STANDARD._STRING.use__info
@@ -2904,6 +2969,8 @@ end namespace
 	La , 8
 	Sa	2, IMAGE__u				; array info ptr from function result
 
+ hexa_show 'var elab TRONQ ', $
+ hexa_show ' disp ', TRONQ_disp
 _TRONQ__type = '_TRONQ__type'
 namespace _TRONQ__type			; array var constrained array type info
 VAR use__info, q

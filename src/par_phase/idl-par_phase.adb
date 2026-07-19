@@ -77,6 +77,8 @@ is
       end;
       READ ( BIN_FILE, GRMR_TBL.GRMR );									--| AMENER LA TABLE
       CLOSE( BIN_FILE );										--| FERMER LE FICHIER TABLE
+
+put_line( "parse lu" );
     end;
 
   end	READ_PARSE_TABLES;
