@@ -246,7 +246,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	LI	1
 	MUL
 	La  1,	-NAME_ofs
-	La
+	La  ,  0
 	BLKMOV
 	La 1, -FILE_ofs
 	LIVA 	, 0, STANDARD.DIRECT_IO._FILE_TYPE.NAME_LEN
@@ -266,7 +266,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	Sb
 	La 1, -FILE_ofs
 	LIVA 	, 0, STANDARD.DIRECT_IO._FILE_TYPE.MODE
-	Lb  1,	-MODE_ofs
+	ULb  1,	-MODE_ofs
 	Sb
 	La 1, -FILE_ofs
 	LIVA 	, 0, STANDARD.DIRECT_IO._FILE_TYPE.INDEX
@@ -359,7 +359,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	LI	1
 	MUL
 	La  1,	-NAME_ofs
-	La
+	La  ,  0
 	BLKMOV
 	La 1, -FILE_ofs
 	LIVA 	, 0, STANDARD.DIRECT_IO._FILE_TYPE.NAME_LEN
@@ -379,7 +379,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	Sb
 	La 1, -FILE_ofs
 	LIVA 	, 0, STANDARD.DIRECT_IO._FILE_TYPE.MODE
-	Lb  1,	-MODE_ofs
+	ULb  1,	-MODE_ofs
 	Sb
 	La 1, -FILE_ofs
 	LIVA 	, 0, STANDARD.DIRECT_IO._FILE_TYPE.INDEX
@@ -577,7 +577,7 @@ end if
 begin:					;---------- BDY INSTRUCTIONS
 					; debut if
 	La 1, -FILE_ofs
-	LIb	, 0, STANDARD.DIRECT_IO._FILE_TYPE.IS_OPENED
+	ULIb	, 0, STANDARD.DIRECT_IO._FILE_TYPE.IS_OPENED
 	LI	0
 	CEQ
 	BF	L31
@@ -595,7 +595,7 @@ L30:					; post if
 	Sd  1,	ERR_CODE_disp
 	La 1, -FILE_ofs
 	LIVA 	, 0, STANDARD.DIRECT_IO._FILE_TYPE.MODE
-	Lb  1,	-MODE_ofs
+	ULb  1,	-MODE_ofs
 	Sb
 	La 1, -FILE_ofs
 	LIVA 	, 0, STANDARD.DIRECT_IO._FILE_TYPE.INDEX
@@ -625,7 +625,7 @@ ELB 1					;    BODY ELAB
 begin:					;---------- BDY INSTRUCTIONS
 					; debut if
 	La 1, -FILE_ofs
-	LIb	, 0, STANDARD.DIRECT_IO._FILE_TYPE.IS_OPENED
+	ULIb	, 0, STANDARD.DIRECT_IO._FILE_TYPE.IS_OPENED
 	LI	0
 	CEQ
 	BF	L35
@@ -637,7 +637,7 @@ L35:
 L34:					; post if
 	La  1,	-GFP_ofs				; propagation GFP generique
 	La 1, -FILE_ofs
-	LIb	, 0, STANDARD.DIRECT_IO._FILE_TYPE.MODE
+	ULIb	, 0, STANDARD.DIRECT_IO._FILE_TYPE.MODE
 	La  1,	-FILE_ofs
 	CALL	STANDARD.DIRECT_IO. ,RESET_L5
 ret_lbl:
@@ -660,7 +660,7 @@ ELB 1					;    BODY ELAB
 begin:					;---------- BDY INSTRUCTIONS
 					; debut if
 	La 1, -FILE_ofs
-	LIb	, 0, STANDARD.DIRECT_IO._FILE_TYPE.IS_OPENED
+	ULIb	, 0, STANDARD.DIRECT_IO._FILE_TYPE.IS_OPENED
 	LI	0
 	CEQ
 	BF	L39
@@ -672,7 +672,7 @@ L39:
 L38:					; post if
 ; CODE_RETURN : EXPR TYPE = DN_ENUMERATION  VUE COMPLETE = DN_ENUMERATION
 	La 1, -FILE_ofs
-	LIb	, 0, STANDARD.DIRECT_IO._FILE_TYPE.MODE
+	ULIb	, 0, STANDARD.DIRECT_IO._FILE_TYPE.MODE
 	Sb  1,	-result__ofs
 	BRA ret_lbl
 ret_lbl:
@@ -695,7 +695,7 @@ ELB 1					;    BODY ELAB
 begin:					;---------- BDY INSTRUCTIONS
 					; debut if
 	La 1, -FILE_ofs
-	LIb	, 0, STANDARD.DIRECT_IO._FILE_TYPE.IS_OPENED
+	ULIb	, 0, STANDARD.DIRECT_IO._FILE_TYPE.IS_OPENED
 	LI	0
 	CEQ
 	BF	L43
@@ -770,7 +770,7 @@ ELB 1					;    BODY ELAB
 begin:					;---------- BDY INSTRUCTIONS
 					; debut if
 	La 1, -FILE_ofs
-	LIb	, 0, STANDARD.DIRECT_IO._FILE_TYPE.IS_OPENED
+	ULIb	, 0, STANDARD.DIRECT_IO._FILE_TYPE.IS_OPENED
 	LI	0
 	CEQ
 	BF	L48
@@ -817,7 +817,7 @@ ELB 1					;    BODY ELAB
 begin:					;---------- BDY INSTRUCTIONS
 ; CODE_RETURN : EXPR TYPE = DN_ENUMERATION  VUE COMPLETE = DN_ENUMERATION
 	La 1, -FILE_ofs
-	LIb	, 0, STANDARD.DIRECT_IO._FILE_TYPE.IS_OPENED
+	ULIb	, 0, STANDARD.DIRECT_IO._FILE_TYPE.IS_OPENED
 	Sb  1,	-result__ofs
 	BRA ret_lbl
 ret_lbl:
@@ -910,7 +910,7 @@ end if
 begin:					;---------- BDY INSTRUCTIONS
 					; debut if
 	La 1, -FILE_ofs
-	LIb	, 0, STANDARD.DIRECT_IO._FILE_TYPE.IS_OPENED
+	ULIb	, 0, STANDARD.DIRECT_IO._FILE_TYPE.IS_OPENED
 	LI	0
 	CEQ
 	BF	L62
@@ -922,7 +922,7 @@ L62:
 L61:					; post if
 					; debut if
 	La 1, -FILE_ofs
-	LIb	, 0, STANDARD.DIRECT_IO._FILE_TYPE.MODE
+	ULIb	, 0, STANDARD.DIRECT_IO._FILE_TYPE.MODE
 	LI	2
 	CEQ
 	BF	L64
@@ -1042,7 +1042,7 @@ end if
 begin:					;---------- BDY INSTRUCTIONS
 					; debut if
 	La 1, -FILE_ofs
-	LIb	, 0, STANDARD.DIRECT_IO._FILE_TYPE.IS_OPENED
+	ULIb	, 0, STANDARD.DIRECT_IO._FILE_TYPE.IS_OPENED
 	LI	0
 	CEQ
 	BF	L75
@@ -1054,7 +1054,7 @@ L75:
 L74:					; post if
 					; debut if
 	La 1, -FILE_ofs
-	LIb	, 0, STANDARD.DIRECT_IO._FILE_TYPE.MODE
+	ULIb	, 0, STANDARD.DIRECT_IO._FILE_TYPE.MODE
 	LI	2
 	CEQ
 	BF	L77
@@ -1176,7 +1176,7 @@ end if
 begin:					;---------- BDY INSTRUCTIONS
 					; debut if
 	La 1, -FILE_ofs
-	LIb	, 0, STANDARD.DIRECT_IO._FILE_TYPE.IS_OPENED
+	ULIb	, 0, STANDARD.DIRECT_IO._FILE_TYPE.IS_OPENED
 	LI	0
 	CEQ
 	BF	L89
@@ -1188,7 +1188,7 @@ L89:
 L88:					; post if
 					; debut if
 	La 1, -FILE_ofs
-	LIb	, 0, STANDARD.DIRECT_IO._FILE_TYPE.MODE
+	ULIb	, 0, STANDARD.DIRECT_IO._FILE_TYPE.MODE
 	LI	0
 	CEQ
 	BF	L91
@@ -1297,7 +1297,7 @@ end if
 begin:					;---------- BDY INSTRUCTIONS
 					; debut if
 	La 1, -FILE_ofs
-	LIb	, 0, STANDARD.DIRECT_IO._FILE_TYPE.IS_OPENED
+	ULIb	, 0, STANDARD.DIRECT_IO._FILE_TYPE.IS_OPENED
 	LI	0
 	CEQ
 	BF	L100
@@ -1309,7 +1309,7 @@ L100:
 L99:					; post if
 					; debut if
 	La 1, -FILE_ofs
-	LIb	, 0, STANDARD.DIRECT_IO._FILE_TYPE.MODE
+	ULIb	, 0, STANDARD.DIRECT_IO._FILE_TYPE.MODE
 	LI	0
 	CEQ
 	BF	L102
@@ -1390,7 +1390,7 @@ end if
 begin:					;---------- BDY INSTRUCTIONS
 					; debut if
 	La 1, -FILE_ofs
-	LIb	, 0, STANDARD.DIRECT_IO._FILE_TYPE.IS_OPENED
+	ULIb	, 0, STANDARD.DIRECT_IO._FILE_TYPE.IS_OPENED
 	LI	0
 	CEQ
 	BF	L109
@@ -1484,7 +1484,7 @@ end if
 begin:					;---------- BDY INSTRUCTIONS
 					; debut if
 	La 1, -FILE_ofs
-	LIb	, 0, STANDARD.DIRECT_IO._FILE_TYPE.IS_OPENED
+	ULIb	, 0, STANDARD.DIRECT_IO._FILE_TYPE.IS_OPENED
 	LI	0
 	CEQ
 	BF	L118
@@ -1588,7 +1588,7 @@ end if
 begin:					;---------- BDY INSTRUCTIONS
 					; debut if
 	La 1, -FILE_ofs
-	LIb	, 0, STANDARD.DIRECT_IO._FILE_TYPE.IS_OPENED
+	ULIb	, 0, STANDARD.DIRECT_IO._FILE_TYPE.IS_OPENED
 	LI	0
 	CEQ
 	BF	L125
@@ -1685,7 +1685,7 @@ end if
 begin:					;---------- BDY INSTRUCTIONS
 					; debut if
 	La 1, -FILE_ofs
-	LIb	, 0, STANDARD.DIRECT_IO._FILE_TYPE.IS_OPENED
+	ULIb	, 0, STANDARD.DIRECT_IO._FILE_TYPE.IS_OPENED
 	LI	0
 	CEQ
 	BF	L135
@@ -1697,7 +1697,7 @@ L135:
 L134:					; post if
 					; debut if
 	La 1, -FILE_ofs
-	LIb	, 0, STANDARD.DIRECT_IO._FILE_TYPE.MODE
+	ULIb	, 0, STANDARD.DIRECT_IO._FILE_TYPE.MODE
 	LI	2
 	CEQ
 	BF	L137

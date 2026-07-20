@@ -103,7 +103,7 @@ is
 
     function  TYPE_SIZE		( TYPE_SPEC :TREE )			return NATURAL;
     function  TYPE_INFO_STR		( TYPE_SPEC :TREE )			return STRING;
-    function  FULL_VIEW		( T : TREE )			return TREE;
+    function  FULL_TYPE_VIEW		( T : TREE )			return TREE;
     function  CODE_DATA_TYPE_OF	( EXP_OR_TYPE_SPEC :TREE )		return CHARACTER;
 
     procedure LOAD_MEM		( DEFN :TREE );
@@ -156,6 +156,7 @@ is
     procedure CODE_STATIC_FIXED_VALUE	( VALUE, FIXED_TYPE :TREE );
     procedure CODE_AGGREGATE		( AGGREGATE, TYPE_SPEC	:TREE );
     procedure CODE_OBJECT_ADDRESS	( NAME : TREE );
+    procedure CODE_COMPOSITE_DATA_ADDRESS( EXP : TREE );
     function  IS_GENERIC_FORMAL_TYPE	( TYPE_DEFN	:TREE )		return BOOLEAN;
     function  IS_GENERIC_FORMAL_OBJECT	( DEFN		:TREE )		return BOOLEAN;
     function  IS_GENERIC_FORMAL_SUBPROGRAM( ID		:TREE )		return BOOLEAN;

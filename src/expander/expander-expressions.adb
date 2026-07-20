@@ -1428,6 +1428,22 @@ null;--	     declare
 	-------------------
 
 
+			---------------------------
+    procedure		CODE_COMPOSITE_DATA_ADDRESS	( EXP : TREE )
+    is			---------------------------
+    -- Compile EXP (composite) et laisse son @DATA sur la pile, quelle que
+    -- soit la forme de EXP.  Discrimination d'OPERAND_DATA_ADDRESS
+    -- (CODE_RECORD_EQUALITY) erigee en regle unique.
+    begin
+      CODE_EXP( EXP );
+      if  EXP.TY = DN_USED_OBJECT_ID  or else  EXP.TY = DN_FUNCTION_CALL  then
+        PUT_LINE( tab & "La  ,  0" );									-- @doublet -> data_ptr
+      end if;											-- sinon : deja @data
+
+    end	CODE_COMPOSITE_DATA_ADDRESS;
+	---------------------------
+
+
 			----------------------
   function		IS_GENERIC_FORMAL_TYPE	( TYPE_DEFN : TREE )	return BOOLEAN
   is			----------------------
@@ -4299,6 +4315,38 @@ end;
         elsif  RET_TS /= TREE_VOID  and then  RET_TS.TY = DN_ARRAY  then
 	PREPARE_ARRAY_RETURN;
 
+        elsif  RET_TS /= TREE_VOID  and then  RET_TS.TY = DN_CONSTRAINED_ARRAY  then
+	  declare
+	    ANON_STR	: constant STRING	:= ANONYMOUS_NAME_AT( FUNCTION_CALL );
+	    TYPE_NAME	: TREE		:= D( XD_SOURCE_NAME, RET_TS );
+	    TN_STR	: constant STRING	:= TYPE_INFO_STR( RET_TS );
+	    TYPE_LVL	: constant STRING	:= IMAGE( DI( CD_LEVEL, RET_TS ) );
+	    LVL_STR	: constant STRING	:= IMAGE( CODI.CUR_LEVEL );
+	  begin
+	    PUT_LINE( "VAR" & tab & ANON_STR & "_disp, q" );
+	    PUT_LINE( "VAR" & tab & ANON_STR & "__u,   q" );
+
+	    -- info du doublet := info du TYPE (bornes deja elaborees)
+	    PUT( tab & "La  " & TYPE_LVL & ", " );
+	    CODI.REGIONS_PATH( TYPE_NAME );
+	    PUT_LINE( TN_STR & ".use__info" );
+	    PUT_LINE( tab & "Sa  " & LVL_STR & ", " & ANON_STR & "__u" );
+
+	    -- data := CO_VAR( SIZ/8 ) -- taille runtime du type
+	    PUT( tab & "Ld  " & TYPE_LVL & ", " );
+	    CODI.REGIONS_PATH( TYPE_NAME );
+	    PUT_LINE( TN_STR & ".SIZ" );
+	    PUT_LINE( tab & "LI" & tab & IMAGE( CODI.STORAGE_UNIT ) );
+	    PUT_LINE( tab & "DIV" );
+	    PUT_LINE( tab & "CO_VAR" );
+	    PUT_LINE( tab & "Sa  " & LVL_STR & ", " & ANON_STR & "_disp" );
+
+	    -- empiler l'adresse du doublet comme result__ofs
+	    PUT_LINE( tab & "LVA " & LVL_STR & ", " & ANON_STR & "_disp" );
+	  end;
+
+
+
         else
           -- Cas scalaire, array, etc. : placeholder qword nul
           PUT( tab & "LI" & tab & "0" );
@@ -4385,307 +4433,6 @@ end;
 
   end	CODE_SUBTYPE_ALLOCATOR;
 	----------------------
-
-
-			--------------------
-  procedure		CODE_ARRAY_AGGREGATE_OLD	( AGGREGATE, TYPE_SPEC :TREE )
-  is			--------------------
-
-    INDEX_S		: SEQ_TYPE;
-
-  begin
-      if  TYPE_SPEC.TY = DN_CONSTRAINED_ARRAY  then
-        INDEX_S := LIST( D( SM_INDEX_SUBTYPE_S, TYPE_SPEC ) );
-      elsif  TYPE_SPEC.TY = DN_ARRAY  then
-        INDEX_S := LIST( D( SM_INDEX_S, TYPE_SPEC ) );							-- DN_ARRAY se produit avec QUALIFIED
-      else
-        PUT_LINE( "; CODE_ARRAY_AGGREGATE TYPE_SPEC NON GERE " & NODE_NAME'IMAGE( TYPE_SPEC.TY ) );
-        raise PROGRAM_ERROR;
-      end if;
-				----------------------
-				ASSIGN_ARRAY_AGGREGATE:
-      declare
-        NB_DIMS		: NATURAL		:= 0;
-        IS_DYNAMIC		: BOOLEAN		:= FALSE;
-        -- Tableaux de dimensions et de strides (max 8 dimensions suffit en Ada 83 pratique)
-        type DIM_INFO	is record
-			  FST	: INTEGER;
-			  LST	: INTEGER;
-			  STRIDE	: INTEGER;							-- en octets, pas pour avancer d'un élément
-			end record;
-        DIM_TBL	: array( 1 .. 8 ) of DIM_INFO;
-
-        COMP_SIZ_BITS	: INTEGER		:= DI( CD_IMPL_SIZE, D( SM_COMP_TYPE, D( SM_BASE_TYPE, TYPE_SPEC ) ) );
-        COMP_SIZ_BYTES	: INTEGER		:= COMP_SIZ_BITS / 8;
-
-		-----------------
-        procedure	EMIT_AGG_AT_DEPTH	( AGG :TREE; DEPTH :NATURAL )
-        is	-----------------
-          -- Invariant : à l'entrée, l'adresse du bloc à remplir est sur la pile.
-          --             à la sortie, cette adresse a été DROP-ée.
-	SEQ	: SEQ_TYPE	:= LIST( D( SM_NORMALIZED_COMP_S, AGG ) );
-	ASSOC	: TREE;
-	FST	: INTEGER		:= DIM_TBL( DEPTH ).FST;
-	LST	: INTEGER		:= DIM_TBL( DEPTH ).LST;
-	STRIDE	: INTEGER		:= DIM_TBL( DEPTH ).STRIDE;
-	STRIDE_S	: constant STRING	:= IMAGE( STRIDE );
-	EMIS	: INTEGER		:= 0;
-
-		-------------
-	procedure	EMIT_ONE_COMP	( COMP :TREE )
-	is	-------------
- 	begin
-	  PUT_LINE( tab & "DUP" );
-
-	  if  COMP.TY = DN_AGGREGATE  then
-	    if  DEPTH < NB_DIMS  then
- 	      EMIT_AGG_AT_DEPTH( COMP, DEPTH + 1 );
-	    else
-	      CODE_AGGREGATE( COMP, TYPE_SPEC );
-	    end if;
-
-	  elsif  COMP.TY in CLASS_EXP  then
-	    EXPRESSIONS.CODE_EXP( COMP );
-	    PUT_LINE( tab & "S" & EXP_TYPE_CHAR( COMP ) );
-
-	  else
-	    PUT_LINE( "; EMIT_ONE_COMP : composante non geree " & NODE_NAME'IMAGE( COMP.TY ) );
-	  end if;
-
-	  PUT_LINE( tab & "LI" & tab & STRIDE_S );
-	  PUT_LINE( tab & "ADD" );
-
-	end	EMIT_ONE_COMP;
-		-------------
-
-        begin				-- EMIT_AGG_AT_DEPTH
-
-	while not  IS_EMPTY( SEQ )  loop
-	  POP( SEQ, ASSOC );
-
-	  if  ASSOC.TY = DN_NAMED  then
-	    declare
-	      COMP_EXP	: TREE		:= D( AS_EXP, ASSOC );
-	      CHOICES	: SEQ_TYPE	:= LIST( D( AS_CHOICE_S, ASSOC ) );
-	      CH		: TREE;
-	      REPEAT	: INTEGER		:= 1;
-	    begin
-	      while not  IS_EMPTY( CHOICES )  loop
-	        POP( CHOICES, CH );
-	        if  CH.TY = DN_CHOICE_RANGE  then
-		declare
-		  RNG	: TREE		:= D( AS_DISCRETE_RANGE, CH );
-		  LO	: INTEGER		:= DI( SM_VALUE, D( AS_EXP1, RNG ) );
-		  HI	: INTEGER		:= DI( SM_VALUE, D( AS_EXP2, RNG ) );
-		begin
-		  REPEAT := HI - LO + 1;
-		end;
-	        elsif  CH.TY = DN_CHOICE_OTHERS  then
-		REPEAT := LST - FST + 1 - EMIS;
-	        end if;
-	      end loop;
-
-	      if  REPEAT < 4  then
-	        for  I  in  1 .. REPEAT  loop
-		EMIT_ONE_COMP( COMP_EXP );
-	        end loop;
-
-	      else
-	        declare
-		LBL_STR	:constant STRING	:= ANONYMOUS_NAME_AT( CH );
-		CNT_STR	:constant STRING	:= "CNT_" & LBL_STR;
-		LVL_STR	:constant STRING	:= IMAGE( CODI.CUR_LEVEL );
-	        begin
-		PUT_LINE( "VAR" & tab & CNT_STR & ", " & 'd' );
-		PUT_LINE( tab & "LI" & tab & IMAGE( REPEAT ) );
-		PUT_LINE( tab & "Sd " & LVL_STR & ',' & tab & CNT_STR );
-		PUT_LINE( LBL_STR & ':' );
-
-		EMIT_ONE_COMP( COMP_EXP );
-
-		PUT_LINE( tab & "LI" & tab & '0' );
-		PUT_LINE( tab & "Ld " & LVL_STR & ',' & tab & CNT_STR );
-		PUT_LINE( tab & "DEC" );
-		PUT_LINE( tab & "CEQ" );
-		PUT_LINE( tab & "BF" & tab & LBL_STR );
-
-	        end;
-	      end if;
-	      EMIS := EMIS + REPEAT;
-	    end;
-
-	  else
-			-- DN_AGGREGATE positionnel ou CLASS_EXP positionnel
-	    EMIT_ONE_COMP( ASSOC );
-	    EMIS := EMIS + 1;
-	  end if;
-
-	end loop;
-
-	PUT_LINE( tab & "DROP" );    -- jeter l'adresse finale (au-delà du dernier élément)
-
-        end	EMIT_AGG_AT_DEPTH;
-		-----------------
-
-      begin    											-- ASSIGN_ARRAY_AGGREGATE
-
-        if  CODI.DEBUG  then PUT_LINE( tab50 & "; Assign_array_aggregate type " & NODE_NAME'IMAGE( TYPE_SPEC.TY ) );
-        end if;
-        -- ============================================================
-        -- CAS DYNAMIQUE : DN_ARRAY unconstrained avec bornes en range
-        -- Les bornes (FST, LST) ne sont pas statiques dans SM_INDEX_S
-        -- mais dans le DN_CHOICE_RANGE du premier DN_NAMED de l'agr.
-        -- Algorithme : boucle LLIR sur (LST-FST+1) iterations.
-        -- Precondition : @data_dest est en sommet de pile.
-        -- ============================================================
-        if  TYPE_SPEC.TY = DN_ARRAY  then
-                        -------------------------
-                        DYNAMIC_ARRAY_AGGREGATE:
-          declare
-            NORM_DYN	: SEQ_TYPE	:= LIST( D( SM_NORMALIZED_COMP_S, AGGREGATE ) );
-            ASSOC		: TREE;
-            LVL_STR		:constant STRING	:= IMAGE( CODI.CUR_LEVEL );
-            LBL_LOOP	:constant STRING	:= NEW_LABEL;
-            LBL_END		:constant STRING	:= NEW_LABEL;
-            CNT_VAR		:constant STRING	:= ANONYMOUS_NAME_AT( AGGREGATE ) & "_cnt";
-            PTR_VAR		:constant STRING	:= ANONYMOUS_NAME_AT( AGGREGATE ) & "_ptr";
-	  COMP_TYPE	: TREE		:= D( SM_COMP_TYPE, D( SM_BASE_TYPE, TYPE_SPEC ) );
-            COMP_SCHAR	: CHARACTER         := OPER_SIZ_CHAR( COMP_TYPE );
-          begin
-            -- Sauvegarder @data_dest (sommet de pile) dans PTR_VAR
-            PUT_LINE( "VAR" & tab & PTR_VAR & ", q" );
-            PUT_LINE( "VAR" & tab & CNT_VAR & ", q" );
-            PUT_LINE( tab & "Sa  " & LVL_STR & ", " & PTR_VAR );
-
-            -- Extraire le premier DN_NAMED (et unique dans le cas 1..N => expr)
-            POP( NORM_DYN, ASSOC );
-            declare
-              COMP_EXP : TREE     := D( AS_EXP,      ASSOC );
-              CHOICES  : SEQ_TYPE := LIST( D( AS_CHOICE_S, ASSOC ) );
-              CH       : TREE;
-            begin
-              POP( CHOICES, CH );
-
-              if  CH.TY = DN_CHOICE_RANGE  then
-                declare
-                  RNG : TREE := D( AS_DISCRETE_RANGE, CH );
-                begin
-                  -- COUNT = EXP2 - EXP1 + 1
-                  CODE_EXP( D( AS_EXP2, RNG ) );   -- COMPL (dynamique)
-                  CODE_EXP( D( AS_EXP1, RNG ) );   -- 1     (statique)
-                  PUT_LINE( tab & "SUB" );
-                  PUT_LINE( tab & "INC" );
-	        PUT_LINE( tab & "CLAMP0" );
-                end;
-
-              elsif  CH.TY = DN_CHOICE_OTHERS  then
-
-                -- others sans range explicite :
-                -- le range vient du type cible de l'agregat.
-                declare
-                  BASE_ARRAY : TREE := D( SM_BASE_TYPE, TYPE_SPEC );
-                  IDX_S      : SEQ_TYPE := LIST( D( SM_INDEX_S, BASE_ARRAY ) );
-                  IDX        : TREE;
-                  IDX_TYPE   : TREE;
-                  RNG        : TREE;
-                  LO         : TREE;
-                  HI         : TREE;
-                begin
-                  POP( IDX_S, IDX );
-
-                  -- Dans le cas :
-                  --   array (1 .. LENGTH(...)) of Natural := (others => 0)
-                  -- IDX est un DN_INDEX, dont SM_TYPE_SPEC porte le SM_RANGE.
-                  IDX_TYPE := D( SM_TYPE_SPEC, IDX );
-                  RNG      := D( SM_RANGE, IDX_TYPE );
-
-                  LO := D( AS_EXP1, RNG );
-                  HI := D( AS_EXP2, RNG );
-
-                  -- COUNT = HI - LO + 1
-                  CODE_EXP( HI );
-                  CODE_EXP( LO );
-                  PUT_LINE( tab & "SUB" );
-                  PUT_LINE( tab & "INC" );
-	        PUT_LINE( tab & "CLAMP0" );
-                end;
-
-              end if;
-              PUT_LINE( tab & "Sa  " & LVL_STR & ", " & CNT_VAR );
-
-              -- Tester COUNT <= 0 : si oui, ne rien émettre
-              PUT_LINE( tab & "La  " & LVL_STR & ", " & CNT_VAR );
-              PUT_LINE( tab & "LI" & tab & "0" );
-              PUT_LINE( tab & "CLE" );
-              PUT_LINE( tab & "BT  " & LBL_END );
-
-              -- ---- Boucle : écrire COMP_EXP COUNT fois ----
-              PUT_LINE( LBL_LOOP & ':' );
-
-              -- Charger @dest courant depuis PTR_VAR
-              PUT_LINE( tab & "La  " & LVL_STR & ", " & PTR_VAR );
-              -- Évaluer la valeur à écrire
-              CODE_EXP( COMP_EXP );
-              -- Stocker : Sb -1, 0 => POP_RAX=@dest, POP_RBX=valeur, [rax]=bl
-              PUT_LINE( tab & "S" & COMP_SCHAR & "  -1, 0" );
-
-              -- Avancer PTR_VAR de COMP_SIZ_BYTES
-              PUT_LINE( tab & "La  " & LVL_STR & ", " & PTR_VAR );
-              PUT_LINE( tab & "LI" & tab & IMAGE( COMP_SIZ_BYTES ) );
-              PUT_LINE( tab & "ADD" );
-              PUT_LINE( tab & "Sa  " & LVL_STR & ", " & PTR_VAR );
-
-              -- Décrémenter CNT_VAR, reboucler si > 0
-              PUT_LINE( tab & "La  " & LVL_STR & ", " & CNT_VAR );
-              PUT_LINE( tab & "DEC" );
-              PUT_LINE( tab & "DUP" );
-              PUT_LINE( tab & "Sa  " & LVL_STR & ", " & CNT_VAR );
-              PUT_LINE( tab & "LI" & tab & "0" );
-              PUT_LINE( tab & "CGT" );
-              PUT_LINE( tab & "BT  " & LBL_LOOP );
-
-              PUT_LINE( LBL_END & ':' );
-            end;
-          end      DYNAMIC_ARRAY_AGGREGATE;
-                  -------------------------
-          return;					-- traitement complet, pas de EXTRACT_DIMENSIONS
-        end if;
-
-				------------------
-				EXTRACT_DIMENSIONS:
-        declare
-	INDEX_NODE	: TREE;
-        begin
-	while not  IS_EMPTY( INDEX_S )  loop
-	  POP( INDEX_S, INDEX_NODE );
-	  NB_DIMS := NB_DIMS + 1;
-	  declare
-	    RNG		: TREE	:= D( SM_RANGE, INDEX_NODE );
-	    FST		: TREE	:= D( AS_EXP1, RNG );
-	    LST		: TREE	:= D( AS_EXP2, RNG );
-	  begin
-	    if  FST.TY = DN_CONVERSION  then FST := D( AS_EXP, FST ); end if;
-	    DIM_TBL( NB_DIMS ).FST := DI( SM_VALUE, FST );
-	    if  LST.TY = DN_CONVERSION  then LST := D( AS_EXP, LST ); end if;
-	    DIM_TBL( NB_DIMS ).LST := DI( SM_VALUE, LST );
-	  end;
-	end loop;
-
-        end	EXTRACT_DIMENSIONS;
-		------------------
-
-        DIM_TBL( NB_DIMS ).STRIDE := COMP_SIZ_BYTES;
-        for  K  in reverse  1 .. NB_DIMS - 1  loop
-	DIM_TBL( K ).STRIDE := DIM_TBL( K + 1 ).STRIDE * ( DIM_TBL( K + 1 ).LST - DIM_TBL( K + 1 ).FST + 1 );
-        end loop;
-        EMIT_AGG_AT_DEPTH( AGGREGATE, 1 );
-
-      end	ASSIGN_ARRAY_AGGREGATE;
-	----------------------
-
-  end	CODE_ARRAY_AGGREGATE_OLD;
-	--------------------
-
 
 
 -- Replacement proposal for EXPANDER.EXPRESSIONS.CODE_ARRAY_AGGREGATE.
@@ -5044,8 +4791,28 @@ end;
         end if;
 
       elsif  COMP.TY in CLASS_EXP  then
-        EXPRESSIONS.CODE_EXP( COMP );
-        PUT_LINE( tab & "SI" & EXP_TYPE_CHAR( COMP ) & "  " & LVL_STR & ", " & PTR_NAME( DEPTH ) & ", 0" );
+        declare
+	CT	: TREE	:= FULL_TYPE_VIEW( COMP_TYPE );
+        begin
+	if  CT.TY = DN_RECORD
+	or else  CT.TY = DN_CONSTRAINED_RECORD
+	or else  CT.TY = DN_CONSTRAINED_ARRAY
+	then
+	  -- Composant COMPOSITE (ex. TREE, record represente 32 bits) :
+	  -- CODE_EXP pousse une ADRESSE (convention composite) -- SId
+	  -- stockerait l'adresse tronquee en dword, pas la valeur
+	  -- (bug PAG(RP).DATA.all := (others => TREE_VIRGIN)).
+	  -- Copie de COMP_BYTES octets, meme forme que la branche
+	  -- DN_RECORD de EMIT_ONE_COMPONENT (agregat record).
+	  PUT_LINE( tab & "La  " & LVL_STR & ", " & PTR_NAME( DEPTH ) );					-- destination
+	  PUT_LINE( tab & "LI" & tab & IMAGE( COMP_BYTES ) );						-- longueur
+	  EXPRESSIONS.CODE_EXP( COMP );								-- @source
+	  PUT_LINE( tab & "BLKMOV" );
+	else
+	  EXPRESSIONS.CODE_EXP( COMP );
+	  PUT_LINE( tab & "SI" & EXP_TYPE_CHAR( COMP ) & "  " & LVL_STR & ", " & PTR_NAME( DEPTH ) & ", 0" );
+	end if;
+        end;
 
       else
         PUT_LINE( "; EMIT_ONE_COMP : composante non geree " & NODE_NAME'IMAGE( COMP.TY ) );
@@ -5053,6 +4820,7 @@ end;
 
       EMIT_ADVANCE_PTR( DEPTH );
       EMIT_INC_EMIS( DEPTH );
+
     end	EMIT_ONE_COMP;
 	-------------
 
@@ -5208,7 +4976,6 @@ end;
     elsif  EFFECTIVE_TYPE.TY = DN_RECORD  then								-- L'adresse du doublet est deja empilee
       declare
         TYPE_NAME		: TREE			:= D( XD_SOURCE_NAME, EFFECTIVE_TYPE );
---        TYPE_NAME_STR	:constant	STRING		:= '_' & PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
         TYPE_NAME_STR	:constant	STRING		:= TYPE_INFO_STR( EFFECTIVE_TYPE );
 
       begin
@@ -5229,14 +4996,14 @@ end;
 				---------------------------
 				CANONICAL_RECORD_AGGREGATE:
         declare
-	MAX_DISCR	:constant		:= 15;
-	DISCR_IDS	: array ( 1 .. MAX_DISCR ) of TREE;
+	MAX_DISCR		:constant		:= 15;
+	DISCR_IDS		: array ( 1 .. MAX_DISCR ) of TREE;
 	DISCR_VALS	: array ( 1 .. MAX_DISCR ) of INTEGER;
-	DISCR_CNT	: NATURAL		:= 0;
-	COMP_EXP	: TREE;
+	DISCR_CNT		: NATURAL		:= 0;
+	COMP_EXP		: TREE;
 
-		------------------
-	procedure	EMIT_ONE_COMPONENT	( COMP_ID : TREE; COMP_EXP : TREE )
+			------------------
+	procedure		EMIT_ONE_COMPONENT	( COMP_ID : TREE; COMP_EXP : TREE )
 	is		------------------
 	  COMP_TYPE	: TREE		:= D( SM_OBJ_TYPE, COMP_ID );
 	  COMP_STR	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, COMP_ID ) );
@@ -5260,11 +5027,11 @@ end;
 	  elsif  COMP_TYPE.TY = DN_RECORD  then
 	    PUT( tab & "LI" & tab );
 	    CODI.REGIONS_PATH( D( XD_SOURCE_NAME, COMP_TYPE ) );
---	    PUT_LINE( '_' & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, COMP_TYPE ) ) ) & ".size" );
 	    PUT_LINE( TYPE_INFO_STR( COMP_TYPE  ) & ".size" );
 
-	    CODE_EXP( COMP_EXP );
-	    PUT_LINE( tab & "La  ,  0" );
+	    CODE_COMPOSITE_DATA_ADDRESS( COMP_EXP );
+--	    CODE_EXP( COMP_EXP );
+--	    PUT_LINE( tab & "La  ,  0" );
 	    PUT_LINE( tab & "BLKMOV" );
 
 	  elsif  COMP_TYPE.TY = DN_CONSTRAINED_ARRAY  then
@@ -5483,11 +5250,11 @@ end;
 	  elsif  FIELD_TYPE.TY = DN_RECORD  then
 	    PUT( tab & "LI" & tab );
 	    CODI.REGIONS_PATH( D( XD_SOURCE_NAME, FIELD_TYPE ) );
---	    PUT_LINE( '_' & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, FIELD_TYPE ) ) ) & ".size" );
 	    PUT_LINE( TYPE_INFO_STR( FIELD_TYPE ) & ".size" );
 
-	    EXPRESSIONS.CODE_EXP( FIELD_EXP );
-	    PUT_LINE( tab & "La  ,  0" );
+	    CODE_COMPOSITE_DATA_ADDRESS( FIELD_EXP );
+--	    EXPRESSIONS.CODE_EXP( FIELD_EXP );
+--	    PUT_LINE( tab & "La  ,  0" );
 	    PUT_LINE( tab & "BLKMOV" );
 
 	  else
@@ -5592,7 +5359,6 @@ SCAN_IDS:
 	            if  EFFECTIVE_COMP_TYPE.TY = DN_RECORD  then
 	            -- Composante record : BLKMOV depuis les donnees de la source vers l'offset dans le parent
 	              declare
---	                CN_STR : constant STRING := '_' & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, EFFECTIVE_COMP_TYPE ) ) );
 	                CN_STR : constant STRING := TYPE_INFO_STR( EFFECTIVE_COMP_TYPE );
 	              begin
 	              -- @DST = adresse de la composante dans le record parent
@@ -5605,8 +5371,9 @@ SCAN_IDS:
 	                CODI.REGIONS_PATH( D( XD_SOURCE_NAME, EFFECTIVE_COMP_TYPE ) );
 	                PUT_LINE( CN_STR & ".size" );              -- LEN
 
-	                EXPRESSIONS.CODE_EXP( COMP_EXP );         -- empiле @doublet source
-	                PUT_LINE( tab & "La  ,  0" );              -- @SRC = data_ptr
+		      CODE_COMPOSITE_DATA_ADDRESS( COMP_EXP );
+--	                EXPRESSIONS.CODE_EXP( COMP_EXP );         -- empiле @doublet source
+--	                PUT_LINE( tab & "La  ,  0" );              -- @SRC = data_ptr
 
 	                PUT_LINE( tab & "BLKMOV" );
 	              end;
@@ -5708,7 +5475,7 @@ SCAN_IDS:
 	    PUT_LINE( tab & "LI" & tab & PRINT_NUM( D( XD_NUMER, VALUE ) ) );		-- Nv
 	    PUT_LINE( tab & "LI" & tab & PRINT_NUM( D( XD_DENOM, TARGET_SMALL ) ) );	-- Ds
 	    PUT_LINE( tab & "LI" & tab & LONG_INTEGER'IMAGE(
-			LONG_INTEGER'VALUE( PRINT_NUM( D( XD_DENOM, VALUE ) ) ) * NUMER_SMALL ) );	-- Dv.Ns
+			LONG_INTEGER'VALUE( PRINT_NUM( D( XD_DENOM, VALUE ) ) ) * NUMER_SMALL ) );		-- Dv.Ns
 	    PUT_LINE( tab & "CVTIX" );
 	  end;
 

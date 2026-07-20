@@ -625,7 +625,7 @@ is
     if  OWNER = TREE_VOID  then return  TREE_VOID;  end if;
 
     if  OWNER.TY = DN_TYPE_ID  or else  OWNER.TY = DN_PRIVATE_TYPE_ID  or else  OWNER.TY = DN_L_PRIVATE_TYPE_ID  then
-      TYPE_SPEC := CODI.FULL_VIEW( D( SM_TYPE_SPEC, OWNER ) );
+      TYPE_SPEC := CODI.FULL_TYPE_VIEW( D( SM_TYPE_SPEC, OWNER ) );
     else
       return  TREE_VOID;
     end if;
@@ -643,10 +643,6 @@ is
         return  REP_ELEM;										-- designe les composants du PARENT.
       end if;											-- Noms uniques dans un record : sur.
 
---      if  REP_ELEM.TY = DN_COMP_REP  then
---        DEFN := D( SM_DEFN, D( AS_NAME, REP_ELEM ) );
---        if  DEFN = COMP_ID  then  return  REP_ELEM;  end if;
---      end if;
     end loop;
 
     return  TREE_VOID;
@@ -729,7 +725,7 @@ is
     if  OWNER /= TREE_VOID  and then  OWNER /= TREE_NIL  and then
 	(OWNER.TY = DN_TYPE_ID   or else  OWNER.TY = DN_PRIVATE_TYPE_ID  or else  OWNER.TY = DN_L_PRIVATE_TYPE_ID)
     then
-      TYPE_SPEC := CODI.FULL_VIEW( D( SM_TYPE_SPEC, OWNER ) );
+      TYPE_SPEC := CODI.FULL_TYPE_VIEW( D( SM_TYPE_SPEC, OWNER ) );
     else
       PUT_LINE( "; CODE_STORE_REP_COMPONENT : region du composant non DN_TYPE_ID "
         & PRINT_NAME( D( LX_SYMREP, COMP_ID ) ) );

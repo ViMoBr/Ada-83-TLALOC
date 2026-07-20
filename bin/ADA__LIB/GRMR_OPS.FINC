@@ -525,7 +525,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	LI	1
 	MUL
 	La  1,	-S_ofs
-	La
+	La  ,  0
 	BLKMOV
 	BRA	L6
 L7:
@@ -567,7 +567,7 @@ L6:					; post if
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb
+	ULb
 	ADD
 ; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
 	LI	37
@@ -687,7 +687,7 @@ L11:
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb	, STANDARD.GRMR_OPS._HTABLE_TYPE.HP
+	ULb	, STANDARD.GRMR_OPS._HTABLE_TYPE.HP
 	LI	0
 	CNE
 L9:
@@ -743,7 +743,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb	, STANDARD.GRMR_OPS._HTABLE_TYPE.HP
+	ULb	, STANDARD.GRMR_OPS._HTABLE_TYPE.HP
 	Sb  1,	-result__ofs
 	BRA ret_lbl
 ret_lbl:
@@ -819,7 +819,7 @@ VAR TXT__u, q				; variable array : useinfo pointeur au rec info
 	DIV
 	La	 0, STANDARD.GRMR_OPS.HTABLE_disp		; array data start address on stack
 	La	 0, STANDARD.GRMR_OPS.ITABLE_disp		; array data start address on stack
-	Lb  1,	-GO_ofs
+	ULb  1,	-GO_ofs
 	DUP
 	LId	0, STANDARD.GRMR_OPS.ITABLE__u, STANDARD.GRMR_OPS._ITABLE__type.FST_1
 	CLT
@@ -875,7 +875,7 @@ LOOP__2:
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb
+	ULb
 	LI	32
 	CNE
 	BT	L16
@@ -1084,7 +1084,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	LI	1
 	MUL
 	La  2,	-S_ofs
-	La
+	La  ,  0
 	BLKMOV
 	La	 0, STANDARD.GRMR_OPS.HTABLE_disp		; array data start address on stack
 	Ld 0,	STANDARD.GRMR_OPS.HCODE_disp
@@ -1112,11 +1112,11 @@ begin:					;---------- BDY INSTRUCTIONS
 	BLKMOV
 	DUP
 	LVA	, STANDARD.GRMR_OPS._HTABLE_TYPE.HP
-	Lb  2,	-P_ofs
+	ULb  2,	-P_ofs
 	Sb
 	DROP
 	La	 0, STANDARD.GRMR_OPS.ITABLE_disp		; array data start address on stack
-	Lb  2,	-P_ofs
+	ULb  2,	-P_ofs
 	DUP
 	LId	0, STANDARD.GRMR_OPS.ITABLE__u, STANDARD.GRMR_OPS._ITABLE__type.FST_1
 	CLT

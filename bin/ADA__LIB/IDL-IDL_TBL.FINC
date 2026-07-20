@@ -419,18 +419,21 @@ LOOP__1:
 	LI	1
 	OUX
 	BF	L11
+STR STR_L12, "TEST INIT_SPEC get line"		; constante string="TEST INIT_SPEC get line"
+	LCA	STR_L12.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
 	LVA  1,	STANDARD.IDL.IDL_TBL.INIT_SPEC_L53.T_CHR_disp
 	LVA 1,	SFILE_disp
 	CALL	STANDARD.TEXT_IO. ,GET_L49
 					; debut if
-	Lb 1,	T_CHR_disp
+	ULb 1,	T_CHR_disp
 	LI	67
 	CNE
-	Lb 1,	T_CHR_disp
+	ULb 1,	T_CHR_disp
 	LI	69
 	CNE
 	ET
-	BF	L13
+	BF	L14
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	DUP
@@ -444,9 +447,9 @@ LOOP__1:
 	LVA  1,	STANDARD.IDL.IDL_TBL.INIT_SPEC_L53.T_INT_disp
 	LVA 1,	SFILE_disp
 	CALL	STANDARD.IDL.IDL_TBL.INIT_SPEC_L53.INT_IO. ,GET_L1
-	BRA	L12
-L13:
-L12:					; post if
+	BRA	L13
+L14:
+L13:					; post if
 	LVA  1,	STANDARD.IDL.IDL_TBL.INIT_SPEC_L53.T_LAST_disp
 	LVA  1,	STANDARD.IDL.IDL_TBL.INIT_SPEC_L53.T_TXT_disp
 	LVA 1,	SFILE_disp
@@ -462,21 +465,21 @@ VAR D_disp, d				; variable entiere
 
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-VAR	SL17_disp, d				; compteur boucle LOOP__3
+VAR	SL18_disp, d				; compteur boucle LOOP__3
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
-	Sd  2,	SL17_disp
-VAR	LMT_SL17_disp, d			; limite boucle LOOP__3
+	Sd  2,	SL18_disp
+VAR	LMT_SL18_disp, d			; limite boucle LOOP__3
 	Ld 1,	STANDARD.IDL.IDL_TBL.INIT_SPEC_L53.T_LAST_disp
-	Sd  2,	LMT_SL17_disp
-	Ld  2,	SL17_disp				; test null range LOOP__3
-	Ld  2,	LMT_SL17_disp
+	Sd  2,	LMT_SL18_disp
+	Ld  2,	SL18_disp				; test null range LOOP__3
+	Ld  2,	LMT_SL18_disp
 	CGT
-	BT	L16
+	BT	L17
 LOOP__3:					; corps boucle LOOP__3
 					; debut if
 	La	 1, STANDARD.IDL.IDL_TBL.INIT_SPEC_L53.T_TXT_disp	; array data start address on stack
-	Ld 2,	SL17_disp
+	Ld 2,	SL18_disp
 	DUP
 	LId	1, STANDARD.IDL.IDL_TBL.INIT_SPEC_L53.T_TXT__u, STANDARD._STRING.FST_1
 	CLT
@@ -492,11 +495,11 @@ LOOP__3:					; corps boucle LOOP__3
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb
+	ULb
 	LI	32
 	CNE
 	La	 1, STANDARD.IDL.IDL_TBL.INIT_SPEC_L53.T_TXT_disp	; array data start address on stack
-	Ld 2,	SL17_disp
+	Ld 2,	SL18_disp
 	DUP
 	LId	1, STANDARD.IDL.IDL_TBL.INIT_SPEC_L53.T_TXT__u, STANDARD._STRING.FST_1
 	CLT
@@ -512,11 +515,11 @@ LOOP__3:					; corps boucle LOOP__3
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb
+	ULb
 	LI	 9
 	CNE
 	ET
-	BF	L19
+	BF	L20
 	Ld 2,	D_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
@@ -540,7 +543,7 @@ LOOP__3:					; corps boucle LOOP__3
 	MUL
 	ADD					; add offset to start address
 	La	 1, STANDARD.IDL.IDL_TBL.INIT_SPEC_L53.T_TXT_disp	; array data start address on stack
-	Ld 2,	SL17_disp
+	Ld 2,	SL18_disp
 	DUP
 	LId	1, STANDARD.IDL.IDL_TBL.INIT_SPEC_L53.T_TXT__u, STANDARD._STRING.FST_1
 	CLT
@@ -556,20 +559,20 @@ LOOP__3:					; corps boucle LOOP__3
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb
+	ULb
 	Sb
-	BRA	L18
-L19:
-L18:					; post if
-	Ld  2,	SL17_disp				; test de sortie LOOP__3
-	Ld  2,	LMT_SL17_disp
+	BRA	L19
+L20:
+L19:					; post if
+	Ld  2,	SL18_disp				; test de sortie LOOP__3
+	Ld  2,	LMT_SL18_disp
 	CEQ
-	BT	L16
-	Ld  2,	SL17_disp				; mise a jour compteur LOOP__3
+	BT	L17
+	Ld  2,	SL18_disp				; mise a jour compteur LOOP__3
 	INC
-	Sd  2,	SL17_disp
+	Sd  2,	SL18_disp
 	BRA	LOOP__3				; iteration suivante LOOP__3
-L16:					; post loop LOOP__3
+L17:					; post loop LOOP__3
 	Ld 2,	D_disp
 	DUP
 	Ld	0, STANDARD._NATURAL.FST
@@ -583,29 +586,117 @@ L16:					; post loop LOOP__3
 	UNLINK 2
 endPRO
 					; debut if
-	Lb 1,	T_CHR_disp
+	ULb 1,	T_CHR_disp
 	LI	78
 	CEQ
-	BF	L21
+	BF	L22
 	LId	0, STANDARD.IDL.IDL_TBL.LAST_NODE_disp, 0
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
 	SId	0, 	STANDARD.IDL.IDL_TBL.LAST_NODE_disp, 0
+; CODE & concat _STRING
+VAR	ANON_64_11_L23_G_data, q
+VAR	ANON_64_11_L23_G_info, q
+VAR	ANON_64_39_L23_D_data, q
+VAR	ANON_64_39_L23_D_info, q
+VAR	ANON_64_11_L23_G_len,  q
+VAR	ANON_64_39_L23_D_len,  q
+VAR	ANON_64_11_L23_R_disp, q
+VAR	ANON_64_11_L23_R__u,   q
+namespace ANON_64_11_L23_R_info
+  VAR SIZ,      d
+  VAR _COMP_SIZ, d
+  VAR _FST_1,    d
+  VAR _LST_1,    d
+end namespace
+STR ANON_64_11_L23_G, "TEST INIT_SPEC NODE in "	; constante string="TEST INIT_SPEC NODE in "
+	LCA	ANON_64_11_L23_G.data_ptr
+	DUP
+	La  ,  0
+	Sa  1, ANON_64_11_L23_G_data
+	La  ,  8
+	Sa  1, ANON_64_11_L23_G_info
+	LId 1, ANON_64_11_L23_G_info, _STRING.LST_1
+	LId 1, ANON_64_11_L23_G_info, _STRING.FST_1
+	SUB
+	INC
+	CLAMP0
+	Sa  1, ANON_64_11_L23_G_len
+VAR	ANON_64_39_disp, q
+VAR	ANON_64_39__u,   q
+namespace ANON_64_39_info
+  VAR SIZ, d
+  VAR _COMP_SIZ, d
+  VAR _FST_1, d
+  VAR _LST_1, d
+end namespace
+	LVA 1, ANON_64_39_info.SIZ
+	Sa  1, ANON_64_39__u
+	LVA 1, ANON_64_39_disp
+	LId	0, STANDARD.IDL.IDL_TBL.LAST_NODE_disp, 0
+	CALL	STANDARD. ,INTEGER_IMAGE_L11
+	DUP
+	La  ,  0
+	Sa  1, ANON_64_39_L23_D_data
+	La  ,  8
+	Sa  1, ANON_64_39_L23_D_info
+	LId 1, ANON_64_39_L23_D_info, _STRING.LST_1
+	LId 1, ANON_64_39_L23_D_info, _STRING.FST_1
+	SUB
+	INC
+	CLAMP0
+	Sa  1, ANON_64_39_L23_D_len
+	La  1, ANON_64_11_L23_G_len
+	La  1, ANON_64_39_L23_D_len
+	ADD
+	CO_VAR
+	Sa  1, ANON_64_11_L23_R_disp
+	LI	1
+	Sd  1, ANON_64_11_L23_R_info._FST_1
+	La  1, ANON_64_11_L23_G_len
+	La  1, ANON_64_39_L23_D_len
+	ADD
+	Sd  1, ANON_64_11_L23_R_info._LST_1
+	LI	8
+	Sd  1, ANON_64_11_L23_R_info._COMP_SIZ
+	La  1, ANON_64_11_L23_G_len
+	La  1, ANON_64_39_L23_D_len
+	ADD
+	LI	8
+	MUL
+	Sd  1, ANON_64_11_L23_R_info.SIZ
+	LVA 1, ANON_64_11_L23_R_info.SIZ
+	Sa  1, ANON_64_11_L23_R__u
+	La  1, ANON_64_11_L23_R_disp
+	La  1, ANON_64_11_L23_G_len
+	La  1, ANON_64_11_L23_G_data
+	BLKMOV
+	La  1, ANON_64_11_L23_R_disp
+	La  1, ANON_64_11_L23_G_len
+	ADD
+	La  1, ANON_64_39_L23_D_len
+	La  1, ANON_64_39_L23_D_data
+	BLKMOV
+	LVA 1, ANON_64_11_L23_R_disp
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
 					; debut if
 	LId	0, STANDARD.IDL.IDL_TBL.LAST_NODE_disp, 0
 	Ld 1,	T_INT_disp
 	CNE
-	BF	L23
-STR STR_L24, "IDL.IDL_TBL.INIT_SPEC: LAST NODE /= T_INT"	; constante string="IDL.IDL_TBL.INIT_SPEC: LAST NODE /= T_INT"
-	LCA	STR_L24.data_ptr
+	BF	L25
+STR STR_L26, "IDL.IDL_TBL.INIT_SPEC: LAST NODE /= T_INT"	; constante string="IDL.IDL_TBL.INIT_SPEC: LAST NODE /= T_INT"
+	LCA	STR_L26.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
 	LCA	STANDARD.PROGRAM_ERROR__exc.data_ptr
 	Sa	0, STANDARD.EXCEPTIONS_CURRENT_disp
 	BRA	STANDARD.exc_raise_
-	BRA	L22
-L23:
-L22:					; post if
+	BRA	L24
+L25:
+L24:					; post if
+STR STR_L27, "TEST INIT_SPEC affectation NSPEC"	; constante string="TEST INIT_SPEC affectation NSPEC"
+	LCA	STR_L27.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
 	La	 0, STANDARD.IDL.IDL_TBL.N_SPEC_disp	; array data start address on stack
 	LId	0, STANDARD.IDL.IDL_TBL.LAST_NODE_disp, 0
 	DUP
@@ -639,31 +730,37 @@ L22:					; post if
 	LI	0
 	Sb
 	DROP
+STR STR_L28, "TEST INIT_SPEC NODE out"		; constante string="TEST INIT_SPEC NODE out"
+	LCA	STR_L28.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
 	LI	0
 	Sb  1,	AS_LIST_SEEN_disp
 	LI	0
 	Sb  1,	AS_SEEN_disp
 	LI	0
 	Sb  1,	NON_AS_SEEN_disp
-	BRA	L20
-L21:
-	Lb 1,	T_CHR_disp
+	BRA	L21
+L22:
+	ULb 1,	T_CHR_disp
 	LI	65
 	CEQ
-	Lb 1,	T_CHR_disp
+	ULb 1,	T_CHR_disp
 	LI	66
 	CEQ
 	OU
-	Lb 1,	T_CHR_disp
+	ULb 1,	T_CHR_disp
 	LI	73
 	CEQ
 	OU
-	BF	L25
+	BF	L29
 	LId	0, STANDARD.IDL.IDL_TBL.LAST_NODE_ATTR_disp, 0
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
 	SId	0, 	STANDARD.IDL.IDL_TBL.LAST_NODE_ATTR_disp, 0
+STR STR_L30, "TEST INIT_SPEC ATTRIBUTE in"	; constante string="TEST INIT_SPEC ATTRIBUTE in"
+	LCA	STR_L30.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
 namespace	BLOCK__2
 ELB 2					;    BODY ELAB
  hexa_show 'var elab NN ', $
@@ -674,9 +771,94 @@ VAR NN_disp, b				; variable entiere
 
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
+; CODE & concat _STRING
+VAR	ANON_96_11_L33_G_data, q
+VAR	ANON_96_11_L33_G_info, q
+VAR	ANON_96_66_L33_D_data, q
+VAR	ANON_96_66_L33_D_info, q
+VAR	ANON_96_11_L33_G_len,  q
+VAR	ANON_96_66_L33_D_len,  q
+VAR	ANON_96_11_L33_R_disp, q
+VAR	ANON_96_11_L33_R__u,   q
+namespace ANON_96_11_L33_R_info
+  VAR SIZ,      d
+  VAR _COMP_SIZ, d
+  VAR _FST_1,    d
+  VAR _LST_1,    d
+end namespace
+STR ANON_96_11_L33_G, "TEST INIT_SPEC ATTRIBUTE pre if affectation 0 NN= "	; constante string="TEST INIT_SPEC ATTRIBUTE pre if affectation 0 NN= "
+	LCA	ANON_96_11_L33_G.data_ptr
+	DUP
+	La  ,  0
+	Sa  2, ANON_96_11_L33_G_data
+	La  ,  8
+	Sa  2, ANON_96_11_L33_G_info
+	LId 2, ANON_96_11_L33_G_info, _STRING.LST_1
+	LId 2, ANON_96_11_L33_G_info, _STRING.FST_1
+	SUB
+	INC
+	CLAMP0
+	Sa  2, ANON_96_11_L33_G_len
+VAR	ANON_96_66_disp, q
+VAR	ANON_96_66__u,   q
+namespace ANON_96_66_info
+  VAR SIZ, d
+  VAR _COMP_SIZ, d
+  VAR _FST_1, d
+  VAR _LST_1, d
+end namespace
+	LVA 2, ANON_96_66_info.SIZ
+	Sa  2, ANON_96_66__u
+	LVA 2, ANON_96_66_disp
+	LId	0, STANDARD.IDL.IDL_TBL.LAST_NODE_disp, 0
+	CALL	STANDARD. ,INTEGER_IMAGE_L11
+	DUP
+	La  ,  0
+	Sa  2, ANON_96_66_L33_D_data
+	La  ,  8
+	Sa  2, ANON_96_66_L33_D_info
+	LId 2, ANON_96_66_L33_D_info, _STRING.LST_1
+	LId 2, ANON_96_66_L33_D_info, _STRING.FST_1
+	SUB
+	INC
+	CLAMP0
+	Sa  2, ANON_96_66_L33_D_len
+	La  2, ANON_96_11_L33_G_len
+	La  2, ANON_96_66_L33_D_len
+	ADD
+	CO_VAR
+	Sa  2, ANON_96_11_L33_R_disp
+	LI	1
+	Sd  2, ANON_96_11_L33_R_info._FST_1
+	La  2, ANON_96_11_L33_G_len
+	La  2, ANON_96_66_L33_D_len
+	ADD
+	Sd  2, ANON_96_11_L33_R_info._LST_1
+	LI	8
+	Sd  2, ANON_96_11_L33_R_info._COMP_SIZ
+	La  2, ANON_96_11_L33_G_len
+	La  2, ANON_96_66_L33_D_len
+	ADD
+	LI	8
+	MUL
+	Sd  2, ANON_96_11_L33_R_info.SIZ
+	LVA 2, ANON_96_11_L33_R_info.SIZ
+	Sa  2, ANON_96_11_L33_R__u
+	La  2, ANON_96_11_L33_R_disp
+	La  2, ANON_96_11_L33_G_len
+	La  2, ANON_96_11_L33_G_data
+	BLKMOV
+	La  2, ANON_96_11_L33_R_disp
+	La  2, ANON_96_11_L33_G_len
+	ADD
+	La  2, ANON_96_66_L33_D_len
+	La  2, ANON_96_66_L33_D_data
+	BLKMOV
+	LVA 2, ANON_96_11_L33_R_disp
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
 					; debut if
 	La	 0, STANDARD.IDL.IDL_TBL.N_SPEC_disp	; array data start address on stack
-	Lb 2,	NN_disp
+	ULb 2,	NN_disp
 	DUP
 	LId	0, STANDARD.IDL.IDL_TBL.N_SPEC__u, STANDARD.IDL.IDL_TBL._NODE_SPECIF_TABLE.FST_1
 	CLT
@@ -696,9 +878,12 @@ begin:					;---------- BDY INSTRUCTIONS
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	CEQ
-	BF	L29
+	BF	L35
+STR STR_L36, "TEST INIT_SPEC ATTRIBUTE avant affectation 0"	; constante string="TEST INIT_SPEC ATTRIBUTE avant affectation 0"
+	LCA	STR_L36.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
 	La	 0, STANDARD.IDL.IDL_TBL.N_SPEC_disp	; array data start address on stack
-	Lb 2,	NN_disp
+	ULb 2,	NN_disp
 	DUP
 	LId	0, STANDARD.IDL.IDL_TBL.N_SPEC__u, STANDARD.IDL.IDL_TBL._NODE_SPECIF_TABLE.FST_1
 	CLT
@@ -717,11 +902,14 @@ begin:					;---------- BDY INSTRUCTIONS
 	LVA	, STANDARD.IDL.IDL_TBL._NODE_SPECIF.NS_FIRST_A
 	LId	0, STANDARD.IDL.IDL_TBL.LAST_NODE_ATTR_disp, 0
 	Sd
-	BRA	L28
-L29:
-L28:					; post if
+	BRA	L34
+L35:
+L34:					; post if
+STR STR_L37, "TEST INIT_SPEC ATTRIBUTE avant affectation 0 bis"	; constante string="TEST INIT_SPEC ATTRIBUTE avant affectation 0 bis"
+	LCA	STR_L37.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
 	La	 0, STANDARD.IDL.IDL_TBL.N_SPEC_disp	; array data start address on stack
-	Lb 2,	NN_disp
+	ULb 2,	NN_disp
 	DUP
 	LId	0, STANDARD.IDL.IDL_TBL.N_SPEC__u, STANDARD.IDL.IDL_TBL._NODE_SPECIF_TABLE.FST_1
 	CLT
@@ -739,7 +927,7 @@ L28:					; post if
 	ADD					; add offset to start address
 	LVA	, STANDARD.IDL.IDL_TBL._NODE_SPECIF.NS_SIZE
 	La	 0, STANDARD.IDL.IDL_TBL.N_SPEC_disp	; array data start address on stack
-	Lb 2,	NN_disp
+	ULb 2,	NN_disp
 	DUP
 	LId	0, STANDARD.IDL.IDL_TBL.N_SPEC__u, STANDARD.IDL.IDL_TBL._NODE_SPECIF_TABLE.FST_1
 	CLT
@@ -760,23 +948,26 @@ L28:					; post if
 	LI	1
 	ADD
 	Sb
+STR STR_L38, "TEST INIT_SPEC ATTRIBUTE apres affectation 0"	; constante string="TEST INIT_SPEC ATTRIBUTE apres affectation 0"
+	LCA	STR_L38.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
 					; debut if
 	Ld 1,	STANDARD.IDL.IDL_TBL.INIT_SPEC_L53.T_LAST_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	3
 	CGE
 	DUP
-	BF	L32
+	BF	L41
 	DROP
 ; CODE composite "=" _STRING
-VAR	ANON_85_33_L33_G_data, q
-VAR	ANON_85_33_L33_G_info, q
-VAR	ANON_85_33_L33_G_len,  q
-VAR	ANON_85_33_L33_G_slice_data, q
-VAR	ANON_85_33_L33_G_slice_len,  q
-VAR	ANON_85_33_L33_G_disp, q
-VAR	ANON_85_33_L33_G__u,   q
-namespace ANON_85_33_L33_G_info
+VAR	ANON_111_33_L42_G_data, q
+VAR	ANON_111_33_L42_G_info, q
+VAR	ANON_111_33_L42_G_len,  q
+VAR	ANON_111_33_L42_G_slice_data, q
+VAR	ANON_111_33_L42_G_slice_len,  q
+VAR	ANON_111_33_L42_G_disp, q
+VAR	ANON_111_33_L42_G__u,   q
+namespace ANON_111_33_L42_G_info
   VAR SIZ,      d
   VAR _COMP_SIZ, d
   VAR _FST_1,    d
@@ -799,107 +990,107 @@ end namespace
 	CLAMP0
 	LI	1
 	MUL
-	Sa  2, ANON_85_33_L33_G_slice_len
-	Sa  2, ANON_85_33_L33_G_slice_data
-	La  2, ANON_85_33_L33_G_slice_data
-	Sa  2, ANON_85_33_L33_G_disp
-	LVA 2, ANON_85_33_L33_G_info.SIZ
-	Sa  2, ANON_85_33_L33_G__u
+	Sa  2, ANON_111_33_L42_G_slice_len
+	Sa  2, ANON_111_33_L42_G_slice_data
+	La  2, ANON_111_33_L42_G_slice_data
+	Sa  2, ANON_111_33_L42_G_disp
+	LVA 2, ANON_111_33_L42_G_info.SIZ
+	Sa  2, ANON_111_33_L42_G__u
 	LI	1
-	Sd  2, ANON_85_33_L33_G_info._FST_1
-	La  2, ANON_85_33_L33_G_slice_len
-	Sd  2, ANON_85_33_L33_G_info._LST_1
+	Sd  2, ANON_111_33_L42_G_info._FST_1
+	La  2, ANON_111_33_L42_G_slice_len
+	Sd  2, ANON_111_33_L42_G_info._LST_1
 	LI	8
-	Sd  2, ANON_85_33_L33_G_info._COMP_SIZ
-	La  2, ANON_85_33_L33_G_slice_len
+	Sd  2, ANON_111_33_L42_G_info._COMP_SIZ
+	La  2, ANON_111_33_L42_G_slice_len
 	LI	8
 	MUL
-	Sd  2, ANON_85_33_L33_G_info.SIZ
-	LVA 2, ANON_85_33_L33_G_disp
+	Sd  2, ANON_111_33_L42_G_info.SIZ
+	LVA 2, ANON_111_33_L42_G_disp
 	DUP
 	La  ,  0
-	Sa  2, ANON_85_33_L33_G_data
+	Sa  2, ANON_111_33_L42_G_data
 	La  ,  8
-	Sa  2, ANON_85_33_L33_G_info
-	LId 2, ANON_85_33_L33_G_info, STANDARD._STRING.LST_1
-	LId 2, ANON_85_33_L33_G_info, STANDARD._STRING.FST_1
+	Sa  2, ANON_111_33_L42_G_info
+	LId 2, ANON_111_33_L42_G_info, STANDARD._STRING.LST_1
+	LId 2, ANON_111_33_L42_G_info, STANDARD._STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  2, ANON_85_33_L33_G_len
-VAR	ANON_85_49_L33_D_data, q
-VAR	ANON_85_49_L33_D_info, q
-VAR	ANON_85_49_L33_D_len,  q
-STR ANON_85_49_L33_D, "as_"			; constante string="as_"
-	LCA	ANON_85_49_L33_D.data_ptr
+	Sa  2, ANON_111_33_L42_G_len
+VAR	ANON_111_49_L42_D_data, q
+VAR	ANON_111_49_L42_D_info, q
+VAR	ANON_111_49_L42_D_len,  q
+STR ANON_111_49_L42_D, "as_"			; constante string="as_"
+	LCA	ANON_111_49_L42_D.data_ptr
 	DUP
 	La  ,  0
-	Sa  2, ANON_85_49_L33_D_data
+	Sa  2, ANON_111_49_L42_D_data
 	La  ,  8
-	Sa  2, ANON_85_49_L33_D_info
-	LId 2, ANON_85_49_L33_D_info, STANDARD._STRING.LST_1
-	LId 2, ANON_85_49_L33_D_info, STANDARD._STRING.FST_1
+	Sa  2, ANON_111_49_L42_D_info
+	LId 2, ANON_111_49_L42_D_info, STANDARD._STRING.LST_1
+	LId 2, ANON_111_49_L42_D_info, STANDARD._STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  2, ANON_85_49_L33_D_len
-	La  2, ANON_85_33_L33_G_len
-	La  2, ANON_85_49_L33_D_len
+	Sa  2, ANON_111_49_L42_D_len
+	La  2, ANON_111_33_L42_G_len
+	La  2, ANON_111_49_L42_D_len
 	CEQ
 	DUP
-	BF	L34
+	BF	L43
 	DROP
-	La  2, ANON_85_33_L33_G_data
-	La  2, ANON_85_33_L33_G_len
-	La  2, ANON_85_49_L33_D_data
+	La  2, ANON_111_33_L42_G_data
+	La  2, ANON_111_33_L42_G_len
+	La  2, ANON_111_49_L42_D_data
 	BLKCMP
-L34:
-L32:
-	BF	L31
+L43:
+L41:
+	BF	L40
 					; debut if
 	Ld 1,	STANDARD.IDL.IDL_TBL.INIT_SPEC_L53.T_INT_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	CLT
-	BF	L36
+	BF	L45
 					; debut if
-	Lb 1,	STANDARD.IDL.IDL_TBL.INIT_SPEC_L53.AS_SEEN_disp
-	Lb 1,	STANDARD.IDL.IDL_TBL.INIT_SPEC_L53.NON_AS_SEEN_disp
+	ULb 1,	STANDARD.IDL.IDL_TBL.INIT_SPEC_L53.AS_SEEN_disp
+	ULb 1,	STANDARD.IDL.IDL_TBL.INIT_SPEC_L53.NON_AS_SEEN_disp
 	OU
-	BF	L38
+	BF	L47
 ; CODE & concat _STRING
-VAR	ANON_88_17_L39_G_data, q
-VAR	ANON_88_17_L39_G_info, q
-VAR	ANON_88_36_L39_D_data, q
-VAR	ANON_88_36_L39_D_info, q
-VAR	ANON_88_17_L39_G_len,  q
-VAR	ANON_88_36_L39_D_len,  q
-VAR	ANON_88_17_L39_R_disp, q
-VAR	ANON_88_17_L39_R__u,   q
-namespace ANON_88_17_L39_R_info
+VAR	ANON_114_17_L48_G_data, q
+VAR	ANON_114_17_L48_G_info, q
+VAR	ANON_114_36_L48_D_data, q
+VAR	ANON_114_36_L48_D_info, q
+VAR	ANON_114_17_L48_G_len,  q
+VAR	ANON_114_36_L48_D_len,  q
+VAR	ANON_114_17_L48_R_disp, q
+VAR	ANON_114_17_L48_R__u,   q
+namespace ANON_114_17_L48_R_info
   VAR SIZ,      d
   VAR _COMP_SIZ, d
   VAR _FST_1,    d
   VAR _LST_1,    d
 end namespace
-STR ANON_88_17_L39_G, "BAD AS_LIST: "		; constante string="BAD AS_LIST: "
-	LCA	ANON_88_17_L39_G.data_ptr
+STR ANON_114_17_L48_G, "BAD AS_LIST: "		; constante string="BAD AS_LIST: "
+	LCA	ANON_114_17_L48_G.data_ptr
 	DUP
 	La  ,  0
-	Sa  2, ANON_88_17_L39_G_data
+	Sa  2, ANON_114_17_L48_G_data
 	La  ,  8
-	Sa  2, ANON_88_17_L39_G_info
-	LId 2, ANON_88_17_L39_G_info, _STRING.LST_1
-	LId 2, ANON_88_17_L39_G_info, _STRING.FST_1
+	Sa  2, ANON_114_17_L48_G_info
+	LId 2, ANON_114_17_L48_G_info, _STRING.LST_1
+	LId 2, ANON_114_17_L48_G_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  2, ANON_88_17_L39_G_len
-VAR	ANON_88_36_L39_D_slice_data, q
-VAR	ANON_88_36_L39_D_slice_len,  q
-VAR	ANON_88_36_L39_D_disp, q
-VAR	ANON_88_36_L39_D__u,   q
-namespace ANON_88_36_L39_D_info
+	Sa  2, ANON_114_17_L48_G_len
+VAR	ANON_114_36_L48_D_slice_data, q
+VAR	ANON_114_36_L48_D_slice_len,  q
+VAR	ANON_114_36_L48_D_disp, q
+VAR	ANON_114_36_L48_D__u,   q
+namespace ANON_114_36_L48_D_info
   VAR SIZ,      d
   VAR _COMP_SIZ, d
   VAR _FST_1,    d
@@ -921,76 +1112,79 @@ end namespace
 	CLAMP0
 	LI	1
 	MUL
-	Sa  2, ANON_88_36_L39_D_slice_len
-	Sa  2, ANON_88_36_L39_D_slice_data
-	La  2, ANON_88_36_L39_D_slice_data
-	Sa  2, ANON_88_36_L39_D_disp
-	LVA 2, ANON_88_36_L39_D_info.SIZ
-	Sa  2, ANON_88_36_L39_D__u
+	Sa  2, ANON_114_36_L48_D_slice_len
+	Sa  2, ANON_114_36_L48_D_slice_data
+	La  2, ANON_114_36_L48_D_slice_data
+	Sa  2, ANON_114_36_L48_D_disp
+	LVA 2, ANON_114_36_L48_D_info.SIZ
+	Sa  2, ANON_114_36_L48_D__u
 	LI	1
-	Sd  2, ANON_88_36_L39_D_info._FST_1
-	La  2, ANON_88_36_L39_D_slice_len
-	Sd  2, ANON_88_36_L39_D_info._LST_1
+	Sd  2, ANON_114_36_L48_D_info._FST_1
+	La  2, ANON_114_36_L48_D_slice_len
+	Sd  2, ANON_114_36_L48_D_info._LST_1
 	LI	8
-	Sd  2, ANON_88_36_L39_D_info._COMP_SIZ
-	La  2, ANON_88_36_L39_D_slice_len
+	Sd  2, ANON_114_36_L48_D_info._COMP_SIZ
+	La  2, ANON_114_36_L48_D_slice_len
 	LI	8
 	MUL
-	Sd  2, ANON_88_36_L39_D_info.SIZ
-	LVA 2, ANON_88_36_L39_D_disp
+	Sd  2, ANON_114_36_L48_D_info.SIZ
+	LVA 2, ANON_114_36_L48_D_disp
 	DUP
 	La  ,  0
-	Sa  2, ANON_88_36_L39_D_data
+	Sa  2, ANON_114_36_L48_D_data
 	La  ,  8
-	Sa  2, ANON_88_36_L39_D_info
-	LId 2, ANON_88_36_L39_D_info, _STRING.LST_1
-	LId 2, ANON_88_36_L39_D_info, _STRING.FST_1
+	Sa  2, ANON_114_36_L48_D_info
+	LId 2, ANON_114_36_L48_D_info, _STRING.LST_1
+	LId 2, ANON_114_36_L48_D_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  2, ANON_88_36_L39_D_len
-	La  2, ANON_88_17_L39_G_len
-	La  2, ANON_88_36_L39_D_len
+	Sa  2, ANON_114_36_L48_D_len
+	La  2, ANON_114_17_L48_G_len
+	La  2, ANON_114_36_L48_D_len
 	ADD
 	CO_VAR
-	Sa  2, ANON_88_17_L39_R_disp
+	Sa  2, ANON_114_17_L48_R_disp
 	LI	1
-	Sd  2, ANON_88_17_L39_R_info._FST_1
-	La  2, ANON_88_17_L39_G_len
-	La  2, ANON_88_36_L39_D_len
+	Sd  2, ANON_114_17_L48_R_info._FST_1
+	La  2, ANON_114_17_L48_G_len
+	La  2, ANON_114_36_L48_D_len
 	ADD
-	Sd  2, ANON_88_17_L39_R_info._LST_1
+	Sd  2, ANON_114_17_L48_R_info._LST_1
 	LI	8
-	Sd  2, ANON_88_17_L39_R_info._COMP_SIZ
-	La  2, ANON_88_17_L39_G_len
-	La  2, ANON_88_36_L39_D_len
+	Sd  2, ANON_114_17_L48_R_info._COMP_SIZ
+	La  2, ANON_114_17_L48_G_len
+	La  2, ANON_114_36_L48_D_len
 	ADD
 	LI	8
 	MUL
-	Sd  2, ANON_88_17_L39_R_info.SIZ
-	LVA 2, ANON_88_17_L39_R_info.SIZ
-	Sa  2, ANON_88_17_L39_R__u
-	La  2, ANON_88_17_L39_R_disp
-	La  2, ANON_88_17_L39_G_len
-	La  2, ANON_88_17_L39_G_data
+	Sd  2, ANON_114_17_L48_R_info.SIZ
+	LVA 2, ANON_114_17_L48_R_info.SIZ
+	Sa  2, ANON_114_17_L48_R__u
+	La  2, ANON_114_17_L48_R_disp
+	La  2, ANON_114_17_L48_G_len
+	La  2, ANON_114_17_L48_G_data
 	BLKMOV
-	La  2, ANON_88_17_L39_R_disp
-	La  2, ANON_88_17_L39_G_len
+	La  2, ANON_114_17_L48_R_disp
+	La  2, ANON_114_17_L48_G_len
 	ADD
-	La  2, ANON_88_36_L39_D_len
-	La  2, ANON_88_36_L39_D_data
+	La  2, ANON_114_36_L48_D_len
+	La  2, ANON_114_36_L48_D_data
 	BLKMOV
-	LVA 2, ANON_88_17_L39_R_disp
+	LVA 2, ANON_114_17_L48_R_disp
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-	BRA	L37
-L38:
-L37:					; post if
+	BRA	L46
+L47:
+L46:					; post if
 	LI	1
 	Sb  1,	STANDARD.IDL.IDL_TBL.INIT_SPEC_L53.AS_SEEN_disp
 	LI	1
 	Sb  1,	STANDARD.IDL.IDL_TBL.INIT_SPEC_L53.AS_LIST_SEEN_disp
+STR STR_L49, "TEST INIT_SPEC ATTRIBUTE avant affectation 1"	; constante string="TEST INIT_SPEC ATTRIBUTE avant affectation 1"
+	LCA	STR_L49.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
 	La	 0, STANDARD.IDL.IDL_TBL.N_SPEC_disp	; array data start address on stack
-	Lb 2,	NN_disp
+	ULb 2,	NN_disp
 	DUP
 	LId	0, STANDARD.IDL.IDL_TBL.N_SPEC__u, STANDARD.IDL.IDL_TBL._NODE_SPECIF_TABLE.FST_1
 	CLT
@@ -1008,7 +1202,7 @@ L37:					; post if
 	ADD					; add offset to start address
 	LVA	, STANDARD.IDL.IDL_TBL._NODE_SPECIF.NS_ARITY
 	La	 0, STANDARD.IDL.IDL_TBL.N_SPEC_disp	; array data start address on stack
-	Lb 2,	NN_disp
+	ULb 2,	NN_disp
 	DUP
 	LId	0, STANDARD.IDL.IDL_TBL.N_SPEC__u, STANDARD.IDL.IDL_TBL._NODE_SPECIF_TABLE.FST_1
 	CLT
@@ -1024,51 +1218,54 @@ L37:					; post if
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb	, STANDARD.IDL.IDL_TBL._NODE_SPECIF.NS_ARITY
+	ULb	, STANDARD.IDL.IDL_TBL._NODE_SPECIF.NS_ARITY
 ; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
 	LI	4
 	ADD
 	Sb
-	BRA	L35
-L36:
+STR STR_L50, "TEST INIT_SPEC ATTRIBUTE apres affectation 1"	; constante string="TEST INIT_SPEC ATTRIBUTE apres affectation 1"
+	LCA	STR_L50.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+	BRA	L44
+L45:
 					; debut if
-	Lb 1,	STANDARD.IDL.IDL_TBL.INIT_SPEC_L53.AS_LIST_SEEN_disp
-	Lb 1,	STANDARD.IDL.IDL_TBL.INIT_SPEC_L53.NON_AS_SEEN_disp
+	ULb 1,	STANDARD.IDL.IDL_TBL.INIT_SPEC_L53.AS_LIST_SEEN_disp
+	ULb 1,	STANDARD.IDL.IDL_TBL.INIT_SPEC_L53.NON_AS_SEEN_disp
 	OU
-	BF	L41
+	BF	L52
 ; CODE & concat _STRING
-VAR	ANON_96_17_L42_G_data, q
-VAR	ANON_96_17_L42_G_info, q
-VAR	ANON_96_34_L42_D_data, q
-VAR	ANON_96_34_L42_D_info, q
-VAR	ANON_96_17_L42_G_len,  q
-VAR	ANON_96_34_L42_D_len,  q
-VAR	ANON_96_17_L42_R_disp, q
-VAR	ANON_96_17_L42_R__u,   q
-namespace ANON_96_17_L42_R_info
+VAR	ANON_127_17_L53_G_data, q
+VAR	ANON_127_17_L53_G_info, q
+VAR	ANON_127_34_L53_D_data, q
+VAR	ANON_127_34_L53_D_info, q
+VAR	ANON_127_17_L53_G_len,  q
+VAR	ANON_127_34_L53_D_len,  q
+VAR	ANON_127_17_L53_R_disp, q
+VAR	ANON_127_17_L53_R__u,   q
+namespace ANON_127_17_L53_R_info
   VAR SIZ,      d
   VAR _COMP_SIZ, d
   VAR _FST_1,    d
   VAR _LST_1,    d
 end namespace
-STR ANON_96_17_L42_G, "BAD AS_...: "		; constante string="BAD AS_...: "
-	LCA	ANON_96_17_L42_G.data_ptr
+STR ANON_127_17_L53_G, "BAD AS_...: "		; constante string="BAD AS_...: "
+	LCA	ANON_127_17_L53_G.data_ptr
 	DUP
 	La  ,  0
-	Sa  2, ANON_96_17_L42_G_data
+	Sa  2, ANON_127_17_L53_G_data
 	La  ,  8
-	Sa  2, ANON_96_17_L42_G_info
-	LId 2, ANON_96_17_L42_G_info, _STRING.LST_1
-	LId 2, ANON_96_17_L42_G_info, _STRING.FST_1
+	Sa  2, ANON_127_17_L53_G_info
+	LId 2, ANON_127_17_L53_G_info, _STRING.LST_1
+	LId 2, ANON_127_17_L53_G_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  2, ANON_96_17_L42_G_len
-VAR	ANON_96_34_L42_D_slice_data, q
-VAR	ANON_96_34_L42_D_slice_len,  q
-VAR	ANON_96_34_L42_D_disp, q
-VAR	ANON_96_34_L42_D__u,   q
-namespace ANON_96_34_L42_D_info
+	Sa  2, ANON_127_17_L53_G_len
+VAR	ANON_127_34_L53_D_slice_data, q
+VAR	ANON_127_34_L53_D_slice_len,  q
+VAR	ANON_127_34_L53_D_disp, q
+VAR	ANON_127_34_L53_D__u,   q
+namespace ANON_127_34_L53_D_info
   VAR SIZ,      d
   VAR _COMP_SIZ, d
   VAR _FST_1,    d
@@ -1090,74 +1287,77 @@ end namespace
 	CLAMP0
 	LI	1
 	MUL
-	Sa  2, ANON_96_34_L42_D_slice_len
-	Sa  2, ANON_96_34_L42_D_slice_data
-	La  2, ANON_96_34_L42_D_slice_data
-	Sa  2, ANON_96_34_L42_D_disp
-	LVA 2, ANON_96_34_L42_D_info.SIZ
-	Sa  2, ANON_96_34_L42_D__u
+	Sa  2, ANON_127_34_L53_D_slice_len
+	Sa  2, ANON_127_34_L53_D_slice_data
+	La  2, ANON_127_34_L53_D_slice_data
+	Sa  2, ANON_127_34_L53_D_disp
+	LVA 2, ANON_127_34_L53_D_info.SIZ
+	Sa  2, ANON_127_34_L53_D__u
 	LI	1
-	Sd  2, ANON_96_34_L42_D_info._FST_1
-	La  2, ANON_96_34_L42_D_slice_len
-	Sd  2, ANON_96_34_L42_D_info._LST_1
+	Sd  2, ANON_127_34_L53_D_info._FST_1
+	La  2, ANON_127_34_L53_D_slice_len
+	Sd  2, ANON_127_34_L53_D_info._LST_1
 	LI	8
-	Sd  2, ANON_96_34_L42_D_info._COMP_SIZ
-	La  2, ANON_96_34_L42_D_slice_len
+	Sd  2, ANON_127_34_L53_D_info._COMP_SIZ
+	La  2, ANON_127_34_L53_D_slice_len
 	LI	8
 	MUL
-	Sd  2, ANON_96_34_L42_D_info.SIZ
-	LVA 2, ANON_96_34_L42_D_disp
+	Sd  2, ANON_127_34_L53_D_info.SIZ
+	LVA 2, ANON_127_34_L53_D_disp
 	DUP
 	La  ,  0
-	Sa  2, ANON_96_34_L42_D_data
+	Sa  2, ANON_127_34_L53_D_data
 	La  ,  8
-	Sa  2, ANON_96_34_L42_D_info
-	LId 2, ANON_96_34_L42_D_info, _STRING.LST_1
-	LId 2, ANON_96_34_L42_D_info, _STRING.FST_1
+	Sa  2, ANON_127_34_L53_D_info
+	LId 2, ANON_127_34_L53_D_info, _STRING.LST_1
+	LId 2, ANON_127_34_L53_D_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  2, ANON_96_34_L42_D_len
-	La  2, ANON_96_17_L42_G_len
-	La  2, ANON_96_34_L42_D_len
+	Sa  2, ANON_127_34_L53_D_len
+	La  2, ANON_127_17_L53_G_len
+	La  2, ANON_127_34_L53_D_len
 	ADD
 	CO_VAR
-	Sa  2, ANON_96_17_L42_R_disp
+	Sa  2, ANON_127_17_L53_R_disp
 	LI	1
-	Sd  2, ANON_96_17_L42_R_info._FST_1
-	La  2, ANON_96_17_L42_G_len
-	La  2, ANON_96_34_L42_D_len
+	Sd  2, ANON_127_17_L53_R_info._FST_1
+	La  2, ANON_127_17_L53_G_len
+	La  2, ANON_127_34_L53_D_len
 	ADD
-	Sd  2, ANON_96_17_L42_R_info._LST_1
+	Sd  2, ANON_127_17_L53_R_info._LST_1
 	LI	8
-	Sd  2, ANON_96_17_L42_R_info._COMP_SIZ
-	La  2, ANON_96_17_L42_G_len
-	La  2, ANON_96_34_L42_D_len
+	Sd  2, ANON_127_17_L53_R_info._COMP_SIZ
+	La  2, ANON_127_17_L53_G_len
+	La  2, ANON_127_34_L53_D_len
 	ADD
 	LI	8
 	MUL
-	Sd  2, ANON_96_17_L42_R_info.SIZ
-	LVA 2, ANON_96_17_L42_R_info.SIZ
-	Sa  2, ANON_96_17_L42_R__u
-	La  2, ANON_96_17_L42_R_disp
-	La  2, ANON_96_17_L42_G_len
-	La  2, ANON_96_17_L42_G_data
+	Sd  2, ANON_127_17_L53_R_info.SIZ
+	LVA 2, ANON_127_17_L53_R_info.SIZ
+	Sa  2, ANON_127_17_L53_R__u
+	La  2, ANON_127_17_L53_R_disp
+	La  2, ANON_127_17_L53_G_len
+	La  2, ANON_127_17_L53_G_data
 	BLKMOV
-	La  2, ANON_96_17_L42_R_disp
-	La  2, ANON_96_17_L42_G_len
+	La  2, ANON_127_17_L53_R_disp
+	La  2, ANON_127_17_L53_G_len
 	ADD
-	La  2, ANON_96_34_L42_D_len
-	La  2, ANON_96_34_L42_D_data
+	La  2, ANON_127_34_L53_D_len
+	La  2, ANON_127_34_L53_D_data
 	BLKMOV
-	LVA 2, ANON_96_17_L42_R_disp
+	LVA 2, ANON_127_17_L53_R_disp
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-	BRA	L40
-L41:
-L40:					; post if
+	BRA	L51
+L52:
+L51:					; post if
 	LI	1
 	Sb  1,	STANDARD.IDL.IDL_TBL.INIT_SPEC_L53.AS_SEEN_disp
+STR STR_L54, "TEST INIT_SPEC ATTRIBUTE avant affectation 2"	; constante string="TEST INIT_SPEC ATTRIBUTE avant affectation 2"
+	LCA	STR_L54.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
 	La	 0, STANDARD.IDL.IDL_TBL.N_SPEC_disp	; array data start address on stack
-	Lb 2,	NN_disp
+	ULb 2,	NN_disp
 	DUP
 	LId	0, STANDARD.IDL.IDL_TBL.N_SPEC__u, STANDARD.IDL.IDL_TBL._NODE_SPECIF_TABLE.FST_1
 	CLT
@@ -1175,7 +1375,7 @@ L40:					; post if
 	ADD					; add offset to start address
 	LVA	, STANDARD.IDL.IDL_TBL._NODE_SPECIF.NS_ARITY
 	La	 0, STANDARD.IDL.IDL_TBL.N_SPEC_disp	; array data start address on stack
-	Lb 2,	NN_disp
+	ULb 2,	NN_disp
 	DUP
 	LId	0, STANDARD.IDL.IDL_TBL.N_SPEC__u, STANDARD.IDL.IDL_TBL._NODE_SPECIF_TABLE.FST_1
 	CLT
@@ -1191,19 +1391,25 @@ L40:					; post if
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb	, STANDARD.IDL.IDL_TBL._NODE_SPECIF.NS_ARITY
+	ULb	, STANDARD.IDL.IDL_TBL._NODE_SPECIF.NS_ARITY
 ; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
 	LI	1
 	ADD
 	Sb
-L35:					; post if
-	BRA	L30
-L31:
+STR STR_L55, "TEST INIT_SPEC ATTRIBUTE apres affectation 2"	; constante string="TEST INIT_SPEC ATTRIBUTE apres affectation 2"
+	LCA	STR_L55.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
+L44:					; post if
+	BRA	L39
+L40:
 	LI	1
 	Sb  1,	STANDARD.IDL.IDL_TBL.INIT_SPEC_L53.NON_AS_SEEN_disp
-L30:					; post if
+L39:					; post if
 	UNLINK 2
 endPRO
+STR STR_L56, "TEST INIT_SPEC ATTRIBUTE avant affectation aspec 1"	; constante string="TEST INIT_SPEC ATTRIBUTE avant affectation aspec 1"
+	LCA	STR_L56.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
 	La	 0, STANDARD.IDL.IDL_TBL.A_SPEC_disp	; array data start address on stack
 	LId	0, STANDARD.IDL.IDL_TBL.LAST_NODE_ATTR_disp, 0
 	DUP
@@ -1227,9 +1433,15 @@ endPRO
 	LI	0
 	CLT
 	Sb
+STR STR_L57, "TEST INIT_SPEC ATTRIBUTE apres affectation aspec 1"	; constante string="TEST INIT_SPEC ATTRIBUTE apres affectation aspec 1"
+	LCA	STR_L57.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
 	Ld 1,	T_INT_disp
 	ABS
 	Sd  1,	T_INT_disp
+STR STR_L58, "TEST INIT_SPEC ATTRIBUTE avant affectation aspec 2"	; constante string="TEST INIT_SPEC ATTRIBUTE avant affectation aspec 2"
+	LCA	STR_L58.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
 	La	 0, STANDARD.IDL.IDL_TBL.A_SPEC_disp	; array data start address on stack
 	LId	0, STANDARD.IDL.IDL_TBL.LAST_NODE_ATTR_disp, 0
 	DUP
@@ -1250,19 +1462,22 @@ endPRO
 	LVA	, STANDARD.IDL.IDL_TBL._ATTR_SPECIF.ATTR
 	Ld 1,	T_INT_disp
 	Sb
+STR STR_L59, "TEST INIT_SPEC ATTRIBUTE apres affectation aspec 2"	; constante string="TEST INIT_SPEC ATTRIBUTE apres affectation aspec 2"
+	LCA	STR_L59.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
 					; debut if
 	Ld 1,	T_INT_disp
 	LId	0, STANDARD.IDL.IDL_TBL.LAST_ATTR_disp, 0
 	CGT
-	BF	L44
+	BF	L61
 	Ld 1,	T_INT_disp
 	SId	0, 	STANDARD.IDL.IDL_TBL.LAST_ATTR_disp, 0
-	BRA	L43
-L44:
-L43:					; post if
-	BRA	L20
-L25:
-L20:					; post if
+	BRA	L60
+L61:
+L60:					; post if
+	BRA	L21
+L29:
+L21:					; post if
 	BRA	LOOP__1
 L11:					; post loop LOOP__1
 	LVA  1,	STANDARD.IDL.IDL_TBL.INIT_SPEC_L53.SFILE_disp
@@ -1331,9 +1546,9 @@ END_BLOC_DEF 8, 0, 1
 	Sa	0, use__info
 end namespace
 					; sub program entry decl (in instantiation TRUE )
-if defined CREATE_L45_
-PRO	CREATE_L45				;---------- PRO CREATE
- hexa_show 'CREATE_L45 ', $
+if defined CREATE_L62_
+PRO	CREATE_L62				;---------- PRO CREATE
+ hexa_show 'CREATE_L62 ', $
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in out
 	PRM MODE_ofs				; in
@@ -1353,9 +1568,9 @@ begin:
 endPRO					;---------- end PRO CREATE
 end if
 					; sub program entry decl (in instantiation TRUE )
-if defined OPEN_L46_
-PRO	OPEN_L46				;---------- PRO OPEN
- hexa_show 'OPEN_L46 ', $
+if defined OPEN_L63_
+PRO	OPEN_L63				;---------- PRO OPEN
+ hexa_show 'OPEN_L63 ', $
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in out
 	PRM MODE_ofs				; in
@@ -1375,9 +1590,9 @@ begin:
 endPRO					;---------- end PRO OPEN
 end if
 					; sub program entry decl (in instantiation TRUE )
-if defined CLOSE_L47_
-PRO	CLOSE_L47				;---------- PRO CLOSE
- hexa_show 'CLOSE_L47 ', $
+if defined CLOSE_L64_
+PRO	CLOSE_L64				;---------- PRO CLOSE
+ hexa_show 'CLOSE_L64 ', $
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in out
 endPRMS					;    fin parametrage
@@ -1391,9 +1606,9 @@ begin:
 endPRO					;---------- end PRO CLOSE
 end if
 					; sub program entry decl (in instantiation TRUE )
-if defined DELETE_L48_
-PRO	DELETE_L48				;---------- PRO DELETE
- hexa_show 'DELETE_L48 ', $
+if defined DELETE_L65_
+PRO	DELETE_L65				;---------- PRO DELETE
+ hexa_show 'DELETE_L65 ', $
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in out
 endPRMS					;    fin parametrage
@@ -1407,9 +1622,9 @@ begin:
 endPRO					;---------- end PRO DELETE
 end if
 					; sub program entry decl (in instantiation TRUE )
-if defined RESET_L49_
-PRO	RESET_L49				;---------- PRO RESET
- hexa_show 'RESET_L49 ', $
+if defined RESET_L66_
+PRO	RESET_L66				;---------- PRO RESET
+ hexa_show 'RESET_L66 ', $
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in out
 	PRM MODE_ofs				; in
@@ -1425,9 +1640,9 @@ begin:
 endPRO					;---------- end PRO RESET
 end if
 					; sub program entry decl (in instantiation TRUE )
-if defined RESET_L50_
-PRO	RESET_L50				;---------- PRO RESET
- hexa_show 'RESET_L50 ', $
+if defined RESET_L67_
+PRO	RESET_L67				;---------- PRO RESET
+ hexa_show 'RESET_L67 ', $
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in out
 endPRMS					;    fin parametrage
@@ -1441,9 +1656,9 @@ begin:
 endPRO					;---------- end PRO RESET
 end if
 					; sub program entry decl (in instantiation TRUE )
-if defined MODE_L51_
-PRO	MODE_L51				;---------- PRO MODE
- hexa_show 'MODE_L51 ', $
+if defined MODE_L68_
+PRO	MODE_L68				;---------- PRO MODE
+ hexa_show 'MODE_L68 ', $
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM result__ofs				; resultat de fonction
@@ -1460,9 +1675,9 @@ begin:
 endPRO					;---------- end PRO MODE
 end if
 					; sub program entry decl (in instantiation TRUE )
-if defined NAME_L52_
-PRO	NAME_L52				;---------- PRO NAME
- hexa_show 'NAME_L52 ', $
+if defined NAME_L69_
+PRO	NAME_L69				;---------- PRO NAME
+ hexa_show 'NAME_L69 ', $
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM result__ofs				; resultat de fonction
@@ -1479,9 +1694,9 @@ begin:
 endPRO					;---------- end PRO NAME
 end if
 					; sub program entry decl (in instantiation TRUE )
-if defined FORM_L53_
-PRO	FORM_L53				;---------- PRO FORM
- hexa_show 'FORM_L53 ', $
+if defined FORM_L70_
+PRO	FORM_L70				;---------- PRO FORM
+ hexa_show 'FORM_L70 ', $
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM result__ofs				; resultat de fonction
@@ -1498,9 +1713,9 @@ begin:
 endPRO					;---------- end PRO FORM
 end if
 					; sub program entry decl (in instantiation TRUE )
-if defined IS_OPEN_L54_
-PRO	IS_OPEN_L54				;---------- PRO IS_OPEN
- hexa_show 'IS_OPEN_L54 ', $
+if defined IS_OPEN_L71_
+PRO	IS_OPEN_L71				;---------- PRO IS_OPEN
+ hexa_show 'IS_OPEN_L71 ', $
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM result__ofs				; resultat de fonction
@@ -1517,9 +1732,9 @@ begin:
 endPRO					;---------- end PRO IS_OPEN
 end if
 					; sub program entry decl (in instantiation TRUE )
-if defined READ_L55_
-PRO	READ_L55				;---------- PRO READ
- hexa_show 'READ_L55 ', $
+if defined READ_L72_
+PRO	READ_L72				;---------- PRO READ
+ hexa_show 'READ_L72 ', $
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM ITEM_ofs				; out
@@ -1535,9 +1750,9 @@ begin:
 endPRO					;---------- end PRO READ
 end if
 					; sub program entry decl (in instantiation TRUE )
-if defined WRITE_L56_
-PRO	WRITE_L56				;---------- PRO WRITE
- hexa_show 'WRITE_L56 ', $
+if defined WRITE_L73_
+PRO	WRITE_L73				;---------- PRO WRITE
+ hexa_show 'WRITE_L73 ', $
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM ITEM_ofs				; in
@@ -1553,9 +1768,9 @@ begin:
 endPRO					;---------- end PRO WRITE
 end if
 					; sub program entry decl (in instantiation TRUE )
-if defined END_OF_FILE_L57_
-PRO	END_OF_FILE_L57				;---------- PRO END_OF_FILE
- hexa_show 'END_OF_FILE_L57 ', $
+if defined END_OF_FILE_L74_
+PRO	END_OF_FILE_L74				;---------- PRO END_OF_FILE
+ hexa_show 'END_OF_FILE_L74 ', $
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM result__ofs				; resultat de fonction
@@ -1666,18 +1881,18 @@ VAR SFILE__dat, STANDARD.IDL.IDL_TBL.DTT_IO._FILE_TYPE.size
 
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-STR STR_L60, ""				; constante string=""
-	LCA	STR_L60.data_ptr
+STR STR_L77, ""				; constante string=""
+	LCA	STR_L77.data_ptr
 ; CODE & concat _STRING
-VAR	ANON_133_35_L61_G_data, q
-VAR	ANON_133_35_L61_G_info, q
-VAR	ANON_133_47_L61_D_data, q
-VAR	ANON_133_47_L61_D_info, q
-VAR	ANON_133_35_L61_G_len,  q
-VAR	ANON_133_47_L61_D_len,  q
-VAR	ANON_133_35_L61_R_disp, q
-VAR	ANON_133_35_L61_R__u,   q
-namespace ANON_133_35_L61_R_info
+VAR	ANON_181_35_L78_G_data, q
+VAR	ANON_181_35_L78_G_info, q
+VAR	ANON_181_47_L78_D_data, q
+VAR	ANON_181_47_L78_D_info, q
+VAR	ANON_181_35_L78_G_len,  q
+VAR	ANON_181_47_L78_D_len,  q
+VAR	ANON_181_35_L78_R_disp, q
+VAR	ANON_181_35_L78_R__u,   q
+namespace ANON_181_35_L78_R_info
   VAR SIZ,      d
   VAR _COMP_SIZ, d
   VAR _FST_1,    d
@@ -1686,68 +1901,77 @@ end namespace
 	La  1,	-SPEC_FILE_ofs
 	DUP
 	La  ,  0
-	Sa  1, ANON_133_35_L61_G_data
+	Sa  1, ANON_181_35_L78_G_data
 	La  ,  8
-	Sa  1, ANON_133_35_L61_G_info
-	LId 1, ANON_133_35_L61_G_info, _STRING.LST_1
-	LId 1, ANON_133_35_L61_G_info, _STRING.FST_1
+	Sa  1, ANON_181_35_L78_G_info
+	LId 1, ANON_181_35_L78_G_info, _STRING.LST_1
+	LId 1, ANON_181_35_L78_G_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  1, ANON_133_35_L61_G_len
-STR ANON_133_47_L61_D, ".bin"			; constante string=".bin"
-	LCA	ANON_133_47_L61_D.data_ptr
+	Sa  1, ANON_181_35_L78_G_len
+STR ANON_181_47_L78_D, ".bin"			; constante string=".bin"
+	LCA	ANON_181_47_L78_D.data_ptr
 	DUP
 	La  ,  0
-	Sa  1, ANON_133_47_L61_D_data
+	Sa  1, ANON_181_47_L78_D_data
 	La  ,  8
-	Sa  1, ANON_133_47_L61_D_info
-	LId 1, ANON_133_47_L61_D_info, _STRING.LST_1
-	LId 1, ANON_133_47_L61_D_info, _STRING.FST_1
+	Sa  1, ANON_181_47_L78_D_info
+	LId 1, ANON_181_47_L78_D_info, _STRING.LST_1
+	LId 1, ANON_181_47_L78_D_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  1, ANON_133_47_L61_D_len
-	La  1, ANON_133_35_L61_G_len
-	La  1, ANON_133_47_L61_D_len
+	Sa  1, ANON_181_47_L78_D_len
+	La  1, ANON_181_35_L78_G_len
+	La  1, ANON_181_47_L78_D_len
 	ADD
 	CO_VAR
-	Sa  1, ANON_133_35_L61_R_disp
+	Sa  1, ANON_181_35_L78_R_disp
 	LI	1
-	Sd  1, ANON_133_35_L61_R_info._FST_1
-	La  1, ANON_133_35_L61_G_len
-	La  1, ANON_133_47_L61_D_len
+	Sd  1, ANON_181_35_L78_R_info._FST_1
+	La  1, ANON_181_35_L78_G_len
+	La  1, ANON_181_47_L78_D_len
 	ADD
-	Sd  1, ANON_133_35_L61_R_info._LST_1
+	Sd  1, ANON_181_35_L78_R_info._LST_1
 	LI	8
-	Sd  1, ANON_133_35_L61_R_info._COMP_SIZ
-	La  1, ANON_133_35_L61_G_len
-	La  1, ANON_133_47_L61_D_len
+	Sd  1, ANON_181_35_L78_R_info._COMP_SIZ
+	La  1, ANON_181_35_L78_G_len
+	La  1, ANON_181_47_L78_D_len
 	ADD
 	LI	8
 	MUL
-	Sd  1, ANON_133_35_L61_R_info.SIZ
-	LVA 1, ANON_133_35_L61_R_info.SIZ
-	Sa  1, ANON_133_35_L61_R__u
-	La  1, ANON_133_35_L61_R_disp
-	La  1, ANON_133_35_L61_G_len
-	La  1, ANON_133_35_L61_G_data
+	Sd  1, ANON_181_35_L78_R_info.SIZ
+	LVA 1, ANON_181_35_L78_R_info.SIZ
+	Sa  1, ANON_181_35_L78_R__u
+	La  1, ANON_181_35_L78_R_disp
+	La  1, ANON_181_35_L78_G_len
+	La  1, ANON_181_35_L78_G_data
 	BLKMOV
-	La  1, ANON_133_35_L61_R_disp
-	La  1, ANON_133_35_L61_G_len
+	La  1, ANON_181_35_L78_R_disp
+	La  1, ANON_181_35_L78_G_len
 	ADD
-	La  1, ANON_133_47_L61_D_len
-	La  1, ANON_133_47_L61_D_data
+	La  1, ANON_181_47_L78_D_len
+	La  1, ANON_181_47_L78_D_data
 	BLKMOV
-	LVA 1, ANON_133_35_L61_R_disp
+	LVA 1, ANON_181_35_L78_R_disp
 	LI  1
 	LVA  1,	STANDARD.IDL.IDL_TBL.WRITE_SPEC_L54.SFILE_disp
-	CALL	STANDARD.IDL.IDL_TBL.DTT_IO. ,CREATE_L45
+	CALL	STANDARD.IDL.IDL_TBL.DTT_IO. ,CREATE_L62
+STR STR_L79, "TEST WRITE_SPEC write"		; constante string="TEST WRITE_SPEC write"
+	LCA	STR_L79.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
 	LVA 0,	STANDARD.IDL.IDL_TBL.DIANA_TABLE_AREA_disp
 	LVA 1,	SFILE_disp
-	CALL	STANDARD.IDL.IDL_TBL.DTT_IO. ,WRITE_L56
+	CALL	STANDARD.IDL.IDL_TBL.DTT_IO. ,WRITE_L73
+STR STR_L80, "TEST WRITE_SPEC write ok"		; constante string="TEST WRITE_SPEC write ok"
+	LCA	STR_L80.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
 	LVA  1,	STANDARD.IDL.IDL_TBL.WRITE_SPEC_L54.SFILE_disp
-	CALL	STANDARD.IDL.IDL_TBL.DTT_IO. ,CLOSE_L47
+	CALL	STANDARD.IDL.IDL_TBL.DTT_IO. ,CLOSE_L64
+STR STR_L81, "TEST WRITE_SPEC close ok"		; constante string="TEST WRITE_SPEC close ok"
+	LCA	STR_L81.data_ptr
+	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
 ret_lbl:
 	UNLINK 1
 	RTD	prm_siz
@@ -1786,18 +2010,18 @@ VAR SFILE__dat, STANDARD.IDL.IDL_TBL.DTT_IO._FILE_TYPE.size
 
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
-STR STR_L64, ""				; constante string=""
-	LCA	STR_L64.data_ptr
+STR STR_L84, ""				; constante string=""
+	LCA	STR_L84.data_ptr
 ; CODE & concat _STRING
-VAR	ANON_147_33_L65_G_data, q
-VAR	ANON_147_33_L65_G_info, q
-VAR	ANON_147_45_L65_D_data, q
-VAR	ANON_147_45_L65_D_info, q
-VAR	ANON_147_33_L65_G_len,  q
-VAR	ANON_147_45_L65_D_len,  q
-VAR	ANON_147_33_L65_R_disp, q
-VAR	ANON_147_33_L65_R__u,   q
-namespace ANON_147_33_L65_R_info
+VAR	ANON_203_33_L85_G_data, q
+VAR	ANON_203_33_L85_G_info, q
+VAR	ANON_203_45_L85_D_data, q
+VAR	ANON_203_45_L85_D_info, q
+VAR	ANON_203_33_L85_G_len,  q
+VAR	ANON_203_45_L85_D_len,  q
+VAR	ANON_203_33_L85_R_disp, q
+VAR	ANON_203_33_L85_R__u,   q
+namespace ANON_203_33_L85_R_info
   VAR SIZ,      d
   VAR _COMP_SIZ, d
   VAR _FST_1,    d
@@ -1806,68 +2030,68 @@ end namespace
 	La  1,	-SPEC_FILE_ofs
 	DUP
 	La  ,  0
-	Sa  1, ANON_147_33_L65_G_data
+	Sa  1, ANON_203_33_L85_G_data
 	La  ,  8
-	Sa  1, ANON_147_33_L65_G_info
-	LId 1, ANON_147_33_L65_G_info, _STRING.LST_1
-	LId 1, ANON_147_33_L65_G_info, _STRING.FST_1
+	Sa  1, ANON_203_33_L85_G_info
+	LId 1, ANON_203_33_L85_G_info, _STRING.LST_1
+	LId 1, ANON_203_33_L85_G_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  1, ANON_147_33_L65_G_len
-STR ANON_147_45_L65_D, ".bin"			; constante string=".bin"
-	LCA	ANON_147_45_L65_D.data_ptr
+	Sa  1, ANON_203_33_L85_G_len
+STR ANON_203_45_L85_D, ".bin"			; constante string=".bin"
+	LCA	ANON_203_45_L85_D.data_ptr
 	DUP
 	La  ,  0
-	Sa  1, ANON_147_45_L65_D_data
+	Sa  1, ANON_203_45_L85_D_data
 	La  ,  8
-	Sa  1, ANON_147_45_L65_D_info
-	LId 1, ANON_147_45_L65_D_info, _STRING.LST_1
-	LId 1, ANON_147_45_L65_D_info, _STRING.FST_1
+	Sa  1, ANON_203_45_L85_D_info
+	LId 1, ANON_203_45_L85_D_info, _STRING.LST_1
+	LId 1, ANON_203_45_L85_D_info, _STRING.FST_1
 	SUB
 	INC
 	CLAMP0
-	Sa  1, ANON_147_45_L65_D_len
-	La  1, ANON_147_33_L65_G_len
-	La  1, ANON_147_45_L65_D_len
+	Sa  1, ANON_203_45_L85_D_len
+	La  1, ANON_203_33_L85_G_len
+	La  1, ANON_203_45_L85_D_len
 	ADD
 	CO_VAR
-	Sa  1, ANON_147_33_L65_R_disp
+	Sa  1, ANON_203_33_L85_R_disp
 	LI	1
-	Sd  1, ANON_147_33_L65_R_info._FST_1
-	La  1, ANON_147_33_L65_G_len
-	La  1, ANON_147_45_L65_D_len
+	Sd  1, ANON_203_33_L85_R_info._FST_1
+	La  1, ANON_203_33_L85_G_len
+	La  1, ANON_203_45_L85_D_len
 	ADD
-	Sd  1, ANON_147_33_L65_R_info._LST_1
+	Sd  1, ANON_203_33_L85_R_info._LST_1
 	LI	8
-	Sd  1, ANON_147_33_L65_R_info._COMP_SIZ
-	La  1, ANON_147_33_L65_G_len
-	La  1, ANON_147_45_L65_D_len
+	Sd  1, ANON_203_33_L85_R_info._COMP_SIZ
+	La  1, ANON_203_33_L85_G_len
+	La  1, ANON_203_45_L85_D_len
 	ADD
 	LI	8
 	MUL
-	Sd  1, ANON_147_33_L65_R_info.SIZ
-	LVA 1, ANON_147_33_L65_R_info.SIZ
-	Sa  1, ANON_147_33_L65_R__u
-	La  1, ANON_147_33_L65_R_disp
-	La  1, ANON_147_33_L65_G_len
-	La  1, ANON_147_33_L65_G_data
+	Sd  1, ANON_203_33_L85_R_info.SIZ
+	LVA 1, ANON_203_33_L85_R_info.SIZ
+	Sa  1, ANON_203_33_L85_R__u
+	La  1, ANON_203_33_L85_R_disp
+	La  1, ANON_203_33_L85_G_len
+	La  1, ANON_203_33_L85_G_data
 	BLKMOV
-	La  1, ANON_147_33_L65_R_disp
-	La  1, ANON_147_33_L65_G_len
+	La  1, ANON_203_33_L85_R_disp
+	La  1, ANON_203_33_L85_G_len
 	ADD
-	La  1, ANON_147_45_L65_D_len
-	La  1, ANON_147_45_L65_D_data
+	La  1, ANON_203_45_L85_D_len
+	La  1, ANON_203_45_L85_D_data
 	BLKMOV
-	LVA 1, ANON_147_33_L65_R_disp
+	LVA 1, ANON_203_33_L85_R_disp
 	LI  0
 	LVA  1,	STANDARD.IDL.IDL_TBL.READ_SPEC_L55.SFILE_disp
-	CALL	STANDARD.IDL.IDL_TBL.DTT_IO. ,OPEN_L46
+	CALL	STANDARD.IDL.IDL_TBL.DTT_IO. ,OPEN_L63
 	LVA  0,	STANDARD.IDL.IDL_TBL.DIANA_TABLE_AREA_disp
 	LVA 1,	SFILE_disp
-	CALL	STANDARD.IDL.IDL_TBL.DTT_IO. ,READ_L55
+	CALL	STANDARD.IDL.IDL_TBL.DTT_IO. ,READ_L72
 	LVA  1,	STANDARD.IDL.IDL_TBL.READ_SPEC_L55.SFILE_disp
-	CALL	STANDARD.IDL.IDL_TBL.DTT_IO. ,CLOSE_L47
+	CALL	STANDARD.IDL.IDL_TBL.DTT_IO. ,CLOSE_L64
 ret_lbl:
 	UNLINK 1
 	RTD	prm_siz

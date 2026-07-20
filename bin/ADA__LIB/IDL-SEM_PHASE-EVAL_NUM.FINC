@@ -53,7 +53,7 @@ VAR CHR_disp, b				; variable bool char enum
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb
+	ULb
 	Sb  1,	CHR_disp
 
  hexa_show 'var elab SCALEFACTOR ', $
@@ -429,7 +429,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	DIV
 	MUL
 	ADD					; add offset to start address
-	Lb
+	ULb
 	Sb  1,	STANDARD.IDL.SEM_PHASE_L11.EVAL_NUM_L501.CHR_disp
 	BRA	L20
 L21:
@@ -447,30 +447,30 @@ begin:					;---------- BDY INSTRUCTIONS
 	LVA  1,	STANDARD.IDL.SEM_PHASE_L11.EVAL_NUM_L501.VNUMER_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.EVAL_NUM_L501. ,V_CLEAR_L1
 LOOP__2:
-	Lb 1,	CHR_disp
+	ULb 1,	CHR_disp
 	LI	48
 	CGE
 	LI	57
-	Lb 1,	CHR_disp
+	ULb 1,	CHR_disp
 	CGE
 	ET
 	DUP
 	BT	L26
 	DROP
-	Lb 1,	CHR_disp
+	ULb 1,	CHR_disp
 	LI	46
 	CEQ
 L26:
 	DUP
 	BT	L25
 	DROP
-	Lb 1,	CHR_disp
+	ULb 1,	CHR_disp
 	LI	95
 	CEQ
 L25:
 	BF	L24
 					; debut if
-	Lb 1,	CHR_disp
+	ULb 1,	CHR_disp
 	LI	46
 	CEQ
 	BF	L28
@@ -479,12 +479,12 @@ L25:
 	Sd  1,	SCALEFACTOR_disp
 	BRA	L27
 L28:
-	Lb 1,	CHR_disp
+	ULb 1,	CHR_disp
 	LI	95
 	CNE
 	BF	L29
 	LVA  1,	STANDARD.IDL.SEM_PHASE_L11.EVAL_NUM_L501.VNUMER_disp
-	Lb 1,	CHR_disp
+	ULb 1,	CHR_disp
 	LI	48
 	SUB
 	CALL	STANDARD.IDL.SEM_PHASE_L11.EVAL_NUM_L501. ,V_INCREMENT_L4
@@ -500,7 +500,7 @@ L27:					; post if
 	BRA	LOOP__2
 L24:					; post loop LOOP__2
 					; debut if
-	Lb 1,	CHR_disp
+	ULb 1,	CHR_disp
 	LI	35
 	CEQ
 	BF	L31
@@ -550,12 +550,12 @@ L24:					; post loop LOOP__2
 	Sw
 	CALL	STANDARD.IDL.SEM_PHASE_L11.EVAL_NUM_L501. ,NEXT_CHR_L17
 LOOP__3:
-	Lb 1,	CHR_disp
+	ULb 1,	CHR_disp
 	LI	35
 	CNE
 	BF	L32
 					; debut if
-	Lb 1,	CHR_disp
+	ULb 1,	CHR_disp
 	LI	46
 	CEQ
 	BF	L34
@@ -564,18 +564,18 @@ LOOP__3:
 	Sd  1,	SCALEFACTOR_disp
 	BRA	L33
 L34:
-	Lb 1,	CHR_disp
+	ULb 1,	CHR_disp
 	LI	95
 	CEQ
 	BF	L35
 	BRA	L33
 L35:
-	Lb 1,	CHR_disp
+	ULb 1,	CHR_disp
 	LI	57
 	CLE
 	BF	L36
 	LVA  1,	STANDARD.IDL.SEM_PHASE_L11.EVAL_NUM_L501.VNUMER_disp
-	Lb 1,	CHR_disp
+	ULb 1,	CHR_disp
 	LI	48
 	SUB
 	CALL	STANDARD.IDL.SEM_PHASE_L11.EVAL_NUM_L501. ,V_INCREMENT_L4
@@ -587,7 +587,7 @@ L35:
 	BRA	L33
 L36:
 	LVA  1,	STANDARD.IDL.SEM_PHASE_L11.EVAL_NUM_L501.VNUMER_disp
-	Lb 1,	CHR_disp
+	ULb 1,	CHR_disp
 	LI	65
 	SUB
 ; CODE_NUMERIC_LITERAL DN_INTEGER
@@ -608,20 +608,20 @@ L32:					; post loop LOOP__3
 L31:
 L30:					; post if
 					; debut if
-	Lb 1,	CHR_disp
+	ULb 1,	CHR_disp
 	LI	69
 	CEQ
 	BF	L38
 	CALL	STANDARD.IDL.SEM_PHASE_L11.EVAL_NUM_L501. ,NEXT_CHR_L17
 					; debut if
-	Lb 1,	CHR_disp
+	ULb 1,	CHR_disp
 	LI	43
 	CEQ
 	BF	L40
 	CALL	STANDARD.IDL.SEM_PHASE_L11.EVAL_NUM_L501. ,NEXT_CHR_L17
 	BRA	L39
 L40:
-	Lb 1,	CHR_disp
+	ULb 1,	CHR_disp
 	LI	45
 	CEQ
 	BF	L41
@@ -632,7 +632,7 @@ L40:
 L41:
 L39:					; post if
 LOOP__4:
-	Lb 1,	CHR_disp
+	ULb 1,	CHR_disp
 	LI	32
 	CNE
 	BF	L42
@@ -655,7 +655,7 @@ L43:					; post if
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	10
 	MUL
-	Lb 1,	CHR_disp
+	ULb 1,	CHR_disp
 	ADD
 	LI	48
 	SUB
@@ -664,7 +664,7 @@ L43:					; post if
 	BRA	LOOP__4
 L42:					; post loop LOOP__4
 					; debut if
-	Lb 1,	EXPONENT_POSITIVE_disp
+	ULb 1,	EXPONENT_POSITIVE_disp
 	LI	1
 	OUX
 	BF	L47

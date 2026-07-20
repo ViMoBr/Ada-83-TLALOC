@@ -591,3 +591,82 @@ instances sont expansées sur site.
 
  98. **Garde d'inclusion asymétrique** (UNCHECKED_CONVERSION) 
  99. **La staticité des bornes vit en UN exemplaire** (STATIC_BOUND_VALUE), le test de propriété ne vaut que là où la lecture est licite (l'espèce fixe ses attributs, USED_NAME ≠ USED_OBJECT), un cache de taille se teste par « connue et positive », et le pliage statique appartient à sem (LRM 4.9) — le filet expander est une dette localisée, pas une architecture.
+ 
+ 100. **XD_REGION d'un composant peut être DN_PRIVATE_TYPE_ID** (records
+  représentés dérivés, session bootstrap). La garde « OWNER.TY =
+  DN_TYPE_ID » de FIND_COMP_REP_ELEM_FROM_COMPONENT rejetait les
+  discriminants hérités d'un type PRIVÉ dérivé (new TREE) → branche
+  offset sur un record représenté → symbole fantôme. REGIONS_PATH
+  acceptait déjà PRIVATE/L_PRIVATE_TYPE_ID : quand un consommateur de
+  XD_REGION énumère les espèces, s'aligner sur la liste de
+  REGIONS_PATH. Corollaire verrouillé dans COMPILE_RECORD_VAR : un
+  record représenté n'exporte AUCUN offset — comp_rep introuvable ⇒
+  LÈVE, jamais la branche offset.
+
+ 101. **`_disp` et `_ofs` ne se mélangent pas dans un corps générique.**
+  `X_disp` = physique côté INSTANCE (VAR) ; `X_ofs` = constante
+  d'accès relative au GFP (bloc virtual de
+  CODE_GENERIC_FRAME_OFFSETS), seul nom légal dans le corps :
+  `La n,-GFP_ofs` puis `LVA ,-X_ofs`. LOAD_MEM écrivait `-X_disp`
+  (deux lignes, scalaire et composite) — l'erreur fasmg ressemble à
+  un défaut REGIONS_PATH mais le chemin est bon, seul le suffixe ment.
+
+ 102. **TYPE_INFO_STR : contrat d'argument, et la regex qui le viole**
+  (extension du n° 99). Le helper prend un TYPE_SPEC (descente
+  XD_SOURCE_NAME) ou, version généralisée, un TYPE_NAME (retour
+  direct : un nom du source n'est jamais anonyme) ; tout le reste —
+  en particulier un DN_SYMBOL_REP — LÈVE. La substitution mécanique
+  `'_' & PRINT_NAME( X ) → TYPE_INFO_STR( X )` passe le symrep dans
+  100 % des cas (X était `D( LX_SYMREP, ... )`). Forme B légitime à
+  NE PAS convertir vers le spec : bornes de sous-types scalaires
+  (CODE_SCALAR_SUBTYPE_FIRST_LAST) — le nom AU SITE fait foi, l'alias
+  canonique du spec peut différer.
+
+ 103. **Un sous-programme de bibliothèque withé s'inclut comme un
+  paquetage.** CODE_WITH_CONTEXT (DN_PROCEDURE_ID/DN_FUNCTION_ID) et
+  CODE_TRANS_WITH_INCLUDES doivent émettre la garde d'include ; et la
+  tête de FINC d'une unité sous-programme doit porter `X = 'X'`
+  (convention n° 97 — était réservée aux paquetages/génériques).
+  Sinon : CALL émis, `X_L1.elab` jamais défini. Dette active :
+  CD_PARAM_SIZE := 0 posé en aveugle par la branche with — faux dès
+  qu'un sous-programme withé aura des formels (garde à poser).
+
+ 104. **Expression universelle en `return` = type de RETOUR, pas type
+  de l'expression.** `return ADDR_SIZE;` (nombre nommé) →
+  DN_UNIVERSAL_INTEGER, hors CLASS_SCALAR. Repli : universel ⇒
+  FULL_VIEW du sous-type de retour. ET le caractère de store vient de
+  ce type : EXP_TYPE_CHAR sur un universel répond 'b' (CD_IMPL_SIZE
+  absent) — Sb dans un slot résultat relu en d = 24 bits de bruit,
+  silencieux. Deux corrections indissociables.
+
+ 105. **Le pliage de constante doit consulter IS_SOURCE** (renames,
+  élaboration). Dans PROCESS_DESIGNATOR, la branche
+  CONSTANT/NUMBER/ENUM émettait `LI valeur` même en contexte ADRESSE
+  (CODE_OBJECT_ADDRESS → IS_SOURCE=FALSE) : le slot pointeur du
+  renommage recevait la valeur (déréférencement de 9 au premier
+  usage). Constante : LVa + REGIONS_PATH + _disp (le stockage existe
+  dans _STANDRD). Nombre nommé / littéral d'énumération : PAS des
+  objets, pas d'adresse ⇒ LÈVE. Bug frère au même endroit : l'usage
+  du renommage émettait le _disp SANS REGIONS_PATH — un namespace
+  FRÈRE n'est pas trouvé par la remontée fasmg (seuls les parents le
+  sont) : l'absence de chemin n'est tolérable qu'intra-région.
+
+ 106. **fasmg est multi-passes : les displays se rejouent.** La
+  répétition de la liste d'includes = passes successives, pas une
+  ré-inclusion (les gardes `~ definite` agissent AU SEIN d'une
+  passe). Diagnostic de convergence : suivre `push_pop_rax_count`
+  par passe — répétition = convergence proche ; oscillation =
+  optimisation dont la décision dépend des adresses qu'elle modifie
+  ⇒ la rendre MONOTONE entre passes (un verdict « non élidé » ne se
+  reprend pas), quitte à laisser des octets. Consigner le nombre de
+  passes du premier assemblage réussi comme référence.
+
+  Lecture de trace acquise (2 occurrences décisives) : la pile de
+  macros de l'erreur fasmg désigne l'ARGUMENT fautif — `macro LId /
+  macro FETCH_DWORD : if disp = 0` ⇒ c'est le 3e opérande (offset)
+  qui est indéfini, le 2e (base) a déjà été consommé par
+  INDIRECT_BASE_IN_RAX. Trancher par la pile avant de soupçonner un
+  opérande.
+
+
+ 

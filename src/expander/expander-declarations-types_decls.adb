@@ -766,7 +766,7 @@ is
         EXPRESSIONS.CODE_DISCRETE_RANGE_BOUND( SRC_RANGE, IS_LAST => TRUE );
         PUT_LINE( tab & "Sd" & tab & LVL_STR & ", _LST_" & DIM_NBR_STR );
 
-      elsif	IDX_TYPE.TY = DN_INTEGER  then
+      elsif  IDX_TYPE.TY = DN_INTEGER  then
         declare
 	IDX_RANGE		: TREE		:= D( SM_RANGE, IDX_TYPE );
 	RANGE_FIRST	: TREE		:= D( AS_EXP1, IDX_RANGE );
@@ -785,6 +785,47 @@ is
 
 	if  IS_STATIC  then
 	  ARRAY_STATIC_SIZE	:= ( DI( SM_VALUE, RANGE_LAST	) + 1 - DI( SM_VALUE, RANGE_FIRST ) ) *	ARRAY_STATIC_SIZE;
+	end if;
+        end;
+
+      elsif  IDX_TYPE.TY = DN_ENUMERATION  then
+	-- Index par MARQUE DE TYPE enumere : array (NODE_NAME) of ...
+	-- (chemin sans INDEX_CONSTRAINT ; les plages explicites passent,
+	-- elles, par HAS_RANGES / CODE_DISCRETE_RANGE_BOUND).
+	-- Les bornes vivent dans SM_RANGE du type_spec ; ce sont des
+	-- litteraux (definissants ou used names) : STATIC_BOUND_VALUE
+	-- rend leur SM_REP, coherent avec le LI SM_REP emis au runtime
+	-- pour les litteraux d'enumeration.
+        declare
+	IDX_RANGE		: TREE		:= D( SM_RANGE, IDX_TYPE );
+	RANGE_FIRST	: TREE		:= D( AS_EXP1, IDX_RANGE );
+	RANGE_LAST	: TREE		:= D( AS_EXP2, IDX_RANGE );
+	V_FST		: INTEGER;
+	V_LST		: INTEGER;
+	OK_FST		: BOOLEAN;
+	OK_LST		: BOOLEAN;
+        begin
+	STATIC_BOUND_VALUE( RANGE_FIRST, V_FST, OK_FST );
+	STATIC_BOUND_VALUE( RANGE_LAST,  V_LST, OK_LST );
+
+	if  OK_FST  then
+	  PUT_LINE( tab & "LI" & tab & IMAGE( V_FST ) );
+	else
+	  IS_STATIC := FALSE;
+	  EXPRESSIONS.CODE_EXP( RANGE_FIRST );
+	end if;
+	PUT_LINE(	tab & "Sd" & tab & LVL_STR & ", _FST_" & DIM_NBR_STR );
+
+	if  OK_LST  then
+	  PUT_LINE( tab & "LI" & tab & IMAGE( V_LST ) );
+	else
+	  IS_STATIC := FALSE;
+	  EXPRESSIONS.CODE_EXP( RANGE_LAST );
+	end if;
+	PUT_LINE(	tab & "Sd" & tab & LVL_STR & ", _LST_" & DIM_NBR_STR );
+
+	if  IS_STATIC  then
+	  ARRAY_STATIC_SIZE	:= ( V_LST + 1 - V_FST ) * ARRAY_STATIC_SIZE;
 	end if;
         end;
 
@@ -922,27 +963,6 @@ is
 	---------------------------
 
 
-		--------------
-  function	FULL_TYPE_VIEW		( T :TREE )	return TREE
-  is		--------------
-    R	: TREE	:= T;
-  begin
-    loop
-      if  R.TY = DN_PRIVATE  or else  R.TY = DN_L_PRIVATE  then
-        R := D( SM_TYPE_SPEC, R );
-
-      elsif  R.TY = DN_INCOMPLETE  then
-        R := D( XD_FULL_TYPE_SPEC, R );
-
-      else
-        return  R;
-      end if;
-    end loop;
-
-  end	FULL_TYPE_VIEW;
-	--------------
-
-
 			----------------
   procedure		CODE_RECORD_DECL		( TYPE_DECL :TREE )
   is			----------------
@@ -959,6 +979,22 @@ is
     function  STATIC_TYPE_SIZE_BITS	( T :TREE )	return NATURAL;
     function  STATIC_TYPE_ALIGN_BYTES	( T :TREE )	return NATURAL;					--| alignement du composant elementaire : 1/2/4/8
     function  STATIC_RECORD_SIZE_BITS	( REC :TREE )	return NATURAL;
+
+			-----------------
+    procedure		ALIGN_STATIC_BITS		( CUMUL : in out NATURAL;  COMP_TYPE : TREE )
+    is			-----------------
+    -- Arrondit le cumul de bits a l'alignement du champ qui va etre pose,
+    -- MIROIR EXACT des align_* que STATOFS emet avec le meme
+    -- STATIC_TYPE_ALIGN_BYTES.  Toute divergence entre ce calcul et le
+    -- layout fasmg est un bug d'ecrasement memoire (cf. RPG_DATA).
+      A_BITS	: NATURAL	:= STATIC_TYPE_ALIGN_BYTES( COMP_TYPE ) * CODI.STORAGE_UNIT;
+    begin
+      if  A_BITS > 0  then
+        CUMUL := ( ( CUMUL + A_BITS - 1 ) / A_BITS ) * A_BITS;
+      end if;
+
+    end	ALIGN_STATIC_BITS;
+	-----------------
 
 			------------------
     function		ROUND_STORAGE_BITS		( SIZE_BITS :NATURAL )	return NATURAL
@@ -1013,6 +1049,7 @@ is
 	        return;
 	      end if;
 
+	      ALIGN_STATIC_BITS( SIZE, DISCR_TYPE );
 	      SIZE := SIZE + ROUND_STORAGE_BITS( DISCR_SIZE );
 	    end;
 	  end loop;
@@ -1054,6 +1091,7 @@ is
 		return;
 	        end if;
 
+	        ALIGN_STATIC_BITS( SIZE, COMP_TYPE );
 	        SIZE := SIZE + ROUND_STORAGE_BITS( COMP_SIZE );
 	      end;
 	    end loop;
@@ -1580,6 +1618,7 @@ put_line( "; SIL : idx_spec inattendu " & NODE_NAME'IMAGE( IDX_SPEC.TY ) );
 			& INTEGER'IMAGE( ( DISCR_SIZE + CODI.STORAGE_UNIT - 1 ) / CODI.STORAGE_UNIT ) & ','
 			& INTEGER'IMAGE( STATIC_TYPE_ALIGN_BYTES( DISCR_TYPE ) ) );
 
+	    ALIGN_STATIC_BITS( STATIC_SIZE, DISCR_TYPE );
 	    STATIC_SIZE := STATIC_SIZE
 		+ CODI.STORAGE_UNIT * ( ( DISCR_SIZE + CODI.STORAGE_UNIT - 1 ) / CODI.STORAGE_UNIT );
 	  end;
@@ -1644,6 +1683,7 @@ put_line( "; SIL : idx_spec inattendu " & NODE_NAME'IMAGE( IDX_SPEC.TY ) );
 			& INTEGER'IMAGE( ( COMP_SIZE + CODI.STORAGE_UNIT - 1 ) / CODI.STORAGE_UNIT ) & ','
 			& INTEGER'IMAGE( STATIC_TYPE_ALIGN_BYTES( COMP_TYPE ) ) );
 
+	          ALIGN_STATIC_BITS( STATIC_SIZE, COMP_TYPE );
 	          STATIC_SIZE := STATIC_SIZE
 			   + CODI.STORAGE_UNIT * ( ( COMP_SIZE + CODI.STORAGE_UNIT - 1 ) / CODI.STORAGE_UNIT );
 

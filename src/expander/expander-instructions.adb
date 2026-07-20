@@ -585,12 +585,52 @@ separate ( EXPANDER )
     end	IS_IN_CURRENT_GENERIC;
 	---------------------
 
-		-----------------------------
-    procedure	INVERSE_RECURSE_ON_PARAMETERS
-    is		-----------------------------
+			-----------------------------
+    procedure		INVERSE_RECURSE_ON_PARAMETERS
+    is			-----------------------------
       ACT_PRM	: TREE;
       FRM_PRM_ID	: TREE;
-    begin
+
+		------------------------------
+      procedure	WRAP_COMPOSITE_ACTUAL_DOUBLET		( FRM_PRM_ID, ACT_PRM :TREE )
+      is		------------------------------
+      -- A appeler juste APRES CODE_EXP( ACT_PRM ) quand celui-ci laisse
+      -- une @data nue.  Ne fait rien si le formel n'est pas composite.
+        FRM_TYPE	: TREE	:= CODI.FULL_TYPE_VIEW( D( SM_OBJ_TYPE, FRM_PRM_ID ) );
+      begin
+        if  FRM_TYPE.TY = DN_CONSTRAINED_RECORD  then
+	FRM_TYPE := D( SM_BASE_TYPE, FRM_TYPE );				-- pilier 3.7 : use__info de la base
+        end if;
+
+        if  FRM_TYPE.TY /= DN_RECORD
+	and then  FRM_TYPE.TY /= DN_CONSTRAINED_ARRAY
+	and then  FRM_TYPE.TY /= DN_ARRAY
+        then
+	return;								-- scalaire / access : rvalue deja correcte
+        end if;
+
+        declare
+	ANON	:constant STRING	:= ANONYMOUS_NAME_AT( ACT_PRM ) & "_dbl_" & NEW_LABEL;
+	TYPE_NAME	: TREE		:= D( XD_SOURCE_NAME, FRM_TYPE );
+	TN_STR	:constant STRING	:= TYPE_INFO_STR( FRM_TYPE );
+	LVL_STR	:constant STRING	:= IMAGE( CODI.CUR_LEVEL );
+        begin
+	-- doublet = 2 qwords ADJACENTS (meme motif que TTR_disp/TTR__u)
+	PUT_LINE( "VAR" & tab & ANON & "_disp, q" );
+	PUT_LINE( "VAR" & tab & ANON & "__u,   q" );
+
+	PUT_LINE( tab & "Sa  " & LVL_STR & ", " & ANON & "_disp" );		-- consomme l'@element de CODE_EXP
+	PUT( tab & "La  " & IMAGE( DI( CD_LEVEL, FRM_TYPE ) ) & ", " );
+	CODI.REGIONS_PATH( TYPE_NAME );
+	PUT_LINE( TN_STR & ".use__info" );
+	PUT_LINE( tab & "Sa  " & LVL_STR & ", " & ANON & "__u" );
+
+	PUT_LINE( tab & "LVA " & LVL_STR & ", " & ANON & "_disp" );		-- @doublet, a la place de l'@data
+        end;
+      end	WRAP_COMPOSITE_ACTUAL_DOUBLET;
+	------------------------------
+
+   begin
 
       while  not IS_EMPTY( NORM_ACT_PRM_S )  loop
 
@@ -741,12 +781,8 @@ separate ( EXPANDER )
 
 	        if  OBJ_TYPE.TY in CLASS_SCALAR  or else  OBJ_TYPE.TY = DN_ACCESS  then
 	      -- out/inout -> in scalaire : dereferencement, charger la valeur pointee
---		declare
---		  SIZ_CHAR	: CHARACTER	:= CODI.OPER_SIZ_CHAR( OBJ_TYPE );
---		begin
 		  PUT_LINE( tab & OPER_LOADI_STR( OBJ_TYPE ) & ' ' & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' & tab
 			& '-' & DEFN_STR & "_ofs" );
---		end;
 	        else
 	      -- out/inout -> in composite : le slot contient deja l'adresse, la propager
 		PUT_LINE( tab & "La " & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' & tab
@@ -765,7 +801,7 @@ separate ( EXPANDER )
 	      ITERATION_ID_TAG	: LABEL_TYPE	:= LABEL_TYPE( DI( CD_OFFSET, DEFN ) );
 	      ITERATION_ID_VARSTR	: constant STRING	:= ITERATION_ID_STR
 						& LABEL_STR( ITERATION_ID_TAG ) & "_disp";
---	      TYPE_CHAR		: CHARACTER	:= OPER_SIZ_CHAR( D( SM_OBJ_TYPE, DEFN ) );
+
 	    begin
 	      PUT_LINE( tab & OPER_LOAD_STR( D( SM_OBJ_TYPE, DEFN ) ) & ' '
 			& INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ','
@@ -797,7 +833,6 @@ separate ( EXPANDER )
         elsif  ACT_PRM.TY = DN_SLICE  then								-- SLICE PARAMETER
 	EXPRESSIONS.CODE_SLICE( ACT_PRM, IS_DESTINATION=> FALSE );
 
-
         elsif  ACT_PRM.TY = DN_AGGREGATE
 	 or  ( ACT_PRM.TY = DN_QUALIFIED  and then D( AS_EXP, ACT_PRM).TY = DN_AGGREGATE ) then
 
@@ -808,9 +843,9 @@ separate ( EXPANDER )
 	  TYPE_NAME	: TREE		:= D( XD_SOURCE_NAME, TYPE_SPEC );
 	  TYPE_NAME_STR	:constant	STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
 	begin
-	  PUT_LINE( tab & "VAR " & ANONYMOUS_STR	& "_disp, q" );
-	  PUT_LINE( tab & "VAR " & ANONYMOUS_STR	& "__u, q" );
-	  PUT( tab & "VAR " & ANONYMOUS_STR	& "__dat, " );
+	  PUT_LINE( tab & "VAR " & ANONYMOUS_STR & "_disp, q" );
+	  PUT_LINE( tab & "VAR " & ANONYMOUS_STR & "__u, q" );
+	  PUT( tab & "VAR " & ANONYMOUS_STR & "__dat, " );
 	  CODI.REGIONS_PATH( TYPE_NAME );
 	  PUT_LINE( TYPE_NAME_STR & ".SIZ" );
 
@@ -830,6 +865,7 @@ separate ( EXPANDER )
         elsif  ACT_PRM.TY = DN_INDEXED  then								-- COMPOSANT INDEXE EN ACTUAL
 	if  FRM_PRM_ID.TY = DN_IN_ID  then
 	  EXPRESSIONS.CODE_EXP( ACT_PRM );								-- in : rvalue (scalaire charge, composite laisse @)
+	  WRAP_COMPOSITE_ACTUAL_DOUBLET( FRM_PRM_ID, ACT_PRM );			-- composite : @data -> @doublet
 	else
 	  EXPRESSIONS.CODE_OBJECT_ADDRESS( ACT_PRM );							-- out / in out : adresse seule (par reference)
 	end if;
@@ -919,7 +955,7 @@ separate ( EXPANDER )
 			STORE_FUNCTION_RESULT:
         declare
           EXPR_TYPE		: TREE		:= D ( SM_EXP_TYPE, EXP );
-	FULL_TYPE		: TREE		:= CODI.FULL_VIEW( EXPR_TYPE );
+	FULL_TYPE		: TREE		:= CODI.FULL_TYPE_VIEW( EXPR_TYPE );
 	RETURN_SUBTYPE	: TREE	:= D( SM_TYPE_SPEC,
 					D( SM_DEFN, D( AS_NAME, D( AS_HEADER, CODI.ENCLOSING_BODY ) ) ) );
         begin
@@ -929,7 +965,7 @@ separate ( EXPANDER )
 	end if;
 
 	if  FULL_TYPE.TY = DN_UNIVERSAL_INTEGER  or  FULL_TYPE.TY = DN_UNIVERSAL_REAL  then
-	  FULL_TYPE := CODI.FULL_VIEW( RETURN_SUBTYPE );							-- LRM 83 : conversion implicite
+	  FULL_TYPE := CODI.FULL_TYPE_VIEW( RETURN_SUBTYPE );						-- LRM 83 : conversion implicite
 	end if;
 
 	if  FULL_TYPE.TY in CLASS_SCALAR  or else  FULL_TYPE.TY = DN_ACCESS  then
@@ -938,11 +974,8 @@ separate ( EXPANDER )
 	    EXPRESSIONS.CODE_RANGE_CHECK( RETURN_SUBTYPE );
 	  end if;
 
-	  PUT_LINE( tab & "S" & CODI.OPER_SIZ_CHAR( FULL_TYPE ) & ' ' & INTEGER'IMAGE( CODI.CUR_LEVEL )
+	  PUT_LINE( tab & "S" & CODI.OPER_SIZ_CHAR( FULL_TYPE ) & ' ' & INTEGER'IMAGE( ENCLOSING_LEVEL )
 			& ',' & tab & "-result__ofs" );
-
---	  PUT_LINE( tab & "S" & CODI.EXP_TYPE_CHAR( EXP ) & ' ' & INTEGER'IMAGE( CODI.CUR_LEVEL )
---			& ',' & tab & "-result__ofs" );
 
 	elsif  FULL_TYPE.TY = DN_ARRAY  or  FULL_TYPE.TY = DN_CONSTRAINED_ARRAY
 	or     EXP.TY = DN_STRING_LITERAL								-- return "..." : SM_EXP_TYPE est DN_VOID
@@ -1018,13 +1051,13 @@ separate ( EXPANDER )
 
 	  begin
 	    if  TYPE_SPEC.TY = DN_CONSTRAINED_RECORD  then						-- pilier 3.7 : vue contrainte -> base
-	      TYPE_SPEC := D( SM_BASE_TYPE, TYPE_SPEC );						-- (symbole .size de la vue anonyme inexistant)
+	      TYPE_SPEC := D( SM_BASE_TYPE, TYPE_SPEC );							-- (symbole .size de la vue anonyme inexistant)
 	    end if;
 
 	    declare
 	      TYPE_NAME	: TREE		:= D( XD_SOURCE_NAME, TYPE_SPEC );
 	      TN_STR	: constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
-	      LVL_STR	: constant STRING	:= INTEGER'IMAGE( CODI.CUR_LEVEL );
+	      LVL_STR	: constant STRING	:= INTEGER'IMAGE( ENCLOSING_LEVEL );
 	    begin
 	      if  EXP.TY = DN_AGGREGATE  then
 	      -- result__ofs contient l'adresse du doublet alloue par l'appelant
@@ -1043,9 +1076,7 @@ separate ( EXPANDER )
 	        CODI.REGIONS_PATH( TYPE_NAME );
 	        PUT_LINE( TN_STR & ".size" );                           -- LEN
 
-	        EXPRESSIONS.CODE_EXP( EXP );                            -- empiле @doublet source
-	        PUT_LINE( tab & "La  ,  0" );                           -- @SRC = data_ptr du doublet source
-
+	        EXPRESSIONS.CODE_COMPOSITE_DATA_ADDRESS( EXP );
 	        PUT_LINE( tab & "BLKMOV" );
 	      end if;
 	    end;
@@ -1500,7 +1531,7 @@ separate ( EXPANDER )
 	  DST_TYPE := D( SM_TYPE_SPEC, DST_TYPE );
 	end loop;
 
-	if  DST_TYPE.TY = DN_CONSTRAINED_RECORD  then						-- pilier 3.7 : vue contrainte -> base
+	if  DST_TYPE.TY = DN_CONSTRAINED_RECORD  then							-- pilier 3.7 : vue contrainte -> base
 	  DST_TYPE := D( SM_BASE_TYPE, DST_TYPE );
 	end if;
 
@@ -1513,7 +1544,7 @@ separate ( EXPANDER )
 	  if  SRC_EXP.TY = DN_AGGREGATE  then
 	    EXPRESSIONS.CODE_AGGREGATE( SRC_EXP, DST_TYPE );
 	  else
-	    EXPRESSIONS.CODE_EXP( SRC_EXP );
+	    EXPRESSIONS.CODE_EXP( SRC_EXP );			-- A VERIFIER POUR EXPRESSIONS.CODE_COMPOSITE_DATA_ADDRESS( SRC_EXP );
 	    PUT_LINE( tab & "La" );
 	    PUT_LINE( tab & "BLKMOV" );
 	  end if;
@@ -1587,7 +1618,7 @@ separate ( EXPANDER )
 	    PUT( tab & "LI" & tab );
 	    CODI.REGIONS_PATH( D( XD_SOURCE_NAME, DST_TYPE ) );
 	    PUT_LINE( '_' & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, DST_TYPE ) ) ) & ".size" );
-	    EXPRESSIONS.CODE_EXP( SRC_EXP );
+	    EXPRESSIONS.CODE_EXP( SRC_EXP );		-- A VERIFIER POUR EXPRESSIONS.CODE_COMPOSITE_DATA_ADDRESS( SRC_EXP );
 --	    PUT_LINE( tab & "La" );
 	    PUT_LINE( tab & "BLKMOV" );
 	  end if;
@@ -1767,8 +1798,9 @@ separate ( EXPANDER )
 	      PUT_LINE( tab & "DROP" );								-- longueur = celle de la destination
 
 	    else
-	      EXPRESSIONS.CODE_EXP( SRC_EXP );								-- @doublet (variable, concat, appel de fonction, qualifie)
-	      PUT_LINE( tab & "La" );									-- @SRC = data_ptr
+	      EXPRESSIONS.CODE_COMPOSITE_DATA_ADDRESS( SRC_EXP );
+--	      EXPRESSIONS.CODE_EXP( SRC_EXP );								-- @doublet (variable, concat, appel de fonction, qualifie)
+--	      PUT_LINE( tab & "La" );									-- @SRC = data_ptr
 	    end if;
 
 	    PUT_LINE( tab & "BLKMOV" );
@@ -1789,15 +1821,9 @@ separate ( EXPANDER )
 
 	  if  ST_VIA_CALLI  then
 
---	    if  DEFN.TY = DN_OUT_ID  or  DEFN.TY = DN_IN_OUT_ID  then
 	      PUT_LINE( tab & "LVA " & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ','
 		    & tab & '-' & PRINT_NAME( D( LX_SYMREP, DEFN ) ) & "_ofs" );
 	      PUT_LINE( tab & "La" );
-
---	    elsif  EXPRESSIONS.IS_GENERIC_FORMAL_TYPE( D( XD_SOURCE_NAME, NAME_TYPE ) )  then
---	      PUT_LINE( tab & "LVA " & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ','
---		    & tab & PRINT_NAME( D( LX_SYMREP, DEFN ) ) & "_disp" );
---	    end if;
 
 	  end if;
 
@@ -1829,8 +1855,9 @@ separate ( EXPANDER )
 	      CODI.REGIONS_PATH( D( XD_SOURCE_NAME, NAME_TYPE ) );
 	      PUT_LINE( '_' & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, NAME_TYPE ) ) ) & ".size" );		-- LEN (taille en octets, calculee par FASM)
 
-	      EXPRESSIONS.CODE_EXP( SRC_EXP );								-- @variable (adresse du doublet)
-	      PUT_LINE( tab & "La" );									-- @SRC (adresse des data)
+	      EXPRESSIONS.CODE_COMPOSITE_DATA_ADDRESS( SRC_EXP );
+--	      EXPRESSIONS.CODE_EXP( SRC_EXP );								-- @variable (adresse du doublet)
+--	      PUT_LINE( tab & "La" );									-- @SRC (adresse des data)
 	      PUT_LINE( tab & "BLKMOV" );								-- COPY_BLOCK  @DST LEN @SRC
 	    end if;
 	  end;
@@ -1894,8 +1921,9 @@ separate ( EXPANDER )
 	PUT_LINE( tab & "BLKMOV" );									-- COPY_BLOCK;	- @DST @SRC LEN
 
         else
-	EXPRESSIONS.CODE_EXP( SRC_EXP );
-	PUT_LINE( tab & "La" );
+	EXPRESSIONS.CODE_COMPOSITE_DATA_ADDRESS( SRC_EXP );
+--	EXPRESSIONS.CODE_EXP( SRC_EXP );
+--	PUT_LINE( tab & "La" );
 	PUT_LINE( tab & "BLKMOV" );									-- COPY_BLOCK;	- @DST @SRC LEN
         end if;
 

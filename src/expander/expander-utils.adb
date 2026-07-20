@@ -176,9 +176,9 @@ is					-----
   end	TYPE_INFO_STR;
 	-------------
 
-			--^^^^^^^^^--
-  function		  FULL_VIEW		( T : TREE )	return TREE
-  is			-------------
+			--^^^^^^^^^^^^^^--
+  function		  FULL_TYPE_VIEW		( T : TREE )	return TREE
+  is			------------------
     R : TREE := T;
   begin
     loop
@@ -193,8 +193,8 @@ is					-----
       end if;
     end loop;
 
-  end	FULL_VIEW;
-	---------
+  end	FULL_TYPE_VIEW;
+	--------------
 
 
 			--^^^^^^^^^^^^^^^^^--
@@ -363,7 +363,7 @@ is					-----
   function		  EXP_TYPE_CHAR		( EXP :TREE )	return CHARACTER
   is			-----------------
 
-    EXP_TYPE	: TREE		:= FULL_VIEW( D( SM_EXP_TYPE, EXP ) );
+    EXP_TYPE	: TREE		:= FULL_TYPE_VIEW( D( SM_EXP_TYPE, EXP ) );
 
   begin
     -- Les flottants sont toujours en double IEEE	754 = 64 bits = qword
@@ -392,7 +392,7 @@ is					-----
   -- toujours correct aujourd'hui). Enumere : 'POS >= 0, donc TRUE, SAUF clause
   -- de representation (codes internes negatifs possibles, RM83 13.3) -> FALSE.
 
-    TS	: TREE	:= FULL_VIEW( DEFN );
+    TS	: TREE	:= FULL_TYPE_VIEW( DEFN );
 
   begin
     if  TS = TREE_VOID  or else  TS = TREE_NIL  then
@@ -400,20 +400,38 @@ is					-----
       raise PROGRAM_ERROR;
     end if;
 
---    if  TS.TY = DN_ENUMERATION  then
---      declare
---        REP	: TREE	:= D( SM_REPRESENTATION, TS );
---      begin
---        return  REP = TREE_VOID  or else  REP = TREE_NIL;
---      end;
---    end if;
+    if  TS.TY = DN_ENUMERATION  then
+	-- Le conteneur porte les CODES internes (SM_REP), pas les positions.
+	-- Sans clause de representation : code = position >= 0.  Avec clause
+	-- (RM83 13.3), les codes sont strictement CROISSANTS : le SM_REP du
+	-- PREMIER litteral du type de BASE est donc le minimum representable
+	-- dans le conteneur.  Pas de sm_representation sur dn_enumeration
+	-- dans diana.idl (D stricte, piege 95a) : on lit SM_LITERAL_S,
+	-- qui couvre les deux cas.
+      declare
+	BASE	: TREE		:= FULL_TYPE_VIEW( D( SM_BASE_TYPE, TS ) );
+	LITS	: SEQ_TYPE;
+	FIRST_LIT	: TREE;
+      begin
+	if  BASE = TREE_VOID  or else  BASE = TREE_NIL  then
+	  BASE := TS;
+	end if;
+
+	LITS := LIST( D( SM_LITERAL_S, BASE ) );
+	if  IS_EMPTY( LITS )  then
+	  return FALSE;							-- conservateur : load signe
+	end if;
+	POP( LITS, FIRST_LIT );
+	return  DI( SM_REP, FIRST_LIT ) >= 0;
+      end;
+    end if;
 
     if  TS.TY /= DN_INTEGER  then									-- FLOAT/ACCESS : chemin qword, hors sujet
       return FALSE;
     end if;
 
     declare
-      BASE	: TREE	:= FULL_VIEW( D( SM_BASE_TYPE, TS ) );
+      BASE	: TREE	:= FULL_TYPE_VIEW( D( SM_BASE_TYPE, TS ) );
       NAMED	: TREE;
       RNG		: TREE;
       FST		: TREE;
@@ -432,7 +450,7 @@ is					-----
       if       D( XD_SOURCE_NAME, BASE ) /= TREE_VOID
       and then D( XD_SOURCE_NAME, BASE ) /= TREE_NIL  then
         declare
-	SPEC	: TREE	:= FULL_VIEW( D( SM_TYPE_SPEC, D( XD_SOURCE_NAME, BASE ) ) );
+	SPEC	: TREE	:= FULL_TYPE_VIEW( D( SM_TYPE_SPEC, D( XD_SOURCE_NAME, BASE ) ) );
         begin
 	if  SPEC /= TREE_VOID  and then  SPEC /= TREE_NIL  then
 	  NAMED := SPEC;
