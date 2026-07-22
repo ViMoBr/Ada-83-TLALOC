@@ -1,5 +1,4 @@
 #!/bin/bash
-./comp_predef_units.sh
 ./a83.sh ./ ../acvc83_11/support/repspec.ada W
 ./a83.sh ./ ../acvc83_11/support/repbody.ada W
 

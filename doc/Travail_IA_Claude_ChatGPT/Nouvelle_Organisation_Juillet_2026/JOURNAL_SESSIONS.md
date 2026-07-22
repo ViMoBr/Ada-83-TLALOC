@@ -950,3 +950,35 @@ non-régression de convergence). Patchs : expander-utils,
 expander-represented_items, expander-declarations, expander-expressions,
 expander-instructions, expander-structures ; EXPANDER.FINC régénéré.
 
+## 20 juillet 2026 Session « CREATE_IDL_TREE_FILE → PAR_PHASE » (chasse aux segfaults
+## d'exécution d'ADA_COMP, ~10 bugs, pièges 107-113)
+
+Fil : élaboration passée, diana.bin produit, puis remontée de
+CREATE_IDL_TREE_FILE (INIT_SPEC, PAGE_MAN, MAKE) jusqu'à IDL_MAN
+(HASH_SEARCH, DABS, INSERT) et l'entrée de PAR_PHASE (POP_ITEM).
+Méthode rodée : adresse segfault → map → x/3i + registres → FINC →
+générateur. Chaque valeur de registre a signé son bug (0xffff0000 =
+pointeur mutilé par écrasement de stride ; déréférencement de 0 =
+slot résultat scalaire ; PC entre PRO et VAR = co-pile pleine).
+
+(1) INIT_SPEC : bornes énumérées absentes (n° 107) puis Lb signé sur
+NODE_NAME au nœud 128 (n° 108) — diana.tbl est le premier code à
+exercer les gros tableaux indexés énumérés.
+(2) Co-pile : fuite structurelle, palliatif 64 Mio, vrai fix différé
+et documenté (n° 109). NE PAS toucher UNLINK naïvement.
+(3) RPG_DATA : divergence calcul Ada / layout STATOFS (n° 110) ;
+diana.bin TLALOC ≠ gnat en taille = padding, bénin en circuit fermé.
+(4) UNCHECKED_CONVERSION : trampoline non consommé + retour tableau
+contraint non préparé (n° 111) — HASH_SEARCH cumule générique +
+tableau dynamique + UC, excellent chien renifleur.
+(5) La couture composite @doublet/@data, six occurrences en cascade
+(TO_INT, DABS, INSERT, POP_ITEM…) → convention n° 112 + helper
+CODE_COMPOSITE_DATA_ADDRESS + balayage grep des deux orthographes.
+(6) Niveaux : return-depuis-bloc et renaming inter-niveaux (n° 113).
+
+**État de sortie** : ADA_COMP dépasse HASH_SEARCH/INSERT et entre
+dans PAR_PHASE (POP_ITEM corrigé) — la table parse.bin se déroule
+sur un vrai source. Dettes ouvertes : voir bloc AUDITS. Patchs :
+expander-declarations-types_decls, expander-utils, expander-
+declarations, expander-expressions, expander-instructions,
+codi_x86_64.finc (p_memsz).

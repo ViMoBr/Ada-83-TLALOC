@@ -103,13 +103,78 @@ separate ( EXPANDER )
 	--====--
 
 
+			------------
+  procedure		CODE_LABELED		( LABELED :TREE )
+  is			------------
 
-  procedure			CODE_LABELED		( LABELED :TREE )
-  is
+    LBL_SEQ	: SEQ_TYPE	:= LIST( D( AS_SOURCE_NAME_S, LABELED ) );
+    LBL_ID	: TREE;
+
   begin
-    null;
-  end	CODE_LABELED;
+    while  not IS_EMPTY( LBL_SEQ )  loop
+      POP( LBL_SEQ, LBL_ID );
+      declare
+        E		: CODI.GOTO_LBL_IDX	:= CODI.GOTO_LABEL_ENTRY( LBL_ID );
+        LX_STR	:constant STRING	:= LABEL_STR( CODI.GOTO_LABELS( E ).LBL );
+        HAS_STUB	: BOOLEAN		:= FALSE;
+      begin
+        if  CODI.GOTO_LABELS( E ).DEFINED  then						-- sem garantit l'unicite (LRM 5.1) ;
+	PUT_LINE( "; !!! CODE_LABELED : etiquette emise deux fois" );			-- ceinture bruyante (piege n 53)
+	raise PROGRAM_ERROR;
+        end if;
 
+			-- 1. y a-t-il des raccords a poser (gotos en avant inter-niveaux) ?
+        for  I in CODI.GOTO_PEND_BASE + 1 .. CODI.GOTO_PEND_TOP  loop
+	if  CODI.GOTO_PENDING( I ).TARGET = LBL_ID
+	  and then  CODI.GOTO_PENDING( I ).LEVEL /= CODI.CUR_LEVEL
+	then
+	  HAS_STUB := TRUE;
+	end if;
+        end loop;
+
+        if  HAS_STUB  then								-- la chute normale saute les raccords
+	PUT_LINE( tab & "BRA" & tab & LX_STR );
+        end if;
+
+			-- 2. raccords inter-niveaux : EXC_POP d'apres la PHOTO prise au
+			--    site du goto (les blocs traverses sont refermes ici), puis
+			--    UNLINK par niveau (piege n 69), puis BRA vers l'etiquette.
+        for  I in CODI.GOTO_PEND_BASE + 1 .. CODI.GOTO_PEND_TOP  loop
+	if  CODI.GOTO_PENDING( I ).TARGET = LBL_ID
+	  and then  CODI.GOTO_PENDING( I ).LEVEL /= CODI.CUR_LEVEL
+	then
+	  if  CODI.GOTO_PENDING( I ).LEVEL < CODI.CUR_LEVEL  then				-- goto ENTRANT dans un bloc :
+	    PUT_LINE( "; !!! CODE_LABELED : goto en avant vers un niveau plus profond" );	-- illegal (LRM 5.9), sem le refuse ;
+	    raise PROGRAM_ERROR;							-- ceinture bruyante (piege n 53)
+	  end if;
+	  PUT_LINE( LABEL_STR( CODI.GOTO_PENDING( I ).LBL_G ) & ':' );
+	  for  L in reverse CODI.CUR_LEVEL + 1 .. CODI.GOTO_PENDING( I ).LEVEL  loop
+	    if  CODI.GOTO_PENDING( I ).CTX( L )  then  CODI.EXC_POP;  end if;
+	    PUT_LINE( tab & "UNLINK" & LEVEL_NUM'IMAGE( L ) );
+	  end loop;
+	  PUT_LINE( tab & "BRA" & tab & LX_STR );
+	  CODI.GOTO_PENDING( I ).TARGET := TREE_VOID;					-- raccord resolu
+	end if;
+        end loop;
+
+			-- 3. gotos en avant de MEME niveau : etiquette vide, chute vers Lx
+        for  I in CODI.GOTO_PEND_BASE + 1 .. CODI.GOTO_PEND_TOP  loop
+	if  CODI.GOTO_PENDING( I ).TARGET = LBL_ID  then
+	  PUT_LINE( LABEL_STR( CODI.GOTO_PENDING( I ).LBL_G ) & ':' );
+	  CODI.GOTO_PENDING( I ).TARGET := TREE_VOID;					-- raccord resolu
+	end if;
+        end loop;
+
+        CODI.GOTO_LABELS( E ).DEFINED := TRUE;
+        CODI.GOTO_LABELS( E ).LEVEL   := CODI.CUR_LEVEL;
+        PUT_LINE( LX_STR & ':' );
+      end;
+    end loop;
+
+    CODE_STM( D( AS_STM, LABELED ) );							-- l'instruction etiquetee elle-meme
+
+  end	CODE_LABELED;
+	------------
 
 
   procedure			CODE_NULL_STM		( NULL_STM :TREE )
@@ -479,13 +544,50 @@ separate ( EXPANDER )
   end	CODE_STM_WITH_NAME;
 
 
+			---------
+  procedure		CODE_GOTO			( ADA_GOTO :TREE )
+  is			---------
 
-  procedure			CODE_GOTO			( ADA_GOTO :TREE )
-  is
+    TARGET	: TREE	:= D( AS_NAME, ADA_GOTO );
+
   begin
-    null;
-  end;
+    if  TARGET.TY /= DN_LABEL_ID  then
+      TARGET := D( SM_DEFN, TARGET );							-- forme du dump GOTO_DUMP :
+    end if;										-- DN_USED_NAME_ID -> SM_DEFN -> DN_LABEL_ID
+    if  TARGET.TY /= DN_LABEL_ID  then
+      PUT_LINE( "; !!! CODE_GOTO : cible non resolue " & NODE_NAME'IMAGE( TARGET.TY ) );		-- refus bruyant (piege n 53)
+      raise PROGRAM_ERROR;
+    end if;
 
+    declare
+      E	: CODI.GOTO_LBL_IDX	:= CODI.GOTO_LABEL_ENTRY( TARGET );
+    begin
+      if  CODI.GOTO_LABELS( E ).DEFINED  then						-- GOTO ARRIERE : deniveler ICI, forme de
+        for  L in reverse CODI.GOTO_LABELS( E ).LEVEL + 1 .. CODI.CUR_LEVEL  loop			-- CODE_EXIT (pieges n 69 et 34)
+	if  CODI.HANDLER_CTX_AT( L )  then  CODI.EXC_POP;  end if;				-- pop des blocs proteges traverses
+	PUT_LINE( tab & "UNLINK" & LEVEL_NUM'IMAGE( L ) );
+        end loop;
+        PUT_LINE( tab & "BRA" & tab & LABEL_STR( CODI.GOTO_LABELS( E ).LBL ) );
+
+      else										-- GOTO AVANT : BRA vers le RACCORD propre a
+        if  CODI.GOTO_PEND_TOP = MAX_GOTO_LABELS  then					-- ce goto ; le denivele sera emis par
+	PUT_LINE( "; !!! CODE_GOTO : table des raccords pleine" );				-- CODE_LABELED qui connaitra les 2 niveaux
+	raise PROGRAM_ERROR;
+        end if;
+        CODI.GOTO_PEND_TOP := CODI.GOTO_PEND_TOP + 1;
+        CODI.GOTO_PENDING( CODI.GOTO_PEND_TOP ).TARGET := TARGET;
+        CODI.GOTO_PENDING( CODI.GOTO_PEND_TOP ).LBL_G  := NEW_LABEL;
+        CODI.GOTO_PENDING( CODI.GOTO_PEND_TOP ).LEVEL  := CODI.CUR_LEVEL;
+        for  L in LEVEL_NUM  loop								-- PHOTO des contextes au site du goto
+	CODI.GOTO_PENDING( CODI.GOTO_PEND_TOP ).CTX( L ) := CODI.HANDLER_CTX_AT( L );		-- (miroir du principe d'EXC_MACH : les
+        end loop;										-- blocs seront refermes a l'etiquette)
+        PUT_LINE( tab & "BRA" & tab & LABEL_STR( CODI.GOTO_PENDING( CODI.GOTO_PEND_TOP ).LBL_G ) );
+      end if;
+
+    end;
+
+  end	CODE_GOTO;
+	---------
 
 
 				----------

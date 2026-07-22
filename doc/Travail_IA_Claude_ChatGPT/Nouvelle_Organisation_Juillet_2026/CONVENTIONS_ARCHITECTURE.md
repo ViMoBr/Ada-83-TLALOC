@@ -350,6 +350,28 @@ transférer le résultat depuis `[rbp]` vers `result__ofs` :
 | SYS_FILE_READ     | LENGTH, @BUFFER, FILE_ID     | -16 ou -24|
 | SYS_FILE_WRITE    | LENGTH, @BUFFER, FILE_ID     | -16 ou -24|
 
+## Convention de représentation des composites (issue pièges 112-113)
+
+CODE_EXP d'une expression composite laisse sur la pile d'opérandes :
+  @DOUBLET  — objet entier (DN_USED_OBJECT_ID), appel de fonction
+              (DN_FUNCTION_CALL) ;
+  @DATA nue — toute référence de composant (DN_INDEXED, DN_SELECTED,
+              DN_ALL) ; DN_SLICE construit son doublet anonyme.
+Consommation : CODE_COMPOSITE_DATA_ADDRESS, jamais de La/La ,0
+inconditionnel. Frontière de sous-programme : @doublet exclusivement
+(arguments via SELARG/INDARG pour les composants, slot résultat =
+@doublet caller-alloué — record : __dat statique ; tableau contraint :
+CO_VAR à SIZ runtime). Le résultat composite revient dans le slot
+conservé par RTD prm_siz-8.
+
+## Miroir de layout (issu piège 110)
+
+Toute grandeur de layout calculée côté Ada (taille, offset, stride,
+CD_IMPL_SIZE) reproduit EXACTEMENT ce que les macros fasmg font
+(STATOFS + align_*, pas d'arrondi final). Au premier écart : pas
+d'erreur de compilation — un écrasement mémoire silencieux à
+l'exécution. Un seul helper d'alignement (ALIGN_STATIC_BITS), trois
+sites, zéro calcul parallèle nouveau sans son test-miroir.
 
 ## 8. Discipline des témoins et des livraisons (5 juillet 2026)
 

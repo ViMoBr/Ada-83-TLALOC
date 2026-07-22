@@ -668,5 +668,88 @@ instances sont expansées sur site.
   INDIRECT_BASE_IN_RAX. Trancher par la pile avant de soupçonner un
   opérande.
 
+ 107. **Tableau indexé par MARQUE de type énuméré : bornes jamais
+  émises.** Le chemin sans INDEX_CONSTRAINT de
+  PROCESS_CONSTRAINED_ARRAY_TYPE_SPEC ne traitait que DN_INTEGER ;
+  DN_ENUMERATION tombait dans le else-commentaire → _FST_1/_LST_1
+  restaient à 0 (VAR zéro-initialisées). Signature : indice 0 passe,
+  indice 1 lève CONSTRAINT_ERROR. Fix : STATIC_BOUND_VALUE sur les
+  bornes de SM_RANGE (SM_REP), repli CODE_EXP. Les plages explicites
+  `range A..B` passaient déjà par HAS_RANGES, seules les marques de
+  type étaient touchées.
+
+ 108. **Énumérés sur conteneur octet/word : charge SIGNÉE.** La
+  branche énumérée d'IS_UNSIGNED_TYPE était commentée (pas de
+  sm_representation dans diana.idl, D stricte — cf. 95a) → Lb au lieu
+  de ULb. Signature : tout marche jusqu'à 'VAL(128), relu -128, échec
+  du check FST. Fix : SM_REP du PREMIER littéral du type de BASE ≥ 0
+  (RM83 13.3 : codes croissants → premier = minimum) ; couvre la
+  clause de représentation sans l'attribut absent. Corrige au passage
+  CHARACTER ≥ 128 (Latin-1 des sources !).
+
+ 109. **La co-pile est un bump allocator MONOTONE : UNLINK ne
+  redescend jamais R14.** Fuites : 8 octets par appel (slot ELB) +
+  tous les CO_VAR (concat, IMAGE, agrégats dynamiques). Budget =
+  p_memsz (l. 2138 finc), franchi → segfault sur le `mov [r14],r13`
+  du prochain ELB (PC entre PRO et zone VAR — signature). Palliatif
+  en place : 64 Mio. INTERDIT de « corriger » UNLINK par r14:=r13 :
+  les résultats de fonctions à taille non contrainte vivent dans la
+  frame co-pile du callee et doivent survivre au retour. Vrai fix
+  différé : mark/release DANS L'APPELANT au niveau instruction
+  (= secondary stack GNAT) ; intermédiaire possible : épilogue
+  libérant pour les procédures seulement. Même famille dormante :
+  tas HEAP_ALLOC (R12↓) et pile standard (rbp↑) partagent 1 Mio sans
+  détection de collision.
+
+ 110. **Tout calcul Ada d'une grandeur de layout doit être le MIROIR
+  EXACT des macros fasmg.** STATIC_RECORD_SIZE_BITS et le STATIC_SIZE
+  de TRAITER_LES_CHAMPS sommaient les tailles SANS simuler les
+  align_* que STATOFS émet (STATIC_TYPE_ALIGN_BYTES déjà fourni au
+  3e argument !) → CD_IMPL_SIZE < size réel dès qu'un champ aligné
+  crée du padding. Signature : stride d'agrégat trop court, chaque
+  élément écrase la fin du précédent — pointeur de tas mutilé
+  0xffff0000 (octets 0-1 et 4-7 zappés par VP/AREA du suivant).
+  Fix : ALIGN_STATIC_BITS avant chaque champ, aux 3 sites. Assumé :
+  pas d'arrondi FINAL (STATOFS n'en fait pas) → éléments de tableau
+  désalignés à partir du 2e si size ∉ multiple de l'alignement max
+  (toléré x86 ; une des raisons du diana.bin ≠ gnat).
+
+ 111. **Instance générique : le trampoline d'appel du modèle (LI 0 /
+  LVA GFP / args) n'est pas consommé par le corps inline
+  d'UNCHECKED_CONVERSION** → pile déséquilibrée, UNLINK dépile un faux
+  FP, RTD saute sur une valeur. Fix : hisser le test UC avant les
+  émissions (bloc declare remonté) et les garder par not IS_UC ; le
+  chemin non-UC émet bien le CALL qui les consomme. Bug frère :
+  CODE_FUNCTION_CALL ne préparait le slot résultat composite que pour
+  DN_RECORD et DN_ARRAY — DN_CONSTRAINED_ARRAY tombait dans LI 0
+  scalaire, déréférencé 0 par le callee. Fix : doublet caller-alloué,
+  data par CO_VAR à SIZ runtime du type (bornes dynamiques — TTREES),
+  motif identique à l'élaboration d'une variable du type.
+
+ 112. **CONVENTION COMPOSITE (6 bugs, désormais règle) : CODE_EXP
+  d'un composite rend @DOUBLET pour un objet ENTIER
+  (DN_USED_OBJECT_ID) ou un APPEL DE FONCTION (DN_FUNCTION_CALL),
+  @DATA nue pour toute RÉFÉRENCE DE COMPOSANT (indexé, sélecté,
+  .all).** Tout consommateur voulant l'@data passe par
+  CODE_COMPOSITE_DATA_ADDRESS ; un `La ,0` (ou `La` nu — DEUX
+  orthographes, angle mort de grep : normaliser !) inconditionnel
+  après CODE_EXP est un bug. Sites corrigés : égalité record
+  (précédent fondateur OPERAND_DATA_ADDRESS), actual indexé (doublet
+  INDARG, jumeau de SELARG qui existait déjà pour les sélectés),
+  CODE_RETURN record, agrégat record ×3, init de déclaration,
+  CODE_ASSIGN record et tableau. À la frontière d'un sous-programme,
+  un composite voyage TOUJOURS en @doublet (arguments, résultat,
+  les deux sens) ; l'@data est interne aux expressions.
+
+ 113. **Deux niveaux lexicaux distincts dans une même élaboration —
+  ne jamais les fusionner.** (a) result__ofs est un PARAMÈTRE de la
+  fonction : CODE_RETURN doit l'adresser à ENCLOSING_LEVEL, pas
+  CUR_LEVEL (return depuis un declare imbriqué lisait la frame du
+  bloc ; la branche tableau et la cascade UNLINK étaient déjà justes
+  — précédent interne). Branche scalaire : même fix, corruption
+  SILENCIEUSE sinon. (b) Renaming composite : les slots _disp/__u du
+  renommage vivent à CUR_LEVEL (stores + CD_LEVEL posé), mais le LVA
+  du descripteur de type vise DI(CD_LEVEL, SRC_TYPE) — la session 1
+  marchait par coïncidence des niveaux (N_SPEC, tout au niveau 0).
 
  

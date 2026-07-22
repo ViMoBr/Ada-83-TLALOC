@@ -1,0 +1,331 @@
+if ~ definite REPORT
+include 'REPORT.FINC'
+end if
+if ~ definite REPORT
+include 'REPORT.FINC'
+end if
+A83A06A = 'A83A06A'
+PRO	A83A06A_L1				;---------- PRO A83A06A
+ELB 1					;    BODY ELAB
+VAR LAB_VAR_disp, d				; variable entiere
+
+VAR LAB_CONST_disp, d			; variable entiere
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	12
+	Sd  1,	LAB_CONST_disp
+
+
+					; _ENUM ENUMERATION TYPE INFO
+_ENUM = '_ENUM'
+namespace _ENUM
+VAR use__info, q
+BEGIN_BLOC_DEF
+db 0, 2, "AA"
+db 1, 2, "BB"
+db 2, 12, "LAB_ENUMERAL"
+END_BLOC_DEF 8, 0, 2
+	; SIZ en bits !
+	LCA	SIZ
+	Sa	1, use__info
+end namespace
+
+					; _LAB_TYPE TYPE RANGE INFO
+_LAB_TYPE = '_LAB_TYPE'
+namespace _LAB_TYPE
+VAR use__info, q
+VAR SIZ, d
+	LVA	1, SIZ
+	Sa	1, use__info
+VAR FST, d
+VAR LST, d
+	LI	32
+	Sd	1, SIZ
+; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
+	LI	2
+; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
+	LI	31
+	DEC
+	SHL
+	NEG
+	Sd	1, FST
+; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
+	LI	2
+; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
+	LI	31
+	DEC
+	SHL
+; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
+	LI	1
+	SUB
+	Sd	1, LST
+end namespace
+
+if defined LAB_PROCEDURE_L2_
+PRO	LAB_PROCEDURE_L2			;---------- PRO LAB_PROCEDURE
+ELB 2					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+ret_lbl:
+	UNLINK 2
+	RTD
+excep:
+endPRO					;---------- end PRO LAB_PROCEDURE
+end if
+
+if defined LAB_FUNCTION_L5_
+PRO	LAB_FUNCTION_L5				;---------- PRO LAB_FUNCTION
+PRMS					;    debut parametrage
+	PRM result__ofs				; resultat de fonction
+endPRMS					;    fin parametrage
+ELB 2					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+; CODE_RETURN : EXPR TYPE = DN_INTEGER  VUE COMPLETE = DN_INTEGER
+; CODE_NUMERIC_LITERAL DN_INTEGER
+	LI	7
+	Sd  2,	-result__ofs
+	BRA ret_lbl
+ret_lbl:
+	UNLINK 2
+	RTD
+excep:
+endPRO					;---------- end PRO LAB_FUNCTION
+end if
+LAB_PACKAGE = 'LAB_PACKAGE'
+namespace LAB_PACKAGE			;---------- PACKAGE DECLARATION
+					; CODE_PACKAGE_SPEC
+VAR INT_disp, d				; variable entiere
+
+; EXC_LBL	L8
+end namespace
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+; CODE & concat _STRING
+VAR	ANON_40_23_L11_G_data, q
+VAR	ANON_40_23_L11_G_info, q
+VAR	ANON_42_23_L11_D_data, q
+VAR	ANON_42_23_L11_D_info, q
+VAR	ANON_40_23_L11_G_len,  q
+VAR	ANON_42_23_L11_D_len,  q
+VAR	ANON_40_23_L11_R_disp, q
+VAR	ANON_40_23_L11_R__u,   q
+namespace ANON_40_23_L11_R_info
+  VAR SIZ,      d
+  VAR _COMP_SIZ, d
+  VAR _FST_1,    d
+  VAR _LST_1,    d
+end namespace
+; CODE & concat _STRING
+VAR	ANON_40_23_L12_G_data, q
+VAR	ANON_40_23_L12_G_info, q
+VAR	ANON_41_23_L12_D_data, q
+VAR	ANON_41_23_L12_D_info, q
+VAR	ANON_40_23_L12_G_len,  q
+VAR	ANON_41_23_L12_D_len,  q
+VAR	ANON_40_23_L12_R_disp, q
+VAR	ANON_40_23_L12_R__u,   q
+namespace ANON_40_23_L12_R_info
+  VAR SIZ,      d
+  VAR _COMP_SIZ, d
+  VAR _FST_1,    d
+  VAR _LST_1,    d
+end namespace
+STR ANON_40_23_L12_G, "CHECK THAT STATEMENT LABELS INSIDE A BLOCK "	; constante string="CHECK THAT STATEMENT LABELS INSIDE A BLOCK "
+	LCA	ANON_40_23_L12_G.data_ptr
+	DUP
+	La  ,  0
+	Sa  1, ANON_40_23_L12_G_data
+	La  ,  8
+	Sa  1, ANON_40_23_L12_G_info
+	LId 1, ANON_40_23_L12_G_info, _STRING.LST_1
+	LId 1, ANON_40_23_L12_G_info, _STRING.FST_1
+	SUB
+	INC
+	CLAMP0
+	Sa  1, ANON_40_23_L12_G_len
+STR ANON_41_23_L12_D, "BODY CAN BE THE SAME AS IDENTIFIERS DECLARED "	; constante string="BODY CAN BE THE SAME AS IDENTIFIERS DECLARED "
+	LCA	ANON_41_23_L12_D.data_ptr
+	DUP
+	La  ,  0
+	Sa  1, ANON_41_23_L12_D_data
+	La  ,  8
+	Sa  1, ANON_41_23_L12_D_info
+	LId 1, ANON_41_23_L12_D_info, _STRING.LST_1
+	LId 1, ANON_41_23_L12_D_info, _STRING.FST_1
+	SUB
+	INC
+	CLAMP0
+	Sa  1, ANON_41_23_L12_D_len
+	La  1, ANON_40_23_L12_G_len
+	La  1, ANON_41_23_L12_D_len
+	ADD
+	CO_VAR
+	Sa  1, ANON_40_23_L12_R_disp
+	LI	1
+	Sd  1, ANON_40_23_L12_R_info._FST_1
+	La  1, ANON_40_23_L12_G_len
+	La  1, ANON_41_23_L12_D_len
+	ADD
+	Sd  1, ANON_40_23_L12_R_info._LST_1
+	LI	8
+	Sd  1, ANON_40_23_L12_R_info._COMP_SIZ
+	La  1, ANON_40_23_L12_G_len
+	La  1, ANON_41_23_L12_D_len
+	ADD
+	LI	8
+	MUL
+	Sd  1, ANON_40_23_L12_R_info.SIZ
+	LVA 1, ANON_40_23_L12_R_info.SIZ
+	Sa  1, ANON_40_23_L12_R__u
+	La  1, ANON_40_23_L12_R_disp
+	La  1, ANON_40_23_L12_G_len
+	La  1, ANON_40_23_L12_G_data
+	BLKMOV
+	La  1, ANON_40_23_L12_R_disp
+	La  1, ANON_40_23_L12_G_len
+	ADD
+	La  1, ANON_41_23_L12_D_len
+	La  1, ANON_41_23_L12_D_data
+	BLKMOV
+	LVA 1, ANON_40_23_L12_R_disp
+	DUP
+	La  ,  0
+	Sa  1, ANON_40_23_L11_G_data
+	La  ,  8
+	Sa  1, ANON_40_23_L11_G_info
+	LId 1, ANON_40_23_L11_G_info, _STRING.LST_1
+	LId 1, ANON_40_23_L11_G_info, _STRING.FST_1
+	SUB
+	INC
+	CLAMP0
+	Sa  1, ANON_40_23_L11_G_len
+STR ANON_42_23_L11_D, "OUTSIDE THE BODY"	; constante string="OUTSIDE THE BODY"
+	LCA	ANON_42_23_L11_D.data_ptr
+	DUP
+	La  ,  0
+	Sa  1, ANON_42_23_L11_D_data
+	La  ,  8
+	Sa  1, ANON_42_23_L11_D_info
+	LId 1, ANON_42_23_L11_D_info, _STRING.LST_1
+	LId 1, ANON_42_23_L11_D_info, _STRING.FST_1
+	SUB
+	INC
+	CLAMP0
+	Sa  1, ANON_42_23_L11_D_len
+	La  1, ANON_40_23_L11_G_len
+	La  1, ANON_42_23_L11_D_len
+	ADD
+	CO_VAR
+	Sa  1, ANON_40_23_L11_R_disp
+	LI	1
+	Sd  1, ANON_40_23_L11_R_info._FST_1
+	La  1, ANON_40_23_L11_G_len
+	La  1, ANON_42_23_L11_D_len
+	ADD
+	Sd  1, ANON_40_23_L11_R_info._LST_1
+	LI	8
+	Sd  1, ANON_40_23_L11_R_info._COMP_SIZ
+	La  1, ANON_40_23_L11_G_len
+	La  1, ANON_42_23_L11_D_len
+	ADD
+	LI	8
+	MUL
+	Sd  1, ANON_40_23_L11_R_info.SIZ
+	LVA 1, ANON_40_23_L11_R_info.SIZ
+	Sa  1, ANON_40_23_L11_R__u
+	La  1, ANON_40_23_L11_R_disp
+	La  1, ANON_40_23_L11_G_len
+	La  1, ANON_40_23_L11_G_data
+	BLKMOV
+	La  1, ANON_40_23_L11_R_disp
+	La  1, ANON_40_23_L11_G_len
+	ADD
+	La  1, ANON_42_23_L11_D_len
+	La  1, ANON_42_23_L11_D_data
+	BLKMOV
+	LVA 1, ANON_40_23_L11_R_disp
+STR STR_L13, "A83A06A"			; constante string="A83A06A"
+	LCA	STR_L13.data_ptr
+	CALL	STANDARD.REPORT. ,TEST_L1
+namespace	LAB_BLOCK_1
+ELB 2					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	UNLINK 2
+endPRO
+LAB_LOOP_1:
+	BRA	L16
+	BRA	LAB_LOOP_1
+L16:					; post loop LAB_LOOP_1
+namespace	BLOCK__1
+ELB 2					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+L20:
+namespace	BLOCK__2
+ELB 3					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	UNLINK 3
+endPRO
+L23:
+L24:
+VAR	IL26_disp, d				; compteur boucle LOOP__3
+; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
+	LI	2
+; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
+	LI	31
+	DEC
+	SHL
+	NEG
+	Sd  2,	IL26_disp
+VAR	LMT_IL26_disp, d			; limite boucle LOOP__3
+; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
+	LI	2
+; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
+	LI	31
+	DEC
+	SHL
+; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
+	LI	1
+	SUB
+	Sd  2,	LMT_IL26_disp
+	Ld  2,	IL26_disp				; test null range LOOP__3
+	Ld  2,	LMT_IL26_disp
+	CGT
+	BT	L25
+LOOP__3:					; corps boucle LOOP__3
+L27:
+L28:
+L29:
+	BRA	L25
+	Ld  2,	IL26_disp				; test de sortie LOOP__3
+	Ld  2,	LMT_IL26_disp
+	CEQ
+	BT	L25
+	Ld  2,	IL26_disp				; mise a jour compteur LOOP__3
+	INC
+	Sd  2,	IL26_disp
+	BRA	LOOP__3				; iteration suivante LOOP__3
+L25:					; post loop LOOP__3
+L31:
+L32:
+	UNLINK 2
+endPRO
+namespace	LAB_BLOCK_2
+ELB 2					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	UNLINK 2
+endPRO
+LAB_LOOP_2:
+	BRA	L35
+	BRA	LAB_LOOP_2
+L35:					; post loop LAB_LOOP_2
+	CALL	STANDARD.REPORT. ,RESULT_L6
+ret_lbl:
+	UNLINK 1
+	RTD
+excep:
+endPRO					;---------- end PRO A83A06A

@@ -1,0 +1,64 @@
+if ~ definite REPORT
+include 'REPORT.FINC'
+end if
+if ~ definite REPORT
+include 'REPORT.FINC'
+end if
+A72001A = 'A72001A'
+PRO	A72001A_L1				;---------- PRO A72001A
+ELB 1					;    BODY ELAB
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+STR STR_L4, "CHECK: PACKAGE SPECIFICATIONS CAN BE NESTED"	; constante string="CHECK: PACKAGE SPECIFICATIONS CAN BE NESTED"
+	LCA	STR_L4.data_ptr
+STR STR_L5, "A72001A"			; constante string="A72001A"
+	LCA	STR_L5.data_ptr
+	CALL	STANDARD.REPORT. ,TEST_L1
+namespace	BLOCK__1
+ELB 2					;    BODY ELAB
+P1 = 'P1'
+namespace P1				;---------- PACKAGE DECLARATION
+					; CODE_PACKAGE_SPEC
+; EXC_LBL	L6
+end namespace
+
+P2 = 'P2'
+namespace P2				;---------- PACKAGE DECLARATION
+					; CODE_PACKAGE_SPEC
+P3 = 'P3'
+namespace P3				;---------- PACKAGE DECLARATION
+					; CODE_PACKAGE_SPEC
+; EXC_LBL	L7
+end namespace
+
+; EXC_LBL	L8
+end namespace
+
+P5 = 'P5'
+namespace P5				;---------- PACKAGE DECLARATION
+					; CODE_PACKAGE_SPEC
+VAR A_disp, b				; variable bool char enum
+	LI	65
+	Sb  2,	STANDARD.A72001A_L1.BLOCK__1.P5.A_disp
+
+P6 = 'P6'
+namespace P6				;---------- PACKAGE DECLARATION
+					; CODE_PACKAGE_SPEC
+VAR I_disp, d				; variable entiere
+
+; EXC_LBL	L9
+end namespace
+
+; EXC_LBL	L10
+end namespace
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+	UNLINK 2
+endPRO
+	CALL	STANDARD.REPORT. ,RESULT_L6
+ret_lbl:
+	UNLINK 1
+	RTD
+excep:
+endPRO					;---------- end PRO A72001A

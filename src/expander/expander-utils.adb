@@ -10,9 +10,6 @@ separate ( EXPANDER	)
 	package body			UTILS
 is					-----
 
-
---  INACTIVE	: BOOLEAN	renames TRUE;
-
   INT_LABEL	: LABEL_TYPE	:= 1;
   FS		: FILE_TYPE;
 
@@ -26,8 +23,6 @@ is					-----
   GA_ACTUAL	: array( 1 .. MAX_GENERIC_FORMALS ) of TREE;
   GA_COUNT	: NATURAL	:= 0;
 
---  GA_FORMAL	: array( 1 .. MAX_GENERIC_FORMALS ) of TREE;
---  GA_ACTUAL	: array( 1 .. MAX_GENERIC_FORMALS ) of TREE;
 
 			--^^^^^^^^^^^^^^^^--
   procedure		  OPEN_OUTPUT_FILE		( FILE_NAME :STRING	)
@@ -830,6 +825,47 @@ end	SUBPROGRAM_ORIGIN;
 
   end	EXCEPTION_ID_OF;
 	---------------
+
+
+			--^^^^^^^^^^^^^^^^--
+  function		  GOTO_LABEL_ENTRY		( LABEL_ID :TREE )	return GOTO_LBL_IDX
+  is			--------------------
+  begin
+    for  I in GOTO_BODY_BASE + 1 .. GOTO_LBL_TOP  loop
+      if  GOTO_LABELS( I ).ID = LABEL_ID  then
+        return I;
+      end if;
+    end loop;
+
+    if  GOTO_LBL_TOP = MAX_GOTO_LABELS  then						-- refus bruyant (piege n 53)
+      PUT_LINE( "; !!! GOTO_LABEL_ENTRY : table pleine (MAX_GOTO_LABELS)" );
+      raise PROGRAM_ERROR;
+    end if;
+
+    GOTO_LBL_TOP := GOTO_LBL_TOP + 1;
+    GOTO_LABELS( GOTO_LBL_TOP ) := ( ID	=> LABEL_ID,
+			         LBL	=> NEW_LABEL,
+			         DEFINED	=> FALSE,
+			         LEVEL	=> 0 );
+    return GOTO_LBL_TOP;
+
+  end	GOTO_LABEL_ENTRY;
+	----------------
+
+
+			--^^^^^^^^^^^^^^^^^^^--
+  procedure		  GOTO_CHECK_BODY_END
+  is			-----------------------
+  begin
+    for  I in GOTO_PEND_BASE + 1 .. GOTO_PEND_TOP  loop
+      if  GOTO_PENDING( I ).TARGET /= TREE_VOID  then					-- un goto en avant a ete emis, son raccord
+        PUT_LINE( "; !!! GOTO : etiquette jamais emise dans ce corps" );			-- jamais pose : sem le garantit,
+        raise PROGRAM_ERROR;							-- ceinture bruyante (piege n 53)
+      end if;
+    end loop;
+
+  end	GOTO_CHECK_BODY_END;
+	-------------------
 
 
 			--^^^^^--

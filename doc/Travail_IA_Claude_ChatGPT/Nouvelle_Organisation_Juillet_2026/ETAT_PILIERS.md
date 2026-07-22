@@ -175,6 +175,36 @@ La sémantique n'est protégée que par les programmes-témoins à sortie attend
   divergence documentée : attribut d'instanciation JUSTE (calcul
   expander), attribut direct FAUX (pliage sem).
 
+ **Dettes audits différés debogage bootstrap**
+ - [ ] Co-pile : mark/release par instruction dans l'appelant (n° 109) ;
+      intermédiaire possible : épilogue libérant pour procédures.
+- [ ] `La` nus restants à trier avec la question unique « l'opérande
+      amont est-il @doublet par construction ? » : instructions 1517,
+      1576, 1638, 1898 ; expressions 756. Sains vérifiés : 1763
+      (LCA .data_ptr), declarations 1372 (doublet CODE_SLICE).
+- [ ] declarations ~1703 : contrat de CODE_ACTUAL_OBJECT_VALUE
+      (objet formel générique) vis-à-vis de la convention n° 112.
+- [ ] Branche TABLEAU de CODE_RETURN : suppose @doublet_src ;
+      `return TAB2D(I)` ferait le trou du n° 112. Non exercé.
+- [ ] SELARG/INDARG : factoriser en un helper ; ni l'un ni l'autre ne
+      teste DN_CONSTRAINED_RECORD (dette commune) ; out/in-out
+      composites INDEXÉS non normalisés (les sélectés le sont).
+- [ ] Renaming : DN_CONSTRAINED_RECORD absent d'IS_COMPOSITE (pas de
+      __u émis) ; bloc commenté l. ~1348-1352 porte l'ancien bug de
+      niveau si ressuscité.
+- [ ] DN_SLICE en composant d'agrégat : refus bruyant à poser dans
+      CODE_COMPOSITE_DATA_ADDRESS si le cas surgit.
+- [ ] Normaliser l'orthographe d'émission `La  ,  0` (supprimer les
+      `La` nus) pour rendre les greps exhaustifs par construction.
+- [ ] Oracle manquant : fonction ORDINAIRE retournant un tableau
+      contraint à bornes dynamiques (le n° 111 ne fut vu que via UC) ;
+      oracle énuméré >128 littéraux avec array(ENUM) (n° 107-108).
+- [ ] Garde NE_RAISE si SIZ=0 au doublet résultat tableau contraint
+      (appel avant élaboration du type — tordu mais légal).
+- [ ] diana.bin : consigner LAST_NODE/LAST_NODE_ATTR relus comme
+      invariant logique (la taille fichier ≠ gnat est un non-critère).
+
+ 
 ## Prochaine séquence (à arbitrer à l'ouverture de la prochaine session)
 
 A discuter

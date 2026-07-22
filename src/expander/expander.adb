@@ -20,7 +20,7 @@ is
   is
 
     DEBUG				: BOOLEAN		:= TRUE;
-    GENERATE_BINARY_MAP		: BOOLEAN		:= TRUE;
+    GENERATE_BINARY_MAP		: BOOLEAN		:= FALSE;
 
     tab				: CHARACTER	renames ASCII.HT;
 
@@ -71,6 +71,46 @@ is
     HANDLER_CTX_SUF			: LABEL_TYPE		:= 0;					--| generation -- niveau et suffixe (numero du label de dispatch) du contexte associe.
     CHECKS_ENABLED			: BOOLEAN			:= TRUE;					--| PILIER CHECKS : commutateur global d'emission.
 
+			-- GOTO SERVICE (etiquettes <<L>> et instruction goto, LRM 5.9)
+			--| Tables par CORPS (les etiquettes ne franchissent pas les corps,
+			--| LRM 5.9), discipline de pile pour l'imbrication des corps.
+			--| Indexees par le NOEUD DN_LABEL_ID (le CD_LABEL des label_id est
+			--| vierge -- constat au dump GOTO_DUMP -- on ne le touche pas).
+			--| goto ARRIERE : denivele immediat (forme CODE_EXIT).
+			--| goto AVANT : BRA vers un RACCORD propre au goto + photo des
+			--| contextes ; le raccord (EXC_POP + UNLINK) est emis par
+			--| CODE_LABELED, qui connait les deux niveaux.
+
+    MAX_GOTO_LABELS		: constant		:= 64;					--| NB MAX D'ETIQUETTES GOTO PAR IMBRICATION DE CORPS
+    subtype GOTO_LBL_IDX	is NATURAL		range 0 .. MAX_GOTO_LABELS;
+
+    type LVL_SET		is array( LEVEL_NUM ) of BOOLEAN;					--| photo de HANDLER_CTX_AT au site d'un goto
+
+    type GOTO_LBL_REC	is record
+			  ID		: TREE;							--| le DN_LABEL_ID (cle, egalite TREE)
+			  LBL		: LABEL_TYPE;						--| etiquette FASM de l'instruction etiquetee
+			  DEFINED		: BOOLEAN;						--| l'etiquette a ete EMISE
+			  LEVEL		: LEVEL_NUM;						--| niveau d'emission (valide si DEFINED)
+			end record;
+
+    GOTO_LABELS		: array( 1 .. MAX_GOTO_LABELS ) of GOTO_LBL_REC;
+    GOTO_LBL_TOP		: GOTO_LBL_IDX	:= 0;
+    GOTO_BODY_BASE		: GOTO_LBL_IDX	:= 0;							--| base du corps courant dans la table
+
+    type GOTO_PEND_REC	is record									--| un goto EN AVANT en attente de raccord
+			  TARGET		: TREE;							--| le DN_LABEL_ID vise (TREE_VOID : resolu)
+			  LBL_G		: LABEL_TYPE;						--| etiquette du raccord propre a ce goto
+			  LEVEL		: LEVEL_NUM;						--| niveau du SITE du goto
+			  CTX		: LVL_SET;						--| photo de HANDLER_CTX_AT au site du goto
+			end record;
+
+    GOTO_PENDING			: array( 1 .. MAX_GOTO_LABELS ) of GOTO_PEND_REC;
+    GOTO_PEND_TOP			: GOTO_LBL_IDX	:= 0;
+    GOTO_PEND_BASE			: GOTO_LBL_IDX	:= 0;					--| base du corps courant
+
+    function  GOTO_LABEL_ENTRY	( LABEL_ID :TREE )		return GOTO_LBL_IDX;	--| trouve ou cree l'entree du corps courant
+    procedure GOTO_CHECK_BODY_END;							--| ceinture bruyante : raccord jamais resolu
+
 												--| -1 : hors handler (raise nu = ANOMALIE).
     NO_SUBP_PARAMS			: BOOLEAN			:= TRUE;					--| pour prms et prm_siz
     ENCLOSING_BODY			: TREE;
@@ -81,8 +121,6 @@ is
     LOOP_OP_GT_LT			: LOOP_CODE;							--| DE MEME
 
     TYPE_SYMREP			: TREE;								--| UTILISE POUR LES OBJECT_DECL VAR CONST
-
-
 
     procedure OPEN_OUTPUT_FILE	( FILE_NAME :STRING	);
     procedure CLOSE_OUTPUT_FILE;

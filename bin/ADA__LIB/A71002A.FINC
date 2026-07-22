@@ -1,0 +1,154 @@
+if ~ definite REPORT
+include 'REPORT.FINC'
+end if
+if ~ definite REPORT
+include 'REPORT.FINC'
+end if
+A71002A = 'A71002A'
+PRO	A71002A_L1				;---------- PRO A71002A
+ELB 1					;    BODY ELAB
+P1 = 'P1'
+namespace P1				;---------- PACKAGE DECLARATION
+					; CODE_PACKAGE_SPEC
+; EXC_LBL	L2
+end namespace
+
+P1 = 'P1'
+namespace P1				;---------- PACKAGE (BDY)
+					;    BODY ELAB
+begin:					;---------- package BDY INSTRUCTIONS
+end namespace 				;---------- end package BDY P1
+
+P1X = 'P1X'
+namespace P1X				;---------- PACKAGE DECLARATION
+					; CODE_PACKAGE_SPEC
+; EXC_LBL	L5
+end namespace
+
+P1X = 'P1X'
+namespace P1X				;---------- PACKAGE (BDY)
+					;    BODY ELAB
+begin:					;---------- package BDY INSTRUCTIONS
+end namespace 				;---------- end package BDY P1X
+
+P2 = 'P2'
+namespace P2				;---------- PACKAGE DECLARATION
+					; CODE_PACKAGE_SPEC
+P3 = 'P3'
+namespace P3				;---------- PACKAGE DECLARATION
+					; CODE_PACKAGE_SPEC
+; EXC_LBL	L8
+end namespace
+
+; EXC_LBL	L9
+end namespace
+
+P2 = 'P2'
+namespace P2				;---------- PACKAGE (BDY)
+					;    BODY ELAB
+P3 = 'P3'
+namespace P3				;---------- PACKAGE (BDY)
+					;    BODY ELAB
+begin:					;---------- package BDY INSTRUCTIONS
+end namespace 				;---------- end package BDY P3
+
+begin:					;---------- package BDY INSTRUCTIONS
+end namespace 				;---------- end package BDY P2
+
+P3 = 'P3'
+namespace P3				;---------- PACKAGE DECLARATION
+					; CODE_PACKAGE_SPEC
+; EXC_LBL	L14
+end namespace
+
+P3 = 'P3'
+namespace P3				;---------- PACKAGE (BDY)
+					;    BODY ELAB
+begin:					;---------- package BDY INSTRUCTIONS
+;ANOMALIE : handlers sur corps de package non modelises
+end namespace 				;---------- end package BDY P3
+
+					;    end elab
+begin:					;---------- BDY INSTRUCTIONS
+; CODE & concat _STRING
+VAR	ANON_47_23_L19_G_data, q
+VAR	ANON_47_23_L19_G_info, q
+VAR	ANON_48_23_L19_D_data, q
+VAR	ANON_48_23_L19_D_info, q
+VAR	ANON_47_23_L19_G_len,  q
+VAR	ANON_48_23_L19_D_len,  q
+VAR	ANON_47_23_L19_R_disp, q
+VAR	ANON_47_23_L19_R__u,   q
+namespace ANON_47_23_L19_R_info
+  VAR SIZ,      d
+  VAR _COMP_SIZ, d
+  VAR _FST_1,    d
+  VAR _LST_1,    d
+end namespace
+STR ANON_47_23_L19_G, "CHECK THAT DEGENERATE SYNTACTIC CASES OF "	; constante string="CHECK THAT DEGENERATE SYNTACTIC CASES OF "
+	LCA	ANON_47_23_L19_G.data_ptr
+	DUP
+	La  ,  0
+	Sa  1, ANON_47_23_L19_G_data
+	La  ,  8
+	Sa  1, ANON_47_23_L19_G_info
+	LId 1, ANON_47_23_L19_G_info, _STRING.LST_1
+	LId 1, ANON_47_23_L19_G_info, _STRING.FST_1
+	SUB
+	INC
+	CLAMP0
+	Sa  1, ANON_47_23_L19_G_len
+STR ANON_48_23_L19_D, "PACKAGE SPECIFICATIONS AND BODIES ARE ALLOWED"	; constante string="PACKAGE SPECIFICATIONS AND BODIES ARE ALLOWED"
+	LCA	ANON_48_23_L19_D.data_ptr
+	DUP
+	La  ,  0
+	Sa  1, ANON_48_23_L19_D_data
+	La  ,  8
+	Sa  1, ANON_48_23_L19_D_info
+	LId 1, ANON_48_23_L19_D_info, _STRING.LST_1
+	LId 1, ANON_48_23_L19_D_info, _STRING.FST_1
+	SUB
+	INC
+	CLAMP0
+	Sa  1, ANON_48_23_L19_D_len
+	La  1, ANON_47_23_L19_G_len
+	La  1, ANON_48_23_L19_D_len
+	ADD
+	CO_VAR
+	Sa  1, ANON_47_23_L19_R_disp
+	LI	1
+	Sd  1, ANON_47_23_L19_R_info._FST_1
+	La  1, ANON_47_23_L19_G_len
+	La  1, ANON_48_23_L19_D_len
+	ADD
+	Sd  1, ANON_47_23_L19_R_info._LST_1
+	LI	8
+	Sd  1, ANON_47_23_L19_R_info._COMP_SIZ
+	La  1, ANON_47_23_L19_G_len
+	La  1, ANON_48_23_L19_D_len
+	ADD
+	LI	8
+	MUL
+	Sd  1, ANON_47_23_L19_R_info.SIZ
+	LVA 1, ANON_47_23_L19_R_info.SIZ
+	Sa  1, ANON_47_23_L19_R__u
+	La  1, ANON_47_23_L19_R_disp
+	La  1, ANON_47_23_L19_G_len
+	La  1, ANON_47_23_L19_G_data
+	BLKMOV
+	La  1, ANON_47_23_L19_R_disp
+	La  1, ANON_47_23_L19_G_len
+	ADD
+	La  1, ANON_48_23_L19_D_len
+	La  1, ANON_48_23_L19_D_data
+	BLKMOV
+	LVA 1, ANON_47_23_L19_R_disp
+STR STR_L20, "A71002A"			; constante string="A71002A"
+	LCA	STR_L20.data_ptr
+	CALL	STANDARD.REPORT. ,TEST_L1
+	CALL	STANDARD.REPORT. ,RESULT_L6
+ret_lbl:
+	UNLINK 1
+	RTD
+excep:
+endPRO					;---------- end PRO A71002A
