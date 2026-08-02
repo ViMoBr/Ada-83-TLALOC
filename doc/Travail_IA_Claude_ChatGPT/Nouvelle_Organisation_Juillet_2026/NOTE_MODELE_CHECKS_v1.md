@@ -266,3 +266,13 @@ Aucune nouvelle mécanique d'exception, aucun contexte, aucune macro de
 déroulage ni de check, aucune modification de _standrd.adb ni de codi. Si
 une étape semble exiger l'un de ces éléments, c'est que le design dévie —
 revenir à cette note.
+
+## Mise à jour 28 juillet 2026
+
+- Factorisation : LOAD_BOUND (interne à CODE_RANGE_CHECK) devient
+  CODE_SCALAR_SUBTYPE_BOUND( TYPE_SPEC, IS_LAST ), visible, désormais
+  utilisé aussi par CODE_TYPE_MEMBERSHIP (sémantique LRM 4.5.2, forme
+  marque). Attention à la distinction : le check est gardé par
+  CHECKS_ENABLED, le membership NE L'EST PAS. Le motif d'élision par
+  comparaison de nœuds (sous-type = base) a un sens INVERSE côté
+  membership : élision = émettre `LI 1`, jamais zéro instruction.

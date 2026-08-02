@@ -1,17 +1,17 @@
 ------------------------------------------------------------------------------------------------------------------------
--- SPDX-FileCopyrightText: 2026 VINCENT	MORIN, UBO
+-- SPDX-FileCopyrightText: 2026 VINCENT MORIN, UBO
 -- SPDX-License-Identifier: GPL-3.0-or-later
 ------------------------------------------------------------------------------------------------------------------------
 --	1	2	3	4	5	6	7	8	9	0	1	2
 
-separate ( EXPANDER	)
+separate ( EXPANDER )
 				------------
 	package body		DECLARATIONS
 				------------
 is
 
 
-  package	CODI	renames EXPANDER.UTILS;
+  package CODI	renames EXPANDER.UTILS;
   use CODI;
 
   -------			-----------
@@ -21,30 +21,37 @@ is
 
     procedure CODE_TYPE_DECL			( TYPE_DECL :TREE );
     procedure CODE_SUBTYPE_DECL		( SUBTYPE_DECL :TREE );
-    procedure PROCESS_CONSTRAINED_ARRAY_TYPE_SPEC	( TYPE_SPEC :TREE; CONSTRAINT :TREE := TREE_VOID );
+    procedure PROCESS_CONSTRAINED_ARRAY_TYPE_SPEC ( TYPE_SPEC :TREE; CONSTRAINT :TREE := TREE_VOID );
+    procedure STATIC_BOUND_VALUE		( BOUND :TREE;  VAL :out INTEGER;  OK :out BOOLEAN );
 
   ---	-----------
   end	TYPES_DECLS;
   ---	-----------
-  package	body TYPES_DECLS is	separate;
+  package body TYPES_DECLS is separate;
 
   procedure CODE_REP	( REP :TREE );
   procedure CODE_USE_PRAGMA	( USE_PRAGMA :TREE );
 
 
-			--=========--
+			--^^^^^^^^^--
   procedure		  CODE_DECL		( DECL :TREE )
-  is			--=========--
+  is			-------------
   begin
-    if	 DECL.TY = DN_NULL_COMP_DECL	then  CODE_NULL_COMP_DECL( DECL );
-    elsif	 DECL.TY in CLASS_ID_DECL	then  CODE_ID_DECL	     ( DECL );
-    elsif	 DECL.TY in CLASS_ID_S_DECL	then  CODE_ID_S_DECL     ( DECL );
-    elsif	 DECL.TY in CLASS_REP	then  CODE_REP	     ( DECL );
-    elsif	 DECL.TY in CLASS_USE_PRAGMA	then  CODE_USE_PRAGMA    ( DECL );
+    if	 DECL.TY = DN_NULL_COMP_DECL  then  CODE_NULL_COMP_DECL( DECL );
+    elsif  DECL.TY in CLASS_ID_DECL	then  CODE_ID_DECL	     ( DECL );
+    elsif  DECL.TY in CLASS_ID_S_DECL	then  CODE_ID_S_DECL     ( DECL );
+    elsif  DECL.TY in CLASS_REP	then  CODE_REP	     ( DECL );
+    elsif  DECL.TY in CLASS_USE_PRAGMA  then  CODE_USE_PRAGMA    ( DECL );
+    elsif  DECL.TY = DN_PRAGMA_ID									--| INTENTIONNEL (recensement _standrd, 28/07) :
+    	or else  DECL.TY = DN_ATTRIBUTE_ID								--| entites PREDEFINIES de STANDARD (noms de pragmas,
+    	or else  DECL.TY = DN_BLTN_OPERATOR_ID								--| d'attributs, operateurs intrinseques -- classe DIANA
+    then  null;											--| INTENTIONNEL -- PREDEF_NAME) : AUCUNE elaboration a emettre.
+												--| Tout autre PREDEF (argument_id...) continue de sonner.
+    else  CODI.TROU( "CODE_DECL", DECL );								--| vague 4 : dispatch muet (fossile n 115)
     end if;
 
-  end	  CODE_DECL;
-	--=========--
+  end	CODE_DECL;
+	---------
 
 
 
@@ -55,7 +62,7 @@ is
     DECL_SEQ	: SEQ_TYPE	:= LIST( DECL_S );
     DECL		: TREE;
   begin
-    while	 not IS_EMPTY( DECL_SEQ )  loop
+    while  not IS_EMPTY( DECL_SEQ )  loop
       POP( DECL_SEQ, DECL );
       CODE_DECL( DECL );
     end loop;
@@ -69,22 +76,23 @@ is
   procedure		CODE_NULL_COMP_DECL		( NULL_COMP_DECL :TREE )
   is
   begin
-    null;
+    null;											--| INTENTIONNEL : composant null, aucun code
+
   end	CODE_NULL_COMP_DECL;
 	-------------------
 
 
 
 			------------
-  procedure		CODE_ID_DECL		( ID_DECL	:TREE )
+  procedure		CODE_ID_DECL		( ID_DECL :TREE )
   is			------------
   begin
     if	 ID_DECL.TY = DN_TYPE_DECL		then  TYPES_DECLS.CODE_TYPE_DECL   ( ID_DECL );
-    elsif	 ID_DECL.TY = DN_SUBTYPE_DECL		then  TYPES_DECLS.CODE_SUBTYPE_DECL( ID_DECL );
-    elsif	 ID_DECL.TY = DN_TASK_DECL		then  CODE_TASK_DECL         ( ID_DECL );
-    elsif	 ID_DECL.TY in CLASS_UNIT_DECL	then  CODE_UNIT_DECL         ( ID_DECL );
-    elsif	 ID_DECL.TY in CLASS_SIMPLE_RENAME_DECL	then  CODE_SIMPLE_RENAME_DECL( ID_DECL );
-
+    elsif  ID_DECL.TY = DN_SUBTYPE_DECL		then  TYPES_DECLS.CODE_SUBTYPE_DECL( ID_DECL );
+    elsif  ID_DECL.TY = DN_TASK_DECL		then  CODE_TASK_DECL         ( ID_DECL );
+    elsif  ID_DECL.TY in CLASS_UNIT_DECL	then  CODE_UNIT_DECL         ( ID_DECL );
+    elsif  ID_DECL.TY in CLASS_SIMPLE_RENAME_DECL then  CODE_SIMPLE_RENAME_DECL( ID_DECL );
+    else   CODI.TROU( "CODE_ID_DECL", ID_DECL );						--| vague 4 : dispatch muet (fossile n 115)
     end if;
 
   end	CODE_ID_DECL;
@@ -97,8 +105,9 @@ is
   is			--------------
   begin
     if	 ID_S_DECL.TY in CLASS_EXP_DECL		then  CODE_EXP_DECL		   ( ID_S_DECL );
-    elsif	 ID_S_DECL.TY = DN_EXCEPTION_DECL		then  CODE_EXCEPTION_DECL	   ( ID_S_DECL );
-    elsif	 ID_S_DECL.TY = DN_DEFERRED_CONSTANT_DECL	then  CODE_DEFERRED_CONSTANT_DECL( ID_S_DECL );
+    elsif  ID_S_DECL.TY = DN_EXCEPTION_DECL		then  CODE_EXCEPTION_DECL	   ( ID_S_DECL );
+    elsif  ID_S_DECL.TY = DN_DEFERRED_CONSTANT_DECL	then  CODE_DEFERRED_CONSTANT_DECL( ID_S_DECL );
+    else   CODI.TROU( "CODE_ID_S_DECL", ID_S_DECL );						--| vague 4 : dispatch muet (fossile n 115)
     end if;
 
   end	CODE_ID_S_DECL;
@@ -106,27 +115,30 @@ is
 
 
 
-			--=======--
-  procedure		CODE_HEADER		( HEADER :TREE )
-  is			--=======--
+			--^^^^^^^^^^^--
+  procedure		  CODE_HEADER		( HEADER :TREE )
+  is			---------------
   begin
 
     if  HEADER.TY in CLASS_SUBP_ENTRY_HEADER
     then
-      CODE_PARAM_S(	D( AS_PARAM_S, HEADER ), (HEADER.TY = DN_FUNCTION_SPEC) );
-      CODE_SUBP_ENTRY_HEADER(	HEADER );
+      CODE_PARAM_S( D( AS_PARAM_S, HEADER ), (HEADER.TY = DN_FUNCTION_SPEC) );
+      CODE_SUBP_ENTRY_HEADER( HEADER );
 
-    elsif	 HEADER.TY = DN_PACKAGE_SPEC
-    then	CODE_PACKAGE_SPEC( HEADER );
+    elsif  HEADER.TY = DN_PACKAGE_SPEC
+    then  CODE_PACKAGE_SPEC( HEADER );
+
+    else
+      CODI.TROU( "CODE_HEADER", HEADER );							--| vague 4 : dispatch muet (fossile n 115)
 
     end if;
 
-  end	  CODE_HEADER;
-	--===========--
+  end	CODE_HEADER;
+	-----------
 
 
 			------------
-  procedure		CODE_PARAM_S	( PARAM_S	:TREE; FOR_FUNCTION	:BOOLEAN := FALSE )
+  procedure		CODE_PARAM_S	( PARAM_S :TREE; FOR_FUNCTION :BOOLEAN := FALSE )
   is			------------
   begin
     declare
@@ -134,34 +146,34 @@ is
       PARAM		: TREE;
     begin
       CODI.NO_SUBP_PARAMS := IS_EMPTY( PARAM_SEQ );
-      if	CODI.NO_SUBP_PARAMS	 and  not FOR_FUNCTION  and  not CODI.IN_GENERIC_BODY  then
+      if  CODI.NO_SUBP_PARAMS  and  not FOR_FUNCTION  and  not CODI.IN_GENERIC_BODY  then
         return;
-      end	if;
+      end if;
 
-      if	CODI.OUTPUT_CODE  then
-        PUT( "PRMS"	);
-        if  CODI.DEBUG  then	PUT( tab50 & ";    debut parametrage" ); end if;
+      if  CODI.OUTPUT_CODE  then
+        PUT( "PRMS" );
+        if  CODI.DEBUG  then  PUT( tab50 & ";    debut parametrage" ); end if;
         NEW_LINE;
-      end	if;
+      end if;
 
-      while  not IS_EMPTY( PARAM_SEQ )	loop
-        POP( PARAM_SEQ, PARAM	);
-        CODE_PARAM(	PARAM );
-      end	loop;
+      while  not IS_EMPTY( PARAM_SEQ )  loop
+        POP( PARAM_SEQ, PARAM );
+        CODE_PARAM( PARAM );
+      end loop;
 
-      if	CODI.OUTPUT_CODE  then
+      if  CODI.OUTPUT_CODE  then
         if  CODI.IN_GENERIC_BODY  then
-	PUT_LINE(	tab & "PRM GFP_ofs"	);
+	PUT_LINE( tab & "PRM GFP_ofs" );
         end if;
         if  FOR_FUNCTION  then
 	PUT( tab & "PRM result__ofs" );
-	if  CODI.DEBUG  then  PUT( tab50 & "; resultat de fonction"	); end if;
+	if  CODI.DEBUG  then  PUT( tab50 & "; resultat de fonction" ); end if;
 	NEW_LINE;
         end if;
         PUT( "endPRMS" );
-        if CODI.DEBUG then PUT( tab50 &	";    fin parametrage" ); end	if;
+        if CODI.DEBUG then PUT( tab50 & ";    fin parametrage" ); end if;
         NEW_LINE;
-      end	if;
+      end if;
     end;
 
   end	CODE_PARAM_S;
@@ -172,25 +184,25 @@ is
   procedure		CODE_PARAM	( PARAM :TREE )
   is			----------
 
-    ID_LIST	: SEQ_TYPE	:= LIST( D( AS_SOURCE_NAME_S,	PARAM ) );
+    ID_LIST	: SEQ_TYPE	:= LIST( D( AS_SOURCE_NAME_S, PARAM ) );
     ID		: TREE;
 
   begin
-    while	 not IS_EMPTY( ID_LIST )  loop
-      POP( ID_LIST,	ID );
+    while  not IS_EMPTY( ID_LIST )  loop
+      POP( ID_LIST, ID );
 
-      DI(	CD_LEVEL,	ID, INTEGER( CODI.CUR_LEVEL )	);
+      DI( CD_LEVEL, ID, INTEGER( CODI.CUR_LEVEL ) );
 
-      if	CODI.OUTPUT_CODE  then
+      if  CODI.OUTPUT_CODE  then
         if  D( SM_OBJ_TYPE, ID ).TY in CLASS_SCALAR and PARAM.TY = DN_IN  then
-	PUT( tab & "PRM " &	PRINT_NAME( D( LX_SYMREP, ID ) ) & "_ofs" );
+	PUT( tab & "PRM " & PRINT_NAME( D( LX_SYMREP, ID ) ) & "_ofs" );
         else
-	PUT( tab & "PRM " &	PRINT_NAME( D( LX_SYMREP, ID ) ) & "_ofs" );
+	PUT( tab & "PRM " & PRINT_NAME( D( LX_SYMREP, ID ) ) & "_ofs" );
         end if;
-      end	if;
+      end if;
 
-      if	PARAM.TY = DN_IN
-      then  CODE_IN	( PARAM );
+      if  PARAM.TY = DN_IN
+      then  CODE_IN ( PARAM );
 
       elsif  PARAM.TY = DN_OUT
       then  CODE_OUT ( PARAM );
@@ -198,8 +210,11 @@ is
       elsif  PARAM.TY = DN_IN_OUT
       then  CODE_IN_OUT ( PARAM );
 
-      end	if;
-      if	CODI.OUTPUT_CODE  then NEW_LINE; end if;
+      else
+        CODI.TROU( "CODE_PARAM mode", PARAM );							--| vague 4, HORS LISTE : chaine muette
+
+      end if;
+      if  CODI.OUTPUT_CODE  then NEW_LINE; end if;
     end loop;
 
   end	CODE_PARAM;
@@ -207,10 +222,10 @@ is
 
 
   --|-------------------------------------------------------------------------------------------
-  procedure CODE_IN	( ADA_IN :TREE ) is
+  procedure CODE_IN ( ADA_IN :TREE ) is
   begin
     if  CODI.OUTPUT_CODE  then
-      if	CODI.DEBUG  then PUT( tab50 &	"; in" );	end if;
+      if  CODI.DEBUG  then PUT( tab50 & "; in" ); end if;
     end if;
   end;
 
@@ -218,7 +233,7 @@ is
   procedure CODE_IN_OUT ( ADA_IN_OUT :TREE ) is
   begin
     if  CODI.OUTPUT_CODE  then
-      if	CODI.DEBUG  then PUT( tab50 &	"; in out" ); end if;
+      if  CODI.DEBUG  then PUT( tab50 & "; in out" ); end if;
     end if;
   end;
 
@@ -226,20 +241,20 @@ is
   procedure CODE_OUT ( ADA_OUT :TREE ) is
   begin
     if  CODI.OUTPUT_CODE  then
-      if	CODI.DEBUG  then PUT( tab50 &	"; out" ); end if;
+      if  CODI.DEBUG  then PUT( tab50 & "; out" ); end if;
     end if;
   end;
 
 			----------------------
-  procedure		CODE_SUBP_ENTRY_HEADER	( SUBP_ENTRY_HEADER	:TREE )
+  procedure		CODE_SUBP_ENTRY_HEADER	( SUBP_ENTRY_HEADER :TREE )
   is			----------------------
   begin
-    if SUBP_ENTRY_HEADER.TY =	DN_PROCEDURE_SPEC
-    then
-null;
-    elsif	SUBP_ENTRY_HEADER.TY = DN_FUNCTION_SPEC
-    then
-null;
+    if SUBP_ENTRY_HEADER.TY = DN_PROCEDURE_SPEC  then
+      null;
+    elsif SUBP_ENTRY_HEADER.TY = DN_FUNCTION_SPEC  then
+      null;
+    else
+      CODI.TROU( "CODE_SUBP_ENTRY_HEADER", SUBP_ENTRY_HEADER );						--| vague 4 : dispatch muet
     end if;
   end	CODE_SUBP_ENTRY_HEADER;
 	----------------------
@@ -255,8 +270,8 @@ null;
       PUT_LINE( " hexa_show '" & " spec ', $" );
     end if;
 
-    CODE_DECL_S( D(	AS_DECL_S1, PACKAGE_SPEC ) );
-    CODE_DECL_S( D(	AS_DECL_S2, PACKAGE_SPEC ) );
+    CODE_DECL_S( D( AS_DECL_S1, PACKAGE_SPEC ) );
+    CODE_DECL_S( D( AS_DECL_S2, PACKAGE_SPEC ) );
 
   end	CODE_PACKAGE_SPEC;
 	-----------------
@@ -275,19 +290,19 @@ null;
 
     begin
       while  not IS_EMPTY( SOURCE_NAME_SEQ )  loop
-        POP( SOURCE_NAME_SEQ,	SOURCE_NAME );
+        POP( SOURCE_NAME_SEQ, SOURCE_NAME );
         declare
 	EXC_STR	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, SOURCE_NAME ) );
         begin
 	PUT_LINE( "STR " & EXC_STR & "__exc, " & """" & EXC_STR & """" );
         end;
-      end	loop;
+      end loop;
 
     end	CODE_SOURCE_NAME_S;
 	------------------
 
   begin
-    CODE_SOURCE_NAME_S( D( AS_SOURCE_NAME_S, EXCEPTION_DECL	) );
+    CODE_SOURCE_NAME_S( D( AS_SOURCE_NAME_S, EXCEPTION_DECL ) );
 
   end	CODE_EXCEPTION_DECL;
 	-------------------
@@ -296,7 +311,7 @@ null;
 
 		----------------------------------------------------
 
-		--	DECL . ID_S_DECL .	E X P _ D	E C L	--
+		--	DECL . ID_S_DECL .  E X P _ D E C L	--
 
 		----------------------------------------------------
 
@@ -306,12 +321,14 @@ null;
   is			-------------
 
   begin
-    if  EXP_DECL.TY	in CLASS_OBJECT_DECL
-    then	CODE_OBJECT_DECL ( EXP_DECL );
+    if  EXP_DECL.TY in CLASS_OBJECT_DECL
+    then  CODE_OBJECT_DECL ( EXP_DECL );
 
-    elsif	 EXP_DECL.TY = DN_NUMBER_DECL
-    then	CODE_NUMBER_DECL ( EXP_DECL );
+    elsif  EXP_DECL.TY = DN_NUMBER_DECL
+    then  CODE_NUMBER_DECL ( EXP_DECL );
 
+    else
+      CODI.TROU( "CODE_EXP_DECL", EXP_DECL );								--| vague 4, HORS LISTE : dispatch muet
     end if;
 
   end	CODE_EXP_DECL;
@@ -319,14 +336,14 @@ null;
 
 
 			----------------
-  procedure		CODE_OBJECT_DECL		( OBJECT_DECL :TREE	)
+  procedure		CODE_OBJECT_DECL		( OBJECT_DECL :TREE )
   is			----------------
 
-    SRC_NAME_SEQ	: SEQ_TYPE	:= LIST( D( AS_SOURCE_NAME_S,	OBJECT_DECL ) );
+    SRC_NAME_SEQ	: SEQ_TYPE	:= LIST( D( AS_SOURCE_NAME_S, OBJECT_DECL ) );
     SRC_NAME	: TREE;
 
   begin
-    while	 not IS_EMPTY( SRC_NAME_SEQ )	 loop
+    while  not IS_EMPTY( SRC_NAME_SEQ )  loop
       POP( SRC_NAME_SEQ, SRC_NAME );
       if  not CODI.IN_GENERIC_BODY  or else  ( CODI.CUR_LEVEL /= CODI.GENERIC_BASE_LEVEL )  then
         CODE_VC_NAME( SRC_NAME, OBJECT_DECL );
@@ -338,9 +355,11 @@ null;
 
 
 			----------------
-  procedure		CODE_NUMBER_DECL		( NUMBER_DECL :TREE	) is
+  procedure		CODE_NUMBER_DECL		( NUMBER_DECL :TREE ) is
   begin
-    null;
+    null;												--| INTENTIONNEL : DN_NUMBER_ID est plie A L'USAGE via
+												--| SM_INIT_EXP (expressions, CODE_USED_OBJECT_ID) --
+												--| rien a elaborer ici (triage 28/07)
   end	CODE_NUMBER_DECL;
 	----------------
 
@@ -349,7 +368,16 @@ null;
   procedure		CODE_DEFERRED_CONSTANT_DECL	( DEFERRED_CONSTANT_DECL :TREE )
   is			---------------------------
   begin
-    null; --PUT_LINE( "; DEFERRED CONSTANT A FAIRE " );
+			--| INTENTIONNEL (reclassement n 6, recensement idl-sem_phase
+			--| 28/07 -- la porte de sortie pre-ecrite en vague 4 est prise) :
+			--| constante DIFFEREE, LRM 7.4.  L'elaboration a lieu a la
+			--| COMPLETION : la declaration complete de la partie PRIVEE est
+			--| un object_decl ordinaire, et CODE_PACKAGE_SPEC elabore bien
+			--| AS_DECL_S1 PUIS AS_DECL_S2 (verifie).  Meme modele que les
+			--| types prives << deferred to full type >>.  Caveat : les
+			--| usages doivent resoudre vers l'objet COMPLETE (liaison
+			--| front-end) -- atteste par l'historique du bootstrap.
+    null;												--| INTENTIONNEL (cf. ci-dessus)
 
   end	CODE_DEFERRED_CONSTANT_DECL;
 	---------------------------
@@ -357,30 +385,90 @@ null;
 
 
 			------------
-  procedure		CODE_VC_NAME		( VC_NAME	:TREE; OBJECT_DECL :TREE := TREE_VOID )
+  procedure		CODE_VC_NAME		( VC_NAME :TREE; OBJECT_DECL :TREE := TREE_VOID )
   is			------------
 
-        VC_ADDRESS		: TREE			:= D( SM_ADDRESS, VC_NAME );				-- adresse eventuelle
+    VC_ADDRESS		: TREE			:= D( SM_ADDRESS, VC_NAME );				-- adresse eventuelle
+
+			--------------
+    function		OVERLAY_TARGET		return TREE
+    is			--------------
+			--| C8 (oracle ADDR_OV1) : cible d'un overlay STATIQUE PAR NOM --
+			--| << for X use at Y'ADDRESS >>, Y objet autonome (ni renames)
+			--| ou PARAMETRE in.  La contrainte de NIVEAU appartient aux
+			--| USAGERS : equation/LVA exigent le meme frame ; la voie
+			--| parametre adresse FP(niveau cible) explicitement (univ_ops :
+			--| VDP declare dans un BLOC, INC_LEVEL au-dessus de V).
+			--| La resolution est alors DELEGUEE A
+			--| FASMG par equation de symbole ( X_disp = Y_disp ) : meme
+			--| cellule de frame, zero code -- et le seul schema qui couvre
+			--| aussi les SCALAIRES (acces par VALEUR directe dans le slot,
+			--| aucune indirection a detourner).  TREE_VOID sinon.
+	  PREFIX	: TREE;
+	  TARGET	: TREE;
+    begin
+      if  VC_ADDRESS = TREE_VOID  or else  VC_ADDRESS.TY /= DN_ATTRIBUTE  then
+        return  TREE_VOID;
+      end if;
+      if  PRINT_NAME( D( LX_SYMREP, D( AS_USED_NAME_ID, VC_ADDRESS ) ) ) /= "ADDRESS"  then
+        return  TREE_VOID;
+      end if;
+      PREFIX := D( AS_NAME, VC_ADDRESS );
+      if  PREFIX.TY /= DN_USED_OBJECT_ID  then
+        return  TREE_VOID;
+      end if;
+
+      TARGET := D( SM_DEFN, PREFIX );
+      if  TARGET.TY in CLASS_VC_NAME  then
+        if  DB( SM_RENAMES_OBJ, TARGET )  then								-- le _disp d'un renames porte une ADRESSE
+	return TREE_VOID;
+        end if;
+      elsif  TARGET.TY = DN_IN_ID  or else  TARGET.TY = DN_IN_OUT_ID  then					-- C8 (univ_ops) : cible = PARAMETRE in --
+        null;											--| slot = VALEUR (scalaire) ou @doublet (composite, n 91/94)
+      else
+        return TREE_VOID;
+      end if;
+
+      return  TARGET;
+
+    end	OVERLAY_TARGET;
+	--------------
+
 
   begin
     declare
       TYPE_SPEC	: TREE	:= D( SM_OBJ_TYPE, VC_NAME );
 
 		-----------------------
-      procedure	COMPILE_VC_NAME_INTEGER	( VC_NAME	:TREE )
+      procedure	COMPILE_VC_NAME_INTEGER	( VC_NAME :TREE )
       is		-----------------------
 
         OPER_TYPE		: CHARACTER	:= OPER_SIZ_CHAR( TYPE_SPEC );
         INIT_EXP		: TREE		:= D( SM_INIT_EXP, VC_NAME );
 
       begin
-        if  VC_ADDRESS /= TREE_VOID  then								-- Clause	adressage	présente
-	PUT_LINE( "; COMPILE_VC_NAME_INTEGER ADDRESS CLAUSE non geree" );
-	raise  PROGRAM_ERROR;
+        if  VC_ADDRESS /= TREE_VOID  then								-- C8 : clause d'adresse = OVERLAY (LRM 13.5)
+	declare
+	  TGT	: TREE	:= OVERLAY_TARGET;
+	begin
+	  if  TGT = TREE_VOID  or else  INIT_EXP /= TREE_VOID
+		or else  TGT.TY  not in  CLASS_VC_NAME							-- parametre : pas de symbole _disp, pas d'equation
+		or else  DI( CD_LEVEL, TGT ) /= INTEGER( CODI.CUR_LEVEL )					-- equation : meme frame requis (ex-garde du helper)
+		or else  CODI.FULL_TYPE_VIEW( D( SM_OBJ_TYPE, TGT ) ).TY  not in  CLASS_SCALAR			-- slot cible = VALEUR : l'equation exige la meme sorte des deux cotes
+	  then
+	    CODI.TROU( "COMPILE_VC_NAME_INTEGER overlay 'ADDRESS non statique-par-nom (ou avec init)", VC_NAME );	--| discrimine (n 122) : absolue/dynamique, renames, autre niveau ; retombee : objet DISTINCT, FINC SUSPECT
+	  else
+	    PUT( PRINT_NAME( D( LX_SYMREP, VC_NAME ) ) & "_disp = " & PRINT_NAME( D( LX_SYMREP, TGT ) ) & "_disp" );
+	    if  CODI.DEBUG  then PUT( tab50 & "; variable entiere OVERLAY : equation fasmg, meme slot" ); end if;
+	    NEW_LINE;
+	    DI( CD_LEVEL, VC_NAME, INTEGER( CODI.CUR_LEVEL ) );
+	    return;
+	  end if;
+	end;
         end if;
 
-        PUT( "VAR "	& PRINT_NAME( D( LX_SYMREP, VC_NAME ) )	& "_disp, " & OPER_TYPE );
-        if  CODI.DEBUG  then PUT( tab50	& "; variable entiere" ); end	if;
+        PUT( "VAR " & PRINT_NAME( D( LX_SYMREP, VC_NAME ) ) & "_disp, " & OPER_TYPE );
+        if  CODI.DEBUG  then PUT( tab50 & "; variable entiere" ); end if;
         NEW_LINE;
         DI( CD_LEVEL,     VC_NAME, INTEGER( CODI.CUR_LEVEL ) );
 
@@ -390,12 +478,12 @@ null;
 	  CODI.STORE( VC_NAME );
 	end if;
 
-      end	COMPILE_VC_NAME_INTEGER;
+      end COMPILE_VC_NAME_INTEGER;
 	-----------------------
 
 
 		---------------------
-      procedure	COMPILE_VC_NAME_FIXED	( VC_NAME	:TREE )
+      procedure	COMPILE_VC_NAME_FIXED	( VC_NAME :TREE )
       is		---------------------
 
         OPER_TYPE		: CHARACTER;
@@ -403,7 +491,7 @@ null;
         IS_GENERIC_FORMAL	: BOOLEAN		:= FALSE;
         VAR_NAME		:constant STRING	:= PRINT_NAME( D( LX_SYMREP, VC_NAME ) );
       begin
-        if  VC_ADDRESS /= TREE_VOID  then								-- Clause	adressage	presente
+        if  VC_ADDRESS /= TREE_VOID  then								-- Clause adressage presente
 	PUT_LINE( "; COMPILE_VC_NAME_FIXED ADDRESS CLAUSE non geree" );
 	raise  PROGRAM_ERROR;
         end if;
@@ -420,8 +508,8 @@ null;
         end if;
 
 <<NORMALE>>
-       PUT( "VAR "	& VAR_NAME & "_disp, " & OPER_TYPE );
-       if  CODI.DEBUG  then PUT( tab50	& "; variable fixed" ); end	if;
+       PUT( "VAR "  & VAR_NAME & "_disp, " & OPER_TYPE );
+       if  CODI.DEBUG  then PUT( tab50  & "; variable fixed" ); end	if;
 	NEW_LINE;
 	DI( CD_LEVEL,     VC_NAME, INTEGER( CODI.CUR_LEVEL ) );
 
@@ -431,9 +519,6 @@ null;
 	end if;
 
 	EXPRESSIONS.CODE_EXP( INIT_EXP );
-	if  D( SM_EXP_TYPE, INIT_EXP ).TY = DN_FIXED  then
-null;
-	end if;
 
 	if  not IS_GENERIC_FORMAL  then
 	  CODI.STORE( VC_NAME );
@@ -445,35 +530,35 @@ null;
 	end if;
         end if;
 
-      end	COMPILE_VC_NAME_FIXED;
+      end COMPILE_VC_NAME_FIXED;
 	---------------------
 
 
 		---------------------
-      procedure	COMPILE_VC_NAME_FLOAT	( VC_NAME	:TREE )
+      procedure	COMPILE_VC_NAME_FLOAT	( VC_NAME :TREE )
       is		---------------------
 
---        OPER_TYPE		: CHARACTER	:= OPER_SIZ_CHAR( D( SM_OBJ_TYPE, VC_NAME ) );
+--	OPER_TYPE		: CHARACTER	:= OPER_SIZ_CHAR( D( SM_OBJ_TYPE, VC_NAME ) );
         OPER_TYPE		: CHARACTER	:= OPER_SIZ_CHAR( TYPE_SPEC );
         INIT_EXP		: TREE		:= D( SM_INIT_EXP, VC_NAME );
 
       begin
-        if  VC_ADDRESS /= TREE_VOID  then								-- Clause	adressage	présente
+        if  VC_ADDRESS /= TREE_VOID  then								-- Clause adressage présente
 	PUT_LINE( "; COMPILE_VC_NAME_FLOAT ADDRESS CLAUSE non geree" );
 	raise  PROGRAM_ERROR;
         end if;
 
-        PUT( "VAR "	& PRINT_NAME( D( LX_SYMREP, VC_NAME ) )	& "_disp, " & OPER_TYPE );
-        if  CODI.DEBUG  then PUT( tab50	& "; variable flottante" ); end if;
+        PUT( "VAR " & PRINT_NAME( D( LX_SYMREP, VC_NAME ) ) & "_disp, " & OPER_TYPE );
+        if  CODI.DEBUG  then PUT( tab50 & "; variable flottante" ); end if;
         NEW_LINE;
-        DI( CD_LEVEL, VC_NAME, INTEGER(	CODI.CUR_LEVEL ) );
+        DI( CD_LEVEL, VC_NAME, INTEGER( CODI.CUR_LEVEL ) );
 
         if  INIT_EXP /= TREE_VOID  then
 	EXPRESSIONS.CODE_EXP( INIT_EXP );
-	CODI.STORE( VC_NAME	);
+	CODI.STORE( VC_NAME );
         end if;
 
-      end	COMPILE_VC_NAME_FLOAT;
+      end COMPILE_VC_NAME_FLOAT;
 	---------------------
 
 
@@ -481,19 +566,17 @@ null;
       procedure		COMPILE_VC_NAME_ENUMERATION	( VC_NAME, TYPE_SPEC :TREE )
       is			---------------------------
 
-        NAME	:constant	STRING	:= PRINT_NAME( D(LX_SYMREP, CODI.TYPE_SYMREP ) );
+        NAME	:constant STRING	:= PRINT_NAME( D(LX_SYMREP, CODI.TYPE_SYMREP ) );
 
 		-------------------------
-        procedure	COMPILE_VC_NAME_BOOL_CHAR	( VC_NAME	:TREE )
+        procedure	COMPILE_VC_NAME_BOOL_CHAR	( VC_NAME :TREE )
         is	-------------------------
 
---	OPER_TYPE		: CHARACTER	:= OPER_SIZ_CHAR( D( SM_OBJ_TYPE, VC_NAME ) );
 	OPER_TYPE		: CHARACTER	:= OPER_SIZ_CHAR( TYPE_SPEC );
 	INIT_EXP		: TREE		:= D( SM_INIT_EXP, VC_NAME );
 
         begin
---	PUT( "VAR " & PRINT_NAME( D( LX_SYMREP,	VC_NAME )	) & "_disp, d" );
-	PUT( "VAR " & PRINT_NAME( D( LX_SYMREP,	VC_NAME )	) & "_disp, " & OPER_TYPE );
+	PUT( "VAR " & PRINT_NAME( D( LX_SYMREP, VC_NAME ) ) & "_disp, " & OPER_TYPE );
 	if  CODI.DEBUG  then PUT( tab50 & "; variable bool char enum" ); end if;
 	NEW_LINE;
 
@@ -510,7 +593,7 @@ null;
 		-------------------------
 
       begin
-        if  VC_ADDRESS /= TREE_VOID  then								-- Clause	adressage	présente
+        if  VC_ADDRESS /= TREE_VOID  then								-- Clause adressage présente
 	PUT_LINE( "; COMPILE_VC_NAME_ENUMERATION ADDRESS CLAUSE non geree" );
 	raise  PROGRAM_ERROR;
         end if;
@@ -518,18 +601,18 @@ null;
         if  NAME = "BOOLEAN"
         then  COMPILE_VC_NAME_BOOL_CHAR( VC_NAME );
 
-        elsif  NAME	= "CHARACTER"
+        elsif  NAME = "CHARACTER"
         then  COMPILE_VC_NAME_BOOL_CHAR( VC_NAME );
 
         else  COMPILE_VC_NAME_INTEGER( VC_NAME );
         end if;
 
-      end	COMPILE_VC_NAME_ENUMERATION;
+      end COMPILE_VC_NAME_ENUMERATION;
 	---------------------------
 
 
 		------------------
-      procedure	COMPILE_ACCESS_VAR	( VAR_ID,	TYPE_SPEC	:TREE )
+      procedure	COMPILE_ACCESS_VAR  ( VAR_ID, TYPE_SPEC :TREE )
       is		------------------
 
         LVL		: LEVEL_NUM	renames CODI.CUR_LEVEL;
@@ -537,7 +620,7 @@ null;
         VAR_STR		: constant STRING := PRINT_NAME( D( LX_SYMREP, VAR_ID ) );
 
       begin
-        if  VC_ADDRESS /= TREE_VOID  then								-- Clause	adressage	présente
+        if  VC_ADDRESS /= TREE_VOID  then								-- Clause adressage présente
 	PUT_LINE( "; COMPILE_ACCESS_VAR ADDRESS CLAUSE non geree" );
 	raise  PROGRAM_ERROR;
         end if;
@@ -559,23 +642,28 @@ null;
 		PUT_LINE( tab & "Sa" & tab & LVL_STR & ", " & VAR_STR & "_disp" );
         end;
 
-      end	COMPILE_ACCESS_VAR;
+      end COMPILE_ACCESS_VAR;
 	------------------
 
 
 		-----------------
       procedure	COMPILE_ARRAY_VAR	( VC_NAME, TYPE_SPEC :TREE )
       is		-----------------
-        VC_STR		:constant	STRING		:= PRINT_NAME( D( LX_SYMREP, VC_NAME ) );
+        VC_STR		:constant STRING		:= PRINT_NAME( D( LX_SYMREP, VC_NAME ) );
         TYPE_NAME		: TREE			:= D( XD_SOURCE_NAME, TYPE_SPEC );
         TYPE_LEVEL		: INTEGER;
-        TYPE_NAME_STR	:constant	STRING		:= '_' & PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
-        LOCAL_TYPE_INFO_STR	:constant	STRING		:= '_' & VC_STR & "__type";
+        TYPE_NAME_STR	:constant STRING		:= '_' & PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
+        LOCAL_TYPE_INFO_STR	:constant STRING		:= '_' & VC_STR & "__type";
         DIM_NBR		: NATURAL			:= 1;
         LVL		: LEVEL_NUM		renames CODI.CUR_LEVEL;
-        LVL_STR		:constant	STRING		:= IMAGE(	CODI.CUR_LEVEL );
+        LVL_STR		:constant STRING		:= IMAGE( CODI.CUR_LEVEL );
         ANONYMOUS_SUBTYPE	: BOOLEAN			:= FALSE;
         USE_LOCAL_TYPE_INFO	: BOOLEAN			:= FALSE;
+        OVERLAY_TGT		: TREE			:= OVERLAY_TARGET;					-- C8 : overlay statique-par-nom (equation fasmg / LVA)
+        OVERLAY_TGT_TYPE	: TREE			:= TREE_VOID;					-- vue complete du type de la cible (posee en tete de corps)
+        OVERLAY_EQUATE	: BOOLEAN			:= FALSE;						-- cible COMPOSITE : equation, cellule data_ptr PARTAGEE
+        OVERLAY_LVA		: BOOLEAN			:= FALSE;						-- cible SCALAIRE  : data_ptr := @slot de la cible (print_nod)
+        DO_OVERLAY		: BOOLEAN			:= FALSE;
 
 			--------------------
         procedure		PUT_TYPE_INFO_PREFIX
@@ -596,12 +684,12 @@ null;
         begin
 	PUT( tab & "Ld" & tab & IMAGE( TYPE_LEVEL ) & ", " );						-- LOAD SIZ FOR ALLOCATION
 	PUT_TYPE_INFO_PREFIX;
-	PUT_LINE(	".SIZ" );
-	PUT_LINE(	tab & "LI" & tab & '8' );
-	PUT_LINE(	tab & "DIV" );
+	PUT_LINE( ".SIZ" );
+	PUT_LINE( tab & "LI" & tab & '8' );
+	PUT_LINE( tab & "DIV" );
 
-	PUT_LINE(	tab & "CO_VAR" );
-	PUT( tab & "Sa" & tab & LVL_STR & ", " & VC_STR &	"_disp" );
+	PUT_LINE( tab & "CO_VAR" );
+	PUT( tab & "Sa" & tab & LVL_STR & ", " & VC_STR & "_disp" );
 	if  CODI.DEBUG  then PUT( tab50 & "; array data ptr at _disp" ); end if;
 	NEW_LINE;
 
@@ -621,16 +709,16 @@ null;
 
         BASE_TYPE		: TREE		:= D( SM_BASE_TYPE, TYPE_SPEC );
         COMP_TYPE		: TREE		:= D( SM_COMP_TYPE, BASE_TYPE );
-        COMP_BITS		: INTEGER	:= DI( CD_IMPL_SIZE, COMP_TYPE );
-        COMP_BYTES		: INTEGER	:= COMP_BITS / CODI.STORAGE_UNIT;
+        COMP_BITS		: INTEGER := DI( CD_IMPL_SIZE, COMP_TYPE );
+        COMP_BYTES		: INTEGER := COMP_BITS / CODI.STORAGE_UNIT;
         INFO_STR		:constant STRING	:= '_' & VC_STR & "__agg_info";
 
-        SEEN_POSITIONAL	: BOOLEAN	:= FALSE;
-        SEEN_NAMED		: BOOLEAN	:= FALSE;
-        ALL_CHOICES_STATIC	: BOOLEAN	:= TRUE;
-        NB_ELEMENTS		: NATURAL	:= 0;
-        MIN_CHOICE		: INTEGER	:= INTEGER'LAST;
-        MAX_CHOICE		: INTEGER	:= INTEGER'FIRST;
+        SEEN_POSITIONAL	: BOOLEAN := FALSE;
+        SEEN_NAMED		: BOOLEAN := FALSE;
+        ALL_CHOICES_STATIC	: BOOLEAN := TRUE;
+        NB_ELEMENTS		: NATURAL := 0;
+        MIN_CHOICE		: INTEGER := INTEGER'LAST;
+        MAX_CHOICE		: INTEGER := INTEGER'FIRST;
 
 			-------
         procedure	EMIT_LI		( VALUE :INTEGER )
@@ -665,7 +753,7 @@ null;
 		-----------------
         procedure	ANALYSE_AGGREGATE
         is	-----------------
-	NORM_SEQ	: SEQ_TYPE	:= LIST( D( SM_NORMALIZED_COMP_S, AGG ) );
+	NORM_SEQ  : SEQ_TYPE	:= LIST( D( SM_NORMALIZED_COMP_S, AGG ) );
 	ASSOC	: TREE;
         begin
 	while not  IS_EMPTY( NORM_SEQ )  loop
@@ -829,21 +917,20 @@ null;
         PUT_LINE( tab & "La" & tab & LVL_STR & ", " & VC_STR & "_disp" );
         EXPRESSIONS.CODE_AGGREGATE( AGG, TYPE_SPEC );
 
-      end	UNCONSTRAINED_AGGREGATE_OBJECT;
+      end UNCONSTRAINED_AGGREGATE_OBJECT;
 	------------------------------
 
       begin
-        if  VC_ADDRESS /= TREE_VOID  then								-- Clause	adressage	présente
-	declare
-	  SV	: TREE	:= D( SM_VALUE, VC_ADDRESS );
-	begin
-	  if  ((SV.PT = HI)  and then  ( SV.NOTY = DN_NUM_VAL ))  or else  (SV.TY = DN_NUM_VAL)
-	  then
-	    PUT_LINE( tab & "LI" & tab & PRINT_NUM( SV ) );						-- use at 16#...# : adresse statique
-	  else
-	    EXPRESSIONS.CODE_EXP( VC_ADDRESS );								-- use at V'ADDRESS : adresse dynamique
-	  end if;
-	end;
+        if  OVERLAY_TGT /= TREE_VOID  then								-- C8 : la SORTE de la cible choisit le mecanisme
+	OVERLAY_TGT_TYPE := CODI.FULL_TYPE_VIEW( D( SM_OBJ_TYPE, OVERLAY_TGT ) );
+	OVERLAY_EQUATE   := OVERLAY_TGT.TY in CLASS_VC_NAME						-- parametre : pas de symbole _disp (TROU, cf. grille v2.2)
+		     and then  DI( CD_LEVEL, OVERLAY_TGT ) = INTEGER( CODI.CUR_LEVEL )			-- equation/LVA : meme frame requis (ex-garde du helper)
+		     and then  ( OVERLAY_TGT_TYPE.TY = DN_ARRAY   or else  OVERLAY_TGT_TYPE.TY = DN_CONSTRAINED_ARRAY
+		     or else  OVERLAY_TGT_TYPE.TY = DN_RECORD  or else  OVERLAY_TGT_TYPE.TY = DN_CONSTRAINED_RECORD );
+	OVERLAY_LVA      := OVERLAY_TGT.TY in CLASS_VC_NAME
+		     and then  DI( CD_LEVEL, OVERLAY_TGT ) = INTEGER( CODI.CUR_LEVEL )
+		     and then  OVERLAY_TGT_TYPE.TY in CLASS_SCALAR;
+	DO_OVERLAY       := OVERLAY_EQUATE  or else  OVERLAY_LVA;
         end if;
 
         declare
@@ -859,7 +946,7 @@ null;
 	      SOURCE_CONSTRAINT := D( AS_CONSTRAINT, TYPE_DEF );
 	    end if;
 	  end;
-          end if;
+	end if;
 
 	if  SOURCE_CONSTRAINT /= TREE_VOID  or else  DB( CD_COMPILED, TYPE_SPEC ) = FALSE  then
 	  ANONYMOUS_SUBTYPE := TRUE;
@@ -874,58 +961,89 @@ null;
 
         TYPE_LEVEL := DI( CD_LEVEL, TYPE_SPEC );
 
-        PUT( "VAR "	& VC_STR & "_disp, q" );
-        if  CODI.DEBUG  then PUT( tab50	& "; variable array : pointeur aux data" ); end if;
-        NEW_LINE;
-        PUT( "VAR "	& VC_STR & "__u, q"	);
-        if  CODI.DEBUG  then PUT( tab50	& "; variable array : useinfo pointeur au rec info" ); end if;
+        if  OVERLAY_EQUATE  then
+	PUT( VC_STR & "_disp = " & PRINT_NAME( D( LX_SYMREP, OVERLAY_TGT ) ) & "_disp" );		-- C8 : OVERLAY, equation fasmg -- meme cellule data_ptr
+	if  CODI.DEBUG  then PUT( tab50 & "; variable array OVERLAY : data_ptr partage (pas d'allocation)" ); end if;
+	NEW_LINE;
+        elsif  OVERLAY_LVA  then									-- C8 : cible SCALAIRE (print_nod, endianite) --
+	PUT( "VAR " & VC_STR & "_disp, q" );								--| le slot scalaire contient sa VALEUR : pas d'equation --
+	if  CODI.DEBUG  then PUT( tab50 & "; variable array OVERLAY sur scalaire" ); end if;		--| le data_ptr de l'overlay = ADRESSE du slot cible
+	NEW_LINE;
+	PUT_LINE( tab & "LVA" & tab & LVL_STR & ", " & PRINT_NAME( D( LX_SYMREP, OVERLAY_TGT ) ) & "_disp" );
+	PUT( tab & "Sa" & tab & LVL_STR & ", " & VC_STR & "_disp" );
+	if  CODI.DEBUG  then PUT( tab50 & "; array data ptr at _disp (OVERLAY, pas d'allocation)" ); end if;
+	NEW_LINE;
+        else
+	if  VC_ADDRESS /= TREE_VOID  then
+	  CODI.TROU( "COMPILE_ARRAY_VAR overlay 'ADDRESS hors motif (non statique-par-nom, ou cible ni composite ni scalaire)", VC_NAME );	--| discrimine (n 122) ; retombee : objet DISTINCT, FINC SUSPECT
+	end if;
+	PUT( "VAR " & VC_STR & "_disp, q" );
+	if  CODI.DEBUG  then PUT( tab50 & "; variable array : pointeur aux data" ); end if;
+	NEW_LINE;
+        end if;
+
+        PUT( "VAR " & VC_STR & "__u, q" );
+        if  CODI.DEBUG  then PUT( tab50 & "; variable array : useinfo pointeur au rec info" ); end if;
         NEW_LINE;
 
-        DI( CD_LEVEL, VC_NAME, INTEGER(	LVL ) );
+        DI( CD_LEVEL, VC_NAME, INTEGER( LVL ) );
 
-        PUT( tab & "La" & INTEGER'IMAGE( TYPE_LEVEL ) & ", " );						-- LOAD ADDRESS FOR	INFO
+        PUT( tab & "La" & INTEGER'IMAGE( TYPE_LEVEL ) & ", " );						-- LOAD ADDRESS FOR INFO
         PUT_TYPE_INFO_PREFIX;
         PUT_LINE( ".use__info" );
 
-        PUT( tab & "Sa" & tab	& LVL_STR	& ", " & VC_STR & "__u" );
-        if  CODI.DEBUG  then PUT( tab50	& "; array info ptr at __u" ); end if;
+        PUT( tab & "Sa" & tab & LVL_STR & ", " & VC_STR & "__u" );
+        if  CODI.DEBUG  then PUT( tab50 & "; array info ptr at __u" ); end if;
         NEW_LINE;
 				----------
 				INITIALIZE:
         declare
 	INIT_EXP		: TREE		:= D( SM_INIT_EXP, VC_NAME );
         begin
-	if  INIT_EXP /= TREE_VOID  then
+	if  DO_OVERLAY  then									-- C8 : OVERLAY -- les data sont celles de la cible
+	  if  INIT_EXP = TREE_VOID  then
+	    null;										--| ni allocation ni init ; __u (vue cible) pose ci-dessus
+	  elsif  INIT_EXP.TY = DN_AGGREGATE  and then  TYPE_SPEC.TY /= DN_ARRAY  then
+			--| print_nod (detection d'endianite) : init A TRAVERS l'overlay --
+			--| PAS d'allocation ; l'agregat s'ecrit dans la memoire de la
+			--| CIBLE via [_disp].  LRM 13.5 : l'elaboration de l'objet ECRIT
+			--| l'emplacement vise -- c'est le but meme de l'idiome.
+	    PUT_LINE( tab &  "La" & tab & LVL_STR & ", " & VC_STR & "_disp" );
+	    EXPRESSIONS.CODE_AGGREGATE( INIT_EXP, TYPE_SPEC );
+	  else
+	    CODI.TROU( "COMPILE_ARRAY_VAR overlay : forme d'initialisation non observee", INIT_EXP );	--| n 122 ; un litteral chaine RE-POINTERAIT _disp sur la CONSTANTE -- jamais ici
+	  end if;
+	elsif  INIT_EXP /= TREE_VOID  then
 
-	  if  INIT_EXP.TY =	DN_STRING_LITERAL								-- vraie constante chaine
+	  if  INIT_EXP.TY = DN_STRING_LITERAL								-- vraie constante chaine
 	  then
 	    EXPRESSIONS.CODE_STRING_LITERAL( INIT_EXP, VC_STR );
 
-	    PUT_LINE( tab &	"LCA" & tab & VC_STR & ".data_ptr" );
-	    PUT_LINE( tab &	"La" );
-	    PUT( tab & "Sa"	& tab & LVL_STR & ", " & VC_STR & "_disp" );
-	    if  CODI.DEBUG	then PUT(	tab50 & "; array data ptr at _disp" ); end if;
+	    PUT_LINE( tab & "LCA" & tab & VC_STR & ".data_ptr" );
+	    PUT_LINE( tab & "La" );
+	    PUT( tab & "Sa" & tab & LVL_STR & ", " & VC_STR & "_disp" );
+	    if  CODI.DEBUG  then PUT( tab50 & "; array data ptr at _disp" ); end if;
 	    NEW_LINE;
 
-	    PUT_LINE( tab &	"LCA" & tab & VC_STR & ".info_ptr" );						-- LOAD CONSTANT ADDRESS FOR INFO
-	    PUT_LINE( tab &	"La" );
-	    PUT( tab & "Sa"	& tab & LVL_STR & ", " & VC_STR & "__u"	);
-	    if  CODI.DEBUG	then PUT(	tab50 & "; array info ptr at __u" ); end if;
+	    PUT_LINE( tab & "LCA" & tab & VC_STR & ".info_ptr" );						-- LOAD CONSTANT ADDRESS FOR INFO
+	    PUT_LINE( tab & "La" );
+	    PUT( tab & "Sa" & tab & LVL_STR & ", " & VC_STR & "__u" );
+	    if  CODI.DEBUG  then PUT( tab50 & "; array info ptr at __u" ); end if;
 	    NEW_LINE;
 
-	  elsif  INIT_EXP.TY = DN_FUNCTION_CALL								-- retour	de STRING	par fonction par exemple
+	  elsif  INIT_EXP.TY = DN_FUNCTION_CALL								-- retour de STRING par fonction par exemple
 	  then
-	    EXPRESSIONS.CODE_EXP( INIT_EXP );								-- appel fonction, resultat =	adresse du descripteur
+	    EXPRESSIONS.CODE_EXP( INIT_EXP );								-- appel fonction, resultat = adresse du descripteur
 
-	    PUT_LINE( tab &	"DUP" );									-- dupliquer l'adresse du descripteur
-	    PUT_LINE( tab &	"La" );									-- charger data_ptr	(qword a offset 0)
-	    PUT( tab & "Sa"	& tab & LVL_STR & ", " & VC_STR & "_disp" );
-	    if  CODI.DEBUG	then PUT(	tab50 & "; array data ptr from function result" ); end if;
+	    PUT_LINE( tab & "DUP" );									-- dupliquer l'adresse du descripteur
+	    PUT_LINE( tab & "La" );									-- charger data_ptr (qword a offset 0)
+	    PUT( tab & "Sa" & tab & LVL_STR & ", " & VC_STR & "_disp" );
+	    if  CODI.DEBUG  then PUT( tab50 & "; array data ptr from function result" ); end if;
 	    NEW_LINE;
 
-	    PUT_LINE( tab &	"La , 8" );								-- offset	+8 pour info_ptr
-	    PUT( tab & "Sa"	& tab & LVL_STR & ", " & VC_STR & "__u"	);
-	    if  CODI.DEBUG	then PUT(	tab50 & "; array info ptr from function result" ); end if;
+	    PUT_LINE( tab & "La , 8" );								-- offset +8 pour info_ptr
+	    PUT( tab & "Sa" & tab & LVL_STR & ", " & VC_STR & "__u" );
+	    if  CODI.DEBUG  then PUT( tab50 & "; array info ptr from function result" ); end if;
 	    NEW_LINE;
 
 
@@ -948,13 +1066,13 @@ null;
   -- Il faut allouer l'objet destination ici, puis coder l'agregat
   -- dans les donnees de cet objet. CODE_QUALIFIED seul construit
   -- une valeur d'expression et ne remplace pas l'initialisation.
-  	    declare
-  	      QUAL_EXP : TREE := D( AS_EXP, INIT_EXP );
+	    declare
+	      QUAL_EXP : TREE := D( AS_EXP, INIT_EXP );
 	    begin
 	      if  QUAL_EXP.TY = DN_AGGREGATE  then
 	        COVAR_ALLOCATE;
 	        if  CODI.DEBUG  then
-	          PUT( tab50 & "; array data qualified aggregate" );
+		PUT( tab50 & "; array data qualified aggregate" );
 	        end if;
 	        NEW_LINE;
 
@@ -972,7 +1090,7 @@ null;
 	        PUT_LINE( tab & "LI" & tab & '8' );
 	        PUT_LINE( tab & "DIV" );
 	        EXPRESSIONS.CODE_EXP( INIT_EXP );
-	        PUT_LINE( tab & "La" & tab & ", 0" );
+	        PUT_LINE( tab & "La" );
 	        PUT_LINE( tab & "BLKMOV" );
 	      end if;
 	    end;
@@ -981,7 +1099,7 @@ null;
 	    EXPRESSIONS.CODE_EXP( INIT_EXP );
 
 	  elsif  ( INIT_EXP.TY = DN_SELECTED
-	            and then  D( SM_DEFN, D( AS_DESIGNATOR, INIT_EXP ) ).TY /= DN_FUNCTION_ID )
+		  and then  D( SM_DEFN, D( AS_DESIGNATOR, INIT_EXP ) ).TY /= DN_FUNCTION_ID )
 	    or else  INIT_EXP.TY = DN_INDEXED
 	  then
 	  -- Initialiseur composant tableau INLINE (TXT := HTABLE(I).HN) : le
@@ -1021,11 +1139,34 @@ null;
 	    PUT_LINE( tab & "LI" & tab & '8' );
 	    PUT_LINE( tab & "DIV" );
 	    EXPRESSIONS.CODE_SLICE( INIT_EXP, IS_DESTINATION => FALSE );					-- @doublet de la tranche
-	    PUT_LINE( tab & "La" & tab & ", 0" );							-- @SRC = data_ptr du doublet
+	    PUT_LINE( tab & "La" );									-- @SRC = data_ptr du doublet
+	    PUT_LINE( tab & "BLKMOV" );
+
+	  elsif  INIT_EXP.TY = DN_USED_OBJECT_ID
+	  or else  INIT_EXP.TY = DN_CONVERSION  then
+	  -- Chantier C4 (recensement 28/07, 3 traversees : nod_walk, vis_util,
+	  -- expander-expressions ; temoin ARRINI1) : X : ARR := Y, init par
+	  -- OBJET ENTIER -- allocation puis copie, modele exact de la branche
+	  -- tranche ci-dessus.  @SRC par la regle unique CCDA (@doublet -> La) ;
+	  -- la regle etant TRANSPARENTE aux conversions depuis C1-ter, la forme
+	  -- X : ARR := ARR(Z) (Z derive) passe par le meme chemin.  L'init par
+	  -- APPEL DE FONCTION reste au TROU ci-dessous : protocole << lieu
+	  -- resultat >> des fonctions a resultat composite SUSPENDU (carnet,
+	  -- preuve CONV_DER1 v1 du 30/07) -- le bilan prescrivait cette forme
+	  -- au temoin, il precedait la preuve.
+	    COVAR_ALLOCATE;
+	    PUT_LINE( tab & "La" & tab & LVL_STR & ", " & VC_STR & "_disp" );					-- @DST
+	    PUT( tab & "Ld" & tab & IMAGE( TYPE_LEVEL ) & ", " );						-- LEN en octets : SIZ destination / 8
+	    PUT_TYPE_INFO_PREFIX;
+	    PUT_LINE( ".SIZ" );
+	    PUT_LINE( tab & "LI" & tab & '8' );
+	    PUT_LINE( tab & "DIV" );
+	    EXPRESSIONS.CODE_COMPOSITE_DATA_ADDRESS( INIT_EXP );						-- @SRC (@doublet -> La par la regle)
 	    PUT_LINE( tab & "BLKMOV" );
 
 	  else
-	    PUT_LINE( "; COMPILE_ARRAY_VAR ASSOC.TY non gere " & NODE_NAME'IMAGE( INIT_EXP.TY ) );
+	    CODI.TROU( "COMPILE_ARRAY_VAR forme d'initialisation", INIT_EXP );				--| vague 5 : ni allocation ni init emises ;
+												--| reste : DN_FUNCTION_CALL (chantier suspendu)
 	  end if;
 
 	else											-- PAS D'INITIALISATION, ALLOUER
@@ -1038,7 +1179,7 @@ null;
         DI( CD_LEVEL,	VC_NAME, INTEGER( LVL ) );
         DB( CD_COMPILED,	VC_NAME, TRUE );
 
-      end	COMPILE_ARRAY_VAR;
+      end COMPILE_ARRAY_VAR;
 	-----------------
 
 
@@ -1046,43 +1187,65 @@ null;
       procedure	COMPILE_RECORD_VAR		( VC_NAME, TYPE_SPEC :TREE )
       is		------------------
 
-        VC_STR		:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, VC_NAME ) );
+        VC_STR		:constant STRING	:= PRINT_NAME( D( LX_SYMREP, VC_NAME ) );
         INIT_EXP		: TREE		:= D( SM_INIT_EXP, VC_NAME );
         LVL		: LEVEL_NUM	renames CODI.CUR_LEVEL;
-        LVL_STR		:constant	STRING	:= IMAGE(	LVL );
+        LVL_STR		:constant STRING	:= IMAGE( LVL );
         TYPE_NAME		: TREE		:= D( XD_SOURCE_NAME, TYPE_SPEC );
-        TYPE_NAME_STR	:constant	STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
+        TYPE_NAME_STR	:constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
 
       begin
-        PUT( "VAR "	& VC_STR & "_disp, q" );								-- Ptr to	rec
-        if  CODI.DEBUG  then	PUT( tab50 & "; variable record : pointeur aux data record"	); end if;
-        NEW_LINE;
-        PUT( "VAR "	& VC_STR & "__u, q"	);								-- Ptr to	rec
-        if  CODI.DEBUG  then	PUT( tab50 & "; variable record : pointeur aux useinfo" ); end if;
-        NEW_LINE;
+        declare
+	OVERLAY_TGT	: TREE		:= OVERLAY_TARGET;						-- C8 : overlay statique-par-nom (equation fasmg)
+	DO_OVERLAY	: BOOLEAN		:= OVERLAY_TGT /= TREE_VOID
+		and then  INIT_EXP = TREE_VOID
+		and then  TYPE_SPEC.TY = DN_RECORD
+		and then  IS_EMPTY( LIST( D( SM_DISCRIMINANT_S, TYPE_SPEC ) ) )
+		and then  CODI.FULL_TYPE_VIEW( D( SM_OBJ_TYPE, OVERLAY_TGT ) ).TY  not in  CLASS_SCALAR		-- slot cible = data_ptr requis :
+		and then  CODI.FULL_TYPE_VIEW( D( SM_OBJ_TYPE, OVERLAY_TGT ) ).TY /= DN_ACCESS;			-- l'equation exige la meme sorte
+        begin
+	if  VC_ADDRESS /= TREE_VOID  and then  not DO_OVERLAY  then
+	  CODI.TROU( "COMPILE_RECORD_VAR overlay 'ADDRESS non statique-par-nom (ou init/discriminants)", VC_NAME );	--| discrimine (n 122) : l'elaboration ecraserait la cible ; retombee : objet DISTINCT, FINC SUSPECT
+	end if;
 
-        if  VC_ADDRESS /= TREE_VOID  then								-- Clause	adressage	présente
-	declare
-	  SV	: TREE	:= D( SM_VALUE, VC_ADDRESS );
-	begin
-	  if  ((SV.PT = HI)  and then  ( SV.NOTY = DN_NUM_VAL ))  or else  (SV.TY = DN_NUM_VAL)
-	  then
-	    PUT_LINE( tab & "LI" & tab & PRINT_NUM( SV ) );						-- use at 16#...# : adresse statique
+	if  DO_OVERLAY  then
+	  if  OVERLAY_TGT.TY = DN_IN_ID  or else  OVERLAY_TGT.TY = DN_IN_OUT_ID  then				-- C8 : cible = PARAMETRE composite (univ_ops) --
+	    PUT( "VAR " & VC_STR & "_disp, q" );							--| son slot porte l'@doublet de l'ACTUEL (n 91/94) :
+	    if  CODI.DEBUG  then  PUT( tab50 & "; variable record OVERLAY sur parametre" ); end if;		--| data_ptr := [[-ofs]+0] -- pas d'equation possible
+	    NEW_LINE;
+	    PUT_LINE( tab & "La  " & IMAGE( DI( CD_LEVEL, OVERLAY_TGT ) ) & ", -"
+			& PRINT_NAME( D( LX_SYMREP, OVERLAY_TGT ) ) & "_ofs" );				-- niveau de la CIBLE (VDP peut etre dans un bloc)
+	    PUT_LINE( tab & "La  ,  0" );
+	    PUT( tab & "Sa" & tab & LVL_STR & ", " & VC_STR & "_disp" );
+	    if  CODI.DEBUG  then  PUT( tab50 & "; record data ptr at _disp (OVERLAY, data de l'actuel)" ); end if;
+	    NEW_LINE;
 	  else
-	    EXPRESSIONS.CODE_EXP( VC_ADDRESS );								-- use at V'ADDRESS : adresse dynamique
+	    PUT( VC_STR & "_disp = " & PRINT_NAME( D( LX_SYMREP, OVERLAY_TGT ) ) & "_disp" );			-- C8 : OVERLAY, equation fasmg -- meme cellule data_ptr, pas de __dat
+	    if  CODI.DEBUG  then  PUT( tab50 & "; variable record OVERLAY : data_ptr partage" ); end if;
+	    NEW_LINE;
 	  end if;
-	end;
+	  PUT( "VAR " & VC_STR & "__u, q" );								-- Ptr to rec
+	  if  CODI.DEBUG  then  PUT( tab50 & "; variable record : pointeur aux useinfo" ); end if;
+	  NEW_LINE;
 
-        else
-	PUT( "VAR " & VC_STR & "__dat, " );								-- Espace	data
-	REGIONS_PATH( TYPE_NAME );
-	PUT_LINE(	TYPE_NAME_STR & ".size" );
+	else
+	  PUT( "VAR " & VC_STR & "_disp, q" );								-- Ptr to rec
+	  if  CODI.DEBUG  then  PUT( tab50 & "; variable record : pointeur aux data record" ); end if;
+	  NEW_LINE;
+	  PUT( "VAR " & VC_STR & "__u, q" );								-- Ptr to rec
+	  if  CODI.DEBUG  then  PUT( tab50 & "; variable record : pointeur aux useinfo" ); end if;
+	  NEW_LINE;
 
-	PUT_LINE(	tab & "LVA" & tab &	LVL_STR &	", " & VC_STR & "__dat" );
-	PUT( tab & "Sa" & tab & LVL_STR & ", " & VC_STR &	"_disp" );					-- Stocker l'adresse du rec dans le ptr
-	if  CODI.DEBUG   then  PUT( tab50 & "; record fin" ); end if;
-	NEW_LINE;
-        end if;
+	  PUT( "VAR " & VC_STR & "__dat, " );								-- Espace data
+	  REGIONS_PATH( TYPE_NAME );
+	  PUT_LINE( TYPE_NAME_STR & ".size" );
+
+	  PUT_LINE( tab & "LVA" & tab & LVL_STR & ", " & VC_STR & "__dat" );
+	  PUT( tab & "Sa" & tab & LVL_STR & ", " & VC_STR & "_disp" );					-- Stocker l'adresse du rec dans le ptr
+	  if  CODI.DEBUG   then  PUT( tab50 & "; record fin" ); end if;
+	  NEW_LINE;
+	end if;
+        end;
 
         PUT( tab & "LVA" & tab & LVL_STR & ", " );
         REGIONS_PATH( TYPE_NAME );
@@ -1091,36 +1254,34 @@ null;
 
         DI( CD_LEVEL, VC_NAME, INTEGER( LVL ) );
 
-put_line( "; CODE_VC_NAME " & NODE_NAME'IMAGE( VC_NAME.TY ) );
-
         if  VC_NAME.TY = DN_CONSTANT_ID  and then  D( SM_FIRST, VC_NAME ) /= VC_NAME  then			-- Cas de differe
 	DI( CD_LEVEL, D( SM_FIRST, VC_NAME ), INTEGER( LVL ) );
         end if;
-        DB( CD_COMPILED,  VC_NAME, TRUE	);
+        DB( CD_COMPILED,  VC_NAME, TRUE );
 
-        if  INIT_EXP.TY = DN_AGGREGATE	then
+        if  INIT_EXP.TY = DN_AGGREGATE  then
 	PUT_LINE( tab & "La " & LVL_STR & ", " & VC_STR & "_disp" );					-- Adresse de debut data
 	EXPRESSIONS.CODE_AGGREGATE( INIT_EXP, TYPE_SPEC );
 
 
         elsif  INIT_EXP /= TREE_VOID  then
-          -- Initialisation par expression quelconque (function_call, variable, ...) retournant un record
-          -- @DST = data_ptr de la variable destination
-          PUT_LINE( tab & "La  " & LVL_STR & ", " & VC_STR & "_disp" );   -- @DST
+	-- Initialisation par expression quelconque (function_call, variable, ...) retournant un record
+	-- @DST = data_ptr de la variable destination
+	PUT_LINE( tab & "La  " & LVL_STR & ", " & VC_STR & "_disp" );   -- @DST
 
-          declare
-            TYPE_NAME2  : TREE            := D( XD_SOURCE_NAME, TYPE_SPEC );
-            TN_STR2     : constant STRING := '_' & PRINT_NAME( D( LX_SYMREP, TYPE_NAME2 ) );
-          begin
-            PUT( tab & "LI" & tab );
-            CODI.REGIONS_PATH( TYPE_NAME2 );
-            PUT_LINE( TN_STR2 & ".size" );                                 -- LEN
-          end;
+	declare
+	  TYPE_NAME2  : TREE	  := D( XD_SOURCE_NAME, TYPE_SPEC );
+	  TN_STR2	    : constant STRING := '_' & PRINT_NAME( D( LX_SYMREP, TYPE_NAME2 ) );
+	begin
+	  PUT( tab & "LI" & tab );
+	  CODI.REGIONS_PATH( TYPE_NAME2 );
+	  PUT_LINE( TN_STR2 & ".size" );			     -- LEN
+	end;
 
-          EXPRESSIONS.CODE_EXP( INIT_EXP );                                -- empile @doublet source
-          PUT_LINE( tab & "La  ,  0" );                                    -- @SRC = data_ptr source
+	EXPRESSIONS.CODE_EXP( INIT_EXP );			     -- empile @doublet source
+	PUT_LINE( tab & "La  ,  0" );				     -- @SRC = data_ptr source
 
-          PUT_LINE( tab & "BLKMOV" );
+	PUT_LINE( tab & "BLKMOV" );
 
         else
 				-- Pilier 3.7 : elaboration des VALEURS de discriminants.
@@ -1132,7 +1293,7 @@ put_line( "; CODE_VC_NAME " & NODE_NAME'IMAGE( VC_NAME.TY ) );
 	declare
 	  BASE_REC	: TREE	:= TYPE_SPEC;
 	  DSCRMT_EXP_S	: SEQ_TYPE;
-	  USE_NORM	: BOOLEAN	:= FALSE;
+	  USE_NORM	: BOOLEAN := FALSE;
 	begin
 	  if  TYPE_SPEC.TY = DN_CONSTRAINED_RECORD  then
 	    BASE_REC     := D( SM_BASE_TYPE, TYPE_SPEC );
@@ -1144,30 +1305,30 @@ put_line( "; CODE_VC_NAME " & NODE_NAME'IMAGE( VC_NAME.TY ) );
 	    declare
 	      BASE_NAME	: TREE		:= D( XD_SOURCE_NAME, BASE_REC );
 	      BASE_STR	:constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, BASE_NAME ) );
-	      DSCRMT_DECL_S	: SEQ_TYPE	:= LIST( D( SM_DISCRIMINANT_S, BASE_REC ) );
+	      DSCRMT_DECL_S : SEQ_TYPE	:= LIST( D( SM_DISCRIMINANT_S, BASE_REC ) );
 	      DSCRMT_DECL	: TREE;
 	      DSCRMT_EXP	: TREE;
 	    begin
 	      while  not IS_EMPTY( DSCRMT_DECL_S )  loop
 	        POP( DSCRMT_DECL_S, DSCRMT_DECL );
 	        declare
-	          DISCR_ID_S	: SEQ_TYPE	:= LIST( D( AS_SOURCE_NAME_S, DSCRMT_DECL ) );
-	          DISCR_ID	: TREE;
+		DISCR_ID_S	: SEQ_TYPE	:= LIST( D( AS_SOURCE_NAME_S, DSCRMT_DECL ) );
+		DISCR_ID  : TREE;
 	        begin
-	          while  not IS_EMPTY( DISCR_ID_S )  loop
-	            POP( DISCR_ID_S, DISCR_ID );
+		while  not IS_EMPTY( DISCR_ID_S )  loop
+		  POP( DISCR_ID_S, DISCR_ID );
 
-	            if  USE_NORM  then
-	              if  IS_EMPTY( DSCRMT_EXP_S )  then
-	                PUT_LINE( "; COMPILE_RECORD_VAR : contrainte normalisee incomplete" );
-	                raise PROGRAM_ERROR;
-	              end if;
-	              POP( DSCRMT_EXP_S, DSCRMT_EXP );
-	            else
-	              DSCRMT_EXP := D( SM_INIT_EXP, DISCR_ID );		-- defaut eventuel (3.7.1)
-	            end if;
+		  if  USE_NORM  then
+		    if  IS_EMPTY( DSCRMT_EXP_S )  then
+		      PUT_LINE( "; COMPILE_RECORD_VAR : contrainte normalisee incomplete" );
+		      raise PROGRAM_ERROR;
+		    end if;
+		    POP( DSCRMT_EXP_S, DSCRMT_EXP );
+		  else
+		    DSCRMT_EXP := D( SM_INIT_EXP, DISCR_ID );		-- defaut eventuel (3.7.1)
+		  end if;
 
-	            if  DSCRMT_EXP /= TREE_VOID  and then  DSCRMT_EXP /= TREE_NIL  then
+		  if  DSCRMT_EXP /= TREE_VOID  and then  DSCRMT_EXP /= TREE_NIL  then
 
 		    if  REPRESENTED_ITEMS.HAS_COMPONENT_REP( DISCR_ID )  then
 		      PUT_LINE( tab & "La  " & LVL_STR & ", " & VC_STR & "_disp" );				-- @data du record (meme idiome que BLKMOV)
@@ -1187,8 +1348,8 @@ put_line( "; CODE_VC_NAME " & NODE_NAME'IMAGE( VC_NAME.TY ) );
 		      EXPRESSIONS.CODE_EXP( DSCRMT_EXP );
 		      PUT_LINE( tab & "S" & CODI.OPER_SIZ_CHAR( D( SM_OBJ_TYPE, DISCR_ID ) ) );
 		    end if;
-	            end if;
-	          end loop;
+		  end if;
+		end loop;
 	        end;
 	      end loop;
 	    end;
@@ -1196,7 +1357,7 @@ put_line( "; CODE_VC_NAME " & NODE_NAME'IMAGE( VC_NAME.TY ) );
 	end;
 
 				-- No explicit aggregate : initialize
-				-- fields	that have	default values
+				-- fields that have default values
 	declare
 	  COMP_DECL_S	: SEQ_TYPE;
 	  COMP_DECL	: TREE;
@@ -1215,15 +1376,15 @@ put_line( "; CODE_VC_NAME " & NODE_NAME'IMAGE( VC_NAME.TY ) );
 	    if  COMP_DECL.TY /= DN_NULL_COMP_DECL  then
 
 	    declare
-	      COMP_ID_S	: SEQ_TYPE	:= LIST( D( AS_SOURCE_NAME_S,	COMP_DECL	) );
+	      COMP_ID_S	: SEQ_TYPE	:= LIST( D( AS_SOURCE_NAME_S, COMP_DECL ) );
 	      COMP_ID	: TREE;
 	    begin
-	      while  not IS_EMPTY( COMP_ID_S )	loop
+	      while  not IS_EMPTY( COMP_ID_S )  loop
 	        POP( COMP_ID_S, COMP_ID );
 	        declare
 		FIELD_INIT	: TREE		:= D( SM_INIT_EXP, COMP_ID );
 		COMP_TYPE		: TREE		:= D( SM_OBJ_TYPE, COMP_ID );
-		COMP_STR		:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, COMP_ID ) );
+		COMP_STR		:constant STRING	:= PRINT_NAME( D( LX_SYMREP, COMP_ID ) );
 	        begin
 		if  FIELD_INIT /= TREE_VOID  then
 
@@ -1242,7 +1403,7 @@ put_line( "; CODE_VC_NAME " & NODE_NAME'IMAGE( VC_NAME.TY ) );
 
 		  else										-- composant scalaire : store direct
 		    if  REPRESENTED_ITEMS.HAS_COMPONENT_REP( COMP_ID )  then
-		      PUT_LINE( tab & "La  " & LVL_STR & ", " & VC_STR & "_disp" );   -- @data du record
+		      PUT_LINE( tab & "La  " & LVL_STR & ", " & VC_STR & "_disp" );	-- @data du record
 		      REPRESENTED_ITEMS.CODE_STORE_REP_COMPONENT( COMP_ID, FIELD_INIT );
 
 		    else
@@ -1258,13 +1419,13 @@ put_line( "; CODE_VC_NAME " & NODE_NAME'IMAGE( VC_NAME.TY ) );
 
 		end if;
 	        end;
-	      end	loop;
+	      end loop;
 	    end;
 	    end if;
 	  end loop;
 	end;
         end if;
-      end	COMPILE_RECORD_VAR;
+      end COMPILE_RECORD_VAR;
 	------------------
 
 
@@ -1273,7 +1434,6 @@ put_line( "; CODE_VC_NAME " & NODE_NAME'IMAGE( VC_NAME.TY ) );
 
       if  CODI.GENERATE_BINARY_MAP  then
         PUT_LINE( " hexa_show 'var elab " & PRINT_NAME( D( LX_SYMREP, VC_NAME ) ) & " ', $" );
-        PUT_LINE( " hexa_show ' disp ', " & PRINT_NAME( D( LX_SYMREP, VC_NAME ) ) & "_disp" );
       end if;
 
       case TYPE_SPEC.TY is
@@ -1290,21 +1450,26 @@ put_line( "; CODE_VC_NAME " & NODE_NAME'IMAGE( VC_NAME.TY ) );
       when others =>
         PUT_LINE( "; ERREUR CODE_VC_NAME, TYPE_SPEC.TY = " & NODE_NAME'IMAGE( TYPE_SPEC.TY ) );
         raise PROGRAM_ERROR;
-      end	case;
+      end case;
     end;
     NEW_LINE;
+
+      if  CODI.GENERATE_BINARY_MAP  then
+        PUT_LINE( " hexa_show ' disp ', " & PRINT_NAME( D( LX_SYMREP, VC_NAME ) ) & "_disp" );
+      end if;
 
   end	CODE_VC_NAME;
 	------------
 
 
-
-  --|-------------------------------------------------------------------------------------------
-  procedure	CODE_TASK_DECL ( TASK_DECL :TREE )
-  is
+			--------------
+  procedure		CODE_TASK_DECL	( TASK_DECL :TREE )
+  is			--------------
   begin
-    null;
-  end;
+    CODI.TROU( "CODE_TASK_DECL (tasking hors perimetre)", TASK_DECL );					--| vague 4 : corps vide, la declaration etait avalee
+
+  end	CODE_TASK_DECL;
+	--------------
 
 
 			---------------------
@@ -1392,7 +1557,7 @@ put_line( "; CODE_VC_NAME " & NODE_NAME'IMAGE( VC_NAME.TY ) );
   procedure	CODE_RENAMES_EXC_DECL	( RENAMES_EXC_DECL :TREE )
   is		--------------------
   begin
-    null;		-- PILIER 11, LRM 8.5 : un renames d'exception ne declare RIEN.
+    null;		-- INTENTIONNEL -- PILIER 11, LRM 8.5 : un renames d'exception ne declare RIEN.
 		-- L'identite est celle de l'exception d'ORIGINE, resolue au site
 		-- d'usage par CODI.EXCEPTION_ID_OF.  PIEGE : emettre une STR ici
 		-- creerait une identite DISTINCTE -- handlers inoperants a travers
@@ -1401,20 +1566,23 @@ put_line( "; CODE_VC_NAME " & NODE_NAME'IMAGE( VC_NAME.TY ) );
 	---------------------
 
 
-  --|-------------------------------------------------------------------------------------------
-  procedure	CODE_SIMPLE_RENAME_DECL ( SIMPLE_RENAME_DECL :TREE )
-  is
+			-----------------------
+  procedure		CODE_SIMPLE_RENAME_DECL	( SIMPLE_RENAME_DECL :TREE )
+  is			-----------------------
   begin
 
     if SIMPLE_RENAME_DECL.TY = DN_RENAMES_OBJ_DECL then
-      CODE_RENAMES_OBJ_DECL (	SIMPLE_RENAME_DECL );
+      CODE_RENAMES_OBJ_DECL ( SIMPLE_RENAME_DECL );
 
-    elsif	SIMPLE_RENAME_DECL.TY = DN_RENAMES_EXC_DECL then
-      CODE_RENAMES_EXC_DECL (	SIMPLE_RENAME_DECL );
+    elsif SIMPLE_RENAME_DECL.TY = DN_RENAMES_EXC_DECL then
+      CODE_RENAMES_EXC_DECL ( SIMPLE_RENAME_DECL );
 
+    else
+      CODI.TROU( "CODE_SIMPLE_RENAME_DECL", SIMPLE_RENAME_DECL );				--| vague 4, HORS LISTE : dispatch muet
     end if;
-  end	CODE_SIMPLE_RENAME_DECL;
 
+  end	CODE_SIMPLE_RENAME_DECL;
+	-----------------------
 
 
  procedure CODE_NAMED_REP	( NAMED_REP :TREE );
@@ -1425,13 +1593,14 @@ put_line( "; CODE_VC_NAME " & NODE_NAME'IMAGE( VC_NAME.TY ) );
  is			--------
   begin
 
-    if REP.TY in CLASS_NAMED_REP
-    then	CODE_NAMED_REP ( REP );
+    if REP.TY in CLASS_NAMED_REP  then  CODE_NAMED_REP( REP );
 
-    elsif	REP.TY = DN_RECORD_REP
-    then	CODE_RECORD_REP ( REP );
+    elsif REP.TY = DN_RECORD_REP  then  CODE_RECORD_REP( REP );
+
+    else  CODI.TROU( "CODE_REP", REP );								--| vague 4 : dispatch muet (fossile n 115)
 
     end if;
+
   end	CODE_REP;
 	--------
 
@@ -1441,30 +1610,93 @@ put_line( "; CODE_VC_NAME " & NODE_NAME'IMAGE( VC_NAME.TY ) );
   is			--------------
   begin
 
-    if NAMED_REP.TY	= DN_ADDRESS
-    then null; -- CODE_ADDRESS ( NAMED_REP );
+    if  NAMED_REP.TY = DN_ADDRESS  then
+      declare
+        OBJ_DEFN	: TREE	:= D( SM_DEFN, D( AS_NAME, NAMED_REP ) );
+      begin
+        if  OBJ_DEFN.TY in CLASS_VC_NAME  and then  D( SM_ADDRESS, OBJ_DEFN ) /= TREE_VOID  then
+			--| INTENTIONNEL (C8, oracle ADDR_OV1, 01/08) : clause d'adresse
+			--| d'OBJET entierement traitee a la DECLARATION via SM_ADDRESS --
+			--| equation de symbole fasmg ( X_disp = Y_disp ), scalaires ET
+			--| composites ; hors statique-par-nom le TROU est leve LA-BAS.
+			--| Rien a emettre au site de la clause.
+          null;
+        else
+          CODI.TROU( "rep-clause 'ADDRESS hors objet (sous-programme/entree systeme ?)", NAMED_REP );	--| carnet : clause de SOUS-PROGRAMME (16#...#) = chantier separe
+        end if;
+      end;
 
-    elsif	NAMED_REP.TY = DN_LENGTH_ENUM_REP
-    then null; -- CODE_LENGTH_ENUM_REP ( NAMED_REP );
-
+    elsif  NAMED_REP.TY = DN_LENGTH_ENUM_REP
+    then
+			--| Reclassement n 3 (recensement auto-compilation, 28/07) :
+			--| le noeud couvre DEUX clauses, sorts distincts.
+      if  D( AS_EXP, NAMED_REP ).TY = DN_AGGREGATE  then
+			--| for T use (...) : representation d'ENUMERATION.  Les
+			--| VALEURS sont pliees (SM_REP partout) mais la machinerie
+			--| ORDINALE ne l'est pas ('POS/'VAL identite, 'SUCC/'PRED
+			--| par INC/DEC, indexation par la valeur) : rep /= pos
+			--| donnerait du code faux.  Reste TROU -- dossier n 117-bis.
+        CODI.TROU( "rep-clause d'ENUMERATION (machinerie ordinale non auditee, n 117-bis)", NAMED_REP );
+      else
+			--| INTENTIONNEL : clause de LONGUEUR (for T'SIZE/'SMALL/... use N),
+			--| pliee par le FRONT-END -- CD_IMPL_SIZE porte la taille (les
+			--| acces passent par OPER_SIZ_CHAR sur la BASE), le small du
+			--| fixed est porte par ses attributs (pilier F).  Rien a emettre
+			--| au site.  Au premier temoin 'SIZE : verifier que CD_IMPL_SIZE
+			--| reflete bien la clause, sinon rouvrir.  Restes n 117 :
+			--| TYPE_SIZE scalaire ignore CD_IMPL_SIZE (arbitrage vague 2).
+        null;											--| INTENTIONNEL (cf. ci-dessus)
+      end if;
+    else
+      CODI.TROU( "CODE_NAMED_REP", NAMED_REP );								--| vague 4 : dispatch muet
     end if;
+
   end	CODE_NAMED_REP;
 	--------------
-
 
 
 			---------------
   procedure		CODE_RECORD_REP	( RECORD_REP :TREE )
   is			---------------
   begin
-    null;	-- CODE_ALIGNMENT_CLAUSE ( D ( AS_ALIGNMENT_CLAUSE, RECORD_REP ) );
+			--| Les clauses de COMPOSANTS sont traitees par represented_items
+			--| via les ATTRIBUTS du type (n 117) : le noeud REP en position
+			--| de declaration n'a rien a emettre.  Seule la clause
+			--| d'ALIGNEMENT (at mod) reste non couverte : TROU si presente.
+    if  D( AS_ALIGNMENT_CLAUSE, RECORD_REP ) /= TREE_VOID
+    and then  D( AS_ALIGNMENT_CLAUSE, RECORD_REP ) /= TREE_NIL
+    then
+			--| Reclassement n 5 (recensement idl.ads/adb, 28/07) : l'at mod
+			--| est DISCRIMINABLE.  L'alignement effectif du stockage est 8
+			--| PARTOUT dans le modele x86_64 maison (pile en q, VAR q,
+			--| STATOFS 8 -- defaut documente n 117) : une adresse multiple
+			--| de 8 est multiple de tout diviseur de 8, donc at mod 1/2/4/8
+			--| est SATISFAIT PAR CONSTRUCTION.  Seuls at mod > 8 ou une
+			--| expression non statique restent des manques reels.
+      declare
+        ALIGN_VAL	: INTEGER;
+        ALIGN_OK	: BOOLEAN;
+      begin
+        TYPES_DECLS.STATIC_BOUND_VALUE( D( AS_EXP, D( AS_ALIGNMENT_CLAUSE, RECORD_REP ) ),
+					ALIGN_VAL, ALIGN_OK );
+        if  ALIGN_OK  and then  ALIGN_VAL > 0  and then  8 mod ALIGN_VAL = 0  then
+	null;											--| INTENTIONNEL : garanti par l'alignement 8
+        else
+	CODI.TROU( "clause at mod > 8 ou non statique (croiser n 117)", RECORD_REP );
+        end if;
+      end;
+
+    else
+      null;											--| INTENTIONNEL : composants via represented_items
+    end if;
+
   end	CODE_RECORD_REP;
 	---------------
 
 
 			----------------------------------------------------
 
-			--	DECL . ID_DECL .  U	N I T _ D	E C L	--
+			--	DECL . ID_DECL .  U N I T _ D E C L	--
 
 			----------------------------------------------------
 
@@ -1476,12 +1708,14 @@ put_line( "; CODE_VC_NAME " & NODE_NAME'IMAGE( VC_NAME.TY ) );
   is		--------------
   begin
 
-    if UNIT_DECL.TY	= DN_GENERIC_DECL
-    then	CODE_GENERIC_DECL (	UNIT_DECL	);
+    if UNIT_DECL.TY = DN_GENERIC_DECL
+    then  CODE_GENERIC_DECL ( UNIT_DECL );
 
-    elsif	UNIT_DECL.TY in CLASS_NON_GENERIC_DECL
-    then	CODE_NON_GENERIC_DECL ( UNIT_DECL );
+    elsif UNIT_DECL.TY in CLASS_NON_GENERIC_DECL
+    then  CODE_NON_GENERIC_DECL ( UNIT_DECL );
 
+    else
+      CODI.TROU( "CODE_UNIT_DECL", UNIT_DECL );								--| vague 4 : dispatch muet (fossile n 115)
     end if;
 
   end	CODE_UNIT_DECL;
@@ -1511,16 +1745,16 @@ put_line( "; CODE_VC_NAME " & NODE_NAME'IMAGE( VC_NAME.TY ) );
     PUT_LINE( GEN_NAME & " = '" & GEN_NAME & "'" );
 				------------------------
 				TRAITE_FORMAL_PARAMETERS:
-    while	 not IS_EMPTY( G_PARAMS )  loop
+    while  not IS_EMPTY( G_PARAMS )  loop
       POP( G_PARAMS, G_PARAM );
-      if	G_PARAM.TY = DN_TYPE_DECL  then
+      if  G_PARAM.TY = DN_TYPE_DECL  then
         if  D( AS_TYPE_DEF, G_PARAM ).TY = DN_FORMAL_INTEGER_DEF  then
 	DI( CD_IMPL_SIZE, D( SM_TYPE_SPEC, D( AS_SOURCE_NAME, G_PARAM ) ), INTG_SIZE * 8 );
 
         elsif  D( AS_TYPE_DEF, G_PARAM ).TY = DN_FORMAL_DSCRT_DEF  then
 	DI( CD_IMPL_SIZE, D( SM_TYPE_SPEC, D( AS_SOURCE_NAME, G_PARAM ) ), INTG_SIZE * 8 );
         end if;
-      end	if;
+      end if;
     end loop	TRAITE_FORMAL_PARAMETERS;
 		------------------------
 
@@ -1535,14 +1769,14 @@ put_line( "; CODE_VC_NAME " & NODE_NAME'IMAGE( VC_NAME.TY ) );
       begin
         while  not IS_EMPTY( DECL_S )  loop
 	POP( DECL_S, DECL );
-	if  DECL.TY = DN_SUBPROG_ENTRY_DECL  and then  IN_SPEC_UNIT	 then
+	if  DECL.TY = DN_SUBPROG_ENTRY_DECL  and then  IN_SPEC_UNIT  then
 	  declare
 	    LBL	: LABEL_TYPE	:= NEW_LABEL;
-	    NAME	: TREE		:= D( AS_SOURCE_NAME, DECL );
+	    NAME  : TREE		:= D( AS_SOURCE_NAME, DECL );
 	  begin
 	    DI( CD_LABEL, NAME, INTEGER( LBL ) );
-	    DI( CD_LEVEL, NAME, INTEGER( CODI.CUR_LEVEL )	+ 1 );
-	    DB( CD_COMPILED, D( AS_SOURCE_NAME,	DECL ), TRUE );
+	    DI( CD_LEVEL, NAME, INTEGER( CODI.CUR_LEVEL ) + 1 );
+	    DB( CD_COMPILED, D( AS_SOURCE_NAME, DECL ), TRUE );
 	  end;
 	end if;
         end loop;
@@ -1559,13 +1793,16 @@ put_line( "; CODE_VC_NAME " & NODE_NAME'IMAGE( VC_NAME.TY ) );
   is			---------------------
   begin
 
-    if  NON_GENERIC_DECL.TY =	DN_SUBPROG_ENTRY_DECL
-    then	CODE_SUBPROG_ENTRY_DECL( NON_GENERIC_DECL );
+    if  NON_GENERIC_DECL.TY = DN_SUBPROG_ENTRY_DECL
+    then  CODE_SUBPROG_ENTRY_DECL( NON_GENERIC_DECL );
 
-    elsif	NON_GENERIC_DECL.TY	= DN_PACKAGE_DECL
-    then	CODE_PACKAGE_DECL( NON_GENERIC_DECL );
+    elsif NON_GENERIC_DECL.TY = DN_PACKAGE_DECL
+    then  CODE_PACKAGE_DECL( NON_GENERIC_DECL );
 
+    else
+      CODI.TROU( "CODE_NON_GENERIC_DECL", NON_GENERIC_DECL );					--| vague 4, HORS LISTE : dispatch muet
     end if;
+
   end	CODE_NON_GENERIC_DECL;
 	---------------------
 
@@ -1618,13 +1855,9 @@ put_line( "; CODE_VC_NAME " & NODE_NAME'IMAGE( VC_NAME.TY ) );
         ACTUAL := D( AS_EXP, ACTUAL );
       end if;
 
---      while  ACTUAL.TY = DN_SELECTED  loop
---        ACTUAL := D( AS_NAME, ACTUAL );
---      end loop;
-
       declare
         DEFN		: TREE;
-        LVL_STR		:constant	STRING	:= LEVEL_NUM'IMAGE(	ACTUALS_LEVEL );
+        LVL_STR		:constant STRING	:= LEVEL_NUM'IMAGE( ACTUALS_LEVEL );
 
       begin
         if  FORMAL.TY = DN_IN  or else  FORMAL.TY = DN_IN_OUT  or else  FORMAL.TY = DN_OUT  then
@@ -1649,6 +1882,18 @@ put_line( "; CODE_VC_NAME " & NODE_NAME'IMAGE( VC_NAME.TY ) );
 	    if ACTUAL.TY = DN_STRING_LITERAL then
 	      EXPRESSIONS.CODE_STRING_LITERAL( ACTUAL, ANON );
 	      PUT_LINE( tab & "LCA" & tab & ANON & ".data_ptr" );
+
+	    elsif  ACTUAL.TY = DN_INDEXED  or else  ACTUAL.TY = DN_SELECTED
+	    or else  ACTUAL.TY = DN_ALL   or else  ACTUAL.TY = DN_SLICE
+	    then
+			--| Vague 2 (n 112, dette AUDITS "contrat de
+			--| CODE_ACTUAL_OBJECT_VALUE") : l'appelant enchaine DUP /
+			--| La ,0 / La ,8 -- contrat @doublet strict.  Une reference
+			--| de composant laisse @data nue (la tranche : @data, LEN),
+			--| les deux La liraient des donnees comme des pointeurs.
+			--| Refus bruyant ; remede le jour du temoin : doublet anonyme.
+	      CODI.TROU( "actuel generique composite reference de composant (contrat @doublet)", ACTUAL );
+
 	    else
 	      EXPRESSIONS.CODE_EXP( ACTUAL );
 	    end if;
@@ -1698,15 +1943,15 @@ put_line( "; CODE_VC_NAME " & NODE_NAME'IMAGE( VC_NAME.TY ) );
 				-------------------
 				ACTUAL_GENERIC_TYPE:
 	declare
-	  DEFN_TYPE_SPEC	: TREE		:= D( SM_TYPE_SPEC,	DEFN );
-	  DEFN_STR	:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, DEFN ) );
+	  DEFN_TYPE_SPEC	: TREE		:= D( SM_TYPE_SPEC, DEFN );
+	  DEFN_STR	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, DEFN ) );
 	  FORMAL_ID	: TREE		:= D( AS_SOURCE_NAME, FORMAL );
 	  FORMAL_STR	:constant STRING	:= ACTUALS_PREFIX & PRINT_NAME( D( LX_SYMREP, FORMAL_ID ) );
 	begin
 	  CODI.SET_GENERIC_ACTUAL_TYPE( PRINT_NAME( D( LX_SYMREP, FORMAL_ID ) ), DEFN_TYPE_SPEC );		-- F-4a
 
 	  if  DEFN_TYPE_SPEC.TY  in  CLASS_SCALAR  then
-	        -- Micro-procedures LD et ST pour le type	actuel (contournees	par BRA)
+	        -- Micro-procedures LD et ST pour le type actuel (contournees par BRA)
 	    declare
 	      SIZ_CHAR	: CHARACTER	:= OPER_SIZ_CHAR( DEFN_TYPE_SPEC );
 	    begin
@@ -1714,11 +1959,10 @@ put_line( "; CODE_VC_NAME " & NODE_NAME'IMAGE( VC_NAME.TY ) );
 	      PUT_LINE(	"BRA post_LD_" & FORMAL_STR );
 	      PUT_LINE(	"LD_" & FORMAL_STR & ".elab:" );
 	      PUT_LINE(	tab & OPER_LOAD_STR( DEFN_TYPE_SPEC ) & " -1, 0" );
---	      PUT_LINE(	tab & "L"	& SIZ_CHAR & " -1, 0" );
 	      PUT_LINE(	tab & "RTD 0" );
 	      PUT_LINE(	"post_LD_" & FORMAL_STR & ":" );
 
-		-- ST : pile = [@param_out, valeur] →	pile = []
+		-- ST : pile = [@param_out, valeur] → pile = []
 	      PUT_LINE(	"BRA post_ST_" & FORMAL_STR );
 	      PUT_LINE(	"ST_" & FORMAL_STR & ".elab:" );
 	      PUT_LINE(	tab & "S" & SIZ_CHAR & " -1, 0" );
@@ -1726,19 +1970,19 @@ put_line( "; CODE_VC_NAME " & NODE_NAME'IMAGE( VC_NAME.TY ) );
 	      PUT_LINE(	"post_ST_" & FORMAL_STR & ":" );
 		-- ADR : pile = [@param_out, valeur] → pile = []
 
-	      PUT_LINE(	"BRA post_INADR_" &	FORMAL_STR );
+	      PUT_LINE(	"BRA post_INADR_" & FORMAL_STR );
 	      PUT_LINE(	"INADR_" & FORMAL_STR & ".elab:" );
-	      PUT_LINE(	tab & "RTD 0" );								-- Rien a	faire pour un scalaire
+	      PUT_LINE(	tab & "RTD 0" );								-- Rien a faire pour un scalaire
 	      PUT_LINE(	"post_INADR_" & FORMAL_STR & ":" );
 
 	      PUT_LINE(	"BRA post_OUTADR_" & FORMAL_STR );
-	      PUT_LINE(	"OUTADR_"	& FORMAL_STR & ".elab:" );
+	      PUT_LINE(	"OUTADR_" & FORMAL_STR & ".elab:" );
 	      PUT_LINE(	tab & "La" );								-- Pointer Data
-	      PUT_LINE(	tab & "RTD 0" );								-- Rien a	faire pour un scalaire
+	      PUT_LINE(	tab & "RTD 0" );								-- Rien a faire pour un scalaire
 	      PUT_LINE(	"post_OUTADR_" & FORMAL_STR & ":" );
 	    end;
 
-	        -- VAR en ordre INVERSE des PRM	du modele	:
+	        -- VAR en ordre INVERSE des PRM du modele :
 	        -- PRM: __u(8) __ld(16) __st(24)  → VAR: __st(-24) __ld(-16) __u(-8)
 
 	    PUT_LINE( "VAR " & FORMAL_STR & "__outadr_ofs, q" );
@@ -1769,21 +2013,21 @@ put_line( "; CODE_VC_NAME " & NODE_NAME'IMAGE( VC_NAME.TY ) );
 	      PUT_LINE(	tab & "RTD 0" );
 	      PUT_LINE(	"post_LD_" & FORMAL_STR & ":" );
 
-		-- ST : pile = [@param_out, valeur] →	pile = []
+		-- ST : pile = [@param_out, valeur] → pile = []
 	      PUT_LINE(	"BRA post_ST_" & FORMAL_STR );
 	      PUT_LINE(	"ST_" & FORMAL_STR & ".elab:" );
 	      PUT_LINE(	tab & "DROP" );				-- A REVOIR
 	      PUT_LINE(	tab & "RTD 0" );
 	      PUT_LINE(	"post_ST_" & FORMAL_STR & ":" );
 
-	      PUT_LINE(	"BRA post_INADR_" &	FORMAL_STR );
+	      PUT_LINE(	"BRA post_INADR_" & FORMAL_STR );
 	      PUT_LINE(	"INADR_" & FORMAL_STR	& ".elab:" );
 	      PUT_LINE(	tab & "LIa" );								-- Indirection
 	      PUT_LINE(	tab & "RTD 0" );
 	      PUT_LINE(	"post_INADR_" & FORMAL_STR & ":" );
 
 	      PUT_LINE(	"BRA post_OUTADR_" & FORMAL_STR	);
-	      PUT_LINE(	"OUTADR_"	& FORMAL_STR & ".elab:" );
+	      PUT_LINE(	"OUTADR_" & FORMAL_STR & ".elab:" );
 	      PUT_LINE(	tab & "LIa" );								-- Indirection
 	      PUT_LINE(	tab & "RTD 0" );
 	      PUT_LINE(	"post_OUTADR_" & FORMAL_STR & ":" );
@@ -1806,15 +2050,14 @@ put_line( "; CODE_VC_NAME " & NODE_NAME'IMAGE( VC_NAME.TY ) );
 	    PUT_LINE( tab & "Sa" & tab & LVL_STR & ", " & FORMAL_STR & "__ld_ofs" );
 
 	  else
-	    PUT_LINE( "; CODE_PACKAGE_DECL : TYPE_ID GENERIQUE PAS GERE "	& NODE_NAME'IMAGE( DEFN_TYPE_SPEC.TY ) );
-
+	    CODI.TROU( "ACTUAL_GENERIC_TYPE actuel generique de type : sorte non geree", DEFN_TYPE_SPEC );		--| vague 5 : __ld_ofs absent, appels indirects faux
 	  end if;
 
 	  PUT_LINE( "VAR " & FORMAL_STR & "__u_ofs, q"	);
 	  PUT( tab & "La" & tab & INTEGER'IMAGE( DI( CD_LEVEL, D( SM_TYPE_SPEC, DEFN ) ) ) & ", " );
 	  CODI.REGIONS_PATH( DEFN	);
 	  PUT_LINE( '_' & DEFN_STR & ".use__info"	);
-	  PUT_LINE( tab	& "Sa" & tab & LVL_STR & ", "	& FORMAL_STR & "__u_ofs" );
+	  PUT_LINE( tab & "Sa" & tab & LVL_STR & ", " & FORMAL_STR & "__u_ofs" );
 
 	end	ACTUAL_GENERIC_TYPE;
 		-------------------
@@ -1828,8 +2071,8 @@ put_line( "; CODE_VC_NAME " & NODE_NAME'IMAGE( VC_NAME.TY ) );
 	FORMAL_ID		: TREE		:= D( AS_SOURCE_NAME, FORMAL );
 	FORMAL_STR	: constant STRING	:= PRINT_NAME( D( LX_SYMREP, FORMAL_ID ) );
 	FORMAL_SPEC	: TREE		:= D( AS_HEADER, FORMAL );
-	BRIDGE_STR  	:constant STRING	:= FORMAL_STR & "__bridge_" & NEW_LABEL;
-          ACTUAL_SUBP 	: TREE		:= ACTUAL;
+	BRIDGE_STR	:constant STRING	:= FORMAL_STR & "__bridge_" & NEW_LABEL;
+	ACTUAL_SUBP	: TREE		:= ACTUAL;
 	ACTUAL_DEFN	: TREE		:= ACTUAL_NAME_DEFN( ACTUAL );
 
         begin
@@ -1856,11 +2099,11 @@ put_line( "; CODE_VC_NAME " & NODE_NAME'IMAGE( VC_NAME.TY ) );
 	  SUBNAME_STR	:constant string	:= LETTERED_SUBNAME( FORMAL_STR );
 begin
 
---          CODE_GENERIC_SUBPROGRAM_BRIDGE( BRIDGE_STR  => BRIDGE_STR,
---              FORMAL      => FORMAL,
---              FORMAL_ID   => FORMAL_ID,
---              FORMAL_SPEC => FORMAL_SPEC,
---              ACTUAL      => ACTUAL_SUBP );
+--	  CODE_GENERIC_SUBPROGRAM_BRIDGE( BRIDGE_STR  => BRIDGE_STR,
+--	      FORMAL      => FORMAL,
+--	      FORMAL_ID   => FORMAL_ID,
+--	      FORMAL_SPEC => FORMAL_SPEC,
+--	      ACTUAL      => ACTUAL_SUBP );
 
 	  PUT_LINE( "VAR " & SUBNAME_STR & "__call_ofs, q" );
 	  PUT( tab & "LSPA" & tab );
@@ -1873,6 +2116,8 @@ end if;
 	end	ACTUAL_SUBPROGRAM;
 		-----------------
 
+        else
+	CODI.TROU( "actuel generique : sorte de formel non couverte", FORMAL );				--| vague 4, HORS LISTE : dispatch muet
         end if;
       end;
     end loop;
@@ -1893,11 +2138,11 @@ end if;
 
     SOURCE_NAME			: TREE	:= D( AS_SOURCE_NAME, SUBPROG_ENTRY_DECL );
 
-    SAVE_NO_SUB_PARAM		: BOOLEAN	:= CODI.NO_SUBP_PARAMS;
-    SAVE_IN_GENERIC_INSTANTIATION	: BOOLEAN	:= CODI.IN_GENERIC_INSTANTIATION;
+    SAVE_NO_SUB_PARAM		: BOOLEAN := CODI.NO_SUBP_PARAMS;
+    SAVE_IN_GENERIC_INSTANTIATION	: BOOLEAN := CODI.IN_GENERIC_INSTANTIATION;
     SAVE_INSTANTIATION_MODEL_NAME	: TREE	:= CODI.INSTANTIATION_MODEL_NAME;
-    SAVE_OUTPUT_CODE		: BOOLEAN	:= CODI.OUTPUT_CODE;
-    IS_AN_INSTANTIATION		: BOOLEAN	:= D( AS_UNIT_KIND, SUBPROG_ENTRY_DECL ).TY = DN_INSTANTIATION;
+    SAVE_OUTPUT_CODE		: BOOLEAN := CODI.OUTPUT_CODE;
+    IS_AN_INSTANTIATION		: BOOLEAN := D( AS_UNIT_KIND, SUBPROG_ENTRY_DECL ).TY = DN_INSTANTIATION;
 
   begin
     if  CODI.DEBUG  then PUT( tab50 & "; sub program entry decl (in instantiation "
@@ -1905,24 +2150,24 @@ end if;
     NEW_LINE;
 
     if  not (SOURCE_NAME.TY in CLASS_SUBPROG_NAME)  then
-      PUT_LINE( "ANOMALIE : EXPANDER.DECLARATIONS.CODE_SUBPROG_ENTRY_DECL ; SOURCE_NAME.TY pas dans CLASS_SUBPROG_NAME"	);
+      PUT_LINE( "ANOMALIE : EXPANDER.DECLARATIONS.CODE_SUBPROG_ENTRY_DECL ; SOURCE_NAME.TY pas dans CLASS_SUBPROG_NAME" );
       raise PROGRAM_ERROR;
     else
-      if	CODI.IN_SPEC_UNIT
+      if  CODI.IN_SPEC_UNIT
       then DB( CD_COMPILED, SOURCE_NAME, TRUE );
       else
         if  not IN_GENERIC_INSTANTIATION  and then  DB( CD_COMPILED, SOURCE_NAME )  then
 	return;
         end if;
-      end	if;
+      end if;
     end if;
 
-    if  IS_AN_INSTANTIATION  then                -- ce decl EST une instanciation (a8)
+    if  IS_AN_INSTANTIATION  then	         -- ce decl EST une instanciation (a8)
       CODI.IN_GENERIC_INSTANTIATION := TRUE;
       CODI.CLEAR_GENERIC_ACTUAL_TYPES;									-- F-4a : table de l'instanciation courante
 
       CODI.INSTANTIATION_MODEL_NAME := D( AS_NAME, D( AS_UNIT_KIND, SUBPROG_ENTRY_DECL ) );
-      while  CODI.INSTANTIATION_MODEL_NAME.TY = DN_SELECTED  loop     -- cas TEXT_IO.xxx
+      while  CODI.INSTANTIATION_MODEL_NAME.TY = DN_SELECTED  loop	-- cas TEXT_IO.xxx
         CODI.INSTANTIATION_MODEL_NAME := D( AS_DESIGNATOR, CODI.INSTANTIATION_MODEL_NAME );
       end loop;
     end if;
@@ -1935,27 +2180,27 @@ end if;
       LBL		: LABEL_TYPE	:= NEW_LABEL;
     begin
 
-      if	CODI.IN_SPEC_UNIT  or else  not DB( CD_COMPILED, SOURCE_NAME )
+      if  CODI.IN_SPEC_UNIT  or else  not DB( CD_COMPILED, SOURCE_NAME )
       then  DI( CD_LABEL, SOURCE_NAME, INTEGER( LBL ) );
-      end	if;
+      end if;
 
-      DI(	CD_LEVEL,	SOURCE_NAME, INTEGER( CODI.CUR_LEVEL ) );
-      DB(	CD_COMPILED, SOURCE_NAME, TRUE );
+      DI( CD_LEVEL, SOURCE_NAME, INTEGER( CODI.CUR_LEVEL ) );
+      DB( CD_COMPILED, SOURCE_NAME, TRUE );
 
-      if	not CODI.IN_GENERIC_INSTANTIATION  then CODI.OUTPUT_CODE := FALSE; end if;				-- ne pas	coder les	parametres (le body	fera ca)
+      if  not CODI.IN_GENERIC_INSTANTIATION  then CODI.OUTPUT_CODE := FALSE; end if;				-- ne pas coder les parametres (le body fera ca)
 
-      if	CODI.IN_GENERIC_INSTANTIATION  then
+      if  CODI.IN_GENERIC_INSTANTIATION  then
         HEADER := D( SM_SPEC, SOURCE_NAME );
 				-------------------------------
 				INSTANTIATION_SUBPROG_GENERIQUE:
         declare
 	SOURCE_NAME	: TREE		:= D( AS_SOURCE_NAME, SUBPROG_ENTRY_DECL );
-	SUB_NAME		:constant	STRING	:= LETTERED_SUBNAME( PRINT_NAME( D( LX_SYMREP, SOURCE_NAME ) ) );
+	SUB_NAME		:constant STRING	:= LETTERED_SUBNAME( PRINT_NAME( D( LX_SYMREP, SOURCE_NAME ) ) );
 	LBL		: LABEL_TYPE	:= LABEL_TYPE( DI( CD_LABEL, SOURCE_NAME ) );
 	LABELED_SUB_STR	:constant STRING	:= SUB_NAME & '_' & LABEL_STR( LBL );
 
         begin
-	PUT_LINE(	"if defined " & LABELED_SUB_STR & '_' );
+	PUT_LINE( "if defined " & LABELED_SUB_STR & '_' );
 
 	if  IS_AN_INSTANTIATION  then
 	  CODE_GENERIC_ACTUALS( D( AS_UNIT_KIND, SUBPROG_ENTRY_DECL ), LABELED_SUB_STR, CODI.CUR_LEVEL-1 );
@@ -1968,46 +2213,54 @@ end if;
 	  PUT_LINE( " hexa_show '" & SUB_NAME & '_' & LABEL_STR( LBL ) & " ', $" );
 	end if;
 
-	CODE_HEADER( HEADER	);
+	CODE_HEADER( HEADER );
 
-	PUT_LINE(	"ELB" & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL	) );
-	PUT_LINE(	"begin:" );
-
+	PUT_LINE( "ELB" & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL ) );
+	PUT_LINE( "begin:" );
 
 	declare
-	  MODEL_DEFN	: TREE		:= D( SM_DEFN, CODI.INSTANTIATION_MODEL_NAME );
-	  MODEL_SPEC	: TREE		:= D( SM_SPEC, MODEL_DEFN );
-	  IS_UNCHECKED_CONVERSION
-			: constant BOOLEAN
-			:= MODEL_DEFN.TY = DN_GENERIC_ID
+	  MODEL_DEFN		: TREE		:= D( SM_DEFN, CODI.INSTANTIATION_MODEL_NAME );
+	  MODEL_SPEC		: TREE		:= D( SM_SPEC, MODEL_DEFN );
+	  IS_UNCHECKED_CONVERSION	: constant BOOLEAN
+					:= MODEL_DEFN.TY = DN_GENERIC_ID
 			   and then  PRINT_NAME( D( LX_SYMREP, MODEL_DEFN ) ) = "UNCHECKED_CONVERSION";
 	begin
 
 	  if  not IS_UNCHECKED_CONVERSION  then								-- protocole d'appel du modele : slot resultat + GFP + arguments
 	    if  SOURCE_NAME.TY = DN_FUNCTION_ID  or  SOURCE_NAME.TY = DN_OPERATOR_ID  then
-	      PUT( tab & "LI" & tab & '0' );								-- lieu result
-	      if  CODI.DEBUG  then PUT( tab50 & "; lieu result" ); end if;
-	      NEW_LINE;
+	      declare
+	        WRAP_RESULT_TYPE	: TREE		:= D( SM_TYPE_SPEC, D( SM_DEFN, D( AS_NAME, HEADER ) ) );
+	      begin
+	        if  WRAP_RESULT_TYPE.TY = DN_ARRAY  then							--| C7 (oracle INSTF1) : resultat NON CONTRAINT --
+	          PUT( tab & "La " & tab & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL ) & ", -result__ofs" );		--| RELAYER le slot recu au modele : son CODE_RETURN
+	          if  CODI.DEBUG  then PUT( tab50 & "; lieu result = relais du slot recu (doublet)" ); end if;	--| ecrit data_ptr+descripteur CHEZ l'appelant
+	          NEW_LINE;
+	        else
+	          PUT( tab & "LI" & tab & '0' );							-- lieu result
+	          if  CODI.DEBUG  then PUT( tab50 & "; lieu result" ); end if;
+	          NEW_LINE;
+	        end if;
+	      end;
 	    end if;
 
-	    PUT_LINE(	tab & "LVA" & tab &	LEVEL_NUM'IMAGE( CODI.CUR_LEVEL - 1 ) &	", GFP_disp" );
+	    PUT_LINE(	tab & "LVA" & tab & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL - 1 ) & ", GFP_disp" );
 	  end if;
 
 	declare
-	  PRM_SECTIONS_S	: SEQ_TYPE	:= LIST( D( AS_PARAM_S, D( SM_SPEC, SOURCE_NAME )	) );
+	  PRM_SECTIONS_S	: SEQ_TYPE	:= LIST( D( AS_PARAM_S, D( SM_SPEC, SOURCE_NAME ) ) );
 
 			----------------------------
-	  procedure	INVERSE_RECURSE_PRM_SECTIONS	( REMAIN_SECTIONS :in out SEQ_TYPE )
+	  procedure	INVERSE_RECURSE_PRM_SECTIONS  ( REMAIN_SECTIONS :in out SEQ_TYPE )
 	  is		----------------------------
 
 	    PRM_SECTION		: TREE;
 	  begin
-	    if  IS_EMPTY( REMAIN_SECTIONS )  then return;	end if;
+	    if  IS_EMPTY( REMAIN_SECTIONS )  then return; end if;
 	    POP( REMAIN_SECTIONS, PRM_SECTION );
-	    INVERSE_RECURSE_PRM_SECTIONS( REMAIN_SECTIONS	);
+	    INVERSE_RECURSE_PRM_SECTIONS( REMAIN_SECTIONS );
 
 	    declare
-	      NAME_S	: SEQ_TYPE	:= LIST( D( AS_SOURCE_NAME_S,	PRM_SECTION ) );
+	      NAME_S	: SEQ_TYPE	:= LIST( D( AS_SOURCE_NAME_S, PRM_SECTION ) );
 
 			---------------------
 	      procedure	INVERSE_RECURSE_NAMES	( NAMES :in out SEQ_TYPE )
@@ -2015,21 +2268,21 @@ end if;
 	        NAME	: TREE;
 
 	      begin
-	        if  IS_EMPTY( NAMES )	 then return; end if;
-	        POP( NAMES,	NAME );
+	        if  IS_EMPTY( NAMES )  then return; end if;
+	        POP( NAMES, NAME );
 	        INVERSE_RECURSE_NAMES( NAMES );
 
 	        if  (NAME.TY = DN_IN_ID) and (D( SM_OBJ_TYPE, NAME ).TY in CLASS_SCALAR)  then
 		-- in scalaire : passer par copie (valeur)
-		PUT_LINE(	tab & 'L' & OPER_SIZ_CHAR( D( SM_OBJ_TYPE, NAME ) ) & tab & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL )
-			& ", -" &	PRINT_NAME( D( LX_SYMREP, NAME ) ) & "_ofs" );
+		PUT_LINE( tab & 'L' & OPER_SIZ_CHAR( D( SM_OBJ_TYPE, NAME ) ) & tab & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL )
+			& ", -" & PRINT_NAME( D( LX_SYMREP, NAME ) ) & "_ofs" );
 
 	        else
-		-- in composite (record, array) ou out / in_out :	propager l'adresse
-		PUT_LINE(	tab & "La " & tab &	LEVEL_NUM'IMAGE( CODI.CUR_LEVEL )
-			& ", -" &	PRINT_NAME( D( LX_SYMREP, NAME ) ) & "_ofs" );
+		-- in composite (record, array) ou out / in_out : propager l'adresse
+		PUT_LINE( tab & "La " & tab & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL )
+			& ", -" & PRINT_NAME( D( LX_SYMREP, NAME ) ) & "_ofs" );
 	        end if;
-	      end	INVERSE_RECURSE_NAMES;
+	      end INVERSE_RECURSE_NAMES;
 		---------------------
 
 	    begin
@@ -2060,9 +2313,9 @@ end if;
 	      is
 	  UNIT_KIND : TREE := D( AS_UNIT_KIND, SUBPROG_ENTRY_DECL );
 
-	  ACTUALS   : SEQ_TYPE := LIST( D( AS_GENERAL_ASSOC_S, UNIT_KIND ) );
-	  SRC_ACT   : TREE;
-	  DST_ACT   : TREE;
+	  ACTUALS	  : SEQ_TYPE := LIST( D( AS_GENERAL_ASSOC_S, UNIT_KIND ) );
+	  SRC_ACT	  : TREE;
+	  DST_ACT	  : TREE;
 
 	  SRC_DEFN  : TREE;
 	  DST_DEFN  : TREE;
@@ -2112,7 +2365,7 @@ end if;
 
 	    else
 	      PUT_LINE( "; UNCHECKED_CONVERSION : taille cible non geree "
-	              & NODE_NAME'IMAGE( TT.TY ) );
+		    & NODE_NAME'IMAGE( TT.TY ) );
 	      raise PROGRAM_ERROR;
 	    end if;
 
@@ -2150,14 +2403,14 @@ end if;
 	  then
 	    -- @DST = result__ofs.data_ptr
 	    PUT_LINE( tab & "La" & tab & IMAGE( CODI.CUR_LEVEL ) & ", -result__ofs" );
-	    PUT_LINE( tab & "La" & tab & ", 0" );
+	    PUT_LINE( tab & "La" );
 
     -- LEN = taille du type cible en octets
 	    EMIT_TYPE_SIZE_BYTES( DST_TYPE );
 
     -- @SRC = S.data_ptr
 	    PUT_LINE( tab & "La" & tab & IMAGE( CODI.CUR_LEVEL ) & ", -S_ofs" );
-	    PUT_LINE( tab & "La" & tab & ", 0" );
+	    PUT_LINE( tab & "La" );
 
 	    PUT_LINE( tab & "BLKMOV" );
 
@@ -2167,7 +2420,7 @@ end if;
   -- Source composite passée par adresse de doublet.
   -- result__ofs est un résultat scalaire.
 	  PUT_LINE( tab & "La" & tab & IMAGE( CODI.CUR_LEVEL ) & ", -S_ofs" );
-	  PUT_LINE( tab & "La" & tab & ", 0" );
+	  PUT_LINE( tab & "La" );
 
   -- Lire les octets bruts avec la taille du type cible.
 	  PUT_LINE( tab & OPER_LOAD_STR( DST_TYPE ) );
@@ -2178,12 +2431,12 @@ end if;
 
 	  else
 	    PUT_LINE( "; UNCHECKED_CONVERSION : cas non encore gere "
-	            & NODE_NAME'IMAGE( SRC_TYPE.TY )
-	            & " -> "
-	            & NODE_NAME'IMAGE( DST_TYPE.TY ) );
+		  & NODE_NAME'IMAGE( SRC_TYPE.TY )
+		  & " -> "
+		  & NODE_NAME'IMAGE( DST_TYPE.TY ) );
 	    raise PROGRAM_ERROR;
 	  end if;
-	      end	CODE_UNCHECKED_CONVERSION_INSTANCE;
+	      end CODE_UNCHECKED_CONVERSION_INSTANCE;
 		----------------------------------
 
 	    begin
@@ -2222,48 +2475,71 @@ end if;
 	        if  MODEL_DECL.TY = DN_SUBPROG_ENTRY_DECL  then
 		declare
 		  NAME	: TREE	:= D( AS_SOURCE_NAME, MODEL_DECL );
-		  LBL	: INTEGER	:= DI( CD_LABEL, NAME );
-	          begin
+		  LBL	: INTEGER := DI( CD_LABEL, NAME );
+		begin
 		  PUT_LINE( PRINT_NAME( D( LX_SYMREP, NAME ) ) & "_L" & IMAGE( LBL ) );
 		  exit;
-	          end;
+		end;
 	        end if;
 	      end loop;
 	    end	SUBPROG_IN_GENERIC_PACKAGE_INSTANTIATION;
 		----------------------------------------
-            end if;
-          end;
+	  end if;
+	end;
 
-	if  SOURCE_NAME.TY = DN_FUNCTION_ID  or	 SOURCE_NAME.TY = DN_OPERATOR_ID  then
+	if  SOURCE_NAME.TY = DN_FUNCTION_ID  or  SOURCE_NAME.TY = DN_OPERATOR_ID  then
 
 	  if  D( SM_UNIT_DESC, SOURCE_NAME ).TY /= DN_INSTANTIATION  then
 	    declare
 	      USED_OBJECT_ID	: TREE		:= D( AS_NAME, HEADER );
-	      RESULT_TYPE_ID	: TREE		:= D( SM_DEFN, USED_OBJECT_ID	);
-	      RESULT_TYPE_SPEC	: TREE		:= D( SM_TYPE_SPEC,	RESULT_TYPE_ID );
+	      RESULT_TYPE_ID	: TREE		:= D( SM_DEFN, USED_OBJECT_ID );
+	      RESULT_TYPE_SPEC	: TREE		:= D( SM_TYPE_SPEC, RESULT_TYPE_ID );
 	      RESULT_SIZE_CHAR	: CHARACTER;
 	    begin
-	      if  RESULT_TYPE_SPEC.TY  in  CLASS_UNCONSTRAINED  then
-	        PUT_LINE( "; RESULTAT UNCONSTRAINED A FAIRE" );
+	      if  RESULT_TYPE_SPEC.TY = DN_ARRAY  then
+			--| INTENTIONNEL (C7, oracle INSTF1, 01/08) : resultat NON CONTRAINT.
+			--| Le prologue du wrapper RELAIE le slot recu ( La lvl,-result__ofs
+			--| au lieu de LI 0 ) ; le CODE_RETURN du modele ecrit data_ptr et
+			--| descripteur A TRAVERS ce slot, directement chez l'appelant, et
+			--| RTD prm_siz-8 le lui laisse. Rien a rapatrier ici -- symetrique
+			--| du rameau DN_INSTANTIATION ci-dessous (reclassement n 4).
+	        null;
+
+	      elsif  RESULT_TYPE_SPEC.TY  in  CLASS_UNCONSTRAINED  then
+	        CODI.TROU( "INSTANTIATION_SUBPROG_GENERIQUE : resultat non contraint NON tableau", RESULT_TYPE_SPEC );	--| discrimine C7 : record/access jamais observes (doctrine n 122)
+
 	      else
 	        RESULT_SIZE_CHAR := OPER_SIZ_CHAR( RESULT_TYPE_SPEC );
-	        if	RESULT_SIZE_CHAR /=	'v'  then
+	        if	RESULT_SIZE_CHAR /= 'v'  then
 		PUT( tab & 'S' & RESULT_SIZE_CHAR
-		& tab & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL	) & ", -result__ofs"  );
+		& tab & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL ) & ", -result__ofs"  );
 		if  CODI.DEBUG  then PUT( tab50	& "; retour resultat" ); end if;
 		NEW_LINE;
+
 	        else
-		PUT_LINE( "; RESULTAT PAR REFERENCE A FAIRE" );
-		raise PROGRAM_ERROR;
+		CODI.TROU( "INSTANTIATION_SUBPROG_GENERIQUE : resultat par ref a faire", RESULT_TYPE_SPEC );	--| vague 5
 	        end if;
 	      end if;
 	    end;
 	  else
-	    null;			-- A VOIR
+			--| INTENTIONNEL (reclassement n 4, recensement idl.adb 28/07,
+			--| FINC TO_CHN_L187 a l'appui) : fonction d'INSTANCIATION.
+			--| Son corps est SYNTHETISE par l'expander (unchecked_conversion:
+			--| BLKMOV a travers le slot resultat -- La lvl,-result__ofs ; La ;
+			--| BLKMOV) ou PARTAGE (modele generique) : le resultat est
+			--| materialise PAR le corps via le protocole du slot, et
+			--| RTD prm_siz-8 le laisse a l'appelant.  L'epilogue-magasin ne
+			--| concerne que les corps compiles depuis l'Ada (CODE_RETURN).
+			--| Rien a rapatrier ici -- l'ex-"A VOIR" est elucide.
+			--| AMENDEMENT C7 (01/08, oracle INSTF1) : la moitie PARTAGE de ce
+			--| fossile ne tenait que si le prologue RELAIE le slot -- le LI 0
+			--| d'origine donnait un slot nul au modele (segfault a son
+			--| CODE_RETURN). Relais pose au prologue pour DN_ARRAY.
+	    null;											--| INTENTIONNEL (cf. ci-dessus)
 	  end if;
 	end if;
 
-	PUT_LINE(	tab & "UNLINK" & tab & LEVEL_NUM'IMAGE(	CODI.CUR_LEVEL ) );
+	PUT_LINE( tab & "UNLINK" & tab & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL ) );
 
 	if  CODI.NO_SUBP_PARAMS  then
 	  PUT_LINE( tab & "RTD" );
@@ -2275,9 +2551,9 @@ end if;
 	  end if;
 	end if;
 	PUT( "endPRO" );
-	if  CODI.DEBUG  then PUT( tab50 & ";---------- end PRO " & SUB_NAME);	end if;
+	if  CODI.DEBUG  then PUT( tab50 & ";---------- end PRO " & SUB_NAME); end if;
 	NEW_LINE;
-	PUT_LINE(	"end if" );
+	PUT_LINE( "end if" );
 
         end		INSTANTIATION_SUBPROG_GENERIQUE;
 			-------------------------------
@@ -2289,14 +2565,14 @@ end if;
 				SOUS_PROGRAMME_NORMAL:
         begin
         if  CODI.IN_GENERIC_INSTANTIATION  then
-	if  CODI.DEBUG  then PUT( tab50 & "; subprog in generic");	end if;
+	if  CODI.DEBUG  then PUT( tab50 & "; subprog in generic");  end if;
 	NEW_LINE;
 
         else
 	declare
-	  SAVE_NO_SUB_PARAM	: BOOLEAN		:= CODI.NO_SUBP_PARAMS;
+	  SAVE_NO_SUB_PARAM : BOOLEAN		:= CODI.NO_SUBP_PARAMS;
 	begin
-	  CODI.OUTPUT_CODE := FALSE;						-- ne pas	coder les	parametres (le body	fera ca)
+	  CODI.OUTPUT_CODE := FALSE;						-- ne pas coder les parametres (le body fera ca)
 	  CODE_HEADER( HEADER );
 	  CODI.OUTPUT_CODE := TRUE;
 	  CODI.NO_SUBP_PARAMS := SAVE_NO_SUB_PARAM;
@@ -2304,7 +2580,7 @@ end if;
         end if;
         end		SOUS_PROGRAMME_NORMAL;
 			---------------------
-      end	if;
+      end if;
 
     end;
     DEC_LEVEL;
@@ -2319,28 +2595,40 @@ end if;
 
 
 
-			--=================--
+			--^^^^^^^^^^^^^^^^^--
   procedure		  CODE_PACKAGE_DECL		( PACKAGE_DECL :TREE )
-  is			--=================--
+  is			---------------------
 
     PACK_ID		: TREE			:= D( AS_SOURCE_NAME, PACKAGE_DECL );
-    PACK_NAME		:constant	STRING		:= PRINT_NAME( D( LX_SYMREP, PACK_ID ) );
-    UNIT_KIND		: TREE			:= D( AS_UNIT_KIND,	PACKAGE_DECL );
+    PACK_NAME		:constant STRING		:= PRINT_NAME( D( LX_SYMREP, PACK_ID ) );
+    UNIT_KIND		: TREE			:= D( AS_UNIT_KIND, PACKAGE_DECL );
     SAVE_NO_SUB_PARAM	: BOOLEAN			:= CODI.NO_SUBP_PARAMS;
     SAVE_MODEL_SEQ		: SEQ_TYPE		:= CODI.GENERIC_MODEL_DECL_SEQ;
     CAS_NORMAL		: BOOLEAN			:= PACK_NAME /= "STANDARD" and PACK_NAME /= "_STANDRD";
-    SAVE_IN_GENERIC_INSTANTIATION	: BOOLEAN	:= CODI.IN_GENERIC_INSTANTIATION;
+    SAVE_IN_GENERIC_INSTANTIATION	: BOOLEAN := CODI.IN_GENERIC_INSTANTIATION;
     SAVE_INSTANTIATION_MODEL_NAME	: TREE	:= CODI.INSTANTIATION_MODEL_NAME;
-    SAVE_OUTPUT_CODE		: BOOLEAN	:= CODI.OUTPUT_CODE;
+    SAVE_OUTPUT_CODE		: BOOLEAN := CODI.OUTPUT_CODE;
 
   begin
-    if  CAS_NORMAL	then
+    if  UNIT_KIND.TY = DN_RENAMES_UNIT  then
+			--| INTENTIONNEL (recensement system.ads, 28/07) : renommage de
+			--| paquetage (package X renames Y) -- ne declare RIEN : ni
+			--| namespace, ni en-tete (AS_HEADER est d'ailleurs VOID).
+			--| L'identite est celle de l'ORIGINE, resolue au site d'usage
+			--| -- meme modele que les renames de sous-programmes
+			--| (SUBPROGRAM_ORIGIN) et d'exceptions (pilier 11).  Avant
+			--| cette garde : namespace _SYSTEM VIDE emis + TROU CODE_HEADER.
+      return;
+    end if;
+
+
+    if  CAS_NORMAL  then
       PUT_LINE( PACK_NAME & " = '" & PACK_NAME & "'" );
       PUT( "namespace " & PACK_NAME );
     end if;
     if  UNIT_KIND.TY = DN_INSTANTIATION
     then
-      if	CODI.DEBUG  then PUT( tab50 &	";---------- GENERIC PACKAGE INSTANTIATION" ); end if;
+      if  CODI.DEBUG  then PUT( tab50 & ";---------- GENERIC PACKAGE INSTANTIATION" ); end if;
       NEW_LINE;
 
       CODI.IN_GENERIC_INSTANTIATION := TRUE;
@@ -2351,10 +2639,10 @@ end if;
         CODI.INSTANTIATION_MODEL_NAME := D( AS_DESIGNATOR, CODI.INSTANTIATION_MODEL_NAME );
       end loop;
 
-      CODI.GENERIC_MODEL_DECL_SEQ := LIST( D( AS_DECL_S1, D( SM_SPEC,	D( SM_DEFN, CODI.INSTANTIATION_MODEL_NAME ) ) ) );
+      CODI.GENERIC_MODEL_DECL_SEQ := LIST( D( AS_DECL_S1, D( SM_SPEC, D( SM_DEFN, CODI.INSTANTIATION_MODEL_NAME ) ) ) );
 
       PUT( "elab_spec:" );
-      if	CODI.DEBUG  then PUT_LINE( tab50 & ";    SPEC ELAB" ); end if;
+      if  CODI.DEBUG  then PUT_LINE( tab50 & ";    SPEC ELAB" ); end if;
       NEW_LINE;
 
       CODE_GENERIC_ACTUALS( UNIT_KIND );
@@ -2370,23 +2658,23 @@ end if;
       CODI.IN_GENERIC_INSTANTIATION := FALSE;
 
     else
-      if	CAS_NORMAL and CODI.DEBUG  then PUT( tab50 & ";---------- PACKAGE DECLARATION" ); end if;
+      if  CAS_NORMAL and CODI.DEBUG  then PUT( tab50 & ";---------- PACKAGE DECLARATION" ); end if;
       NEW_LINE;
 
       CODE_HEADER( D( AS_HEADER, PACKAGE_DECL ) );
 
       declare
-        EXC_LBL		:constant	STRING	:= NEW_LABEL;
+        EXC_LBL		:constant STRING	:= NEW_LABEL;
       begin
-        PUT_LINE( "; EXC_LBL"	& tab & EXC_LBL );
+        PUT_LINE( "; EXC_LBL" & tab & EXC_LBL );
       end;
     end if;
 
-    if  CAS_NORMAL	then
+    if  CAS_NORMAL  then
       PUT_LINE( "end namespace" );
     end if;
     DB( CD_COMPILED, PACK_ID, TRUE );
-    if  CODI.DEBUG	then  NEW_LINE; end	if;
+    if  CODI.DEBUG  then  NEW_LINE; end if;
 
     CODI.NO_SUBP_PARAMS := SAVE_NO_SUB_PARAM;
     CODI.IN_GENERIC_INSTANTIATION := SAVE_IN_GENERIC_INSTANTIATION;
@@ -2401,14 +2689,15 @@ end if;
   procedure		CODE_USE_PRAGMA	( USE_PRAGMA :TREE )
   is			---------------
   begin
-
-    if USE_PRAGMA.TY = DN_USE
-    then null;	-- CODE_USE ( USE_PRAGMA );
-
-    elsif	USE_PRAGMA.TY = DN_PRAGMA
-    then null;	-- CODE_PRAGMA ( USE_PRAGMA );
-
+    if  USE_PRAGMA.TY = DN_USE  then
+      null;											--| INTENTIONNEL : use = visibilite, aucun code
+    elsif  USE_PRAGMA.TY = DN_PRAGMA  then
+      null;											--| INTENTIONNEL (partiel) : cf. CODE_STM_PRAGMA --
+												--| trier ICI si un pragma declaratif devient signifiant
+    else
+      CODI.TROU( "CODE_USE_PRAGMA", USE_PRAGMA );								--| vague 4 : dispatch muet
     end if;
+
   end	CODE_USE_PRAGMA;
 	---------------
 

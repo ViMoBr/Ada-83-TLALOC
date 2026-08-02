@@ -1,14 +1,17 @@
 if ~ definite MACHINE_CODE
 include 'MACHINE_CODE.FINC'
+display 'including withed unit MACHINE_CODE.FINC', 10
 end if
 if ~ definite MACHINE_CODE
 include 'MACHINE_CODE.FINC'
+display 'including trans withed unit MACHINE_CODE.FINC', 10
 end if
 CALENDAR = 'CALENDAR'
 namespace CALENDAR				;---------- PACKAGE (BDY)
 elab_spec:				;    SPEC ELAB
 
 					; CODE_PACKAGE_SPEC
+ hexa_show ' spec ', $
 ; EXPANDER.DECLARATIONS.CODE_TYPE_DECL : skip PRIVATE TIME (deferred to full type)
 
 					; _YEAR_NUMBER INTEGER SUBTYPE INFO
@@ -151,34 +154,45 @@ VAR DENOM, q
 	Sq	0, DENOM
 end namespace
 					;    BODY ELAB
+ hexa_show 'var elab EPOCH_DIFF_S ', $
 VAR EPOCH_DIFF_S_disp, q			; variable entiere
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	002208988800
 	Sq  0,	STANDARD.CALENDAR.EPOCH_DIFF_S_disp
 
+ hexa_show ' disp ', EPOCH_DIFF_S_disp
+ hexa_show 'var elab SCALE ', $
 VAR SCALE_disp, q				; variable entiere
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	000536870912
 	Sq  0,	STANDARD.CALENDAR.SCALE_disp
 
+ hexa_show ' disp ', SCALE_disp
+ hexa_show 'var elab DAYS_1900 ', $
 VAR DAYS_1900_disp, q			; variable entiere
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	00693901
 	Sq  0,	STANDARD.CALENDAR.DAYS_1900_disp
 
+ hexa_show ' disp ', DAYS_1900_disp
+ hexa_show 'var elab SECONDS_PER_DAY ', $
 VAR SECONDS_PER_DAY_disp, q			; variable entiere
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	00086400
 	Sq  0,	STANDARD.CALENDAR.SECONDS_PER_DAY_disp
 
+ hexa_show ' disp ', SECONDS_PER_DAY_disp
+ hexa_show 'var elab NS_PER_SEC ', $
 VAR NS_PER_SEC_disp, q			; variable entiere
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	001000000000
 	Sq  0,	STANDARD.CALENDAR.NS_PER_SEC_disp
 
+ hexa_show ' disp ', NS_PER_SEC_disp
 
 if defined DAYS_FROM_CIVIL_L1_
 PRO	DAYS_FROM_CIVIL_L1			;---------- PRO DAYS_FROM_CIVIL
+ hexa_show 'DAYS_FROM_CIVIL_L1 ', $
 PRMS					;    debut parametrage
 	PRM Y_IN_ofs				; in
 	PRM M_IN_ofs				; in
@@ -186,18 +200,30 @@ PRMS					;    debut parametrage
 	PRM result__ofs				; resultat de fonction
 endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
+ hexa_show 'var elab Y ', $
 VAR Y_disp, q				; variable entiere
 
+ hexa_show ' disp ', Y_disp
+ hexa_show 'var elab M_ADJ ', $
 VAR M_ADJ_disp, q				; variable entiere
 
+ hexa_show ' disp ', M_ADJ_disp
+ hexa_show 'var elab ERA ', $
 VAR ERA_disp, q				; variable entiere
 
+ hexa_show ' disp ', ERA_disp
+ hexa_show 'var elab YOE ', $
 VAR YOE_disp, q				; variable entiere
 
+ hexa_show ' disp ', YOE_disp
+ hexa_show 'var elab DOY ', $
 VAR DOY_disp, q				; variable entiere
 
+ hexa_show ' disp ', DOY_disp
+ hexa_show 'var elab DOE ', $
 VAR DOE_disp, q				; variable entiere
 
+ hexa_show ' disp ', DOE_disp
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 					; debut if
@@ -326,6 +352,7 @@ end if
 
 if defined CIVIL_FROM_DAYS_L8_
 PRO	CIVIL_FROM_DAYS_L8			;---------- PRO CIVIL_FROM_DAYS
+ hexa_show 'CIVIL_FROM_DAYS_L8 ', $
 PRMS					;    debut parametrage
 	PRM DAYS_ofs				; in
 	PRM Y_ofs				; out
@@ -333,24 +360,42 @@ PRMS					;    debut parametrage
 	PRM D_ofs				; out
 endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
+ hexa_show 'var elab ERA ', $
 VAR ERA_disp, q				; variable entiere
 
+ hexa_show ' disp ', ERA_disp
+ hexa_show 'var elab DOE ', $
 VAR DOE_disp, q				; variable entiere
 
+ hexa_show ' disp ', DOE_disp
+ hexa_show 'var elab YOE ', $
 VAR YOE_disp, q				; variable entiere
 
+ hexa_show ' disp ', YOE_disp
+ hexa_show 'var elab Y_OUT ', $
 VAR Y_OUT_disp, q				; variable entiere
 
+ hexa_show ' disp ', Y_OUT_disp
+ hexa_show 'var elab DOY ', $
 VAR DOY_disp, q				; variable entiere
 
+ hexa_show ' disp ', DOY_disp
+ hexa_show 'var elab MP ', $
 VAR MP_disp, q				; variable entiere
 
+ hexa_show ' disp ', MP_disp
+ hexa_show 'var elab M_OUT ', $
 VAR M_OUT_disp, q				; variable entiere
 
+ hexa_show ' disp ', M_OUT_disp
+ hexa_show 'var elab D_OUT ', $
 VAR D_OUT_disp, q				; variable entiere
 
+ hexa_show ' disp ', D_OUT_disp
+ hexa_show 'var elab TMP ', $
 VAR TMP_disp, q				; variable entiere
 
+ hexa_show ' disp ', TMP_disp
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 					; debut if
@@ -527,6 +572,7 @@ end if
 
 if defined CLOCK_L1_
 PRO	CLOCK_L1				;---------- PRO CLOCK
+ hexa_show 'CLOCK_L1 ', $
 PRMS					;    debut parametrage
 	PRM result__ofs				; resultat de fonction
 endPRMS					;    fin parametrage
@@ -549,6 +595,7 @@ end virtual
 	LI	 size*8
 	Sd	1, SIZ
 end namespace
+ hexa_show 'var elab LTV ', $
 VAR LTV_disp, q				; variable record : pointeur aux data record
 VAR LTV__u, q				; variable record : pointeur aux useinfo
 VAR LTV__dat, STANDARD.CALENDAR.CLOCK_L1._LINUX_TIMEVAL.size
@@ -556,15 +603,20 @@ VAR LTV__dat, STANDARD.CALENDAR.CLOCK_L1._LINUX_TIMEVAL.size
 	Sa	1, LTV_disp				; record fin
 	LVA	1, STANDARD.CALENDAR.CLOCK_L1._LINUX_TIMEVAL.SIZ
 	Sa	1, LTV__u
-; CODE_VC_NAME DN_VARIABLE_ID
 
+ hexa_show ' disp ', LTV_disp
+ hexa_show 'var elab T ', $
 VAR T_disp, q				; variable fixed
 
+ hexa_show ' disp ', T_disp
+ hexa_show 'var elab NANOSEC_PART ', $
 VAR NANOSEC_PART_disp, q			; variable fixed
 
+ hexa_show ' disp ', NANOSEC_PART_disp
 
 if defined GETTIME_SYSCALL_L15_
 PRO	GETTIME_SYSCALL_L15			;---------- PRO GETTIME_SYSCALL
+ hexa_show 'GETTIME_SYSCALL_L15 ', $
 PRMS					;    debut parametrage
 	PRM TV_ofs				; out
 endPRMS					;    fin parametrage
@@ -619,16 +671,19 @@ end if
 
 if defined WHOLE_SECONDS_L20_
 PRO	WHOLE_SECONDS_L20			;---------- PRO WHOLE_SECONDS
+ hexa_show 'WHOLE_SECONDS_L20 ', $
 PRMS					;    debut parametrage
 	PRM DATE_ofs				; in
 	PRM result__ofs				; resultat de fonction
 endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
+ hexa_show 'var elab D ', $
 VAR D_disp, q				; variable fixed
 	La  1,	-DATE_ofs
 ; CODE CONVERSION SOURCE DN_FIXED TARGET DN_FIXED
 	Sq  1,	D_disp
 
+ hexa_show ' disp ', D_disp
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 					; debut if
@@ -671,17 +726,21 @@ end if
 
 if defined YEAR_L2_
 PRO	YEAR_L2				;---------- PRO YEAR
+ hexa_show 'YEAR_L2 ', $
 PRMS					;    debut parametrage
 	PRM DATE_ofs				; in
 	PRM result__ofs				; resultat de fonction
 endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
+ hexa_show 'var elab SECONDS_TOTAL ', $
 VAR SECONDS_TOTAL_disp, q			; variable entiere
 	LI	0					; lieu resultat sur pile
 	La  1,	-DATE_ofs
 	CALL	STANDARD.CALENDAR. ,WHOLE_SECONDS_L20
 	Sq  1,	SECONDS_TOTAL_disp
 
+ hexa_show ' disp ', SECONDS_TOTAL_disp
+ hexa_show 'var elab DAYS_FROM_1900 ', $
 VAR DAYS_FROM_1900_disp, q			; variable entiere
 	Lq 1,	SECONDS_TOTAL_disp
 	Lq 0,	STANDARD.CALENDAR.SECONDS_PER_DAY_disp
@@ -692,12 +751,19 @@ VAR DAYS_FROM_1900_disp, q			; variable entiere
 	DIV
 	Sq  1,	DAYS_FROM_1900_disp
 
+ hexa_show ' disp ', DAYS_FROM_1900_disp
+ hexa_show 'var elab Y ', $
 VAR Y_disp, q				; variable entiere
 
+ hexa_show ' disp ', Y_disp
+ hexa_show 'var elab M ', $
 VAR M_disp, q				; variable entiere
 
+ hexa_show ' disp ', M_disp
+ hexa_show 'var elab D ', $
 VAR D_disp, q				; variable entiere
 
+ hexa_show ' disp ', D_disp
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 	LVA  1,	STANDARD.CALENDAR.YEAR_L2.D_disp
@@ -726,7 +792,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	Ld	0, STANDARD.CALENDAR._YEAR_NUMBER.LST
 	CGT
 	BT	STANDARD.ce_raise_
-	Sd  1,	-result__ofs
+	Sq  1,	-result__ofs
 	BRA ret_lbl
 ret_lbl:
 	UNLINK 1
@@ -737,17 +803,21 @@ end if
 
 if defined MONTH_L3_
 PRO	MONTH_L3				;---------- PRO MONTH
+ hexa_show 'MONTH_L3 ', $
 PRMS					;    debut parametrage
 	PRM DATE_ofs				; in
 	PRM result__ofs				; resultat de fonction
 endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
+ hexa_show 'var elab SECONDS_TOTAL ', $
 VAR SECONDS_TOTAL_disp, q			; variable entiere
 	LI	0					; lieu resultat sur pile
 	La  1,	-DATE_ofs
 	CALL	STANDARD.CALENDAR. ,WHOLE_SECONDS_L20
 	Sq  1,	SECONDS_TOTAL_disp
 
+ hexa_show ' disp ', SECONDS_TOTAL_disp
+ hexa_show 'var elab DAYS_FROM_1900 ', $
 VAR DAYS_FROM_1900_disp, q			; variable entiere
 	Lq 1,	SECONDS_TOTAL_disp
 	Lq 0,	STANDARD.CALENDAR.SECONDS_PER_DAY_disp
@@ -758,12 +828,19 @@ VAR DAYS_FROM_1900_disp, q			; variable entiere
 	DIV
 	Sq  1,	DAYS_FROM_1900_disp
 
+ hexa_show ' disp ', DAYS_FROM_1900_disp
+ hexa_show 'var elab Y ', $
 VAR Y_disp, q				; variable entiere
 
+ hexa_show ' disp ', Y_disp
+ hexa_show 'var elab M ', $
 VAR M_disp, q				; variable entiere
 
+ hexa_show ' disp ', M_disp
+ hexa_show 'var elab D ', $
 VAR D_disp, q				; variable entiere
 
+ hexa_show ' disp ', D_disp
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 	LVA  1,	STANDARD.CALENDAR.MONTH_L3.D_disp
@@ -792,7 +869,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	Ld	0, STANDARD.CALENDAR._MONTH_NUMBER.LST
 	CGT
 	BT	STANDARD.ce_raise_
-	Sd  1,	-result__ofs
+	Sq  1,	-result__ofs
 	BRA ret_lbl
 ret_lbl:
 	UNLINK 1
@@ -803,17 +880,21 @@ end if
 
 if defined DAY_L4_
 PRO	DAY_L4				;---------- PRO DAY
+ hexa_show 'DAY_L4 ', $
 PRMS					;    debut parametrage
 	PRM DATE_ofs				; in
 	PRM result__ofs				; resultat de fonction
 endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
+ hexa_show 'var elab SECONDS_TOTAL ', $
 VAR SECONDS_TOTAL_disp, q			; variable entiere
 	LI	0					; lieu resultat sur pile
 	La  1,	-DATE_ofs
 	CALL	STANDARD.CALENDAR. ,WHOLE_SECONDS_L20
 	Sq  1,	SECONDS_TOTAL_disp
 
+ hexa_show ' disp ', SECONDS_TOTAL_disp
+ hexa_show 'var elab DAYS_FROM_1900 ', $
 VAR DAYS_FROM_1900_disp, q			; variable entiere
 	Lq 1,	SECONDS_TOTAL_disp
 	Lq 0,	STANDARD.CALENDAR.SECONDS_PER_DAY_disp
@@ -824,12 +905,19 @@ VAR DAYS_FROM_1900_disp, q			; variable entiere
 	DIV
 	Sq  1,	DAYS_FROM_1900_disp
 
+ hexa_show ' disp ', DAYS_FROM_1900_disp
+ hexa_show 'var elab Y ', $
 VAR Y_disp, q				; variable entiere
 
+ hexa_show ' disp ', Y_disp
+ hexa_show 'var elab M ', $
 VAR M_disp, q				; variable entiere
 
+ hexa_show ' disp ', M_disp
+ hexa_show 'var elab D ', $
 VAR D_disp, q				; variable entiere
 
+ hexa_show ' disp ', D_disp
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 	LVA  1,	STANDARD.CALENDAR.DAY_L4.D_disp
@@ -858,7 +946,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	Ld	0, STANDARD.CALENDAR._DAY_NUMBER.LST
 	CGT
 	BT	STANDARD.ce_raise_
-	Sd  1,	-result__ofs
+	Sq  1,	-result__ofs
 	BRA ret_lbl
 ret_lbl:
 	UNLINK 1
@@ -869,17 +957,21 @@ end if
 
 if defined SECONDS_L5_
 PRO	SECONDS_L5				;---------- PRO SECONDS
+ hexa_show 'SECONDS_L5 ', $
 PRMS					;    debut parametrage
 	PRM DATE_ofs				; in
 	PRM result__ofs				; resultat de fonction
 endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
+ hexa_show 'var elab SECONDS_TOTAL ', $
 VAR SECONDS_TOTAL_disp, q			; variable entiere
 	LI	0					; lieu resultat sur pile
 	La  1,	-DATE_ofs
 	CALL	STANDARD.CALENDAR. ,WHOLE_SECONDS_L20
 	Sq  1,	SECONDS_TOTAL_disp
 
+ hexa_show ' disp ', SECONDS_TOTAL_disp
+ hexa_show 'var elab SEC_OF_DAY ', $
 VAR SEC_OF_DAY_disp, q			; variable entiere
 	Lq 1,	SECONDS_TOTAL_disp
 	Lq 0,	STANDARD.CALENDAR.SECONDS_PER_DAY_disp
@@ -890,6 +982,8 @@ VAR SEC_OF_DAY_disp, q			; variable entiere
 	REMI
 	Sq  1,	SEC_OF_DAY_disp
 
+ hexa_show ' disp ', SEC_OF_DAY_disp
+ hexa_show 'var elab FRAC_PART ', $
 VAR FRAC_PART_disp, q			; variable fixed
 	La  1,	-DATE_ofs
 ; CODE CONVERSION SOURCE DN_FIXED TARGET DN_FIXED
@@ -901,6 +995,7 @@ VAR FRAC_PART_disp, q			; variable fixed
 	SUB
 	Sq  1,	FRAC_PART_disp
 
+ hexa_show ' disp ', FRAC_PART_disp
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 ; CODE_RETURN : EXPR TYPE = DN_FIXED  VUE COMPLETE = DN_FIXED
@@ -923,6 +1018,7 @@ end if
 
 if defined SPLIT_L6_
 PRO	SPLIT_L6				;---------- PRO SPLIT
+ hexa_show 'SPLIT_L6 ', $
 PRMS					;    debut parametrage
 	PRM DATE_ofs				; in
 	PRM YEAR_ofs				; out
@@ -931,12 +1027,15 @@ PRMS					;    debut parametrage
 	PRM SECONDS_ofs				; out
 endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
+ hexa_show 'var elab SEC_TOTAL ', $
 VAR SEC_TOTAL_disp, q			; variable entiere
 	LI	0					; lieu resultat sur pile
 	La  1,	-DATE_ofs
 	CALL	STANDARD.CALENDAR. ,WHOLE_SECONDS_L20
 	Sq  1,	SEC_TOTAL_disp
 
+ hexa_show ' disp ', SEC_TOTAL_disp
+ hexa_show 'var elab DAYS_FROM_1900 ', $
 VAR DAYS_FROM_1900_disp, q			; variable entiere
 	Lq 1,	SEC_TOTAL_disp
 	Lq 0,	STANDARD.CALENDAR.SECONDS_PER_DAY_disp
@@ -947,6 +1046,8 @@ VAR DAYS_FROM_1900_disp, q			; variable entiere
 	DIV
 	Sq  1,	DAYS_FROM_1900_disp
 
+ hexa_show ' disp ', DAYS_FROM_1900_disp
+ hexa_show 'var elab SEC_OF_DAY ', $
 VAR SEC_OF_DAY_disp, q			; variable entiere
 	Lq 1,	SEC_TOTAL_disp
 	Lq 0,	STANDARD.CALENDAR.SECONDS_PER_DAY_disp
@@ -957,6 +1058,8 @@ VAR SEC_OF_DAY_disp, q			; variable entiere
 	REMI
 	Sq  1,	SEC_OF_DAY_disp
 
+ hexa_show ' disp ', SEC_OF_DAY_disp
+ hexa_show 'var elab FRAC_PART ', $
 VAR FRAC_PART_disp, q			; variable fixed
 	La  1,	-DATE_ofs
 ; CODE CONVERSION SOURCE DN_FIXED TARGET DN_FIXED
@@ -968,12 +1071,19 @@ VAR FRAC_PART_disp, q			; variable fixed
 	SUB
 	Sq  1,	FRAC_PART_disp
 
+ hexa_show ' disp ', FRAC_PART_disp
+ hexa_show 'var elab Y ', $
 VAR Y_disp, q				; variable entiere
 
+ hexa_show ' disp ', Y_disp
+ hexa_show 'var elab M ', $
 VAR M_disp, q				; variable entiere
 
+ hexa_show ' disp ', M_disp
+ hexa_show 'var elab D ', $
 VAR D_disp, q				; variable entiere
 
+ hexa_show ' disp ', D_disp
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 	LVA  1,	STANDARD.CALENDAR.SPLIT_L6.D_disp
@@ -1058,6 +1168,7 @@ end if
 
 if defined TIME_OF_L7_
 PRO	TIME_OF_L7				;---------- PRO TIME_OF
+ hexa_show 'TIME_OF_L7 ', $
 PRMS					;    debut parametrage
 	PRM YEAR_ofs				; in
 	PRM MONTH_ofs				; in
@@ -1066,6 +1177,7 @@ PRMS					;    debut parametrage
 	PRM result__ofs				; resultat de fonction
 endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
+ hexa_show 'var elab DAYS_FROM_HINNANT ', $
 VAR DAYS_FROM_HINNANT_disp, q			; variable entiere
 	LI	0					; lieu resultat sur pile
 	Ld  1,	-DAY_ofs
@@ -1077,12 +1189,15 @@ VAR DAYS_FROM_HINNANT_disp, q			; variable entiere
 	CALL	STANDARD.CALENDAR. ,DAYS_FROM_CIVIL_L1
 	Sq  1,	DAYS_FROM_HINNANT_disp
 
+ hexa_show ' disp ', DAYS_FROM_HINNANT_disp
+ hexa_show 'var elab DAYS_FROM_1900_LOCAL ', $
 VAR DAYS_FROM_1900_LOCAL_disp, q		; variable entiere
 	Lq 1,	DAYS_FROM_HINNANT_disp
 	Lq 0,	STANDARD.CALENDAR.DAYS_1900_disp
 	SUB
 	Sq  1,	DAYS_FROM_1900_LOCAL_disp
 
+ hexa_show ' disp ', DAYS_FROM_1900_LOCAL_disp
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 ; CODE_RETURN : EXPR TYPE = DN_PRIVATE  VUE COMPLETE = DN_FIXED
@@ -1106,6 +1221,7 @@ end if
 
 if defined _PLUS__L8_
 PRO	_PLUS__L8				;---------- PRO _PLUS_
+ hexa_show '_PLUS__L8 ', $
 PRMS					;    debut parametrage
 	PRM LEFT_ofs				; in
 	PRM RIGHT_ofs				; in
@@ -1131,6 +1247,7 @@ end if
 
 if defined _PLUS__L9_
 PRO	_PLUS__L9				;---------- PRO _PLUS_
+ hexa_show '_PLUS__L9 ', $
 PRMS					;    debut parametrage
 	PRM LEFT_ofs				; in
 	PRM RIGHT_ofs				; in
@@ -1156,6 +1273,7 @@ end if
 
 if defined _MINUS__L10_
 PRO	_MINUS__L10				;---------- PRO _MINUS_
+ hexa_show '_MINUS__L10 ', $
 PRMS					;    debut parametrage
 	PRM LEFT_ofs				; in
 	PRM RIGHT_ofs				; in
@@ -1181,6 +1299,7 @@ end if
 
 if defined _MINUS__L11_
 PRO	_MINUS__L11				;---------- PRO _MINUS_
+ hexa_show '_MINUS__L11 ', $
 PRMS					;    debut parametrage
 	PRM LEFT_ofs				; in
 	PRM RIGHT_ofs				; in
@@ -1206,6 +1325,7 @@ end if
 
 if defined _LT__L12_
 PRO	_LT__L12				;---------- PRO _LT_
+ hexa_show '_LT__L12 ', $
 PRMS					;    debut parametrage
 	PRM LEFT_ofs				; in
 	PRM RIGHT_ofs				; in
@@ -1218,7 +1338,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	La  1,	-LEFT_ofs
 	La  1,	-RIGHT_ofs
 	CLT
-	Sb  1,	-result__ofs
+	Sq  1,	-result__ofs
 	BRA ret_lbl
 ret_lbl:
 	UNLINK 1
@@ -1229,6 +1349,7 @@ end if
 
 if defined _LE__L13_
 PRO	_LE__L13				;---------- PRO _LE_
+ hexa_show '_LE__L13 ', $
 PRMS					;    debut parametrage
 	PRM LEFT_ofs				; in
 	PRM RIGHT_ofs				; in
@@ -1241,7 +1362,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	La  1,	-LEFT_ofs
 	La  1,	-RIGHT_ofs
 	CLE
-	Sb  1,	-result__ofs
+	Sq  1,	-result__ofs
 	BRA ret_lbl
 ret_lbl:
 	UNLINK 1
@@ -1252,6 +1373,7 @@ end if
 
 if defined _GT__L14_
 PRO	_GT__L14				;---------- PRO _GT_
+ hexa_show '_GT__L14 ', $
 PRMS					;    debut parametrage
 	PRM LEFT_ofs				; in
 	PRM RIGHT_ofs				; in
@@ -1264,7 +1386,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	La  1,	-LEFT_ofs
 	La  1,	-RIGHT_ofs
 	CGT
-	Sb  1,	-result__ofs
+	Sq  1,	-result__ofs
 	BRA ret_lbl
 ret_lbl:
 	UNLINK 1
@@ -1275,6 +1397,7 @@ end if
 
 if defined _GE__L15_
 PRO	_GE__L15				;---------- PRO _GE_
+ hexa_show '_GE__L15 ', $
 PRMS					;    debut parametrage
 	PRM LEFT_ofs				; in
 	PRM RIGHT_ofs				; in
@@ -1287,7 +1410,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	La  1,	-LEFT_ofs
 	La  1,	-RIGHT_ofs
 	CGE
-	Sb  1,	-result__ofs
+	Sq  1,	-result__ofs
 	BRA ret_lbl
 ret_lbl:
 	UNLINK 1

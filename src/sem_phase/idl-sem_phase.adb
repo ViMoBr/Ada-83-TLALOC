@@ -4,7 +4,7 @@
 ------------------------------------------------------------------------------------------------------------------------
 --	1	2	3	4	5	6	7	8	9	0	1	2
 
-separate(	IDL )
+separate( IDL )
 
 					---------
 		procedure			SEM_PHASE
@@ -16,11 +16,11 @@ is					---------
 				--------
   is
 
---    type SB_TYPE	is record								--| SAUVE	ET RESTAURE AUTOUR DES CORPS
+--    type SB_TYPE  is record								--| SAUVE ET RESTAURE AUTOUR DES CORPS
 --		  null;
 --		end record;
 
-    type SU_TYPE	is record								--| SAUVE	ET RESTAURE AUTOUR DES REGIONS
+    type SU_TYPE	is record								--| SAUVE ET RESTAURE AUTOUR DES REGIONS
 		  USED_PACKAGE_LIST		: SEQ_TYPE;
 		  INCOMPLETE_TYPE_LIST	: SEQ_TYPE;
 		  PRIVATE_TYPE_LIST		: SEQ_TYPE;
@@ -33,7 +33,7 @@ is					---------
 		  IS_IN_BODY	: BOOLEAN;
 		  SUBP_SYMREP	: TREE;
 		  RETURN_TYPE	: TREE;
-		  ENCLOSING_LOOP_ID	: TREE;
+		  ENCLOSING_LOOP_ID : TREE;
 		end record;
 
 --    SB			: SB_TYPE;
@@ -86,37 +86,37 @@ is					---------
   --		UNIV_OPS
 
   --|------------------------------------------------------------------------------------------------
-  package	UNIV_OPS is
+  package UNIV_OPS is
 
     URADIX		: constant := 10_000;
 
-    type UDIGIT		is range -32_768 ..	32_767;		for UDIGIT'SIZE use	16;
+    type UDIGIT		is range -32_768 .. 32_767;		for UDIGIT'SIZE use 16;
 
-    type VECTOR_DIGITS	is array(	1..252 ) of UDIGIT;		pragma PACK( VECTOR_DIGITS );
+    type VECTOR_DIGITS	is array( 1..252 ) of UDIGIT;		pragma PACK( VECTOR_DIGITS );
 
     type VECTOR		is record
 			  L	: NATURAL;					--| NOMBRE DE "CHIFFRES" 10_000 AIRES
-			  S	: UDIGIT;						--| SIGNE	+1 OR -1
+			  S	: UDIGIT;						--| SIGNE +1 OR -1
 			  D	: VECTOR_DIGITS;					--| CHIFFRES EN BASE 10_000
-			end record;			pragma PACK( VECTOR	);
+			end record;			pragma PACK( VECTOR );
 
     function  U_INT		( V :VECTOR )			return TREE;		--| FABRIQUE UN ENTIER UNIVERSEL À PARTIR D'UN VECTEUR
-    function  U_REAL	( NUMER, DENOM :VECTOR )		return TREE;		--| UNIVERSAL REAL À PARTIR DE VECTEURS	DEJÀ REDUITS AUX TERMES LES PLUS BAS
+    function  U_REAL	( NUMER, DENOM :VECTOR )		return TREE;		--| UNIVERSAL REAL À PARTIR DE VECTEURS DEJÀ REDUITS AUX TERMES LES PLUS BAS
     function  U_REAL	( NUMER, DENOM :TREE )		return TREE;		--| UNIVERSAL REAL AVEC DEUX ENTIERS UNIVERSELS (NON NECESSAIREMENT REDUITS)
     procedure SPREAD	( T :TREE; V :in out VECTOR );
-    procedure SPREAD	( I :INTEGER; V :in	out VECTOR );
+    procedure SPREAD	( I :INTEGER; V :in out VECTOR );
     procedure NORMALIZE	( V :in out VECTOR );
 
-      --|	LES SIGNES SONT IGNORES : OPERATIONS SUR VALEURS ABSOLUES
+      --| LES SIGNES SONT IGNORES : OPERATIONS SUR VALEURS ABSOLUES
 
-    procedure V_ADD		( A :VECTOR; R :in out VECTOR	);				-- |R| + |A| --> |R|
-    procedure V_SUB		( A :VECTOR; R :in out VECTOR	);				-- |R| - |A| --> |R| ; ASSUME	|A| < |R|
+    procedure V_ADD		( A :VECTOR; R :in out VECTOR );				-- |R| + |A| --> |R|
+    procedure V_SUB		( A :VECTOR; R :in out VECTOR );				-- |R| - |A| --> |R| ; ASSUME |A| < |R|
     procedure V_MUL		( A,B :VECTOR; R :in out VECTOR );				-- |A| * |B| --> R
-    procedure V_SCALE	( A :INTEGER; R :in	out VECTOR );				-- A * R --> R ; ASSUME A > 0
-    procedure V_DIV		( A :VECTOR; R, Q :in out VECTOR );				-- |R| / |A| --> Q REMAINDER |R| ASSUME	A /= 0
-    procedure V_REM		( A :VECTOR; R :in out VECTOR	);				-- |R| / |A| --> ... REMAINDER |R| ; ASSUME A /= 0
-    procedure V_GCD		( A,B :VECTOR; R :in out VECTOR );				-- GCD(|A|,|B|) -->	R
-    procedure V_LOWEST_TERMS	( A,B : in out VECTOR );					-- REDUCE	|A|/|B| TO LOWEST TERMS, ASSUME B /= 0
+    procedure V_SCALE	( A :INTEGER; R :in out VECTOR );				-- A * R --> R ; ASSUME A > 0
+    procedure V_DIV		( A :VECTOR; R, Q :in out VECTOR );				-- |R| / |A| --> Q REMAINDER |R| ASSUME A /= 0
+    procedure V_REM		( A :VECTOR; R :in out VECTOR );				-- |R| / |A| --> ... REMAINDER |R| ; ASSUME A /= 0
+    procedure V_GCD		( A,B :VECTOR; R :in out VECTOR );				-- GCD(|A|,|B|) --> R
+    procedure V_LOWEST_TERMS  ( A,B : in out VECTOR );					-- REDUCE |A|/|B| TO LOWEST TERMS, ASSUME B /= 0
     function  V_EQUAL	( A,B : VECTOR )			return BOOLEAN;		-- TEST |A| = |B|, |A| < |B|
     function  V_LESS	( A,B : VECTOR )			return BOOLEAN;
 
@@ -132,30 +132,30 @@ is					---------
   --		UARITH
 
   --|------------------------------------------------------------------------------------------------
-  package	UARITH is
+  package UARITH is
 
     function  U_VAL		( A :INTEGER )			return TREE;
     function  U_VALUE	( TXT :STRING )			return TREE;
     function  U_POS		( A : TREE )			return INTEGER;
 
-    function  U_EQUAL	( LEFT, RIGHT: TREE	)		return TREE;
-    function  U_NOT_EQUAL	( LEFT, RIGHT: TREE	)		return TREE;
-    function  "<"		( LEFT, RIGHT: TREE	)		return TREE;
-    function  "<="		( LEFT, RIGHT :TREE	)		return TREE;
-    function  ">"		( LEFT, RIGHT :TREE	)		return TREE;
-    function  ">="		( LEFT, RIGHT :TREE	)		return TREE;
-    function  U_MEMBER	( VALUE, DISCRETE_RANGE :TREE	)	return TREE;
+    function  U_EQUAL	( LEFT, RIGHT: TREE )		return TREE;
+    function  U_NOT_EQUAL	( LEFT, RIGHT: TREE )		return TREE;
+    function  "<"		( LEFT, RIGHT: TREE )		return TREE;
+    function  "<="		( LEFT, RIGHT :TREE )		return TREE;
+    function  ">"		( LEFT, RIGHT :TREE )		return TREE;
+    function  ">="		( LEFT, RIGHT :TREE )		return TREE;
+    function  U_MEMBER	( VALUE, DISCRETE_RANGE :TREE )	return TREE;
 
-        -- FOLLOWING RETURN BOOLEAN (FOR COMPILER	RANGE TESTS)
-    function  "<="		( LEFT, RIGHT :TREE	)		return BOOLEAN;
-    function  ">="		( LEFT, RIGHT :TREE	)		return BOOLEAN;
-    function  U_EQUAL	( LEFT, RIGHT :TREE	)		return BOOLEAN;
-    function  U_MEMBER	( VALUE, DISCRETE_RANGE :TREE	)	return BOOLEAN;
+        -- FOLLOWING RETURN BOOLEAN (FOR COMPILER RANGE TESTS)
+    function  "<="		( LEFT, RIGHT :TREE )		return BOOLEAN;
+    function  ">="		( LEFT, RIGHT :TREE )		return BOOLEAN;
+    function  U_EQUAL	( LEFT, RIGHT :TREE )		return BOOLEAN;
+    function  U_MEMBER	( VALUE, DISCRETE_RANGE :TREE )	return BOOLEAN;
 
-        -- FOLLOWING EXPECT 0	OR 1 AS ARGUMENT --	BOOLEAN OPERATORS
-    function "AND"		( LEFT, RIGHT :TREE	)		return TREE;
-    function "OR"		( LEFT, RIGHT :TREE	)		return TREE;
-    function "XOR"		( LEFT, RIGHT :TREE	)		return TREE;
+        -- FOLLOWING EXPECT 0 OR 1 AS ARGUMENT -- BOOLEAN OPERATORS
+    function "AND"		( LEFT, RIGHT :TREE )		return TREE;
+    function "OR"		( LEFT, RIGHT :TREE )		return TREE;
+    function "XOR"		( LEFT, RIGHT :TREE )		return TREE;
     function "NOT"		( RIGHT :TREE )			return TREE;
 
         -- UNARY FUNCTIONS
@@ -163,13 +163,13 @@ is					---------
     function "ABS"		( RIGHT :TREE )			return TREE;
 
         -- BINARY FUNCTIONS
-    function "+"		( LEFT, RIGHT :TREE	)		return TREE;
-    function "-"		( LEFT, RIGHT :TREE	)		return TREE;
-    function "*"		( LEFT, RIGHT :TREE	)		return TREE;		-- I*I, I*R, R*I, R*R
-    function "/"		( LEFT, RIGHT :TREE	)		return TREE;		-- I/I, R/I, R/R
-    function "MOD"		( LEFT, RIGHT :TREE	)		return TREE;
-    function "REM"		( LEFT, RIGHT :TREE	)		return TREE;
-    function "**"		( LEFT, RIGHT :TREE	)		return TREE;		-- I**I, R**I
+    function "+"		( LEFT, RIGHT :TREE )		return TREE;
+    function "-"		( LEFT, RIGHT :TREE )		return TREE;
+    function "*"		( LEFT, RIGHT :TREE )		return TREE;		-- I*I, I*R, R*I, R*R
+    function "/"		( LEFT, RIGHT :TREE )		return TREE;		-- I/I, R/I, R/R
+    function "MOD"		( LEFT, RIGHT :TREE )		return TREE;
+    function "REM"		( LEFT, RIGHT :TREE )		return TREE;
+    function "**"		( LEFT, RIGHT :TREE )		return TREE;		-- I**I, R**I
 
   --|-----------------------------------------------------------------------------------------------
   end UARITH;
@@ -183,7 +183,7 @@ is					---------
   --		FIX_WITH
 
   --|------------------------------------------------------------------------------------------------
-  package	FIX_WITH is
+  package FIX_WITH is
 
     USED_PACKAGE_LIST	: SEQ_TYPE;
 
@@ -202,7 +202,7 @@ is					---------
   --		DEF_UTIL
 
   --|------------------------------------------------------------------------------------------------
-  package	DEF_UTIL is
+  package DEF_UTIL is
 
     function  MAKE_DEF_FOR_ID			( ID :TREE; H :H_TYPE )		return TREE;
     procedure CHECK_UNIQUE_SOURCE_NAME_S	( SOURCE_NAME_S :TREE );
@@ -211,16 +211,16 @@ is					---------
     function  GET_PRIOR_DEF			( DEF :TREE )			return TREE;
     function  GET_PRIOR_HOMOGRAPH_DEF		( DEF :TREE )			return TREE;
     function  GET_PRIOR_HOMOGRAPH_DEF		( DEF, PARAM_S :TREE;
-					  RESULT_TYPE :TREE	:= TREE_VOID )	return TREE;
+					  RESULT_TYPE :TREE := TREE_VOID )	return TREE;
     function  GET_DEF_IN_REGION		( ID :TREE; H :H_TYPE )		return TREE;
     procedure CHECK_UNIQUE_DEF		( SOURCE_DEF :TREE);
-    procedure CHECK_CONSTANT_DEF		( SOURCE_DEF :TREE;	H :H_TYPE	);
-    procedure CHECK_TYPE_DEF			( SOURCE_DEF :TREE;	H :H_TYPE	);
+    procedure CHECK_CONSTANT_DEF		( SOURCE_DEF :TREE; H :H_TYPE );
+    procedure CHECK_TYPE_DEF			( SOURCE_DEF :TREE; H :H_TYPE );
     function  ARE_HOMOGRAPH_HEADERS		( HEADER_1, HEADER_2 :TREE )		return BOOLEAN;
     function  IS_SAME_PARAMETER_PROFILE		( PARAM_S_1, PARAM_S_2 :TREE )	return BOOLEAN;
     procedure CONFORM_PARAMETER_LISTS		( PARAM_S_1, PARAM_S_2 :TREE );
     function  IS_COMPATIBLE_EXPRESSION		( EXP_1, EXP_2 :TREE )		return BOOLEAN;
-    procedure MAKE_DEF_VISIBLE		( DEF :TREE; HEADER	:TREE := TREE_VOID );
+    procedure MAKE_DEF_VISIBLE		( DEF :TREE; HEADER :TREE := TREE_VOID );
     procedure MAKE_DEF_IN_ERROR		( DEF :TREE );
     procedure REMOVE_DEF_FROM_ENVIRONMENT	( DEF :TREE );
 
@@ -240,7 +240,7 @@ is					---------
   --		SET_UTIL
 
   --|------------------------------------------------------------------------------------------------
-  package	SET_UTIL is
+  package SET_UTIL is
 
     type DEFSET_TYPE	is private;
     type TYPESET_TYPE	is private;
@@ -253,7 +253,7 @@ is					---------
     NULL_EXTRAINFO		: constant EXTRAINFO_TYPE;
 
 
-			--  OPERATIONS SUR LES LISTES	DE DEFINITIONS  --
+			--  OPERATIONS SUR LES LISTES DE DEFINITIONS  --
 
     function  IS_EMPTY		( DEFSET	   :DEFSET_TYPE )		return BOOLEAN;
     procedure POP			( DEFSET	   :in out DEFSET_TYPE;
@@ -278,7 +278,7 @@ is					---------
     procedure ADD_EXTRAINFO		( EXTRAINFO  :in out EXTRAINFO_TYPE;  EXTRAINFO_IN :EXTRAINFO_TYPE );
 
 
-			--  OPERATIONS SUR LES LISTES	DE TYPES	--
+			--  OPERATIONS SUR LES LISTES DE TYPES  --
 
     function  IS_EMPTY		( TYPESET	   :TYPESET_TYPE )		return BOOLEAN;
     procedure POP			( TYPESET	   :in out TYPESET_TYPE;
@@ -290,23 +290,23 @@ is					---------
 				  EXTRAINFO  :EXTRAINFO_TYPE := NULL_EXTRAINFO );
 
     procedure ADD_TO_TYPESET		( TYPESET	   :in out TYPESET_TYPE;
-				  TYPEINTERP :TYPEINTERP_TYPE	);
+				  TYPEINTERP :TYPEINTERP_TYPE );
     function  INSERT		( TYPESET	   :TYPESET_TYPE;
-				  TYPEINTERP :TYPEINTERP_TYPE	)	return TYPESET_TYPE;
-    function  GET_TYPE		( TYPEINTERP :TYPEINTERP_TYPE	)	return TREE;
-    function  GET_EXTRAINFO		( TYPEINTERP :TYPEINTERP_TYPE	)	return EXTRAINFO_TYPE;
+				  TYPEINTERP :TYPEINTERP_TYPE )	return TYPESET_TYPE;
+    function  GET_TYPE		( TYPEINTERP :TYPEINTERP_TYPE )	return TREE;
+    function  GET_EXTRAINFO		( TYPEINTERP :TYPEINTERP_TYPE )	return EXTRAINFO_TYPE;
     procedure ADD_EXTRAINFO		( TYPEINTERP :in out TYPEINTERP_TYPE; EXTRAINFO	 :EXTRAINFO_TYPE );
     procedure ADD_EXTRAINFO		( TYPEINTERP :in out TYPEINTERP_TYPE; EXTRAINFO_OF :TYPEINTERP_TYPE );
 
 
 
 
-    procedure REQUIRE_UNIQUE_DEF	( EXP :TREE; DEFSET	:in out DEFSET_TYPE	);
+    procedure REQUIRE_UNIQUE_DEF	( EXP :TREE; DEFSET :in out DEFSET_TYPE );
     procedure REQUIRE_UNIQUE_TYPE	( EXP :TREE; TYPESET :in out TYPESET_TYPE );
 
-    procedure REDUCE_OPERATOR_DEFS( EXP	:TREE; DEFSET :in out DEFSET_TYPE );
+    procedure REDUCE_OPERATOR_DEFS( EXP :TREE; DEFSET :in out DEFSET_TYPE );
 
-    procedure STASH_DEFSET	( EXP :TREE; DEFSET	:DEFSET_TYPE );
+    procedure STASH_DEFSET	( EXP :TREE; DEFSET :DEFSET_TYPE );
     function  FETCH_DEFSET	( EXP :TREE )			return DEFSET_TYPE;
     procedure STASH_TYPESET	( EXP :TREE; TYPESET :TYPESET_TYPE );
     function  FETCH_TYPESET	( EXP :TREE )			return TYPESET_TYPE;
@@ -325,7 +325,7 @@ is					---------
 
     EMPTY_DEFSET	: constant DEFSET_TYPE	:= (TREE_NIL,TREE_NIL);
     EMPTY_TYPESET	: constant TYPESET_TYPE	:= (TREE_NIL,TREE_NIL);
-    NULL_EXTRAINFO	: constant EXTRAINFO_TYPE	:= (TREE_NIL,TREE_NIL);
+    NULL_EXTRAINFO  : constant EXTRAINFO_TYPE	:= (TREE_NIL,TREE_NIL);
 
   --|--------------------------------------------------------------------------------------------------
   end SET_UTIL;
@@ -339,23 +339,23 @@ is					---------
   --		REQ_UTIL
 
   --|------------------------------------------------------------------------------------------------
-  package	REQ_UTIL is
+  package REQ_UTIL is
 
     --|----------------------------------------------------------------------------------------------
     --|	REQ_GENE
     --|----------------------------------------------------------------------------------------------
     package REQ_GENE is
-      use	SET_UTIL;
+      use SET_UTIL;
 
       generic
         with function IS_XXX ( ITEM :TREE ) return BOOLEAN;
         MESSAGE :in STRING;
-      procedure REQ_DEF_XXX		( EXP :TREE; DEFSET	:in out DEFSET_TYPE	);
+      procedure REQ_DEF_XXX		( EXP :TREE; DEFSET :in out DEFSET_TYPE );
 
       generic
         with function IS_XXX ( ITEM :TREE ) return BOOLEAN;
         MESSAGE: in STRING;
-      procedure REQ_TYPE_XXX	( EXP :TREE; TYPESET :in out TYPESET_TYPE );
+      procedure REQ_TYPE_XXX  ( EXP :TREE; TYPESET :in out TYPESET_TYPE );
 
     --|----------------------------------------------------------------------------------------
     end REQ_GENE;
@@ -367,7 +367,7 @@ is					---------
 					  EXP_2 :TREE; TYPESET_2 :TYPESET_TYPE;
 					  TYPESET_OUT :out TYPESET_TYPE );
     procedure REQUIRE_TYPE			( TYPE_SPEC :TREE; EXP :TREE;
-					  TYPESET	:in out TYPESET_TYPE );
+					  TYPESET :in out TYPESET_TYPE );
     function  IS_NONLIMITED_TYPE		( ITEM :TREE )			return BOOLEAN;
     function  IS_LIMITED_TYPE			( ITEM :TREE )			return BOOLEAN;
     function  IS_PRIVATE_TYPE			( ITEM :TREE )			return BOOLEAN;
@@ -375,7 +375,7 @@ is					---------
     function  IS_BOOLEAN_TYPE			( ITEM :TREE )			return BOOLEAN;
     function  IS_REAL_TYPE			( ITEM :TREE )			return BOOLEAN;
     function  IS_SCALAR_TYPE			( ITEM :TREE )			return BOOLEAN;
-    function  IS_MEMBER_OF_UNSPECIFIED		( SPEC_TYPE :TREE; UNSPEC_TYPE :TREE )	return BOOLEAN;
+    function  IS_MEMBER_OF_UNSPECIFIED		( SPEC_TYPE :TREE; UNSPEC_TYPE :TREE )  return BOOLEAN;
     function  IS_NONLIMITED_COMPOSITE_TYPE	( TYPE_SPEC :TREE )			return BOOLEAN;
     function  IS_STRING_TYPE			( TYPE_SPEC :TREE )			return BOOLEAN;
     function  IS_CHARACTER_TYPE		( TYPE_SPEC :TREE )			return BOOLEAN;
@@ -383,7 +383,7 @@ is					---------
     function  IS_NON_UNIVERSAL_TYPE		( ITEM :TREE )			return BOOLEAN;
     function  IS_DISCRETE_TYPE		( ITEM :TREE )			return BOOLEAN;
     function  IS_TASK_TYPE			( ITEM :TREE )			return BOOLEAN;
-    procedure REQUIRE_ID			( ID_KIND	:NODE_NAME; EXP :TREE;
+    procedure REQUIRE_ID			( ID_KIND :NODE_NAME; EXP :TREE;
 					  DEFSET :in out DEFSET_TYPE );
     function  IS_TYPE_DEF			( ITEM :TREE )			return BOOLEAN;
     function  IS_ENTRY_DEF			( ITEM :TREE )			return BOOLEAN;
@@ -400,11 +400,11 @@ is					---------
     procedure REQUIRE_NON_UNIVERSAL_TYPE	( EXP :TREE; TYPESET :in out TYPESET_TYPE );
     procedure REQUIRE_DISCRETE_TYPE		( EXP :TREE; TYPESET :in out TYPESET_TYPE );
     procedure REQUIRE_TASK_TYPE		( EXP :TREE; TYPESET :in out TYPESET_TYPE );
-    procedure REQUIRE_TYPE_DEF		( EXP :TREE; DEFSET	:in out DEFSET_TYPE	);
-    procedure REQUIRE_ENTRY_DEF		( EXP :TREE; DEFSET	:in out DEFSET_TYPE	);
-    procedure REQUIRE_PROC_OR_ENTRY_DEF		( EXP :TREE; DEFSET	:in out DEFSET_TYPE	);
-    procedure REQUIRE_FUNCTION_OR_ARRAY_DEF	( EXP :TREE; DEFSET	:in out DEFSET_TYPE	);
-    procedure REQUIRE_FUNCTION_OR_ENUMERATION_DEF	( EXP :TREE; DEFSET	:in out DEFSET_TYPE	);
+    procedure REQUIRE_TYPE_DEF		( EXP :TREE; DEFSET :in out DEFSET_TYPE );
+    procedure REQUIRE_ENTRY_DEF		( EXP :TREE; DEFSET :in out DEFSET_TYPE );
+    procedure REQUIRE_PROC_OR_ENTRY_DEF		( EXP :TREE; DEFSET :in out DEFSET_TYPE );
+    procedure REQUIRE_FUNCTION_OR_ARRAY_DEF	( EXP :TREE; DEFSET :in out DEFSET_TYPE );
+    procedure REQUIRE_FUNCTION_OR_ENUMERATION_DEF ( EXP :TREE; DEFSET :in out DEFSET_TYPE );
 
   --|-------------------------------------------------------------------------------------------
   end REQ_UTIL;
@@ -419,19 +419,19 @@ is					---------
   --		AGGRESO
 
   --|------------------------------------------------------------------------------------------------
-  package	AGGRESO is
+  package AGGRESO is
     use SET_UTIL, DEF_UTIL, REQ_UTIL;
 
     type AGGREGATE_ITEM_TYPE		is private;
 
     type AGGREGATE_ARRAY_TYPE		is array (POSITIVE range <>) of AGGREGATE_ITEM_TYPE;
 
-    function  COUNT_AGGREGATE_CHOICES	( ASSOC_S	:TREE )				return NATURAL;
-    procedure SPREAD_ASSOC_S		( ASSOC_S	:TREE; AGGREGATE_ARRAY :in out AGGREGATE_ARRAY_TYPE );
-    procedure WALK_RECORD_DECL_S	( EXP :TREE; DECL_S	:TREE; AGGREGATE_ARRAY :in out AGGREGATE_ARRAY_TYPE;
-				  NORMALIZED_LIST :in out SEQ_TYPE; LAST_POSITIONAL :in out	NATURAL );
-    procedure RESOLVE_RECORD_ASSOC_S	( ASSOC_S	:TREE; AGGREGATE_ARRAY :in out AGGREGATE_ARRAY_TYPE );
-    function  RESOLVE_EXP_OR_AGGREGATE	( EXP :TREE; SUBTYPE_SPEC :TREE; NAMED_OTHERS_OK :BOOLEAN )		return TREE;
+    function  COUNT_AGGREGATE_CHOICES	( ASSOC_S :TREE )				return NATURAL;
+    procedure SPREAD_ASSOC_S		( ASSOC_S :TREE; AGGREGATE_ARRAY :in out AGGREGATE_ARRAY_TYPE );
+    procedure WALK_RECORD_DECL_S	( EXP :TREE; DECL_S :TREE; AGGREGATE_ARRAY :in out AGGREGATE_ARRAY_TYPE;
+				  NORMALIZED_LIST :in out SEQ_TYPE; LAST_POSITIONAL :in out NATURAL );
+    procedure RESOLVE_RECORD_ASSOC_S	( ASSOC_S :TREE; AGGREGATE_ARRAY :in out AGGREGATE_ARRAY_TYPE );
+    function  RESOLVE_EXP_OR_AGGREGATE  ( EXP :TREE; SUBTYPE_SPEC :TREE; NAMED_OTHERS_OK :BOOLEAN )		return TREE;
     procedure RESOLVE_AGGREGATE	( EXP :TREE; TYPE_SPEC :TREE );
     procedure RESOLVE_STRING		( EXP :TREE; TYPE_SPEC :TREE );
 
@@ -466,16 +466,16 @@ is					---------
   --		EXPRESO
 
   --|------------------------------------------------------------------------------------------------
-  package	EXPRESO is
+  package EXPRESO is
     use SET_UTIL;
 
     function  GET_NAME_DEFN			( NAME :TREE )			return TREE;
     function  GET_STATIC_VALUE		( EXP  :TREE )			return TREE;
-    function  RESOLVE_EXP			( EXP  :TREE; TYPE_SPEC :TREE	)	return TREE;
-    function  RESOLVE_DISCRETE_RANGE		( EXP  :TREE; TYPE_SPEC :TREE	)	return TREE;
+    function  RESOLVE_EXP			( EXP  :TREE; TYPE_SPEC :TREE )	return TREE;
+    function  RESOLVE_DISCRETE_RANGE		( EXP  :TREE; TYPE_SPEC :TREE )	return TREE;
     function  RESOLVE_TYPE_MARK		( EXP  :TREE)			return TREE;
     procedure RESOLVE_SUBTYPE_INDICATION	( EXP  :in out TREE;
-					  SUBTYPE_SPEC :out	TREE );
+					  SUBTYPE_SPEC :out TREE );
     function  RESOLVE_EXP			( EXP  :TREE; TYPESET :TYPESET_TYPE )	return TREE;
     function  RESOLVE_NAME			( NAME :TREE; DEFN :TREE )		return TREE;
     function  WALK_ERRONEOUS_EXP		( EXP  :TREE )			return TREE;
@@ -492,7 +492,7 @@ is					---------
   --		VIS_UTIL
 
   --|------------------------------------------------------------------------------------------------
-  package	VIS_UTIL is
+  package VIS_UTIL is
     use SET_UTIL;
 
     type PARAM_CURSOR_TYPE	is record
@@ -510,14 +510,14 @@ is					---------
     function IS_OVERLOADABLE_HEADER		( HEADER :TREE )			return BOOLEAN;
         -- $$$$$
 
-    procedure FIND_VISIBILITY			( EXP :TREE; DEFSET	:out DEFSET_TYPE );
-    procedure FIND_DIRECT_VISIBILITY		( ID  :TREE; DEFSET	:out DEFSET_TYPE );
+    procedure FIND_VISIBILITY			( EXP :TREE; DEFSET :out DEFSET_TYPE );
+    procedure FIND_DIRECT_VISIBILITY		( ID  :TREE; DEFSET :out DEFSET_TYPE );
     procedure FIND_SELECTED_VISIBILITY		( SELECTED :TREE;
 					  DEFSET :out DEFSET_TYPE );
 
     function  GET_ENCLOSING_DEF		( USED_NAME :TREE; DEFSET :DEFSET_TYPE )return TREE;
     function  MAKE_USED_NAME_ID_FROM_OBJECT	( USED_OBJECT_ID :TREE )		return TREE;
-    function  MAKE_USED_OP_FROM_STRING		( STRING_NODE :TREE	)		return TREE;
+    function  MAKE_USED_OP_FROM_STRING		( STRING_NODE :TREE )		return TREE;
     function  EXPRESSION_TYPE_OF_DEF		( DEF :TREE )			return TREE;
     function  ALL_PARAMETERS_HAVE_DEFAULTS	( HEADER :TREE )			return BOOLEAN;
     function  CAST_TREE			( ARG  :SEQ_TYPE )			return TREE;
@@ -536,9 +536,9 @@ is					---------
   --		DEF_WALK
 
   --|------------------------------------------------------------------------------------------------
-  package	DEF_WALK is
+  package DEF_WALK is
 
-    function  EVAL_TYPE_DEF			( TYPE_DEF :TREE; ID :TREE; H	:H_TYPE;
+    function  EVAL_TYPE_DEF			( TYPE_DEF :TREE; ID :TREE; H :H_TYPE;
 					  DSCRMT_DECL_S :TREE := TREE_VOID )	return TREE;
     function  GET_SUBTYPE_OF_DISCRETE_RANGE	( DISCRETE_RANGE :TREE )		return TREE;
 
@@ -554,7 +554,7 @@ is					---------
   --		NOD_WALK
 
   --|------------------------------------------------------------------------------------------------
-  package	NOD_WALK is
+  package NOD_WALK is
 
     type S_TYPE	is record
 --		  SB		: SB_TYPE;
@@ -563,7 +563,7 @@ is					---------
 
     procedure WALK			( NODE :TREE; H :H_TYPE );
     procedure FINISH_PARAM_S		( DECL_S :TREE; H :H_TYPE );
-    function  WALK_NAME		( ID_KIND	:NODE_NAME; NAME :TREE )		return TREE;
+    function  WALK_NAME		( ID_KIND :NODE_NAME; NAME :TREE )		return TREE;
     function  WALK_TYPE_MARK		( NAME :TREE )				return TREE;
     procedure WALK_DISCRETE_CHOICE_S	( CHOICE_S :TREE; TYPE_SPEC :TREE );
     procedure ENTER_REGION		( DEF :TREE; H :in out H_TYPE; S :out S_TYPE );
@@ -585,15 +585,15 @@ is					---------
   --		ATT_WALK
 
   --|------------------------------------------------------------------------------------------------
-  package	ATT_WALK is
+  package ATT_WALK is
     use SET_UTIL;
 
     procedure EVAL_ATTRIBUTE		( EXP :TREE; TYPESET :out TYPESET_TYPE;
 				  IS_SUBTYPE :out BOOLEAN; IS_FUNCTION : BOOLEAN := FALSE );
     function  RESOLVE_ATTRIBUTE	( EXP :TREE )		return TREE;
-    function  EVAL_ATTRIBUTE_IDENTIFIER	( ATTRIBUTE_NODE :TREE )	return TREE;
+    function  EVAL_ATTRIBUTE_IDENTIFIER ( ATTRIBUTE_NODE :TREE )	return TREE;
 
-        --PROCEDURE	WALK_ATTRIBUTE_FUNCTION(EXP: TREE);
+        --PROCEDURE WALK_ATTRIBUTE_FUNCTION(EXP: TREE);
 
   --|------------------------------------------------------------------------------------------------
   end ATT_WALK;
@@ -607,7 +607,7 @@ is					---------
   --		STM_WALK
 
   --|------------------------------------------------------------------------------------------------
-  package	STM_WALK is
+  package STM_WALK is
 
     procedure DECLARE_LABEL_BLOCK_LOOP_IDS	( STM_S :TREE; H :H_TYPE );
     procedure WALK_STM_S			( STM_S :TREE; H :H_TYPE );
@@ -626,7 +626,7 @@ is					---------
   --		PRA_WALK
 
   --|------------------------------------------------------------------------------------------------
-  package	PRA_WALK is
+  package PRA_WALK is
 
     procedure WALK_PRAGMA	( USED_NAME_ID :TREE; GEN_ASSOC_S :TREE; H :H_TYPE );
 
@@ -642,13 +642,13 @@ is					---------
   --		CHK_STAT
 
   --|------------------------------------------------------------------------------------------------
-  package	CHK_STAT is
+  package CHK_STAT is
 
-    function  IS_STATIC_RANGE			( A :TREE	)		return BOOLEAN;
-    function  IS_STATIC_SUBTYPE		( A :TREE	)		return BOOLEAN;
-    function  IS_STATIC_DISCRETE_RANGE		( A :TREE	)		return BOOLEAN;
-    function  IS_STATIC_INDEX_CONSTRAINT	( ARRAY_TYPE, INDEX_CONSTRAINT :TREE )	return BOOLEAN;
-        -- FUNCTION	IS_STATIC_DISCRIMINANT_CONSTRAINT ... (NOT USED)
+    function  IS_STATIC_RANGE			( A :TREE )		return BOOLEAN;
+    function  IS_STATIC_SUBTYPE		( A :TREE )		return BOOLEAN;
+    function  IS_STATIC_DISCRETE_RANGE		( A :TREE )		return BOOLEAN;
+    function  IS_STATIC_INDEX_CONSTRAINT	( ARRAY_TYPE, INDEX_CONSTRAINT :TREE )  return BOOLEAN;
+        -- FUNCTION IS_STATIC_DISCRIMINANT_CONSTRAINT ... (NOT USED)
 
   --|------------------------------------------------------------------------------------------------
   end CHK_STAT;
@@ -662,9 +662,9 @@ is					---------
   --		DERIVED
 
   --|------------------------------------------------------------------------------------------------
-  package	DERIVED is
+  package DERIVED is
 
-    function  MAKE_DERIVED_SUBPROGRAM_LIST	( DERIVED_SUBTYPE :TREE; PARENT_SUBTYPE	:TREE;
+    function  MAKE_DERIVED_SUBPROGRAM_LIST	( DERIVED_SUBTYPE :TREE; PARENT_SUBTYPE :TREE;
 					  H :H_TYPE )		return SEQ_TYPE;
     procedure REMEMBER_DERIVED_DECL		( DECL :TREE );
         -- (CALLED FROM FIXWITH -- REMEMBERS DERIVED DECL WITH DERIVED SUBP)
@@ -681,12 +681,12 @@ is					---------
   --		EXP_TYPE
 
   --|------------------------------------------------------------------------------------------------
-  package	EXP_TYPE is
+  package EXP_TYPE is
     use SET_UTIL;
 
     procedure EVAL_EXP_TYPES			( EXP :TREE; TYPESET :out TYPESET_TYPE );
     procedure EVAL_EXP_SUBTYPE_TYPES		( EXP :TREE; TYPESET :out TYPESET_TYPE;
-					  IS_SUBTYPE_OUT :out BOOLEAN	);
+					  IS_SUBTYPE_OUT :out BOOLEAN );
     function  EVAL_TYPE_MARK			( EXP :TREE )		return TREE;
     function  EVAL_SUBTYPE_INDICATION		( EXP :TREE )		return TREE;
     procedure EVAL_RANGE			( EXP :TREE; TYPESET :out TYPESET_TYPE );
@@ -705,7 +705,7 @@ is					---------
   --		HOM_UNIT
 
   --|------------------------------------------------------------------------------------------------
-  package	HOM_UNIT is
+  package HOM_UNIT is
 
     function WALK_HOMOGRAPH_UNIT	( UNIT_NAME :TREE; HEADER :TREE )	return TREE;
 
@@ -721,9 +721,9 @@ is					---------
   --		INSTANT
 
   --|------------------------------------------------------------------------------------------------
-  package	INSTANT is
+  package INSTANT is
 
-    procedure WALK_INSTANTIATION	( UNIT_ID	:TREE; INSTANTIATION :TREE; H	:H_TYPE );
+    procedure WALK_INSTANTIATION	( UNIT_ID :TREE; INSTANTIATION :TREE; H :H_TYPE );
 
   --|------------------------------------------------------------------------------------------------
   end INSTANT;
@@ -737,32 +737,32 @@ is					---------
   --		MAKE_NOD
 
   --|------------------------------------------------------------------------------------------------
-  package	MAKE_NOD is
+  package MAKE_NOD is
 
-    function  MAKE_VARIABLE_ID	( LX_SRCPOS, LX_SYMREP, SM_OBJ_TYPE, SM_INIT_EXP:	TREE := TREE_VOID;
+    function  MAKE_VARIABLE_ID	( LX_SRCPOS, LX_SYMREP, SM_OBJ_TYPE, SM_INIT_EXP: TREE := TREE_VOID;
 				  SM_RENAMES_OBJ: BOOLEAN := FALSE;
 				  SM_ADDRESS: TREE := TREE_VOID;
 				  SM_IS_SHARED: BOOLEAN := FALSE;
 				  XD_REGION: TREE := TREE_VOID )
 				return TREE;
 
-    function  MAKE_CONSTANT_ID	( LX_SRCPOS, LX_SYMREP, SM_OBJ_TYPE, SM_INIT_EXP:	TREE := TREE_VOID;
+    function  MAKE_CONSTANT_ID	( LX_SRCPOS, LX_SYMREP, SM_OBJ_TYPE, SM_INIT_EXP: TREE := TREE_VOID;
 				  SM_RENAMES_OBJ: BOOLEAN := FALSE;
-				  SM_ADDRESS, SM_FIRST, XD_REGION: TREE	:= TREE_VOID )
+				  SM_ADDRESS, SM_FIRST, XD_REGION: TREE := TREE_VOID )
 				return TREE;
 
-    function  MAKE_NUMBER_ID		( LX_SRCPOS, LX_SYMREP, SM_OBJ_TYPE, SM_INIT_EXP,	XD_REGION: TREE := TREE_VOID )
+    function  MAKE_NUMBER_ID		( LX_SRCPOS, LX_SYMREP, SM_OBJ_TYPE, SM_INIT_EXP, XD_REGION: TREE := TREE_VOID )
 				return TREE;
 
-    function  MAKE_COMPONENT_ID	( LX_SRCPOS, LX_SYMREP, SM_OBJ_TYPE, SM_INIT_EXP,	SM_COMP_REP,
+    function  MAKE_COMPONENT_ID	( LX_SRCPOS, LX_SYMREP, SM_OBJ_TYPE, SM_INIT_EXP, SM_COMP_REP,
 				  XD_REGION: TREE := TREE_VOID)
 				return TREE;
 
-    function MAKE_DISCRIMINANT_ID	( LX_SRCPOS, LX_SYMREP, SM_OBJ_TYPE, SM_INIT_EXP,	SM_COMP_REP, SM_FIRST,
+    function MAKE_DISCRIMINANT_ID	( LX_SRCPOS, LX_SYMREP, SM_OBJ_TYPE, SM_INIT_EXP, SM_COMP_REP, SM_FIRST,
 				  XD_REGION: TREE := TREE_VOID)
 				return TREE;
 
-    function  MAKE_IN_ID		( LX_SRCPOS, LX_SYMREP, SM_OBJ_TYPE, SM_INIT_EXP,	SM_FIRST,
+    function  MAKE_IN_ID		( LX_SRCPOS, LX_SYMREP, SM_OBJ_TYPE, SM_INIT_EXP, SM_FIRST,
 				XD_REGION: TREE := TREE_VOID )
 				return TREE;
 
@@ -819,13 +819,13 @@ is					---------
 				return TREE;
 
     function MAKE_PACKAGE_ID		( LX_SRCPOS, LX_SYMREP, SM_FIRST, SM_SPEC, SM_UNIT_DESC,
-				SM_ADDRESS, XD_REGION, XD_STUB, XD_BODY	:TREE := TREE_VOID )
+				SM_ADDRESS, XD_REGION, XD_STUB, XD_BODY :TREE := TREE_VOID )
 				return TREE;
 
-    function MAKE_GENERIC_ID	( LX_SRCPOS, LX_SYMREP, SM_FIRST, SM_SPEC, SM_GENERIC_PARAM_S,
+    function MAKE_GENERIC_ID  ( LX_SRCPOS, LX_SYMREP, SM_FIRST, SM_SPEC, SM_GENERIC_PARAM_S,
 				SM_BODY	:TREE	:= TREE_VOID;
 				SM_IS_INLINE :BOOLEAN := FALSE;
-				XD_REGION	:TREE	:= TREE_VOID )
+				XD_REGION :TREE	:= TREE_VOID )
 				return TREE;
 
     function MAKE_TASK_BODY_ID	( LX_SRCPOS,LX_SYMREP, SM_FIRST, SM_TYPE_SPEC, SM_BODY,
@@ -841,13 +841,13 @@ is					---------
     function MAKE_ENTRY_ID		( LX_SRCPOS, LX_SYMREP, SM_SPEC, SM_ADDRESS, XD_REGION: TREE := TREE_VOID )
 				return TREE;
 
-    function MAKE_EXCEPTION_ID	( LX_SRCPOS, LX_SYMREP, SM_RENAMES_EXC,	XD_REGION: TREE := TREE_VOID )
+    function MAKE_EXCEPTION_ID	( LX_SRCPOS, LX_SYMREP, SM_RENAMES_EXC, XD_REGION: TREE := TREE_VOID )
 				return TREE;
     function MAKE_ATTRIBUTE_ID	( LX_SRCPOS, LX_SYMREP: TREE := TREE_VOID; XD_POS: INTEGER )
 				return TREE;
-    function MAKE_PRAGMA_ID		( LX_SRCPOS, LX_SYMREP, SM_ARGUMENT_ID_S :TREE :=	TREE_VOID; XD_POS :INTEGER )
+    function MAKE_PRAGMA_ID		( LX_SRCPOS, LX_SYMREP, SM_ARGUMENT_ID_S :TREE := TREE_VOID; XD_POS :INTEGER )
 				return TREE;
-    function MAKE_ARGUMENT_ID		( LX_SRCPOS, LX_SYMREP :TREE := TREE_VOID; XD_POS	:INTEGER )
+    function MAKE_ARGUMENT_ID		( LX_SRCPOS, LX_SYMREP :TREE := TREE_VOID; XD_POS :INTEGER )
 				return TREE;
     function MAKE_BLTN_OPERATOR_ID	( LX_SRCPOS, LX_SYMREP: TREE := TREE_VOID; SM_OPERATOR: INTEGER )
 				return TREE;
@@ -889,7 +889,7 @@ is					---------
 
 	function MAKE_DEFERRED_CONSTANT_DECL
 	      ( AS_SOURCE_NAME_S: TREE := TREE_VOID;
-	      AS_NAME: TREE	:= TREE_VOID;
+	      AS_NAME: TREE := TREE_VOID;
 	      LX_SRCPOS: TREE := TREE_VOID)
 	      return TREE;
 
@@ -922,14 +922,14 @@ is					---------
 	function MAKE_SUBPROG_ENTRY_DECL
 	      ( AS_SOURCE_NAME: TREE := TREE_VOID;
 	      AS_HEADER: TREE := TREE_VOID;
-	      AS_UNIT_KIND:	TREE := TREE_VOID;
+	      AS_UNIT_KIND: TREE := TREE_VOID;
 	      LX_SRCPOS: TREE := TREE_VOID)
 	      return TREE;
 
 	function MAKE_PACKAGE_DECL
 	      ( AS_SOURCE_NAME: TREE := TREE_VOID;
 	      AS_HEADER: TREE := TREE_VOID;
-	      AS_UNIT_KIND:	TREE := TREE_VOID;
+	      AS_UNIT_KIND: TREE := TREE_VOID;
 	      LX_SRCPOS: TREE := TREE_VOID )
 	      return TREE;
 
@@ -938,7 +938,7 @@ is					---------
 
 	function MAKE_RENAMES_EXC_DECL
 	      ( AS_SOURCE_NAME: TREE := TREE_VOID;
-	      AS_NAME: TREE	:= TREE_VOID;
+	      AS_NAME: TREE := TREE_VOID;
 	      LX_SRCPOS: TREE := TREE_VOID)
 	      return TREE;
 
@@ -946,7 +946,7 @@ is					---------
 	      ( LX_SRCPOS: TREE := TREE_VOID)
 	      return TREE;
 
-    function  MAKE_LENGTH_ENUM_REP	( AS_NAME, AS_EXP, LX_SRCPOS: TREE := TREE_VOID )	return TREE;
+    function  MAKE_LENGTH_ENUM_REP	( AS_NAME, AS_EXP, LX_SRCPOS: TREE := TREE_VOID ) return TREE;
 
 	function MAKE_ADDRESS
 	      ( AS_NAME: TREE := TREE_VOID;
@@ -967,27 +967,27 @@ is					---------
 	      return TREE;
 
 	function MAKE_PRAGMA
-	      ( AS_USED_NAME_ID: TREE	:= TREE_VOID;
+	      ( AS_USED_NAME_ID: TREE := TREE_VOID;
 	      AS_GENERAL_ASSOC_S: TREE := TREE_VOID;
 	      LX_SRCPOS: TREE := TREE_VOID)
 	      return TREE;
 
 	function MAKE_SUBPROGRAM_BODY
 	      ( AS_SOURCE_NAME: TREE := TREE_VOID;
-	      AS_BODY: TREE	:= TREE_VOID;
+	      AS_BODY: TREE := TREE_VOID;
 	      AS_HEADER: TREE := TREE_VOID;
 	      LX_SRCPOS: TREE := TREE_VOID)
 	      return TREE;
 
 	function MAKE_PACKAGE_BODY
 	      ( AS_SOURCE_NAME: TREE := TREE_VOID;
-	      AS_BODY: TREE	:= TREE_VOID;
+	      AS_BODY: TREE := TREE_VOID;
 	      LX_SRCPOS: TREE := TREE_VOID)
 	      return TREE;
 
 	function MAKE_TASK_BODY
 	      ( AS_SOURCE_NAME: TREE := TREE_VOID;
-	      AS_BODY: TREE	:= TREE_VOID;
+	      AS_BODY: TREE := TREE_VOID;
 	      LX_SRCPOS: TREE := TREE_VOID)
 	      return TREE;
 
@@ -1004,7 +1004,7 @@ is					---------
 
 	function MAKE_SUBTYPE_INDICATION
 	      ( AS_CONSTRAINT: TREE := TREE_VOID;
-	      AS_NAME: TREE	:= TREE_VOID;
+	      AS_NAME: TREE := TREE_VOID;
 	      LX_SRCPOS: TREE := TREE_VOID)
 	      return TREE;
 
@@ -1047,7 +1047,7 @@ is					---------
 	      return TREE;
 
 	function MAKE_RECORD_DEF
-	      ( AS_COMP_LIST: TREE :=	TREE_VOID;
+	      ( AS_COMP_LIST: TREE := TREE_VOID;
 	      LX_SRCPOS: TREE := TREE_VOID)
 	      return TREE;
 
@@ -1218,20 +1218,20 @@ is					---------
 
 	function MAKE_ASSIGN
 	      ( AS_EXP: TREE := TREE_VOID;
-	      AS_NAME: TREE	:= TREE_VOID;
+	      AS_NAME: TREE := TREE_VOID;
 	      LX_SRCPOS: TREE := TREE_VOID)
 	      return TREE;
 
 	function MAKE_EXIT
 	      ( AS_EXP: TREE := TREE_VOID;
-	      AS_NAME: TREE	:= TREE_VOID;
+	      AS_NAME: TREE := TREE_VOID;
 	      LX_SRCPOS: TREE := TREE_VOID;
 	      SM_STM: TREE := TREE_VOID)
 	      return TREE;
 
 	function MAKE_CODE
 	      ( AS_EXP: TREE := TREE_VOID;
-	      AS_NAME: TREE	:= TREE_VOID;
+	      AS_NAME: TREE := TREE_VOID;
 	      LX_SRCPOS: TREE := TREE_VOID)
 	      return TREE;
 
@@ -1274,7 +1274,7 @@ is					---------
 
 	function MAKE_LOOP
 	      ( AS_SOURCE_NAME: TREE := TREE_VOID;
-	      AS_ITERATION:	TREE := TREE_VOID;
+	      AS_ITERATION: TREE := TREE_VOID;
 	      AS_STM_S: TREE := TREE_VOID;
 	      LX_SRCPOS: TREE := TREE_VOID)
 	      return TREE;
@@ -1326,14 +1326,14 @@ is					---------
 
 	function MAKE_ASSOC
 	      ( AS_EXP: TREE := TREE_VOID;
-	      AS_USED_NAME:	TREE := TREE_VOID;
+	      AS_USED_NAME: TREE := TREE_VOID;
 	      LX_SRCPOS: TREE := TREE_VOID)
 	      return TREE;
 
 	function MAKE_USED_CHAR
 	      ( LX_SRCPOS: TREE := TREE_VOID;
 	      LX_SYMREP: TREE := TREE_VOID;
-	      SM_DEFN: TREE	:= TREE_VOID;
+	      SM_DEFN: TREE := TREE_VOID;
 	      SM_EXP_TYPE: TREE := TREE_VOID;
 	      SM_VALUE: TREE := TREE_VOID)
 	      return TREE;
@@ -1341,7 +1341,7 @@ is					---------
 	function MAKE_USED_OBJECT_ID
 	      ( LX_SRCPOS: TREE := TREE_VOID;
 	      LX_SYMREP: TREE := TREE_VOID;
-	      SM_DEFN: TREE	:= TREE_VOID;
+	      SM_DEFN: TREE := TREE_VOID;
 	      SM_EXP_TYPE: TREE := TREE_VOID;
 	      SM_VALUE: TREE := TREE_VOID)
 	      return TREE;
@@ -1349,13 +1349,13 @@ is					---------
 	function MAKE_USED_OP
 	      ( LX_SRCPOS: TREE := TREE_VOID;
 	      LX_SYMREP: TREE := TREE_VOID;
-	      SM_DEFN: TREE	:= TREE_VOID)
+	      SM_DEFN: TREE := TREE_VOID)
 	      return TREE;
 
 	function MAKE_USED_NAME_ID
 	      ( LX_SRCPOS: TREE := TREE_VOID;
 	      LX_SYMREP: TREE := TREE_VOID;
-	      SM_DEFN: TREE	:= TREE_VOID)
+	      SM_DEFN: TREE := TREE_VOID)
 	      return TREE;
 
 	function MAKE_ATTRIBUTE
@@ -1394,7 +1394,7 @@ is					---------
 
 	function MAKE_SLICE
 	      ( AS_NAME: TREE := TREE_VOID;
-	      AS_DISCRETE_RANGE: TREE	:= TREE_VOID;
+	      AS_DISCRETE_RANGE: TREE := TREE_VOID;
 	      LX_SRCPOS: TREE := TREE_VOID;
 	      SM_EXP_TYPE: TREE := TREE_VOID)
 	      return TREE;
@@ -1408,7 +1408,7 @@ is					---------
 	function MAKE_SHORT_CIRCUIT
 	      ( AS_EXP1: TREE := TREE_VOID;
 	      AS_SHORT_CIRCUIT_OP: TREE := TREE_VOID;
-	      AS_EXP2: TREE	:= TREE_VOID;
+	      AS_EXP2: TREE := TREE_VOID;
 	      LX_SRCPOS: TREE := TREE_VOID;
 	      SM_EXP_TYPE: TREE := TREE_VOID;
 	      SM_VALUE: TREE := TREE_VOID)
@@ -1439,7 +1439,7 @@ is					---------
 	function MAKE_TYPE_MEMBERSHIP
 	      ( AS_EXP: TREE := TREE_VOID;
 	      AS_MEMBERSHIP_OP: TREE := TREE_VOID;
-	      AS_NAME: TREE	:= TREE_VOID;
+	      AS_NAME: TREE := TREE_VOID;
 	      LX_SRCPOS: TREE := TREE_VOID;
 	      SM_EXP_TYPE: TREE := TREE_VOID;
 	      SM_VALUE: TREE := TREE_VOID)
@@ -1447,7 +1447,7 @@ is					---------
 
 	function MAKE_CONVERSION
 	      ( AS_EXP: TREE := TREE_VOID;
-	      AS_NAME: TREE	:= TREE_VOID;
+	      AS_NAME: TREE := TREE_VOID;
 	      LX_SRCPOS: TREE := TREE_VOID;
 	      SM_EXP_TYPE: TREE := TREE_VOID;
 	      SM_VALUE: TREE := TREE_VOID)
@@ -1455,7 +1455,7 @@ is					---------
 
 	function MAKE_QUALIFIED
 	      ( AS_EXP: TREE := TREE_VOID;
-	      AS_NAME: TREE	:= TREE_VOID;
+	      AS_NAME: TREE := TREE_VOID;
 	      LX_SRCPOS: TREE := TREE_VOID;
 	      SM_EXP_TYPE: TREE := TREE_VOID;
 	      SM_VALUE: TREE := TREE_VOID)
@@ -1472,7 +1472,7 @@ is					---------
 	      ( AS_GENERAL_ASSOC_S: TREE := TREE_VOID;
 	      LX_SRCPOS: TREE := TREE_VOID;
 	      SM_EXP_TYPE: TREE := TREE_VOID;
-	      SM_DISCRETE_RANGE: TREE	:= TREE_VOID;
+	      SM_DISCRETE_RANGE: TREE := TREE_VOID;
 	      SM_NORMALIZED_COMP_S: TREE := TREE_VOID)
 	      return TREE;
 
@@ -1480,11 +1480,11 @@ is					---------
 	      ( LX_SRCPOS: TREE := TREE_VOID;
 	      LX_SYMREP: TREE := TREE_VOID;
 	      SM_EXP_TYPE: TREE := TREE_VOID;
-	      SM_DISCRETE_RANGE: TREE	:= TREE_VOID)
+	      SM_DISCRETE_RANGE: TREE := TREE_VOID)
 	      return TREE;
 
 	function MAKE_QUALIFIED_ALLOCATOR
-	      ( AS_QUALIFIED: TREE :=	TREE_VOID;
+	      ( AS_QUALIFIED: TREE := TREE_VOID;
 	      LX_SRCPOS: TREE := TREE_VOID;
 	      SM_EXP_TYPE: TREE := TREE_VOID)
 	      return TREE;
@@ -1498,9 +1498,9 @@ is					---------
 
 	function MAKE_RANGE
 	      ( AS_EXP1: TREE := TREE_VOID;
-	      AS_EXP2: TREE	:= TREE_VOID;
+	      AS_EXP2: TREE := TREE_VOID;
 	      LX_SRCPOS: TREE := TREE_VOID;
-	      SM_TYPE_SPEC:	TREE := TREE_VOID)
+	      SM_TYPE_SPEC: TREE := TREE_VOID)
 	      return TREE;
 
 	function MAKE_RANGE_ATTRIBUTE
@@ -1508,7 +1508,7 @@ is					---------
 	      AS_USED_NAME_ID: TREE := TREE_VOID;
 	      AS_EXP: TREE := TREE_VOID;
 	      LX_SRCPOS: TREE := TREE_VOID;
-	      SM_TYPE_SPEC:	TREE := TREE_VOID)
+	      SM_TYPE_SPEC: TREE := TREE_VOID)
 	      return TREE;
 
 	function MAKE_DISCRETE_SUBTYPE
@@ -1520,14 +1520,14 @@ is					---------
 	      ( AS_EXP: TREE := TREE_VOID;
 	      AS_RANGE: TREE := TREE_VOID;
 	      LX_SRCPOS: TREE := TREE_VOID;
-	      SM_TYPE_SPEC:	TREE := TREE_VOID)
+	      SM_TYPE_SPEC: TREE := TREE_VOID)
 	      return TREE;
 
 	function MAKE_FIXED_CONSTRAINT
 	      ( AS_EXP: TREE := TREE_VOID;
 	      AS_RANGE: TREE := TREE_VOID;
 	      LX_SRCPOS: TREE := TREE_VOID;
-	      SM_TYPE_SPEC:	TREE := TREE_VOID)
+	      SM_TYPE_SPEC: TREE := TREE_VOID)
 	      return TREE;
 
 	function MAKE_INDEX_CONSTRAINT
@@ -1555,24 +1555,24 @@ is					---------
 	      return TREE;
 
 	function MAKE_PROCEDURE_SPEC
-	      ( AS_PARAM_S:	TREE := TREE_VOID;
+	      ( AS_PARAM_S: TREE := TREE_VOID;
 	      LX_SRCPOS: TREE := TREE_VOID)
 	      return TREE;
 
 	function MAKE_FUNCTION_SPEC
-	      ( AS_PARAM_S:	TREE := TREE_VOID;
-	      AS_NAME: TREE	:= TREE_VOID;
+	      ( AS_PARAM_S: TREE := TREE_VOID;
+	      AS_NAME: TREE := TREE_VOID;
 	      LX_SRCPOS: TREE := TREE_VOID)
 	      return TREE;
 
 	function MAKE_ENTRY
-	      ( AS_PARAM_S:	TREE := TREE_VOID;
-	      AS_DISCRETE_RANGE: TREE	:= TREE_VOID;
+	      ( AS_PARAM_S: TREE := TREE_VOID;
+	      AS_DISCRETE_RANGE: TREE := TREE_VOID;
 	      LX_SRCPOS: TREE := TREE_VOID)
 	      return TREE;
 
 	function MAKE_PACKAGE_SPEC
-	      ( AS_DECL_S1:	TREE := TREE_VOID;
+	      ( AS_DECL_S1: TREE := TREE_VOID;
 	      AS_DECL_S2: TREE := TREE_VOID;
 	      LX_SRCPOS: TREE := TREE_VOID;
 	      XD_BODY_IS_REQUIRED: BOOLEAN := FALSE)
@@ -1621,7 +1621,7 @@ is					---------
 
 	function MAKE_DERIVED_SUBPROG
 	      ( LX_SRCPOS: TREE := TREE_VOID;
-	      SM_DERIVABLE:	TREE := TREE_VOID)
+	      SM_DERIVABLE: TREE := TREE_VOID)
 	      return TREE;
 
 	function MAKE_COND_CLAUSE
@@ -1659,13 +1659,13 @@ is					---------
 
 	function MAKE_FOR
 	      ( AS_SOURCE_NAME: TREE := TREE_VOID;
-	      AS_DISCRETE_RANGE: TREE	:= TREE_VOID;
+	      AS_DISCRETE_RANGE: TREE := TREE_VOID;
 	      LX_SRCPOS: TREE := TREE_VOID)
 	      return TREE;
 
 	function MAKE_REVERSE
 	      ( AS_SOURCE_NAME: TREE := TREE_VOID;
-	      AS_DISCRETE_RANGE: TREE	:= TREE_VOID;
+	      AS_DISCRETE_RANGE: TREE := TREE_VOID;
 	      LX_SRCPOS: TREE := TREE_VOID)
 	      return TREE;
 
@@ -1710,7 +1710,7 @@ is					---------
 
 	function MAKE_VARIANT
 	      ( AS_CHOICE_S: TREE := TREE_VOID;
-	      AS_COMP_LIST:	TREE := TREE_VOID;
+	      AS_COMP_LIST: TREE := TREE_VOID;
 	      LX_SRCPOS: TREE := TREE_VOID)
 	      return TREE;
 
@@ -1727,7 +1727,7 @@ is					---------
 
 	function MAKE_VARIANT_PART
 	      ( AS_NAME: TREE := TREE_VOID;
-	      AS_VARIANT_S:	TREE := TREE_VOID;
+	      AS_VARIANT_S: TREE := TREE_VOID;
 	      LX_SRCPOS: TREE := TREE_VOID)
 	      return TREE;
 
@@ -1748,88 +1748,88 @@ is					---------
 	      AS_ALL_DECL: TREE := TREE_VOID;
 	      AS_PRAGMA_S: TREE := TREE_VOID;
 	      LX_SRCPOS: TREE := TREE_VOID;
-	      XD_TIMESTAMP:	INTEGER := 0;
+	      XD_TIMESTAMP: INTEGER := 0;
 	      LIST: SEQ_TYPE := (TREE_NIL,TREE_NIL);
-	      XD_NBR_PAGES:	INTEGER := 0;
+	      XD_NBR_PAGES: INTEGER := 0;
 	      XD_LIB_NAME: TREE := TREE_VOID)
 	      return TREE;
 
 	function MAKE_INDEX
 	      ( AS_NAME: TREE := TREE_VOID;
 	      LX_SRCPOS: TREE := TREE_VOID;
-	      SM_TYPE_SPEC:	TREE := TREE_VOID)
+	      SM_TYPE_SPEC: TREE := TREE_VOID)
 	      return TREE;
 
 	function MAKE_TASK_SPEC
-	      ( SM_DERIVED:	TREE := TREE_VOID;
+	      ( SM_DERIVED: TREE := TREE_VOID;
 	      SM_IS_ANONYMOUS: BOOLEAN := FALSE;
 	      SM_DECL_S: TREE := TREE_VOID;
-	      SM_BODY: TREE	:= TREE_VOID;
+	      SM_BODY: TREE := TREE_VOID;
 	      SM_ADDRESS: TREE := TREE_VOID;
-	      SM_SIZE: TREE	:= TREE_VOID;
+	      SM_SIZE: TREE := TREE_VOID;
 	      SM_STORAGE_SIZE: TREE := TREE_VOID;
-	      XD_SOURCE_NAME: TREE :=	TREE_VOID;
-	      XD_STUB: TREE	:= TREE_VOID;
-	      XD_BODY: TREE	:= TREE_VOID)
+	      XD_SOURCE_NAME: TREE := TREE_VOID;
+	      XD_STUB: TREE := TREE_VOID;
+	      XD_BODY: TREE := TREE_VOID)
 	      return TREE;
 
 	function MAKE_ENUMERATION
-	      ( SM_DERIVED:	TREE := TREE_VOID;
+	      ( SM_DERIVED: TREE := TREE_VOID;
 	      SM_IS_ANONYMOUS: BOOLEAN := FALSE;
-	      SM_BASE_TYPE:	TREE := TREE_VOID;
+	      SM_BASE_TYPE: TREE := TREE_VOID;
 	      SM_RANGE: TREE := TREE_VOID;
-	      SM_LITERAL_S:	TREE := TREE_VOID;
-	      XD_SOURCE_NAME: TREE :=	TREE_VOID;
-	      CD_IMPL_SIZE:	INTEGER := 0)
+	      SM_LITERAL_S: TREE := TREE_VOID;
+	      XD_SOURCE_NAME: TREE := TREE_VOID;
+	      CD_IMPL_SIZE: INTEGER := 0)
 	      return TREE;
 
-	function MAKE_INTEGER (	SM_DERIVED, SM_BASE_TYPE, SM_RANGE, XD_SOURCE_NAME :TREE :=	TREE_VOID;
+	function MAKE_INTEGER (	SM_DERIVED, SM_BASE_TYPE, SM_RANGE, XD_SOURCE_NAME :TREE := TREE_VOID;
 			CD_IMPL_SIZE: INTEGER := 0; SM_IS_ANONYMOUS :BOOLEAN := FALSE
 		) return TREE;
 
 	function MAKE_FLOAT
-	      ( SM_DERIVED:	TREE := TREE_VOID;
+	      ( SM_DERIVED: TREE := TREE_VOID;
 	      SM_IS_ANONYMOUS: BOOLEAN := FALSE;
-	      SM_BASE_TYPE:	TREE := TREE_VOID;
+	      SM_BASE_TYPE: TREE := TREE_VOID;
 	      SM_RANGE: TREE := TREE_VOID;
 	      SM_ACCURACY: TREE := TREE_VOID;
-	      XD_SOURCE_NAME: TREE :=	TREE_VOID;
-	      CD_IMPL_SIZE:	INTEGER := 0)
+	      XD_SOURCE_NAME: TREE := TREE_VOID;
+	      CD_IMPL_SIZE: INTEGER := 0)
 	      return TREE;
 
 	function MAKE_FIXED
-	      ( SM_DERIVED:	TREE := TREE_VOID;
+	      ( SM_DERIVED: TREE := TREE_VOID;
 	      SM_IS_ANONYMOUS: BOOLEAN := FALSE;
-	      SM_BASE_TYPE:	TREE := TREE_VOID;
+	      SM_BASE_TYPE: TREE := TREE_VOID;
 	      SM_RANGE: TREE := TREE_VOID;
 	      SM_ACCURACY: TREE := TREE_VOID;
-	      XD_SOURCE_NAME: TREE :=	TREE_VOID;
-	      CD_IMPL_SIZE:	INTEGER := 0;
+	      XD_SOURCE_NAME: TREE := TREE_VOID;
+	      CD_IMPL_SIZE: INTEGER := 0;
 	      CD_IMPL_SMALL: TREE := TREE_VOID)
 	      return TREE;
 
     function  MAKE_ARRAY	( SM_DERIVED		:TREE	:= TREE_VOID;
-			  SM_IS_ANONYMOUS		:BOOLEAN	:= FALSE;
+			  SM_IS_ANONYMOUS		:BOOLEAN  := FALSE;
 			  SM_BASE_TYPE, SM_SIZE	:TREE	:= TREE_VOID;
-			  SM_IS_LIMITED		:BOOLEAN	:= FALSE;
-			  SM_IS_PACKED		:BOOLEAN	:= FALSE;
+			  SM_IS_LIMITED		:BOOLEAN  := FALSE;
+			  SM_IS_PACKED		:BOOLEAN  := FALSE;
 			  SM_INDEX_S, SM_COMP_TYPE, XD_SOURCE_NAME	: TREE	:= TREE_VOID )
 			return TREE;
 
     function  MAKE_RECORD	( SM_DERIVED		:TREE	:= TREE_VOID;
-			  SM_IS_ANONYMOUS		:BOOLEAN	:= FALSE;
+			  SM_IS_ANONYMOUS		:BOOLEAN  := FALSE;
 			  SM_BASE_TYPE, SM_SIZE	:TREE	:= TREE_VOID;
-			  SM_IS_LIMITED		:BOOLEAN	:= FALSE;
-			  SM_IS_PACKED		:BOOLEAN	:= FALSE;
+			  SM_IS_LIMITED		:BOOLEAN  := FALSE;
+			  SM_IS_PACKED		:BOOLEAN  := FALSE;
 			  SM_DISCRIMINANT_S, SM_COMP_LIST,
 			  SM_REPRESENTATION, XD_SOURCE_NAME	:TREE	:= TREE_VOID )
 			return TREE;
 
     function MAKE_ACCESS	( SM_DERIVED	:TREE	:= TREE_VOID;
-			  SM_IS_ANONYMOUS	:BOOLEAN	:= FALSE;
-			  SM_BASE_TYPE, SM_SIZE, SM_STORAGE_SIZE :TREE 	:= TREE_VOID;
-			  SM_IS_CONTROLLED	:BOOLEAN	:= FALSE;
-			  SM_DESIG_TYPE, SM_MASTER, XD_SOURCE_NAME :TREE	:= TREE_VOID)
+			  SM_IS_ANONYMOUS	:BOOLEAN  := FALSE;
+			  SM_BASE_TYPE, SM_SIZE, SM_STORAGE_SIZE :TREE	:= TREE_VOID;
+			  SM_IS_CONTROLLED  :BOOLEAN  := FALSE;
+			  SM_DESIG_TYPE, SM_MASTER, XD_SOURCE_NAME :TREE  := TREE_VOID)
 			return TREE;
 
     function  MAKE_CONSTRAINED_ARRAY	( SM_DERIVED	:TREE := TREE_VOID;
@@ -1843,35 +1843,35 @@ is					---------
 				  SM_IS_ANONYMOUS	:BOOLEAN := FALSE;
 				  SM_BASE_TYPE	:TREE := TREE_VOID;
 				  SM_DEPENDS_ON_DSCRMT :BOOLEAN := FALSE;
-				  SM_NORMALIZED_DSCRMT_S, XD_SOURCE_NAME: TREE :=	TREE_VOID )
+				  SM_NORMALIZED_DSCRMT_S, XD_SOURCE_NAME: TREE := TREE_VOID )
 				return TREE;
 
     function MAKE_CONSTRAINED_ACCESS
-	      ( SM_DERIVED:	TREE := TREE_VOID;
+	      ( SM_DERIVED: TREE := TREE_VOID;
 	      SM_IS_ANONYMOUS: BOOLEAN := FALSE;
-	      SM_BASE_TYPE:	TREE := TREE_VOID;
+	      SM_BASE_TYPE: TREE := TREE_VOID;
 	      SM_DEPENDS_ON_DSCRMT: BOOLEAN := FALSE;
 	      SM_DESIG_TYPE: TREE := TREE_VOID;
-	      XD_SOURCE_NAME: TREE :=	TREE_VOID)
+	      XD_SOURCE_NAME: TREE := TREE_VOID)
 	      return TREE;
 
     function MAKE_PRIVATE
-	      ( SM_DERIVED:	TREE := TREE_VOID;
+	      ( SM_DERIVED: TREE := TREE_VOID;
 	      SM_IS_ANONYMOUS: BOOLEAN := FALSE;
-	      SM_DISCRIMINANT_S: TREE	:= TREE_VOID;
-	      SM_TYPE_SPEC:	TREE := TREE_VOID;
-	      XD_SOURCE_NAME: TREE :=	TREE_VOID)
+	      SM_DISCRIMINANT_S: TREE := TREE_VOID;
+	      SM_TYPE_SPEC: TREE := TREE_VOID;
+	      XD_SOURCE_NAME: TREE := TREE_VOID)
 	      return TREE;
 
     function MAKE_L_PRIVATE		( SM_DERIVED	:TREE := TREE_VOID;
 				SM_IS_ANONYMOUS	:BOOLEAN := FALSE;
 				SM_DISCRIMINANT_S	:TREE := TREE_VOID;
 				SM_TYPE_SPEC	:TREE := TREE_VOID;
-				XD_SOURCE_NAME	:TREE :=	TREE_VOID)
+				XD_SOURCE_NAME	:TREE :=  TREE_VOID)
 	      return TREE;
 
-    function MAKE_INCOMPLETE		( SM_DISCRIMINANT_S	:TREE := TREE_VOID;
-				XD_SOURCE_NAME	:TREE :=	TREE_VOID;
+    function MAKE_INCOMPLETE		( SM_DISCRIMINANT_S :TREE := TREE_VOID;
+				XD_SOURCE_NAME	:TREE :=  TREE_VOID;
 				XD_FULL_TYPE_SPEC	:TREE := TREE_VOID)
 	      return TREE;
 
@@ -1896,16 +1896,16 @@ is					---------
   --		GEN_SUBS
 
   --|------------------------------------------------------------------------------------------------
-  package	GEN_SUBS is
+  package GEN_SUBS is
 
     NODE_HASH_SIZE		: constant	:= 131;
-    type NODE_ARRAY_TYPE	is array(	0 .. INTEGER( NODE_HASH_SIZE - 1 ) ) of	TREE;
+    type NODE_ARRAY_TYPE	is array( 0 .. INTEGER( NODE_HASH_SIZE - 1 ) ) of TREE;
     type NODE_HASH_TYPE	is record
 			  LIMIT	: NATURAL		:= 32000;
 			  A	: NODE_ARRAY_TYPE	:= (others => TREE_VOID);
 			end record;
 
-    procedure INSERT_NODE_HASH	( NODE_HASH :in out	NODE_HASH_TYPE; NEW_NODE :TREE;
+    procedure INSERT_NODE_HASH	( NODE_HASH :in out NODE_HASH_TYPE; NEW_NODE :TREE;
 				  OLD_NODE :TREE );
     procedure REPLACE_NODE		( NODE :in out TREE; NODE_HASH :in out NODE_HASH_TYPE );
     procedure SUBSTITUTE_ATTRIBUTES	( NODE :in out TREE; NODE_HASH :in out NODE_HASH_TYPE;
@@ -1925,11 +1925,11 @@ is					---------
   --		NEWSNAM
 
   --|------------------------------------------------------------------------------------------------
-  package	NEWSNAM is
+  package NEWSNAM is
     use GEN_SUBS;
 
     procedure REPLACE_SOURCE_NAME	( SOURCE_NAME :in out TREE; NODE_HASH :in out NODE_HASH_TYPE;
-				  H_IN :H_TYPE; DECL :TREE :=	TREE_VOID	);
+				  H_IN :H_TYPE; DECL :TREE := TREE_VOID );
 
   --|------------------------------------------------------------------------------------------------
   end NEWSNAM;
@@ -1943,9 +1943,9 @@ is					---------
   --		PRE_FCNS
 
   --|------------------------------------------------------------------------------------------------
-  package	PRE_FCNS is
+  package PRE_FCNS is
 
-    procedure GEN_PREDEFINED_OPERATORS	( TYPE_SPEC :TREE; H_IN :H_TYPE );
+    procedure GEN_PREDEFINED_OPERATORS  ( TYPE_SPEC :TREE; H_IN :H_TYPE );
 
   --|------------------------------------------------------------------------------------------------
   end PRE_FCNS;
@@ -1959,17 +1959,17 @@ is					---------
   --		PRENAME
 
   --|------------------------------------------------------------------------------------------------
-  package	PRENAME is
+  package PRENAME is
 
     type DEFINED_PRAGMAS	is (
 			CONTROLLED,	ELABORATE,	INLINE,	INTERFACE,
-			LIST,		MEMORY_SIZE,	OPTIMIZE,	PACK,
-			PAGE,		PRIORITY,	SHARED,	STORAGE_UNIT,
+			LIST,		MEMORY_SIZE,	OPTIMIZE, PACK,
+			PAGE,		PRIORITY, SHARED,	STORAGE_UNIT,
 			SUPPRESS,		SYSTEM_NAME,
 			DEBUG							--| PRAGMA DEBUG ( ON|OFF ) -- ENABLES/DISABLES TRACE IN COMPILER
 			);
 
-    type LIST_ARGUMENTS	is ( OFF,	ON );
+    type LIST_ARGUMENTS	is ( OFF, ON );
 
     type OPTIMIZE_ARGUMENTS	is ( TIME, SPACE );
 
@@ -1980,7 +1980,7 @@ is					---------
 			DIVISION_CHECK,	OVERFLOW_CHECK,	STORAGE_CHECK
 			);
 
-    type INTERFACE_ARGUMENTS	is ( ADA,	ASM );
+    type INTERFACE_ARGUMENTS  is ( ADA, ASM );
 
     type DEFINED_ATTRIBUTES	is (
 			ADDRESS,		AFT,		BASE,
@@ -2004,7 +2004,7 @@ is					---------
 			OP_AND,		OP_OR,		OP_XOR,	OP_NOT,
 			OP_UNARY_PLUS,	OP_UNARY_MINUS,	OP_ABS,	OP_EQ,
 			OP_NE,		OP_LT,		OP_LE,	OP_GT,
-			OP_GE,		OP_PLUS,		OP_MINUS,	OP_MULT,
+			OP_GE,		OP_PLUS,		OP_MINUS, OP_MULT,
 			OP_DIV,		OP_MOD,		OP_REM,	OP_CAT,
 			OP_EXP
 			);
@@ -2022,13 +2022,13 @@ is					---------
 
     subtype STRING_3	is STRING(1..3);
 
-    BLTN_TEXT_ARRAY	: constant array (OP_CLASS) of STRING_3	:= (
-	OP_AND =>	"AND",	OP_OR => "OR!",	OP_XOR =>	"XOR",	OP_EQ => "=!!",
+    BLTN_TEXT_ARRAY : constant array (OP_CLASS) of STRING_3 := (
+	OP_AND => "AND",	OP_OR => "OR!",	OP_XOR => "XOR",	OP_EQ => "=!!",
 	OP_NE => "/=!",	OP_LT => "<!!",	OP_LE => "<=!",	OP_GT => ">!!",
-	OP_GE => ">=!",	OP_PLUS => "+!!",	OP_MINUS => "-!!",	OP_CAT =>	"&!!",
+	OP_GE => ">=!",	OP_PLUS => "+!!",	OP_MINUS => "-!!",  OP_CAT => "&!!",
 	OP_UNARY_PLUS => "+!!",	OP_UNARY_MINUS => "-!!",
-	OP_ABS =>	"ABS",	OP_NOT =>	"NOT",	OP_MULT => "*!!",	OP_DIV =>	"/!!",
-	OP_MOD =>	"MOD",	OP_REM =>	"REM",	OP_EXP =>	"**!"
+	OP_ABS => "ABS",	OP_NOT => "NOT",	OP_MULT => "*!!",	OP_DIV => "/!!",
+	OP_MOD => "MOD",	OP_REM => "REM",	OP_EXP => "**!"
 	);
 
     BLTN_ID_ARRAY	: array (OP_CLASS) of TREE	:= (others => TREE_VOID);
@@ -2044,12 +2044,12 @@ is					---------
   --		RED_SUBP
 
   --|------------------------------------------------------------------------------------------------
-  package	RED_SUBP is
+  package RED_SUBP is
     use SET_UTIL;
 
     procedure EVAL_SUBP_CALL			( EXP :TREE; TYPESET :out TYPESET_TYPE );
     function  RESOLVE_FUNCTION_CALL		( EXP :TREE; TYPE_SPEC :TREE )	return TREE;
-    procedure REDUCE_APPLY_NAMES		( NAME :TREE; NAME_DEFSET :in	out DEFSET_TYPE;
+    procedure REDUCE_APPLY_NAMES		( NAME :TREE; NAME_DEFSET :in out DEFSET_TYPE;
 					  GEN_ASSOC_S :TREE; INDEX :TREE := TREE_VOID );
     function  RESOLVE_SUBP_PARAMETERS		( DEF :TREE; GEN_ASSOC_S :TREE )	return TREE;
     procedure RESOLVE_ERRONEOUS_PARAM_S		( GENERAL_ASSOC_S :TREE);
@@ -2070,13 +2070,13 @@ is					---------
   --		REP_CLAU
 
   --|------------------------------------------------------------------------------------------------
-  package	REP_CLAU is
+  package REP_CLAU is
 
     procedure RESOLVE_LENGTH_REP	( ATTRIBUTE :TREE; EXP :in out TREE; H :H_TYPE );
     procedure RESOLVE_ENUM_REP	( SIMPLE_NAME :in out TREE; EXP :TREE; H :H_TYPE );
-    procedure RESOLVE_ADDRESS_REP	( SIMPLE_NAME :in out TREE; EXP :in out	TREE; H :H_TYPE );
+    procedure RESOLVE_ADDRESS_REP	( SIMPLE_NAME :in out TREE; EXP :in out TREE; H :H_TYPE );
     procedure RESOLVE_RECORD_REP	( SIMPLE_NAME :in out TREE; ALIGNMENT :TREE;
-				  COMP_REP_S :TREE;	H :H_TYPE	);
+				  COMP_REP_S :TREE; H :H_TYPE );
 
   --|------------------------------------------------------------------------------------------------
   end REP_CLAU;
@@ -2085,36 +2085,36 @@ is					---------
 
 
 
-  USED_PACKAGE_LIST	: SEQ_TYPE	renames FIX_WITH.USED_PACKAGE_LIST;
+  USED_PACKAGE_LIST : SEQ_TYPE	renames FIX_WITH.USED_PACKAGE_LIST;
 
 
-  package	body SEM_GLOB	is separate;
-  package	body UNIV_OPS	is separate;
+  package body SEM_GLOB	is separate;
+  package body UNIV_OPS	is separate;
   function  EVAL_NUM	( TXT :STRING )	return TREE	is separate;
-  package	body UARITH	is separate;
-  package	body FIX_WITH	is separate;
-  package	body DEF_UTIL	is separate;
-  package	body SET_UTIL	is separate;
-  package	body REQ_UTIL	is separate;
-  package	body AGGRESO	is separate;
-  package	body EXPRESO	is separate;
-  package	body VIS_UTIL	is separate;
-  package	body DEF_WALK	is separate;
-  package	body NOD_WALK	is separate;
-  package	body ATT_WALK	is separate;
-  package	body STM_WALK	is separate;
-  package	body PRA_WALK	is separate;
-  package	body CHK_STAT	is separate;
-  package	body DERIVED	is separate;
-  package	body EXP_TYPE	is separate;
-  package	body HOM_UNIT	is separate;
-  package	body INSTANT	is separate;
-  package	body MAKE_NOD	is separate;
-  package	body GEN_SUBS	is separate;
-  package	body NEWSNAM	is separate;
-  package	body PRE_FCNS	is separate;
-  package	body RED_SUBP	is separate;
-  package	body REP_CLAU	is separate;
+  package body UARITH	is separate;
+  package body FIX_WITH	is separate;
+  package body DEF_UTIL	is separate;
+  package body SET_UTIL	is separate;
+  package body REQ_UTIL	is separate;
+  package body AGGRESO	is separate;
+  package body EXPRESO	is separate;
+  package body VIS_UTIL	is separate;
+  package body DEF_WALK	is separate;
+  package body NOD_WALK	is separate;
+  package body ATT_WALK	is separate;
+  package body STM_WALK	is separate;
+  package body PRA_WALK	is separate;
+  package body CHK_STAT	is separate;
+  package body DERIVED	is separate;
+  package body EXP_TYPE	is separate;
+  package body HOM_UNIT	is separate;
+  package body INSTANT	is separate;
+  package body MAKE_NOD	is separate;
+  package body GEN_SUBS	is separate;
+  package body NEWSNAM	is separate;
+  package body PRE_FCNS	is separate;
+  package body RED_SUBP	is separate;
+  package body REP_CLAU	is separate;
 
 
 
@@ -2123,23 +2123,23 @@ is					---------
 
   is
     STD_PACK_SYM		: TREE		:= STORE_SYM( "_STANDRD.DCL" );
-    STD_PACK_ID		: TREE		:= HEAD( LIST( STD_PACK_SYM )	);
+    STD_PACK_ID		: TREE		:= HEAD( LIST( STD_PACK_SYM ) );
     ALL_DECL		: TREE		:= D( AS_ALL_DECL, STD_PACK_ID );
     STD_PACK_HEADER		: TREE		:= D( AS_HEADER, ALL_DECL );
     DECL_PRIV		: TREE		:= D( AS_DECL_S2, STD_PACK_HEADER );
-    ID_LIST		: SEQ_TYPE	:= LIST( DECL_PRIV );			--| LA LISTE DES DECLARATIONS	PRIVEES DE _STANDRD
+    ID_LIST		: SEQ_TYPE	:= LIST( DECL_PRIV );			--| LA LISTE DES DECLARATIONS PRIVEES DE _STANDRD
     ID			: TREE;
     DEF			: TREE;
   begin
-    while	not IS_EMPTY( ID_LIST ) loop							--| TANT QU'IL Y A DES ELEMENTS PRIVES
-      POP( ID_LIST,	ID );								--| EN EXTRAIRE UN
-      if ID.TY in DN_ATTRIBUTE_ID .. DN_PRAGMA_ID						--| SI C'EST UN ID D'ATTRIBUT	OU DE PRAGMA
-         and then D( LX_SYMREP, ID ).TY	= DN_SYMBOL_REP
+    while not IS_EMPTY( ID_LIST ) loop							--| TANT QU'IL Y A DES ELEMENTS PRIVES
+      POP( ID_LIST, ID );								--| EN EXTRAIRE UN
+      if ID.TY in DN_ATTRIBUTE_ID .. DN_PRAGMA_ID						--| SI C'EST UN ID D'ATTRIBUT OU DE PRAGMA
+         and then D( LX_SYMREP, ID ).TY = DN_SYMBOL_REP
       then
         DEF := DEF_UTIL.MAKE_DEF_FOR_ID( ID, SEM_GLOB.INITIAL_H );
         D( XD_REGION_DEF, DEF, TREE_VOID );
         DB( XD_IS_IN_SPEC, DEF, FALSE );
-      end	if;
+      end if;
     end loop;
 
   end	INITIALIZE_PRAGMA_ATTRIBUTE_DEFS;
@@ -2156,7 +2156,7 @@ is					---------
     CONTEXT_ELEM_S		: constant TREE	:= D( AS_CONTEXT_ELEM_S, COMPILATION_UNIT );
     ALL_DECL		: constant TREE	:= D( AS_ALL_DECL,	     COMPILATION_UNIT );
     PRAGMA_S		: constant TREE	:= D( AS_PRAGMA_S,	     COMPILATION_UNIT );
-    WITH_LIST		: constant SEQ_TYPE	:= LIST( COMPILATION_UNIT );
+    WITH_LIST		: constant SEQ_TYPE := LIST( COMPILATION_UNIT );
 
 
 			-------------------
@@ -2170,17 +2170,17 @@ is					---------
       while not IS_EMPTY( NAME_LIST ) loop
         POP( NAME_LIST, NAME );
         declare
-	NAME_DEFN		:constant	TREE	:= D( SM_DEFN, NAME	);
-	NAME_DEF		:constant	TREE	:= DEF_UTIL.GET_DEF_FOR_ID( NAME_DEFN );
+	NAME_DEFN		:constant TREE	:= D( SM_DEFN, NAME );
+	NAME_DEF		:constant TREE	:= DEF_UTIL.GET_DEF_FOR_ID( NAME_DEFN );
 	NEW_NAME		: TREE;
         begin
 	D( XD_REGION_DEF, NAME_DEF, DEF_UTIL.GET_DEF_FOR_ID( D( XD_REGION, NAME_DEFN ) ) );
 	NEW_NAME := VIS_UTIL.MAKE_USED_NAME_ID_FROM_OBJECT( NAME );
-	NEW_NAME_LIST := APPEND( NEW_NAME_LIST,	NEW_NAME );
+	NEW_NAME_LIST := APPEND( NEW_NAME_LIST, NEW_NAME );
         end;
-      end	loop;
+      end loop;
 
-      LIST( NAME_S,	NEW_NAME_LIST );
+      LIST( NAME_S, NEW_NAME_LIST );
 
     end	PROCESS_WITH_NAME_S;
 	-------------------
@@ -2195,10 +2195,10 @@ is					---------
     begin
 
       while not IS_EMPTY( USE_PRAGMA_LIST ) loop
-        POP( USE_PRAGMA_LIST,	USE_PRAGMA );
+        POP( USE_PRAGMA_LIST, USE_PRAGMA );
 
         if USE_PRAGMA.TY = DN_PRAGMA
-        then NOD_WALK.WALK( USE_PRAGMA,	INITIAL_H	);
+        then NOD_WALK.WALK( USE_PRAGMA, INITIAL_H );
         else
 			CONVERT_USE_NAMES_TO_IDS:
 	declare
@@ -2208,18 +2208,18 @@ is					---------
 	  NAME_DEFN	: TREE;
 	begin
 	  while not IS_EMPTY( NAME_LIST) loop
-	    POP( NAME_LIST,	NAME );
+	    POP( NAME_LIST, NAME );
 	    if  NAME.TY = DN_SELECTED
-	    then NAME_DEFN := D( AS_DESIGNATOR,	NAME );
+	    then NAME_DEFN := D( AS_DESIGNATOR, NAME );
 	    else NAME_DEFN := D( SM_DEFN, NAME );
 	    end if;
 	    declare
-	      NAME_DEF	:constant	TREE		:= DEF_UTIL.GET_DEF_FOR_ID( NAME_DEFN );
+	      NAME_DEF	:constant TREE		:= DEF_UTIL.GET_DEF_FOR_ID( NAME_DEFN );
 	      NEW_NAME	: TREE;
 	    begin
-	      DB(	XD_IS_USED, NAME_DEF, TRUE );
+	      DB( XD_IS_USED, NAME_DEF, TRUE );
 	      NEW_NAME	:= VIS_UTIL.MAKE_USED_NAME_ID_FROM_OBJECT( NAME );
-	      NEW_NAME_LIST	:= APPEND( NEW_NAME_LIST, NEW_NAME );
+	      NEW_NAME_LIST := APPEND( NEW_NAME_LIST, NEW_NAME );
 	    end;
 	  end loop;
 
@@ -2227,7 +2227,7 @@ is					---------
 	end		CONVERT_USE_NAMES_TO_IDS;
         end if;
 
-      end	loop;
+      end loop;
 
     end	PROCESS_WITH_USE_PRAGMA_S;
 	-------------------------
@@ -2245,7 +2245,7 @@ is					---------
       TRANS_WITH		: TREE;
 
 			------------------------
-      procedure		PROCESS_ANCESTOR_CONTEXT	( ANCESTOR_UNIT, COMPILATION_UNIT :TREE	)
+      procedure		PROCESS_ANCESTOR_CONTEXT	( ANCESTOR_UNIT, COMPILATION_UNIT :TREE )
 			------------------------
       is
 
@@ -2255,8 +2255,8 @@ is					---------
 			-----------
         is
         begin
-	if COMP_ALL_DECL.TY	in CLASS_SUBUNIT_BODY then
-	  return (    ANC_ALL_DECL.TY	in CLASS_UNIT_DECL
+	if COMP_ALL_DECL.TY in CLASS_SUBUNIT_BODY then
+	  return (    ANC_ALL_DECL.TY in CLASS_UNIT_DECL
 		    and then D( SM_FIRST, D( AS_SOURCE_NAME, COMP_ALL_DECL ) ) = D ( AS_SOURCE_NAME, ANC_ALL_DECL)
 		    );
 	elsif COMP_ALL_DECL.TY = DN_SUBUNIT then
@@ -2267,11 +2267,11 @@ is					---------
 	    if ANC_ALL_DECL.TY = DN_SUBUNIT then
 	      ANC_ID := D( SM_FIRST, D(  AS_SOURCE_NAME, D( AS_SUBUNIT_BODY, ANC_ALL_DECL ) ) );
 	      return FIX_WITH.IS_ANCESTOR( ANC_ID, COMP_ALL_DECL );
-	    elsif	ANC_ALL_DECL /= TREE_VOID then
+	    elsif ANC_ALL_DECL /= TREE_VOID then
 	      ANC_ID := D( SM_FIRST, D(  AS_SOURCE_NAME, ANC_ALL_DECL ) );
 	      while COMP_NAME.TY = DN_SELECTED loop
 	        COMP_NAME := D( AS_NAME, COMP_NAME );
-	      end	loop;
+	      end loop;
 	      return D( LX_SYMREP, ANC_ID ) = D( LX_SYMREP, COMP_NAME );
 	    end if;
 	  end;
@@ -2285,7 +2285,7 @@ is					---------
 			-----------------
         is
 	    -- GIVEN CONTEXT_ELEM_S FOR AN ANCESTOR UNIT,
-	      -- ... REPROCESS WITH'S	AND USE'S	IN FOR USE IN CURRENT UNIT
+	      -- ... REPROCESS WITH'S AND USE'S IN FOR USE IN CURRENT UNIT
 	CONTEXT_ELEM_LIST	: SEQ_TYPE	:= LIST( CONTEXT_ELEM_S );
 	CONTEXT_ELEM	: TREE;
 	USE_PRAGMA_LIST	: SEQ_TYPE;
@@ -2293,28 +2293,28 @@ is					---------
 	ITEM_LIST		: SEQ_TYPE;
 	ITEM		: TREE;
         begin
-	while not	IS_EMPTY(	CONTEXT_ELEM_LIST )	loop
+	while not IS_EMPTY( CONTEXT_ELEM_LIST ) loop
 	  POP( CONTEXT_ELEM_LIST, CONTEXT_ELEM);
 	  if CONTEXT_ELEM.TY = DN_WITH then
-	    ITEM_LIST := LIST( D( AS_NAME_S, CONTEXT_ELEM	) );
-	    while	not IS_EMPTY( ITEM_LIST) loop
+	    ITEM_LIST := LIST( D( AS_NAME_S, CONTEXT_ELEM ) );
+	    while not IS_EMPTY( ITEM_LIST) loop
 	      POP( ITEM_LIST, ITEM);
 	      if D( SM_DEFN, ITEM ) /= TREE_VOID then
 	        D( XD_REGION_DEF, DEF_UTIL.GET_DEF_FOR_ID( D( SM_DEFN,ITEM ) ), PREDEFINED_STANDARD_DEF );
-	      end	if;
+	      end if;
 	    end loop;
-	    USE_PRAGMA_LIST	:= LIST( D( AS_USE_PRAGMA_S, CONTEXT_ELEM ) );
-	    while	not IS_EMPTY( USE_PRAGMA_LIST) loop
+	    USE_PRAGMA_LIST := LIST( D( AS_USE_PRAGMA_S, CONTEXT_ELEM ) );
+	    while not IS_EMPTY( USE_PRAGMA_LIST) loop
 	      POP( USE_PRAGMA_LIST, USE_PRAGMA);
 	      if USE_PRAGMA.TY = DN_USE then
-	        ITEM_LIST := LIST( D(	AS_NAME_S, USE_PRAGMA ) );
-	        while not IS_EMPTY( ITEM_LIST )	loop
+	        ITEM_LIST := LIST( D( AS_NAME_S, USE_PRAGMA ) );
+	        while not IS_EMPTY( ITEM_LIST ) loop
 		POP( ITEM_LIST, ITEM );
-		if D( SM_DEFN, ITEM	) /= TREE_VOID then
-		  DB( XD_IS_USED, DEF_UTIL.GET_DEF_FOR_ID( D( SM_DEFN, ITEM	) ), TRUE	);
+		if D( SM_DEFN, ITEM ) /= TREE_VOID then
+		  DB( XD_IS_USED, DEF_UTIL.GET_DEF_FOR_ID( D( SM_DEFN, ITEM ) ), TRUE );
 		end if;
 	        end loop;
-	      end	if;
+	      end if;
 	    end loop;
 	  end if;
 	end loop;
@@ -2323,11 +2323,11 @@ is					---------
 		-----------------
 
       begin
-        if IS_ANCESTOR( D( AS_ALL_DECL,	ANCESTOR_UNIT ), D(	AS_ALL_DECL, COMPILATION_UNIT	) ) then
+        if IS_ANCESTOR( D( AS_ALL_DECL, ANCESTOR_UNIT ), D( AS_ALL_DECL, COMPILATION_UNIT ) ) then
 	REPROCESS_CONTEXT( D( AS_CONTEXT_ELEM_S, ANCESTOR_UNIT ) );
         end if;
 
-      end	PROCESS_ANCESTOR_CONTEXT;
+      end PROCESS_ANCESTOR_CONTEXT;
 	------------------------
 
     begin
@@ -2335,28 +2335,28 @@ is					---------
       while  not IS_EMPTY( CONTEXT_ELEM_LIST )  loop
         POP( CONTEXT_ELEM_LIST, CONTEXT_ELEM );
 
-        if  CONTEXT_ELEM.TY =	DN_WITH  then
+        if  CONTEXT_ELEM.TY = DN_WITH  then
 
-	PROCESS_WITH_NAME_S( D( AS_NAME_S, CONTEXT_ELEM )	);
-	PROCESS_WITH_USE_PRAGMA_S( D(	AS_USE_PRAGMA_S, CONTEXT_ELEM	) );
+	PROCESS_WITH_NAME_S( D( AS_NAME_S, CONTEXT_ELEM ) );
+	PROCESS_WITH_USE_PRAGMA_S( D( AS_USE_PRAGMA_S, CONTEXT_ELEM ) );
 
         else
-	PUT_LINE(	"SEM_PHASE.PROCESS_CONTEXT_CLAUSES!! $$$$ CONTEXT PRAGMA." );
+	PUT_LINE( "SEM_PHASE.PROCESS_CONTEXT_CLAUSES!! $$$$ CONTEXT PRAGMA." );
 	raise PROGRAM_ERROR;
         end if;
-      end	loop;
+      end loop;
 
       while  not IS_EMPTY( TRANS_WITH_LIST )  loop
-        POP( TRANS_WITH_LIST,	TRANS_WITH);
+        POP( TRANS_WITH_LIST, TRANS_WITH);
         PROCESS_ANCESTOR_CONTEXT( D( TW_COMP_UNIT, TRANS_WITH ), COMPILATION_UNIT );
-      end	loop;
+      end loop;
 
     end	PROCESS_CONTEXT_CLAUSES;
 	-----------------------
 
 
 			---------------------
-    procedure		ENTER_ANCESTOR_REGION		( NAME :TREE; H :in	out H_TYPE )
+    procedure		ENTER_ANCESTOR_REGION		( NAME :TREE; H :in out H_TYPE )
 			---------------------
     is
       S			: NOD_WALK.S_TYPE;
@@ -2368,33 +2368,33 @@ is					---------
     begin
       if NAME.TY = DN_SELECTED then
         ENTER_ANCESTOR_REGION( D( AS_NAME, NAME ), H );
-        DESIGNATOR := D( AS_DESIGNATOR,	NAME );
+        DESIGNATOR := D( AS_DESIGNATOR, NAME );
       else
         DESIGNATOR := NAME;
-      end	if;
+      end if;
 
-      D( SM_DEFN, DESIGNATOR,	TREE_VOID	);
-      DEFLIST := LIST( D( LX_SYMREP, DESIGNATOR )	);
+      D( SM_DEFN, DESIGNATOR, TREE_VOID );
+      DEFLIST := LIST( D( LX_SYMREP, DESIGNATOR ) );
 
       while not IS_EMPTY( DEFLIST ) loop
         POP( DEFLIST, DEF );
 
-        if D( XD_REGION, D( XD_SOURCE_NAME, DEF )	) = D( XD_SOURCE_NAME, H.REGION_DEF ) then
+        if D( XD_REGION, D( XD_SOURCE_NAME, DEF ) ) = D( XD_SOURCE_NAME, H.REGION_DEF ) then
 	DEFN := D( XD_SOURCE_NAME, DEF);
-	if DEFN.TY = DN_TYPE_ID or else DEFN.TY	in CLASS_UNIT_NAME then
-	  DEFN :=	D( SM_FIRST, DEFN );
+	if DEFN.TY = DN_TYPE_ID or else DEFN.TY in CLASS_UNIT_NAME then
+	  DEFN := D( SM_FIRST, DEFN );
 	end if;
 	D( SM_DEFN, DESIGNATOR, DEFN );
 	exit;
         end if;
 
-      end	loop;
+      end loop;
 
       DEFN := D( SM_DEFN, DESIGNATOR );
       if DEFN = TREE_VOID then
         PUT_LINE( "!! DEFN NOT FOUND FOR ANCESTOR" );
         raise PROGRAM_ERROR;
-      end	if;
+      end if;
       DES_DEF := DEF_UTIL.GET_DEF_FOR_ID( DEFN );
       D( XD_REGION_DEF, DES_DEF, H.REGION_DEF );
       NOD_WALK.ENTER_BODY( DES_DEF, H, S );
@@ -2407,7 +2407,7 @@ is					---------
 			---------
 	procedure		WALK_ITEM		( ITEM :TREE; H_IN :H_TYPE )
     is
-      H	: H_TYPE	:= H_IN;
+      H	: H_TYPE  := H_IN;
     begin
       NOD_WALK.WALK( ITEM, H );
     end	WALK_ITEM;
@@ -2416,7 +2416,7 @@ is					---------
 
 
   begin
-    if  ALL_DECL.TY	= DN_VOID	 then
+    if  ALL_DECL.TY = DN_VOID  then
       ERROR( D( LX_SRCPOS, COMPILATION_UNIT ), "$$$ EMPTY UNIT NOT IMPLEMENTED YET" );
       return;
     end if;
@@ -2435,19 +2435,19 @@ is					---------
       H.IS_IN_SPEC := TRUE;
       H.IS_IN_BODY := FALSE;
 
-      if	ALL_DECL.TY = DN_SUBUNIT  then
+      if  ALL_DECL.TY = DN_SUBUNIT  then
         ENTER_ANCESTOR_REGION( D( AS_NAME, ALL_DECL ), H );
         WALK_ITEM( D( AS_SUBUNIT_BODY, ALL_DECL ), H );
       else
         WALK_ITEM( ALL_DECL, H);
-      end	if;
+      end if;
 
-      NOD_WALK.WALK_ITEM_S( PRAGMA_S, H	);
+      NOD_WALK.WALK_ITEM_S( PRAGMA_S, H );
 
       while  not IS_EMPTY( USED_PACKAGE_LIST )  loop
-        DB( XD_IS_USED, HEAD(	USED_PACKAGE_LIST ), FALSE );
+        DB( XD_IS_USED, HEAD( USED_PACKAGE_LIST ), FALSE );
         USED_PACKAGE_LIST := TAIL( USED_PACKAGE_LIST );
-      end	loop;
+      end loop;
     end;
 
   end	COMPILE_COMPILATION_UNIT;
@@ -2465,19 +2465,19 @@ is					---------
     ALL_DECL		: TREE;
     UNIT_ID		: TREE;
   begin
-    while	not IS_EMPTY( TRANS_WITH_LIST	) loop
+    while not IS_EMPTY( TRANS_WITH_LIST ) loop
       POP( TRANS_WITH_LIST, TRANS_WITH );
 
       ALL_DECL := D( AS_ALL_DECL, D( TW_COMP_UNIT, TRANS_WITH ) );
       if ALL_DECL.TY /= DN_SUBUNIT then
         UNIT_ID := D( AS_SOURCE_NAME, ALL_DECL );
-        if UNIT_ID.TY in CLASS_UNIT_NAME and then	D( SM_FIRST, UNIT_ID ) = UNIT_ID then
+        if UNIT_ID.TY in CLASS_UNIT_NAME and then D( SM_FIRST, UNIT_ID ) = UNIT_ID then
 	DEF_UTIL.REMOVE_DEF_FROM_ENVIRONMENT( GET_DEF_FOR_ID( UNIT_ID ) );
         end if;
       else
-        UNIT_ID := D( SM_FIRST, D( AS_SOURCE_NAME, D( AS_SUBUNIT_BODY, ALL_DECL	) ) );
+        UNIT_ID := D( SM_FIRST, D( AS_SOURCE_NAME, D( AS_SUBUNIT_BODY, ALL_DECL ) ) );
         REMOVE_DEF_FROM_ENVIRONMENT( GET_DEF_FOR_ID( UNIT_ID ) );
-      end	if;
+      end if;
 
     end loop;
     REMOVE_DEF_FROM_ENVIRONMENT( PREDEFINED_STANDARD_DEF );
@@ -2494,16 +2494,16 @@ is					---------
 begin
   OPEN_IDL_TREE_FILE( IDL.LIB_PATH( 1..LIB_PATH_LENGTH ) & "$$$.TMP" );
 
-  if  DI(	XD_ERR_COUNT, TREE_ROOT ) = 0	 then
+  if  DI( XD_ERR_COUNT, TREE_ROOT ) = 0  then
     declare
-      USER_ROOT		: TREE		:= D( XD_USER_ROOT,	TREE_ROOT	);
-      COMPILATION		: TREE		:= D( XD_STRUCTURE,	USER_ROOT	);
+      USER_ROOT		: TREE		:= D( XD_USER_ROOT, TREE_ROOT );
+      COMPILATION		: TREE		:= D( XD_STRUCTURE, USER_ROOT );
       COMPLTN_UNIT_LIST	: SEQ_TYPE	:= LIST( D( AS_COMPLTN_UNIT_S, COMPILATION ) );
       COMPILATION_UNIT	: TREE;
-      SRC_NAME		:constant	STRING	:= PRINT_NAME( D( XD_SOURCENAME, USER_ROOT ) );
+      SRC_NAME		:constant STRING	:= PRINT_NAME( D( XD_SOURCENAME, USER_ROOT ) );
     begin
 
-      if	SRC_NAME = "_standrd.ads"  then
+      if  SRC_NAME = "_standrd.ads"  then
 
         FIX_PRE;
 
@@ -2511,7 +2511,7 @@ begin
         SEM_GLOB.INITIALIZE_GLOBAL_DATA;
         INITIALIZE_PRAGMA_ATTRIBUTE_DEFS;
 
-        while  not IS_EMPTY( COMPLTN_UNIT_LIST )	loop
+        while  not IS_EMPTY( COMPLTN_UNIT_LIST )  loop
 	POP( COMPLTN_UNIT_LIST, COMPILATION_UNIT );
 
 	COMPILE_COMPILATION_UNIT( COMPILATION_UNIT, INITIAL_H );
@@ -2520,7 +2520,7 @@ begin
 	  CANCEL_TRANS_WITHS( COMPILATION_UNIT );
 	end if;
         end loop;
-      end	if;
+      end if;
     end;
   end if;
 

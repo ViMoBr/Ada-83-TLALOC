@@ -27,7 +27,8 @@ is
     CODI.ENCLOSING_BODY := TREE_VOID;
     THE_COMPILATION_UNIT := COMPILATION_UNIT;
 
-    CODE_WITH_CONTEXT( D( AS_CONTEXT_ELEM_S, COMPILATION_UNIT ) );
+    CODE_WITH_CONTEXT( D( AS_CONTEXT_ELEM_S, COMPILATION_UNIT ),
+			EMIT_INCLUDES => UNIT_ALL_DECL.TY /= DN_SUBUNIT );
     if  UNIT_ALL_DECL.TY /= DN_SUBUNIT  then
       CODE_TRANS_WITH_INCLUDES( COMPILATION_UNIT );
     end if;
@@ -65,22 +66,30 @@ is
 
 
 			-----------------
-  procedure		CODE_WITH_CONTEXT		( CONTEXT_ELEM_S :TREE )
+  procedure		CODE_WITH_CONTEXT		( CONTEXT_ELEM_S :TREE; EMIT_INCLUDES :BOOLEAN := TRUE )
   is			-----------------
 
     CONTEXT_ELEM_SEQ	: SEQ_TYPE	:= LIST( CONTEXT_ELEM_S );
     CONTEXT_ELEM		: TREE;
-		-----------------
-    procedure	INSERT_WITHED_PKG	( DEFN :TREE )
+		------------------
+    procedure	INSERT_WITHED_UNIT  ( DEFN :TREE )
     is
     begin
-      PUT_LINE( "if ~ definite " & PRINT_NAME( D( LX_SYMREP, DEFN ) ) );
-      PUT_LINE( "include '" & PRINT_NAME( D( LX_SYMREP, DEFN ) ) & ".FINC'" );
-      PUT_LINE( "end if" );
+      if  EMIT_INCLUDES  then
+        declare
+	UNIT_NAME :constant STRING	:= PRINT_NAME( D( LX_SYMREP, DEFN ) );
+        begin
+	PUT_LINE( "if ~ definite " & PRINT_NAME( D( LX_SYMREP, DEFN ) ) );
+	PUT_LINE( "include '" & UNIT_NAME & ".FINC'" );
+	if  CODI.GENERATE_BINARY_MAP  then
+	  PUT_LINE( "display 'including withed unit " & UNIT_NAME & ".FINC'" & ", 10"  );
+	end if;
+	PUT_LINE( "end if" );
+        end;
+      end if;
 
-      DB( CD_COMPILED, DEFN, TRUE );
-    end	INSERT_WITHED_PKG;
-	-----------------
+    end	INSERT_WITHED_UNIT;
+	------------------
   begin
 
     while  not IS_EMPTY( CONTEXT_ELEM_SEQ )  loop
@@ -98,16 +107,16 @@ is
 	  declare
 	    DEFN  : TREE	:= D( SM_DEFN, NAME );
 	  begin
-	    if  DEFN.TY = DN_PACKAGE_ID
-	    then  INSERT_WITHED_PKG( DEFN );
+	    if  DEFN.TY = DN_PACKAGE_ID  then
+	      INSERT_WITHED_UNIT( DEFN );
+	      DB( CD_COMPILED, DEFN, TRUE );
 
-	    elsif  DEFN.TY = DN_GENERIC_ID
-	    then
-	      PUT_LINE( "if ~ definite " & PRINT_NAME( D( LX_SYMREP, DEFN ) ) );
-	      PUT_LINE( "include '" & PRINT_NAME( D( LX_SYMREP, DEFN ) ) & ".FINC'" );
-	      PUT_LINE( "end if" );
+	    elsif  DEFN.TY = DN_GENERIC_ID  then
+	      INSERT_WITHED_UNIT( DEFN );
 
-	    elsif  DEFN.TY = DN_PROCEDURE_ID  then
+	    elsif  DEFN.TY = DN_PROCEDURE_ID  or  DEFN.TY = DN_FUNCTION_ID  then
+	      INSERT_WITHED_UNIT( DEFN );
+
 	      if  not DB( CD_COMPILED, DEFN )  then
 	        DI( CD_LEVEL,      DEFN,  1 );
 	        DI( CD_PARAM_SIZE, DEFN,  0 );
@@ -148,7 +157,6 @@ is
 		:= PRINT_NAME( D( LX_SYMREP, D( AS_SOURCE_NAME, D( AS_ALL_DECL, COMPILATION_UNIT ) ) ) );
 
   begin
-
     while  not IS_EMPTY( TW_SEQ )  loop
       POP( TW_SEQ, TW );
 
@@ -157,13 +165,17 @@ is
         DEFN		: TREE	:= D( AS_SOURCE_NAME, D( AS_ALL_DECL, TW_UNIT ) );
         UNIT_NAME	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, DEFN ) );
       begin
-        if  ( DEFN.TY = DN_PACKAGE_ID  or  DEFN.TY = DN_GENERIC_ID )
+        if  ( DEFN.TY = DN_PACKAGE_ID  or  DEFN.TY = DN_GENERIC_ID
+	or  DEFN.TY = DN_PROCEDURE_ID  or  DEFN.TY = DN_FUNCTION_ID)
 	  and then  UNIT_NAME /= "_STANDRD"  and then  UNIT_NAME /= "STANDARD"
 	  and then  UNIT_NAME /= OWN_NAME
 	  and then  TW_UNIT /= OWN_SPEC
         then
 	  PUT_LINE( "if ~ definite " & UNIT_NAME );
 	  PUT_LINE( "include '" & UNIT_NAME & ".FINC'" );
+	  if  CODI.GENERATE_BINARY_MAP  then
+	    PUT_LINE( "display 'including trans withed unit " & UNIT_NAME & ".FINC'" & ", 10" );
+	  end if;
 	  PUT_LINE( "end if" );
         end if;
       end;
@@ -302,9 +314,15 @@ is
     SAVE_IN_GENERIC_BODY	: BOOLEAN		:= CODI.IN_GENERIC_BODY;
     SAVE_ENCLOSING_GENERIC	: TREE		:= CODI.ENCLOSING_GENERIC;
     SAVE_GENERIC_BASE_LEVEL	: LEVEL_NUM	:= CODI.GENERIC_BASE_LEVEL;
+    SAVE_GOTO_BASE		: GOTO_LBL_IDX	:= CODI.GOTO_BODY_BASE;
+    SAVE_GOTO_TOP		: GOTO_LBL_IDX	:= CODI.GOTO_LBL_TOP;
+    SAVE_GOTO_PEND_BASE	: GOTO_LBL_IDX	:= CODI.GOTO_PEND_BASE;
+    SAVE_GOTO_PEND_TOP	: GOTO_LBL_IDX	:= CODI.GOTO_PEND_TOP;
 
   begin
     INC_LEVEL;
+    CODI.GOTO_BODY_BASE := CODI.GOTO_LBL_TOP;								-- ouvrir le perimetre goto de CE corps
+    CODI.GOTO_PEND_BASE := CODI.GOTO_PEND_TOP;
     if  DECL_ID.TY /= DN_GENERIC_ID  then
       if  DECL_ID = SOURCE_NAME  then									-- PREMIERE DEFINITION PAS DE SPEC DEJA ETIQUETEE
         LBL := NEW_LABEL;
@@ -337,15 +355,28 @@ is
     if  SUB_BODY.TY = DN_STUB  then
       declare
         UNIT_FILE_NAME	:constant STRING	:= PRINT_NAME( D( XD_LIB_NAME, THE_COMPILATION_UNIT ) );
+        FULL_NAME		:constant STRING	:= UNIT_FILE_NAME( UNIT_FILE_NAME'FIRST .. UNIT_FILE_NAME'LAST-4 )
+						& '-' & SUB_NAME & ".FINC";
       begin
-        PUT_LINE( "include '" & UNIT_FILE_NAME( UNIT_FILE_NAME'FIRST .. UNIT_FILE_NAME'LAST-4 )
-			& '-' & SUB_NAME & ".FINC'" );
+        PUT_LINE( "include '" & FULL_NAME & ''' );
+        if  CODI.GENERATE_BINARY_MAP  then
+	PUT_LINE( "display 'including sub body " & FULL_NAME & ''' & ", 10" );
+        end if;
       end;
 
     else
+      if  ENCLOSING_BODY = TREE_VOID  then								-- unite de bibliotheque : garde n 97
+        PUT_LINE( SUB_NAME & " = '" & SUB_NAME & "'" );
+      end if;
+
       PUT( "PRO" & tab & SUB_NAME & '_' & LABEL_STR( LBL ) );
+
       if  CODI.DEBUG  then PUT( tab50 & ";---------- PRO " & SUB_NAME ); end if;
       NEW_LINE;
+      if  CODI.GENERATE_BINARY_MAP  then
+        PUT_LINE( " hexa_show '" & SUB_NAME & '_' & LABEL_STR( LBL ) & " ', $" );
+      end if;
+
 
       if DECL_ID.TY = DN_GENERIC_ID then
         CODE_GENERIC_FRAME_OFFSETS( DECL_ID );
@@ -381,6 +412,11 @@ is
       PUT_LINE( "end if" );
     end if;
 
+    CODI.GOTO_CHECK_BODY_END;										-- ceinture : raccord jamais resolu
+    CODI.GOTO_LBL_TOP    := SAVE_GOTO_TOP;								-- refermer le perimetre goto de ce corps
+    CODI.GOTO_BODY_BASE  := SAVE_GOTO_BASE;
+    CODI.GOTO_PEND_TOP   := SAVE_GOTO_PEND_TOP;
+    CODI.GOTO_PEND_BASE  := SAVE_GOTO_PEND_BASE;
     CODI.IN_GENERIC_BODY    := SAVE_IN_GENERIC_BODY;
     CODI.ENCLOSING_GENERIC  := SAVE_ENCLOSING_GENERIC;
     CODI.GENERIC_BASE_LEVEL := SAVE_GENERIC_BASE_LEVEL;
@@ -412,6 +448,9 @@ is
       PUT( "namespace " & PACK_NAME );
       if  CODI.DEBUG  then NEW_LINE; PUT( tab50 & ";---------- GENERIC PACKAGE ----------" ); NEW_LINE; end if;
       NEW_LINE;
+      if  CODI.GENERATE_BINARY_MAP  then
+        PUT_LINE( " hexa_show '" & PACK_NAME & " body ', $" );
+      end if;
 
       PUT_LINE( "PRMS" );
 
@@ -473,9 +512,13 @@ is
       if  PACK_BODY.TY = DN_STUB  then
         declare
 	UNIT_FILE_NAME	:constant STRING	:= PRINT_NAME( D( XD_LIB_NAME, THE_COMPILATION_UNIT ) );
+	FULL_UNIT_NAME	:constant STRING	:= UNIT_FILE_NAME( UNIT_FILE_NAME'FIRST .. UNIT_FILE_NAME'LAST-4 )
+						& '-' & PACK_NAME & ".FINC";
         begin
-	PUT_LINE( "include '" & UNIT_FILE_NAME( UNIT_FILE_NAME'FIRST .. UNIT_FILE_NAME'LAST-4 )
-		& '-' & PACK_NAME & ".FINC'" );
+	PUT_LINE( "include '" & FULL_UNIT_NAME & ''' );
+	if  CODI.GENERATE_BINARY_MAP  then
+	  PUT_LINE( "display 'including sub unit " & FULL_UNIT_NAME & ''' & ", 10" );
+	end if;
         end;
 
       else
@@ -590,7 +633,7 @@ is
     begin
       if  HAS_HANDLERS  then
         if  IS_PACK_BODY  then
-	PUT_LINE( "ANOMALIE : handlers sur corps de package non modelises" );					-- bruyant -- exceptions d'elaboration, differe
+	PUT_LINE( ";ANOMALIE : handlers sur corps de package non modelises" );					-- bruyant -- exceptions d'elaboration, differe
 
         else
 			-- PILIER 11 : frame porteur -> contexte de reprise (push a begin:, apres

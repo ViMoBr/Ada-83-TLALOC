@@ -4,6 +4,7 @@ namespace NEWSNAM				;---------- PACKAGE (BDY)
 
 if defined REPLACE_SOURCE_NAME_L439_
 PRO	REPLACE_SOURCE_NAME_L439			;---------- PRO REPLACE_SOURCE_NAME
+ hexa_show 'REPLACE_SOURCE_NAME_L439 ', $
 PRMS					;    debut parametrage
 	PRM SOURCE_NAME_ofs			; in out
 	PRM NODE_HASH_ofs				; in out
@@ -11,6 +12,7 @@ PRMS					;    debut parametrage
 	PRM DECL_ofs				; in
 endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
+ hexa_show 'var elab OLD_NAME ', $
 VAR OLD_NAME_disp, q			; variable record : pointeur aux data record
 VAR OLD_NAME__u, q				; variable record : pointeur aux useinfo
 VAR OLD_NAME__dat, STANDARD.IDL._TREE.size
@@ -18,13 +20,14 @@ VAR OLD_NAME__dat, STANDARD.IDL._TREE.size
 	Sa	1, OLD_NAME_disp			; record fin
 	LVA	1, STANDARD.IDL._TREE.SIZ
 	Sa	1, OLD_NAME__u
-; CODE_VC_NAME DN_CONSTANT_ID
 	La  1, OLD_NAME_disp
 	LI	STANDARD.IDL._TREE.size
 	La  1,	-SOURCE_NAME_ofs
 	La  ,  0
 	BLKMOV
 
+ hexa_show ' disp ', OLD_NAME_disp
+ hexa_show 'var elab DEF ', $
 VAR DEF_disp, q				; variable record : pointeur aux data record
 VAR DEF__u, q				; variable record : pointeur aux useinfo
 VAR DEF__dat, STANDARD.IDL._TREE.size
@@ -32,13 +35,14 @@ VAR DEF__dat, STANDARD.IDL._TREE.size
 	Sa	1, DEF_disp				; record fin
 	LVA	1, STANDARD.IDL._TREE.SIZ
 	Sa	1, DEF__u
-; CODE_VC_NAME DN_VARIABLE_ID
 	La  1, DEF_disp
 	LI	STANDARD.IDL._TREE.size
 	LVA 0,	STANDARD.IDL.TREE_VOID_disp
 	La  ,  0
 	BLKMOV
 
+ hexa_show ' disp ', DEF_disp
+ hexa_show 'var elab H ', $
 VAR H_disp, q				; variable record : pointeur aux data record
 VAR H__u, q				; variable record : pointeur aux useinfo
 VAR H__dat, STANDARD.IDL.SEM_PHASE_L11.SEM_GLOB._H_TYPE.size
@@ -46,13 +50,14 @@ VAR H__dat, STANDARD.IDL.SEM_PHASE_L11.SEM_GLOB._H_TYPE.size
 	Sa	1, H_disp				; record fin
 	LVA	1, STANDARD.IDL.SEM_PHASE_L11.SEM_GLOB._H_TYPE.SIZ
 	Sa	1, H__u
-; CODE_VC_NAME DN_VARIABLE_ID
 	La  1, H_disp
 	LI	STANDARD.IDL.SEM_PHASE_L11.SEM_GLOB._H_TYPE.size
 	La  1,	-H_IN_ofs
 	La  ,  0
 	BLKMOV
 
+ hexa_show ' disp ', H_disp
+ hexa_show 'var elab S ', $
 VAR S_disp, q				; variable record : pointeur aux data record
 VAR S__u, q				; variable record : pointeur aux useinfo
 VAR S__dat, STANDARD.IDL.SEM_PHASE_L11.NOD_WALK._S_TYPE.size
@@ -60,11 +65,28 @@ VAR S__dat, STANDARD.IDL.SEM_PHASE_L11.NOD_WALK._S_TYPE.size
 	Sa	1, S_disp				; record fin
 	LVA	1, STANDARD.IDL.SEM_PHASE_L11.NOD_WALK._S_TYPE.SIZ
 	Sa	1, S__u
-; CODE_VC_NAME DN_VARIABLE_ID
 
+ hexa_show ' disp ', S_disp
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 					; debut if
+VAR	ANON_36_8_disp, q
+VAR	ANON_36_8__u,    q
+VAR	ANON_36_8__dat, STANDARD.IDL._TREE.size
+	LVA 1, ANON_36_8__dat
+	Sa  1, ANON_36_8_disp
+	La  0, STANDARD.IDL._TREE.use__info
+	Sa  1, ANON_36_8__u
+	LVA 1, ANON_36_8_disp
+					; doublet resultat record anonyme
+	La  1,	-SOURCE_NAME_ofs
+	LI  13
+	CALL	STANDARD.IDL. ,D_L17
+	La
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	1
 	CEQ
 	BF	L4
@@ -139,7 +161,15 @@ L3:					; post if
 	LI	16
 	CEQ
 	BT	L8
-; CODE_CASE : choice_range non DN_RANGE a completer
+	DUP
+	LI	20
+	CGE
+	BF	L15
+	DUP
+	LI	21
+	CGT
+	BF	L9
+L15:
 	DUP
 	LI	23
 	CEQ
@@ -152,7 +182,15 @@ L3:					; post if
 	LI	26
 	CEQ
 	BT	L11
-; CODE_CASE : choice_range non DN_RANGE a completer
+	DUP
+	LI	27
+	CGE
+	BF	L16
+	DUP
+	LI	31
+	CGT
+	BF	L12
+L16:
 	DUP
 	LI	35
 	CEQ
@@ -165,7 +203,15 @@ L3:					; post if
 	LI	15
 	CEQ
 	BT	L13
-; CODE_CASE : choice_range non DN_RANGE a completer
+	DUP
+	LI	17
+	CGE
+	BF	L17
+	DUP
+	LI	19
+	CGT
+	BF	L13
+L17:
 	DUP
 	LI	24
 	CEQ
@@ -182,13 +228,22 @@ L3:					; post if
 	LI	32
 	CEQ
 	BT	L14
-; CODE_CASE : choice_range non DN_RANGE a completer
+	DUP
+	LI	33
+	CGE
+	BF	L18
+	DUP
+	LI	34
+	CGT
+	BF	L14
+L18:
 	DROP
 	BRA	L5
 L6:
 	DROP
 namespace	BLOCK__1
 ELB 2					;    BODY ELAB
+ hexa_show 'var elab TYPE_SPEC ', $
 VAR TYPE_SPEC_disp, q			; variable record : pointeur aux data record
 VAR TYPE_SPEC__u, q				; variable record : pointeur aux useinfo
 VAR TYPE_SPEC__dat, STANDARD.IDL._TREE.size
@@ -196,7 +251,6 @@ VAR TYPE_SPEC__dat, STANDARD.IDL._TREE.size
 	Sa	2, TYPE_SPEC_disp			; record fin
 	LVA	2, STANDARD.IDL._TREE.SIZ
 	Sa	2, TYPE_SPEC__u
-; CODE_VC_NAME DN_VARIABLE_ID
 	La  2, TYPE_SPEC_disp
 					; store represented component PT range 0 .. 1 width 2
 	DUP
@@ -207,6 +261,7 @@ VAR TYPE_SPEC__dat, STANDARD.IDL._TREE.size
 	BFI
 	Sd
 
+ hexa_show ' disp ', TYPE_SPEC_disp
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 	LVA 1,	STANDARD.IDL.SEM_PHASE_L11.NEWSNAM.REPLACE_SOURCE_NAME_L439.DEF_disp
@@ -224,7 +279,7 @@ VAR	ANON_51_9__dat, STANDARD.IDL._TREE.size
 	LVA 1,	STANDARD.IDL.SEM_PHASE_L11.NEWSNAM.REPLACE_SOURCE_NAME_L439.H_disp
 	La  1,	-SOURCE_NAME_ofs
 	CALL	STANDARD.IDL.SEM_PHASE_L11.DEF_UTIL. ,MAKE_DEF_FOR_ID_L52
-	La  ,  0
+	La
 	BLKMOV
 	LVA  0,	STANDARD.IDL.TREE_VOID_disp		; array actual
 	LVA 1,	STANDARD.IDL.SEM_PHASE_L11.NEWSNAM.REPLACE_SOURCE_NAME_L439.DEF_disp
@@ -258,7 +313,7 @@ VAR	ANON_59_17__dat, STANDARD.IDL._TREE.size
 	La  1,	-SOURCE_NAME_ofs
 	LI  15
 	CALL	STANDARD.IDL. ,D_L17
-	La  ,  0
+	La
 	BLKMOV
 	La  1,	-NODE_HASH_ofs
 	LVA  2,	STANDARD.IDL.SEM_PHASE_L11.NEWSNAM.REPLACE_SOURCE_NAME_L439.BLOCK__1.TYPE_SPEC_disp
@@ -274,7 +329,7 @@ VAR	ANON_59_17__dat, STANDARD.IDL._TREE.size
 	La
 	LI	STANDARD.IDL.SEM_PHASE_L11.SEM_GLOB._H_TYPE.size
 	La  1,	-H_IN_ofs
-	La  ,  0
+	La
 	BLKMOV
 	BRA	L21
 L22:
@@ -289,6 +344,23 @@ L22:
 	DUP
 	BF	L24
 	DROP
+VAR	ANON_66_48_disp, q
+VAR	ANON_66_48__u,    q
+VAR	ANON_66_48__dat, STANDARD.IDL._TREE.size
+	LVA 2, ANON_66_48__dat
+	Sa  2, ANON_66_48_disp
+	La  0, STANDARD.IDL._TREE.use__info
+	Sa  2, ANON_66_48__u
+	LVA 2, ANON_66_48_disp
+					; doublet resultat record anonyme
+	La  1,	-DECL_ofs
+	LI  23
+	CALL	STANDARD.IDL. ,D_L17
+	La
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	74
 	CEQ
 L24:
@@ -318,7 +390,7 @@ VAR	ANON_69_32__dat, STANDARD.IDL._TREE.size
 	LI  15
 	CALL	STANDARD.IDL. ,D_L17
 	CALL	STANDARD.IDL.SEM_PHASE_L11.DEF_UTIL. ,GET_BASE_TYPE_L71
-	La  ,  0
+	La
 	BLKMOV
 	La  1,	-NODE_HASH_ofs
 	LVA  2,	STANDARD.IDL.SEM_PHASE_L11.NEWSNAM.REPLACE_SOURCE_NAME_L439.BLOCK__1.TYPE_SPEC_disp
@@ -337,6 +409,7 @@ L7:
 	DROP
 namespace	BLOCK__2
 ELB 2					;    BODY ELAB
+ hexa_show 'var elab FIRST_NAME ', $
 VAR FIRST_NAME_disp, q			; variable record : pointeur aux data record
 VAR FIRST_NAME__u, q			; variable record : pointeur aux useinfo
 VAR FIRST_NAME__dat, STANDARD.IDL._TREE.size
@@ -344,13 +417,14 @@ VAR FIRST_NAME__dat, STANDARD.IDL._TREE.size
 	Sa	2, FIRST_NAME_disp			; record fin
 	LVA	2, STANDARD.IDL._TREE.SIZ
 	Sa	2, FIRST_NAME__u
-; CODE_VC_NAME DN_VARIABLE_ID
 	La  2, FIRST_NAME_disp
 	LI	STANDARD.IDL._TREE.size
 	La  1,	-SOURCE_NAME_ofs
 	La  ,  0
 	BLKMOV
 
+ hexa_show ' disp ', FIRST_NAME_disp
+ hexa_show 'var elab TYPE_SPEC ', $
 VAR TYPE_SPEC_disp, q			; variable record : pointeur aux data record
 VAR TYPE_SPEC__u, q				; variable record : pointeur aux useinfo
 VAR TYPE_SPEC__dat, STANDARD.IDL._TREE.size
@@ -358,7 +432,6 @@ VAR TYPE_SPEC__dat, STANDARD.IDL._TREE.size
 	Sa	2, TYPE_SPEC_disp			; record fin
 	LVA	2, STANDARD.IDL._TREE.SIZ
 	Sa	2, TYPE_SPEC__u
-; CODE_VC_NAME DN_VARIABLE_ID
 	La  2, TYPE_SPEC_disp
 					; store represented component PT range 0 .. 1 width 2
 	DUP
@@ -369,6 +442,8 @@ VAR TYPE_SPEC__dat, STANDARD.IDL._TREE.size
 	BFI
 	Sd
 
+ hexa_show ' disp ', TYPE_SPEC_disp
+ hexa_show 'var elab INIT_EXP ', $
 VAR INIT_EXP_disp, q			; variable record : pointeur aux data record
 VAR INIT_EXP__u, q				; variable record : pointeur aux useinfo
 VAR INIT_EXP__dat, STANDARD.IDL._TREE.size
@@ -376,7 +451,6 @@ VAR INIT_EXP__dat, STANDARD.IDL._TREE.size
 	Sa	2, INIT_EXP_disp			; record fin
 	LVA	2, STANDARD.IDL._TREE.SIZ
 	Sa	2, INIT_EXP__u
-; CODE_VC_NAME DN_VARIABLE_ID
 	La  2, INIT_EXP_disp
 					; store represented component PT range 0 .. 1 width 2
 	DUP
@@ -387,6 +461,7 @@ VAR INIT_EXP__dat, STANDARD.IDL._TREE.size
 	BFI
 	Sd
 
+ hexa_show ' disp ', INIT_EXP_disp
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 	LVA 2,	FIRST_NAME_disp
@@ -404,7 +479,7 @@ VAR	ANON_84_16__dat, STANDARD.IDL._TREE.size
 	LVA  1,	STANDARD.IDL.SEM_PHASE_L11.NEWSNAM.REPLACE_SOURCE_NAME_L439.OLD_NAME_disp	; array actual
 	LI  16
 	CALL	STANDARD.IDL. ,D_L17
-	La  ,  0
+	La
 	BLKMOV
 					; debut if
 ; CODE record equality "=" _TREE
@@ -420,7 +495,7 @@ VAR	ANON_84_16__dat, STANDARD.IDL._TREE.size
 	La
 	LI	STANDARD.IDL._TREE.size
 	La  1,	-SOURCE_NAME_ofs
-	La  ,  0
+	La
 	BLKMOV
 	LVA 1,	STANDARD.IDL.SEM_PHASE_L11.NEWSNAM.REPLACE_SOURCE_NAME_L439.DEF_disp
 	La
@@ -437,7 +512,7 @@ VAR	ANON_89_11__dat, STANDARD.IDL._TREE.size
 	LVA 1,	STANDARD.IDL.SEM_PHASE_L11.NEWSNAM.REPLACE_SOURCE_NAME_L439.H_disp
 	La  1,	-SOURCE_NAME_ofs
 	CALL	STANDARD.IDL.SEM_PHASE_L11.DEF_UTIL. ,MAKE_DEF_FOR_ID_L52
-	La  ,  0
+	La
 	BLKMOV
 	LVA  0,	STANDARD.IDL.TREE_VOID_disp		; array actual
 	LVA 1,	STANDARD.IDL.SEM_PHASE_L11.NEWSNAM.REPLACE_SOURCE_NAME_L439.DEF_disp
@@ -458,6 +533,23 @@ VAR	ANON_89_11__dat, STANDARD.IDL._TREE.size
 	CALL	STANDARD.IDL. ,D_L16
 	BRA	L29
 L30:
+VAR	ANON_99_10_disp, q
+VAR	ANON_99_10__u,    q
+VAR	ANON_99_10__dat, STANDARD.IDL._TREE.size
+	LVA 2, ANON_99_10__dat
+	Sa  2, ANON_99_10_disp
+	La  0, STANDARD.IDL._TREE.use__info
+	Sa  2, ANON_99_10__u
+	LVA 2, ANON_99_10_disp
+					; doublet resultat record anonyme
+	La  1,	-DECL_ofs
+	LI  23
+	CALL	STANDARD.IDL. ,D_L17
+	La
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	74
 	CEQ
 	BF	L31
@@ -486,7 +578,7 @@ VAR	ANON_102_34__dat, STANDARD.IDL._TREE.size
 	LI  33
 	CALL	STANDARD.IDL. ,D_L17
 	CALL	STANDARD.IDL.SEM_PHASE_L11.DEF_UTIL. ,GET_BASE_TYPE_L71
-	La  ,  0
+	La
 	BLKMOV
 	La  1,	-NODE_HASH_ofs
 	LVA  2,	STANDARD.IDL.SEM_PHASE_L11.NEWSNAM.REPLACE_SOURCE_NAME_L439.BLOCK__2.TYPE_SPEC_disp
@@ -519,7 +611,7 @@ VAR	ANON_113_16__dat, STANDARD.IDL._TREE.size
 	La  1,	-SOURCE_NAME_ofs
 	LI  24
 	CALL	STANDARD.IDL. ,D_L17
-	La  ,  0
+	La
 	BLKMOV
 	LVA 1,	STANDARD.IDL.SEM_PHASE_L11.NEWSNAM.REPLACE_SOURCE_NAME_L439.H_disp
 	La  1,	-NODE_HASH_ofs
@@ -537,6 +629,7 @@ L8:
 	DROP
 namespace	BLOCK__3
 ELB 2					;    BODY ELAB
+ hexa_show 'var elab FIRST_NAME ', $
 VAR FIRST_NAME_disp, q			; variable record : pointeur aux data record
 VAR FIRST_NAME__u, q			; variable record : pointeur aux useinfo
 VAR FIRST_NAME__dat, STANDARD.IDL._TREE.size
@@ -544,7 +637,6 @@ VAR FIRST_NAME__dat, STANDARD.IDL._TREE.size
 	Sa	2, FIRST_NAME_disp			; record fin
 	LVA	2, STANDARD.IDL._TREE.SIZ
 	Sa	2, FIRST_NAME__u
-; CODE_VC_NAME DN_VARIABLE_ID
 	La  2, FIRST_NAME_disp
 	LI	STANDARD.IDL._TREE.size
 VAR	ANON_122_23_disp, q
@@ -562,6 +654,7 @@ VAR	ANON_122_23__dat, STANDARD.IDL._TREE.size
 	La  ,  0
 	BLKMOV
 
+ hexa_show ' disp ', FIRST_NAME_disp
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 					; debut if
@@ -589,7 +682,7 @@ VAR	ANON_129_11__dat, STANDARD.IDL._TREE.size
 	LVA 1,	STANDARD.IDL.SEM_PHASE_L11.NEWSNAM.REPLACE_SOURCE_NAME_L439.H_disp
 	La  1,	-SOURCE_NAME_ofs
 	CALL	STANDARD.IDL.SEM_PHASE_L11.DEF_UTIL. ,MAKE_DEF_FOR_ID_L52
-	La  ,  0
+	La
 	BLKMOV
 	LVA  0,	STANDARD.IDL.TREE_VOID_disp		; array actual
 	LVA 1,	STANDARD.IDL.SEM_PHASE_L11.NEWSNAM.REPLACE_SOURCE_NAME_L439.DEF_disp
@@ -604,6 +697,7 @@ L9:
 	DROP
 namespace	BLOCK__4
 ELB 2					;    BODY ELAB
+ hexa_show 'var elab HEADER ', $
 VAR HEADER_disp, q				; variable record : pointeur aux data record
 VAR HEADER__u, q				; variable record : pointeur aux useinfo
 VAR HEADER__dat, STANDARD.IDL._TREE.size
@@ -611,13 +705,14 @@ VAR HEADER__dat, STANDARD.IDL._TREE.size
 	Sa	2, HEADER_disp				; record fin
 	LVA	2, STANDARD.IDL._TREE.SIZ
 	Sa	2, HEADER__u
-; CODE_VC_NAME DN_VARIABLE_ID
 	La  2, HEADER_disp
 	LI	STANDARD.IDL._TREE.size
 	LVA 0,	STANDARD.IDL.TREE_VOID_disp
 	La  ,  0
 	BLKMOV
 
+ hexa_show ' disp ', HEADER_disp
+ hexa_show 'var elab DEFLIST ', $
 VAR DEFLIST_disp, q				; variable record : pointeur aux data record
 VAR DEFLIST__u, q				; variable record : pointeur aux useinfo
 VAR DEFLIST__dat, STANDARD.IDL._SEQ_TYPE.size
@@ -625,7 +720,6 @@ VAR DEFLIST__dat, STANDARD.IDL._SEQ_TYPE.size
 	Sa	2, DEFLIST_disp				; record fin
 	LVA	2, STANDARD.IDL._SEQ_TYPE.SIZ
 	Sa	2, DEFLIST__u
-; CODE_VC_NAME DN_VARIABLE_ID
 	La  2, DEFLIST_disp
 	LI	STANDARD.IDL._SEQ_TYPE.size
 VAR	ANON_138_24_disp, q
@@ -653,6 +747,8 @@ VAR	ANON_138_30__dat, STANDARD.IDL._TREE.size
 	La  ,  0
 	BLKMOV
 
+ hexa_show ' disp ', DEFLIST_disp
+ hexa_show 'var elab DEF ', $
 VAR DEF_disp, q				; variable record : pointeur aux data record
 VAR DEF__u, q				; variable record : pointeur aux useinfo
 VAR DEF__dat, STANDARD.IDL._TREE.size
@@ -660,7 +756,6 @@ VAR DEF__dat, STANDARD.IDL._TREE.size
 	Sa	2, DEF_disp				; record fin
 	LVA	2, STANDARD.IDL._TREE.SIZ
 	Sa	2, DEF__u
-; CODE_VC_NAME DN_VARIABLE_ID
 	La  2, DEF_disp
 					; store represented component PT range 0 .. 1 width 2
 	DUP
@@ -671,6 +766,7 @@ VAR DEF__dat, STANDARD.IDL._TREE.size
 	BFI
 	Sd
 
+ hexa_show ' disp ', DEF_disp
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 LOOP__8:
@@ -719,7 +815,7 @@ VAR	ANON_146_16__dat, STANDARD.IDL._TREE.size
 	LVA 2,	DEF_disp
 	LI  168
 	CALL	STANDARD.IDL. ,D_L17
-	La  ,  0
+	La
 	BLKMOV
 	BRA	L38
 	BRA	L39
@@ -764,7 +860,7 @@ VAR	ANON_153_28__dat, STANDARD.IDL._TREE.size
 	CALL	STANDARD.IDL.SEM_PHASE_L11.DEF_UTIL. ,GET_DEF_FOR_ID_L55
 	LI  168
 	CALL	STANDARD.IDL. ,D_L17
-	La  ,  0
+	La
 	BLKMOV
 	LVA 1,	STANDARD.IDL.SEM_PHASE_L11.NEWSNAM.REPLACE_SOURCE_NAME_L439.H_disp
 	La  1,	-NODE_HASH_ofs
@@ -785,7 +881,7 @@ VAR	ANON_157_11__dat, STANDARD.IDL._TREE.size
 	LVA 1,	STANDARD.IDL.SEM_PHASE_L11.NEWSNAM.REPLACE_SOURCE_NAME_L439.H_disp
 	La  1,	-SOURCE_NAME_ofs
 	CALL	STANDARD.IDL.SEM_PHASE_L11.DEF_UTIL. ,MAKE_DEF_FOR_ID_L52
-	La  ,  0
+	La
 	BLKMOV
 	LVA 2,	HEADER_disp
 	LVA 2,	DEF_disp
@@ -800,6 +896,7 @@ L10:
 	DROP
 namespace	BLOCK__5
 ELB 2					;    BODY ELAB
+ hexa_show 'var elab FIRST_NAME ', $
 VAR FIRST_NAME_disp, q			; variable record : pointeur aux data record
 VAR FIRST_NAME__u, q			; variable record : pointeur aux useinfo
 VAR FIRST_NAME__dat, STANDARD.IDL._TREE.size
@@ -807,13 +904,14 @@ VAR FIRST_NAME__dat, STANDARD.IDL._TREE.size
 	Sa	2, FIRST_NAME_disp			; record fin
 	LVA	2, STANDARD.IDL._TREE.SIZ
 	Sa	2, FIRST_NAME__u
-; CODE_VC_NAME DN_VARIABLE_ID
 	La  2, FIRST_NAME_disp
 	LI	STANDARD.IDL._TREE.size
 	La  1,	-SOURCE_NAME_ofs
 	La  ,  0
 	BLKMOV
 
+ hexa_show ' disp ', FIRST_NAME_disp
+ hexa_show 'var elab TYPE_SPEC ', $
 VAR TYPE_SPEC_disp, q			; variable record : pointeur aux data record
 VAR TYPE_SPEC__u, q				; variable record : pointeur aux useinfo
 VAR TYPE_SPEC__dat, STANDARD.IDL._TREE.size
@@ -821,7 +919,6 @@ VAR TYPE_SPEC__dat, STANDARD.IDL._TREE.size
 	Sa	2, TYPE_SPEC_disp			; record fin
 	LVA	2, STANDARD.IDL._TREE.SIZ
 	Sa	2, TYPE_SPEC__u
-; CODE_VC_NAME DN_VARIABLE_ID
 	La  2, TYPE_SPEC_disp
 					; store represented component PT range 0 .. 1 width 2
 	DUP
@@ -832,6 +929,7 @@ VAR TYPE_SPEC__dat, STANDARD.IDL._TREE.size
 	BFI
 	Sd
 
+ hexa_show ' disp ', TYPE_SPEC_disp
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 	LVA 2,	TYPE_SPEC_disp
@@ -849,7 +947,7 @@ VAR	ANON_170_16__dat, STANDARD.IDL._TREE.size
 	LVA  1,	STANDARD.IDL.SEM_PHASE_L11.NEWSNAM.REPLACE_SOURCE_NAME_L439.OLD_NAME_disp	; array actual
 	LI  33
 	CALL	STANDARD.IDL. ,D_L17
-	La  ,  0
+	La
 	BLKMOV
 	LVA 2,	FIRST_NAME_disp
 	La
@@ -866,7 +964,7 @@ VAR	ANON_171_16__dat, STANDARD.IDL._TREE.size
 	LVA  1,	STANDARD.IDL.SEM_PHASE_L11.NEWSNAM.REPLACE_SOURCE_NAME_L439.OLD_NAME_disp	; array actual
 	LI  16
 	CALL	STANDARD.IDL. ,D_L17
-	La  ,  0
+	La
 	BLKMOV
 					; debut if
 ; CODE record equality "=" _TREE
@@ -882,7 +980,7 @@ VAR	ANON_171_16__dat, STANDARD.IDL._TREE.size
 	La
 	LI	STANDARD.IDL._TREE.size
 	La  1,	-SOURCE_NAME_ofs
-	La  ,  0
+	La
 	BLKMOV
 	LVA 1,	STANDARD.IDL.SEM_PHASE_L11.NEWSNAM.REPLACE_SOURCE_NAME_L439.DEF_disp
 	La
@@ -899,12 +997,27 @@ VAR	ANON_178_11__dat, STANDARD.IDL._TREE.size
 	LVA 1,	STANDARD.IDL.SEM_PHASE_L11.NEWSNAM.REPLACE_SOURCE_NAME_L439.H_disp
 	La  1,	-SOURCE_NAME_ofs
 	CALL	STANDARD.IDL.SEM_PHASE_L11.DEF_UTIL. ,MAKE_DEF_FOR_ID_L52
-	La  ,  0
+	La
 	BLKMOV
 	LVA  0,	STANDARD.IDL.TREE_VOID_disp		; array actual
 	LVA 1,	STANDARD.IDL.SEM_PHASE_L11.NEWSNAM.REPLACE_SOURCE_NAME_L439.DEF_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.DEF_UTIL. ,MAKE_DEF_VISIBLE_L67
 					; debut if
+	La	2, STANDARD.IDL.SEM_PHASE_L11.NEWSNAM.REPLACE_SOURCE_NAME_L439.BLOCK__5.TYPE_SPEC_disp
+	Ld
+	LI	24
+	LI	8
+	UBFX
+	ULb	0, STANDARD.DIANA_NODE_ATTR_CLASS_NAMES._CLASS_CONSTRAINED.FST
+	CGE
+	ULb	0, STANDARD.DIANA_NODE_ATTR_CLASS_NAMES._CLASS_CONSTRAINED.LST
+	La	2, STANDARD.IDL.SEM_PHASE_L11.NEWSNAM.REPLACE_SOURCE_NAME_L439.BLOCK__5.TYPE_SPEC_disp
+	Ld
+	LI	24
+	LI	8
+	UBFX
+	CGE
+	ET
 	BF	L49
 	LVA 2,	TYPE_SPEC_disp
 	La
@@ -921,7 +1034,7 @@ VAR	ANON_183_19__dat, STANDARD.IDL._TREE.size
 	LVA 2,	TYPE_SPEC_disp
 	LI  38
 	CALL	STANDARD.IDL. ,D_L17
-	La  ,  0
+	La
 	BLKMOV
 	BRA	L48
 L49:
@@ -955,7 +1068,7 @@ VAR	ANON_188_19__dat, STANDARD.IDL._TREE.size
 					; doublet resultat record anonyme
 	LVA 2,	TYPE_SPEC_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.DEF_UTIL. ,GET_BASE_TYPE_L71
-	La  ,  0
+	La
 	BLKMOV
 L50:					; post if
 	BRA	L46
@@ -978,7 +1091,7 @@ VAR	ANON_196_11__dat, STANDARD.IDL._TREE.size
 					; doublet resultat record anonyme
 	LVA 2,	FIRST_NAME_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.DEF_UTIL. ,GET_DEF_FOR_ID_L55
-	La  ,  0
+	La
 	BLKMOV
 L46:					; post if
 	LVA 2,	TYPE_SPEC_disp
@@ -995,7 +1108,7 @@ VAR	ANON_200_15__dat, STANDARD.IDL._TREE.size
 					; doublet resultat record anonyme
 	LVA 2,	TYPE_SPEC_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.DEF_UTIL. ,GET_BASE_TYPE_L71
-	La  ,  0
+	La
 	BLKMOV
 	La  1,	-NODE_HASH_ofs
 	LVA  2,	STANDARD.IDL.SEM_PHASE_L11.NEWSNAM.REPLACE_SOURCE_NAME_L439.BLOCK__5.TYPE_SPEC_disp
@@ -1046,6 +1159,7 @@ L53:
 	BF	L55
 namespace	BLOCK__9
 ELB 3					;    BODY ELAB
+ hexa_show 'var elab LITERAL_LIST ', $
 VAR LITERAL_LIST_disp, q			; variable record : pointeur aux data record
 VAR LITERAL_LIST__u, q			; variable record : pointeur aux useinfo
 VAR LITERAL_LIST__dat, STANDARD.IDL._SEQ_TYPE.size
@@ -1053,26 +1167,25 @@ VAR LITERAL_LIST__dat, STANDARD.IDL._SEQ_TYPE.size
 	Sa	3, LITERAL_LIST_disp			; record fin
 	LVA	3, STANDARD.IDL._SEQ_TYPE.SIZ
 	Sa	3, LITERAL_LIST__u
-; CODE_VC_NAME DN_VARIABLE_ID
 	La  3, LITERAL_LIST_disp
 	LI	STANDARD.IDL._SEQ_TYPE.size
-VAR	ANON_221_35_disp, q
-VAR	ANON_221_35__u,    q
-VAR	ANON_221_35__dat, STANDARD.IDL._SEQ_TYPE.size
-	LVA 3, ANON_221_35__dat
-	Sa  3, ANON_221_35_disp
+VAR	ANON_221_36_disp, q
+VAR	ANON_221_36__u,    q
+VAR	ANON_221_36__dat, STANDARD.IDL._SEQ_TYPE.size
+	LVA 3, ANON_221_36__dat
+	Sa  3, ANON_221_36_disp
 	La  0, STANDARD.IDL._SEQ_TYPE.use__info
-	Sa  3, ANON_221_35__u
-	LVA 3, ANON_221_35_disp
+	Sa  3, ANON_221_36__u
+	LVA 3, ANON_221_36_disp
 					; doublet resultat record anonyme
-VAR	ANON_221_41_disp, q
-VAR	ANON_221_41__u,    q
-VAR	ANON_221_41__dat, STANDARD.IDL._TREE.size
-	LVA 3, ANON_221_41__dat
-	Sa  3, ANON_221_41_disp
+VAR	ANON_221_42_disp, q
+VAR	ANON_221_42__u,    q
+VAR	ANON_221_42__dat, STANDARD.IDL._TREE.size
+	LVA 3, ANON_221_42__dat
+	Sa  3, ANON_221_42_disp
 	La  0, STANDARD.IDL._TREE.use__info
-	Sa  3, ANON_221_41__u
-	LVA 3, ANON_221_41_disp
+	Sa  3, ANON_221_42__u
+	LVA 3, ANON_221_42_disp
 					; doublet resultat record anonyme
 	LVA 2,	STANDARD.IDL.SEM_PHASE_L11.NEWSNAM.REPLACE_SOURCE_NAME_L439.BLOCK__5.TYPE_SPEC_disp
 	LI  54
@@ -1081,6 +1194,8 @@ VAR	ANON_221_41__dat, STANDARD.IDL._TREE.size
 	La  ,  0
 	BLKMOV
 
+ hexa_show ' disp ', LITERAL_LIST_disp
+ hexa_show 'var elab LITERAL ', $
 VAR LITERAL_disp, q				; variable record : pointeur aux data record
 VAR LITERAL__u, q				; variable record : pointeur aux useinfo
 VAR LITERAL__dat, STANDARD.IDL._TREE.size
@@ -1088,7 +1203,6 @@ VAR LITERAL__dat, STANDARD.IDL._TREE.size
 	Sa	3, LITERAL_disp				; record fin
 	LVA	3, STANDARD.IDL._TREE.SIZ
 	Sa	3, LITERAL__u
-; CODE_VC_NAME DN_VARIABLE_ID
 	La  3, LITERAL_disp
 					; store represented component PT range 0 .. 1 width 2
 	DUP
@@ -1099,6 +1213,7 @@ VAR LITERAL__dat, STANDARD.IDL._TREE.size
 	BFI
 	Sd
 
+ hexa_show ' disp ', LITERAL_disp
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 LOOP__10:
@@ -1155,7 +1270,7 @@ VAR	ANON_239_17__dat, STANDARD.IDL._TREE.size
 	La  1,	-SOURCE_NAME_ofs
 	LI  33
 	CALL	STANDARD.IDL. ,D_L17
-	La  ,  0
+	La
 	BLKMOV
 	LVA 1,	STANDARD.IDL.SEM_PHASE_L11.NEWSNAM.REPLACE_SOURCE_NAME_L439.H_disp
 	La  1,	-NODE_HASH_ofs
@@ -1213,6 +1328,7 @@ L11:
 	DROP
 namespace	BLOCK__6
 ELB 2					;    BODY ELAB
+ hexa_show 'var elab TYPE_SPEC ', $
 VAR TYPE_SPEC_disp, q			; variable record : pointeur aux data record
 VAR TYPE_SPEC__u, q				; variable record : pointeur aux useinfo
 VAR TYPE_SPEC__dat, STANDARD.IDL._TREE.size
@@ -1220,7 +1336,6 @@ VAR TYPE_SPEC__dat, STANDARD.IDL._TREE.size
 	Sa	2, TYPE_SPEC_disp			; record fin
 	LVA	2, STANDARD.IDL._TREE.SIZ
 	Sa	2, TYPE_SPEC__u
-; CODE_VC_NAME DN_VARIABLE_ID
 	La  2, TYPE_SPEC_disp
 					; store represented component PT range 0 .. 1 width 2
 	DUP
@@ -1231,6 +1346,7 @@ VAR TYPE_SPEC__dat, STANDARD.IDL._TREE.size
 	BFI
 	Sd
 
+ hexa_show ' disp ', TYPE_SPEC_disp
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 	LVA 1,	STANDARD.IDL.SEM_PHASE_L11.NEWSNAM.REPLACE_SOURCE_NAME_L439.DEF_disp
@@ -1248,7 +1364,7 @@ VAR	ANON_258_9__dat, STANDARD.IDL._TREE.size
 	LVA 1,	STANDARD.IDL.SEM_PHASE_L11.NEWSNAM.REPLACE_SOURCE_NAME_L439.H_disp
 	La  1,	-SOURCE_NAME_ofs
 	CALL	STANDARD.IDL.SEM_PHASE_L11.DEF_UTIL. ,MAKE_DEF_FOR_ID_L52
-	La  ,  0
+	La
 	BLKMOV
 	LVA  0,	STANDARD.IDL.TREE_VOID_disp		; array actual
 	LVA 1,	STANDARD.IDL.SEM_PHASE_L11.NEWSNAM.REPLACE_SOURCE_NAME_L439.DEF_disp
@@ -1268,7 +1384,7 @@ VAR	ANON_262_15__dat, STANDARD.IDL._TREE.size
 	La  1,	-SOURCE_NAME_ofs
 	LI  33
 	CALL	STANDARD.IDL. ,D_L17
-	La  ,  0
+	La
 	BLKMOV
 	La  1,	-NODE_HASH_ofs
 	LVA  2,	STANDARD.IDL.SEM_PHASE_L11.NEWSNAM.REPLACE_SOURCE_NAME_L439.BLOCK__6.TYPE_SPEC_disp
@@ -1300,6 +1416,7 @@ L12:
 	DROP
 namespace	BLOCK__7
 ELB 2					;    BODY ELAB
+ hexa_show 'var elab HEADER ', $
 VAR HEADER_disp, q				; variable record : pointeur aux data record
 VAR HEADER__u, q				; variable record : pointeur aux useinfo
 VAR HEADER__dat, STANDARD.IDL._TREE.size
@@ -1307,7 +1424,6 @@ VAR HEADER__dat, STANDARD.IDL._TREE.size
 	Sa	2, HEADER_disp				; record fin
 	LVA	2, STANDARD.IDL._TREE.SIZ
 	Sa	2, HEADER__u
-; CODE_VC_NAME DN_VARIABLE_ID
 	La  2, HEADER_disp
 	LI	STANDARD.IDL._TREE.size
 VAR	ANON_278_19_disp, q
@@ -1325,6 +1441,8 @@ VAR	ANON_278_19__dat, STANDARD.IDL._TREE.size
 	La  ,  0
 	BLKMOV
 
+ hexa_show ' disp ', HEADER_disp
+ hexa_show 'var elab UNIT_DESC ', $
 VAR UNIT_DESC_disp, q			; variable record : pointeur aux data record
 VAR UNIT_DESC__u, q				; variable record : pointeur aux useinfo
 VAR UNIT_DESC__dat, STANDARD.IDL._TREE.size
@@ -1332,13 +1450,14 @@ VAR UNIT_DESC__dat, STANDARD.IDL._TREE.size
 	Sa	2, UNIT_DESC_disp			; record fin
 	LVA	2, STANDARD.IDL._TREE.SIZ
 	Sa	2, UNIT_DESC__u
-; CODE_VC_NAME DN_VARIABLE_ID
 	La  2, UNIT_DESC_disp
 	LI	STANDARD.IDL._TREE.size
 	LVA 0,	STANDARD.IDL.TREE_VOID_disp
 	La  ,  0
 	BLKMOV
 
+ hexa_show ' disp ', UNIT_DESC_disp
+ hexa_show 'var elab DECL_S ', $
 VAR DECL_S_disp, q				; variable record : pointeur aux data record
 VAR DECL_S__u, q				; variable record : pointeur aux useinfo
 VAR DECL_S__dat, STANDARD.IDL._TREE.size
@@ -1346,7 +1465,6 @@ VAR DECL_S__dat, STANDARD.IDL._TREE.size
 	Sa	2, DECL_S_disp				; record fin
 	LVA	2, STANDARD.IDL._TREE.SIZ
 	Sa	2, DECL_S__u
-; CODE_VC_NAME DN_VARIABLE_ID
 	La  2, DECL_S_disp
 					; store represented component PT range 0 .. 1 width 2
 	DUP
@@ -1357,6 +1475,8 @@ VAR DECL_S__dat, STANDARD.IDL._TREE.size
 	BFI
 	Sd
 
+ hexa_show ' disp ', DECL_S_disp
+ hexa_show 'var elab NOT_EQUAL ', $
 VAR NOT_EQUAL_disp, q			; variable record : pointeur aux data record
 VAR NOT_EQUAL__u, q				; variable record : pointeur aux useinfo
 VAR NOT_EQUAL__dat, STANDARD.IDL._TREE.size
@@ -1364,7 +1484,6 @@ VAR NOT_EQUAL__dat, STANDARD.IDL._TREE.size
 	Sa	2, NOT_EQUAL_disp			; record fin
 	LVA	2, STANDARD.IDL._TREE.SIZ
 	Sa	2, NOT_EQUAL__u
-; CODE_VC_NAME DN_VARIABLE_ID
 	La  2, NOT_EQUAL_disp
 					; store represented component PT range 0 .. 1 width 2
 	DUP
@@ -1375,6 +1494,7 @@ VAR NOT_EQUAL__dat, STANDARD.IDL._TREE.size
 	BFI
 	Sd
 
+ hexa_show ' disp ', NOT_EQUAL_disp
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 					; debut if
@@ -1391,6 +1511,23 @@ begin:					;---------- BDY INSTRUCTIONS
 	DUP
 	BF	L69
 	DROP
+	La 1, -SOURCE_NAME_ofs
+	La	-1, 0
+	Ld
+	LI	24
+	LI	8
+	UBFX
+	ULb	0, STANDARD.DIANA_NODE_ATTR_CLASS_NAMES._CLASS_SUBPROG_PACK_NAME.FST
+	CGE
+	ULb	0, STANDARD.DIANA_NODE_ATTR_CLASS_NAMES._CLASS_SUBPROG_PACK_NAME.LST
+	La 1, -SOURCE_NAME_ofs
+	La	-1, 0
+	Ld
+	LI	24
+	LI	8
+	UBFX
+	CGE
+	ET
 L69:
 	BF	L68
 	LVA 2,	UNIT_DESC_disp
@@ -1408,7 +1545,7 @@ VAR	ANON_287_17__dat, STANDARD.IDL._TREE.size
 	La  1,	-SOURCE_NAME_ofs
 	LI  112
 	CALL	STANDARD.IDL. ,D_L17
-	La  ,  0
+	La
 	BLKMOV
 	BRA	L67
 L68:
@@ -1428,7 +1565,7 @@ VAR	ANON_291_9__dat, STANDARD.IDL._TREE.size
 	LVA 1,	STANDARD.IDL.SEM_PHASE_L11.NEWSNAM.REPLACE_SOURCE_NAME_L439.H_disp
 	La  1,	-SOURCE_NAME_ofs
 	CALL	STANDARD.IDL.SEM_PHASE_L11.DEF_UTIL. ,MAKE_DEF_FOR_ID_L52
-	La  ,  0
+	La
 	BLKMOV
 	LVA  1,	STANDARD.IDL.SEM_PHASE_L11.NEWSNAM.REPLACE_SOURCE_NAME_L439.S_disp
 	LVA  1,	STANDARD.IDL.SEM_PHASE_L11.NEWSNAM.REPLACE_SOURCE_NAME_L439.H_disp
@@ -1461,7 +1598,7 @@ VAR	ANON_299_14__dat, STANDARD.IDL._TREE.size
 	LVA 2,	UNIT_DESC_disp
 	LI  132
 	CALL	STANDARD.IDL. ,D_L17
-	La  ,  0
+	La
 	BLKMOV
 	LVA 1,	STANDARD.IDL.SEM_PHASE_L11.NEWSNAM.REPLACE_SOURCE_NAME_L439.H_disp
 	La  1,	-NODE_HASH_ofs
@@ -1497,7 +1634,7 @@ VAR	ANON_309_14__dat, STANDARD.IDL._TREE.size
 	La  1,	-SOURCE_NAME_ofs
 	LI  148
 	CALL	STANDARD.IDL. ,D_L17
-	La  ,  0
+	La
 	BLKMOV
 	LVA 1,	STANDARD.IDL.SEM_PHASE_L11.NEWSNAM.REPLACE_SOURCE_NAME_L439.H_disp
 	La  1,	-NODE_HASH_ofs
@@ -1530,7 +1667,7 @@ VAR	ANON_315_19__dat, STANDARD.IDL._TREE.size
 	LVA 2,	HEADER_disp
 	LI  127
 	CALL	STANDARD.IDL. ,D_L17
-	La  ,  0
+	La
 	BLKMOV
 	LIVA 	1, STANDARD.IDL.SEM_PHASE_L11.NEWSNAM.REPLACE_SOURCE_NAME_L439.H_disp, STANDARD.IDL.SEM_PHASE_L11.SEM_GLOB._H_TYPE.IS_IN_SPEC
 	LI	1
@@ -1563,6 +1700,23 @@ L73:					; post if
 	LVA  2,	STANDARD.IDL.SEM_PHASE_L11.NEWSNAM.REPLACE_SOURCE_NAME_L439.BLOCK__7.HEADER_disp
 	CALL	STANDARD.IDL.SEM_PHASE_L11.GEN_SUBS. ,SUBSTITUTE_L437
 					; debut if
+	La 1, -SOURCE_NAME_ofs
+	La	-1, 0
+	Ld
+	LI	24
+	LI	8
+	UBFX
+	ULb	0, STANDARD.DIANA_NODE_ATTR_CLASS_NAMES._CLASS_SUBPROG_NAME.FST
+	CGE
+	ULb	0, STANDARD.DIANA_NODE_ATTR_CLASS_NAMES._CLASS_SUBPROG_NAME.LST
+	La 1, -SOURCE_NAME_ofs
+	La	-1, 0
+	Ld
+	LI	24
+	LI	8
+	UBFX
+	CGE
+	ET
 	BF	L77
 	LVA 2,	HEADER_disp
 	LVA 1,	STANDARD.IDL.SEM_PHASE_L11.NEWSNAM.REPLACE_SOURCE_NAME_L439.DEF_disp
@@ -1631,7 +1785,7 @@ VAR	ANON_339_17__dat, STANDARD.IDL._TREE.size
 	La  1,	-SOURCE_NAME_ofs
 	LI  119
 	CALL	STANDARD.IDL. ,D_L17
-	La  ,  0
+	La
 	BLKMOV
 	LVA  0,	STANDARD.IDL.TREE_VOID_disp		; array actual
 	LVA 1,	STANDARD.IDL.SEM_PHASE_L11.NEWSNAM.REPLACE_SOURCE_NAME_L439.H_disp
@@ -1651,6 +1805,23 @@ endPRO
 L13:
 	DROP
 					; debut if
+VAR	ANON_349_12_disp, q
+VAR	ANON_349_12__u,    q
+VAR	ANON_349_12__dat, STANDARD.IDL._TREE.size
+	LVA 1, ANON_349_12__dat
+	Sa  1, ANON_349_12_disp
+	La  0, STANDARD.IDL._TREE.use__info
+	Sa  1, ANON_349_12__u
+	LVA 1, ANON_349_12_disp
+					; doublet resultat record anonyme
+	La  1,	-SOURCE_NAME_ofs
+	LI  13
+	CALL	STANDARD.IDL. ,D_L17
+	La
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	9
 	CEQ
 	BF	L82
@@ -1669,7 +1840,7 @@ VAR	ANON_350_9__dat, STANDARD.IDL._TREE.size
 	LVA 1,	H_disp
 	La  1,	-SOURCE_NAME_ofs
 	CALL	STANDARD.IDL.SEM_PHASE_L11.DEF_UTIL. ,MAKE_DEF_FOR_ID_L52
-	La  ,  0
+	La
 	BLKMOV
 	LVA  0,	STANDARD.IDL.TREE_VOID_disp		; array actual
 	LVA 1,	DEF_disp

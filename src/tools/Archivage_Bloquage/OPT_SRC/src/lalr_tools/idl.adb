@@ -27,7 +27,8 @@ package body IDL is
     subtype VPG_IDX			is PAGE_IDX range 0 .. MAX_VPG;
     subtype VPG_NUM			is VPG_IDX  range 1 .. MAX_VPG;
 
-    MAX_RPG			: constant	:= 2000;				--| PAGES PHYSIQUES (REELLES)
+--    MAX_RPG			: constant	:= 2000;				--| PAGES PHYSIQUES (REELLES)
+    MAX_RPG			: constant	:= 100;				--| PAGES PHYSIQUES (REELLES)
     type RPG_IDX			is new INTEGER range 0 .. MAX_RPG;			--|
     subtype RPG_NUM			is RPG_IDX     range 1 .. MAX_RPG;
 
@@ -59,12 +60,6 @@ package body IDL is
 			  DATA		: A_SECTOR;
 			end record;
     PAG			: array( RPG_NUM ) of RPG_DATA;				--| TABLE DE PAGES REELLES
---			:= (OTHERS=> (	VP		=> 0,			--| NON LIEE
---					AREA		=> 0,
---					CHANGED		=> FALSE,
---					RECUPERABLE	=> TRUE,
---					DATA		=> NEW SECTOR )
---			);
 
     type AREA_DATA		is record							--| MARQUE DE POINT D'INSERTION
 			  VP		: VPG_IDX;				--| PAGE VIRTUELLE D'INSERTION

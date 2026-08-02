@@ -4,7 +4,7 @@
 ------------------------------------------------------------------------------------------------------------------------
 --	1	2	3	4	5	6	7	8	9	0	1	2
 
-separate(	IDL.SEM_PHASE )
+separate( IDL.SEM_PHASE )
 
 					------
 package body				UARITH
@@ -128,7 +128,7 @@ is					------
       end;
 
     else												--| VALEUR REELLE
-      return  "<" (	D( XD_NUMER, LEFT )	* D( XD_DENOM, RIGHT ),
+      return  "<" ( D( XD_NUMER, LEFT ) * D( XD_DENOM, RIGHT ),
 		D( XD_NUMER, RIGHT ) * D( XD_DENOM, LEFT )
 	     );
     end if;
@@ -186,7 +186,7 @@ is					------
       declare
         SUBTYPE_INDICATION	: constant TREE	:= D( AS_SUBTYPE_INDICATION, DISCRETE_RANGE );
         NAME		: constant TREE	:= D( AS_NAME, SUBTYPE_INDICATION );
-        CONSTRAINT		: constant TREE	:= D( AS_CONSTRAINT, SUBTYPE_INDICATION	);
+        CONSTRAINT		: constant TREE	:= D( AS_CONSTRAINT, SUBTYPE_INDICATION );
       begin
         if  CONSTRAINT.TY in CLASS_RANGE  then
 	return  U_MEMBER( VALUE, CONSTRAINT );
@@ -305,7 +305,7 @@ begin
   if RIGHT = TREE_VOID then
     return TREE_VOID;
   else
-    return U_VAL( 1	- INTEGER( RIGHT.ABSS mod 2 )	);
+    return U_VAL( 1 - INTEGER( RIGHT.ABSS mod 2 ) );
   end if;
 end "NOT";
 --||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
@@ -314,16 +314,16 @@ function "-" ( RIGHT :TREE ) return TREE is
 begin
   if RIGHT = TREE_VOID then
     return TREE_VOID;
-  elsif (RIGHT.PT =	HI and then RIGHT.NOTY = DN_NUM_VAL) or	else RIGHT.TY = DN_NUM_VAL then
+  elsif (RIGHT.PT = HI and then RIGHT.NOTY = DN_NUM_VAL) or else RIGHT.TY = DN_NUM_VAL then
     declare
       R_SPREAD	: VECTOR;
     begin
-      SPREAD( RIGHT, R_SPREAD	);
-      R_SPREAD.S :=	- R_SPREAD.S;
-      return U_INT(	R_SPREAD );
+      SPREAD( RIGHT, R_SPREAD );
+      R_SPREAD.S := - R_SPREAD.S;
+      return U_INT( R_SPREAD );
     end;
   else										--| REEL
-    return U_REAL (	- D ( XD_NUMER, RIGHT ), D ( XD_DENOM, RIGHT ) );
+    return U_REAL ( - D ( XD_NUMER, RIGHT ), D ( XD_DENOM, RIGHT ) );
   end if;
 end "-";
 --||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
@@ -333,56 +333,56 @@ begin
   if RIGHT = TREE_VOID then
     return TREE_VOID;
 	  
-  elsif (RIGHT.PT =	HI and then RIGHT.NOTY = DN_NUM_VAL) or	else RIGHT.TY = DN_NUM_VAL then
+  elsif (RIGHT.PT = HI and then RIGHT.NOTY = DN_NUM_VAL) or else RIGHT.TY = DN_NUM_VAL then
     declare
       R_SPREAD	: VECTOR;
     begin
-      SPREAD( RIGHT, R_SPREAD	);
-      if R_SPREAD.S	> 0 then
+      SPREAD( RIGHT, R_SPREAD );
+      if R_SPREAD.S > 0 then
         return RIGHT;
       else
         R_SPREAD.S := +1;
         return U_INT( R_SPREAD );
-      end	if;
+      end if;
     end;
   else										--| DOIT ETRE UN REEL
-    return U_REAL (	abs D ( XD_NUMER, RIGHT ), D ( XD_DENOM, RIGHT ) );
+    return U_REAL ( abs D ( XD_NUMER, RIGHT ), D ( XD_DENOM, RIGHT ) );
   end if;
 end "ABS";
 --||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 --|		FUNCTION "+"
 function "+" ( LEFT, RIGHT :TREE ) return TREE is
 begin
-  if LEFT	= TREE_VOID or RIGHT = TREE_VOID then
+  if LEFT = TREE_VOID or RIGHT = TREE_VOID then
     return TREE_VOID;
 	
   elsif (LEFT.PT = HI and then LEFT.NOTY = DN_NUM_VAL) or else LEFT.TY = DN_NUM_VAL then
     declare
       L_SPREAD, R_SPREAD	: VECTOR;
     begin
-      SPREAD ( LEFT, L_SPREAD	);
+      SPREAD ( LEFT, L_SPREAD );
       SPREAD ( RIGHT, R_SPREAD );
 	     
-      if L_SPREAD.S	= R_SPREAD.S then
+      if L_SPREAD.S = R_SPREAD.S then
         V_ADD ( L_SPREAD, R_SPREAD );
         return U_INT ( R_SPREAD );
 	       
-      elsif V_EQUAL	( L_SPREAD, R_SPREAD ) then
+      elsif V_EQUAL ( L_SPREAD, R_SPREAD ) then
         return U_VAL ( 0 );
 	        
-      elsif V_LESS ( L_SPREAD, R_SPREAD	) then
+      elsif V_LESS ( L_SPREAD, R_SPREAD ) then
         V_SUB ( L_SPREAD, R_SPREAD );
         return U_INT ( R_SPREAD );
 	        
       else
         V_SUB ( R_SPREAD, L_SPREAD );
         return U_INT ( L_SPREAD);
-      end	if;
+      end if;
     end;
   else					--| REEL
     return U_REAL(
-	     D ( XD_NUMER, LEFT ) * D	( XD_DENOM, RIGHT )	+ D ( XD_NUMER, RIGHT ) * D (	XD_DENOM,	LEFT ),
-	     D ( XD_DENOM, LEFT ) * D	( XD_DENOM, RIGHT )
+	     D ( XD_NUMER, LEFT ) * D ( XD_DENOM, RIGHT ) + D ( XD_NUMER, RIGHT ) * D ( XD_DENOM, LEFT ),
+	     D ( XD_DENOM, LEFT ) * D ( XD_DENOM, RIGHT )
 	     );
   end if;
 end "+";
@@ -390,36 +390,36 @@ end "+";
 --|		FUNCTION "-"
 function "-" ( LEFT, RIGHT :TREE ) return TREE is
 begin
-  if LEFT	= TREE_VOID or RIGHT = TREE_VOID then
+  if LEFT = TREE_VOID or RIGHT = TREE_VOID then
     return TREE_VOID;
 	  
   elsif (LEFT.PT = HI and then LEFT.NOTY = DN_NUM_VAL) or else LEFT.TY = DN_NUM_VAL then
     declare
       L_SPREAD, R_SPREAD	: VECTOR;
     begin
-      SPREAD ( LEFT, L_SPREAD	);
+      SPREAD ( LEFT, L_SPREAD );
       SPREAD ( RIGHT, R_SPREAD );
-      R_SPREAD.S :=	- R_SPREAD.S;
-			  -- REST	OF CODE SAME AS +
-      if L_SPREAD.S	= R_SPREAD.S then
+      R_SPREAD.S := - R_SPREAD.S;
+			  -- REST OF CODE SAME AS +
+      if L_SPREAD.S = R_SPREAD.S then
         V_ADD ( L_SPREAD, R_SPREAD );
         return U_INT ( R_SPREAD );
 	        
-      elsif V_EQUAL	( L_SPREAD, R_SPREAD ) then
+      elsif V_EQUAL ( L_SPREAD, R_SPREAD ) then
         return U_VAL ( 0 );
 	        
-      elsif V_LESS ( L_SPREAD, R_SPREAD	) then
+      elsif V_LESS ( L_SPREAD, R_SPREAD ) then
         V_SUB ( L_SPREAD, R_SPREAD );
         return U_INT ( R_SPREAD );
       else
         V_SUB ( R_SPREAD, L_SPREAD );
         return U_INT ( L_SPREAD );
-      end	if;
+      end if;
     end;
-  else --	MUST BE REAL_VAL
+  else -- MUST BE REAL_VAL
     return U_REAL(
-	     D ( XD_NUMER, LEFT ) * D	( XD_DENOM, RIGHT )	- D ( XD_NUMER, RIGHT ) * D (	XD_DENOM,	LEFT ),
-	     D ( XD_DENOM, LEFT ) * D	( XD_DENOM, RIGHT )
+	     D ( XD_NUMER, LEFT ) * D ( XD_DENOM, RIGHT ) - D ( XD_NUMER, RIGHT ) * D ( XD_DENOM, LEFT ),
+	     D ( XD_DENOM, LEFT ) * D ( XD_DENOM, RIGHT )
 	     );
   end if;
 end "-";
@@ -427,72 +427,72 @@ end "-";
 --|		FUNCTION "*"
 --|
 function "*" ( LEFT, RIGHT :TREE ) return TREE is
-  LEFT_IS_INT	: BOOLEAN	:= (LEFT.PT = HI and then LEFT.NOTY = DN_NUM_VAL)	or else LEFT.TY = DN_NUM_VAL;
-  RIGHT_IS_INT	: BOOLEAN	:= (RIGHT.PT = HI and then RIGHT.NOTY =	DN_NUM_VAL) or else	RIGHT.TY = DN_NUM_VAL;
+  LEFT_IS_INT	: BOOLEAN := (LEFT.PT = HI and then LEFT.NOTY = DN_NUM_VAL) or else LEFT.TY = DN_NUM_VAL;
+  RIGHT_IS_INT	: BOOLEAN := (RIGHT.PT = HI and then RIGHT.NOTY = DN_NUM_VAL) or else RIGHT.TY = DN_NUM_VAL;
 begin
-  if LEFT	= TREE_VOID or RIGHT = TREE_VOID then
+  if LEFT = TREE_VOID or RIGHT = TREE_VOID then
     return TREE_VOID;
 	  
-  elsif LEFT_IS_INT	and RIGHT_IS_INT then
+  elsif LEFT_IS_INT and RIGHT_IS_INT then
     declare
       L_SPREAD, R_SPREAD	: VECTOR;
       TEMP		: VECTOR;
     begin
-      SPREAD( LEFT,	L_SPREAD );
-      SPREAD( RIGHT, R_SPREAD	);
+      SPREAD( LEFT, L_SPREAD );
+      SPREAD( RIGHT, R_SPREAD );
       V_MUL( L_SPREAD, R_SPREAD, TEMP );
       TEMP.S := L_SPREAD.S * R_SPREAD.S;
-      return U_INT(	TEMP );
+      return U_INT( TEMP );
     end;
   elsif RIGHT_IS_INT then
     return U_REAL( D( XD_NUMER, LEFT ) * RIGHT, D( XD_DENOM, LEFT ) );
-  elsif LEFT_IS_INT	then
+  elsif LEFT_IS_INT then
     return RIGHT * LEFT;
   else										--| REELS
-    return U_REAL( D( XD_NUMER, LEFT ) * D( XD_NUMER, RIGHT	), D( XD_DENOM, LEFT ) * D( XD_DENOM, RIGHT ) );
+    return U_REAL( D( XD_NUMER, LEFT ) * D( XD_NUMER, RIGHT ), D( XD_DENOM, LEFT ) * D( XD_DENOM, RIGHT ) );
   end if;
 end "*";
 --||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 --|	FUNCTION "/"
 --|
 function "/" ( LEFT, RIGHT :TREE ) return TREE is
-  LEFT_IS_INT	: BOOLEAN	:= (LEFT.PT = HI and then LEFT.NOTY = DN_NUM_VAL)	or else LEFT.TY = DN_NUM_VAL;
-  RIGHT_IS_INT	: BOOLEAN	:= (RIGHT.PT = HI and then RIGHT.NOTY =	DN_NUM_VAL) or else	RIGHT.TY = DN_NUM_VAL;
+  LEFT_IS_INT	: BOOLEAN := (LEFT.PT = HI and then LEFT.NOTY = DN_NUM_VAL) or else LEFT.TY = DN_NUM_VAL;
+  RIGHT_IS_INT	: BOOLEAN := (RIGHT.PT = HI and then RIGHT.NOTY = DN_NUM_VAL) or else RIGHT.TY = DN_NUM_VAL;
 begin
-  if LEFT	= TREE_VOID or RIGHT = TREE_VOID then
+  if LEFT = TREE_VOID or RIGHT = TREE_VOID then
     return TREE_VOID;
 	  
-  elsif LEFT_IS_INT	and RIGHT_IS_INT then
+  elsif LEFT_IS_INT and RIGHT_IS_INT then
     declare
       L_SPREAD, R_SPREAD	: VECTOR;
       TEMP		: VECTOR;
     begin
-      SPREAD( RIGHT, R_SPREAD	);
+      SPREAD( RIGHT, R_SPREAD );
       if IS_ZERO( R_SPREAD ) then
         return TREE_VOID;
-      end	if;
-      SPREAD( LEFT,	L_SPREAD );
+      end if;
+      SPREAD( LEFT, L_SPREAD );
       V_DIV( R_SPREAD, L_SPREAD, TEMP );
       TEMP.S := L_SPREAD.S * R_SPREAD.S;
-      return U_INT(	TEMP );
+      return U_INT( TEMP );
     end;
   elsif RIGHT_IS_INT then
     if RIGHT = U_VAL( 0) then
       return TREE_VOID;
     end if;
-    return U_REAL( D( XD_NUMER, LEFT ),	D( XD_DENOM, LEFT )	* RIGHT );
+    return U_REAL( D( XD_NUMER, LEFT ), D( XD_DENOM, LEFT ) * RIGHT );
   else												--| REELS
-    if D(	XD_NUMER,	RIGHT ) =	U_VAL( 0 ) then
+    if D( XD_NUMER, RIGHT ) = U_VAL( 0 ) then
       return TREE_VOID;
     end if;
-    return U_REAL( D( XD_NUMER, LEFT ) * D( XD_DENOM, RIGHT	), D( XD_DENOM, LEFT ) * D( XD_NUMER, RIGHT ) );
+    return U_REAL( D( XD_NUMER, LEFT ) * D( XD_DENOM, RIGHT ), D( XD_DENOM, LEFT ) * D( XD_NUMER, RIGHT ) );
   end if;
 end "/";
 --||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 --|	FUNCTION "MOD"
 function "MOD" ( LEFT, RIGHT :TREE ) return TREE is
 begin
-  if LEFT	= TREE_VOID or RIGHT = TREE_VOID then
+  if LEFT = TREE_VOID or RIGHT = TREE_VOID then
     return TREE_VOID;
 	  
   else
@@ -500,20 +500,20 @@ begin
       L_SPREAD, R_SPREAD	: VECTOR;
       TEMP		: VECTOR;
     begin
-      SPREAD( LEFT,	L_SPREAD );
-      SPREAD( RIGHT, R_SPREAD	);
+      SPREAD( LEFT, L_SPREAD );
+      SPREAD( RIGHT, R_SPREAD );
 	  
       if IS_ZERO( R_SPREAD ) then
         return TREE_VOID;								--| DIV ZERO
-      end	if;
+      end if;
 	  
       V_DIV( R_SPREAD, L_SPREAD, TEMP );
-      if L_SPREAD.S	/= R_SPREAD.S and then not IS_ZERO( L_SPREAD ) then
+      if L_SPREAD.S /= R_SPREAD.S and then not IS_ZERO( L_SPREAD ) then
         V_SUB( L_SPREAD, R_SPREAD );
-        L_SPREAD.D(	1..R_SPREAD.L ) := R_SPREAD.D( 1..R_SPREAD.L );
-      end	if;
-      L_SPREAD.S :=	R_SPREAD.S;
-      return U_INT(	L_SPREAD );
+        L_SPREAD.D( 1..R_SPREAD.L ) := R_SPREAD.D( 1..R_SPREAD.L );
+      end if;
+      L_SPREAD.S := R_SPREAD.S;
+      return U_INT( L_SPREAD );
     end;
   end if;
 end "MOD";
@@ -521,7 +521,7 @@ end "MOD";
 --|	FUNCTION "REM"
 function "REM" ( LEFT, RIGHT :TREE ) return TREE is
 begin
-  if LEFT	= TREE_VOID or RIGHT = TREE_VOID then
+  if LEFT = TREE_VOID or RIGHT = TREE_VOID then
     return TREE_VOID;
 	  
   else
@@ -529,15 +529,15 @@ begin
       L_SPREAD, R_SPREAD	: VECTOR;
       TEMP		: VECTOR;
     begin
-      SPREAD( LEFT,	L_SPREAD );
-      SPREAD( RIGHT, R_SPREAD	);
+      SPREAD( LEFT, L_SPREAD );
+      SPREAD( RIGHT, R_SPREAD );
 	  
       if IS_ZERO( R_SPREAD ) then
         return TREE_VOID;								--| DIV ZERO
-      end	if;
+      end if;
 	  
       V_DIV( R_SPREAD, L_SPREAD, TEMP );						--| LE SIGNE EST CELUI DU L_SPREAD D'ORIGINE
-      return U_INT(	L_SPREAD );
+      return U_INT( L_SPREAD );
     end;
   end if;
 end "REM";
@@ -555,7 +555,7 @@ end "REM";
         L_SPREAD	: VECTOR;
         TEMP	: VECTOR;
         RESULT	: VECTOR;
-        COUNT	: INTEGER		:= U_POS(	RIGHT );
+        COUNT	: INTEGER		:= U_POS( RIGHT );
       begin
         if  COUNT < 0  then
 	return  TREE_VOID;										--| CONSTRAINT ERROR FOR - EXP

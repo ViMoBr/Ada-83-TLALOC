@@ -19,7 +19,8 @@ is
 			-----
   is
 
-    DEBUG				: BOOLEAN := TRUE;
+    DEBUG				: BOOLEAN		:= TRUE;
+    GENERATE_BINARY_MAP		: BOOLEAN		:= FALSE;
 
     tab				: CHARACTER	renames ASCII.HT;
 
@@ -44,23 +45,72 @@ is
     type LOOP_CODE			is (DEC, GT, INC, LT);
 
     OUTPUT_CODE			: BOOLEAN			:= TRUE;					-- Dans le traitement de spécif on désactive le codage
+
+
+			-- GENERICS MANAGEMENT
+
     IN_GENERIC_INSTANTIATION		: BOOLEAN			:= FALSE;					-- Traitement special pour les spec d instantiation
     INSTANTIATION_MODEL_NAME		: TREE;
     GENERIC_MODEL_DECL_SEQ		: SEQ_TYPE;
     IN_GENERIC_BODY			: BOOLEAN			:= FALSE;					-- Traitement special pour les corps de generique
     ENCLOSING_GENERIC		: TREE;
     GENERIC_BASE_LEVEL		: LEVEL_NUM		:= 0;
+    MAX_GENERIC_FORMALS		: constant		:= 8;
 
     IN_SPEC_UNIT			: BOOLEAN;
 
     CUR_LEVEL			: LEVEL_NUM;							--| NIVEAU D'IMBRICATION COURANT
     CUR_OFFSET			: OFFSET_VAL		:= 0;
 
+
 			-- EXCEPTIONS SERVICE
+
 --| PILIER 11 : contexte de reprise empile au niveau L.  VRAI pendant la generation des stms proteges SEULEMENT (jamais pendant les handlers : deja depile, LRM 11.4.1).
     HANDLER_CTX_AT			: array( LEVEL_NUM ) of BOOLEAN	:= ( others => FALSE );
     HANDLER_LVL			: INTEGER			:= -1;					--| PILIER 11 : handler INNERMOST en cours de
     HANDLER_CTX_SUF			: LABEL_TYPE		:= 0;					--| generation -- niveau et suffixe (numero du label de dispatch) du contexte associe.
+    CHECKS_ENABLED			: BOOLEAN			:= TRUE;					--| PILIER CHECKS : commutateur global d'emission.
+
+			-- GOTO SERVICE (etiquettes <<L>> et instruction goto, LRM 5.9)
+			--| Tables par CORPS (les etiquettes ne franchissent pas les corps,
+			--| LRM 5.9), discipline de pile pour l'imbrication des corps.
+			--| Indexees par le NOEUD DN_LABEL_ID (le CD_LABEL des label_id est
+			--| vierge -- constat au dump GOTO_DUMP -- on ne le touche pas).
+			--| goto ARRIERE : denivele immediat (forme CODE_EXIT).
+			--| goto AVANT : BRA vers un RACCORD propre au goto + photo des
+			--| contextes ; le raccord (EXC_POP + UNLINK) est emis par
+			--| CODE_LABELED, qui connait les deux niveaux.
+
+    MAX_GOTO_LABELS		: constant		:= 64;					--| NB MAX D'ETIQUETTES GOTO PAR IMBRICATION DE CORPS
+    subtype GOTO_LBL_IDX	is NATURAL		range 0 .. MAX_GOTO_LABELS;
+
+    type LVL_SET		is array( LEVEL_NUM ) of BOOLEAN;					--| photo de HANDLER_CTX_AT au site d'un goto
+
+    type GOTO_LBL_REC	is record
+			  ID		: TREE;							--| le DN_LABEL_ID (cle, egalite TREE)
+			  LBL		: LABEL_TYPE;						--| etiquette FASM de l'instruction etiquetee
+			  DEFINED		: BOOLEAN;						--| l'etiquette a ete EMISE
+			  LEVEL		: LEVEL_NUM;						--| niveau d'emission (valide si DEFINED)
+			end record;
+
+    GOTO_LABELS		: array( 1 .. MAX_GOTO_LABELS ) of GOTO_LBL_REC;
+    GOTO_LBL_TOP		: GOTO_LBL_IDX	:= 0;
+    GOTO_BODY_BASE		: GOTO_LBL_IDX	:= 0;							--| base du corps courant dans la table
+
+    type GOTO_PEND_REC	is record									--| un goto EN AVANT en attente de raccord
+			  TARGET		: TREE;							--| le DN_LABEL_ID vise (TREE_VOID : resolu)
+			  LBL_G		: LABEL_TYPE;						--| etiquette du raccord propre a ce goto
+			  LEVEL		: LEVEL_NUM;						--| niveau du SITE du goto
+			  CTX		: LVL_SET;						--| photo de HANDLER_CTX_AT au site du goto
+			end record;
+
+    GOTO_PENDING			: array( 1 .. MAX_GOTO_LABELS ) of GOTO_PEND_REC;
+    GOTO_PEND_TOP			: GOTO_LBL_IDX	:= 0;
+    GOTO_PEND_BASE			: GOTO_LBL_IDX	:= 0;					--| base du corps courant
+
+    function  GOTO_LABEL_ENTRY	( LABEL_ID :TREE )		return GOTO_LBL_IDX;	--| trouve ou cree l'entree du corps courant
+    procedure GOTO_CHECK_BODY_END;							--| ceinture bruyante : raccord jamais resolu
+
 												--| -1 : hors handler (raise nu = ANOMALIE).
     NO_SUBP_PARAMS			: BOOLEAN			:= TRUE;					--| pour prms et prm_siz
     ENCLOSING_BODY			: TREE;
@@ -72,14 +122,15 @@ is
 
     TYPE_SYMREP			: TREE;								--| UTILISE POUR LES OBJECT_DECL VAR CONST
 
-
-
     procedure OPEN_OUTPUT_FILE	( FILE_NAME :STRING );
     procedure CLOSE_OUTPUT_FILE;
 
 
     function  OPER_SIZ_CHAR		( DEFN :TREE )			return CHARACTER;
     function  EXP_TYPE_CHAR		( EXP :TREE )			return CHARACTER;
+    function  IS_UNSIGNED_TYPE	( DEFN :TREE )			return BOOLEAN;			--| borne basse statique du type de BASE >= 0
+    function  OPER_LOAD_STR		( DEFN :TREE )			return STRING;			--| "Lb".."Lq" ou "ULb".."ULd" selon le signe
+    function  OPER_LOADI_STR		( DEFN :TREE )			return STRING;			--| "LIb".."LIq" ou "ULIb".."ULId" idem
 
     function  NEW_LABEL						return LABEL_TYPE;
     function  NEW_LABEL						return STRING;
@@ -87,12 +138,20 @@ is
 
     procedure INC_LEVEL;
     procedure DEC_LEVEL;
+
     function  TYPE_SIZE		( TYPE_SPEC :TREE )			return NATURAL;
+    function  TYPE_INFO_STR		( TYPE_SPEC :TREE )			return STRING;
+    function  FULL_TYPE_VIEW		( T : TREE )			return TREE;
     function  CODE_DATA_TYPE_OF	( EXP_OR_TYPE_SPEC :TREE )		return CHARACTER;
+
     procedure LOAD_MEM		( DEFN :TREE );
     procedure STORE			( DEST_DEFN :TREE );
 
     function  SUBPROGRAM_ORIGIN	( DEFN :TREE )			return TREE;
+
+    procedure SET_GENERIC_ACTUAL_TYPE	( FORMAL_NAME : STRING; ACTUAL_SPEC : TREE );
+    function  GENERIC_ACTUAL_TYPE_OF	( FORMAL_NAME : STRING )		return TREE;			-- TREE_VOID si absent
+    procedure CLEAR_GENERIC_ACTUAL_TYPES;
 
     procedure EXC_POP;
     function  EXCEPTION_ID_OF		( NAME :TREE )			return TREE;			--| PILIER 11 : SM_DEFN a travers DN_SELECTED, puis chaine des renommages (LRM 8.5)
@@ -101,6 +160,7 @@ is
     function  IMAGE			( I : NATURAL )			return STRING;
 
     procedure REGIONS_PATH		( ID : TREE; WITH_DOT :BOOLEAN := TRUE );
+
     function  LETTERED_SUBNAME	( SUB_NAME : STRING )		return STRING;
 
     function  LAST_OF_SELECTED	( NAME_ID :TREE )			return TREE;
@@ -134,10 +194,14 @@ is
     procedure CODE_STATIC_FIXED_VALUE	( VALUE, FIXED_TYPE :TREE );
     procedure CODE_AGGREGATE		( AGGREGATE, TYPE_SPEC	:TREE );
     procedure CODE_OBJECT_ADDRESS	( NAME : TREE );
+    procedure CODE_COMPOSITE_DATA_ADDRESS( EXP : TREE );
     function  IS_GENERIC_FORMAL_TYPE	( TYPE_DEFN	:TREE )		return BOOLEAN;
     function  IS_GENERIC_FORMAL_OBJECT  ( DEFN		:TREE )		return BOOLEAN;
     function  IS_GENERIC_FORMAL_SUBPROGRAM( ID		:TREE )		return BOOLEAN;
     procedure CODE_DISCRETE_RANGE_BOUND ( DISCRETE_RANGE :TREE; IS_LAST :BOOLEAN );
+    procedure CODE_RANGE_CHECK	( TYPE_SPEC	:TREE );						--| PILIER CHECKS : gamme scalaire, valeur au
+    procedure CODE_ZERO_DIVIDE_CHECK;									--| PILIER CHECKS E-E : diviseur au sommet,
+
 
   private
 
@@ -176,6 +240,8 @@ is
   package			REPRESENTED_ITEMS
 			-----------------
   is
+
+    function  REP_RECORD_USED_BITS		( TYPE_SPEC :TREE )		return INTEGER;
 
     function  REPRESENTED_RECORD_SIZE_BITS	( TYPE_SPEC :TREE )		return INTEGER;
     function  HAS_RECORD_REP			( TYPE_SPEC :TREE )		return BOOLEAN;
@@ -311,7 +377,7 @@ is
 
   private
 
-    procedure CODE_WITH_CONTEXT	( CONTEXT_ELEM_S  :TREE );
+    procedure CODE_WITH_CONTEXT	( CONTEXT_ELEM_S  :TREE; EMIT_INCLUDES :BOOLEAN := TRUE );
     procedure CODE_SUBPROGRAM_BODY	( SUBPROGRAM_BODY :TREE );
     procedure CODE_PACKAGE_BODY	( PACKAGE_BODY :TREE );
     procedure CODE_SUBUNIT_BODY	( SUBUNIT_BODY :TREE );
@@ -516,9 +582,10 @@ FIND_DOT_IF_ANY_AND_UPCASE:
 	PUT_LINE( "  virtual at 8" );
 	PUT_LINE( "    VARzone::" );
 	PUT_LINE( "  end virtual" );
-	PUT_LINE( "include '../../bin/ADA__LIB/_STANDRD.FINC'" );
 
 	PUT_LINE( tab & "LINK" & tab & "0, loc_siz" );
+
+	PUT_LINE( "include '../../bin/ADA__LIB/_STANDRD.FINC'" );
 
    -- PILIER 11 EXCEPTIONS : contexte-sentinelle en fond de la pile des contextes de reprise
 	PUT_LINE( tab & "EXC_MACH" & tab & "0, EXC_CTX0__dat" );						-- photo niveau 0 (NXT_LVL=1 : FP(0))
@@ -539,11 +606,25 @@ FIND_DOT_IF_ANY_AND_UPCASE:
 	PUT_LINE( tab & "STR" & tab & "EXC_NL__, 10" );
 	PUT_LINE( tab & "LCA" & tab & "EXC_MSG__.data_ptr" );
 	PUT_LINE( tab & "SYS_PUT_STR" );
-	PUT_LINE( tab & "La" & tab & "0, EXCEPTIONS_CURRENT_disp" );						-- le symbole EST son diagnostic
+	PUT_LINE( tab & "La" & tab & "0, EXCEPTIONS_CURRENT_disp" );					-- le symbole EST son diagnostic
 	PUT_LINE( tab & "SYS_PUT_STR" );
 	PUT_LINE( tab & "LCA" & tab & "EXC_NL__.data_ptr" );
 	PUT_LINE( tab & "SYS_PUT_STR" );
 	PUT_LINE( tab & "SYS_EXIT" & tab & "1" );
+
+    -- PILIER CHECKS : trampolines de levee des predefinies. Instance unique par executable,
+    -- atteinte par BT/BF depuis les sites de check ; ne font que POSER l'identite et sauter
+    -- au deroulage (pilier 11). Pas de photographie : l'invariant de frontiere d'instruction
+    -- couvre le saut depuis toute profondeur d'expression, comme pour raise.
+	PUT_LINE( "ce_raise_:" );									-- CONSTRAINT_ERROR
+	PUT_LINE( tab & "LCA" & tab & "CONSTRAINT_ERROR__exc.data_ptr" );
+	PUT_LINE( tab & "Sa" & tab & "0, EXCEPTIONS_CURRENT_disp" );
+	PUT_LINE( tab & "BRA" & tab & "exc_raise_" );
+	PUT_LINE( "ne_raise_:" );									-- NUMERIC_ERROR (utilise a partir de E-E)
+	PUT_LINE( tab & "LCA" & tab & "NUMERIC_ERROR__exc.data_ptr" );
+	PUT_LINE( tab & "Sa" & tab & "0, EXCEPTIONS_CURRENT_disp" );
+	PUT_LINE( tab & "BRA" & tab & "exc_raise_" );
+
 
 	PUT_LINE( " virtual VARzone" );
 	PUT_LINE( "   loc_siz = $" );

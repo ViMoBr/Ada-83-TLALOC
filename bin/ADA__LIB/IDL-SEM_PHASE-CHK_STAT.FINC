@@ -4,6 +4,7 @@ namespace CHK_STAT				;---------- PACKAGE (BDY)
 
 if defined IS_STATIC_RANGE_L207_
 PRO	IS_STATIC_RANGE_L207			;---------- PRO IS_STATIC_RANGE
+ hexa_show 'IS_STATIC_RANGE_L207 ', $
 PRMS					;    debut parametrage
 	PRM A_ofs				; in
 	PRM result__ofs				; resultat de fonction
@@ -90,7 +91,7 @@ VAR	ANON_20_111__dat, STANDARD.IDL._TREE.size
 	LI	1
 	OUX
 L3:
-	Sb  1,	-result__ofs
+	Sq  1,	-result__ofs
 	BRA ret_lbl
 ret_lbl:
 	UNLINK 1
@@ -101,6 +102,7 @@ end if
 
 if defined IS_STATIC_SUBTYPE_L208_
 PRO	IS_STATIC_SUBTYPE_L208			;---------- PRO IS_STATIC_SUBTYPE
+ hexa_show 'IS_STATIC_SUBTYPE_L208 ', $
 PRMS					;    debut parametrage
 	PRM A_ofs				; in
 	PRM result__ofs				; resultat de fonction
@@ -109,8 +111,62 @@ ELB 1					;    BODY ELAB
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 					; debut if
+	La 1, -A_ofs
+	La	-1, 0
+	Ld
+	LI	24
+	LI	8
+	UBFX
+	ULb	0, STANDARD.DIANA_NODE_ATTR_CLASS_NAMES._CLASS_PRIVATE_SPEC.FST
+	CGE
+	ULb	0, STANDARD.DIANA_NODE_ATTR_CLASS_NAMES._CLASS_PRIVATE_SPEC.LST
+	La 1, -A_ofs
+	La	-1, 0
+	Ld
+	LI	24
+	LI	8
+	UBFX
+	CGE
+	ET
 	BF	L8
 ; CODE_RETURN : EXPR TYPE = DN_ENUMERATION  VUE COMPLETE = DN_ENUMERATION
+VAR	ANON_26_14_disp, q
+VAR	ANON_26_14__u,    q
+VAR	ANON_26_14__dat, STANDARD.IDL._TREE.size
+	LVA 1, ANON_26_14__dat
+	Sa  1, ANON_26_14_disp
+	La  0, STANDARD.IDL._TREE.use__info
+	Sa  1, ANON_26_14__u
+	LVA 1, ANON_26_14_disp
+					; doublet resultat record anonyme
+	La  1,	-A_ofs
+	CALL	STANDARD.IDL.SEM_PHASE_L11.REQ_UTIL. ,GET_BASE_STRUCT_L108
+	La
+	Ld
+	LI	24
+	LI	8
+	UBFX
+	ULb	0, STANDARD.DIANA_NODE_ATTR_CLASS_NAMES._CLASS_SCALAR.FST
+	CGE
+	ULb	0, STANDARD.DIANA_NODE_ATTR_CLASS_NAMES._CLASS_SCALAR.LST
+VAR	ANON_26_14_disp, q
+VAR	ANON_26_14__u,    q
+VAR	ANON_26_14__dat, STANDARD.IDL._TREE.size
+	LVA 1, ANON_26_14__dat
+	Sa  1, ANON_26_14_disp
+	La  0, STANDARD.IDL._TREE.use__info
+	Sa  1, ANON_26_14__u
+	LVA 1, ANON_26_14_disp
+					; doublet resultat record anonyme
+	La  1,	-A_ofs
+	CALL	STANDARD.IDL.SEM_PHASE_L11.REQ_UTIL. ,GET_BASE_STRUCT_L108
+	La
+	Ld
+	LI	24
+	LI	8
+	UBFX
+	CGE
+	ET
 	DUP
 	BF	L9
 	DROP
@@ -129,7 +185,7 @@ VAR	ANON_26_81__dat, STANDARD.IDL._TREE.size
 	CALL	STANDARD.IDL. ,D_L17
 	CALL	STANDARD.IDL.SEM_PHASE_L11.CHK_STAT. ,IS_STATIC_SUBTYPE_L208
 L9:
-	Sb  1,	-result__ofs
+	Sq  1,	-result__ofs
 	BRA ret_lbl
 	BRA	L7
 L8:
@@ -143,6 +199,43 @@ L8:
 	CEQ
 	BF	L10
 ; CODE_RETURN : EXPR TYPE = DN_ENUMERATION  VUE COMPLETE = DN_ENUMERATION
+VAR	ANON_28_14_disp, q
+VAR	ANON_28_14__u,    q
+VAR	ANON_28_14__dat, STANDARD.IDL._TREE.size
+	LVA 1, ANON_28_14__dat
+	Sa  1, ANON_28_14_disp
+	La  0, STANDARD.IDL._TREE.use__info
+	Sa  1, ANON_28_14__u
+	LVA 1, ANON_28_14_disp
+					; doublet resultat record anonyme
+	La  1,	-A_ofs
+	CALL	STANDARD.IDL.SEM_PHASE_L11.REQ_UTIL. ,GET_BASE_STRUCT_L108
+	La
+	Ld
+	LI	24
+	LI	8
+	UBFX
+	ULb	0, STANDARD.DIANA_NODE_ATTR_CLASS_NAMES._CLASS_SCALAR.FST
+	CGE
+	ULb	0, STANDARD.DIANA_NODE_ATTR_CLASS_NAMES._CLASS_SCALAR.LST
+VAR	ANON_28_14_disp, q
+VAR	ANON_28_14__u,    q
+VAR	ANON_28_14__dat, STANDARD.IDL._TREE.size
+	LVA 1, ANON_28_14__dat
+	Sa  1, ANON_28_14_disp
+	La  0, STANDARD.IDL._TREE.use__info
+	Sa  1, ANON_28_14__u
+	LVA 1, ANON_28_14_disp
+					; doublet resultat record anonyme
+	La  1,	-A_ofs
+	CALL	STANDARD.IDL.SEM_PHASE_L11.REQ_UTIL. ,GET_BASE_STRUCT_L108
+	La
+	Ld
+	LI	24
+	LI	8
+	UBFX
+	CGE
+	ET
 	DUP
 	BF	L11
 	DROP
@@ -161,16 +254,35 @@ VAR	ANON_28_81__dat, STANDARD.IDL._TREE.size
 	CALL	STANDARD.IDL. ,D_L17
 	CALL	STANDARD.IDL.SEM_PHASE_L11.CHK_STAT. ,IS_STATIC_SUBTYPE_L208
 L11:
-	Sb  1,	-result__ofs
+	Sq  1,	-result__ofs
 	BRA ret_lbl
 	BRA	L7
 L10:
 L7:					; post if
 					; debut if
+	La 1, -A_ofs
+	La	-1, 0
+	Ld
+	LI	24
+	LI	8
+	UBFX
+	ULb	0, STANDARD.DIANA_NODE_ATTR_CLASS_NAMES._CLASS_SCALAR.FST
+	CGE
+	ULb	0, STANDARD.DIANA_NODE_ATTR_CLASS_NAMES._CLASS_SCALAR.LST
+	La 1, -A_ofs
+	La	-1, 0
+	Ld
+	LI	24
+	LI	8
+	UBFX
+	CGE
+	ET
+	LI	1
+	OUX
 	BF	L13
 ; CODE_RETURN : EXPR TYPE = DN_ENUMERATION  VUE COMPLETE = DN_ENUMERATION
 	LI	0
-	Sb  1,	-result__ofs
+	Sq  1,	-result__ofs
 	BRA ret_lbl
 	BRA	L12
 L13:
@@ -218,7 +330,7 @@ VAR	ANON_37_14__dat, STANDARD.IDL._TREE.size
 	CEQ
 	LI	1
 	OUX
-	Sb  1,	-result__ofs
+	Sq  1,	-result__ofs
 	BRA ret_lbl
 	BRA	L14
 L15:
@@ -266,7 +378,7 @@ VAR	ANON_40_93__dat, STANDARD.IDL._TREE.size
 	CALL	STANDARD.IDL. ,D_L17
 	CALL	STANDARD.IDL.SEM_PHASE_L11.CHK_STAT. ,IS_STATIC_SUBTYPE_L208
 L16:
-	Sb  1,	-result__ofs
+	Sq  1,	-result__ofs
 	BRA ret_lbl
 L14:					; post if
 ret_lbl:
@@ -278,6 +390,7 @@ end if
 
 if defined IS_STATIC_DISCRETE_RANGE_L209_
 PRO	IS_STATIC_DISCRETE_RANGE_L209		;---------- PRO IS_STATIC_DISCRETE_RANGE
+ hexa_show 'IS_STATIC_DISCRETE_RANGE_L209 ', $
 PRMS					;    debut parametrage
 	PRM A_ofs				; in
 	PRM result__ofs				; resultat de fonction
@@ -331,7 +444,7 @@ VAR	ANON_48_42__dat, STANDARD.IDL._TREE.size
 	LI  34
 	CALL	STANDARD.IDL. ,D_L17
 	CALL	STANDARD.IDL.SEM_PHASE_L11.CHK_STAT. ,IS_STATIC_DISCRETE_RANGE_L209
-	Sb  1,	-result__ofs
+	Sq  1,	-result__ofs
 	BRA ret_lbl
 	BRA	L19
 L21:
@@ -372,7 +485,7 @@ VAR	ANON_51_35__dat, STANDARD.IDL._TREE.size
 	LI  48
 	CALL	STANDARD.IDL. ,D_L17
 	CALL	STANDARD.IDL.SEM_PHASE_L11.CHK_STAT. ,IS_STATIC_DISCRETE_RANGE_L209
-	Sb  1,	-result__ofs
+	Sq  1,	-result__ofs
 	BRA ret_lbl
 	BRA	L26
 L27:
@@ -409,7 +522,7 @@ VAR	ANON_53_77__dat, STANDARD.IDL._TREE.size
 	CALL	STANDARD.IDL. ,D_L17
 	CALL	STANDARD.IDL.SEM_PHASE_L11.CHK_STAT. ,IS_STATIC_RANGE_L207
 L28:
-	Sb  1,	-result__ofs
+	Sq  1,	-result__ofs
 	BRA ret_lbl
 L26:					; post if
 	BRA	L19
@@ -419,7 +532,7 @@ L22:
 	LI	0					; lieu resultat sur pile
 	La  1,	-A_ofs
 	CALL	STANDARD.IDL.SEM_PHASE_L11.CHK_STAT. ,IS_STATIC_RANGE_L207
-	Sb  1,	-result__ofs
+	Sq  1,	-result__ofs
 	BRA ret_lbl
 	BRA	L19
 L23:
@@ -475,7 +588,7 @@ VAR	ANON_58_95__dat, STANDARD.IDL._TREE.size
 	CALL	STANDARD.IDL. ,D_L17
 	CALL	STANDARD.IDL.SEM_PHASE_L11.CHK_STAT. ,IS_STATIC_DISCRETE_RANGE_L209
 L29:
-	Sb  1,	-result__ofs
+	Sq  1,	-result__ofs
 	BRA ret_lbl
 	BRA	L19
 L24:
@@ -495,13 +608,13 @@ VAR	ANON_60_42__dat, STANDARD.IDL._TREE.size
 	LI  91
 	CALL	STANDARD.IDL. ,D_L17
 	CALL	STANDARD.IDL.SEM_PHASE_L11.CHK_STAT. ,IS_STATIC_DISCRETE_RANGE_L209
-	Sb  1,	-result__ofs
+	Sq  1,	-result__ofs
 	BRA ret_lbl
 	BRA	L19
 L25:
 ; CODE_RETURN : EXPR TYPE = DN_ENUMERATION  VUE COMPLETE = DN_ENUMERATION
 	LI	0
-	Sb  1,	-result__ofs
+	Sq  1,	-result__ofs
 	BRA ret_lbl
 	BRA	L19
 L19:
@@ -515,12 +628,14 @@ end if
 
 if defined IS_STATIC_INDEX_CONSTRAINT_L210_
 PRO	IS_STATIC_INDEX_CONSTRAINT_L210		;---------- PRO IS_STATIC_INDEX_CONSTRAINT
+ hexa_show 'IS_STATIC_INDEX_CONSTRAINT_L210 ', $
 PRMS					;    debut parametrage
 	PRM ARRAY_TYPE_ofs				; in
 	PRM INDEX_CONSTRAINT_ofs			; in
 	PRM result__ofs				; resultat de fonction
 endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
+ hexa_show 'var elab INDEX_LIST ', $
 VAR INDEX_LIST_disp, q			; variable record : pointeur aux data record
 VAR INDEX_LIST__u, q			; variable record : pointeur aux useinfo
 VAR INDEX_LIST__dat, STANDARD.IDL._SEQ_TYPE.size
@@ -528,7 +643,6 @@ VAR INDEX_LIST__dat, STANDARD.IDL._SEQ_TYPE.size
 	Sa	1, INDEX_LIST_disp			; record fin
 	LVA	1, STANDARD.IDL._SEQ_TYPE.SIZ
 	Sa	1, INDEX_LIST__u
-; CODE_VC_NAME DN_VARIABLE_ID
 	La  1, INDEX_LIST_disp
 	LI	STANDARD.IDL._SEQ_TYPE.size
 VAR	ANON_67_30_disp, q
@@ -556,6 +670,8 @@ VAR	ANON_67_36__dat, STANDARD.IDL._TREE.size
 	La  ,  0
 	BLKMOV
 
+ hexa_show ' disp ', INDEX_LIST_disp
+ hexa_show 'var elab INDEX ', $
 VAR INDEX_disp, q				; variable record : pointeur aux data record
 VAR INDEX__u, q				; variable record : pointeur aux useinfo
 VAR INDEX__dat, STANDARD.IDL._TREE.size
@@ -563,7 +679,6 @@ VAR INDEX__dat, STANDARD.IDL._TREE.size
 	Sa	1, INDEX_disp				; record fin
 	LVA	1, STANDARD.IDL._TREE.SIZ
 	Sa	1, INDEX__u
-; CODE_VC_NAME DN_VARIABLE_ID
 	La  1, INDEX_disp
 					; store represented component PT range 0 .. 1 width 2
 	DUP
@@ -574,6 +689,8 @@ VAR INDEX__dat, STANDARD.IDL._TREE.size
 	BFI
 	Sd
 
+ hexa_show ' disp ', INDEX_disp
+ hexa_show 'var elab ARRAY_TYPE_SPEC ', $
 VAR ARRAY_TYPE_SPEC_disp, q			; variable record : pointeur aux data record
 VAR ARRAY_TYPE_SPEC__u, q			; variable record : pointeur aux useinfo
 VAR ARRAY_TYPE_SPEC__dat, STANDARD.IDL._TREE.size
@@ -581,13 +698,13 @@ VAR ARRAY_TYPE_SPEC__dat, STANDARD.IDL._TREE.size
 	Sa	1, ARRAY_TYPE_SPEC_disp			; record fin
 	LVA	1, STANDARD.IDL._TREE.SIZ
 	Sa	1, ARRAY_TYPE_SPEC__u
-; CODE_VC_NAME DN_VARIABLE_ID
 	La  1, ARRAY_TYPE_SPEC_disp
 	LI	STANDARD.IDL._TREE.size
 	La  1,	-ARRAY_TYPE_ofs
 	La  ,  0
 	BLKMOV
 
+ hexa_show ' disp ', ARRAY_TYPE_SPEC_disp
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 LOOP__1:
@@ -609,7 +726,7 @@ LOOP__1:
 	BF	L34
 ; CODE_RETURN : EXPR TYPE = DN_ENUMERATION  VUE COMPLETE = DN_ENUMERATION
 	LI	0
-	Sb  1,	-result__ofs
+	Sq  1,	-result__ofs
 	BRA ret_lbl
 	BRA	L33
 L34:
@@ -617,6 +734,21 @@ L33:					; post if
 	BRA	LOOP__1
 L32:					; post loop LOOP__1
 					; debut if
+	La	1, STANDARD.IDL.SEM_PHASE_L11.CHK_STAT.IS_STATIC_INDEX_CONSTRAINT_L210.ARRAY_TYPE_SPEC_disp
+	Ld
+	LI	24
+	LI	8
+	UBFX
+	ULb	0, STANDARD.DIANA_NODE_ATTR_CLASS_NAMES._CLASS_PRIVATE_SPEC.FST
+	CGE
+	ULb	0, STANDARD.DIANA_NODE_ATTR_CLASS_NAMES._CLASS_PRIVATE_SPEC.LST
+	La	1, STANDARD.IDL.SEM_PHASE_L11.CHK_STAT.IS_STATIC_INDEX_CONSTRAINT_L210.ARRAY_TYPE_SPEC_disp
+	Ld
+	LI	24
+	LI	8
+	UBFX
+	CGE
+	ET
 	BF	L36
 	LVA 1,	ARRAY_TYPE_SPEC_disp
 	La
@@ -633,7 +765,7 @@ VAR	ANON_80_26__dat, STANDARD.IDL._TREE.size
 	LVA 1,	ARRAY_TYPE_SPEC_disp
 	LI  33
 	CALL	STANDARD.IDL. ,D_L17
-	La  ,  0
+	La
 	BLKMOV
 	BRA	L35
 L36:
@@ -660,7 +792,7 @@ VAR	ANON_82_26__dat, STANDARD.IDL._TREE.size
 	LVA 1,	ARRAY_TYPE_SPEC_disp
 	LI  84
 	CALL	STANDARD.IDL. ,D_L17
-	La  ,  0
+	La
 	BLKMOV
 	BRA	L35
 L37:
@@ -676,7 +808,7 @@ L35:					; post if
 	BF	L39
 ; CODE_RETURN : EXPR TYPE = DN_ENUMERATION  VUE COMPLETE = DN_ENUMERATION
 	LI	0
-	Sb  1,	-result__ofs
+	Sq  1,	-result__ofs
 	BRA ret_lbl
 	BRA	L38
 L39:
@@ -706,7 +838,7 @@ VAR	ANON_90_25__dat, STANDARD.IDL._TREE.size
 	LI  61
 	CALL	STANDARD.IDL. ,D_L17
 	CALL	STANDARD.IDL. ,LIST_L22
-	La  ,  0
+	La
 	BLKMOV
 LOOP__2:
 	LI	0					; lieu resultat sur pile
@@ -738,7 +870,7 @@ VAR	ANON_93_33__dat, STANDARD.IDL._TREE.size
 	BF	L42
 ; CODE_RETURN : EXPR TYPE = DN_ENUMERATION  VUE COMPLETE = DN_ENUMERATION
 	LI	0
-	Sb  1,	-result__ofs
+	Sq  1,	-result__ofs
 	BRA ret_lbl
 	BRA	L41
 L42:
@@ -747,7 +879,7 @@ L41:					; post if
 L40:					; post loop LOOP__2
 ; CODE_RETURN : EXPR TYPE = DN_ENUMERATION  VUE COMPLETE = DN_ENUMERATION
 	LI	1
-	Sb  1,	-result__ofs
+	Sq  1,	-result__ofs
 	BRA ret_lbl
 ret_lbl:
 	UNLINK 1

@@ -1,13 +1,17 @@
 ERR_PHASE = 'ERR_PHASE'
 PRO	ERR_PHASE_L12				;---------- PRO ERR_PHASE
+ hexa_show 'ERR_PHASE_L12 ', $
 PRMS					;    debut parametrage
 	PRM ACCES_TEXTE_ofs			; in
 endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
+ hexa_show 'var elab FULL_LIST ', $
 VAR FULL_LIST_disp, b			; variable bool char enum
 	LI	0
 	Sb  1,	FULL_LIST_disp
 
+ hexa_show ' disp ', FULL_LIST_disp
+ hexa_show 'var elab IFILE ', $
 VAR IFILE_disp, q				; variable record : pointeur aux data record
 VAR IFILE__u, q				; variable record : pointeur aux useinfo
 VAR IFILE__dat, STANDARD.TEXT_IO._FILE_TYPE.size
@@ -15,7 +19,6 @@ VAR IFILE__dat, STANDARD.TEXT_IO._FILE_TYPE.size
 	Sa	1, IFILE_disp				; record fin
 	LVA	1, STANDARD.TEXT_IO._FILE_TYPE.SIZ
 	Sa	1, IFILE__u
-; CODE_VC_NAME DN_VARIABLE_ID
 	LIVa 1, STANDARD.IDL.ERR_PHASE_L12.IFILE_disp, STANDARD.TEXT_IO._FILE_TYPE.ID
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
@@ -55,6 +58,8 @@ VAR IFILE__dat, STANDARD.TEXT_IO._FILE_TYPE.size
 	LI	0
 	Sb
 
+ hexa_show ' disp ', IFILE_disp
+ hexa_show 'var elab LINE_COUNT ', $
 VAR LINE_COUNT_disp, d			; variable entiere
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
@@ -68,8 +73,11 @@ VAR LINE_COUNT_disp, d			; variable entiere
 	BT	STANDARD.ce_raise_
 	Sd  1,	LINE_COUNT_disp
 
+ hexa_show ' disp ', LINE_COUNT_disp
+ hexa_show 'var elab ERR_COUNT ', $
 VAR ERR_COUNT_disp, d			; variable entiere
 
+ hexa_show ' disp ', ERR_COUNT_disp
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 ; CODE & concat _STRING
@@ -222,6 +230,7 @@ STR STR_L8, ""				; constante string=""
 	CALL	STANDARD.TEXT_IO. ,OPEN_L2
 namespace	BLOCK__1
 ELB 2					;    BODY ELAB
+ hexa_show 'var elab SOURCE_LIST ', $
 VAR SOURCE_LIST_disp, q			; variable record : pointeur aux data record
 VAR SOURCE_LIST__u, q			; variable record : pointeur aux useinfo
 VAR SOURCE_LIST__dat, STANDARD.IDL._SEQ_TYPE.size
@@ -229,7 +238,6 @@ VAR SOURCE_LIST__dat, STANDARD.IDL._SEQ_TYPE.size
 	Sa	2, SOURCE_LIST_disp			; record fin
 	LVA	2, STANDARD.IDL._SEQ_TYPE.SIZ
 	Sa	2, SOURCE_LIST__u
-; CODE_VC_NAME DN_VARIABLE_ID
 	La  2, SOURCE_LIST_disp
 	LI	STANDARD.IDL._SEQ_TYPE.size
 VAR	ANON_28_32_disp, q
@@ -246,6 +254,8 @@ VAR	ANON_28_32__dat, STANDARD.IDL._SEQ_TYPE.size
 	La  ,  0
 	BLKMOV
 
+ hexa_show ' disp ', SOURCE_LIST_disp
+ hexa_show 'var elab ERRORLIST ', $
 VAR ERRORLIST_disp, q			; variable record : pointeur aux data record
 VAR ERRORLIST__u, q				; variable record : pointeur aux useinfo
 VAR ERRORLIST__dat, STANDARD.IDL._SEQ_TYPE.size
@@ -253,15 +263,19 @@ VAR ERRORLIST__dat, STANDARD.IDL._SEQ_TYPE.size
 	Sa	2, ERRORLIST_disp			; record fin
 	LVA	2, STANDARD.IDL._SEQ_TYPE.SIZ
 	Sa	2, ERRORLIST__u
-; CODE_VC_NAME DN_VARIABLE_ID
 
+ hexa_show ' disp ', ERRORLIST_disp
+ hexa_show 'var elab SOURCENBR ', $
 VAR SOURCENBR_disp, d			; variable entiere
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	Sd  2,	SOURCENBR_disp
 
+ hexa_show ' disp ', SOURCENBR_disp
+ hexa_show 'var elab NB_PREFIX_CHARS ', $
 VAR NB_PREFIX_CHARS_disp, d			; variable entiere
 
+ hexa_show ' disp ', NB_PREFIX_CHARS_disp
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 LOOP__2:
@@ -279,19 +293,20 @@ LOOP__2:
 	LVA	, STANDARD.IDL._SEQ_TYPE.FIRST
 	LI	STANDARD.IDL._TREE.size
 	LVA 0,	STANDARD.IDL.TREE_NIL_disp
-	La  ,  0
+	La
 	BLKMOV
 	DUP
 	LVA	, STANDARD.IDL._SEQ_TYPE.NEXT
 	LI	STANDARD.IDL._TREE.size
 	LVA 0,	STANDARD.IDL.TREE_NIL_disp
-	La  ,  0
+	La
 	BLKMOV
 	DROP
 	BRA	L12
 L13:
 namespace	BLOCK__3
 ELB 3					;    BODY ELAB
+ hexa_show 'var elab SOURCELINE ', $
 VAR SOURCELINE_disp, q			; variable record : pointeur aux data record
 VAR SOURCELINE__u, q			; variable record : pointeur aux useinfo
 VAR SOURCELINE__dat, STANDARD.IDL._TREE.size
@@ -299,7 +314,6 @@ VAR SOURCELINE__dat, STANDARD.IDL._TREE.size
 	Sa	3, SOURCELINE_disp			; record fin
 	LVA	3, STANDARD.IDL._TREE.SIZ
 	Sa	3, SOURCELINE__u
-; CODE_VC_NAME DN_VARIABLE_ID
 	La  3, SOURCELINE_disp
 					; store represented component PT range 0 .. 1 width 2
 	DUP
@@ -310,6 +324,7 @@ VAR SOURCELINE__dat, STANDARD.IDL._TREE.size
 	BFI
 	Sd
 
+ hexa_show ' disp ', SOURCELINE_disp
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 	LVA  3,	STANDARD.IDL.ERR_PHASE_L12.BLOCK__1.BLOCK__3.SOURCELINE_disp
@@ -334,7 +349,7 @@ VAR	ANON_44_15__dat, STANDARD.IDL._SEQ_TYPE.size
 					; doublet resultat record anonyme
 	LVA 3,	SOURCELINE_disp
 	CALL	STANDARD.IDL. ,LIST_L22
-	La  ,  0
+	La
 	BLKMOV
 	UNLINK 3
 endPRO
@@ -404,6 +419,7 @@ L20:					; post if
 L19:
 namespace	BLOCK__5
 ELB 3					;    BODY ELAB
+ hexa_show 'var elab SLINE ', $
 _SLINE__type = '_SLINE__type'
 namespace _SLINE__type			; array var constrained array type info
 VAR use__info, q
@@ -448,8 +464,11 @@ VAR SLINE__u, q				; variable array : useinfo pointeur au rec info
 	CO_VAR
 	Sa	3, SLINE_disp				; array data ptr at _disp
 
+ hexa_show ' disp ', SLINE_disp
+ hexa_show 'var elab LAST ', $
 VAR LAST_disp, d				; variable entiere
 
+ hexa_show ' disp ', LAST_disp
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 	LVA  3,	STANDARD.IDL.ERR_PHASE_L12.BLOCK__1.BLOCK__5.LAST_disp
@@ -639,6 +658,7 @@ LOOP__6:
 	BF	L33
 namespace	BLOCK__7
 ELB 3					;    BODY ELAB
+ hexa_show 'var elab ERROR ', $
 VAR ERROR_disp, q				; variable record : pointeur aux data record
 VAR ERROR__u, q				; variable record : pointeur aux useinfo
 VAR ERROR__dat, STANDARD.IDL._TREE.size
@@ -646,7 +666,6 @@ VAR ERROR__dat, STANDARD.IDL._TREE.size
 	Sa	3, ERROR_disp				; record fin
 	LVA	3, STANDARD.IDL._TREE.SIZ
 	Sa	3, ERROR__u
-; CODE_VC_NAME DN_VARIABLE_ID
 	La  3, ERROR_disp
 					; store represented component PT range 0 .. 1 width 2
 	DUP
@@ -657,8 +676,11 @@ VAR ERROR__dat, STANDARD.IDL._TREE.size
 	BFI
 	Sd
 
+ hexa_show ' disp ', ERROR_disp
+ hexa_show 'var elab COL ', $
 VAR COL_disp, d				; variable entiere
 
+ hexa_show ' disp ', COL_disp
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 	LVA  3,	STANDARD.IDL.ERR_PHASE_L12.BLOCK__1.BLOCK__7.ERROR_disp

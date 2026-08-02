@@ -4,7 +4,7 @@
 ------------------------------------------------------------------------------------------------------------------------
 --	1	2	3	4	5	6	7	8	9	0	1	2
 
-separate ( EXPANDER	)
+separate ( EXPANDER )
 
 					-----
 	package body			UTILS
@@ -21,17 +21,65 @@ is					-----
   GA_NAME		: array( 1 .. MAX_GENERIC_FORMALS ) of STRING( 1 .. MAX_FORMAL_NAME_LEN );
   GA_LEN		: array( 1 .. MAX_GENERIC_FORMALS ) of NATURAL;
   GA_ACTUAL	: array( 1 .. MAX_GENERIC_FORMALS ) of TREE;
-  GA_COUNT	: NATURAL	:= 0;
+  GA_COUNT	: NATURAL := 0;
+
+
+			--^^^^--
+  procedure		  TROU			( SITE :STRING; NOEUD :TREE := TREE_VOID )
+  is			--------
+
+	-- Signal maison des manques de capacite. Ecrit "; !! TROU ..."
+	-- dans le FINC (traçabilite : grep TROU = inventaire vivant)
+	-- ET le meme message sur la console (lecon n 96 : un
+	-- commentaire FINC n'est vu par personne), puis leve
+	-- PROGRAM_ERROR -- mode STRICT, defaut. En RECENSEMENT :
+	-- compte, logue, continue.
+	-- HYPOTHESE : la sortie courante est le FINC (vrai de tous les
+	-- sites CODE_*). Si FS est ferme (hors expansion d'unite), on
+	-- ecrit seulement sur la console.
+
+    function	MSG		return STRING
+    is
+    begin
+      if  NOEUD = TREE_VOID  then
+        return  "!! TROU " & SITE;
+      else
+        return  "!! TROU " & SITE & " : " & NODE_NAME'IMAGE( NOEUD.TY );
+      end if;
+    end MSG;
+
+  begin
+    TROU_COUNT := TROU_COUNT + 1;
+
+    if  IS_OPEN( FS )  then
+      PUT_LINE( "; " & MSG );									-- dans le FINC (sortie courante)
+      SET_OUTPUT( STANDARD_OUTPUT );
+      NEW_LINE;
+      PUT_LINE( MSG );									-- sur la console
+      SET_OUTPUT( FS );									-- retour au FINC
+    else
+      NEW_LINE;
+      PUT_LINE( MSG );									-- deja sur la console
+    end if;
+
+    if  not TROU_RECENSEMENT  then
+      raise PROGRAM_ERROR;
+    end if;
+
+  end	TROU;
+	----
 
 
 			--^^^^^^^^^^^^^^^^--
-  procedure		  OPEN_OUTPUT_FILE		( FILE_NAME :STRING	)
+  procedure		  OPEN_OUTPUT_FILE		( FILE_NAME :STRING )
   is			--------------------
 
   begin
     CREATE ( FS, OUT_FILE, FILE_NAME( FILE_NAME'FIRST .. FILE_NAME'LAST-4 ) & ".FINC" );				-- FASM INCLUDE
-    SET_OUTPUT ( FS	);										-- CODAGE	SUR SORTIE STANDARD
+    SET_OUTPUT ( FS );										-- CODAGE SUR SORTIE STANDARD
     INT_LABEL := 1;
+
+    TROU_COUNT := 0;										-- RAZ COMPTAGE DES TROUS D'IMPLEMENTATION PAR UNITE
 
   end	OPEN_OUTPUT_FILE;
 	----------------
@@ -43,14 +91,19 @@ is					-----
 
   begin
     SET_OUTPUT ( STANDARD_OUTPUT );
-    CLOSE	( FS );
+
+    if  TROU_COUNT > 0  then
+      PUT_LINE( "!!" & NATURAL'IMAGE( TROU_COUNT ) & " TROU(s) traverses -- FINC SUSPECT" );
+    end if;
+
+    CLOSE ( FS );
 
   end	CLOSE_OUTPUT_FILE;
 	-----------------
 
 
-  package	INT_IO	is new INTEGER_IO (	INTEGER ); use INT_IO;
-  package	LBL_IO	is new INTEGER_IO (	LABEL_TYPE ); use LBL_IO;
+  package INT_IO	is new INTEGER_IO ( INTEGER ); use INT_IO;
+  package LBL_IO	is new INTEGER_IO ( LABEL_TYPE ); use LBL_IO;
 
 
 			--^^^^^^^^^--
@@ -71,7 +124,7 @@ is					-----
   function		  NEW_LABEL						return STRING
   is			-------------
 
-    LSTR	:constant	STRING	:= LABEL_TYPE'IMAGE( INT_LABEL );
+    LSTR  :constant STRING	:= LABEL_TYPE'IMAGE( INT_LABEL );
 
   begin
     INT_LABEL := INT_LABEL + 1;
@@ -85,7 +138,7 @@ is					-----
   function		  LABEL_STR			( LBL : LABEL_TYPE )	return STRING
   is			-------------
 
-    LSTR	:constant	STRING	:= LABEL_TYPE'IMAGE( LBL );
+    LSTR  :constant STRING	:= LABEL_TYPE'IMAGE( LBL );
 
   begin
     return 'L' & LSTR( LSTR'FIRST+1 .. LSTR'LAST );
@@ -100,7 +153,7 @@ is					-----
   begin
     CUR_LEVEL := CUR_LEVEL + 1;
 
---    if DEBUG then	put_line(	"inc lvl cur= " & LEVEL_NUM'IMAGE( CUR_LEVEL ) );	end if;
+--    if DEBUG then put_line( "inc lvl cur= " & LEVEL_NUM'IMAGE( CUR_LEVEL ) ); end if;
 
 --   exception
 --     when CONSTRAINT_ERROR => raise STATIC_LEVEL_OVERFLOW;
@@ -116,7 +169,7 @@ is					-----
   begin
     CUR_LEVEL := CUR_LEVEL - 1;
 
---    if DEBUG then	put_line(	"dec lvl cur= " & LEVEL_NUM'IMAGE( CUR_LEVEL ) );	end if;
+--    if DEBUG then put_line( "dec lvl cur= " & LEVEL_NUM'IMAGE( CUR_LEVEL ) ); end if;
 
 --   exception
 --     when CONSTRAINT_ERROR => raise STATIC_LEVEL_UNDERFLOW;
@@ -131,18 +184,17 @@ is					-----
 
   begin
     case TYPE_SPEC.TY is
-    when DN_ACCESS			=> return	ADDR_SIZE;
+    when DN_ACCESS			=> return ADDR_SIZE;
     when DN_RECORD
 	=> return ( DI( CD_IMPL_SIZE, TYPE_SPEC ) + STORAGE_UNIT - 1 ) / STORAGE_UNIT;
     when DN_CONSTRAINED_RECORD
 	=> return TYPE_SIZE( D( SM_BASE_TYPE, TYPE_SPEC ) );
-    when DN_ARRAY			=> return	2 * ADDR_SIZE;
-    when DN_ENUMERATION | DN_INTEGER	=> return	INTG_SIZE;
-    when DN_FLOAT			=> return	ADDR_SIZE;			-- 8 octets = 64 bits IEEE 754 double
-    when DN_L_PRIVATE		=> return	TYPE_SIZE( D( SM_TYPE_SPEC, TYPE_SPEC )	);
+    when DN_ARRAY			=> return 2 * ADDR_SIZE;
+    when DN_ENUMERATION | DN_INTEGER	=> return INTG_SIZE;
+    when DN_FLOAT			=> return ADDR_SIZE;			-- 8 octets = 64 bits IEEE 754 double
+    when DN_L_PRIVATE		=> return TYPE_SIZE( D( SM_TYPE_SPEC, TYPE_SPEC ) );
     when others =>
-      PUT_LINE( "CODAGE_INTERMEDIAIRE.TYPE_SIZE : TYPE_SPEC.TY ILLICITE " & NODE_NAME'IMAGE( TYPE_SPEC.TY ) );
---      raise PROGRAM_ERROR;
+      TROU( "TYPE_SIZE type illicite", TYPE_SPEC );
     end case;
     return 0;
 
@@ -151,7 +203,7 @@ is					-----
 
 
 		--^^^^^^^^^^^^^--
-  function	  TYPE_INFO_STR	( TYPE_SPEC :TREE )	return STRING
+  function	  TYPE_INFO_STR	( TYPE_SPEC :TREE ) return STRING
   is		-----------------
 	-- Nom du namespace d'info d'un type dans le FINC. Convention
 	-- UNIQUE (piege n 99) : type nomme -> '_' & nom_du_type ;
@@ -178,7 +230,23 @@ is					-----
   begin
     loop
       if R.TY = DN_PRIVATE or else R.TY = DN_L_PRIVATE then
-        R := D( SM_TYPE_SPEC, R );
+        if  D( SM_TYPE_SPEC, R ) /= TREE_VOID  then
+          R := D( SM_TYPE_SPEC, R );
+
+        elsif  D( SM_DERIVED, R ) /= TREE_VOID  then
+			--| Seconde saveur DIANA de `private`/`l_private` (grammaire
+			--| diana_NODES : SM_DERIVED en tete d'attributs) : type DERIVE
+			--| d'un type prive, declare HORS du paquetage -- SM_TYPE_SPEC
+			--| est VOID et aucune completion ne viendra.  La vue pleine est
+			--| celle du PARENT : representation identique (LRM 3.4, meme
+			--| doctrine que C1).  Precedent maison : ROOT_RECORD suit deja
+			--| SM_DERIVED (n 120b).  Decouverte temoin CONV_DER1 30/07
+			--| (ERREUR CODE_VC_NAME TYPE_SPEC.TY = DN_VOID sur DS : DSET).
+          R := D( SM_DERIVED, R );
+
+        else
+          return R;								-- ni completion ni parent : anomalie, bruyante en aval
+        end if;
 
       elsif R.TY = DN_INCOMPLETE then
         R := D( XD_FULL_TYPE_SPEC, R );
@@ -202,18 +270,18 @@ is					-----
         EXP	: TREE	renames EXP_OR_TYPE_SPEC;
 
       begin
-        case EXP.TY	is
-        when DN_FUNCTION_CALL	| DN_PARENTHESIZED | DN_USED_OBJECT_ID =>
+        case EXP.TY is
+        when DN_FUNCTION_CALL | DN_PARENTHESIZED | DN_USED_OBJECT_ID =>
 	return CODE_DATA_TYPE_OF( D( SM_EXP_TYPE, EXP ) );
 
-        when others	=>
-	PUT_LINE(	"ERREUR CODE_DATA_TYPE_OF : EXP.TY ILLICITE " & NODE_NAME'IMAGE( EXP.TY ) );
+        when others =>
+	PUT_LINE( "ERREUR CODE_DATA_TYPE_OF : EXP.TY ILLICITE " & NODE_NAME'IMAGE( EXP.TY ) );
 	raise PROGRAM_ERROR;
         end case;
 
       end;
 
-    elsif	 EXP_OR_TYPE_SPEC.TY in CLASS_TYPE_SPEC	 then
+    elsif  EXP_OR_TYPE_SPEC.TY in CLASS_TYPE_SPEC  then
       declare
         TYPE_SPEC	: TREE	renames EXP_OR_TYPE_SPEC;
 
@@ -224,12 +292,12 @@ is					-----
 
         when DN_ENUMERATION =>
 	declare
-	  TYPE_SOURCE_NAME	: TREE		:= D( XD_SOURCE_NAME, TYPE_SPEC );
+	  TYPE_SOURCE_NAME  : TREE		:= D( XD_SOURCE_NAME, TYPE_SPEC );
 	  TYPE_SYMREP	: TREE		:= D( LX_SYMREP, TYPE_SOURCE_NAME );
 	  NAME		: constant STRING	:= PRINT_NAME( TYPE_SYMREP );
 
 	begin
-	  if NAME	= "BOOLEAN" then
+	  if NAME = "BOOLEAN" then
 	    return 'B';
 	  elsif NAME = "CHARACTER" then
 	    return 'B';
@@ -241,8 +309,8 @@ is					-----
         when DN_INTEGER | DN_NUMERIC_LITERAL =>
 	return 'I';
 
-        when others	=>
-	PUT_LINE(	"ERREUR CODE_DATA_TYPE_OF : TYPE_SPEC.TY ILLICITE " & NODE_NAME'IMAGE( TYPE_SPEC.TY ) );
+        when others =>
+	PUT_LINE( "ERREUR CODE_DATA_TYPE_OF : TYPE_SPEC.TY ILLICITE " & NODE_NAME'IMAGE( TYPE_SPEC.TY ) );
 	raise PROGRAM_ERROR;
         end case;
       end;
@@ -264,10 +332,10 @@ is					-----
     if  EXP.TY in CLASS_CONSTRAINED  then
       return NUMBER_OF_DIMENSIONS( D( SM_BASE_TYPE, EXP ) );
 
-    elsif	 EXP.TY =	DN_FUNCTION_CALL or	EXP.TY = DN_USED_OBJECT_ID  then
+    elsif  EXP.TY = DN_FUNCTION_CALL or EXP.TY = DN_USED_OBJECT_ID  then
       return NUMBER_OF_DIMENSIONS( D( SM_EXP_TYPE, EXP ) );
 
-    elsif	 EXP.TY =	DN_ARRAY	then
+    elsif  EXP.TY = DN_ARRAY  then
       return DI( CD_DIMENSIONS, EXP );
 
     else
@@ -284,7 +352,7 @@ is					-----
   is			--===========--
 
   begin
-    return not ( TYPE_SPEC.TY	in CLASS_UNCONSTRAINED );
+    return not ( TYPE_SPEC.TY in CLASS_UNCONSTRAINED );
 
   end	  CONSTRAINED;
 	--===========--
@@ -300,9 +368,7 @@ is					-----
       PUT_LINE( ASCII.HT & "LI" & ASCII.HT &  INTEGER'IMAGE( TYPE_SIZE( TYPE_SPEC ) ) );
 
     else
-      PUT_LINE( "ERREUR LOAD_TYPE_SIZE : TYPE_SPEC NON CONTRAINT" );
-      raise PROGRAM_ERROR;
-
+      TROU( "LOAD_TYPE_SIZE type non contraint", TYPE_SPEC );
     end if;
 
   end	  LOAD_TYPE_SIZE;
@@ -330,9 +396,6 @@ is					-----
       end if;
       SIZ := DI( CD_IMPL_SIZE, TS );
 
---    declare
---      SIZ		: NATURAL		:= DI( CD_IMPL_SIZE, DEFN );
---    begin
       if  SIZ <= 0  then PUT_LINE( "'; EXPANDER.UTILS.OPER_SIZ_CHAR SIZ = 0 ! "
 	& NODE_NAME'IMAGE( DEFN.TY )
 	& ' ' & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, DEFN ) ) )
@@ -361,15 +424,15 @@ is					-----
     EXP_TYPE	: TREE		:= FULL_TYPE_VIEW( D( SM_EXP_TYPE, EXP ) );
 
   begin
-    -- Les flottants sont toujours en double IEEE	754 = 64 bits = qword
-    if  EXP_TYPE.TY	= DN_FLOAT  or  EXP_TYPE.TY = DN_ACCESS then return 'q'; end if;
+    -- Les flottants sont toujours en double IEEE 754 = 64 bits = qword
+    if  EXP_TYPE.TY = DN_FLOAT  or  EXP_TYPE.TY = DN_ACCESS then return 'q'; end if;
     declare
-      SIZ		: NATURAL		:= DI( CD_IMPL_SIZE, EXP_TYPE	);
+      SIZ		: NATURAL		:= DI( CD_IMPL_SIZE, EXP_TYPE );
     begin
     if	 SIZ <= 8		then return 'b';
-    elsif	 SIZ <= 16	then return 'w';
-    elsif	 SIZ <= 32	then return 'd';
-    elsif	 SIZ <= 64	then return 'q';
+    elsif  SIZ <= 16	then return 'w';
+    elsif  SIZ <= 32	then return 'd';
+    elsif  SIZ <= 64	then return 'q';
     else return 'v';
     end if;
     end;
@@ -406,7 +469,7 @@ is					-----
       declare
 	BASE	: TREE		:= FULL_TYPE_VIEW( D( SM_BASE_TYPE, TS ) );
 	LITS	: SEQ_TYPE;
-	FIRST_LIT	: TREE;
+	FIRST_LIT : TREE;
       begin
 	if  BASE = TREE_VOID  or else  BASE = TREE_NIL  then
 	  BASE := TS;
@@ -442,7 +505,7 @@ is					-----
       -- contraint dans la gamme du premier nomme : le conteneur ne recoit
       -- jamais d'autre valeur.
       NAMED := BASE;
-      if       D( XD_SOURCE_NAME, BASE ) /= TREE_VOID
+      if	     D( XD_SOURCE_NAME, BASE ) /= TREE_VOID
       and then D( XD_SOURCE_NAME, BASE ) /= TREE_NIL  then
         declare
 	SPEC	: TREE	:= FULL_TYPE_VIEW( D( SM_TYPE_SPEC, D( XD_SOURCE_NAME, BASE ) ) );
@@ -555,18 +618,18 @@ is					-----
     end if;
 
     if  DEFN.TY in CLASS_PARAM_NAME  then								-- in_id in_out_id out_id
-      if	(DEFN.TY = DN_IN_ID) and (D( SM_OBJ_TYPE, DEFN ).TY in CLASS_SCALAR
+      if  (DEFN.TY = DN_IN_ID) and (D( SM_OBJ_TYPE, DEFN ).TY in CLASS_SCALAR
 			or else D( SM_OBJ_TYPE, DEFN ).TY = DN_ACCESS)	then
 				-------------------
 				SCALAR_IN_PARAMETER:
---        declare
---	SIZ_CHAR	: CHARACTER	:= OPER_SIZ_CHAR( D( SM_OBJ_TYPE, DEFN ) );
+--	declare
+--	SIZ_CHAR  : CHARACTER	:= OPER_SIZ_CHAR( D( SM_OBJ_TYPE, DEFN ) );
 
         begin
---	PUT( tab & "L" & SIZ_CHAR & ' ' & INTEGER'IMAGE( DI( CD_LEVEL, DEFN )	) & ',' );
+--	PUT( tab & "L" & SIZ_CHAR & ' ' & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' );
 	PUT( tab & OPER_LOAD_STR( D( SM_OBJ_TYPE, DEFN ) ) & ' ' & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' );
 	PUT( tab & '-' & PRINT_NAME( D( LX_SYMREP, DEFN ) ) );							-- ATTENTION signe offset de params opposé aux vars
-	PUT_LINE(	"_ofs" );										-- offset	de parametre scalaire
+	PUT_LINE( "_ofs" );										-- offset de parametre scalaire
         end	SCALAR_IN_PARAMETER;
 		-------------------
 
@@ -574,23 +637,23 @@ is					-----
 	or else  D( SM_OBJ_TYPE, DEFN ).TY = DN_ACCESS  then						-- out/in_out SCALAIRE lu en expression :
 			----------------------								-- le slot contient l'ADRESSE, dereferencer
 			SCALAR_REF_PARAMETER:								-- (meme geste que la re-passe out->in de
---        declare											-- CODE_PROCEDURE_CALL). Piege n° 80.
---	SIZ_CHAR	: CHARACTER	:= OPER_SIZ_CHAR( D( SM_OBJ_TYPE, DEFN ) );
+--	declare											-- CODE_PROCEDURE_CALL). Piege n° 80.
+--	SIZ_CHAR  : CHARACTER	:= OPER_SIZ_CHAR( D( SM_OBJ_TYPE, DEFN ) );
 
         begin
 --	PUT( tab & "LI" & SIZ_CHAR & ' ' & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' );
 	PUT( tab & OPER_LOADI_STR( D( SM_OBJ_TYPE, DEFN ) ) & ' ' & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' );
 	PUT( tab & '-' & PRINT_NAME( D( LX_SYMREP, DEFN ) ) );
-	PUT_LINE(	"_ofs" );
+	PUT_LINE( "_ofs" );
         end	SCALAR_REF_PARAMETER;
 		----------------------
 
       else											-- pas scalaire ou out in/out
         PUT( tab & "La " & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' & tab );
-        PUT( '-' & PRINT_NAME( D( LX_SYMREP, DEFN	) ) );							-- ATTENTION signe offset de params opposé aux vars
-        PUT_LINE( "_ofs" );										-- offset	de parametre adresse
+        PUT( '-' & PRINT_NAME( D( LX_SYMREP, DEFN ) ) );							-- ATTENTION signe offset de params opposé aux vars
+        PUT_LINE( "_ofs" );										-- offset de parametre adresse
 
-      end	if;
+      end if;
 
     else												-- NON PARAM
       declare
@@ -673,7 +736,7 @@ is					-----
 
     if  DEST_DEFN.TY = DN_COMPONENT_ID  then
       declare
-        PARENT_TYPE	: TREE	:= D( SM_TYPE_SPEC, D( XD_REGION, DEST_DEFN ) );
+        PARENT_TYPE : TREE	:= D( SM_TYPE_SPEC, D( XD_REGION, DEST_DEFN ) );
       begin
         STORE_LEVEL := DI( CD_LEVEL, PARENT_TYPE );
       end;
@@ -682,7 +745,7 @@ is					-----
     end if;
 
     if  DEST_DEFN.TY = DN_OUT_ID  or  DEST_DEFN.TY = DN_IN_OUT_ID  then
-      PUT_LINE( tab	& "SI" & SIZ_CHAR &	' ' & INTEGER'IMAGE( STORE_LEVEL )
+      PUT_LINE( tab & "SI" & SIZ_CHAR & ' ' & INTEGER'IMAGE( STORE_LEVEL )
 	& ',' & tab & '-' & DEST_DEFN_STR & "_ofs" );
 
     else
@@ -828,7 +891,7 @@ end	SUBPROGRAM_ORIGIN;
 
 
 			--^^^^^^^^^^^^^^^^--
-  function		  GOTO_LABEL_ENTRY		( LABEL_ID :TREE )	return GOTO_LBL_IDX
+  function		  GOTO_LABEL_ENTRY		( LABEL_ID :TREE )  return GOTO_LBL_IDX
   is			--------------------
   begin
     for  I in GOTO_BODY_BASE + 1 .. GOTO_LBL_TOP  loop
@@ -843,7 +906,7 @@ end	SUBPROGRAM_ORIGIN;
     end if;
 
     GOTO_LBL_TOP := GOTO_LBL_TOP + 1;
-    GOTO_LABELS( GOTO_LBL_TOP ) := ( ID	=> LABEL_ID,
+    GOTO_LABELS( GOTO_LBL_TOP ) := ( ID => LABEL_ID,
 			         LBL	=> NEW_LABEL,
 			         DEFINED	=> FALSE,
 			         LEVEL	=> 0 );
@@ -872,12 +935,12 @@ end	SUBPROGRAM_ORIGIN;
   function		  TAB50			return STRING
   is			---------
 
-    NTABS		: INTEGER		:= (50 - NATURAL(TEXT_IO.COL)	) / 10;
+    NTABS		: INTEGER		:= (50 - NATURAL(TEXT_IO.COL) ) / 10;
 
   begin
-    if  NTABS < 0  then  NTABS := 1;  else  NTABS	:= NTABS + 1;  end if;
+    if  NTABS < 0  then  NTABS := 1;  else  NTABS := NTABS + 1;  end if;
     declare
-      ESPACEMENT	: STRING(	1.. NATURAL(NTABS) )	:= (others => tab );
+      ESPACEMENT	: STRING( 1.. NATURAL(NTABS) )	:= (others => tab );
 
     begin
       return ESPACEMENT;
@@ -891,10 +954,10 @@ end	SUBPROGRAM_ORIGIN;
   function		IMAGE			( I : NATURAL )	return STRING
   is			-----
 
-    STR	:constant	STRING	:= NATURAL'IMAGE( I	);
+    STR	:constant STRING	:= NATURAL'IMAGE( I );
 
   begin
-    return STR( STR'FIRST+1 .. STR'LAST	);
+    return STR( STR'FIRST+1 .. STR'LAST );
 
   end	  IMAGE;
 	--=====--
@@ -904,15 +967,15 @@ end	SUBPROGRAM_ORIGIN;
   procedure		  REGIONS_PATH		( ID : TREE; WITH_DOT :BOOLEAN := TRUE )
   is			----------------
 
-    REGION	: TREE		:= D( XD_REGION, ID	);
-    RGN_NAME	:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, REGION ) );
+    REGION	: TREE		:= D( XD_REGION, ID );
+    RGN_NAME	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, REGION ) );
 
   begin
-    if  RGN_NAME = "STANDARD"	 or  RGN_NAME = "_STANDRD" then
+    if  RGN_NAME = "STANDARD"  or  RGN_NAME = "_STANDRD" then
       PUT( "STANDARD." );
 
     else
-      REGIONS_PATH(	REGION );
+      REGIONS_PATH( REGION );
 
       if  REGION.TY = DN_TYPE_ID
       or else REGION.TY = DN_SUBTYPE_ID
@@ -924,8 +987,8 @@ end	SUBPROGRAM_ORIGIN;
 
       PUT( RGN_NAME );
 
-      if	REGION.TY	= DN_PROCEDURE_ID  or  REGION.TY = DN_FUNCTION_ID  then
-        PUT( '_' & LABEL_STR(	LABEL_TYPE( DI( CD_LABEL, REGION ) ) ) );
+      if  REGION.TY = DN_PROCEDURE_ID  or  REGION.TY = DN_FUNCTION_ID  then
+        PUT( '_' & LABEL_STR( LABEL_TYPE( DI( CD_LABEL, REGION ) ) ) );
 
       elsif  REGION.TY = DN_GENERIC_ID  and then
 		( D( SM_SPEC, REGION ).TY = DN_PROCEDURE_SPEC  or  D( SM_SPEC, REGION ).TY = DN_FUNCTION_SPEC )
@@ -938,8 +1001,8 @@ end	SUBPROGRAM_ORIGIN;
 		-- Les generiques de PACKAGE gardent leur namespace NON etiquete.
         PUT( '_' & LABEL_STR( LABEL_TYPE( DI( CD_LABEL, D( AS_SOURCE_NAME, D( XD_BODY, REGION ) ) ) ) ) );
 
-      end	if;
-      if	WITH_DOT	then PUT(	'.' ); end if;
+      end if;
+      if  WITH_DOT  then PUT( '.' ); end if;
 
     end if;
 
@@ -972,7 +1035,7 @@ end	SUBPROGRAM_ORIGIN;
       elsif SUB_NAME = """ABS"""  then return "_ABS_";
       end if;
       PUT_LINE( "'; LETTERED_SUBNAME : operateur non mappe " & SUB_NAME );
-      raise  PROGRAM_ERROR;					-- n 96 : plus JAMAIS de guillemets en sortie      end if;
+      raise  PROGRAM_ERROR;					-- n 96 : plus JAMAIS de guillemets en sortie	 end if;
       return  SUB_NAME;
     else
       return  SUB_NAME;

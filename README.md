@@ -30,7 +30,7 @@ Ada 83 powered some of the most critical systems in computing history:
 - **🛡️ Defense**: Military embedded systems worldwide
 - **🏭 Industrial**: Real-time control systems
 
-TLALOC is an experimental compiler that preserves this heritage by implementing the full Ada 83 standard using modern development tools.
+TLALOC is an experimental compiler whose aim is preserving this heritage by implementing the full Ada 83 standard using modern development tools.
 
 ---
 
@@ -104,11 +104,17 @@ The **a83.sh** script launches the executable **ada_comp** (in the same bin dire
  - the path from the executable to the Ada 83 source text (for example **./dis_bonjour.adb** which is a french hello world)
  - a single option letter in S,s, L,l, M,m, C, c, W, w, U, A, P (the normal choice is W)
 
-So the first command when in the **bin** directory is :
+So the first command when in the **bin** directory is with option W :
 
 <pre> ./a83.sh  ./  ./dis_bonjour.adb  W  </pre>
 
 (note : the first parameter ./ is the project directory path. The second path is project directory relative)
+this command compile and create a .FINC macro text in ADA__LIB
+
+Then a second command with option B :
+<pre> ./a83.sh  ./  ./dis_bonjour.adb  B  </pre>
+create a .fas macro header file in ADA__LIB also.
+
 Then enter the **bin/ADA__LIB** sub-directory
 
 <pre> cd ./ADA__LIB </pre>
@@ -117,7 +123,7 @@ Then enter the **bin/ADA__LIB** sub-directory
 
 Enter the command :
 
-<pre>./fasmg ./DIS_BONJOUR.fas</pre>
+<pre>./fasmg ./DIS_BONJOUR.fas ./DIS_BONJOUR</pre>
 
 This creates an ELF executable **DIS_BONJOUR** in the **ADA__LIB** where you are.
 
@@ -141,7 +147,7 @@ TLALOC offers fine-grained control over compilation phases:
 | **C**, **c** | Expand | Generate code (no library write) |
 | **W** | Write | Full compilation with library output |
 | **w** | Write (debug) | Library write without code generation |
-| **U**, **P**, **A** | Pretty-print | Display DIANA tree (various formats) |
+| **U**, **P**, **A** | Pretty-print | Display DIANA tree (various formats). Do NOT use after w or W option which destroy the temporary DIANA used by display|
 
 ### Example: Debugging Semantic Analysis
 
@@ -197,7 +203,7 @@ Ada83_TLALOC/
 
 ### Compilation Statistics
 - **Total code**: 34,344 lines
-- **Number of files**: 82
+- **Number of files**: 85
 - **Largest module**: SEM_PHASE (64.6% of codebase)
 - **Frontend/Backend ratio**: 4.8:1 (typical for research compilers)
 

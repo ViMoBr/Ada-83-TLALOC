@@ -933,7 +933,7 @@ is					---------
 	      LX_SRCPOS: TREE := TREE_VOID )
 	      return TREE;
 
-    function  MAKE_RENAMES_OBJ_DECL ( AS_SOURCE_NAME, AS_NAME, AS_TYPE_MARK_NAME, LX_SRCPOS :TREE := TREE_VOID )
+    function  MAKE_RENAMES_OBJ_DECL	( AS_SOURCE_NAME, AS_NAME, AS_TYPE_MARK_NAME, LX_SRCPOS :TREE := TREE_VOID )
 				return TREE;
 
 	function MAKE_RENAMES_EXC_DECL
@@ -946,11 +946,7 @@ is					---------
 	      ( LX_SRCPOS: TREE := TREE_VOID)
 	      return TREE;
 
-	function MAKE_LENGTH_ENUM_REP
-	      ( AS_NAME: TREE := TREE_VOID;
-	      AS_EXP: TREE := TREE_VOID;
-	      LX_SRCPOS: TREE := TREE_VOID)
-	      return TREE;
+    function  MAKE_LENGTH_ENUM_REP	( AS_NAME, AS_EXP, LX_SRCPOS: TREE := TREE_VOID ) return TREE;
 
 	function MAKE_ADDRESS
 	      ( AS_NAME: TREE := TREE_VOID;

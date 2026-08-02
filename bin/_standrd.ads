@@ -1,5 +1,5 @@
 
-   --|	ATTENTION	: RESPECTER LA CASSE DES CARACTERES DES	TYPES, LE	COMPILATEUR Y PRETE	ATTENTION
+   --|	ATTENTION : RESPECTER LA CASSE DES CARACTERES DES TYPES, LE COMPILATEUR Y PRETE ATTENTION
 
 				--------
 package				_standrd								--| Package invisible aux programmes
@@ -16,14 +16,14 @@ is				--------
     type INTEGER			is range -2**31 .. 2**31-1;
     type LONG_INTEGER		is range -2**63 .. 2**63-1;
 
-    type FLOAT			is digits	 6 range -1.0E38 ..	1.0E38;
-    type LONG_FLOAT			is digits	15 range -1.0E308 .. 1.0E308;
+    type FLOAT			is digits  6 range -1.0E38 .. 1.0E38;
+    type LONG_FLOAT			is digits 15 range -1.0E308 .. 1.0E308;
 
     type CHARACTER is (
-	_nul,  _soh,  _stx,	 _etx,	  _eot, _enq,  _ack,  _bel,
+	_nul,  _soh,  _stx,  _etx,	  _eot, _enq,  _ack,  _bel,
 	_bs,   _ht,   _lf,	 _vt,	  _ff,  _cr,   _so,	  _si,
-	_dle,  _dc1,  _dc2,	 _dc3,	  _dc4, _nak,  _syn,  _etb,
-	_can,  _em,   _sub,	 _esc,	  _fs,  _gs,   _rs,	  _us,
+	_dle,  _dc1,  _dc2,  _dc3,	  _dc4, _nak,  _syn,  _etb,
+	_can,  _em,   _sub,  _esc,	  _fs,  _gs,   _rs,	  _us,
 
 	' ',  '!',  '"',  '#',    '$',  '%',  '&',  ''',
 	'(',  ')',  '*',  '+',    ',',  '-',  '.',  '/',
@@ -63,27 +63,27 @@ is				--------
 	  RS   : constant CHARACTER := _rs;   US   : constant CHARACTER := _us;
 	  DEL  : constant CHARACTER := _del;
 
-	  EXCLAM	      : constant CHARACTER :=	'!';
-	  SHARP	      : constant CHARACTER :=	'#';
-	  PERCENT	      : constant CHARACTER :=	'%';
-	  COLON	      : constant CHARACTER :=	':';
-	  QUERY	      : constant CHARACTER :=	'?';
-	  L_BRACKET     : constant CHARACTER :=	'[';
-	  R_BRACKET     : constant CHARACTER :=	']';
-	  UNDERLINE     : constant CHARACTER :=	'_';
-	  L_BRACE	      : constant CHARACTER :=	'{';
-	  R_BRACE	      : constant CHARACTER :=	'}';
+	  EXCLAM	      : constant CHARACTER := '!';
+	  SHARP	      : constant CHARACTER := '#';
+	  PERCENT	      : constant CHARACTER := '%';
+	  COLON	      : constant CHARACTER := ':';
+	  QUERY	      : constant CHARACTER := '?';
+	  L_BRACKET     : constant CHARACTER := '[';
+	  R_BRACKET     : constant CHARACTER := ']';
+	  UNDERLINE     : constant CHARACTER := '_';
+	  L_BRACE	      : constant CHARACTER := '{';
+	  R_BRACE	      : constant CHARACTER := '}';
 
-	  QUOTATION     : constant CHARACTER :=	'"';
-	  DOLLAR	      : constant CHARACTER :=	'$';
-	  AMPERSAND     : constant CHARACTER :=	'&';
-	  SEMICOLON     : constant CHARACTER :=	';';
-	  AT_SIGN	      : constant CHARACTER :=	'@';
-	  BACK_SLASH    : constant CHARACTER :=	'\';
-	  CIRCUMFLEX    : constant CHARACTER :=	'^';
-	  GRAVE	      : constant CHARACTER :=	'`';
-	  BAR	      : constant CHARACTER :=	'|';
-	  TILDE	      : constant CHARACTER :=	'~';
+	  QUOTATION     : constant CHARACTER := '"';
+	  DOLLAR	      : constant CHARACTER := '$';
+	  AMPERSAND     : constant CHARACTER := '&';
+	  SEMICOLON     : constant CHARACTER := ';';
+	  AT_SIGN	      : constant CHARACTER := '@';
+	  BACK_SLASH    : constant CHARACTER := '\';
+	  CIRCUMFLEX    : constant CHARACTER := '^';
+	  GRAVE	      : constant CHARACTER := '`';
+	  BAR	      : constant CHARACTER := '|';
+	  TILDE	      : constant CHARACTER := '~';
 
 	  LC_A : constant CHARACTER := 'a';   LC_B : constant CHARACTER := 'b';
 	  LC_C : constant CHARACTER := 'c';   LC_D : constant CHARACTER := 'd';
@@ -107,7 +107,7 @@ is				--------
     subtype POSITIVE	is INTEGER range 1 .. 2147483647;
 
     type STRING		is array (POSITIVE range <>) of CHARACTER;
-	-- pragma	PACK(STRING);
+	-- pragma PACK(STRING);
 
 --    type DURATION		is delta 2.0**(-29) range -2.0**34 .. 2.0**34 - 1.0;				-- type DURATION souhaite, ecriture trop complexe
       type DURATION		is delta 0.00000000186264514923095703125 range -17179869184.0 .. 17179869183.0;
@@ -118,16 +118,16 @@ is				--------
     STORAGE_ERROR		: exception;
     TASKING_ERROR		: exception;
 
-		--| Type de base invisible renommé en ADDRESS (le	type visible) dans SYSTEM
+		--| Type de base invisible renommé en ADDRESS (le type visible) dans SYSTEM
 
     type _address		is new LONG_INTEGER;
 
 
     private
 
-      --|	Ce type est invisible, il doit être en minuscules	et sert de type de base pour DURATION
+      --| Ce type est invisible, il doit être en minuscules et sert de type de base pour DURATION
 
---      type _duration	is delta 2.0**(-29)	range -2.0**34 .. 2.0**34 - 1.0;				-- type _duration souhaite, ecriture trop complexe
+--      type _duration	is delta 2.0**(-29) range -2.0**34 .. 2.0**34 - 1.0;				-- type _duration souhaite, ecriture trop complexe
       type _duration	is delta 0.00000000186264514923095703125 range -17179869184.0 .. 17179869183.0;
 
       -- Specification of implementation sizes

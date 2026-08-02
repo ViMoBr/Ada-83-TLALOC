@@ -1,6 +1,6 @@
 # ÉTAT DES PILIERS — tableau de bord TLALOC
 
-**Dernière mise à jour : 12 juillet 2026** (pilier FIXED 3.5.9 CLOS ; fossiles n° 91–94 ; dettes sem-1/2/3)
+**Dernière mise à jour : 1 août 2026**
 
 **Régime** : ce fichier est RÉÉCRIT à chaque clôture ; il est la seule source de
 vérité sur « où on en est ». Le récit des sessions est dans JOURNAL_SESSIONS.md,
@@ -58,15 +58,41 @@ La sémantique n'est protégée que par les programmes-témoins à sortie attend
 - **D6** (3.6) : bloc info anonyme câblé 1-dim (concat, agrégat dynamique,
   résultat de fonction). Le lot D3 l'a CONTOURNÉE en réutilisant l'info de
   l'opérande gauche — argument pour généraliser ce contournement.
+
+-**D-C7a**. Fonction ORDINAIRE retournant tableau a bornes dynamiques :
+       temoin du (modele unique C7) ; dette D6 (bloc info anonyme
+       1-dim) susceptible de mordre — a exercer AVANT le premier site.
+-**D-C7b**. Temoin negatif return TAB2D(I) (rameau 2D du meme modele).
+-**D-C7c**. Modele generique SANS parametre Ada : NO_SUBP_PARAMS=TRUE →
+       RTD nu laisse [slot, GFP], GFP AU SOMMET. Inoffensif sur les
+       chemins actuels (wrapper UNLINK) ; MORDRAIT une fonction
+       generique SCALAIRE sans parametre (le rapatriement prendrait le
+       GFP pour le resultat). Temoin avant correctif.
+-**D-C8a**. Clause d'adresse de SOUS-PROGRAMME (SYSTEM_CALL at 16#...#) :
+       chantier separe, protocole d'appel a instruire.
+-**D-C8b**. Mode OUT en cible d'overlay (situation C3 : lire l'actuel avant
+       ecriture) ; adresse ABSOLUE d'objet ; scalaire-sur-composite ;
+       equation cross-niveau/namespace ; tailles scalaires differentes
+       (tolere, non asserte).
+-**D-ant**. Inchangees d'avant : n 117-bis (rep d'enumeration, machinerie
+       ordinale) ; alignement/variantes des representes (n 117) ;
+       mmap + 448 Mio ; double evaluation memberships ; assert
+       d'equilibre de pile a PERENNISER en mode debug (a poser POUR la
+       reprise segfault, point 4 du memo).
+
+
+
 - **D10** (4.1.4) : attributs à préfixe non nommé (tranche, indexé, appel) ;
   même famille : `return (S(2..3))`.
 - **D3-contrôle** (4.5.1/11) : pas de contrôle `LEN_G = LEN_D` des logiques
   composites — CONSTRAINT_ERROR différé au pilier exceptions.
 - **CODE_QUALIFIED** : records qualifiés (même vice que tableaux avant D9,
   pilier 3.7) ; branche non contrainte suppose une association nommée unique.
-- **CODE_USED_NAME_ID** : retombée silencieuse à aligner sur le style bruyant
-  (piège n° 53).
-- **'IMAGE/'VALUE** d'énuméré hors générique → pilier 3.5.5.
+- **CODE_USED_NAME_ID** : SOLDÉE 28/07 (vague 1, n° 118) — else TROU(),
+  branche exception annotée INTENTIONNELLE.
+- **'IMAGE/'VALUE** d'énuméré hors générique → pilier 3.5.5 ('VALUE
+  ENTIER fait le 28/07 : primitive STANDARD.INTEGER_VALUE + CODE_VALUE ;
+  l'énuméré reste au carnet TROU).
 - **A8** : 4 échecs consignés (renommage, use, portée, visibilité).
 - **FIXED** : mul/div générales incomplètes (suffisantes pour DURATION).
 - Mélange `and then`/`or` non parenthésé mal géré (TODO §5.2 historique).
@@ -192,30 +218,91 @@ La sémantique n'est protégée que par les programmes-témoins à sortie attend
 - [ ] Renaming : DN_CONSTRAINED_RECORD absent d'IS_COMPOSITE (pas de
       __u émis) ; bloc commenté l. ~1348-1352 porte l'ancien bug de
       niveau si ressuscité.
-- [ ] DN_SLICE en composant d'agrégat : refus bruyant à poser dans
-      CODE_COMPOSITE_DATA_ADDRESS si le cas surgit.
+- [x] DN_SLICE en composant d'agrégat : refus bruyant POSÉ dans
+      CODE_COMPOSITE_DATA_ADDRESS (vague 2, 28/07).
 - [ ] Normaliser l'orthographe d'émission `La  ,  0` (supprimer les
       `La` nus) pour rendre les greps exhaustifs par construction.
+- [ ] Dette C1 (LRM 4.6(11), posée le 30/07) : conversion vers tableau
+      dérivé à sous-types d'index de profils DIFFÉRENTS — glissement
+      de bornes + vérification d'index NON ÉMIS (identité seule ;
+      corpus : mêmes profils, non exercé — témoin à créer le jour où).
 - [ ] Oracle manquant : fonction ORDINAIRE retournant un tableau
       contraint à bornes dynamiques (le n° 111 ne fut vu que via UC) ;
       oracle énuméré >128 littéraux avec array(ENUM) (n° 107-108).
+      
+  ORACLE B :
+    1. CONV_DER1 : « RESULTAT :  12 OK,   0 ECHECS » + « CONV_DER1 PASSE » ;
+       comparer à la sortie de référence GNAT (identique).
+    2. Diff FINC du témoin (avant = FINC SUSPECT du commit A, après =
+       re-expansion) : SEULES les lignes « ; !! TROU » disparaissent,
+       aucune autre émission ne change (l'identité n'émet rien — oracle
+       gratuit des suppressions de no-op, technique du 28/07).
+    3. Re-run RECENSEMENT auto-compilation : compteur 187 → 127, la
+       famille « CODE_CONVERSION cible non faite » ABSENTE du bilan
+       (si résidu : ce sont d'autres cibles — les laisser au TROU, ne
+       PAS élargir la branche ; doctrine n° 122, bénir l'observé).
+    4. Re-expansion STRICT de set_util et d'idl : aucune ligne
+       « !! TROU » pour ces unités ; FINC assemblés.
+    5. Filet complet (corpus + ACVC A2..A8 + témoins + auto-compilation)
+       inchangé ; CONV_DER1 ENTRE au filet ; tag git à la clôture.
+
 - [ ] Garde NE_RAISE si SIZ=0 au doublet résultat tableau contraint
       (appel avant élaboration du type — tordu mais légal).
 - [ ] diana.bin : consigner LAST_NODE/LAST_NODE_ATTR relus comme
       invariant logique (la taille fichier ≠ gnat est un non-critère).
 
- 
-## Prochaine séquence (à arbitrer à l'ouverture de la prochaine session)
+ - **Carnet TROU — CAMPAGNE « EXPANDER BRUYANT » CLOSE le 28/07**
+  (5 vagues + 6 reclassements post-recensement ; livraisons par
+  fichiers d'instructions ancrés, contre-épreuve par rejeu). Définition
+  de fini ATTEINTE : grep null; → tout INTENTIONNEL ; when others →
+  raise/TROU/DEFAUT DOCUMENTE ; aucun dispatch sans else (revues
+  systématiques, 12 dispatchers HORS listes du triage trouvés) ;
+  demi-bruyants tous à verdict. Le run RECENSEMENT auto-compilation
+  rend 187 traversées / 10 familles = LE PLAN DE TRAVAIL (chantiers
+  C1-C8, cf. BILAN_RECENSEMENT_TRIAGE.md ; segfaults SUSPENDUS jusqu'à
+  la mise en ordre — décision du 28/07).
+  Trous vivants par familles (tous bruyants en STRICT) :
+  chantiers C1-C7 du bilan (conversions dérivées 60, case sous-type 84,
+  lecture OUT 2, init tableau par objet 3, exponentielle 22, tranches
+  ALL/INDEXED 3, instanciation à résultat non contraint 10 — à fusionner
+  avec la dette « RESULTAT UNCONSTRAINED » de l'épilogue et l'oracle
+  tableau-contraint-dynamique : UNE note de modèle) ;
+  C8 'ADDRESS overlay : 3 sites, dossier CHANTIER_ADDRESS_OVERLAY.md,
+  recommandation voie 3 (réécriture source en UC) ;
+  tasking (pilier 9) : corps + attributs, inchangé ;
+  rep-clauses DISCRIMINÉES (reclassements 3-5) : ENUM à agrégat =
+  n° 117-bis (machinerie ordinale non auditée : 'POS/'VAL identité,
+  SUCC/PRED par INC/DEC, indexation par la valeur — SM_POS→SM_REP de
+  l'actuel énuméré DÉJÀ aligné) ; at-mod > 8 ou non statique ;
+  'LAST_BIT/'POSITION ; clauses de LONGUEUR = INTENTIONNEL (pliées
+  front-end : CD_IMPL_SIZE — vérifier au premier témoin 'SIZE) ;
+  arbitrage ouvert : TYPE_SIZE scalaire ignore CD_IMPL_SIZE (test-miroir
+  n° 110, croiser n° 117) ;
+  frontières : SELARG/INDARG (factorisation + normalisation indexés
+  out/in-out, gardes TROU posées, témoins à créer) ; « adresse seule
+  vers formel in composite » (observation vague 3, à confronter n° 112) ;
+  divers : handlers de corps de package (DEFAUT DOCUMENTE, pilier 11),
+  CODE_DERIVED_SUBPROG (SUBPROGRAM_ORIGIN ne suit pas la dérivation),
+  attributs restants ('RANGE expression, 'VALUE énuméré, AS_EXP direct).
+  ÉLUCIDÉS EN CAMPAGNE (plus au carnet) : IMPLICIT_NOT_EQ (résolu au
+  site d'usage), DEFERRED_CONSTANT (LRM 7.4), épilogue instanciation
+  (corps synthétisé/partagé, slot résultat), « A VOIR », scorie
+  DN_FIXED (morte, supprimée), CODE_ADRESSE (mort présumé, ceinturé),
+  PREDEF_NAME de STANDARD, renommage de paquetage (garde avant
+  namespace).
 
-A discuter
+## Prochaine séquence (arrêtée le 1/08 — bilan recensement)
 
-4. Rédiger la note de modèle d'exécution du pilier retenu AVANT de coder.
-5. Filet complet + tag git à chaque clôture.
+ retour aux segfaults sur FINC assainis après séquence C1-C8 "expander bruyant".
+
+1. Rédiger la note de modèle d'exécution du pilier retenu AVANT de coder.
+2. Filet complet + tag git à chaque clôture.
 
 ## Fichiers à uploader en début de session
 
 Les 8 `expander*.adb`, `codi_x86_64.finc`, les paquetages IO concernés,
 `machine_code.ads`, le programme de test en cours, et ce dossier documentaire.
++ analyse de segfault
 
 ## restrictions pilier 3.7 (périmètre 1)
 
@@ -226,9 +313,16 @@ Les 8 `expander*.adb`, `codi_x86_64.finc`, les paquetages IO concernés,
 - Égalité : opérande agrégat non supporté (refus bruyant).
 - Composants dépendant d'un discriminant : hors périmètre (garde
   SM_DEPENDS_ON_DSCRMT disponible, FALSE partout dans TEST1).
-- Fonctions retournant un TABLEAU CONTRAINT : vigilance jumelle de C10, le
-  slot résultat prend vraisemblablement le placeholder LI 0 — à traiter au
-  pilier des retours de tableaux, pas exercé par le filet actuel.
+- Fonctions ordinaires retournant un COMPOSITE (record OU tableau
+  contraint) : le slot résultat de l'APPELANT prend le placeholder LI 0
+  alors que le CORPS (CODE_RETURN record + épilogue RTD prm_siz-8)
+  DÉRÉFÉRENCE le slot comme @doublet du lieu résultat — PROUVÉ le 30/07
+  par CONV_DER1 v1 : segfault dans MK_L18 (La 2,-result__ofs ; La ,0
+  sur 0).  Reproduction minimale : S : REC := F(7).  Côté corps :
+  CORRECT ; côté appelant d'INSTANCIATION (TO_CHN) : CORRECT — modèle à
+  copier le jour du chantier (fusionner avec C7/NOTE_MODELE, jumelle de
+  C10).  CONV_DER1 v1 (function MK) archivé comme témoin FUTUR de ce
+  chantier ; v2 passe par procedure MK( N ; S : out SET ).
 - Catégorie E → couvert : dscrmt_decl, dscrmt_decl_s, dscrmt_constraint,
   variant_part, variant_s, comp_list (à sortir du triage DIANA).
 - 'CONSTRAINED d'un formel de type mutable : approximation statique

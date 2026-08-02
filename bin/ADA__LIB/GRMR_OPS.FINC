@@ -3,6 +3,7 @@ namespace GRMR_OPS				;---------- PACKAGE (BDY)
 elab_spec:				;    SPEC ELAB
 
 					; CODE_PACKAGE_SPEC
+ hexa_show ' spec ', $
 
 					; _GRMR_OP ENUMERATION TYPE INFO
 _GRMR_OP = '_GRMR_OP'
@@ -224,8 +225,10 @@ VAR LST, b
 	LI	255
 	Sb	0, LST
 end namespace
+ hexa_show 'var elab HCODE ', $
 VAR HCODE_disp, d				; variable entiere
 
+ hexa_show ' disp ', HCODE_disp
 
 					; _HTABLE_TYPE RECORD TYPE INFO
 _HTABLE_TYPE = '_HTABLE_TYPE'
@@ -278,6 +281,7 @@ end virtual
 	LI	 size*8
 	Sd	0, SIZ
 end namespace
+ hexa_show 'var elab HTABLE ', $
 _HTABLE__type = '_HTABLE__type'
 namespace _HTABLE__type			; array var constrained array type info
 VAR use__info, q
@@ -326,6 +330,8 @@ VAR HTABLE__u, q				; variable array : useinfo pointeur au rec info
 	CO_VAR
 	Sa	0, HTABLE_disp				; array data ptr at _disp
 
+ hexa_show ' disp ', HTABLE_disp
+ hexa_show 'var elab ITABLE ', $
 _ITABLE__type = '_ITABLE__type'
 namespace _ITABLE__type			; array var constrained array type info
 VAR use__info, q
@@ -368,13 +374,16 @@ VAR ITABLE__u, q				; variable array : useinfo pointeur au rec info
 	CO_VAR
 	Sa	0, ITABLE_disp				; array data ptr at _disp
 
+ hexa_show ' disp ', ITABLE_disp
 
 if defined HASH_SEARCH_L1_
 PRO	HASH_SEARCH_L1				;---------- PRO HASH_SEARCH
+ hexa_show 'HASH_SEARCH_L1 ', $
 PRMS					;    debut parametrage
 	PRM S_ofs				; in
 endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
+ hexa_show 'var elab A_17 ', $
 _A_17__type = '_A_17__type'
 namespace _A_17__type			; array var constrained array type info
 VAR use__info, q
@@ -474,6 +483,7 @@ L2:
 	BT  L2
 L3:
 
+ hexa_show ' disp ', A_17_disp
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 					; debut if
@@ -515,7 +525,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	LI	1
 	MUL
 	La  1,	-S_ofs
-	La  ,  0
+	La
 	BLKMOV
 	BRA	L6
 L7:
@@ -705,6 +715,7 @@ end if
 
 if defined GRMR_OP_VALUE_L1_
 PRO	GRMR_OP_VALUE_L1			;---------- PRO GRMR_OP_VALUE
+ hexa_show 'GRMR_OP_VALUE_L1 ', $
 PRMS					;    debut parametrage
 	PRM S_ofs				; in
 	PRM result__ofs				; resultat de fonction
@@ -733,7 +744,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	MUL
 	ADD					; add offset to start address
 	ULb	, STANDARD.GRMR_OPS._HTABLE_TYPE.HP
-	Sb  1,	-result__ofs
+	Sq  1,	-result__ofs
 	BRA ret_lbl
 ret_lbl:
 	UNLINK 1
@@ -744,16 +755,20 @@ end if
 
 if defined GRMR_OP_IMAGE_L2_
 PRO	GRMR_OP_IMAGE_L2			;---------- PRO GRMR_OP_IMAGE
+ hexa_show 'GRMR_OP_IMAGE_L2 ', $
 PRMS					;    debut parametrage
 	PRM GO_ofs				; in
 	PRM result__ofs				; resultat de fonction
 endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
+ hexa_show 'var elab LL ', $
 VAR LL_disp, d				; variable entiere
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	17
 	Sd  1,	LL_disp
 
+ hexa_show ' disp ', LL_disp
+ hexa_show 'var elab TXT ', $
 _TXT__type = '_TXT__type'
 namespace _TXT__type			; array var constrained array type info
 VAR use__info, q
@@ -839,6 +854,7 @@ VAR TXT__u, q				; variable array : useinfo pointeur au rec info
 	LVA	, STANDARD.GRMR_OPS._HTABLE_TYPE.HN
 	BLKMOV
 
+ hexa_show ' disp ', TXT_disp
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 LOOP__2:
@@ -932,11 +948,13 @@ ELB 1					;    BODY ELAB
 
 if defined STASH_L21_
 PRO	STASH_L21				;---------- PRO STASH
+ hexa_show 'STASH_L21 ', $
 PRMS					;    debut parametrage
 	PRM P_ofs				; in
 	PRM S_ofs				; in
 endPRMS					;    fin parametrage
 ELB 2					;    BODY ELAB
+ hexa_show 'var elab A_17 ', $
 _A_17__type = '_A_17__type'
 namespace _A_17__type			; array var constrained array type info
 VAR use__info, q
@@ -1036,6 +1054,7 @@ L22:
 	BT  L22
 L23:
 
+ hexa_show ' disp ', A_17_disp
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 	La  2,	-S_ofs
@@ -1065,7 +1084,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	LI	1
 	MUL
 	La  2,	-S_ofs
-	La  ,  0
+	La
 	BLKMOV
 	La	 0, STANDARD.GRMR_OPS.HTABLE_disp		; array data start address on stack
 	Ld 0,	STANDARD.GRMR_OPS.HCODE_disp

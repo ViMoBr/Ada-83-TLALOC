@@ -719,7 +719,9 @@ instances sont expansées sur site.
   d'UNCHECKED_CONVERSION** → pile déséquilibrée, UNLINK dépile un faux
   FP, RTD saute sur une valeur. Fix : hisser le test UC avant les
   émissions (bloc declare remonté) et les garder par not IS_UC ; le
-  chemin non-UC émet bien le CALL qui les consomme. Bug frère :
+  chemin non-UC émet bien le CALL qui les consomme. *
+  
+ 111. bis. ** Bug frère**
   CODE_FUNCTION_CALL ne préparait le slot résultat composite que pour
   DN_RECORD et DN_ARRAY — DN_CONSTRAINED_ARRAY tombait dans LI 0
   scalaire, déréférencé 0 par le callee. Fix : doublet caller-alloué,
@@ -752,4 +754,195 @@ instances sont expansées sur site.
   du descripteur de type vise DI(CD_LEVEL, SRC_TYPE) — la session 1
   marchait par coïncidence des niveaux (N_SPEC, tout au niveau 0).
 
- 
+  114. **Un octet REX faux change la destination ET la base : `db 0x49,8D,A0`
+  = `lea rsp,[r8+disp]`, pas `lea r12,[rax+disp]`** : l'init du tas
+  (codi_x86_64.finc, prologue) encodait REX.B au lieu de REX.R. Résultat :
+  R12 jamais écrit (tas partant de 0, premiers `new` rendant -512, -1024…)
+  et rsp = r8(-1)+64 Mio — la pile de travail tombée PAR CHANCE dans le BSS
+  des 128 Mio de p_memsz, masquant tout jusqu'au premier déréférencement de
+  tas. Empreinte de diagnostic : r8=-1 survivant, r15=0x3BFFFFF,
+  r12 = -(N_allocs × taille). Correctif : 0x49 → 0x4C. Règle : tout `db`
+  manuel visant R8-R15 se vérifie DES DEUX CÔTÉS du ModRM (reg via REX.R,
+  r/m via REX.B) — même angle mort que le n° 16, côté préfixe.
+  
+  note : au prologue le retour du mmap n'est pas testé (échec → R12 ≈ 64 Mio dans le vide, cousin silencieux du 114)
+
+ 115. **`CODE_TYPE_MEMBERSHIP` était un stub `null;` : `X in MARQUE` (la
+  forme la plus idiomatique du membership !) n'émettait RIEN** — le BF du
+  `if` dépilait un booléen jamais empilé, rbp descendait d'un quadword par
+  exécution, et les push suivants labouraient le haut de la zone des VAR.
+  Fossile de plus pour le n° 96 (le À FAIRE silencieux) : celui-ci a coûté
+  trois jours, le crash éclatant à ~200 réductions de grammaire du trou,
+  dans DABS via D via un SELARG écrasé. La collision n'apparaissait qu'au
+  tour où la dérive s'ALIGNAIT sur une VAR (cf. n° 53, fuite lente) — d'où
+  un premier passage réussi, un second fatal, sur les mêmes octets.
+  Correctif : implémentation miroir de CODE_RANGE_MEMBERSHIP, bornes lues
+  dans _<SOUS_TYPE>.FST/.LST via CODE_SCALAR_SUBTYPE_BOUND (LOAD_BOUND de
+  CODE_RANGE_CHECK factorisé). Trois pointes du correctif : PAS de garde
+  CHECKS_ENABLED (c'est de la sémantique, pas un check) ; marque = type de
+  base → émettre `LI 1`, jamais rien ; marque non scalaire → raise BRUYANT.
+
+ 116. **Empreintes FINC d'une émission de condition manquante** :
+  `; debut if` immédiatement suivi d'un `BF` nu ; ou un `DUP` en tête du
+  squelette `or else` (DUP/BT/DROP) sans production en amont = opérande
+  gauche évaporé. Grep systématique de ces motifs sur tous les FINC après
+  tout ajout au CODE_EXP. Côté gdb, l'arme contre les dérives de pile :
+  `watch $rbp < <base>` (watchpoint logiciel, single-step) dégainé AU
+  DERNIER MOMENT — laisser courir en breakpoints normaux jusqu'au dernier
+  point sain, poser le watch, continue : gdb s'arrête SUR l'instruction
+  mangeuse. Audit mécanique complémentaire : tout PRO dont le PRMS contient
+  `result__ofs` doit rendre par `RTD prm_siz-8`, les autres par
+  `RTD prm_siz` — grep en deux passes.
+
+ 117. **Layout des records représentés : deux anomalies cohérentes donc
+  silencieuses** (constatées sur SEMSTAK_UNIT, 36 octets au lieu de ~24) :
+  (a) STATIC_TYPE_ALIGN_BYTES rend 8 pour tout composant de type record —
+  un TREE représenté 4 octets devrait s'aligner sur 4 ; (b) les variantes
+  d'un record à discriminant sont posées SÉQUENTIELLEMENT au lieu de se
+  recouvrir (max des branches). Les deux faces du miroir (STATOFS fasmg et
+  COMP_SIZ Ada) racontent la même histoire → gaspillage et hétérodoxie du
+  diana.bin, pas de crash. Dette consignée, à corriger ensemble et des deux
+  côtés à la fois (leçon du n° 110).
+
+ 118. **La discipline TROU() — le silence est un bug** (campagne
+  « expander bruyant », 28 juillet, briefing du 27). Tout manque de
+  capacité de l'expander se signale AU SITE : procédure centrale TROU
+  (expander-utils) — message « !! TROU <site> [: <noeud>] » dans le
+  FINC ET sur la console (leçon n° 96), puis PROGRAM_ERROR ; mode
+  RECENSEMENT (TROU_RECENSEMENT, option W) : compte et continue, le
+  FINC est alors SUSPECT par construction et ne s'assemble jamais ;
+  bilan « N TROU(s) traversés » à CLOSE_OUTPUT_FILE. Trois découvertes
+  structurelles : (a) l'arbre de dispatch ENTIER (CODE_EXP → ~35
+  dispatchers en cascade de classes) était en if/elsif SANS else — un
+  noeud hors classes traversait tout et disparaissait ; l'avaleur
+  était SYSTÉMIQUE, pas accidentel, et le grep ne le voit pas (audit
+  manuel, désormais un else TROU() partout) ; (b) « !! TROU CODE_EXP »
+  nu = appelant ayant passé TREE_VOID — doctrine : correction TOUJOURS
+  chez l'appelant par garde annotée de la raison (modèle CODE_RETURN),
+  JAMAIS en faisant accepter le vide au producteur ; (c) le FINC du
+  recensement EST le traceback : « ; !! TROU » tombe au site
+  d'émission, `grep -B 12` + commentaires DEBUG identifient la
+  construction en secondes. Quatre bugs latents VIVANTS payés au tri
+  (n° 119-120) contre trois jours pour le seul n° 115 chassé au gdb.
+  Fossile fondateur : n° 115 ; définition de fini : plus un null; sans
+  INTENTIONNEL annoté, plus un dispatcher sans else, plus un « pas
+  géré » sans raise.
+
+ 119. **Le contrat attribut-fonction invisible : l'argument de
+  T'POS(X)/PRED/SUCC/VAL est évalué par CODE_FUNCTION_CALL, PAS par
+  CODE_ATTRIBUTE.** La forme appel (DN_FUNCTION_CALL de nom
+  DN_ATTRIBUTE) évalue l'actuel puis délègue l'opération ; AS_EXP du
+  noeud attribut est TOUJOURS vide sur cette forme — mais DIANA
+  prévoit le slot. Les quatre branches refaisaient CODE_EXP(AS_EXP) =
+  no-op silencieux qui MASQUAIT le contrat : POS/VAL (identité) et
+  PRED/SUCC (DEC/INC sur le sommet) marchaient depuis l'origine grâce
+  à l'appelant, sans que la division du travail soit écrite nulle
+  part. Révélé par le premier recensement (_STANDRD INTEGER_IMAGE /
+  ENUM_IMAGE). Correctif : appel vestigial supprimé, ceinture
+  INVERSÉE — le cas vide est le légitime documenté, AS_EXP peuplé
+  (forme directe jamais émise) est le TROU. Leçon générale : un trou
+  silencieux ne cache pas que des bugs, il cache aussi des CONTRATS ;
+  oracle gratuit du correctif : diff des FINC (le no-op n'émettait
+  rien).
+
+ 120. **Préfixes non nommés de composant sélectionné : deux CEQ sur
+  fond de pile.** RECURSE_SELECTED ne connaissait que les préfixes
+  nommés/indexés/déréférencés ; deux formes du corpus tombaient au
+  travers SANS RIEN émettre — le comparateur consommait du fond de
+  pile : (a) préfixe APPEL, `DABS(0,TXT_T).NSIZ = NB_TREES`
+  (IDL_MAN.HASH_SEARCH — troisième fossile de cette fonction, la
+  déduplication des symbol_rep du binaire auto-compilé répondait au
+  hasard) ; (b) préfixe CONVERSION-VUE, `TREE(DEFINTERP).TY =
+  DN_NULLARY_CALL` (SET_UTIL.IS_NULLARY, dérivés privés de TREE,
+  famille n° 117). Correctifs : (a) branche DN_FUNCTION_CALL sur le
+  modèle CODE_INDEXED — CODE_EXP(appel) laisse @doublet, La extrait
+  data_ptr, PROCESS_DESIGNATOR reprend par ses chemins « adresse en
+  pile » ; garde TROU sur retour non record (déréf implicite 4.1.3
+  non instruite) ; (b) normalisation EN TÊTE DU TRI : boucle while qui
+  rebranche NAME sur l'opérande quand ROOT_RECORD prouve la même
+  racine de dérivation (hypothèse documentée : pas de rep propre sur
+  les dérivés) — la conversion enveloppant n'importe quel préfixe, la
+  transparence d'adressage se traite AVANT le dispatch, pas comme une
+  branche. Tout binaire auto-compilé antérieur à ces correctifs est
+  suspect (HASH_SEARCH et IS_NULLARY faux) : re-dérouler depuis le
+  compilateur de référence.
+
+ 121. **Les avaleurs qui ne déséquilibrent pas la pile : le programme
+  FAUX qui tourne** (vagues 2-5 du bruyant, 28/07). Le n° 115 (pile)
+  n'est qu'une espèce ; la campagne en a collecté quatre autres, toutes
+  invisibles au filet tant qu'un témoin ne vise pas juste : (a) boucle
+  FOR sans INC/DEC émis = boucle INFINIE (dispatch itération muet) ;
+  (b) offsets GFP faux (formel générique non couvert = slots non
+  réservés, tout le cadre décalé) ; (c) émission SYNTAXIQUEMENT cassée
+  (`LI ` sans opérande — l'erreur part à l'assemblage, loin du site) ;
+  (d) layout continué après « OFFSET NON STATIQUE » (tous les offsets
+  SUIVANTS faux). S'y ajoute la DIVERGENCE DE CONVENTION dormante :
+  l'actuel énuméré émettait SM_POS là où toute la maison est SM_REP —
+  identique tant que rep = pos, faux au premier `for T use (...)`.
+  Amendement du n° 112 au passage : DN_QUALIFIED EST un producteur
+  d'@doublet — la règle unique (CODE_COMPOSITE_DATA_ADDRESS) portait le
+  trou que deux sites locaux avaient déjà corrigé chacun pour soi.
+  Leçon : quand un site local contredit la règle unique, c'est la RÈGLE
+  qu'on audite d'abord. Et la leçon de clôture : les greps de MOTS
+  (« pas géré/a faire ») inventorient, seule la vérification
+  STRUCTURELLE du critère de fini clôt — deux survivants pris ainsi
+  ('STORAGE_SIZE avalé dans une branche explicite de chaîne, « choix
+  inconnu » hors lexique).
+
+ 122. **La boucle recensement → triage → reclassement : bénir l'observé,
+  jamais la classe** (6 reclassements, 28/07). Un TROU vivant au
+  recensement n'est pas d'office à implémenter : (a) verdicts
+  PRÉ-ÉCRITS pris tels quels — le TROU de vague 4 portait déjà sa porte
+  de sortie (« si l'élaboration à la complétion suffit, LRM 7.4,
+  reclasser ») et l'« A VOIR » sa promesse (le FINC de TO_CHN a fourni
+  la vraie raison : corps synthétisé, résultat via le slot, RTD
+  prm_siz-8) ; (b) DISCRIMINER plutôt que bénir — length_enum_rep
+  couvre DEUX clauses (longueur pliée front-end = INTENTIONNEL ; enum à
+  agrégat = TROU n° 117-bis), at-mod se plie statiquement (divise 8 =
+  garanti par le miroir STATOFS, sinon TROU), PREDEF_NAME borné aux
+  trois sortes OBSERVÉES (argument_id sonne encore) ; (c) un TROU trop
+  LARGE se raffine (RECORD_REP sonnait sur tout nœud alors que seule
+  l'ALIGNEMENT était avalée). Chaque reclassement porte sa raison ET sa
+  référence de recensement dans le commentaire — le verdict interdit
+  « A VOIR » est mort avec sa vraie raison écrite.
+
+123. **Le protocole resultat scalaire ne se transpose pas aux doublets :
+    le wrapper RELAIE, il ne rapatrie pas.** Scalaire : slot factice
+    (LI 0), le modele ecrit DANS son slot, RTD prm_siz-8 le laisse, le
+    wrapper rapatrie (S<c> lvl,-result__ofs). Composite non contraint :
+    le resultat se materialise PAR le corps A TRAVERS le slot — le
+    wrapper doit passer SON slot recu (La lvl,-result__ofs) comme lieu
+    result du modele ; LI 0 = ecriture a l'adresse 0 au CODE_RETURN du
+    modele (segfault d'INSTF1). Corollaire : un fossile INTENTIONNEL
+    peut benir une moitie jamais exercee — le reclassement n 4
+    (« RTD prm_siz-8 le laisse a l'appelant ») decrivait le protocole
+    PARTAGE comme acquis alors que son amont (le relais) n'existait
+    pas. Un INTENTIONNEL sur un rameau non exerce vaut un TROU muet.
+    (session 1er aout)
+
+124. **Trois SORTES de slots, trois mecanismes d'overlay — l'equation
+    fasmg exige la meme sorte des deux cotes ET le meme frame.**
+    Contenu du slot selon l'objet : VALEUR (scalaire local),
+    DATA_PTR (composite local), @DOUBLET de l'actuel (parametre
+    composite, TOUS modes — n 91/94). D'ou la grille (alias / cible) :
+    scalaire/scalaire = equation X_disp = Y_disp ; composite/composite
+    local = equation (data_ptr partage, __u propre = vue de
+    reinterpretation) ; composite/scalaire = VAR + data_ptr := @slot
+    cible (LVA/Sa) ; composite/parametre = La <niv cible>,-ofs /
+    La ,0 / Sa. Toute case hors grille = TROU discrimine : equater a
+    sorte differente fait DEREFERENCER une valeur ou lire un pointeur
+    comme valeur. Init a travers l'overlay : agregat seulement — un
+    litteral chaine RE-POINTERAIT _disp sur la CONSTANTE (aliaserait
+    la constante, pas la cible). (session 1er aout)
+
+125. **Une garde de FAISABILITE appartient au MECANISME qu'elle
+    protege, pas au recruteur commun.** La garde « meme niveau »
+    (necessaire a l'equation : un seul CD_LEVEL sert _disp ET __u de
+    l'alias) etait posee dans OVERLAY_TARGET, le helper commun — elle
+    rejetait la cible AVANT que la voie parametre (niveau LIBRE : le
+    La s'adresse a FP(niveau cible) explicitement, comme tout acces
+    parametre emis d'un bloc) ait pu jouer. Symptome : TROU sur un cas
+    que le mecanisme aval savait traiter ; declencheur : CODE_BLOCK
+    fait INC_LEVEL, toute declaration en bloc est au-dessus des
+    parametres. Posee trop haut, une garde interdit aux autres
+    mecanismes ce qui leur est permis. (session 1er aout)

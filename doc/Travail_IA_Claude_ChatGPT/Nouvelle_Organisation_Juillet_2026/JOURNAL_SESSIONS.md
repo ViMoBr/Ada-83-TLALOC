@@ -982,3 +982,196 @@ sur un vrai source. Dettes ouvertes : voir bloc AUDITS. Patchs :
 expander-declarations-types_decls, expander-utils, expander-
 declarations, expander-expressions, expander-instructions,
 codi_x86_64.finc (p_memsz).
+
+## Session 25-27/07/2026 — deux segfaults, PAR_PHASE de null_prog franchie
+
+Segfault 1 (0x446249, BLKMOV de l'agrégat d'ALLOC_PAGE) : rdi=-512 et
+r12=-25600=-(50×512) signaient un tas partant de zéro. Cause : un octet
+REX faux dans le prologue du wrapper — `db 0x49,8D,A0` assemblait
+`lea rsp,[r8+64Mio]` au lieu de `lea r12,[rax+64Mio]`. R12 jamais
+initialisé, et la pile de travail relogée par accident dans le BSS de la
+co-pile (d'où r15=0x3BFFFFF, adresses impaires partout). Correctif : un
+octet, 0x49→0x4C. → PIÈGE n° 114.
+
+Segfault 2 (0x45173d, BLKMOV de DABS_L37, ~220 passages avant crash) :
+longue remontée. Observations clés : slot VAL = &_TREE.SIZ (le CONTENU
+d'un __u), [&_TREE.SIZ]=32, T fonctionnel dans le même appel, premier
+passage du site réussi. Chaîne d'élimination : DABS/D/D_L17/DABS_L38
+conformes (retours composites en doublet OK — la vague post-111 tient) ;
+émission SELARG conforme ; LVa à niveau vide sain (BASE_IN_RAX -1 =
+POP_RAX) ; USEINFO/STATOFS sans collision de symbole (USEINFO définit
+`champ__u`) ; rétro-propagation loc_siz des PRO imbriqués INNOCENTÉE
+(fausse piste, retirée). Cause réelle : CODE_TYPE_MEMBERSHIP = `null;`.
+Les deux `X in LT_WITH_SEMANTICS` de PARSE_COMPILATION n'émettaient rien ;
+le BF orphelin mangeait un quadword par lexème décalé ; à dérive k=1 le
+paramètre 3 de D s'empilait pile sur SELARG_L317__u que le `Sa __u`
+écrasait ensuite avec &_TREE.SIZ. Toute la géométrie observée découle de
+ce seul trou. Correctif : corps miroir de CODE_RANGE_MEMBERSHIP avec
+CODE_SCALAR_SUBTYPE_BOUND factorisé depuis CODE_RANGE_CHECK ; cas type de
+base → `LI 1` ; non-scalaire → raise bruyant ; pas de garde
+CHECKS_ENABLED. → PIÈGES n° 115, 116, 117.
+
+Après correctifs : l'analyse syntaxique de null_prog.adb passe. Erreur
+suivante dans une autre phase — chantier séparé.
+
+Techniques retenues : lecture du fingerprint registres (empreinte REX) ;
+watch $rbp conditionnel dégainé tard ; empreinte « debut if + BF nu ».
+Dettes ouvertes : double évaluation de EXP dans les deux memberships
+(style maison, bénin sans effet de bord) ; alignement/variantes des
+représentés (n° 117) ; mmap non testé + 448 Mio perdus ; oracle
+membership à écrire ; assert rbp-contre-base en tête de boucle en mode
+debug à pérenniser.
+
+## Session 28/07/2026 — campagne « expander bruyant » : recensement initial CLOS
+
+Exécution du briefing du 27/07 (fin de session n° 115). Infrastructure :
+procédure TROU (utils, spec CODI) — FINC + console + PROGRAM_ERROR,
+mode RECENSEMENT (option W) qui compte sans lever, bilan par unité à la
+fermeture. Essai validé sur 'TERMINATED commenté (oracle négatif).
+
+Vague 1 (arbre de CODE_EXP, contexte expression) : else TROU() sur les
+13 dispatchers muets + CODE_USED_OP + queue de CODE_USED_NAME_ID +
+CODE_ATTRIBUTE complet (branches ET chaînes internes 'C/'L/'M/'P/'S) ;
+CODE_POS ceinturé (mort présumé, aucun appelant) ; annotations
+INTENTIONNEL ('BASE, exception-comme-nom, normalisation base, adresse
+déjà en pile).
+
+Le recensement du corpus a rendu quatre catégories, toutes soldées :
+1. CODE_EXP(TREE_VOID) en masse → contrat attribut-fonction invisible
+   (n° 119), appel vestigial supprimé, ceinture inversée. Diff FINC =
+   oracle (aucune émission ne change).
+2. RECURSE_SELECTED : DN_FUNCTION_CALL → F(...).COMP jamais émis
+   (HASH_SEARCH, CEQ sur fond de pile — n° 120a). Branche modèle
+   CODE_INDEXED, témoin TROU_SEL1.
+3. CODE_ATTRIBUTE 'VALUE (29 sites expander-expressions + idl +
+   types_decls, tous INTEGER/LONG_INTEGER sur PRINT_NUM) → primitive
+   cachée STANDARD.INTEGER_VALUE (réciproque d'INTEGER_IMAGE, une
+   seule 64 bits pour les deux types), CODE_VALUE avec lieu résultat
+   passé sous l'argument par temporaire (zéro macro codi). Témoin
+   TROU_VAL1 (aller-retour IMAGE/VALUE + CONSTRAINT_ERROR exercée).
+4. RECURSE_SELECTED : DN_CONVERSION → TREE(X).COMP jamais émis
+   (IS_NULLARY, SET_UTIL — n° 120b). Normalisation conversion-vue en
+   tête du tri, garde ROOT_RECORD même-racine. Témoin TROU_CONV1.
+
+Run final corpus + auto-compilation : ZÉRO trou. Quatre bugs latents
+vivants payés au recensement (deux binaires auto-compilés étaient
+faux : dédup des symboles, prédicats IS_*ARY) — re-déroulé depuis le
+compilateur de référence.
+
+Techniques retenues : le FINC du recensement comme traceback
+(grep -B 12 '!! TROU') ; ceinture inversée (le cas constaté devient le
+légitime documenté, l'imprévu devient le TROU) ; diff de FINC comme
+oracle gratuit des suppressions de no-op ; garde appelant annotée pour
+tout enfant optionnel.
+
+Dettes ouvertes : carnet TROU dans ETAT_PILIERS (tasking, 'VALUE
+énuméré, rep-clauses, déréf implicite, forme directe AS_EXP) ; vagues
+2-5 du briefing à dérouler (frontières d'appel + TYPE_SIZE raise
+commenté ; instructions ; déclarations/structures ; promotion des ~30
+demi-bruyants « pas fait » vus dans les FINC). Patchs : expander-utils,
+expander-expressions, expander.adb (spec UTILS), _standrd.adb.
+
+## Session du 28 juillet 2026 (suite) — vagues 2-5 + reclassements : campagne close
+
+Vague 2 (frontières n° 112 + layout) : CODE_ADRESSE ceinturé mort
+présumé ; TYPE_SIZE/LOAD_TYPE_SIZE sous TROU ; STATIC_TYPE_SIZE_BITS
+contrat du 0 documenté + 2 TROU d'ignorance ; règle unique CCDA
+corrigée (DN_QUALIFIED ajouté — amendement n° 112) et imposée aux trois
+sites d'affectation ; gardes TROU sur CODE_RETURN tableau,
+CODE_ACTUAL_OBJECT_VALUE, SELARG vue contrainte, indexé out/in-out ;
+'CONSTRAINED/'WIDTH LI 0 sous TROU ; commit B : orthographe La
+normalisée (21 lignes, octets identiques). Vague 3 (arbre instructions,
+26 modifs) : 11 else de dispatch dont 5 HORS liste (revue systématique
+— CLAUSES_STM, TEST_CLAUSE_ELEM_S, BLOCK_LOOP, ENTRY_STM, INC/DEC =
+boucle infinie), 9 corps tasking+DELAY, 2 découvertes actuels (LI sans
+opérande, else INVERSE_RECURSE). Vague 4 (déclarations/structures, 32
+modifs) : §1c + 7 hors liste (dont GFP offsets) ; élucidations :
+IMPLICIT_NOT_EQ → INTENTIONNEL (résolu au site d'usage),
+DERIVED_SUBPROG → TROU confirmé (SUBPROGRAM_ORIGIN ne suit pas la
+dérivation), scorie DN_FIXED supprimée. Reclassements post-recensement
+1-6 : PREDEF_NAME de STANDARD ; renommage de paquetage (garde avant
+namespace, _SYSTEM) ; split LENGTH/ENUM + SM_POS→SM_REP ;
+RECORD_REP affiné + épilogue instanciation élucidé (FINC TO_CHN) ;
+at-mod plié statiquement (STATIC_BOUND_VALUE exporté) + dossier
+'ADDRESS ouvert ; constante différée LRM 7.4. Vague 5 (32 modifs) :
+22 promotions TROU (équilibres conservés), 6 DEFAUT DOCUMENTE, 2
+prises tardives de la vérification structurelle ('STORAGE_SIZE,
+« choix inconnu »). Définition de fini ATTEINTE (greps vérifiés).
+
+Bilan recensement auto-compilation : 187 traversées / 10 familles / 8
+chantiers (C1-C8, BILAN_RECENSEMENT_TRIAGE.md). DÉCISION : segfaults
+suspendus jusqu'à compteur zéro ; séquencement C1 (conversions
+dérivées, 60) → C2 (case sous-type, 84) → C3-C6 → C8 ('ADDRESS 3
+sites, voie 3 recommandée) → C7 (résultat non contraint, NOTE_MODELE)
+→ STRICT permanent.
+
+Méthode consolidée : livraison par fichier d'instructions ancré (une
+modif = ancre unique + bloc avant + bloc après, tabs préservées),
+contre-épreuve par REJEU programmatique sur sources vierges, filet
+syntaxique -gnats -gnat83 ; deux commits quand deux oracles (logique =
+diff FINC ; orthographe = filet, octets identiques). Pièges versés :
+121 (avaleurs non-115 + amendement 112 + leçon greps), 122 (doctrine
+du reclassement : bénir l'observé, jamais la classe).
+
+## Session du 1er aout 2026 — C7 + C8 : le recensement tombe a ZERO, STRICT permanent
+
+**C7 (instanciation de fonction generique a resultat non contraint,
+10 traversees).** Oracle INSTF1 ecrit avant (deux instances BAND a
+bornes differentes, trois formes d'usage). Le FINC de l'oracle a montre
+que les trois piliers etaient DEJA cables et corrects (site d'appel
+@doublet anonyme ; CODE_RETURN ecrivant data_ptr + descripteur A
+TRAVERS le slot ; RTD prm_siz-8) — le maillon casse etait le WRAPPER :
+INSTANTIATION_SUBPROG_GENERIQUE poussait LI 0 comme lieu result du
+modele (protocole scalaire), et BAND ecrivait a l'adresse 0 (le
+segfault de l'oracle). Correctif : quand le resultat est DN_ARRAY, le
+wrapper RELAIE son slot recu (La lvl,-result__ofs) ; epilogue :
+rien a rapatrier — TROU soldé en INTENTIONNEL discrimine (record/
+access non contraints restent TROU) ; fossile n 4 amende (sa moitie
+PARTAGE supposait un relais qui n'existait pas). INSTF1 PASSE (8 OK),
+les 10 traversees corpus tombent. → PIEGE n 123.
+
+**C8 (clauses d'adresse d'objet, 3 traversees + les refus scalaires).**
+Le dump DIANA du mainteneur (TEST_ADDRESS) a tranche d'emblee : sem
+POSE SM_ADDRESS (objets ET sous-programmes) ; et l'expander etait a
+moitie cable — push d'adresse ORPHELIN dans COMPILE_ARRAY_VAR (fuite
+d'un quadmot par elaboration), Sa _disp MANQUANT dans
+COMPILE_RECORD_VAR. Mecanisme retenu (proposition mainteneur) :
+**resolution PAR NOM deleguee a fasmg** — equation de symbole
+X_disp = Y_disp, zero code, seul schema couvrant les SCALAIRES.
+Cinq lots successifs, chacun declenche par une decouverte du corpus :
+- v2 : helper OVERLAY_TARGET + equation (scalaire, array, record) ;
+  suppression de l'orphelin ; verdict discrimine a CODE_NAMED_REP
+  (clause de SOUS-PROGRAMME → TROU « hors objet », chantier separe).
+- v2.1 (print_nod) : SORTES ASYMETRIQUES — le slot scalaire porte sa
+  VALEUR : array-sur-scalaire = VAR + data_ptr := @slot cible (LVA/Sa),
+  pas d'equation ; et INIT A TRAVERS l'overlay (agregat → array
+  seulement : l'idiome d'endianite ECRIT la cible a l'elaboration).
+  Fermeture d'un angle mort v2 : scalaire-sur-composite equatait a
+  tort (jamais mordu).
+- v2.2 (univ_ops, U_INT) : cible = PARAMETRE in — troisieme sorte de
+  slot (@doublet de l'actuel, n 91/94) : La lvl,-V_ofs / La ,0 / Sa.
+- v2.3 (meme site, bloc) : XD_REGION = BLOCK_LOOP_ID, CODE_BLOCK fait
+  INC_LEVEL — la garde de niveau posee DANS le helper interdisait a la
+  voie parametre ce qui lui est permis. Garde redescendue chez ses
+  proprietaires (equation/LVA) ; le La du parametre s'adresse au
+  NIVEAU DE LA CIBLE. → PIEGE n 125.
+- v2.4 (SPREAD) : parametre in out — protocole IDENTIQUE (slot
+  composite = @doublet pour tous les modes), trois tests = DN_IN_ID
+  elargis. Mode out : au carnet (situation C3).
+Temoin ADDR_OV1 v6 : 27 assertions, 7 sections (alias, univ_ops,
+record, attributs, scalaire, endianite print_nod, parametres in /
+in out / en bloc). → PIEGE n 124.
+
+**Bilan : recensement auto-compilation 187 → 0.** Listing sans TROU du
+01/08. BASCULE STRICT PERMANENTE (option W hors filet,
+TROU_RECENSEMENT = FALSE par defaut). Prochain : re-deroule STRICT +
+filet, puis POINT 8 — reprise des segfaults (null_prog, phase
+post-PAR_PHASE) sur FINC sains ; diagnostics anterieurs a re-observer
+(premiere execution correcte d'univ_ops/print_nod).
+
+Methode consolidee : lots ancres v2→v2.4 COMPOSABLES (contre-epreuve :
+rejeu de la chaine entiere depuis source vierge = octet-identique a
+l'etat final) ; le dump DIANA du mainteneur a tranche DEUX impasses
+(SM_ADDRESS pose ; XD_REGION bloc) — le demander TOT. Patchs :
+expander-declarations.adb SEUL (C7 + C8). Temoins verses au filet :
+INSTF1, ADDR_OV1.

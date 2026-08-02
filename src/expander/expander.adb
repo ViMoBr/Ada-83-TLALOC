@@ -19,14 +19,27 @@ is
 			-----
   is
 
+			-- FLAGS DE DEBOGAGE ET AVERTISSEMENTS DE NON IMPLEMENTATION
+
     DEBUG				: BOOLEAN		:= TRUE;
-    GENERATE_BINARY_MAP		: BOOLEAN		:= FALSE;
+    GENERATE_BINARY_MAP		: BOOLEAN		:= TRUE;
+
+			--| DISCIPLINE TROU() (briefing expander bruyant, fossile n 115) :
+			--| tout manque de capacite se signale AU SITE, dans le FINC ET
+			--| sur la console (lecon n 96), puis leve PROGRAM_ERROR.
+    TROU_RECENSEMENT		: BOOLEAN		:= FALSE;						--| TRUE : loguer SANS lever -- un run complet donne
+												--| l'inventaire des trous vivants du corpus ; le FINC
+												--| produit est alors FAUX (pile potentiellement
+												--| desequilibree), il ne sert qu'a l'inventaire.
+    TROU_COUNT			: NATURAL		:= 0;						--| trous traverses dans l'unite courante
+
+    procedure TROU ( SITE :STRING; NOEUD :TREE := TREE_VOID );
 
     tab				: CHARACTER	renames ASCII.HT;
 
     MAX_INSTR			: constant		:= 10_000;				--| NB MAX D'INSTRUCTIONS
     MAX_LABEL			: constant		:= 10_000;				--| NB MAX D'ETIQUETTES DE SAUT
-    MAX_UNIT			: constant		:= 2**11-1;				--| NB MAX D'UNITES	PROGRAMME
+    MAX_UNIT			: constant		:= 2**11-1;				--| NB MAX D'UNITES PROGRAMME
     MAX_LEVEL			: constant		:= 2**5-1;				--| NB MAX DE NIVEAUX D'IMBRICATION
     MAX_OFFSET			: constant		:= 2**15-1;				--| 32K
 
@@ -35,16 +48,16 @@ is
     subtype LEVEL_NUM		is NATURAL		range 0 .. MAX_LEVEL;
     subtype OFFSET_VAL		is INTEGER		range -MAX_OFFSET .. MAX_OFFSET;
 
-    STORAGE_UNIT			: constant		:= 8;					--| OCTET	DE 8 bits
+    STORAGE_UNIT			: constant		:= 8;					--| OCTET DE 8 bits
     STACK_ELEMENT_SIZE		: constant		:= 8;					--| LA PILE EST GEREE PAR QUAD WORDS SUR X86-64
-    ADDR_SIZE			: constant		:= 8;					--| ADRESSES SUR 64	BITS
+    ADDR_SIZE			: constant		:= 8;					--| ADRESSES SUR 64 BITS
     BOOL_SIZE			: constant		:= 1;					--| BOOLEEN SUR 1 OCTET
-    CHAR_SIZE			: constant		:= 1;					--| CARACTERE SUR 8	BITS
+    CHAR_SIZE			: constant		:= 1;					--| CARACTERE SUR 8 BITS
     INTG_SIZE			: constant		:= 8;					--| ENTIER SUR 64 BITS
 
     type LOOP_CODE			is (DEC, GT, INC, LT);
 
-    OUTPUT_CODE			: BOOLEAN			:= TRUE;					-- Dans le traitement de spécif on désactive le	codage
+    OUTPUT_CODE			: BOOLEAN			:= TRUE;					-- Dans le traitement de spécif on désactive le codage
 
 
 			-- GENERICS MANAGEMENT
@@ -52,7 +65,7 @@ is
     IN_GENERIC_INSTANTIATION		: BOOLEAN			:= FALSE;					-- Traitement special pour les spec d instantiation
     INSTANTIATION_MODEL_NAME		: TREE;
     GENERIC_MODEL_DECL_SEQ		: SEQ_TYPE;
-    IN_GENERIC_BODY			: BOOLEAN			:= FALSE;					-- Traitement special pour les corps de	generique
+    IN_GENERIC_BODY			: BOOLEAN			:= FALSE;					-- Traitement special pour les corps de generique
     ENCLOSING_GENERIC		: TREE;
     GENERIC_BASE_LEVEL		: LEVEL_NUM		:= 0;
     MAX_GENERIC_FORMALS		: constant		:= 8;
@@ -106,10 +119,10 @@ is
 
     GOTO_PENDING			: array( 1 .. MAX_GOTO_LABELS ) of GOTO_PEND_REC;
     GOTO_PEND_TOP			: GOTO_LBL_IDX	:= 0;
-    GOTO_PEND_BASE			: GOTO_LBL_IDX	:= 0;					--| base du corps courant
+    GOTO_PEND_BASE			: GOTO_LBL_IDX	:= 0;						--| base du corps courant
 
-    function  GOTO_LABEL_ENTRY	( LABEL_ID :TREE )		return GOTO_LBL_IDX;	--| trouve ou cree l'entree du corps courant
-    procedure GOTO_CHECK_BODY_END;							--| ceinture bruyante : raccord jamais resolu
+    function  GOTO_LABEL_ENTRY	( LABEL_ID :TREE )		return GOTO_LBL_IDX;			--| trouve ou cree l'entree du corps courant
+    procedure GOTO_CHECK_BODY_END;									--| ceinture bruyante : raccord jamais resolu
 
 												--| -1 : hors handler (raise nu = ANOMALIE).
     NO_SUBP_PARAMS			: BOOLEAN			:= TRUE;					--| pour prms et prm_siz
@@ -122,7 +135,7 @@ is
 
     TYPE_SYMREP			: TREE;								--| UTILISE POUR LES OBJECT_DECL VAR CONST
 
-    procedure OPEN_OUTPUT_FILE	( FILE_NAME :STRING	);
+    procedure OPEN_OUTPUT_FILE	( FILE_NAME :STRING );
     procedure CLOSE_OUTPUT_FILE;
 
 
@@ -171,14 +184,14 @@ is
   end	UTILS;
 	-----
 
-  package	CODI	renames UTILS;
+  package CODI	renames UTILS;
   use CODI;
 
 
   procedure CODE_ROOT ( ROOT :TREE );
   procedure CODE_OBJECT ( OBJECT :TREE );
   procedure CODE_SELECT_ALT_PRAGMA ( SELECT_ALT_PRAGMA :TREE );
-  procedure CODE_EXCEPTION_ID	( EXCEPTION_ID :TREE );
+  procedure CODE_EXCEPTION_ID ( EXCEPTION_ID :TREE );
 
 
 				-----------
@@ -196,9 +209,9 @@ is
     procedure CODE_OBJECT_ADDRESS	( NAME : TREE );
     procedure CODE_COMPOSITE_DATA_ADDRESS( EXP : TREE );
     function  IS_GENERIC_FORMAL_TYPE	( TYPE_DEFN	:TREE )		return BOOLEAN;
-    function  IS_GENERIC_FORMAL_OBJECT	( DEFN		:TREE )		return BOOLEAN;
+    function  IS_GENERIC_FORMAL_OBJECT  ( DEFN		:TREE )		return BOOLEAN;
     function  IS_GENERIC_FORMAL_SUBPROGRAM( ID		:TREE )		return BOOLEAN;
-    procedure CODE_DISCRETE_RANGE_BOUND	( DISCRETE_RANGE :TREE; IS_LAST :BOOLEAN );
+    procedure CODE_DISCRETE_RANGE_BOUND ( DISCRETE_RANGE :TREE; IS_LAST :BOOLEAN );
     procedure CODE_RANGE_CHECK	( TYPE_SPEC	:TREE );						--| PILIER CHECKS : gamme scalaire, valeur au
     procedure CODE_ZERO_DIVIDE_CHECK;									--| PILIER CHECKS E-E : diviseur au sommet,
 
@@ -206,7 +219,7 @@ is
   private
 
     procedure CODE_NAME		( NAME : TREE );
-    procedure CODE_EXP_EXP		( EXP_EXP	:TREE; TYPE_SPEC_HINT :TREE := TREE_VOID );
+    procedure CODE_EXP_EXP		( EXP_EXP :TREE; TYPE_SPEC_HINT :TREE := TREE_VOID );
     procedure CODE_USED_OP		( USED_OP		:TREE );
     procedure CODE_USED_NAME_ID	( USED_NAME_ID	:TREE );
     procedure CODE_USED_CHAR		( USED_CHAR :TREE );
@@ -215,8 +228,8 @@ is
 
     procedure CODE_ATTRIBUTE		( ATTRIBUTE	:TREE );
     procedure CODE_FUNCTION_CALL	( FUNCTION_CALL	:TREE );
-    procedure CODE_QUALIFIED_ALLOCATOR	( QUALIFIED_ALLOCATOR:TREE );
-    procedure CODE_SUBTYPE_ALLOCATOR	( SUBTYPE_ALLOCATOR	:TREE );
+    procedure CODE_QUALIFIED_ALLOCATOR  ( QUALIFIED_ALLOCATOR:TREE );
+    procedure CODE_SUBTYPE_ALLOCATOR	( SUBTYPE_ALLOCATOR :TREE );
 
     procedure CODE_NUMERIC_LITERAL	( NUMERIC_LITERAL	:TREE );
     procedure CODE_NULL_ACCESS	( NULL_ACCESS	:TREE );
@@ -224,7 +237,7 @@ is
     procedure CODE_PARENTHESIZED	( PARENTHESIZED :TREE );
     procedure CODE_CONVERSION		( CONVERSION	:TREE );
     procedure CODE_QUALIFIED		( QUALIFIED	:TREE );
-    procedure CODE_RANGE_MEMBERSHIP	( RANGE_MEMBERSHIP	:TREE );
+    procedure CODE_RANGE_MEMBERSHIP	( RANGE_MEMBERSHIP  :TREE );
     procedure CODE_TYPE_MEMBERSHIP	( TYPE_MEMBERSHIP	:TREE );
 
     procedure CODE_VC_ID		( VC_ID		:TREE );
@@ -233,7 +246,7 @@ is
   end	EXPRESSIONS;
 	-----------
 
-  package	body UTILS is separate;
+  package body UTILS is separate;
 
 
 			-----------------
@@ -257,7 +270,7 @@ is
   end	REPRESENTED_ITEMS;
 	-----------------
 
-  package	body REPRESENTED_ITEMS is separate;
+  package body REPRESENTED_ITEMS is separate;
 
 
 
@@ -287,30 +300,30 @@ is
 
 			-- SUBPROGRAM DECLARATION
 
-    procedure CODE_SUBP_ENTRY_HEADER	( SUBP_ENTRY_HEADER	:TREE );
-    procedure CODE_PARAM_S		( PARAM_S	:TREE; FOR_FUNCTION	:BOOLEAN := FALSE );
+    procedure CODE_SUBP_ENTRY_HEADER	( SUBP_ENTRY_HEADER :TREE );
+    procedure CODE_PARAM_S		( PARAM_S :TREE; FOR_FUNCTION :BOOLEAN := FALSE );
     procedure CODE_PARAM		( PARAM :TREE );
     procedure CODE_IN		( ADA_IN :TREE );
     procedure CODE_IN_OUT		( ADA_IN_OUT :TREE );
-    procedure CODE_OUT		( ADA_OUT	:TREE );
+    procedure CODE_OUT		( ADA_OUT :TREE );
 
 			-- VAR/CONST DECLARATION
 
-    procedure CODE_VC_NAME		( VC_NAME	:TREE; OBJECT_DECL :TREE := TREE_VOID );
+    procedure CODE_VC_NAME		( VC_NAME :TREE; OBJECT_DECL :TREE := TREE_VOID );
     procedure CODE_ID_S_DECL		( ID_S_DECL :TREE );
     procedure CODE_EXCEPTION_DECL	( EXCEPTION_DECL :TREE );
     procedure CODE_DEFERRED_CONSTANT_DECL ( DEFERRED_CONSTANT_DECL :TREE );
     procedure CODE_EXP_DECL		( EXP_DECL :TREE );
-    procedure CODE_NUMBER_DECL	( NUMBER_DECL :TREE	);
-    procedure CODE_OBJECT_DECL	( OBJECT_DECL :TREE	);
+    procedure CODE_NUMBER_DECL	( NUMBER_DECL :TREE );
+    procedure CODE_OBJECT_DECL	( OBJECT_DECL :TREE );
 
-    procedure CODE_ID_DECL		( ID_DECL	:TREE );
+    procedure CODE_ID_DECL		( ID_DECL :TREE );
 
 	------------
   end	DECLARATIONS;
 	------------
 
-  package	body DECLARATIONS is separate;
+  package body DECLARATIONS is separate;
 
 
 
@@ -326,14 +339,14 @@ is
 
   private
 
-    procedure CODE_TEST_CLAUSE_ELEM_S	( TEST_CLAUSE_ELEM_S :TREE; STM_END_LBL	:STRING );
+    procedure CODE_TEST_CLAUSE_ELEM_S	( TEST_CLAUSE_ELEM_S :TREE; STM_END_LBL :STRING );
     procedure CODE_COND_CLAUSE	( COND_CLAUSE :TREE; STM_END_LBL :STRING );
     procedure CODE_STM_ELEM		( STM_ELEM :TREE );
     procedure CODE_STM_PRAGMA		( STM_PRAGMA :TREE );
-    procedure CODE_LABELED		( LABELED	:TREE );
+    procedure CODE_LABELED		( LABELED :TREE );
     procedure CODE_NULL_STM		( NULL_STM :TREE );
     procedure CODE_STM_WITH_EXP	( STM_WITH_EXP :TREE );
-    procedure CODE_STM_WITH_EXP_NAME	( STM_WITH_EXP_NAME	:TREE );
+    procedure CODE_STM_WITH_EXP_NAME	( STM_WITH_EXP_NAME :TREE );
     procedure CODE_STM_WITH_NAME	( STM_WITH_NAME :TREE );
     procedure CODE_CALL_STM		( CALL_STM :TREE );
     procedure CODE_BLOCK_LOOP		( BLOCK_LOOP :TREE );
@@ -351,9 +364,9 @@ is
     procedure CODE_TERMINATE		( ADA_TERMINATE :TREE );
     procedure CODE_ENTRY_STM		( ENTRY_STM :TREE );
     procedure CODE_COND_ENTRY		( COND_ENTRY :TREE );
-    procedure CODE_TIMED_ENTRY	( TIMED_ENTRY :TREE	);
+    procedure CODE_TIMED_ENTRY	( TIMED_ENTRY :TREE );
     procedure CODE_ABORT		( ADA_ABORT :TREE );
-    procedure CODE_CLAUSES_STM	( CLAUSES_STM :TREE	);
+    procedure CODE_CLAUSES_STM	( CLAUSES_STM :TREE );
     procedure CODE_RAISE		( ADA_RAISE :TREE );
     procedure CODE_CODE		( CODE :TREE );
 
@@ -361,7 +374,7 @@ is
   end	INSTRUCTIONS;
 	------------
 
-  package	body EXPRESSIONS  is separate;
+  package body EXPRESSIONS  is separate;
 
 
 
@@ -382,77 +395,95 @@ is
     procedure CODE_PACKAGE_BODY	( PACKAGE_BODY :TREE );
     procedure CODE_SUBUNIT_BODY	( SUBUNIT_BODY :TREE );
     procedure CODE_TASK_BODY		( TASK_BODY :TREE );
-    procedure CODE_EXCEPTIONS_ALTERNATIVE_S ( ALTERNATIVE_S	:TREE );
+    procedure CODE_EXCEPTIONS_ALTERNATIVE_S ( ALTERNATIVE_S :TREE );
 
 	----------
   end	STRUCTURES;
 	----------
 
-  package	body STRUCTURES    is separate;
-  package	body INSTRUCTIONS  is separate;
+  package body STRUCTURES    is separate;
+  package body INSTRUCTIONS  is separate;
 
 
 
 				---------
   procedure			CODE_ROOT			( ROOT :TREE )
   is
-    USER_ROOT	:constant	TREE	:= D( XD_USER_ROOT,	ROOT );
-    COMPILATION	:constant	TREE	:= D( XD_STRUCTURE,	USER_ROOT	);
-    COMPLTN_UNIT_S	:constant	TREE	:= D( AS_COMPLTN_UNIT_S, COMPILATION );
+    USER_ROOT	:constant TREE	:= D( XD_USER_ROOT, ROOT );
+    COMPILATION	:constant TREE	:= D( XD_STRUCTURE, USER_ROOT );
+    COMPLTN_UNIT_S  :constant TREE	:= D( AS_COMPLTN_UNIT_S, COMPILATION );
   begin
     declare
-      COMPLTN_UNIT_SEQ	: SEQ_TYPE	:= LIST (	COMPLTN_UNIT_S );
+      COMPLTN_UNIT_SEQ	: SEQ_TYPE	:= LIST ( COMPLTN_UNIT_S );
       COMPLTN_UNIT		: TREE;
     begin
       while not IS_EMPTY( COMPLTN_UNIT_SEQ ) loop
         POP( COMPLTN_UNIT_SEQ, COMPLTN_UNIT );
-        CODI.OPEN_OUTPUT_FILE( GET_LIB_PREFIX & PRINT_NAME(	D( XD_LIB_NAME, COMPLTN_UNIT ) ) );
+        CODI.OPEN_OUTPUT_FILE( GET_LIB_PREFIX & PRINT_NAME( D( XD_LIB_NAME, COMPLTN_UNIT ) ) );
 
         STRUCTURES.CODE_COMPILATION_UNIT ( COMPLTN_UNIT );
 
         CODI.CLOSE_OUTPUT_FILE;
-      end	loop;
+      end loop;
     end;
 
   end	CODE_ROOT;
 	---------
 
 
-
-  procedure CODE_CONTEXT_PRAGMA ( CONTEXT_PRAGMA :TREE ) is
+			-------------------
+  procedure		CODE_CONTEXT_PRAGMA		( CONTEXT_PRAGMA :TREE )
+  is			-------------------
   begin
-    null;
-  end;
+    null;												--| INTENTIONNEL (partiel) : pragma de contexte sans
+												--| effet de code ; trier ICI si l'un devient signifiant
+  end	CODE_CONTEXT_PRAGMA;
+	-------------------
 
 
-
-  procedure CODE_BLOCK_MASTER	( BLOCK_MASTER :TREE ) is
+			-----------------
+  procedure		CODE_BLOCK_MASTER		( BLOCK_MASTER :TREE )
+  is			-----------------
   begin
-    null;
-  end;
+    TROU( "CODE_BLOCK_MASTER (tasking/masters hors perimetre)", BLOCK_MASTER );					--| vague 4 : corps vide
+
+  end	CODE_BLOCK_MASTER;
+	-----------------
 
 
-
-  procedure CODE_DERIVED_SUBPROG ( DERIVED_SUBPROG :TREE ) is
+			--------------------
+  procedure		CODE_DERIVED_SUBPROG	( DERIVED_SUBPROG :TREE )
+  is			--------------------
   begin
-    null;
-  end;
+			--| Vague 4 : semantique REELLE non couverte -- SUBPROGRAM_ORIGIN
+			--| ne suit que les chaines de RENAMES, pas la derivation : un
+			--| appel au sous-programme derive viserait un label jamais emis.
+    TROU( "CODE_DERIVED_SUBPROG", DERIVED_SUBPROG );
+
+  end	CODE_DERIVED_SUBPROG;
+	--------------------
 
 
-
-  procedure CODE_IMPLICIT_NOT_EQ ( IMPLICIT_NOT_EQ :TREE ) is
+			--------------------
+  procedure		CODE_IMPLICIT_NOT_EQ	( IMPLICIT_NOT_EQ :TREE )
+  is			--------------------
   begin
-    null;
-  end;
+    null;												--| INTENTIONNEL (elucide vague 4) : le "/=" implicite est
+												--| resolu AU SITE D'USAGE par symbole d'operateur
+												--| (expressions : egalites scalaires, BLKCMP, records) --
+												--| rien a declarer ici
+
+  end	CODE_IMPLICIT_NOT_EQ;
+	--------------------
 
 
 			-----------------------
   procedure		CODE_SUBTYPE_INDICATION	( SUBTYPE_INDICATION, TYPE_DECL :TREE )
   is			-----------------------
     TYPE_ID		: TREE		:= D( AS_SOURCE_NAME, TYPE_DECL );
-    INTEGER_SPEC		: TREE		:= D( SM_TYPE_SPEC,	TYPE_ID );
+    INTEGER_SPEC		: TREE		:= D( SM_TYPE_SPEC, TYPE_ID );
   begin
-    DI( CD_LEVEL,	  INTEGER_SPEC, INTEGER( CODI.CUR_LEVEL	) );
+    DI( CD_LEVEL,	  INTEGER_SPEC, INTEGER( CODI.CUR_LEVEL ) );
     DB( CD_COMPILED,  INTEGER_SPEC, TRUE );
 
   end	CODE_SUBTYPE_INDICATION;
@@ -464,23 +495,23 @@ is
   begin
     case OBJECT.TY is
     when DN_VARIABLE_ID =>
-      PUT_LINE( tab	& "La " &	INTEGER'IMAGE( DI( CD_LEVEL, OBJECT ) )	& ',' & tab & PRINT_NAME( D( LX_SYMREP,	OBJECT ) ) & "_disp" );
+      PUT_LINE( tab & "La " & INTEGER'IMAGE( DI( CD_LEVEL, OBJECT ) ) & ',' & tab & PRINT_NAME( D( LX_SYMREP, OBJECT ) ) & "_disp" );
 
     when DN_IN_ID =>
-      PUT_LINE( tab	& "LVA " & INTEGER'IMAGE( DI(	CD_LEVEL,	OBJECT ) ) & ',' & tab & PRINT_NAME( D(	LX_SYMREP, OBJECT )	) );
+      PUT_LINE( tab & "LVA " & INTEGER'IMAGE( DI( CD_LEVEL, OBJECT ) ) & ',' & tab & PRINT_NAME( D( LX_SYMREP, OBJECT ) ) );
 
     when DN_IN_OUT_ID | DN_OUT_ID =>
-      PUT_LINE( tab	& "LVA " & INTEGER'IMAGE( DI(	CD_LEVEL,	OBJECT ) ) & ',' & tab & PRINT_NAME( D(	LX_SYMREP, OBJECT )	) );
+      PUT_LINE( tab & "LVA " & INTEGER'IMAGE( DI( CD_LEVEL, OBJECT ) ) & ',' & tab & PRINT_NAME( D( LX_SYMREP, OBJECT ) ) );
 
-    when DN_INDEXED	=>
+    when DN_INDEXED =>
       EXPRESSIONS.CODE_INDEXED( OBJECT );
 
     when DN_USED_OBJECT_ID =>
-      CODE_OBJECT( D( SM_DEFN, OBJECT )	);
+      CODE_OBJECT( D( SM_DEFN, OBJECT ) );
 
     when DN_CONSTANT_ID =>
-      PUT_LINE( tab	& "LIa " & INTEGER'IMAGE( DI(	CD_LEVEL,	OBJECT ) ) & ','
-	      & tab & PRINT_NAME( D( LX_SYMREP,	OBJECT ) ) & "_disp" );					-- LOAD CONSTANT ADDRESS
+      PUT_LINE( tab & "LIa " & INTEGER'IMAGE( DI( CD_LEVEL, OBJECT ) ) & ','
+	      & tab & PRINT_NAME( D( LX_SYMREP, OBJECT ) ) & "_disp" );					-- LOAD CONSTANT ADDRESS
 
     when others =>
       PUT_LINE( "!!! LOAD_OBJECT_ADDRESS : OBJECT.TY ILLICITE " & NODE_NAME'IMAGE ( OBJECT.TY ) );
@@ -490,49 +521,48 @@ is
 
 
 
-  procedure CODE_ADRESSE ( ADRESSE :TREE ) is
+--  procedure CODE_ADRESSE ( ADRESSE :TREE ) is
+--  begin
+--    case ADRESSE.TY is
+--    when DN_VARIABLE_ID =>
+--null;--	   GEN_PUSH_DATA ( A, DI (CD_COMP_UNIT, ADRESSE ), LEVEL_NUM(DI ( CD_LEVEL, ADRESSE )), DI ( CD_OFFSET, ADRESSE ) );
+--    when DN_IN_ID =>
+--null;--	   GEN_PUSH_DATA ( A, 0,  LEVEL_NUM(DI ( CD_LEVEL, ADRESSE )), DI ( CD_OFFSET, ADRESSE ) );
+--    when DN_IN_OUT_ID | DN_OUT_ID =>
+--null;--	   GEN_PUSH_DATA ( A, 0, LEVEL_NUM(DI( CD_LEVEL, ADRESSE )), DI( CD_VAL_OFFSET, ADRESSE ) );
+--    when DN_INDEXED =>
+--     EXPRESSIONS.CODE_INDEXED ( ADRESSE );
+--    when DN_USED_OBJECT_ID =>
+--      CODE_ADRESSE ( D( SM_DEFN, ADRESSE ) );
+--    when others =>
+--    PUT_LINE ( "!!! CODE_ADRESSE : OBJECT.TY ILLICITE " & NODE_NAME'IMAGE ( ADRESSE.TY ) );
+--      raise PROGRAM_ERROR;
+--    end case;
+--  end;
+
+
+			----------------------
+  procedure		CODE_SELECT_ALT_PRAGMA	( SELECT_ALT_PRAGMA :TREE )
+  is			----------------------
   begin
-    case ADRESSE.TY	is
-    when DN_VARIABLE_ID =>
-null;--	   GEN_PUSH_DATA ( A, DI (CD_COMP_UNIT,	ADRESSE ), LEVEL_NUM(DI ( CD_LEVEL, ADRESSE )), DI ( CD_OFFSET, ADRESSE ) );
-    when DN_IN_ID =>
-null;--	   GEN_PUSH_DATA ( A, 0,  LEVEL_NUM(DI ( CD_LEVEL, ADRESSE )), DI ( CD_OFFSET, ADRESSE ) );
-    when DN_IN_OUT_ID | DN_OUT_ID =>
-null;--	   GEN_PUSH_DATA ( A, 0, LEVEL_NUM(DI( CD_LEVEL, ADRESSE )), DI( CD_VAL_OFFSET,	ADRESSE )	);
-    when DN_INDEXED	=>
-      EXPRESSIONS.CODE_INDEXED ( ADRESSE );
-    when DN_USED_OBJECT_ID =>
-      CODE_ADRESSE ( D( SM_DEFN, ADRESSE ) );
-    when others =>
-    PUT_LINE ( "!!! CODE_ADRESSE : OBJECT.TY ILLICITE " & NODE_NAME'IMAGE ( ADRESSE.TY ) );
-      raise PROGRAM_ERROR;
-    end case;
-  end;
+    null;												--| INTENTIONNEL : pragma d'alternative select, aucun code
+
+  end	CODE_SELECT_ALT_PRAGMA;
+	----------------------
 
 
-
-  procedure CODE_SELECT_ALT_PRAGMA ( SELECT_ALT_PRAGMA :TREE ) is
-  begin
-    null;
-  end;
-
-
-
-  procedure CODE_EXCEPTION_ID	( EXCEPTION_ID :TREE ) is
+  procedure CODE_EXCEPTION_ID ( EXCEPTION_ID :TREE ) is
   begin
     declare
-      LBL	:constant	STRING :=	NEW_LABEL;
+      LBL :constant STRING := NEW_LABEL;
     begin
---      DI ( CD_LABEL, EXCEPTION_ID, INTEGER ( LBL ) );
-PUT_LINE(	"; EXL" &	tab & LBL	);
---      EMIT ( EXL,	LBL, S=> PRINT_NAME	( D ( LX_SYMREP, EXCEPTION_ID	) ),
---	     COMMENT=> "NUMERO D EXCEPTION SUR DECLARATION" );
+      PUT_LINE( "; EXL" & tab & LBL );
     end;
   end;
 
 
 
-  procedure DBGSTOP	is begin null; end;
+  procedure DBGSTOP is begin null; end;									--| INTENTIONNEL : crochet de point d'arret debogueur
 
 
 begin

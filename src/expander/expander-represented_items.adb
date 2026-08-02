@@ -37,7 +37,7 @@ is
 
 
 			------------------------
-  function		REPRESENTATION_SIZE_BITS	( TYPE_SPEC :TREE )	return INTEGER
+  function		REPRESENTATION_SIZE_BITS	( TYPE_SPEC :TREE ) return INTEGER
   is			------------------------
   begin
       return  DI( SM_SIZE, TYPE_SPEC );
@@ -113,7 +113,7 @@ is
     end if;
 
     begin
-      SIZE_BITS := DI( SM_SIZE, TS );	    								-- 1. Source prioritaire : clause "for T'SIZE use N".
+      SIZE_BITS := DI( SM_SIZE, TS );									-- 1. Source prioritaire : clause "for T'SIZE use N".
     exception
       when others =>
         SIZE_BITS := 0;
@@ -134,6 +134,12 @@ is
     exception
       when others =>  SIZE_BITS := 0;
     end;
+    --| DEFAUT DOCUMENTE (vague 2, triage 28/07) : le 0 final est une
+    --| sentinelle ATTRAPEE par tous les appelants, verifies le 28/07 :
+    --| IS_SMALL_REP_RECORD (0 -> FALSE), CODE_REPRESENTED_RECORD_AGGREGATE
+    --| et CODE_STORE_REP_COMPONENT (<= 0 -> raise), STATIC_RECORD_SIZE_BITS
+    --| (0 -> sentinelle non-statique de STATIC_TYPE_SIZE_BITS).  Tout
+    --| NOUVEL appelant doit tester <= 0 -- sinon lever ici a la place.
 
     return SIZE_BITS;
 
@@ -203,7 +209,7 @@ is
     REP := D( SM_COMP_REP, COMP_ID );
 
     if  REP = TREE_VOID  or else  REP = TREE_NIL  or else  REP.TY /= DN_COMP_REP  then
-      REP := FIND_COMP_REP_ELEM_FROM_COMPONENT( COMP_ID );	-- copie derivee : via la clause partagee
+      REP := FIND_COMP_REP_ELEM_FROM_COMPONENT( COMP_ID );  -- copie derivee : via la clause partagee
     end if;
 
     GET_COMP_REP_ELEM( REP, DUMMY_ID, BYTE_OFFSET, FIRST_BIT, LAST_BIT, WIDTH );
@@ -242,7 +248,7 @@ is
     -- Premier périmètre : modèle TREE-like.
     -- Tous les champs doivent être dans le même contenant logique
     -- commençant à byte_offset 0.
-    REP   := D( SM_REPRESENTATION, TS );
+    REP	:= D( SM_REPRESENTATION, TS );
     REP_S := LIST( D( AS_COMP_REP_S, REP ) );
 
     while  not IS_EMPTY( REP_S )  loop
@@ -252,12 +258,12 @@ is
         declare
 	COMP_ID		: TREE;
 	BYTE_OFFSET	: NATURAL;
-	FIRST_BIT, LAST_BIT	: NATURAL;
+	FIRST_BIT, LAST_BIT : NATURAL;
 	WIDTH		: NATURAL;
 	END_BIT		: NATURAL;
         begin
 	GET_COMP_REP_ELEM( REP_ELEM, COMP_ID, BYTE_OFFSET, FIRST_BIT, LAST_BIT, WIDTH );
-          END_BIT := BYTE_OFFSET * CODI.STORAGE_UNIT + LAST_BIT + 1;
+	END_BIT := BYTE_OFFSET * CODI.STORAGE_UNIT + LAST_BIT + 1;
 
 	if  LAST_BIT < FIRST_BIT  or else  WIDTH <= 0  or else  WIDTH > 64  or else  END_BIT > SIZE_BITS  then
 	  return  FALSE;
@@ -375,11 +381,11 @@ is
         POP( REP_S, REP_ELEM );
 
         if  REP_ELEM.TY = DN_COMP_REP  then
-          DEFN := D( SM_DEFN, D( AS_NAME, REP_ELEM ) );
+	DEFN := D( SM_DEFN, D( AS_NAME, REP_ELEM ) );
 
-          if  DEFN = COMP_ID  then
-            return  REP_ELEM;
-          end if;
+	if  DEFN = COMP_ID  then
+	  return  REP_ELEM;
+	end if;
         end if;
       end loop;
 
@@ -403,7 +409,7 @@ is
 
       if  REP_ELEM = TREE_VOID  or else  REP_ELEM = TREE_NIL  then
         PUT_LINE( "; CODE_REPRESENTED_RECORD_AGGREGATE : composant sans comp_rep "
-          & PRINT_NAME( D( LX_SYMREP, COMP_ID ) ) );
+	& PRINT_NAME( D( LX_SYMREP, COMP_ID ) ) );
         raise  PROGRAM_ERROR;
       end if;
 
@@ -411,7 +417,7 @@ is
 
       if BYTE_OFFSET /= 0 then
         PUT_LINE( "; CODE_REPRESENTED_RECORD_AGGREGATE : byte_offset non nul non gere pour "
-          & PRINT_NAME( D( LX_SYMREP, COMP_ID ) ) );
+	& PRINT_NAME( D( LX_SYMREP, COMP_ID ) ) );
         raise  PROGRAM_ERROR;
       end if;
 
@@ -426,7 +432,7 @@ is
       if  CODI.DEBUG  then
         PUT_LINE( tab50 & "; pack " & PRINT_NAME( D( LX_SYMREP, COMP_ID ) )
 		& " range" & INTEGER'IMAGE( FIRST_BIT )
-		& " .."   & INTEGER'IMAGE( LAST_BIT )
+		& " .."	& INTEGER'IMAGE( LAST_BIT )
 		& " width" & INTEGER'IMAGE( WIDTH ) );
       end if;
 
@@ -456,13 +462,13 @@ is
         begin
 	while  not IS_EMPTY( DSCRMT_ID_S )  loop
 	  POP( DSCRMT_ID_S, DSCRMT_ID );
-            COUNT := COUNT + 1;
+	  COUNT := COUNT + 1;
 
-            if  COUNT = POS  then
-              EMIT_PACKED_FIELD( DSCRMT_ID, COMP_EXP );
-              POS := POS + 1;
-              return;
-            end if;
+	  if  COUNT = POS  then
+	    EMIT_PACKED_FIELD( DSCRMT_ID, COMP_EXP );
+	    POS := POS + 1;
+	    return;
+	  end if;
 	end loop;
         end;
       end loop;
@@ -485,22 +491,22 @@ is
         POP( CHOICES, CH );
 
         if  CH.TY = DN_CHOICE_EXP  then
-          COMP_ID := D( SM_DEFN, D( AS_EXP, CH ) );
+	COMP_ID := D( SM_DEFN, D( AS_EXP, CH ) );
 
-          if  COMP_ID = TREE_VOID  or else  COMP_ID = TREE_NIL  then
-            PUT_LINE( "; CODE_REPRESENTED_RECORD_AGGREGATE : choix sans SM_DEFN" );
-            raise PROGRAM_ERROR;
-          end if;
+	if  COMP_ID = TREE_VOID  or else  COMP_ID = TREE_NIL  then
+	  PUT_LINE( "; CODE_REPRESENTED_RECORD_AGGREGATE : choix sans SM_DEFN" );
+	  raise PROGRAM_ERROR;
+	end if;
 
-          EMIT_PACKED_FIELD( COMP_ID, COMP_EXP );
+	EMIT_PACKED_FIELD( COMP_ID, COMP_EXP );
 
         elsif  CH.TY = DN_CHOICE_OTHERS  then
-          PUT_LINE( "; CODE_REPRESENTED_RECORD_AGGREGATE : others non gere" );
-          raise PROGRAM_ERROR;
+	PUT_LINE( "; CODE_REPRESENTED_RECORD_AGGREGATE : others non gere" );
+	raise PROGRAM_ERROR;
 
         else
-          PUT_LINE( "; CODE_REPRESENTED_RECORD_AGGREGATE : choix non gere " & NODE_NAME'IMAGE( CH.TY ) );
-          raise  PROGRAM_ERROR;
+	PUT_LINE( "; CODE_REPRESENTED_RECORD_AGGREGATE : choix non gere " & NODE_NAME'IMAGE( CH.TY ) );
+	raise  PROGRAM_ERROR;
         end if;
       end loop;
 
@@ -639,7 +645,7 @@ is
       POP( REP_S, REP_ELEM );
 
       DEFN := D( SM_DEFN, D( AS_NAME, REP_ELEM ) );
-      if  DEFN = COMP_ID  or else  PRINT_NAME( D( LX_SYMREP, DEFN ) ) = PRINT_NAME( D( LX_SYMREP, COMP_ID ) )	 then	-- n 95b : composant COPIE par derivation (new TREE) -- la clause
+      if  DEFN = COMP_ID  or else  PRINT_NAME( D( LX_SYMREP, DEFN ) ) = PRINT_NAME( D( LX_SYMREP, COMP_ID ) )  then	-- n 95b : composant COPIE par derivation (new TREE) -- la clause
         return  REP_ELEM;										-- designe les composants du PARENT.
       end if;											-- Noms uniques dans un record : sur.
 
@@ -741,7 +747,7 @@ is
     end if;
 
     SIZE_BYTES := ( SIZE_BITS + CODI.STORAGE_UNIT - 1 )
-                / CODI.STORAGE_UNIT;
+	      / CODI.STORAGE_UNIT;
 
     if  CODI.DEBUG  then
       PUT_LINE( TAB50 & "; store represented component "

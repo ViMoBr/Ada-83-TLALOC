@@ -1,6 +1,8 @@
 WRITE_LIB = 'WRITE_LIB'
 PRO	WRITE_LIB_L13				;---------- PRO WRITE_LIB
+ hexa_show 'WRITE_LIB_L13 ', $
 ELB 1					;    BODY ELAB
+ hexa_show 'var elab DONT_MOVE ', $
 _DONT_MOVE__type = '_DONT_MOVE__type'
 namespace _DONT_MOVE__type			; array var constrained array type info
 VAR use__info, q
@@ -44,6 +46,8 @@ VAR DONT_MOVE__u, q				; variable array : useinfo pointeur au rec info
 	CO_VAR
 	Sa	1, DONT_MOVE_disp			; array data ptr at _disp
 
+ hexa_show ' disp ', DONT_MOVE_disp
+ hexa_show 'var elab NEW_UNIT_SEQ ', $
 VAR NEW_UNIT_SEQ_disp, q			; variable record : pointeur aux data record
 VAR NEW_UNIT_SEQ__u, q			; variable record : pointeur aux useinfo
 VAR NEW_UNIT_SEQ__dat, STANDARD.IDL._SEQ_TYPE.size
@@ -51,15 +55,17 @@ VAR NEW_UNIT_SEQ__dat, STANDARD.IDL._SEQ_TYPE.size
 	Sa	1, NEW_UNIT_SEQ_disp			; record fin
 	LVA	1, STANDARD.IDL._SEQ_TYPE.SIZ
 	Sa	1, NEW_UNIT_SEQ__u
-; CODE_VC_NAME DN_VARIABLE_ID
 
+ hexa_show ' disp ', NEW_UNIT_SEQ_disp
 
 if defined MARK_DONT_MOVE_PAGES_L1_
 PRO	MARK_DONT_MOVE_PAGES_L1			;---------- PRO MARK_DONT_MOVE_PAGES
+ hexa_show 'MARK_DONT_MOVE_PAGES_L1 ', $
 PRMS					;    debut parametrage
 	PRM COMP_UNIT_ofs				; in
 endPRMS					;    fin parametrage
 ELB 2					;    BODY ELAB
+ hexa_show 'var elab TRANS_WITH_SEQ ', $
 VAR TRANS_WITH_SEQ_disp, q			; variable record : pointeur aux data record
 VAR TRANS_WITH_SEQ__u, q			; variable record : pointeur aux useinfo
 VAR TRANS_WITH_SEQ__dat, STANDARD.IDL._SEQ_TYPE.size
@@ -67,7 +73,6 @@ VAR TRANS_WITH_SEQ__dat, STANDARD.IDL._SEQ_TYPE.size
 	Sa	2, TRANS_WITH_SEQ_disp			; record fin
 	LVA	2, STANDARD.IDL._SEQ_TYPE.SIZ
 	Sa	2, TRANS_WITH_SEQ__u
-; CODE_VC_NAME DN_VARIABLE_ID
 	La  2, TRANS_WITH_SEQ_disp
 	LI	STANDARD.IDL._SEQ_TYPE.size
 VAR	ANON_47_35_disp, q
@@ -84,11 +89,14 @@ VAR	ANON_47_35__dat, STANDARD.IDL._SEQ_TYPE.size
 	La  ,  0
 	BLKMOV
 
+ hexa_show ' disp ', TRANS_WITH_SEQ_disp
+ hexa_show 'var elab HIGH_BLOCK ', $
 VAR HIGH_BLOCK_disp, w			; variable entiere
 	LI	0					; lieu resultat sur pile
 	CALL	STANDARD.IDL.IDL_MAN. ,LAST_BLOCK_L49
 	Sw  2,	HIGH_BLOCK_disp
 
+ hexa_show ' disp ', HIGH_BLOCK_disp
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 	La 1, STANDARD.IDL.WRITE_LIB_L13.DONT_MOVE_disp
@@ -96,7 +104,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	LI	1
 	LId 1, STANDARD.IDL.WRITE_LIB_L13.DONT_MOVE__u, STANDARD.IDL.WRITE_LIB_L13._DONT_MOVE__type.FST_1
 	SUB
-	LI	0
+	LI	1
 	MUL
 	ADD
 	ULw 2,	HIGH_BLOCK_disp
@@ -105,7 +113,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	SUB
 	INC
 	CLAMP0
-	LI	0
+	LI	1
 	MUL
 	DROP
 					; Assign_array_aggregate dynamic type DN_ARRAY
@@ -167,7 +175,7 @@ L5:
 	ADD
 	LId 1, STANDARD.IDL.WRITE_LIB_L13.DONT_MOVE__u, STANDARD.IDL.WRITE_LIB_L13._DONT_MOVE__type.FST_1
 	SUB
-	LI	0
+	LI	1
 	MUL
 	ADD
 	ULw 0,	STANDARD.IDL.PAGE_MAN.MAX_VPG_disp
@@ -178,7 +186,7 @@ L5:
 	SUB
 	INC
 	CLAMP0
-	LI	0
+	LI	1
 	MUL
 	DROP
 					; Assign_array_aggregate dynamic type DN_ARRAY
@@ -235,6 +243,7 @@ L6:
 L7:
 namespace	MARK_TRANS_WITH
 ELB 3					;    BODY ELAB
+ hexa_show 'var elab TRANS_WITH ', $
 VAR TRANS_WITH_disp, q			; variable record : pointeur aux data record
 VAR TRANS_WITH__u, q			; variable record : pointeur aux useinfo
 VAR TRANS_WITH__dat, STANDARD.IDL._TREE.size
@@ -242,7 +251,6 @@ VAR TRANS_WITH__dat, STANDARD.IDL._TREE.size
 	Sa	3, TRANS_WITH_disp			; record fin
 	LVA	3, STANDARD.IDL._TREE.SIZ
 	Sa	3, TRANS_WITH__u
-; CODE_VC_NAME DN_VARIABLE_ID
 	La  3, TRANS_WITH_disp
 					; store represented component PT range 0 .. 1 width 2
 	DUP
@@ -253,6 +261,7 @@ VAR TRANS_WITH__dat, STANDARD.IDL._TREE.size
 	BFI
 	Sd
 
+ hexa_show ' disp ', TRANS_WITH_disp
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 LOOP__1:
@@ -267,6 +276,7 @@ LOOP__1:
 	CALL	STANDARD.IDL. ,POP_L24
 namespace	MARK_DONT_MOVE_PAGES_WITHEES
 ELB 4					;    BODY ELAB
+ hexa_show 'var elab WITHED_UNIT ', $
 VAR WITHED_UNIT_disp, q			; variable record : pointeur aux data record
 VAR WITHED_UNIT__u, q			; variable record : pointeur aux useinfo
 VAR WITHED_UNIT__dat, STANDARD.IDL._TREE.size
@@ -274,7 +284,6 @@ VAR WITHED_UNIT__dat, STANDARD.IDL._TREE.size
 	Sa	4, WITHED_UNIT_disp			; record fin
 	LVA	4, STANDARD.IDL._TREE.SIZ
 	Sa	4, WITHED_UNIT__u
-; CODE_VC_NAME DN_VARIABLE_ID
 	La  4, WITHED_UNIT_disp
 	LI	STANDARD.IDL._TREE.size
 VAR	ANON_69_25_disp, q
@@ -292,6 +301,8 @@ VAR	ANON_69_25__dat, STANDARD.IDL._TREE.size
 	La  ,  0
 	BLKMOV
 
+ hexa_show ' disp ', WITHED_UNIT_disp
+ hexa_show 'var elab FIRST_PAGE ', $
 VAR FIRST_PAGE_disp, w			; variable entiere
 	La	4, STANDARD.IDL.WRITE_LIB_L13.MARK_DONT_MOVE_PAGES_L1.MARK_TRANS_WITH.MARK_DONT_MOVE_PAGES_WITHEES.WITHED_UNIT_disp
 	Ld
@@ -300,8 +311,11 @@ VAR FIRST_PAGE_disp, w			; variable entiere
 	UBFX
 	Sw  4,	FIRST_PAGE_disp
 
+ hexa_show ' disp ', FIRST_PAGE_disp
+ hexa_show 'var elab NBR_PAGES_WITHED ', $
 VAR NBR_PAGES_WITHED_disp, w			; variable entiere
 
+ hexa_show ' disp ', NBR_PAGES_WITHED_disp
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 	LI	0					; lieu resultat sur pile
@@ -369,6 +383,7 @@ end if
 
 if defined WRITE_UNIT_L15_
 PRO	WRITE_UNIT_L15				;---------- PRO WRITE_UNIT
+ hexa_show 'WRITE_UNIT_L15 ', $
 PRMS					;    debut parametrage
 	PRM COMP_UNIT_ARG_ofs			; in
 endPRMS					;    fin parametrage
@@ -415,6 +430,7 @@ VAR ELEMENT_TYPE__u_ofs, q
 	Sa	 2, ELEMENT_TYPE__u_ofs
 VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
 					; CODE_PACKAGE_SPEC
+ hexa_show ' spec ', $
 ; EXPANDER.DECLARATIONS.CODE_TYPE_DECL : skip PRIVATE FILE_TYPE (deferred to full type)
 
 					; _FILE_MODE ENUMERATION TYPE INFO
@@ -432,6 +448,7 @@ end namespace
 					; sub program entry decl (in instantiation TRUE )
 if defined CREATE_L16_
 PRO	CREATE_L16				;---------- PRO CREATE
+ hexa_show 'CREATE_L16 ', $
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in out
 	PRM MODE_ofs				; in
@@ -453,6 +470,7 @@ end if
 					; sub program entry decl (in instantiation TRUE )
 if defined OPEN_L17_
 PRO	OPEN_L17				;---------- PRO OPEN
+ hexa_show 'OPEN_L17 ', $
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in out
 	PRM MODE_ofs				; in
@@ -474,6 +492,7 @@ end if
 					; sub program entry decl (in instantiation TRUE )
 if defined CLOSE_L18_
 PRO	CLOSE_L18				;---------- PRO CLOSE
+ hexa_show 'CLOSE_L18 ', $
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in out
 endPRMS					;    fin parametrage
@@ -489,6 +508,7 @@ end if
 					; sub program entry decl (in instantiation TRUE )
 if defined DELETE_L19_
 PRO	DELETE_L19				;---------- PRO DELETE
+ hexa_show 'DELETE_L19 ', $
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in out
 endPRMS					;    fin parametrage
@@ -504,6 +524,7 @@ end if
 					; sub program entry decl (in instantiation TRUE )
 if defined RESET_L20_
 PRO	RESET_L20				;---------- PRO RESET
+ hexa_show 'RESET_L20 ', $
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in out
 	PRM MODE_ofs				; in
@@ -521,6 +542,7 @@ end if
 					; sub program entry decl (in instantiation TRUE )
 if defined RESET_L21_
 PRO	RESET_L21				;---------- PRO RESET
+ hexa_show 'RESET_L21 ', $
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in out
 endPRMS					;    fin parametrage
@@ -536,6 +558,7 @@ end if
 					; sub program entry decl (in instantiation TRUE )
 if defined MODE_L22_
 PRO	MODE_L22				;---------- PRO MODE
+ hexa_show 'MODE_L22 ', $
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM result__ofs				; resultat de fonction
@@ -554,17 +577,17 @@ end if
 					; sub program entry decl (in instantiation TRUE )
 if defined NAME_L23_
 PRO	NAME_L23				;---------- PRO NAME
+ hexa_show 'NAME_L23 ', $
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM result__ofs				; resultat de fonction
 endPRMS					;    fin parametrage
 ELB 3
 begin:
-	LI	0					; lieu result
+	La 	 3, -result__ofs			; lieu result = relais du slot recu (doublet)
 	LVA	 2, GFP_disp
 	La 	 3, -FILE_ofs
 	CALL	STANDARD.SEQUENTIAL_IO. ,NAME_L8
-; RESULTAT UNCONSTRAINED A FAIRE
 	UNLINK	 3
 	RTD	prm_siz-8
 endPRO					;---------- end PRO NAME
@@ -572,17 +595,17 @@ end if
 					; sub program entry decl (in instantiation TRUE )
 if defined FORM_L24_
 PRO	FORM_L24				;---------- PRO FORM
+ hexa_show 'FORM_L24 ', $
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM result__ofs				; resultat de fonction
 endPRMS					;    fin parametrage
 ELB 3
 begin:
-	LI	0					; lieu result
+	La 	 3, -result__ofs			; lieu result = relais du slot recu (doublet)
 	LVA	 2, GFP_disp
 	La 	 3, -FILE_ofs
 	CALL	STANDARD.SEQUENTIAL_IO. ,FORM_L9
-; RESULTAT UNCONSTRAINED A FAIRE
 	UNLINK	 3
 	RTD	prm_siz-8
 endPRO					;---------- end PRO FORM
@@ -590,6 +613,7 @@ end if
 					; sub program entry decl (in instantiation TRUE )
 if defined IS_OPEN_L25_
 PRO	IS_OPEN_L25				;---------- PRO IS_OPEN
+ hexa_show 'IS_OPEN_L25 ', $
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM result__ofs				; resultat de fonction
@@ -608,6 +632,7 @@ end if
 					; sub program entry decl (in instantiation TRUE )
 if defined READ_L26_
 PRO	READ_L26				;---------- PRO READ
+ hexa_show 'READ_L26 ', $
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM ITEM_ofs				; out
@@ -625,6 +650,7 @@ end if
 					; sub program entry decl (in instantiation TRUE )
 if defined WRITE_L27_
 PRO	WRITE_L27				;---------- PRO WRITE
+ hexa_show 'WRITE_L27 ', $
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM ITEM_ofs				; in
@@ -642,6 +668,7 @@ end if
 					; sub program entry decl (in instantiation TRUE )
 if defined END_OF_FILE_L28_
 PRO	END_OF_FILE_L28				;---------- PRO END_OF_FILE
+ hexa_show 'END_OF_FILE_L28 ', $
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM result__ofs				; resultat de fonction
@@ -720,6 +747,7 @@ end namespace
 					;---------- end generic package instantiation SEQ_IO
 end namespace
 
+ hexa_show 'var elab COMP_UNIT ', $
 VAR COMP_UNIT_disp, q			; variable record : pointeur aux data record
 VAR COMP_UNIT__u, q				; variable record : pointeur aux useinfo
 VAR COMP_UNIT__dat, STANDARD.IDL._TREE.size
@@ -727,7 +755,6 @@ VAR COMP_UNIT__dat, STANDARD.IDL._TREE.size
 	Sa	2, COMP_UNIT_disp			; record fin
 	LVA	2, STANDARD.IDL._TREE.SIZ
 	Sa	2, COMP_UNIT__u
-; CODE_VC_NAME DN_VARIABLE_ID
 	La  2, COMP_UNIT_disp
 					; store represented component PT range 0 .. 1 width 2
 	DUP
@@ -738,6 +765,8 @@ VAR COMP_UNIT__dat, STANDARD.IDL._TREE.size
 	BFI
 	Sd
 
+ hexa_show ' disp ', COMP_UNIT_disp
+ hexa_show 'var elab LIB_FILE ', $
 VAR LIB_FILE_disp, q			; variable record : pointeur aux data record
 VAR LIB_FILE__u, q				; variable record : pointeur aux useinfo
 VAR LIB_FILE__dat, STANDARD.IDL.WRITE_LIB_L13.WRITE_UNIT_L15.SEQ_IO._FILE_TYPE.size
@@ -745,7 +774,6 @@ VAR LIB_FILE__dat, STANDARD.IDL.WRITE_LIB_L13.WRITE_UNIT_L15.SEQ_IO._FILE_TYPE.s
 	Sa	2, LIB_FILE_disp			; record fin
 	LVA	2, STANDARD.IDL.WRITE_LIB_L13.WRITE_UNIT_L15.SEQ_IO._FILE_TYPE.SIZ
 	Sa	2, LIB_FILE__u
-; CODE_VC_NAME DN_VARIABLE_ID
 	LIVa 2, STANDARD.IDL.WRITE_LIB_L13.WRITE_UNIT_L15.LIB_FILE_disp, STANDARD.IDL.WRITE_LIB_L13.WRITE_UNIT_L15.SEQ_IO._FILE_TYPE.ID
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
@@ -758,9 +786,11 @@ VAR LIB_FILE__dat, STANDARD.IDL.WRITE_LIB_L13.WRITE_UNIT_L15.SEQ_IO._FILE_TYPE.s
 	LI	0
 	Sb
 
+ hexa_show ' disp ', LIB_FILE_disp
 
 if defined RECOPIE_POUR_COMPACTION_L29_
 PRO	RECOPIE_POUR_COMPACTION_L29		;---------- PRO RECOPIE_POUR_COMPACTION
+ hexa_show 'RECOPIE_POUR_COMPACTION_L29 ', $
 PRMS					;    debut parametrage
 	PRM T_ofs				; in
 	PRM result__ofs				; resultat de fonction
@@ -816,7 +846,7 @@ VAR	ANON_109_28__dat, STANDARD.IDL._TREE.size
 	CALL	STANDARD.IDL.IDL_MAN. ,GET_SOURCE_LINE_L43
 	CALL	STANDARD.IDL.WRITE_LIB_L13.WRITE_UNIT_L15. ,RECOPIE_POUR_COMPACTION_L29
 	CALL	STANDARD.IDL.IDL_MAN. ,MAKE_SOURCE_POSITION_L42
-	La  ,  0
+	La
 	BLKMOV
 	BRA ret_lbl
 	BRA	L32
@@ -848,7 +878,7 @@ L35:
 	La  ,  0
 	LI	STANDARD.IDL._TREE.size
 	La  3,	-T_ofs
-	La  ,  0
+	La
 	BLKMOV
 	BRA ret_lbl
 	BRA	L32
@@ -888,7 +918,7 @@ VAR	ANON_119_41__dat, STANDARD.IDL._TREE.size
 	LI  10
 	CALL	STANDARD.IDL. ,D_L17
 	CALL	STANDARD.IDL.WRITE_LIB_L13.WRITE_UNIT_L15. ,RECOPIE_POUR_COMPACTION_L29
-	La  ,  0
+	La
 	BLKMOV
 	BRA ret_lbl
 	BRA	L32
@@ -922,13 +952,14 @@ L36:
 	La  ,  0
 	LI	STANDARD.IDL._TREE.size
 	La  3,	-T_ofs
-	La  ,  0
+	La
 	BLKMOV
 	BRA ret_lbl
 	BRA	L32
 L37:
 namespace	BLOCK__3
 ELB 4					;    BODY ELAB
+ hexa_show 'var elab WORD_ZERO ', $
 VAR WORD_ZERO_disp, q			; variable record : pointeur aux data record
 VAR WORD_ZERO__u, q				; variable record : pointeur aux useinfo
 VAR WORD_ZERO__dat, STANDARD.IDL._TREE.size
@@ -936,7 +967,6 @@ VAR WORD_ZERO__dat, STANDARD.IDL._TREE.size
 	Sa	4, WORD_ZERO_disp			; record fin
 	LVA	4, STANDARD.IDL._TREE.SIZ
 	Sa	4, WORD_ZERO__u
-; CODE_VC_NAME DN_VARIABLE_ID
 	La  4, WORD_ZERO_disp
 	LI	STANDARD.IDL._TREE.size
 VAR	ANON_132_23_disp, q
@@ -963,6 +993,7 @@ VAR	ANON_132_23__dat, STANDARD.IDL._TREE.size
 	La  ,  0
 	BLKMOV
 
+ hexa_show ' disp ', WORD_ZERO_disp
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 					; debut if
@@ -1025,7 +1056,15 @@ L41:
 	LI	24
 	LI	8
 	UBFX
-; CODE_CASE : choice_range non DN_RANGE a completer
+	DUP
+	LI	27
+	CGE
+	BF	L46
+	DUP
+	LI	31
+	CGT
+	BF	L43
+L46:
 	DUP
 	LI	201
 	CEQ
@@ -1060,6 +1099,7 @@ L42:
 					; fin case
 namespace	RECOPIE_ET_MARQUAGE
 ELB 5					;    BODY ELAB
+ hexa_show 'var elab LENGTH ', $
 VAR LENGTH_disp, b				; variable entiere
 	La	4, STANDARD.IDL.WRITE_LIB_L13.WRITE_UNIT_L15.RECOPIE_POUR_COMPACTION_L29.BLOCK__3.WORD_ZERO_disp
 	Ld
@@ -1076,6 +1116,8 @@ VAR LENGTH_disp, b				; variable entiere
 	BT	STANDARD.ce_raise_
 	Sb  5,	LENGTH_disp
 
+ hexa_show ' disp ', LENGTH_disp
+ hexa_show 'var elab COPIED_T ', $
 VAR COPIED_T_disp, q			; variable record : pointeur aux data record
 VAR COPIED_T__u, q				; variable record : pointeur aux useinfo
 VAR COPIED_T__dat, STANDARD.IDL._TREE.size
@@ -1083,7 +1125,6 @@ VAR COPIED_T__dat, STANDARD.IDL._TREE.size
 	Sa	5, COPIED_T_disp			; record fin
 	LVA	5, STANDARD.IDL._TREE.SIZ
 	Sa	5, COPIED_T__u
-; CODE_VC_NAME DN_VARIABLE_ID
 	La  5, COPIED_T_disp
 	LI	STANDARD.IDL._TREE.size
 VAR	ANON_157_27_disp, q
@@ -1114,6 +1155,8 @@ VAR	ANON_157_27__dat, STANDARD.IDL._TREE.size
 	La  ,  0
 	BLKMOV
 
+ hexa_show ' disp ', COPIED_T_disp
+ hexa_show 'var elab LPTR_TO_COPIED_T ', $
 VAR LPTR_TO_COPIED_T_disp, q			; variable record : pointeur aux data record
 VAR LPTR_TO_COPIED_T__u, q			; variable record : pointeur aux useinfo
 VAR LPTR_TO_COPIED_T__dat, STANDARD.IDL._TREE.size
@@ -1121,7 +1164,6 @@ VAR LPTR_TO_COPIED_T__dat, STANDARD.IDL._TREE.size
 	Sa	5, LPTR_TO_COPIED_T_disp			; record fin
 	LVA	5, STANDARD.IDL._TREE.SIZ
 	Sa	5, LPTR_TO_COPIED_T__u
-; CODE_VC_NAME DN_VARIABLE_ID
 	La 5, LPTR_TO_COPIED_T_disp
 					; Assign_represented_record_aggregate size 32 bits
 	DUP
@@ -1161,6 +1203,8 @@ VAR LPTR_TO_COPIED_T__dat, STANDARD.IDL._TREE.size
 	Sd
 	DROP
 
+ hexa_show ' disp ', LPTR_TO_COPIED_T_disp
+ hexa_show 'var elab INUTILE ', $
 VAR INUTILE_disp, q				; variable record : pointeur aux data record
 VAR INUTILE__u, q				; variable record : pointeur aux useinfo
 VAR INUTILE__dat, STANDARD.IDL._TREE.size
@@ -1168,7 +1212,6 @@ VAR INUTILE__dat, STANDARD.IDL._TREE.size
 	Sa	5, INUTILE_disp				; record fin
 	LVA	5, STANDARD.IDL._TREE.SIZ
 	Sa	5, INUTILE__u
-; CODE_VC_NAME DN_VARIABLE_ID
 	La  5, INUTILE_disp
 					; store represented component PT range 0 .. 1 width 2
 	DUP
@@ -1179,6 +1222,7 @@ VAR INUTILE__dat, STANDARD.IDL._TREE.size
 	BFI
 	Sd
 
+ hexa_show ' disp ', INUTILE_disp
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 					; debut if
@@ -1348,7 +1392,7 @@ VAR	ANON_174_46__dat, STANDARD.IDL._TREE.size
 	LI  143
 	CALL	STANDARD.IDL. ,D_L17
 	CALL	STANDARD.IDL.WRITE_LIB_L13.WRITE_UNIT_L15. ,RECOPIE_POUR_COMPACTION_L29
-	La  ,  0
+	La
 	BLKMOV
 	BRA	L55
 L56:
@@ -1421,7 +1465,7 @@ L51:					; post if
 	La  ,  0
 	LI	STANDARD.IDL._TREE.size
 	LVA 5,	COPIED_T_disp
-	La  ,  0
+	La
 	BLKMOV
 	UNLINK 5
 	UNLINK 4
@@ -1454,10 +1498,11 @@ VAR	ANON_195_18__dat, STANDARD.IDL._TREE.size
 					; doublet resultat record anonyme
 	La  2,	-COMP_UNIT_ARG_ofs
 	CALL	STANDARD.IDL.WRITE_LIB_L13.WRITE_UNIT_L15. ,RECOPIE_POUR_COMPACTION_L29
-	La  ,  0
+	La
 	BLKMOV
 namespace	CREER_LE_FICHIER_UNITE
 ELB 3					;    BODY ELAB
+ hexa_show 'var elab SYM ', $
 VAR SYM_disp, q				; variable record : pointeur aux data record
 VAR SYM__u, q				; variable record : pointeur aux useinfo
 VAR SYM__dat, STANDARD.IDL._TREE.size
@@ -1465,7 +1510,6 @@ VAR SYM__dat, STANDARD.IDL._TREE.size
 	Sa	3, SYM_disp				; record fin
 	LVA	3, STANDARD.IDL._TREE.SIZ
 	Sa	3, SYM__u
-; CODE_VC_NAME DN_CONSTANT_ID
 	La  3, SYM_disp
 	LI	STANDARD.IDL._TREE.size
 VAR	ANON_199_30_disp, q
@@ -1483,6 +1527,8 @@ VAR	ANON_199_30__dat, STANDARD.IDL._TREE.size
 	La  ,  0
 	BLKMOV
 
+ hexa_show ' disp ', SYM_disp
+ hexa_show 'var elab FILE_NAM ', $
 VAR FILE_NAM_disp, q			; variable array : pointeur aux data
 VAR FILE_NAM__u, q				; variable array : useinfo pointeur au rec info
 	La 0, STANDARD._STRING.use__info
@@ -1611,6 +1657,7 @@ end namespace
 	La , 8
 	Sa	3, FILE_NAM__u				; array info ptr from function result
 
+ hexa_show ' disp ', FILE_NAM_disp
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 STR STR_L64, ""				; constante string=""
@@ -1623,6 +1670,7 @@ STR STR_L64, ""				; constante string=""
 endPRO
 namespace	PREPARER_ECRITURE_PAGES_UNITE
 ELB 3					;    BODY ELAB
+ hexa_show 'var elab FIRST_PAGE ', $
 VAR FIRST_PAGE_disp, w			; variable entiere
 	La	2, STANDARD.IDL.WRITE_LIB_L13.WRITE_UNIT_L15.COMP_UNIT_disp
 	Ld
@@ -1639,6 +1687,8 @@ VAR FIRST_PAGE_disp, w			; variable entiere
 	BT	STANDARD.ce_raise_
 	Sw  3,	FIRST_PAGE_disp
 
+ hexa_show ' disp ', FIRST_PAGE_disp
+ hexa_show 'var elab NBR_PAGES ', $
 VAR NBR_PAGES_disp, d			; variable entiere
 	LI	0					; lieu resultat sur pile
 	CALL	STANDARD.IDL.IDL_MAN. ,LAST_BLOCK_L49
@@ -1666,6 +1716,8 @@ VAR NBR_PAGES_disp, d			; variable entiere
 	BT	STANDARD.ce_raise_
 	Sd  3,	NBR_PAGES_disp
 
+ hexa_show ' disp ', NBR_PAGES_disp
+ hexa_show 'var elab POINTER ', $
 VAR POINTER_disp, q				; variable record : pointeur aux data record
 VAR POINTER__u, q				; variable record : pointeur aux useinfo
 VAR POINTER__dat, STANDARD.IDL._TREE.size
@@ -1673,7 +1725,6 @@ VAR POINTER__dat, STANDARD.IDL._TREE.size
 	Sa	3, POINTER_disp				; record fin
 	LVA	3, STANDARD.IDL._TREE.SIZ
 	Sa	3, POINTER__u
-; CODE_VC_NAME DN_VARIABLE_ID
 	La 3, POINTER_disp
 					; Assign_represented_record_aggregate size 32 bits
 	DUP
@@ -1702,6 +1753,8 @@ VAR POINTER__dat, STANDARD.IDL._TREE.size
 	Sd
 	DROP
 
+ hexa_show ' disp ', POINTER_disp
+ hexa_show 'var elab INUTILE ', $
 VAR INUTILE_disp, q				; variable record : pointeur aux data record
 VAR INUTILE__u, q				; variable record : pointeur aux useinfo
 VAR INUTILE__dat, STANDARD.IDL._TREE.size
@@ -1709,7 +1762,6 @@ VAR INUTILE__dat, STANDARD.IDL._TREE.size
 	Sa	3, INUTILE_disp				; record fin
 	LVA	3, STANDARD.IDL._TREE.SIZ
 	Sa	3, INUTILE__u
-; CODE_VC_NAME DN_VARIABLE_ID
 	La  3, INUTILE_disp
 					; store represented component PT range 0 .. 1 width 2
 	DUP
@@ -1720,6 +1772,7 @@ VAR INUTILE__dat, STANDARD.IDL._TREE.size
 	BFI
 	Sd
 
+ hexa_show ' disp ', INUTILE_disp
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 	Ld 3,	NBR_PAGES_disp
@@ -1762,7 +1815,7 @@ VAR	ANON_218_20__dat, STANDARD.IDL._TREE.size
 	CGT
 	BT	STANDARD.ce_raise_
 	CALL	STANDARD.IDL.IDL_MAN. ,DABS_L38
-	La  ,  0
+	La
 	BLKMOV
 	VAR SELARG_L69_disp, q
 	VAR SELARG_L69__u, q
@@ -1855,7 +1908,7 @@ VAR	ANON_228_21__dat, STANDARD.IDL._SEQ_TYPE.size
 	LVA 2,	COMP_UNIT_disp
 	LVA 1,	STANDARD.IDL.WRITE_LIB_L13.NEW_UNIT_SEQ_disp
 	CALL	STANDARD.IDL.IDL_MAN. ,APPEND_L34
-	La  ,  0
+	La
 	BLKMOV
 ret_lbl:
 	UNLINK 2
@@ -1994,17 +2047,18 @@ L73:					; post if
 	LVA	, STANDARD.IDL._SEQ_TYPE.FIRST
 	LI	STANDARD.IDL._TREE.size
 	LVA 0,	STANDARD.IDL.TREE_NIL_disp
-	La  ,  0
+	La
 	BLKMOV
 	DUP
 	LVA	, STANDARD.IDL._SEQ_TYPE.NEXT
 	LI	STANDARD.IDL._TREE.size
 	LVA 0,	STANDARD.IDL.TREE_NIL_disp
-	La  ,  0
+	La
 	BLKMOV
 	DROP
 namespace	BLOCK__5
 ELB 2					;    BODY ELAB
+ hexa_show 'var elab USER_ROOT ', $
 VAR USER_ROOT_disp, q			; variable record : pointeur aux data record
 VAR USER_ROOT__u, q				; variable record : pointeur aux useinfo
 VAR USER_ROOT__dat, STANDARD.IDL._TREE.size
@@ -2012,7 +2066,6 @@ VAR USER_ROOT__dat, STANDARD.IDL._TREE.size
 	Sa	2, USER_ROOT_disp			; record fin
 	LVA	2, STANDARD.IDL._TREE.SIZ
 	Sa	2, USER_ROOT__u
-; CODE_VC_NAME DN_VARIABLE_ID
 	La  2, USER_ROOT_disp
 	LI	STANDARD.IDL._TREE.size
 VAR	ANON_243_27_disp, q
@@ -2030,6 +2083,8 @@ VAR	ANON_243_27__dat, STANDARD.IDL._TREE.size
 	La  ,  0
 	BLKMOV
 
+ hexa_show ' disp ', USER_ROOT_disp
+ hexa_show 'var elab COMPILATION ', $
 VAR COMPILATION_disp, q			; variable record : pointeur aux data record
 VAR COMPILATION__u, q			; variable record : pointeur aux useinfo
 VAR COMPILATION__dat, STANDARD.IDL._TREE.size
@@ -2037,7 +2092,6 @@ VAR COMPILATION__dat, STANDARD.IDL._TREE.size
 	Sa	2, COMPILATION_disp			; record fin
 	LVA	2, STANDARD.IDL._TREE.SIZ
 	Sa	2, COMPILATION__u
-; CODE_VC_NAME DN_VARIABLE_ID
 	La  2, COMPILATION_disp
 	LI	STANDARD.IDL._TREE.size
 VAR	ANON_244_29_disp, q
@@ -2055,6 +2109,8 @@ VAR	ANON_244_29__dat, STANDARD.IDL._TREE.size
 	La  ,  0
 	BLKMOV
 
+ hexa_show ' disp ', COMPILATION_disp
+ hexa_show 'var elab COMP_UNIT_SEQ ', $
 VAR COMP_UNIT_SEQ_disp, q			; variable record : pointeur aux data record
 VAR COMP_UNIT_SEQ__u, q			; variable record : pointeur aux useinfo
 VAR COMP_UNIT_SEQ__dat, STANDARD.IDL._SEQ_TYPE.size
@@ -2062,7 +2118,6 @@ VAR COMP_UNIT_SEQ__dat, STANDARD.IDL._SEQ_TYPE.size
 	Sa	2, COMP_UNIT_SEQ_disp			; record fin
 	LVA	2, STANDARD.IDL._SEQ_TYPE.SIZ
 	Sa	2, COMP_UNIT_SEQ__u
-; CODE_VC_NAME DN_VARIABLE_ID
 	La  2, COMP_UNIT_SEQ_disp
 	LI	STANDARD.IDL._SEQ_TYPE.size
 VAR	ANON_245_34_disp, q
@@ -2090,6 +2145,8 @@ VAR	ANON_245_40__dat, STANDARD.IDL._TREE.size
 	La  ,  0
 	BLKMOV
 
+ hexa_show ' disp ', COMP_UNIT_SEQ_disp
+ hexa_show 'var elab COMP_UNIT ', $
 VAR COMP_UNIT_disp, q			; variable record : pointeur aux data record
 VAR COMP_UNIT__u, q				; variable record : pointeur aux useinfo
 VAR COMP_UNIT__dat, STANDARD.IDL._TREE.size
@@ -2097,7 +2154,6 @@ VAR COMP_UNIT__dat, STANDARD.IDL._TREE.size
 	Sa	2, COMP_UNIT_disp			; record fin
 	LVA	2, STANDARD.IDL._TREE.SIZ
 	Sa	2, COMP_UNIT__u
-; CODE_VC_NAME DN_VARIABLE_ID
 	La  2, COMP_UNIT_disp
 					; store represented component PT range 0 .. 1 width 2
 	DUP
@@ -2108,6 +2164,7 @@ VAR COMP_UNIT__dat, STANDARD.IDL._TREE.size
 	BFI
 	Sd
 
+ hexa_show ' disp ', COMP_UNIT_disp
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 TRAITE_LES_UNITES_DE_COMPILATION:
@@ -2121,6 +2178,23 @@ TRAITE_LES_UNITES_DE_COMPILATION:
 	LVA  2,	STANDARD.IDL.WRITE_LIB_L13.BLOCK__5.COMP_UNIT_SEQ_disp
 	CALL	STANDARD.IDL. ,POP_L24
 					; debut if
+VAR	ANON_253_11_disp, q
+VAR	ANON_253_11__u,    q
+VAR	ANON_253_11__dat, STANDARD.IDL._TREE.size
+	LVA 2, ANON_253_11__dat
+	Sa  2, ANON_253_11_disp
+	La  0, STANDARD.IDL._TREE.use__info
+	Sa  2, ANON_253_11__u
+	LVA 2, ANON_253_11_disp
+					; doublet resultat record anonyme
+	LVA 2,	COMP_UNIT_disp
+	LI  138
+	CALL	STANDARD.IDL. ,D_L17
+	La
+	Ld
+	LI	24
+	LI	8
+	UBFX
 	LI	11
 	CEQ
 	BF	L79
@@ -2139,7 +2213,7 @@ VAR	ANON_254_25__dat, STANDARD.IDL._SEQ_TYPE.size
 	LVA 2,	COMP_UNIT_disp
 	LVA 1,	STANDARD.IDL.WRITE_LIB_L13.NEW_UNIT_SEQ_disp
 	CALL	STANDARD.IDL.IDL_MAN. ,APPEND_L34
-	La  ,  0
+	La
 	BLKMOV
 	BRA	L78
 L79:

@@ -31,10 +31,20 @@ macro show description, value				; pour debogage
   end repeat
 end macro
 
-; PAS INDISPENSABLE : exploration d'optimisation
-optim_RAX_ON_TOP		= 0			; pour exploration peephole
-optim_PUSH_POP_RAX_COUNT	= 0
-;BLOC_DEF_ACTIF		= 0			; pour eviter le probleme BEGIN_BLOC_DEF END_BLOC_DEF dans un if
+macro hexa_show description, value			; adresse hexa pour la carto de debogage
+  local x, digit
+  x = value
+  display description, '0', 'x'
+  repeat 16, n:0
+    digit = (x shr ((15 - n) shl 2)) and 0Fh
+    if digit < 10
+      display '0' + digit
+    else
+      display 'A' + digit - 10
+    end if
+  end repeat
+  display 13, 10
+end macro
 ;			-------------------------------------------------------------------
 ;			S P E C I F I Q U E	  P R O C E S S E U R   I N T E L   x 8 6   6 4
 ;			-------------------------------------------------------------------
@@ -82,7 +92,6 @@ macro			PUSH_RAX
   db 0x48, 0x89, 0x45, 0x08				; mov QWORD PTR [rbp+8], rax		(ecrire RAX a l'emplacement libre en haut de pile, au dessus du rbp)
   db 0x48, 0x8D, 0x6D, 0x08				; lea rbp, [rbp+0x8]		(puis MONTER le rbp sur la valeur ecrite car pile croissante vers adresses hautes)
 
-optim_RAX_ON_TOP = 1
 end macro
 
 ;			........
@@ -91,7 +100,6 @@ macro			PUSH_RDX
   db 0x48, 0x89, 0x55, 0x08				; mov QWORD PTR [rbp+8], rdx		(ecrire RDX a l'emplacement libre en haut de pile, au dessus du rbp)
   db 0x48, 0x8D, 0x6D, 0x08				; lea rbp, [rbp+0x8]		(puis MONTER le rbp sur la valeur ecrite car pile croissante vers adresses hautes)
 
-optim_RAX_ON_TOP = 0
 end macro
 
 ;			.......
@@ -100,12 +108,6 @@ macro			POP_RAX
   db 0x48, 0x8B, 0x45, 0x00				; mov rax, QWORD PTR [rbp]		(lire dans RAX la valeur top sur le rbp)
   db 0x48, 0x8D, 0x6D, 0xF8				; lea rbp, [rbp-0x8]		(puis DESCENDRE le rbp car pile croissante vers adresses hautes)
 
-if optim_RAX_ON_TOP = 1
-postpone
-  optim_PUSH_POP_RAX_COUNT = optim_PUSH_POP_RAX_COUNT + 1
-end postpone
-  optim_RAX_ON_TOP = 0
-end if
 end macro
 
 ;			.......
@@ -114,7 +116,6 @@ macro			POP_RBX
   db 0x48, 0x8B, 0x5D, 0x00				; mov rbx, QWORD PTR [rbp]		(lire dans RBX la valeur top sur le rbp)
   db 0x48, 0x8D, 0x6D, 0xF8				; lea rbp, [rbp-0x8]		(puis DESCENDRE le rbp car pile croissante vers adresses hautes)
 
-optim_RAX_ON_TOP = 0
 end macro
 
 ;			.......
@@ -123,7 +124,6 @@ macro			POP_RCX
   db 0x48, 0x8B, 0x4D, 0x00				; mov rcx, QWORD PTR [rbp]		(lire dans RCX la valeur top sur le rbp)
   db 0x48, 0x8D, 0x6D, 0xF8				; lea rbp, [rbp-0x8]		(puis DESCENDRE le rbp car pile croissante vers adresses hautes)
 
-optim_RAX_ON_TOP = 0
 end macro
 
 ;			.......
@@ -132,7 +132,6 @@ macro			POP_RDX
   db 0x48, 0x8B, 0x55, 0x00				; mov rdx, QWORD PTR [rbp]		(lire dans RDX la valeur top sur le rbp)
   db 0x48, 0x8D, 0x6D, 0xF8				; lea rbp, [rbp-0x8]		(puis DESCENDRE le rbp car pile croissante vers adresses hautes)
 
-optim_RAX_ON_TOP = 0
 end macro
 
 ;			.......
@@ -141,7 +140,6 @@ macro			POP_RSI
   db 0x48, 0x8B, 0x75, 0x00				; mov rsi, QWORD PTR [rbp]		(lire dans RSI la valeur top sur le rbp)
   db 0x48, 0x8D, 0x6D, 0xF8				; lea rbp, [rbp-0x8]		(puis DESCENDRE le rbp car pile croissante vers adresses hautes)
 
-optim_RAX_ON_TOP = 0
 end macro
 
 ;			.......
@@ -150,7 +148,6 @@ macro			POP_RDI
   db 0x48, 0x8B, 0x7D, 0x00				; mov rdi, QWORD PTR [rbp]		(lire dans RDI la valeur top sur le rbp)
   db 0x48, 0x8D, 0x6D, 0xF8				; lea rbp, [rbp-0x8]		(puis DESCENDRE le rbp car pile croissante vers adresses hautes)
 
-optim_RAX_ON_TOP = 0
 end macro
 
 ;			....
@@ -158,7 +155,6 @@ macro			DROP
 ;			....
   db 0x48, 0x8D, 0x6D, 0xF8				; lea rbp, [rbp-0x8]		(DESCENDRE le rbp car pile croissante vers adresses hautes)
 
-optim_RAX_ON_TOP = 0
 end macro
 
 ;			...
@@ -231,7 +227,7 @@ macro			FP_IN_RAX		lvl
     dd 8*lvl
   end if
 
-optim_RAX_ON_TOP = 0
+; optim_RAX_ON_TOP = 0
 end macro
 
 ;			.......................
@@ -295,6 +291,50 @@ macro			INDIRECT_BASE_IN_RAX	lvl, disp		; 1 ou 2 instr
 end macro
 
 ;			........................
+macro			FETCH_BYTE_U	disp
+;			........................
+  if disp = 0
+    db 0x48, 0x0F, 0xB6, 0x00						; movzx rax, byte ptr [rax]
+  else if disp >= -128 & disp < 128
+    db 0x48, 0x0F, 0xB6, 0x40, disp					; movzx rax, byte ptr [rax + ofs8]
+  else
+    db 0x48, 0x0F, 0xB6, 0x80						; movzx rax, byte ptr [rax + ofs32]
+    dd disp
+  end if
+
+end macro
+
+;			........................
+macro			FETCH_WORD_U	disp
+;			........................
+  if disp = 0
+    db 0x48, 0x0F, 0xB7, 0x00						; movzx rax, word ptr [rax]
+  else if disp >= -128 & disp < 128
+    db 0x48, 0x0F, 0xB7, 0x40, disp					; movzx rax, word ptr [rax + ofs8]
+  else
+    db 0x48, 0x0F, 0xB7, 0x80						; movzx rax, word ptr [rax + ofs32]
+    dd disp
+  end if
+
+end macro
+
+;			........................
+macro			FETCH_DWORD_U	disp
+;			........................
+; Pas de movzx dword sur x86-64 : inutile, un mov 32 bits (sans REX.W)
+; zero-etend implicitement rax. Un octet plus court que le movsxd signe.
+  if disp = 0
+    db 0x8B, 0x00							; mov eax, dword ptr [rax]		(zero-etend rax)
+  else if disp >= -128 & disp < 128
+    db 0x8B, 0x40, disp						; mov eax, dword ptr [rax + ofs8]
+  else
+    db 0x8B, 0x80							; mov eax, dword ptr [rax + ofs32]
+    dd disp
+  end if
+
+end macro
+
+;			........................
 macro			FETCH_BYTE	disp
 ;			........................
   if disp = 0
@@ -306,7 +346,6 @@ macro			FETCH_BYTE	disp
     dd disp
   end if
 
-optim_RAX_ON_TOP = 0
 end macro
 
 ;			........................
@@ -321,7 +360,6 @@ macro			FETCH_WORD	disp
     dd disp
   end if
 
-optim_RAX_ON_TOP = 0
 end macro
 
 ;			........................
@@ -336,7 +374,6 @@ macro			FETCH_DWORD	disp
     dd disp
   end if
 
-optim_RAX_ON_TOP = 0
 end macro
 
 ;			........................
@@ -351,7 +388,6 @@ macro			FETCH_QWORD	disp
     dd disp
   end if
 
-optim_RAX_ON_TOP = 0
 end macro
 
 ;			........................
@@ -490,9 +526,30 @@ end macro
 
 
 ;-----------------------------------------------------------------------------------------------------------------------
-;					L O A D	D A T A
+;					L O A D	D A T A		(unsigned/signed)
 ;-----------------------------------------------------------------------------------------------------------------------
 
+;			------------------------
+macro			ULb?	lvl:-1, disp:0			; Unsigned Load Byte 8 bits (zero extension)
+;			------------------------
+  BASE_IN_RAX	lvl						; 1 ou 2 instr
+  FETCH_BYTE_U	disp
+  PUSH_RAX							; 2 instr
+end macro
+;			------------------------
+macro			ULw?	lvl:-1, disp:0			; Unsigned Load Word 16 bits
+;			------------------------
+  BASE_IN_RAX	lvl
+  FETCH_WORD_U	disp
+  PUSH_RAX
+end macro
+;			------------------------
+macro			ULd?	lvl:-1, disp:0			; Unsigned Load doubleword 32 bits
+;			------------------------
+  BASE_IN_RAX	lvl
+  FETCH_DWORD_U	disp
+  PUSH_RAX
+end macro
 ;			------------------------
 macro			Lb?	lvl:-1, disp:0			; 4 ou 5 instr : Load Byte 8 bits
 ;			------------------------
@@ -527,6 +584,27 @@ macro			La?	lvl:-1, disp:0			; Load Address 64 bits
   Lq lvl, disp
 end macro
 
+;			-------------------------------
+macro			ULIb?	lvl:-1, disp:0, ofs:0		; Unsigned Load Indirect byte (la variable en frame ou empilee est une adresse, octet zero-etendu)
+;			-------------------------------
+  INDIRECT_BASE_IN_RAX	lvl, disp
+  FETCH_BYTE_U		ofs
+  PUSH_RAX							; empiler la donnee
+end macro
+;			-------------------------------
+macro			ULIw?	lvl:-1, disp:0, ofs:0		; Unsigned Load Indirect word
+;			-------------------------------
+  INDIRECT_BASE_IN_RAX	lvl, disp
+  FETCH_WORD_U		ofs
+  PUSH_RAX
+end macro
+;			-------------------------------
+macro			ULId?	lvl:-1, disp:0, ofs:0		; Unsigned Load Indirect doubleword
+;			-------------------------------
+  INDIRECT_BASE_IN_RAX	lvl, disp
+  FETCH_DWORD_U		ofs
+  PUSH_RAX
+end macro
 ;			-------------------------------
 macro			LIb?	lvl:-1, disp:0, ofs:0		; Load Indirect byte (la variable en frame ou empilee est une adresse, adresse a laquelle on va chercher l'octet avec offset)
 ;			-------------------------------
@@ -1119,13 +1197,13 @@ macro			BT?	lbl				; branch true
   POP_RAX
   db 0x08, 0xC0							; or AL, AL
   local disp
-  if disp >= -128 & disp <= 127
-    db 0x75							; jnz rel8
-    db disp
-  else
+;  if disp	>= -128 & disp <= 127
+;    db 0x75							; jnz rel8
+;    db disp
+;  else
     db 0x0F, 0x85							; jnz rel32
     dd disp
-  end if
+;  end if
   disp = lbl-$
 end macro
 ;			-------------
@@ -1134,13 +1212,13 @@ macro			BF?	lbl				; branch false
   POP_RAX
   db 0x08, 0xC0							; or AL, AL
   local disp
-  if disp >= -128 & disp <= 127
-    db 0x74							; jz rel8
-    db disp
-  else
+;  if disp	>= -128 & disp <= 127
+;    db 0x74							; jz rel8
+;    db disp
+;  else
     db 0x0F, 0x84							; jz rel32
     dd disp
-  end if
+;  end if
   disp = lbl-$
 end macro
 ;			-------------------------
@@ -1234,7 +1312,6 @@ end macro
 ;			----------------------
 macro			PRO	sub_name_lbl			; Debut de procedure declaree
 ;			----------------------
-;sub_name_lbl:
   namespace sub_name_lbl						; definir son espace de noms
   BRA post							; contournement de l'elaboration autour de la procedure
 end macro
@@ -1313,19 +1390,6 @@ macro			BEGIN_BLOC_DEF_OLD				; Debut de definition d'un bloc octets utilisable 
 								; les octets deront places ici
 end macro
 
-;			-------------
-macro			END_BLOC_DEF_OLD!				; Fin de definition d'une constante chaine (Attention inconditionnelle "!")
-;			-------------
-;if BLOC_DEF_ACTIF = 1
-      str_bit_size = 8*($ - data)					; Calculer la taille effective en bits
-    end postpone
-  esc end struc							; Fin de la structure du bloc arrêt de la coupure par "esc"
-;BLOC_DEF_ACTIF = 0
-;end if
-end macro
-
-
-
 ;			--------------
 macro			BEGIN_BLOC_DEF				; Debut du bloc d'images d'un enumere
 ;			--------------
@@ -1334,7 +1398,7 @@ macro			BEGIN_BLOC_DEF				; Debut du bloc d'images d'un enumere
 ;	le namespace _TYPE de l'enumere, unicite garantie par construction.
 ;	Ni struc coupee, ni postpone, ni "!", ni local inter-macros.
   BRA	IMAGES.skip
-IMAGES.data = $						; les db d'images suivent, inline
+IMAGES.data = $							; les db d'images suivent, inline
 end macro
 
 ;			------------
@@ -1343,24 +1407,7 @@ macro			END_BLOC_DEF	siz, fst, lst		; Fin : pose le ENUM_USE_INFO etendu
 ;	CONTRAT (record ENUM_USE_INFO du prelude + doublet images) :
 ;	  SIZ @0 (dd) | FST @+4 | LST @+8 | pad | data_ptr @+16 | info_ptr @+24
 ;	  use__info pointe SIZ ; TEXT_IO (GET_ENUM_IMAGES) lit le doublet a __u+16.
-IMAGES.info = $
-	dd 8*(IMAGES.skip - IMAGES.data), 8, 1, IMAGES.skip - IMAGES.data
-  align_q						; SIZ 8-aligne => doublet @+16 8-aligne
-SIZ = $
-	dd siz
-FST = $
-	dd fst
-LST = $
-	dd lst
-	dd 0						; padding : doublet a +16 exactement
-IMAGES.data_ptr = $
-	dq IMAGES.data
-IMAGES.info_ptr = $
-	dq IMAGES.info
-IMAGES.skip:						; cible du BRA, fin du bloc
-end macro
-macro			END_BLOC_DEF	siz, fst, lst
-IMAGES.data_end = $					; fin des octets d'images (avant info/scalaires)
+IMAGES.data_end = $							; fin des octets d'images (avant info/scalaires)
 IMAGES.info = $
 	dd 8*(IMAGES.data_end - IMAGES.data), 8, 1, IMAGES.data_end - IMAGES.data
   align_q
@@ -1436,19 +1483,31 @@ macro			USEINFO	lvl, field_name, load_instruc&	; Reference a un __u use info
   load_instruc
   Sa lvl, field_name#__u
 end macro
-;			-------------------
-macro			STATOFS	name, siz				; Definition de l'offset statique (pour un record statique, dans une virtual at 0)
-;			-------------------
-  if siz > 4
+
+;			---------------------------
+macro			STATOFS	name, siz, algn:0			; Definition de l'offset statique (pour un record statique, dans une virtual at 0)
+;			---------------------------
+; algn = alignement du COMPOSANT elementaire en octets (1/2/4/8), passe par
+; l'expander. algn 0 : compatibilite, ancienne regle par taille totale.
+  if algn = 8
     align_q
-  else if siz > 2
+  else if algn = 4
     align_d
-  else if siz > 1
+  else if algn = 2
     align_w
+  else if algn = 1
+								; octets : pas d'alignement
+  else								; algn 0 : ancienne regle
+    if siz > 4
+      align_q
+    else if siz > 2
+      align_d
+    else if siz > 1
+      align_w
+    end if
   end if
 name = $								; nom offset du champ
   rb siz								; reservation
-;size = $								; Taille de la structure (sert à l'allocation)
 end macro
 
 ;			-----------------------------------
@@ -1465,7 +1524,6 @@ macro			VAR	name_disp, sizChar, siz:1		; Definition d'un lieu de variable
       rb sizChar
     end if
   end virtual
-
 end macro
 
 ;			------
@@ -1614,14 +1672,14 @@ macro			BLKNOT?					; NOT composite : chaque octet ^= 1
 ; (piege n 5) applique par octet.  La destination a deja recu la copie
 ; de l'operande par BLKMOV.
   local  boucle, fin
-  POP_RCX					; LEN (octets)
-  POP_RDI					; @DST
-  db 0x48, 0x85, 0xC9				; test rcx, rcx
-  db 0x74, fin - $ - 1				; jz  fin
+  POP_RCX								; LEN (octets)
+  POP_RDI								; @DST
+  db 0x48, 0x85, 0xC9						; test rcx, rcx
+  db 0x74, fin - $ - 1						; jz  fin
 boucle:
-  db 0x80, 0x37, 0x01				; xor byte [rdi], 1
-  db 0x48, 0xFF, 0xC7				; inc rdi
-  db 0xE2, boucle - $ - 1			; loop boucle
+  db 0x80, 0x37, 0x01						; xor byte [rdi], 1
+  db 0x48, 0xFF, 0xC7						; inc rdi
+  db 0xE2, boucle - $ - 1						; loop boucle
 fin:
 end macro
 ;			------
@@ -2077,7 +2135,7 @@ Elf64_Phdr:
 	p_vaddr		dq 0x00400078
 	p_paddr		dq 0
 	p_filesz		dq ASM_SIZE				; juste le necessaire code/constantes dans le fichier
-	p_memsz		dq ASM_SIZE + 1024*1024			; 1Mo au dessus du code et des constantes (pour la co-pile)
+	p_memsz		dq ASM_SIZE + 128 * 1024*1024			; 64 Mo au dessus du code et des constantes (pour la co-pile)
 	p_align		dq 4096
 
 
@@ -2097,11 +2155,6 @@ Elf64_Phdr:
   db 0x4D, 0x89, 0x36						; mov [r14], r14			(empiler le premier "frame" de co-pile)
   db 0x4D, 0x89, 0xF5						; mov r13, r14			(R13 est le "frame pointer" de co-pile)
   db 0x4D, 0x8D, 0x76, 0x08						; lea r14, [r14 + 8]		(monter le haut de co-pile sur le premier lieu libre)
-
-; PAS INDISPENSABLE : exploration d'optimisation
-postpone
-  show 'optim push_pop_rax_count (8 octets/unité) = ', optim_PUSH_POP_RAX_COUNT
-end postpone
 
 ;-----------------------------------------------------------------------------------------------------------------------
 ;	1	2	3	4	5	6	7	8	9	0	1	2

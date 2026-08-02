@@ -1,4 +1,4 @@
--- TEST INCLUSION DE RUNTIME VIA BODY STANDARD
+-- INCLUSION DE RUNTIME VIA BODY STANDARD
 
 				--------
 package body			_standrd
@@ -55,7 +55,7 @@ is				--------
 		-------------------
 		INTEGER_IMAGE_WIDTH:
     declare
-      N	: INTEGER	:= ITEM;
+      N	: INTEGER := ITEM;
 
     begin
       LEN := 1;
@@ -79,7 +79,7 @@ is				--------
     declare
       BUF : STRING (1 .. LEN);
       POS : INTEGER := LEN;
-      N   : INTEGER := ITEM;
+      N	: INTEGER := ITEM;
       DIG : INTEGER;
     begin
       if N = 0 then
@@ -130,7 +130,7 @@ is				--------
   begin
     while  I <= IMAGES'LAST  loop
       ITEM_REP := CHARACTER'POS( IMAGES( I ) );
-      LEN      := CHARACTER'POS( IMAGES( I + 1 ) );
+      LEN	     := CHARACTER'POS( IMAGES( I + 1 ) );
 
       if  ITEM_REP = REP  then
         declare
@@ -138,9 +138,9 @@ is				--------
 	-- resultat de 'IMAGE est 1) : LEX compte dessus (IMAGE(4..LGR)).
 	-- Initialisation par tranche : c'est le patch n 3 de
 	-- COMPILE_ARRAY_VAR qui rend cette declaration compilable.
-          IMG	: constant STRING( 1 .. LEN )	:= IMAGES( I + 2 .. I + 1 + LEN );
+	IMG	: constant STRING( 1 .. LEN ) := IMAGES( I + 2 .. I + 1 + LEN );
         begin
-          return IMG;
+	return IMG;
         end;
       end if;
 
@@ -151,6 +151,85 @@ is				--------
 
   end	ENUM_IMAGE;
 	----------
+
+
+			-------------
+  function		INTEGER_VALUE	( S :STRING )	return LONG_INTEGER
+  is			-------------
+  -- Primitive Ada cachee de 'VALUE des ENTIERS, reciproque
+  -- d'INTEGER_IMAGE.  Appelee par le code genere : CODE_VALUE empile
+  -- le lieu resultat (qword), puis @doublet de la chaine (l'argument,
+  -- deja empile par l'appelant de la forme appel).
+  -- LRM 3.5.5, SOUS-ENSEMBLE : blancs de tete/queue, signe optionnel,
+  -- chiffres decimaux, soulignes admis (position non verifiee) ;
+  -- base et exposant NON instruits ; chaine illicite ->
+  -- CONSTRAINT_ERROR ; depassement 64 bits non controle (les valeurs
+  -- du bootstrap viennent de PRINT_NUM).
+    I		: INTEGER		:= S'FIRST;
+    N		: LONG_INTEGER	:= 0;
+    NEGATIVE	: BOOLEAN		:= FALSE;
+    SOME_DIGIT	: BOOLEAN		:= FALSE;
+  begin
+    while  I <= S'LAST  and then  S(I) = ' '  loop				-- blancs de tete
+      I := I + 1;
+    end loop;
+
+    if  I <= S'LAST  and then  ( S(I) = '-'  or else  S(I) = '+' )  then
+      NEGATIVE := S(I) = '-';
+      I := I + 1;
+    end if;
+
+    -- Accumulation en NEGATIF pour couvrir LONG_INTEGER'FIRST
+    -- (le motif d'INTEGER_IMAGE).
+    while  I <= S'LAST
+    and then  (    ( S(I) >= '0'  and then  S(I) <= '9' )
+	   or else  ( S(I) = '_'  and then  SOME_DIGIT ) )  loop
+      if  S(I) /= '_'  then
+        N := N * 10 - LONG_INTEGER( CHARACTER'POS( S(I) ) - CHARACTER'POS('0') );
+        SOME_DIGIT := TRUE;
+      end if;
+      I := I + 1;
+    end loop;
+
+    while  I <= S'LAST  and then  S(I) = ' '  loop				-- blancs de queue
+      I := I + 1;
+    end loop;
+
+    if  not SOME_DIGIT  or else  I <= S'LAST  then				-- rien lu, ou reliquat illicite
+      raise CONSTRAINT_ERROR;
+    end if;
+
+    if  NEGATIVE  then
+      return  N;
+    else
+      return  -N;
+    end if;
+
+  end	INTEGER_VALUE;
+	-------------
+
+
+		-----------
+  function	INTEGER_POW	( X, N : LONG_INTEGER )	return LONG_INTEGER
+  is		-----------
+
+    R	: LONG_INTEGER	:= 1;
+    B	: LONG_INTEGER	:= X;
+    E	: LONG_INTEGER	:= N;
+
+  begin
+    if  E < 0  then
+      raise  CONSTRAINT_ERROR;
+    end if;
+    while  E > 0  loop
+      R := R * B;
+      E := E - 1;
+    end loop;
+
+    return  R;
+
+  end	INTEGER_POW;
+	-----------
 
 
 	--------

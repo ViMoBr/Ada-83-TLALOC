@@ -15,9 +15,9 @@ is					--------
 
 		----------------
   function	MAKE_VARIABLE_ID		( LX_SRCPOS, LX_SYMREP, SM_OBJ_TYPE, SM_INIT_EXP :TREE := TREE_VOID;
-					  SM_RENAMES_OBJ	:BOOLEAN	:= FALSE;
+					  SM_RENAMES_OBJ	:BOOLEAN  := FALSE;
 					  SM_ADDRESS	:TREE	:= TREE_VOID;
-					  SM_IS_SHARED	:BOOLEAN	:= FALSE;
+					  SM_IS_SHARED	:BOOLEAN  := FALSE;
 					  XD_REGION	:TREE	:= TREE_VOID )
 					return TREE
   is		----------------
@@ -106,7 +106,7 @@ is					--------
 					return TREE
   is		--------------------
 
-    NODE	: TREE	:= MAKE( DN_DISCRIMINANT_ID );
+    NODE  : TREE	:= MAKE( DN_DISCRIMINANT_ID );
 
   begin
     D( DA.LX_SRCPOS, NODE, LX_SRCPOS );
@@ -126,7 +126,7 @@ is					--------
 					  XD_REGION	:TREE	:= TREE_VOID )
 					return TREE
   is		---------
-    NODE	: TREE	:= MAKE( DN_IN_ID );
+    NODE  : TREE	:= MAKE( DN_IN_ID );
   begin
     D( DA.LX_SRCPOS, NODE, LX_SRCPOS );
     D( DA.LX_SYMREP, NODE, LX_SYMREP );
@@ -163,7 +163,7 @@ is					--------
   function	MAKE_OUT_ID	( LX_SRCPOS, LX_SYMREP, SM_OBJ_TYPE, SM_INIT_EXP, SM_FIRST,
 				XD_REGION :TREE := TREE_VOID )
 				return TREE is
-    NODE	: TREE	:= MAKE( DN_OUT_ID );
+    NODE  : TREE	:= MAKE( DN_OUT_ID );
   begin
     D( DA.LX_SRCPOS, NODE, LX_SRCPOS );
     D( DA.LX_SYMREP, NODE, LX_SYMREP );
@@ -177,11 +177,11 @@ is					--------
 	-----------
 
 		-------------------
-  function	MAKE_ENUMERATION_ID	( LX_SRCPOS, LX_SYMREP, SM_OBJ_TYPE :TREE := TREE_VOID;
+  function	MAKE_ENUMERATION_ID ( LX_SRCPOS, LX_SYMREP, SM_OBJ_TYPE :TREE := TREE_VOID;
 				SM_POS, SM_REP :INTEGER := 0;
 				XD_REGION :TREE := TREE_VOID )
 				return TREE is
-    NODE	: TREE	:= MAKE( DN_ENUMERATION_ID );
+    NODE  : TREE	:= MAKE( DN_ENUMERATION_ID );
   begin
     D( DA.LX_SRCPOS, NODE, LX_SRCPOS );
     D( DA.LX_SYMREP, NODE, LX_SYMREP );
@@ -199,7 +199,7 @@ is					--------
 				SM_POS, SM_REP :INTEGER := 0;
 				XD_REGION :TREE := TREE_VOID )
 				return TREE is
-    NODE	: TREE	:= MAKE( DN_CHARACTER_ID );
+    NODE  : TREE	:= MAKE( DN_CHARACTER_ID );
   begin
     D( DA.LX_SRCPOS, NODE, LX_SRCPOS );
     D( DA.LX_SYMREP, NODE, LX_SYMREP );
@@ -215,7 +215,7 @@ is					--------
 		-----------------
   function	MAKE_ITERATION_ID	( LX_SRCPOS, LX_SYMREP, SM_OBJ_TYPE, XD_REGION :TREE := TREE_VOID )
 				return TREE is
-    NODE	: TREE	:= MAKE( DN_ITERATION_ID );
+    NODE  : TREE	:= MAKE( DN_ITERATION_ID );
   begin
     D( DA.LX_SRCPOS, NODE, LX_SRCPOS );
     D( DA.LX_SYMREP, NODE, LX_SYMREP );
@@ -229,7 +229,7 @@ is					--------
 		------------
   function	MAKE_TYPE_ID	( LX_SRCPOS, LX_SYMREP, SM_TYPE_SPEC, SM_FIRST, XD_REGION :TREE := TREE_VOID )
 				return TREE is
-    NODE	: TREE	:= MAKE( DN_TYPE_ID );
+    NODE  : TREE	:= MAKE( DN_TYPE_ID );
   begin
     D( DA.LX_SRCPOS, NODE, LX_SRCPOS );
     D( DA.LX_SYMREP, NODE, LX_SYMREP );
@@ -244,7 +244,7 @@ is					--------
 		---------------
   function	MAKE_SUBTYPE_ID	( LX_SRCPOS, LX_SYMREP, SM_TYPE_SPEC, XD_REGION :TREE := TREE_VOID )
 				return TREE is
-    NODE	:TREE	:= MAKE( DN_SUBTYPE_ID );
+    NODE  :TREE	:= MAKE( DN_SUBTYPE_ID );
   begin
     D( DA.LX_SRCPOS, NODE, LX_SRCPOS );
     D( DA.LX_SYMREP, NODE, LX_SYMREP );
@@ -258,7 +258,7 @@ is					--------
 		--------------------
   function	MAKE_PRIVATE_TYPE_ID	( LX_SRCPOS, LX_SYMREP, SM_TYPE_SPEC, XD_REGION :TREE := TREE_VOID )
 					return TREE is
-    NODE	:TREE	:= MAKE( DN_PRIVATE_TYPE_ID );
+    NODE  :TREE	:= MAKE( DN_PRIVATE_TYPE_ID );
   begin
     D( DA.LX_SRCPOS, NODE, LX_SRCPOS );
     D( DA.LX_SYMREP, NODE, LX_SYMREP );
@@ -272,7 +272,7 @@ is					--------
 		----------------------
   function	MAKE_L_PRIVATE_TYPE_ID	( LX_SRCPOS, LX_SYMREP, SM_TYPE_SPEC, XD_REGION :TREE := TREE_VOID )
 					return TREE is
-    NODE	:TREE	:= MAKE( DN_L_PRIVATE_TYPE_ID );
+    NODE  :TREE	:= MAKE( DN_L_PRIVATE_TYPE_ID );
   begin
     D( DA.LX_SRCPOS, NODE, LX_SRCPOS );
     D( DA.LX_SYMREP, NODE, LX_SYMREP );
@@ -291,7 +291,7 @@ is					--------
 				return TREE
   is		-----------------
 
-    NODE	:TREE	:= MAKE( DN_PROCEDURE_ID );
+    NODE  :TREE	:= MAKE( DN_PROCEDURE_ID );
 
   begin
     D( DA.LX_SRCPOS, NODE, LX_SRCPOS );
@@ -321,7 +321,7 @@ is					--------
 				return TREE
   is		----------------
 
-    NODE	:TREE	:= MAKE( DN_FUNCTION_ID );
+    NODE  :TREE	:= MAKE( DN_FUNCTION_ID );
 
   begin
     D( DA.LX_SRCPOS, NODE, LX_SRCPOS );
@@ -351,7 +351,7 @@ is					--------
 				return TREE
   is		----------------
 
-    NODE	:TREE	:= MAKE( DN_OPERATOR_ID );
+    NODE  :TREE	:= MAKE( DN_OPERATOR_ID );
 
   begin
     D( DA.LX_SRCPOS, NODE, LX_SRCPOS );
@@ -400,7 +400,7 @@ is					--------
 				SM_IS_INLINE :BOOLEAN := FALSE;
 				XD_REGION :TREE := TREE_VOID )
 				return TREE is
-    NODE	:TREE	:= MAKE( DN_GENERIC_ID );
+    NODE  :TREE	:= MAKE( DN_GENERIC_ID );
   begin
     D( DA.LX_SRCPOS, NODE, LX_SRCPOS );
     D( DA.LX_SYMREP, NODE, LX_SYMREP );
@@ -419,7 +419,7 @@ is					--------
   function	MAKE_TASK_body_ID	( LX_SRCPOS, LX_SYMREP, SM_FIRST, SM_TYPE_SPEC, SM_body,
 				XD_REGION :TREE := TREE_VOID )
 				return TREE is
-    NODE	:TREE	:= MAKE( DN_TASK_body_ID );
+    NODE  :TREE	:= MAKE( DN_TASK_body_ID );
   begin
     D( DA.LX_SRCPOS, NODE, LX_SRCPOS );
     D( DA.LX_SYMREP, NODE, LX_SYMREP );
@@ -435,7 +435,7 @@ is					--------
 		-------------
   function	MAKE_LABEL_ID	( LX_SRCPOS, LX_SYMREP, SM_STM, XD_REGION :TREE := TREE_VOID )
 				return TREE is
-    NODE	:TREE	:= MAKE( DN_LABEL_ID );
+    NODE  :TREE	:= MAKE( DN_LABEL_ID );
   begin
     D( DA.LX_SRCPOS, NODE, LX_SRCPOS );
     D( DA.LX_SYMREP, NODE, LX_SYMREP );
@@ -447,9 +447,9 @@ is					--------
 	-------------
 
 		------------------
-  function	MAKE_BLOCK_LOOP_ID	( LX_SRCPOS, LX_SYMREP, SM_STM, XD_REGION :TREE := TREE_VOID )
+  function	MAKE_BLOCK_LOOP_ID  ( LX_SRCPOS, LX_SYMREP, SM_STM, XD_REGION :TREE := TREE_VOID )
 				return TREE is
-    NODE	:TREE	:= MAKE( DN_BLOCK_LOOP_ID );
+    NODE  :TREE	:= MAKE( DN_BLOCK_LOOP_ID );
   begin
     D( DA.LX_SRCPOS, NODE, LX_SRCPOS );
     D( DA.LX_SYMREP, NODE, LX_SYMREP );
@@ -463,7 +463,7 @@ is					--------
 		-------------
   function	MAKE_ENTRY_ID	( LX_SRCPOS, LX_SYMREP, SM_SPEC, SM_ADDRESS, XD_REGION :TREE := TREE_VOID )
 				return TREE is
-    NODE	:TREE	:= MAKE( DN_ENTRY_ID );
+    NODE  :TREE	:= MAKE( DN_ENTRY_ID );
   begin
     D( DA.LX_SRCPOS, NODE, LX_SRCPOS );
     D( DA.LX_SYMREP, NODE, LX_SYMREP );
@@ -491,11 +491,11 @@ is					--------
 
 		-----------------
   function	MAKE_ATTRIBUTE_ID ( LX_SRCPOS, LX_SYMREP :TREE := TREE_VOID; XD_POS :INTEGER  ) return TREE is
-    NODE	:TREE	:= MAKE( DN_ATTRIBUTE_ID  );
+    NODE  :TREE	:= MAKE( DN_ATTRIBUTE_ID  );
   begin
     D( DA.LX_SRCPOS, NODE, LX_SRCPOS  );
     D( DA.LX_SYMREP, NODE, LX_SYMREP  );
-    DI( DA.XD_POS,   NODE, XD_POS  );
+    DI( DA.XD_POS,	 NODE, XD_POS  );
     return NODE;
 
   end	MAKE_ATTRIBUTE_ID;
@@ -508,7 +508,7 @@ is					--------
   begin
     D( DA.LX_SRCPOS, NODE, LX_SRCPOS  );
     D( DA.LX_SYMREP, NODE, LX_SYMREP  );
-    DI( DA.XD_POS,    NODE, XD_POS  );
+    DI( DA.XD_POS,	  NODE, XD_POS  );
     D( DA.SM_ARGUMENT_ID_S, NODE, SM_ARGUMENT_ID_S  );
     return NODE;
 
@@ -521,7 +521,7 @@ is					--------
   begin
     D  ( DA.LX_SRCPOS, NODE, LX_SRCPOS  );
     D  ( DA.LX_SYMREP, NODE, LX_SYMREP  );
-    DI ( DA.XD_POS,    NODE, XD_POS  );
+    DI ( DA.XD_POS,	   NODE, XD_POS  );
     return NODE;
 
   end	MAKE_ARGUMENT_ID;
@@ -542,7 +542,7 @@ is					--------
 
 		-----------------
   function	MAKE_BLOCK_MASTER	( LX_SRCPOS, SM_STM :TREE := TREE_VOID )	return TREE is
-    NODE	:TREE	:= MAKE( DN_BLOCK_MASTER );
+    NODE  :TREE	:= MAKE( DN_BLOCK_MASTER );
   begin
     D( DA.LX_SRCPOS, NODE, LX_SRCPOS );
     D( DA.SM_STM, NODE, SM_STM );
@@ -554,7 +554,7 @@ is					--------
 		----------------
   function	MAKE_DSCRMT_DECL	( AS_SOURCE_NAME_S, AS_NAME, AS_EXP, LX_SRCPOS :TREE := TREE_VOID )
 				return TREE is
-    NODE	:TREE	:= MAKE( DN_DSCRMT_DECL );
+    NODE  :TREE	:= MAKE( DN_DSCRMT_DECL );
   begin
     D( DA.AS_SOURCE_NAME_S, NODE, AS_SOURCE_NAME_S );
     D( DA.AS_NAME, NODE, AS_NAME );
@@ -569,7 +569,7 @@ is					--------
   function	MAKE_IN		( AS_SOURCE_NAME_S, AS_NAME, AS_EXP, LX_SRCPOS :TREE := TREE_VOID;
 				LX_DEFAULT :BOOLEAN := FALSE )
 				return TREE is
-    NODE	:TREE	:= MAKE( DN_IN );
+    NODE  :TREE	:= MAKE( DN_IN );
   begin
     D( DA.AS_SOURCE_NAME_S, NODE, AS_SOURCE_NAME_S );
     D( DA.AS_NAME, NODE, AS_NAME );
@@ -584,7 +584,7 @@ is					--------
 		--------
   function	MAKE_OUT		( AS_SOURCE_NAME_S, AS_NAME, AS_EXP, LX_SRCPOS :TREE := TREE_VOID )
 				return TREE is
-    NODE	:TREE	:= MAKE( DN_OUT );
+    NODE  :TREE	:= MAKE( DN_OUT );
   begin
     D( DA.AS_SOURCE_NAME_S, NODE, AS_SOURCE_NAME_S );
     D( DA.AS_NAME, NODE, AS_NAME );
@@ -598,7 +598,7 @@ is					--------
 		-----------
   function	MAKE_IN_OUT	( AS_SOURCE_NAME_S, AS_NAME, AS_EXP, LX_SRCPOS :TREE := TREE_VOID )
 				return TREE is
-    NODE	:TREE	:= MAKE( DN_IN_OUT );
+    NODE  :TREE	:= MAKE( DN_IN_OUT );
   begin
     D( DA.AS_SOURCE_NAME_S, NODE, AS_SOURCE_NAME_S );
     D( DA.AS_NAME, NODE, AS_NAME );
@@ -767,7 +767,7 @@ is					--------
 					  LX_SRCPOS :TREE := TREE_VOID )
 					return TREE
   is		---------------------
-    NODE	: TREE	:= MAKE( DN_RENAMES_OBJ_DECL );
+    NODE  : TREE	:= MAKE( DN_RENAMES_OBJ_DECL );
   begin
     D( DA.AS_SOURCE_NAME, NODE, AS_SOURCE_NAME );
     D( DA.AS_NAME, NODE, AS_NAME );
@@ -800,9 +800,9 @@ is					--------
   end	MAKE_NULL_COMP_DECL;
 
 		--------------------
-  function	MAKE_LENGTH_ENUM_REP	( AS_NAME, AS_EXP, LX_SRCPOS :TREE := TREE_VOID )	return TREE
+  function	MAKE_LENGTH_ENUM_REP	( AS_NAME, AS_EXP, LX_SRCPOS :TREE := TREE_VOID ) return TREE
   is		--------------------
-    NODE	:TREE	:= MAKE( DN_LENGTH_ENUM_REP );
+    NODE  :TREE	:= MAKE( DN_LENGTH_ENUM_REP );
   begin
     D( DA.AS_NAME, NODE, AS_NAME );
     D( DA.AS_EXP, NODE, AS_EXP );
@@ -2625,10 +2625,10 @@ is					--------
          return NODE;
   end	MAKE_ENUMERATION;
       --|-------------------------------------------------------------------------------------------
-      --|	FUNCTION MAKE_INTEGER
+      --| FUNCTION MAKE_INTEGER
   function	MAKE_INTEGER ( SM_DERIVED, SM_BASE_TYPE, SM_RANGE, XD_SOURCE_NAME :TREE := TREE_VOID;
-          		CD_IMPL_SIZE :INTEGER := 0; SM_IS_ANONYMOUS :BOOLEAN := FALSE
-                	 ) return TREE is
+			CD_IMPL_SIZE :INTEGER := 0; SM_IS_ANONYMOUS :BOOLEAN := FALSE
+		 ) return TREE is
          NODE	 :TREE := MAKE( DN_INTEGER  );
   begin
     D( DA.SM_DERIVED, NODE, SM_DERIVED );
@@ -2641,7 +2641,7 @@ is					--------
          return NODE;
   end;
       --|-------------------------------------------------------------------------------------------
-      --|	FUNCTION MAKE_FLOAT
+      --| FUNCTION MAKE_FLOAT
   function	MAKE_FLOAT
 		    ( SM_DERIVED :TREE := TREE_VOID;
 		    SM_IS_ANONYMOUS :BOOLEAN := FALSE;
@@ -2690,15 +2690,15 @@ is					--------
 
 		----------
   function	MAKE_ARRAY	( SM_DERIVED		:TREE	:= TREE_VOID;
-				  SM_IS_ANONYMOUS		:BOOLEAN	:= FALSE;
+				  SM_IS_ANONYMOUS		:BOOLEAN  := FALSE;
 				  SM_BASE_TYPE, SM_SIZE	:TREE	:= TREE_VOID;
-				  SM_IS_LIMITED		:BOOLEAN	:= FALSE;
-				  SM_IS_PACKED		:BOOLEAN	:= FALSE;
+				  SM_IS_LIMITED		:BOOLEAN  := FALSE;
+				  SM_IS_PACKED		:BOOLEAN  := FALSE;
 				  SM_INDEX_S, SM_COMP_TYPE,
 				  XD_SOURCE_NAME		:TREE	:= TREE_VOID )
 				return TREE
   is
-    NODE	:TREE	:= MAKE( DN_ARRAY );
+    NODE  :TREE	:= MAKE( DN_ARRAY );
   begin
     D( DA.SM_DERIVED, NODE, SM_DERIVED );
     DB( DA.SM_IS_ANONYMOUS, NODE, SM_IS_ANONYMOUS );
@@ -2717,15 +2717,15 @@ is					--------
 
 		-----------
   function	MAKE_RECORD	( SM_DERIVED		:TREE	:= TREE_VOID;
-				  SM_IS_ANONYMOUS		:BOOLEAN	:= FALSE;
+				  SM_IS_ANONYMOUS		:BOOLEAN  := FALSE;
 				  SM_BASE_TYPE, SM_SIZE	:TREE	:= TREE_VOID;
-				  SM_IS_LIMITED		:BOOLEAN	:= FALSE;
-				  SM_IS_PACKED		:BOOLEAN	:= FALSE;
+				  SM_IS_LIMITED		:BOOLEAN  := FALSE;
+				  SM_IS_PACKED		:BOOLEAN  := FALSE;
 				  SM_DISCRIMINANT_S, SM_COMP_LIST,
 				  SM_REPRESENTATION,XD_SOURCE_NAME	:TREE := TREE_VOID )
 				return TREE
   is
-    NODE	:TREE	:= MAKE( DN_RECORD );
+    NODE  :TREE	:= MAKE( DN_RECORD );
   begin
     D ( DA.SM_DERIVED, NODE, SM_DERIVED );
     DB( DA.SM_IS_ANONYMOUS, NODE, SM_IS_ANONYMOUS );
@@ -2752,7 +2752,7 @@ is					--------
 				  SM_DESIG_TYPE, SM_MASTER, XD_SOURCE_NAME :TREE := TREE_VOID )
 				return TREE
   is
-    NODE	: TREE	:= MAKE( DN_ACCESS );
+    NODE  : TREE	:= MAKE( DN_ACCESS );
   begin
     D( DA.SM_DERIVED, NODE, SM_DERIVED );
     DB( DA.SM_IS_ANONYMOUS, NODE, SM_IS_ANONYMOUS );
@@ -2795,7 +2795,7 @@ is					--------
 		-----------------------
   function	MAKE_CONSTRAINED_RECORD	( SM_DERIVED :TREE := TREE_VOID;
 					  SM_IS_ANONYMOUS :BOOLEAN := FALSE;
-		   			  SM_BASE_TYPE :TREE := TREE_VOID;
+					  SM_BASE_TYPE :TREE := TREE_VOID;
 					  SM_DEPENDS_ON_DSCRMT :BOOLEAN := FALSE;
 					  SM_NORMALIZED_DSCRMT_S, XD_SOURCE_NAME :TREE := TREE_VOID )
 					return TREE

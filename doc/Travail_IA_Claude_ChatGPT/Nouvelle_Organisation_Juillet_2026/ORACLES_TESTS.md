@@ -338,3 +338,167 @@ Sections TIME_OF/SPLIT, sélecteurs, rollover minuit, opérateurs
 bissextile, passage arrière, CLOCK (visuel), cohérence. Conversion au
 format CHECK/RESULTAT : à faire à l'occasion (dette de confort, pas de
 couverture).
+
+### Choses à ajouter (28 juillet 2026)
+
+- ORACLE membership (suite piège n° 115) : programme minimal exerçant
+  (a) `X in SOUS_TYPE` vrai et faux, (b) `X not in SOUS_TYPE`,
+  (c) `X in TYPE_DE_BASE` (doit empiler LI 1, pas rien), (d) la forme
+  déjà couverte `X in A..B` en témoin, (e) un membership en opérande
+  gauche d'un `or else` (le DUP doit avoir son opérande). Vérifier en
+  binaire : aucun `; debut if` suivi d'un BF nu dans le FINC produit.
+
+- ORACLE équilibre de pile (suite pièges n° 53/115/116) : en mode debug,
+  assert rbp == FP(niveau)+alloc en tête de chaque grande boucle de
+  phase — prend toute fuite au tour où elle naît, pas 200 itérations
+  plus loin.
+  
+### TROU_SEL1 (préfixe appel de selected, n° 120a, 28 juillet)
+F(...).COMP : champ scalaire, second champ (offsets non nuls), record
+REPRÉSENTÉ (jumelle n° 110 — le cas DABS.NSIZ), opérandes composés
+(MK(1).A + MK(2).A). Auto-jugeant : `TROU_SEL1 PASSE`.
+Oracle corpus associé : idl-idl_man re-expansé STRICT sans trou, FINC
+de HASH_SEARCH portant CALL DABS / La / extraction NSIZ avant le CEQ.
+
+### TROU_VAL1 ('VALUE entier, 28 juillet)
+Aller-retour INTEGER'VALUE(INTEGER'IMAGE(X)) sur { 0, 42, -1, grands
+± } ; formes "  123  ", "+7", "1_000" ; LONG_INTEGER'VALUE sur
+rationnel PRINT_NUM ; chaînes illicites ("12X", "") → CONSTRAINT_ERROR
+ATTRAPÉE (le raise du runtime est exercé). `TROU_VAL1 PASSE`.
+
+### TROU_CONV1 (préfixe conversion-vue, n° 120b, 28 juillet)
+R(X).A sur dérivé privé, jumelles rep/non-rep, variable ET paramètre
+in, composition conversion-sur-appel R(MK(N)).B. `TROU_CONV1 PASSE`.
+Oracle corpus : set_util re-expansé STRICT sans trou, FINC d'IS_NULLARY
+portant La -DEFINTERP_ofs / La -1,0 / extraction TY avant LI 230/CEQ.
+
+### Oracle négatif permanent de la discipline TROU (n° 118)
+Un attribut/noeud hors périmètre DOIT produire « !! TROU <site> » sur
+la console ET « ; !! TROU » dans le FINC, puis PROGRAM_ERROR en STRICT
+(essai fondateur : 'TERMINATED). En RECENSEMENT : bilan « N TROU(s)
+traversés -- FINC SUSPECT » à la fermeture, et jamais d'assemblage du
+FINC. Oracle du filet : le run corpus complet en STRICT ne rend AUCUNE
+ligne « !! TROU ».
+
+## Témoins DUS — chantiers C1-C7 (à écrire AVANT chaque implantation)
+
+- C1 CONV_DER1 : conversions record dérivé et tableau dérivé,
+  aller-retour + comparaison de contenu (identité de représentation).
+- C2 CASE_ST1 : case à choix marque-de-sous-type statique — première
+  borne, dernière, hors fenêtre, mélange avec choix simples et others.
+- C3 OUT_RD1 : out scalaire relu après écriture (même chemin que in out).
+- C4 ARRVAR1 : init de tableau par objet entier, par appel, par
+  qualifié (les trois formes @doublet de la règle unique).
+- C5 POWI1 : 3**5, X**0, X**1, exposant variable, exposant négatif
+  (CONSTRAINT_ERROR exercée via ce_raise_).
+- C6 SLICE_PF1 : P.all(2..5) et A(I)(2..5), source ET destination.
+- C7 (avec sa NOTE_MODELE) : fonction générique instanciée à résultat
+  STRING + l'oracle du carnet « fonction ordinaire retournant tableau
+  contraint à bornes dynamiques » + témoin négatif return TAB2D(I) —
+  UN SEUL modèle d'exécution, trois témoins.
+Discipline n° 114/115 : jamais de rameau non exercé ; chaque témoin
+passe le filet AVANT le chantier suivant.
+
+### CONV_DER1 v2 (chantier C1, 30 juillet 2026, 12 assertions)
+Conversions vers types composites DÉRIVÉS (LRM 4.6, identité de
+représentation) : record direct (aller-retour, composé, actual, égalité
+composite), record PRIVÉ dérivé hors paquetage (miroir set_util — seconde
+saveur DIANA de `private`, SM_DERIVED, découverte C1-bis), tableau
+contraint dérivé (miroir idl.adb ; dette LRM 4.6(11) au carnet, non
+exercée).  A payé DEUX bugs latents : (1) la conversion absente des
+producteurs d'@doublet de la règle unique CCDA — affectations composites
+de conversions fausses en silence (C1-ter) ; (2) le placeholder LI 0 du
+lieu résultat des fonctions ordinaires à résultat composite — segfault
+MK, chantier suspendu consigné (v2 passe par procedure MK, v1 archivé
+comme témoin futur).  Hors périmètre volontaire : aucun sous-programme
+DÉRIVÉ appelé ; test 1.4 = contre-témoin n° 120b.  Oracle :
+« RESULTAT :  12 OK,   0 ECHECS / CONV_DER1 PASSE » ; FINC : chaque
+BLKMOV d'affectation-de-conversion porte son `La` source ; élaboration de
+DS identique à celle de S via STANDARD…SETS._SET.
+
+### CASE_ST1 (chantier C2, 30 juillet 2026, 18 assertions)
+case à choix marque-de-sous-type (LRM 5.4 ; choix statiques 5.4(4)) :
+marque entière à bornes négatives et positives — première/dernière borne,
+intérieur, hors fenêtre des deux côtés — ; marque énumérée en couverture
+complète SANS others (bornes = 'FIRST/'LAST du type, chemin SM_REP) ;
+marque et choix simple dans la même alternative.  Implantation : fenêtre
+CGE/CGT/BF de DN_RANGE, bornes par la règle CODE_DISCRETE_RANGE_BOUND
+(DN_RANGE inchangé par construction).  Oracle : « RESULTAT :  18 OK,
+0 ECHECS / CASE_ST1 PASSE » ; FINC : fenêtre présente aux 5 sites-marque.
+
+### OUT_RD1 (chantier C3, 30 juillet 2026, 10 assertions)
+Relecture d'un paramètre out après écriture (dialecte toléré par le
+front-end ; illégal en Ada 83 strict LRM 6.2 — contre-épreuve GNAT en mode
+par défaut).  Out entier, out énuméré, accumulation en boucle.
+Implantation : DN_OUT_ID → LOAD_MEM, même chemin que in out (protocole
+n° 91/94 : le slot porte l'adresse) ; TROU discriminé conservé en corps
+générique.  Oracle : « 10 OK / OUT_RD1 PASSE ».
+
+### ARRINI1 (chantier C4, 30 juillet 2026, 9 assertions)
+Init de tableau par objet entier (VEC, STRING) et par conversion d'objet
+dérivé (transparence C1-ter) ; sémantique de copie vérifiée par mutation
+de la source post-init.  Implantation : branche DN_USED_OBJECT_ID |
+DN_CONVERSION dans COMPILE_ARRAY_VAR — COVAR_ALLOCATE puis BLKMOV, @SRC
+par CCDA, modèle de la branche tranche ; init par appel de fonction
+EXCLUE (protocole lieu résultat suspendu, carnet).  Oracle : « 9 OK /
+ARRINI1 PASSE » ; FINC : CO_VAR + BLKMOV aux 3 sites, conversion
+dépouillée pour la forme VEC(Z).
+
+### POW1 (chantier C5, 30 juillet 2026, 15 assertions)
+Exponentielle entière générale X**N (LRM 4.5.6) : base/exposant
+dynamiques, X**0=1, X**1=X, 0**0=1, bases négatives, imbrication en
+expression, non-régression du pli 2**N (DEC/SHL), exposant négatif =
+CONSTRAINT_ERROR rattrapée.  Implantation : primitive Ada cachée
+STANDARD.INTEGER_POW (_standrd.adb, famille INTEGER_IMAGE/INTEGER_VALUE,
+levée par raise Ada — pilier 11) + détour par temporaires au site (idiome
+CODE_VALUE, protocole scalaire n° 91/94).  Oracle : « 15 OK / POW1
+PASSE » ; _standrd.adb ré-expansé ZÉRO trou ; FINC : CALL
+STANDARD. ,INTEGER_POW_L<nn> aux sites généraux, DEC/SHL conservé.
+
+### INSTF1 (chantier C7, 1er aout 2026 — 8 assertions, PERMANENT au filet)
+
+Instanciation de fonction generique a resultat NON CONTRAINT (STRING).
+DEUX instances de BAND a actuels differents (bornes 3 et 5 — le vrai
+test du partage de modele) ; trois formes d'usage : affectation depuis
+l'appel, operande direct d'egalite, init de declaration par l'appel.
+Juge le relais du slot par le wrapper (piege n 123) et le CODE_RETURN
+doublet du modele.
+```
+=== INSTF1 : instanciation, resultat non contraint ===
+RESULTAT :  8 OK,  0 ECHECS
+INSTF1 PASSE
+```
+Oracle du filet = la ligne « INSTF1 PASSE ».
+
+### ADDR_OV1 v6 (chantier C8, 1er aout 2026 — 27 assertions, PERMANENT au filet)
+
+Clauses d'adresse d'objet (overlay LRM 13.5), TOUTE la grille du piege
+n 124 : S1 alias meme type (2 sens) ; S2 reinterpretation tableau de
+records (motif univ_ops) ; S3 overlay record (3 vues / 1 memoire) ;
+S4 attributs = vue de l'ALIAS ; S5 overlay SCALAIRE (equation, motif
+TEST_ADDRESS) ; S6 motif print_nod (array de CHARACTER sur INTEGER,
+init A TRAVERS a l'elaboration) ; S7 parametres (in, in out, depuis un
+BLOC — geometrie univ_ops exacte, niveaux differents).
+```
+=== ADDR_OV1 : clause d'adresse d'objet (overlay) ===
+RESULTAT : 27 OK,  0 ECHECS
+ADDR_OV1 PASSE
+```
+Oracle du filet = la ligne « ADDR_OV1 PASSE ».
+DEPENDANCES ASSUMEES (les juges memes du temoin) : petit-boutisme
+x86_64 (S6.1 — comme print_nod) ; layout maison PAIR = deux entiers
+contigus sans bourrage, miroir STATOFS (S2/S3) ; passage par REFERENCE
+des composites (7.2 — si les petits composites passaient un jour par
+copie, 7.2 le detecterait).
+
+### Temoins DUS — mise a jour C7/C8
+
+- C7 : INSTF1 FAIT. Restent DUS du « modele unique » : fonction
+  ORDINAIRE retournant tableau a bornes dynamiques (oracle du carnet),
+  et temoin negatif return TAB2D(I) — lies a la dette D6 (bloc info
+  anonyme 1-dim).
+- C8 : ADDR_OV1 FAIT. Rameaux hors benediction (TROU discrimines,
+  temoin AVANT tout code) : mode OUT ; adresse ABSOLUE d'objet ;
+  scalaire-sur-composite ; equation cross-niveau ; clause de
+  SOUS-PROGRAMME (chantier separe) ; tailles scalaires differentes
+  (tolere-non-asserte).

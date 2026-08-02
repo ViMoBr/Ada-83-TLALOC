@@ -1,20 +1,26 @@
 if ~ definite TEXT_IO
 include 'TEXT_IO.FINC'
+display 'including withed unit TEXT_IO.FINC', 10
 end if
 if ~ definite SEQUENTIAL_IO
 include 'SEQUENTIAL_IO.FINC'
+display 'including withed unit SEQUENTIAL_IO.FINC', 10
 end if
 if ~ definite IO_EXCEPTIONS
 include 'IO_EXCEPTIONS.FINC'
+display 'including trans withed unit IO_EXCEPTIONS.FINC', 10
 end if
 if ~ definite TEXT_IO
 include 'TEXT_IO.FINC'
+display 'including trans withed unit TEXT_IO.FINC', 10
 end if
 if ~ definite SEQUENTIAL_IO
 include 'SEQUENTIAL_IO.FINC'
+display 'including trans withed unit SEQUENTIAL_IO.FINC', 10
 end if
 SEQ_IO_TEST = 'SEQ_IO_TEST'
 PRO	SEQ_IO_TEST_L1				;---------- PRO SEQ_IO_TEST
+ hexa_show 'SEQ_IO_TEST_L1 ', $
 ELB 1					;    BODY ELAB
 
 					; _COULEUR ENUMERATION TYPE INFO
@@ -129,6 +135,8 @@ VAR NUM__u_ofs, q
 	Sa	 1, NUM__u_ofs
 VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
 					; CODE_PACKAGE_SPEC
+ hexa_show ' spec ', $
+ hexa_show 'var elab DEFAULT_WIDTH ', $
 VAR DEFAULT_WIDTH_disp, d			; variable entiere
 	LI	 11
 	DUP
@@ -141,6 +149,8 @@ VAR DEFAULT_WIDTH_disp, d			; variable entiere
 	BT	STANDARD.ce_raise_
 	Sd  1,	STANDARD.SEQ_IO_TEST_L1.INT_IO.DEFAULT_WIDTH_disp
 
+ hexa_show ' disp ', DEFAULT_WIDTH_disp
+ hexa_show 'var elab DEFAULT_BASE ', $
 VAR DEFAULT_BASE_disp, d			; variable entiere
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	10
@@ -154,9 +164,11 @@ VAR DEFAULT_BASE_disp, d			; variable entiere
 	BT	STANDARD.ce_raise_
 	Sd  1,	STANDARD.SEQ_IO_TEST_L1.INT_IO.DEFAULT_BASE_disp
 
+ hexa_show ' disp ', DEFAULT_BASE_disp
 					; sub program entry decl (in instantiation TRUE )
 if defined GET_L2_
 PRO	GET_L2				;---------- PRO GET
+ hexa_show 'GET_L2 ', $
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM ITEM_ofs				; out
@@ -176,6 +188,7 @@ end if
 					; sub program entry decl (in instantiation TRUE )
 if defined GET_L3_
 PRO	GET_L3				;---------- PRO GET
+ hexa_show 'GET_L3 ', $
 PRMS					;    debut parametrage
 	PRM ITEM_ofs				; out
 	PRM WIDTH_ofs				; in
@@ -193,6 +206,7 @@ end if
 					; sub program entry decl (in instantiation TRUE )
 if defined PUT_L4_
 PRO	PUT_L4				;---------- PRO PUT
+ hexa_show 'PUT_L4 ', $
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM ITEM_ofs				; in
@@ -214,6 +228,7 @@ end if
 					; sub program entry decl (in instantiation TRUE )
 if defined PUT_L5_
 PRO	PUT_L5				;---------- PRO PUT
+ hexa_show 'PUT_L5 ', $
 PRMS					;    debut parametrage
 	PRM ITEM_ofs				; in
 	PRM WIDTH_ofs				; in
@@ -233,6 +248,7 @@ end if
 					; sub program entry decl (in instantiation TRUE )
 if defined GET_L6_
 PRO	GET_L6				;---------- PRO GET
+ hexa_show 'GET_L6 ', $
 PRMS					;    debut parametrage
 	PRM FROM_ofs				; in
 	PRM ITEM_ofs				; out
@@ -252,6 +268,7 @@ end if
 					; sub program entry decl (in instantiation TRUE )
 if defined PUT_L7_
 PRO	PUT_L7				;---------- PRO PUT
+ hexa_show 'PUT_L7 ', $
 PRMS					;    debut parametrage
 	PRM TO_ofs				; out
 	PRM ITEM_ofs				; in
@@ -312,6 +329,7 @@ VAR ELEMENT_TYPE__u_ofs, q
 	Sa	 1, ELEMENT_TYPE__u_ofs
 VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
 					; CODE_PACKAGE_SPEC
+ hexa_show ' spec ', $
 ; EXPANDER.DECLARATIONS.CODE_TYPE_DECL : skip PRIVATE FILE_TYPE (deferred to full type)
 
 					; _FILE_MODE ENUMERATION TYPE INFO
@@ -329,6 +347,7 @@ end namespace
 					; sub program entry decl (in instantiation TRUE )
 if defined CREATE_L8_
 PRO	CREATE_L8				;---------- PRO CREATE
+ hexa_show 'CREATE_L8 ', $
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in out
 	PRM MODE_ofs				; in
@@ -350,6 +369,7 @@ end if
 					; sub program entry decl (in instantiation TRUE )
 if defined OPEN_L9_
 PRO	OPEN_L9				;---------- PRO OPEN
+ hexa_show 'OPEN_L9 ', $
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in out
 	PRM MODE_ofs				; in
@@ -371,6 +391,7 @@ end if
 					; sub program entry decl (in instantiation TRUE )
 if defined CLOSE_L10_
 PRO	CLOSE_L10				;---------- PRO CLOSE
+ hexa_show 'CLOSE_L10 ', $
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in out
 endPRMS					;    fin parametrage
@@ -386,6 +407,7 @@ end if
 					; sub program entry decl (in instantiation TRUE )
 if defined DELETE_L11_
 PRO	DELETE_L11				;---------- PRO DELETE
+ hexa_show 'DELETE_L11 ', $
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in out
 endPRMS					;    fin parametrage
@@ -401,6 +423,7 @@ end if
 					; sub program entry decl (in instantiation TRUE )
 if defined RESET_L12_
 PRO	RESET_L12				;---------- PRO RESET
+ hexa_show 'RESET_L12 ', $
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in out
 	PRM MODE_ofs				; in
@@ -418,6 +441,7 @@ end if
 					; sub program entry decl (in instantiation TRUE )
 if defined RESET_L13_
 PRO	RESET_L13				;---------- PRO RESET
+ hexa_show 'RESET_L13 ', $
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in out
 endPRMS					;    fin parametrage
@@ -433,6 +457,7 @@ end if
 					; sub program entry decl (in instantiation TRUE )
 if defined MODE_L14_
 PRO	MODE_L14				;---------- PRO MODE
+ hexa_show 'MODE_L14 ', $
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM result__ofs				; resultat de fonction
@@ -451,17 +476,17 @@ end if
 					; sub program entry decl (in instantiation TRUE )
 if defined NAME_L15_
 PRO	NAME_L15				;---------- PRO NAME
+ hexa_show 'NAME_L15 ', $
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM result__ofs				; resultat de fonction
 endPRMS					;    fin parametrage
 ELB 2
 begin:
-	LI	0					; lieu result
+	La 	 2, -result__ofs			; lieu result = relais du slot recu (doublet)
 	LVA	 1, GFP_disp
 	La 	 2, -FILE_ofs
 	CALL	STANDARD.SEQUENTIAL_IO. ,NAME_L8
-; RESULTAT UNCONSTRAINED A FAIRE
 	UNLINK	 2
 	RTD	prm_siz-8
 endPRO					;---------- end PRO NAME
@@ -469,17 +494,17 @@ end if
 					; sub program entry decl (in instantiation TRUE )
 if defined FORM_L16_
 PRO	FORM_L16				;---------- PRO FORM
+ hexa_show 'FORM_L16 ', $
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM result__ofs				; resultat de fonction
 endPRMS					;    fin parametrage
 ELB 2
 begin:
-	LI	0					; lieu result
+	La 	 2, -result__ofs			; lieu result = relais du slot recu (doublet)
 	LVA	 1, GFP_disp
 	La 	 2, -FILE_ofs
 	CALL	STANDARD.SEQUENTIAL_IO. ,FORM_L9
-; RESULTAT UNCONSTRAINED A FAIRE
 	UNLINK	 2
 	RTD	prm_siz-8
 endPRO					;---------- end PRO FORM
@@ -487,6 +512,7 @@ end if
 					; sub program entry decl (in instantiation TRUE )
 if defined IS_OPEN_L17_
 PRO	IS_OPEN_L17				;---------- PRO IS_OPEN
+ hexa_show 'IS_OPEN_L17 ', $
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM result__ofs				; resultat de fonction
@@ -505,6 +531,7 @@ end if
 					; sub program entry decl (in instantiation TRUE )
 if defined READ_L18_
 PRO	READ_L18				;---------- PRO READ
+ hexa_show 'READ_L18 ', $
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM ITEM_ofs				; out
@@ -522,6 +549,7 @@ end if
 					; sub program entry decl (in instantiation TRUE )
 if defined WRITE_L19_
 PRO	WRITE_L19				;---------- PRO WRITE
+ hexa_show 'WRITE_L19 ', $
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM ITEM_ofs				; in
@@ -539,6 +567,7 @@ end if
 					; sub program entry decl (in instantiation TRUE )
 if defined END_OF_FILE_L20_
 PRO	END_OF_FILE_L20				;---------- PRO END_OF_FILE
+ hexa_show 'END_OF_FILE_L20 ', $
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM result__ofs				; resultat de fonction
@@ -659,6 +688,7 @@ VAR ELEMENT_TYPE__u_ofs, q
 	Sa	 1, ELEMENT_TYPE__u_ofs
 VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
 					; CODE_PACKAGE_SPEC
+ hexa_show ' spec ', $
 ; EXPANDER.DECLARATIONS.CODE_TYPE_DECL : skip PRIVATE FILE_TYPE (deferred to full type)
 
 					; _FILE_MODE ENUMERATION TYPE INFO
@@ -676,6 +706,7 @@ end namespace
 					; sub program entry decl (in instantiation TRUE )
 if defined CREATE_L21_
 PRO	CREATE_L21				;---------- PRO CREATE
+ hexa_show 'CREATE_L21 ', $
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in out
 	PRM MODE_ofs				; in
@@ -697,6 +728,7 @@ end if
 					; sub program entry decl (in instantiation TRUE )
 if defined OPEN_L22_
 PRO	OPEN_L22				;---------- PRO OPEN
+ hexa_show 'OPEN_L22 ', $
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in out
 	PRM MODE_ofs				; in
@@ -718,6 +750,7 @@ end if
 					; sub program entry decl (in instantiation TRUE )
 if defined CLOSE_L23_
 PRO	CLOSE_L23				;---------- PRO CLOSE
+ hexa_show 'CLOSE_L23 ', $
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in out
 endPRMS					;    fin parametrage
@@ -733,6 +766,7 @@ end if
 					; sub program entry decl (in instantiation TRUE )
 if defined DELETE_L24_
 PRO	DELETE_L24				;---------- PRO DELETE
+ hexa_show 'DELETE_L24 ', $
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in out
 endPRMS					;    fin parametrage
@@ -748,6 +782,7 @@ end if
 					; sub program entry decl (in instantiation TRUE )
 if defined RESET_L25_
 PRO	RESET_L25				;---------- PRO RESET
+ hexa_show 'RESET_L25 ', $
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in out
 	PRM MODE_ofs				; in
@@ -765,6 +800,7 @@ end if
 					; sub program entry decl (in instantiation TRUE )
 if defined RESET_L26_
 PRO	RESET_L26				;---------- PRO RESET
+ hexa_show 'RESET_L26 ', $
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in out
 endPRMS					;    fin parametrage
@@ -780,6 +816,7 @@ end if
 					; sub program entry decl (in instantiation TRUE )
 if defined MODE_L27_
 PRO	MODE_L27				;---------- PRO MODE
+ hexa_show 'MODE_L27 ', $
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM result__ofs				; resultat de fonction
@@ -798,17 +835,17 @@ end if
 					; sub program entry decl (in instantiation TRUE )
 if defined NAME_L28_
 PRO	NAME_L28				;---------- PRO NAME
+ hexa_show 'NAME_L28 ', $
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM result__ofs				; resultat de fonction
 endPRMS					;    fin parametrage
 ELB 2
 begin:
-	LI	0					; lieu result
+	La 	 2, -result__ofs			; lieu result = relais du slot recu (doublet)
 	LVA	 1, GFP_disp
 	La 	 2, -FILE_ofs
 	CALL	STANDARD.SEQUENTIAL_IO. ,NAME_L8
-; RESULTAT UNCONSTRAINED A FAIRE
 	UNLINK	 2
 	RTD	prm_siz-8
 endPRO					;---------- end PRO NAME
@@ -816,17 +853,17 @@ end if
 					; sub program entry decl (in instantiation TRUE )
 if defined FORM_L29_
 PRO	FORM_L29				;---------- PRO FORM
+ hexa_show 'FORM_L29 ', $
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM result__ofs				; resultat de fonction
 endPRMS					;    fin parametrage
 ELB 2
 begin:
-	LI	0					; lieu result
+	La 	 2, -result__ofs			; lieu result = relais du slot recu (doublet)
 	LVA	 1, GFP_disp
 	La 	 2, -FILE_ofs
 	CALL	STANDARD.SEQUENTIAL_IO. ,FORM_L9
-; RESULTAT UNCONSTRAINED A FAIRE
 	UNLINK	 2
 	RTD	prm_siz-8
 endPRO					;---------- end PRO FORM
@@ -834,6 +871,7 @@ end if
 					; sub program entry decl (in instantiation TRUE )
 if defined IS_OPEN_L30_
 PRO	IS_OPEN_L30				;---------- PRO IS_OPEN
+ hexa_show 'IS_OPEN_L30 ', $
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM result__ofs				; resultat de fonction
@@ -852,6 +890,7 @@ end if
 					; sub program entry decl (in instantiation TRUE )
 if defined READ_L31_
 PRO	READ_L31				;---------- PRO READ
+ hexa_show 'READ_L31 ', $
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM ITEM_ofs				; out
@@ -869,6 +908,7 @@ end if
 					; sub program entry decl (in instantiation TRUE )
 if defined WRITE_L32_
 PRO	WRITE_L32				;---------- PRO WRITE
+ hexa_show 'WRITE_L32 ', $
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM ITEM_ofs				; in
@@ -886,6 +926,7 @@ end if
 					; sub program entry decl (in instantiation TRUE )
 if defined END_OF_FILE_L33_
 PRO	END_OF_FILE_L33				;---------- PRO END_OF_FILE
+ hexa_show 'END_OF_FILE_L33 ', $
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM result__ofs				; resultat de fonction
@@ -1006,6 +1047,7 @@ VAR ELEMENT_TYPE__u_ofs, q
 	Sa	 1, ELEMENT_TYPE__u_ofs
 VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
 					; CODE_PACKAGE_SPEC
+ hexa_show ' spec ', $
 ; EXPANDER.DECLARATIONS.CODE_TYPE_DECL : skip PRIVATE FILE_TYPE (deferred to full type)
 
 					; _FILE_MODE ENUMERATION TYPE INFO
@@ -1023,6 +1065,7 @@ end namespace
 					; sub program entry decl (in instantiation TRUE )
 if defined CREATE_L34_
 PRO	CREATE_L34				;---------- PRO CREATE
+ hexa_show 'CREATE_L34 ', $
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in out
 	PRM MODE_ofs				; in
@@ -1044,6 +1087,7 @@ end if
 					; sub program entry decl (in instantiation TRUE )
 if defined OPEN_L35_
 PRO	OPEN_L35				;---------- PRO OPEN
+ hexa_show 'OPEN_L35 ', $
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in out
 	PRM MODE_ofs				; in
@@ -1065,6 +1109,7 @@ end if
 					; sub program entry decl (in instantiation TRUE )
 if defined CLOSE_L36_
 PRO	CLOSE_L36				;---------- PRO CLOSE
+ hexa_show 'CLOSE_L36 ', $
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in out
 endPRMS					;    fin parametrage
@@ -1080,6 +1125,7 @@ end if
 					; sub program entry decl (in instantiation TRUE )
 if defined DELETE_L37_
 PRO	DELETE_L37				;---------- PRO DELETE
+ hexa_show 'DELETE_L37 ', $
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in out
 endPRMS					;    fin parametrage
@@ -1095,6 +1141,7 @@ end if
 					; sub program entry decl (in instantiation TRUE )
 if defined RESET_L38_
 PRO	RESET_L38				;---------- PRO RESET
+ hexa_show 'RESET_L38 ', $
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in out
 	PRM MODE_ofs				; in
@@ -1112,6 +1159,7 @@ end if
 					; sub program entry decl (in instantiation TRUE )
 if defined RESET_L39_
 PRO	RESET_L39				;---------- PRO RESET
+ hexa_show 'RESET_L39 ', $
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in out
 endPRMS					;    fin parametrage
@@ -1127,6 +1175,7 @@ end if
 					; sub program entry decl (in instantiation TRUE )
 if defined MODE_L40_
 PRO	MODE_L40				;---------- PRO MODE
+ hexa_show 'MODE_L40 ', $
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM result__ofs				; resultat de fonction
@@ -1145,17 +1194,17 @@ end if
 					; sub program entry decl (in instantiation TRUE )
 if defined NAME_L41_
 PRO	NAME_L41				;---------- PRO NAME
+ hexa_show 'NAME_L41 ', $
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM result__ofs				; resultat de fonction
 endPRMS					;    fin parametrage
 ELB 2
 begin:
-	LI	0					; lieu result
+	La 	 2, -result__ofs			; lieu result = relais du slot recu (doublet)
 	LVA	 1, GFP_disp
 	La 	 2, -FILE_ofs
 	CALL	STANDARD.SEQUENTIAL_IO. ,NAME_L8
-; RESULTAT UNCONSTRAINED A FAIRE
 	UNLINK	 2
 	RTD	prm_siz-8
 endPRO					;---------- end PRO NAME
@@ -1163,17 +1212,17 @@ end if
 					; sub program entry decl (in instantiation TRUE )
 if defined FORM_L42_
 PRO	FORM_L42				;---------- PRO FORM
+ hexa_show 'FORM_L42 ', $
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM result__ofs				; resultat de fonction
 endPRMS					;    fin parametrage
 ELB 2
 begin:
-	LI	0					; lieu result
+	La 	 2, -result__ofs			; lieu result = relais du slot recu (doublet)
 	LVA	 1, GFP_disp
 	La 	 2, -FILE_ofs
 	CALL	STANDARD.SEQUENTIAL_IO. ,FORM_L9
-; RESULTAT UNCONSTRAINED A FAIRE
 	UNLINK	 2
 	RTD	prm_siz-8
 endPRO					;---------- end PRO FORM
@@ -1181,6 +1230,7 @@ end if
 					; sub program entry decl (in instantiation TRUE )
 if defined IS_OPEN_L43_
 PRO	IS_OPEN_L43				;---------- PRO IS_OPEN
+ hexa_show 'IS_OPEN_L43 ', $
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM result__ofs				; resultat de fonction
@@ -1199,6 +1249,7 @@ end if
 					; sub program entry decl (in instantiation TRUE )
 if defined READ_L44_
 PRO	READ_L44				;---------- PRO READ
+ hexa_show 'READ_L44 ', $
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM ITEM_ofs				; out
@@ -1216,6 +1267,7 @@ end if
 					; sub program entry decl (in instantiation TRUE )
 if defined WRITE_L45_
 PRO	WRITE_L45				;---------- PRO WRITE
+ hexa_show 'WRITE_L45 ', $
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM ITEM_ofs				; in
@@ -1233,6 +1285,7 @@ end if
 					; sub program entry decl (in instantiation TRUE )
 if defined END_OF_FILE_L46_
 PRO	END_OF_FILE_L46				;---------- PRO END_OF_FILE
+ hexa_show 'END_OF_FILE_L46 ', $
 PRMS					;    debut parametrage
 	PRM FILE_ofs				; in
 	PRM result__ofs				; resultat de fonction
@@ -1311,6 +1364,7 @@ end namespace
 					;---------- end generic package instantiation VEC_SIO
 end namespace
 
+ hexa_show 'var elab FC ', $
 VAR FC_disp, q				; variable record : pointeur aux data record
 VAR FC__u, q				; variable record : pointeur aux useinfo
 VAR FC__dat, STANDARD.SEQ_IO_TEST_L1.CLR_SIO._FILE_TYPE.size
@@ -1318,7 +1372,6 @@ VAR FC__dat, STANDARD.SEQ_IO_TEST_L1.CLR_SIO._FILE_TYPE.size
 	Sa	1, FC_disp				; record fin
 	LVA	1, STANDARD.SEQ_IO_TEST_L1.CLR_SIO._FILE_TYPE.SIZ
 	Sa	1, FC__u
-; CODE_VC_NAME DN_VARIABLE_ID
 	LIVa 1, STANDARD.SEQ_IO_TEST_L1.FC_disp, STANDARD.SEQ_IO_TEST_L1.CLR_SIO._FILE_TYPE.ID
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
@@ -1331,8 +1384,12 @@ VAR FC__dat, STANDARD.SEQ_IO_TEST_L1.CLR_SIO._FILE_TYPE.size
 	LI	0
 	Sb
 
+ hexa_show ' disp ', FC_disp
+ hexa_show 'var elab FC_MODE ', $
 VAR FC_MODE_disp, b				; variable entiere
 
+ hexa_show ' disp ', FC_MODE_disp
+ hexa_show 'var elab FP ', $
 VAR FP_disp, q				; variable record : pointeur aux data record
 VAR FP__u, q				; variable record : pointeur aux useinfo
 VAR FP__dat, STANDARD.SEQ_IO_TEST_L1.POINT_SIO._FILE_TYPE.size
@@ -1340,7 +1397,6 @@ VAR FP__dat, STANDARD.SEQ_IO_TEST_L1.POINT_SIO._FILE_TYPE.size
 	Sa	1, FP_disp				; record fin
 	LVA	1, STANDARD.SEQ_IO_TEST_L1.POINT_SIO._FILE_TYPE.SIZ
 	Sa	1, FP__u
-; CODE_VC_NAME DN_VARIABLE_ID
 	LIVa 1, STANDARD.SEQ_IO_TEST_L1.FP_disp, STANDARD.SEQ_IO_TEST_L1.POINT_SIO._FILE_TYPE.ID
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
@@ -1353,6 +1409,8 @@ VAR FP__dat, STANDARD.SEQ_IO_TEST_L1.POINT_SIO._FILE_TYPE.size
 	LI	0
 	Sb
 
+ hexa_show ' disp ', FP_disp
+ hexa_show 'var elab FV ', $
 VAR FV_disp, q				; variable record : pointeur aux data record
 VAR FV__u, q				; variable record : pointeur aux useinfo
 VAR FV__dat, STANDARD.SEQ_IO_TEST_L1.VEC_SIO._FILE_TYPE.size
@@ -1360,7 +1418,6 @@ VAR FV__dat, STANDARD.SEQ_IO_TEST_L1.VEC_SIO._FILE_TYPE.size
 	Sa	1, FV_disp				; record fin
 	LVA	1, STANDARD.SEQ_IO_TEST_L1.VEC_SIO._FILE_TYPE.SIZ
 	Sa	1, FV__u
-; CODE_VC_NAME DN_VARIABLE_ID
 	LIVa 1, STANDARD.SEQ_IO_TEST_L1.FV_disp, STANDARD.SEQ_IO_TEST_L1.VEC_SIO._FILE_TYPE.ID
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
@@ -1373,26 +1430,38 @@ VAR FV__dat, STANDARD.SEQ_IO_TEST_L1.VEC_SIO._FILE_TYPE.size
 	LI	0
 	Sb
 
+ hexa_show ' disp ', FV_disp
+ hexa_show 'var elab C1 ', $
 VAR C1_disp, b				; variable entiere
 	LI	0
 	Sb  1,	C1_disp
 
+ hexa_show ' disp ', C1_disp
+ hexa_show 'var elab C2 ', $
 VAR C2_disp, b				; variable entiere
 	LI	2
 	Sb  1,	C2_disp
 
+ hexa_show ' disp ', C2_disp
+ hexa_show 'var elab C3 ', $
 VAR C3_disp, b				; variable entiere
 	LI	3
 	Sb  1,	C3_disp
 
+ hexa_show ' disp ', C3_disp
+ hexa_show 'var elab C4 ', $
 VAR C4_disp, b				; variable entiere
 	LI	4
 	Sb  1,	C4_disp
 
+ hexa_show ' disp ', C4_disp
+ hexa_show 'var elab C5 ', $
 VAR C5_disp, b				; variable entiere
 	LI	1
 	Sb  1,	C5_disp
 
+ hexa_show ' disp ', C5_disp
+ hexa_show 'var elab P1 ', $
 VAR P1_disp, q				; variable record : pointeur aux data record
 VAR P1__u, q				; variable record : pointeur aux useinfo
 VAR P1__dat, STANDARD.SEQ_IO_TEST_L1._POINT.size
@@ -1400,7 +1469,6 @@ VAR P1__dat, STANDARD.SEQ_IO_TEST_L1._POINT.size
 	Sa	1, P1_disp				; record fin
 	LVA	1, STANDARD.SEQ_IO_TEST_L1._POINT.SIZ
 	Sa	1, P1__u
-; CODE_VC_NAME DN_VARIABLE_ID
 	La 1, P1_disp
 					; Assign_record_aggregate type DN_RECORD
 	DUP
@@ -1420,6 +1488,8 @@ VAR P1__dat, STANDARD.SEQ_IO_TEST_L1._POINT.size
 	Sd
 	DROP
 
+ hexa_show ' disp ', P1_disp
+ hexa_show 'var elab P2 ', $
 VAR P2_disp, q				; variable record : pointeur aux data record
 VAR P2__u, q				; variable record : pointeur aux useinfo
 VAR P2__dat, STANDARD.SEQ_IO_TEST_L1._POINT.size
@@ -1427,7 +1497,6 @@ VAR P2__dat, STANDARD.SEQ_IO_TEST_L1._POINT.size
 	Sa	1, P2_disp				; record fin
 	LVA	1, STANDARD.SEQ_IO_TEST_L1._POINT.SIZ
 	Sa	1, P2__u
-; CODE_VC_NAME DN_VARIABLE_ID
 	La 1, P2_disp
 					; Assign_record_aggregate type DN_RECORD
 	DUP
@@ -1447,6 +1516,8 @@ VAR P2__dat, STANDARD.SEQ_IO_TEST_L1._POINT.size
 	Sd
 	DROP
 
+ hexa_show ' disp ', P2_disp
+ hexa_show 'var elab P3 ', $
 VAR P3_disp, q				; variable record : pointeur aux data record
 VAR P3__u, q				; variable record : pointeur aux useinfo
 VAR P3__dat, STANDARD.SEQ_IO_TEST_L1._POINT.size
@@ -1454,7 +1525,6 @@ VAR P3__dat, STANDARD.SEQ_IO_TEST_L1._POINT.size
 	Sa	1, P3_disp				; record fin
 	LVA	1, STANDARD.SEQ_IO_TEST_L1._POINT.SIZ
 	Sa	1, P3__u
-; CODE_VC_NAME DN_VARIABLE_ID
 	La 1, P3_disp
 					; Assign_record_aggregate type DN_RECORD
 	DUP
@@ -1475,6 +1545,8 @@ VAR P3__dat, STANDARD.SEQ_IO_TEST_L1._POINT.size
 	Sd
 	DROP
 
+ hexa_show ' disp ', P3_disp
+ hexa_show 'var elab V1 ', $
 VAR V1_disp, q				; variable array : pointeur aux data
 VAR V1__u, q				; variable array : useinfo pointeur au rec info
 	La 1, STANDARD.SEQ_IO_TEST_L1._VECTEUR.use__info
@@ -1554,6 +1626,8 @@ end namespace
 	INC
 	Sd  1, ANON_79_22_aga._EMIS_1
 
+ hexa_show ' disp ', V1_disp
+ hexa_show 'var elab V2 ', $
 VAR V2_disp, q				; variable array : pointeur aux data
 VAR V2__u, q				; variable array : useinfo pointeur au rec info
 	La 1, STANDARD.SEQ_IO_TEST_L1._VECTEUR.use__info
@@ -1633,6 +1707,8 @@ end namespace
 	INC
 	Sd  1, ANON_80_22_aga._EMIS_1
 
+ hexa_show ' disp ', V2_disp
+ hexa_show 'var elab V3 ', $
 VAR V3_disp, q				; variable array : pointeur aux data
 VAR V3__u, q				; variable array : useinfo pointeur au rec info
 	La 1, STANDARD.SEQ_IO_TEST_L1._VECTEUR.use__info
@@ -1716,10 +1792,14 @@ end namespace
 	INC
 	Sd  1, ANON_81_22_aga._EMIS_1
 
+ hexa_show ' disp ', V3_disp
+ hexa_show 'var elab RC ', $
 VAR RC_disp, b				; variable entiere
 	LI	1
 	Sb  1,	RC_disp
 
+ hexa_show ' disp ', RC_disp
+ hexa_show 'var elab RP ', $
 VAR RP_disp, q				; variable record : pointeur aux data record
 VAR RP__u, q				; variable record : pointeur aux useinfo
 VAR RP__dat, STANDARD.SEQ_IO_TEST_L1._POINT.size
@@ -1727,7 +1807,6 @@ VAR RP__dat, STANDARD.SEQ_IO_TEST_L1._POINT.size
 	Sa	1, RP_disp				; record fin
 	LVA	1, STANDARD.SEQ_IO_TEST_L1._POINT.SIZ
 	Sa	1, RP__u
-; CODE_VC_NAME DN_VARIABLE_ID
 	La 1, RP_disp
 					; Assign_record_aggregate type DN_RECORD
 	DUP
@@ -1747,6 +1826,8 @@ VAR RP__dat, STANDARD.SEQ_IO_TEST_L1._POINT.size
 	Sd
 	DROP
 
+ hexa_show ' disp ', RP_disp
+ hexa_show 'var elab RV ', $
 VAR RV_disp, q				; variable array : pointeur aux data
 VAR RV__u, q				; variable array : useinfo pointeur au rec info
 	La 1, STANDARD.SEQ_IO_TEST_L1._VECTEUR.use__info
@@ -1826,19 +1907,25 @@ end namespace
 	INC
 	Sd  1, ANON_89_22_aga._EMIS_1
 
+ hexa_show ' disp ', RV_disp
+ hexa_show 'var elab NB_OK ', $
 VAR NB_OK_disp, d				; variable entiere
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	Sd  1,	NB_OK_disp
 
+ hexa_show ' disp ', NB_OK_disp
+ hexa_show 'var elab NB_ECHECS ', $
 VAR NB_ECHECS_disp, d			; variable entiere
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	Sd  1,	NB_ECHECS_disp
 
+ hexa_show ' disp ', NB_ECHECS_disp
 
 if defined CHECK_L47_
 PRO	CHECK_L47				;---------- PRO CHECK
+ hexa_show 'CHECK_L47 ', $
 PRMS					;    debut parametrage
 	PRM OK_ofs				; in
 	PRM SECTION_ofs				; in
@@ -2446,11 +2533,13 @@ STR STR_L87, "point_seq.dat"			; constante string="point_seq.dat"
 	CALL	STANDARD.SEQ_IO_TEST_L1. ,CHECK_L47
 namespace	BLOCK__2
 ELB 2					;    BODY ELAB
+ hexa_show 'var elab IDX ', $
 VAR IDX_disp, d				; variable entiere
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	Sd  2,	IDX_disp
 
+ hexa_show ' disp ', IDX_disp
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 LOOP__18:

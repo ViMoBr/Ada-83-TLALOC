@@ -38,20 +38,20 @@ is					---
          LT_END_MARK										--| ULEX FIN DE SOURCE
          );
       
-  subtype	LT_RESERVED	is LEX_TYPE range LT_ABORT	  .. LT_XOR;
-  subtype	LT_SYMBOL		is LEX_TYPE range LT_AMPERSAND  .. LT_BOX;
-  subtype	LT_TERMINAL	is LEX_TYPE range LT_ABORT	  .. LT_BOX;
-  subtype	LT_WITH_SEMANTICS	is LEX_TYPE range LT_IDENTIFIER .. LT_CHAR_LIT;
+  subtype LT_RESERVED	is LEX_TYPE range LT_ABORT	  .. LT_XOR;
+  subtype LT_SYMBOL		is LEX_TYPE range LT_AMPERSAND  .. LT_BOX;
+  subtype LT_TERMINAL	is LEX_TYPE range LT_ABORT	  .. LT_BOX;
+  subtype LT_WITH_SEMANTICS	is LEX_TYPE range LT_IDENTIFIER .. LT_CHAR_LIT;
 
 
-  MAX_STRING	: constant POSITIVE	:= 255;								--| CHAINE DE 256 CARACTERES MAXIMUM
+  MAX_STRING	: constant POSITIVE := 255;								--| CHAINE DE 256 CARACTERES MAXIMUM
       
   type LINE_OF_SOURCE	is record
 			  LEN	: NATURAL;
-			  BDY	: STRING(	1 .. MAX_STRING );
+			  BDY	: STRING( 1 .. MAX_STRING );
 			end record;
       
-  SLINE		: LINE_OF_SOURCE;									--| LIGNE	COURANTE LUE
+  SLINE		: LINE_OF_SOURCE;									--| LIGNE COURANTE LUE
   LAST		: NATURAL;									--| NOMBRE DE CARACTERES LUS
   COL		: NATURAL;									--| DERNIERE COLONNE BALAYEE
   F_COL		: NATURAL;									--| POSITION DU PREMIER CARACTERE DU LEXEME

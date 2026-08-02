@@ -310,7 +310,7 @@ is					---
       end if;
       APOS := APOS + 1;										--| MONTER AU CHAMP SUIVANT
     end loop;
-    PUT_LINE( "!! PROCEDURE D : PAS D ATTRIBUT " & ATTR_IMAGE( AN ) & " DANS " & NODE_REP( T ) );			--| L'ATTRIBUT N'A PAS ETE TROUVE POUR LE NOEUD
+    PUT_LINE( "; !! PROCEDURE D : PAS D ATTRIBUT " & ATTR_IMAGE( AN ) & " DANS " & NODE_REP( T ) );			--| L'ATTRIBUT N'A PAS ETE TROUVE POUR LE NOEUD
     raise PROGRAM_ERROR;										--| ERREUR
   end	D;
 	---
@@ -328,8 +328,9 @@ is					---
       end if;
       APOS := APOS + 1;										--| MONTER AU CHAMP SUIVANT
     end loop;
-    PUT_LINE( "!! FUNCTION D : PAS D ATTRIBUT " & ATTR_IMAGE( AN ) & " DANS " & NODE_REP( T ) );			--| L'ATTRIBUT N'A PAS ETE TROUVE POUR LE NOEUD
+    PUT_LINE( "; !! FUNCTION D : PAS D ATTRIBUT " & ATTR_IMAGE( AN ) & " DANS " & NODE_REP( T ) );			--| L'ATTRIBUT N'A PAS ETE TROUVE POUR LE NOEUD
     raise PROGRAM_ERROR;										--| ERREUR
+
   end	 D;
 	---
 
@@ -354,7 +355,7 @@ is					---
     if A = TREE_TRUE then return TRUE;
     elsif A = TREE_FALSE then return FALSE;
     else
-      PUT_LINE( "!! L ATTRIBUT " & ATTR_IMAGE( AN ) & " DU NOEUD " & NODE_REP( T ) & " N EST PAS UN BOOLEEN");
+      PUT_LINE( "; !! L ATTRIBUT " & ATTR_IMAGE( AN ) & " DU NOEUD " & NODE_REP( T ) & " N EST PAS UN BOOLEEN");
       raise PROGRAM_ERROR;
     end if;
   end	DB;
@@ -516,7 +517,8 @@ is					---
 
     if  T.PT = HI  then										--| VALEUR COURTE 16 BITS
       if  T.NOTY /= DN_NUM_VAL  then									--| SI CE N'EST PAS UN NUMVAL
-        return "PRINT_NUM : LE HI N EST PAS UN DN_NUM_VAL ("& NODE_NAME'IMAGE( T.NOTY ) & " PAS DE CHAINE !";		--| CHAINE PAS DE NOM
+        PUT_LINE( "; IDL.PRINT_NUM : LE HI N EST PAS UN DN_NUM_VAL ("& NODE_NAME'IMAGE( T.NOTY ) & " PAS DE CHAINE !" );--| CHAINE PAS DE NOM
+        raise PROGRAM_ERROR;
       end if;
 
       if  T.NSIZ = 1  then										--| VALEUR NEGATIVE
@@ -532,7 +534,8 @@ is					---
       end if;
 
       if  T.TY /= DN_NUM_VAL  then									--| SI CE N'EST PAS UN NUMVAL
-        return "PRINT_NUM : LE HI N EST PAS UN DN_NUM_VAL ("& NODE_NAME'IMAGE( T.TY ) & " PAS DE CHAINE !";		--| CHAINE PAS DE NOM
+        PUT_LINE( "; IDL.PRINT_NUM : LE HI N EST PAS UN DN_NUM_VAL ("& NODE_NAME'IMAGE( T.TY ) & " PAS DE CHAINE !" );  --| CHAINE PAS DE NOM
+        raise PROGRAM_ERROR;
       end if;
 
       declare											--| UN VRAI DN_NUM_VAL
@@ -581,7 +584,8 @@ is					---
       end;
     end if;
 
-    return "PRINT_NUM T.PT INCORRECT ???";
+    PUT_LINE( "IDL.PRINT_NUM T.PT INCORRECT ???" );
+    raise PROGRAM_ERROR;
 
   end	PRINT_NUM;
 	---------

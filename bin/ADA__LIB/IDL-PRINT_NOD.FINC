@@ -1,9 +1,11 @@
 PRINT_NOD = 'PRINT_NOD'
 namespace PRINT_NOD				;---------- PACKAGE (BDY)
 					;    BODY ELAB
+ hexa_show 'var elab DUMMY2 ', $
 VAR DUMMY2_disp, d				; variable entiere
 
-	LVa	0, STANDARD.IDL.PRINT_NOD.DUMMY2_disp
+ hexa_show ' disp ', DUMMY2_disp
+ hexa_show 'var elab DUMMY ', $
 _DUMMY__type = '_DUMMY__type'
 namespace _DUMMY__type			; array var constrained array type info
 VAR use__info, q
@@ -38,16 +40,12 @@ LST_1 = $
 	rd 1 
   end virtual
 end namespace
-VAR DUMMY_disp, q				; variable array : pointeur aux data
+VAR DUMMY_disp, q				; variable array OVERLAY sur scalaire
+	LVA	0, DUMMY2_disp
+	Sa	0, DUMMY_disp				; array data ptr at _disp (OVERLAY, pas d'allocation)
 VAR DUMMY__u, q				; variable array : useinfo pointeur au rec info
 	La 0, _DUMMY__type.use__info
 	Sa	0, DUMMY__u				; array info ptr at __u
-	Ld	0, _DUMMY__type.SIZ
-	LI	8
-	DIV
-	CO_VAR
-	Sa	0, DUMMY_disp				; array data ptr at _disp
-					; array data aggregate
 	La	0, DUMMY_disp
 					; Assign_array_aggregate dynamic type DN_CONSTRAINED_ARRAY
 namespace ANON_18_9_aga
@@ -114,6 +112,8 @@ end namespace
 	INC
 	Sd  0, ANON_18_9_aga._EMIS_1
 
+ hexa_show ' disp ', DUMMY_disp
+ hexa_show 'var elab IS_LITTLE_ENDIAN ', $
 VAR IS_LITTLE_ENDIAN_disp, b			; variable bool char enum
 	Ld 0,	STANDARD.IDL.PRINT_NOD.DUMMY2_disp
 ; CODE_NUMERIC_LITERAL DN_INTEGER
@@ -121,14 +121,17 @@ VAR IS_LITTLE_ENDIAN_disp, b			; variable bool char enum
 	CEQ
 	Sb  0,	STANDARD.IDL.PRINT_NOD.IS_LITTLE_ENDIAN_disp
 
+ hexa_show ' disp ', IS_LITTLE_ENDIAN_disp
 
 if defined L_PNN_L1_
 PRO	L_PNN_L1				;---------- PRO L_PNN
+ hexa_show 'L_PNN_L1 ', $
 PRMS					;    debut parametrage
 	PRM NN_ofs				; in
 	PRM result__ofs				; resultat de fonction
 endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
+ hexa_show 'var elab STR ', $
 VAR STR_disp, q				; variable array : pointeur aux data
 VAR STR__u, q				; variable array : useinfo pointeur au rec info
 	La 0, STANDARD._STRING.use__info
@@ -155,6 +158,7 @@ end namespace
 	La , 8
 	Sa	1, STR__u				; array info ptr from function result
 
+ hexa_show ' disp ', STR_disp
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 	LVA  1,	STANDARD.IDL.PRINT_NOD.L_PNN_L1.STR_disp	; array actual
@@ -173,7 +177,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	Ld	0, STANDARD._NATURAL.LST
 	CGT
 	BT	STANDARD.ce_raise_
-	Sd  1,	-result__ofs
+	Sq  1,	-result__ofs
 	BRA ret_lbl
 ret_lbl:
 	UNLINK 1
@@ -184,6 +188,7 @@ end if
 
 if defined L_PINT_L4_
 PRO	L_PINT_L4				;---------- PRO L_PINT
+ hexa_show 'L_PINT_L4 ', $
 PRMS					;    debut parametrage
 	PRM I_ofs				; in
 	PRM result__ofs				; resultat de fonction
@@ -218,7 +223,7 @@ STR STR_L11, "-32768"			; constante string="-32768"
 	Ld	0, STANDARD._NATURAL.LST
 	CGT
 	BT	STANDARD.ce_raise_
-	Sd  1,	-result__ofs
+	Sq  1,	-result__ofs
 	BRA ret_lbl
 	BRA	L9
 L10:
@@ -240,7 +245,7 @@ L10:
 	Ld	0, STANDARD._NATURAL.LST
 	CGT
 	BT	STANDARD.ce_raise_
-	Sd  1,	-result__ofs
+	Sq  1,	-result__ofs
 	BRA ret_lbl
 L9:					; post if
 	BRA	L7
@@ -280,7 +285,7 @@ L8:
 	Ld	0, STANDARD._NATURAL.LST
 	CGT
 	BT	STANDARD.ce_raise_
-	Sd  1,	-result__ofs
+	Sq  1,	-result__ofs
 	BRA ret_lbl
 	BRA	L7
 L12:
@@ -299,7 +304,7 @@ L12:
 	Ld	0, STANDARD._NATURAL.LST
 	CGT
 	BT	STANDARD.ce_raise_
-	Sd  1,	-result__ofs
+	Sq  1,	-result__ofs
 	BRA ret_lbl
 L7:					; post if
 ret_lbl:
@@ -311,6 +316,7 @@ end if
 
 if defined L_PINT_L13_
 PRO	L_PINT_L13				;---------- PRO L_PINT
+ hexa_show 'L_PINT_L13 ', $
 PRMS					;    debut parametrage
 	PRM P_ofs				; in
 	PRM result__ofs				; resultat de fonction
@@ -331,7 +337,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	Ld	0, STANDARD._NATURAL.LST
 	CGT
 	BT	STANDARD.ce_raise_
-	Sd  1,	-result__ofs
+	Sq  1,	-result__ofs
 	BRA ret_lbl
 ret_lbl:
 	UNLINK 1
@@ -342,6 +348,7 @@ end if
 
 if defined L_PINT_L16_
 PRO	L_PINT_L16				;---------- PRO L_PINT
+ hexa_show 'L_PINT_L16 ', $
 PRMS					;    debut parametrage
 	PRM L_ofs				; in
 	PRM result__ofs				; resultat de fonction
@@ -362,7 +369,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	Ld	0, STANDARD._NATURAL.LST
 	CGT
 	BT	STANDARD.ce_raise_
-	Sd  1,	-result__ofs
+	Sq  1,	-result__ofs
 	BRA ret_lbl
 ret_lbl:
 	UNLINK 1
@@ -373,6 +380,7 @@ end if
 
 if defined L_PINT_L19_
 PRO	L_PINT_L19				;---------- PRO L_PINT
+ hexa_show 'L_PINT_L19 ', $
 PRMS					;    debut parametrage
 	PRM S_ofs				; in
 	PRM result__ofs				; resultat de fonction
@@ -393,7 +401,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	Ld	0, STANDARD._NATURAL.LST
 	CGT
 	BT	STANDARD.ce_raise_
-	Sd  1,	-result__ofs
+	Sq  1,	-result__ofs
 	BRA ret_lbl
 ret_lbl:
 	UNLINK 1
@@ -404,6 +412,7 @@ end if
 
 if defined L_PINT_L22_
 PRO	L_PINT_L22				;---------- PRO L_PINT
+ hexa_show 'L_PINT_L22 ', $
 PRMS					;    debut parametrage
 	PRM C_ofs				; in
 	PRM result__ofs				; resultat de fonction
@@ -424,7 +433,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	Ld	0, STANDARD._NATURAL.LST
 	CGT
 	BT	STANDARD.ce_raise_
-	Sd  1,	-result__ofs
+	Sq  1,	-result__ofs
 	BRA ret_lbl
 ret_lbl:
 	UNLINK 1
@@ -435,16 +444,19 @@ end if
 
 if defined PRINT_ABS_TREE_L25_
 PRO	PRINT_ABS_TREE_L25			;---------- PRO PRINT_ABS_TREE
+ hexa_show 'PRINT_ABS_TREE_L25 ', $
 PRMS					;    debut parametrage
 	PRM T_ofs				; in
 	PRM result__ofs				; resultat de fonction
 endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
+ hexa_show 'var elab SIZE ', $
 VAR SIZE_disp, d				; variable entiere
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	8
 	Sd  1,	SIZE_disp
 
+ hexa_show ' disp ', SIZE_disp
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 STR STR_L28, "!?>"				; constante string="!?>"
@@ -642,7 +654,7 @@ STR STR_L33, "<?!"				; constante string="<?!"
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 ; CODE_RETURN : EXPR TYPE = DN_INTEGER  VUE COMPLETE = DN_INTEGER
 	Ld 1,	SIZE_disp
-	Sd  1,	-result__ofs
+	Sq  1,	-result__ofs
 	BRA ret_lbl
 ret_lbl:
 	UNLINK 1
@@ -653,12 +665,15 @@ end if
 
 if defined PUT_LONG_DIGIT_L34_
 PRO	PUT_LONG_DIGIT_L34			;---------- PRO PUT_LONG_DIGIT
+ hexa_show 'PUT_LONG_DIGIT_L34 ', $
 PRMS					;    debut parametrage
 	PRM I_ofs				; in
 endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
+ hexa_show 'var elab DUMMY ', $
 VAR DUMMY_disp, d				; variable entiere
 
+ hexa_show ' disp ', DUMMY_disp
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 					; debut if
@@ -707,12 +722,15 @@ end if
 
 if defined PRINT_TREE_L32_
 PRO	PRINT_TREE_L32				;---------- PRO PRINT_TREE
+ hexa_show 'PRINT_TREE_L32 ', $
 PRMS					;    debut parametrage
 	PRM T_ofs				; in
 endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
+ hexa_show 'var elab DUMMY ', $
 VAR DUMMY_disp, d				; variable entiere
 
+ hexa_show ' disp ', DUMMY_disp
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 	LI	0					; lieu resultat sur pile
@@ -728,6 +746,7 @@ end if
 
 if defined L_PRINT_TREE_L33_
 PRO	L_PRINT_TREE_L33			;---------- PRO L_PRINT_TREE
+ hexa_show 'L_PRINT_TREE_L33 ', $
 PRMS					;    debut parametrage
 	PRM T_ofs				; in
 	PRM result__ofs				; resultat de fonction
@@ -736,6 +755,7 @@ ELB 1					;    BODY ELAB
 
 if defined TRAITE_SOURCELINE_L45_
 PRO	TRAITE_SOURCELINE_L45			;---------- PRO TRAITE_SOURCELINE
+ hexa_show 'TRAITE_SOURCELINE_L45 ', $
 PRMS					;    debut parametrage
 	PRM result__ofs				; resultat de fonction
 endPRMS					;    fin parametrage
@@ -764,15 +784,18 @@ begin:					;---------- BDY INSTRUCTIONS
 	Ld	0, STANDARD._NATURAL.LST
 	CGT
 	BT	STANDARD.ce_raise_
-	Sd  2,	-result__ofs
+	Sq  2,	-result__ofs
 	BRA ret_lbl
 	BRA	L48
 L49:
 L48:					; post if
 namespace	BLOCK__1
 ELB 3					;    BODY ELAB
+ hexa_show 'var elab NB_CARS ', $
 VAR NB_CARS_disp, d				; variable entiere
 
+ hexa_show ' disp ', NB_CARS_disp
+ hexa_show 'var elab SLPTR ', $
 VAR SLPTR_disp, q				; variable record : pointeur aux data record
 VAR SLPTR__u, q				; variable record : pointeur aux useinfo
 VAR SLPTR__dat, STANDARD.IDL._TREE.size
@@ -780,7 +803,6 @@ VAR SLPTR__dat, STANDARD.IDL._TREE.size
 	Sa	3, SLPTR_disp				; record fin
 	LVA	3, STANDARD.IDL._TREE.SIZ
 	Sa	3, SLPTR__u
-; CODE_VC_NAME DN_VARIABLE_ID
 	La 3, SLPTR_disp
 					; Assign_represented_record_aggregate size 32 bits
 	DUP
@@ -818,6 +840,8 @@ VAR SLPTR__dat, STANDARD.IDL._TREE.size
 	Sd
 	DROP
 
+ hexa_show ' disp ', SLPTR_disp
+ hexa_show 'var elab SLNOD ', $
 VAR SLNOD_disp, q				; variable record : pointeur aux data record
 VAR SLNOD__u, q				; variable record : pointeur aux useinfo
 VAR SLNOD__dat, STANDARD.IDL._TREE.size
@@ -825,7 +849,6 @@ VAR SLNOD__dat, STANDARD.IDL._TREE.size
 	Sa	3, SLNOD_disp				; record fin
 	LVA	3, STANDARD.IDL._TREE.SIZ
 	Sa	3, SLNOD__u
-; CODE_VC_NAME DN_VARIABLE_ID
 	La  3, SLNOD_disp
 	LI	STANDARD.IDL._TREE.size
 VAR	ANON_133_24_disp, q
@@ -843,6 +866,7 @@ VAR	ANON_133_24__dat, STANDARD.IDL._TREE.size
 	La  ,  0
 	BLKMOV
 
+ hexa_show ' disp ', SLNOD_disp
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 	LI	0					; lieu resultat sur pile
@@ -939,7 +963,7 @@ L52:					; post if
 	Ld	0, STANDARD._NATURAL.LST
 	CGT
 	BT	STANDARD.ce_raise_
-	Sd  2,	-result__ofs
+	Sq  2,	-result__ofs
 	UNLINK 3
 	BRA ret_lbl
 	UNLINK 3
@@ -953,6 +977,7 @@ end if
 
 if defined TRAITE_NUM_VAL_L54_
 PRO	TRAITE_NUM_VAL_L54			;---------- PRO TRAITE_NUM_VAL
+ hexa_show 'TRAITE_NUM_VAL_L54 ', $
 PRMS					;    debut parametrage
 	PRM result__ofs				; resultat de fonction
 endPRMS					;    fin parametrage
@@ -1002,7 +1027,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	Ld	0, STANDARD._NATURAL.LST
 	CGT
 	BT	STANDARD.ce_raise_
-	Sd  2,	-result__ofs
+	Sq  2,	-result__ofs
 	BRA ret_lbl
 	BRA	L59
 L60:
@@ -1028,7 +1053,7 @@ L60:
 	Ld	0, STANDARD._NATURAL.LST
 	CGT
 	BT	STANDARD.ce_raise_
-	Sd  2,	-result__ofs
+	Sq  2,	-result__ofs
 	BRA ret_lbl
 L59:					; post if
 	BRA	L57
@@ -1076,13 +1101,14 @@ L58:
 	Ld	0, STANDARD._NATURAL.LST
 	CGT
 	BT	STANDARD.ce_raise_
-	Sd  2,	-result__ofs
+	Sq  2,	-result__ofs
 	BRA ret_lbl
 	BRA	L62
 L63:
 L62:					; post if
 namespace	BLOCK__2
 ELB 3					;    BODY ELAB
+ hexa_show 'var elab ENTETE ', $
 VAR ENTETE_disp, q				; variable record : pointeur aux data record
 VAR ENTETE__u, q				; variable record : pointeur aux useinfo
 VAR ENTETE__dat, STANDARD.IDL._TREE.size
@@ -1090,7 +1116,6 @@ VAR ENTETE__dat, STANDARD.IDL._TREE.size
 	Sa	3, ENTETE_disp				; record fin
 	LVA	3, STANDARD.IDL._TREE.SIZ
 	Sa	3, ENTETE__u
-; CODE_VC_NAME DN_VARIABLE_ID
 	La  3, ENTETE_disp
 	LI	STANDARD.IDL._TREE.size
 VAR	ANON_169_28_disp, q
@@ -1117,6 +1142,7 @@ VAR	ANON_169_28__dat, STANDARD.IDL._TREE.size
 	La  ,  0
 	BLKMOV
 
+ hexa_show ' disp ', ENTETE_disp
 
 					; array decl constrained array type info
 _DOUBLET = '_DOUBLET'
@@ -1229,6 +1255,7 @@ VAR TO_DOUBLET_L64TARGET__u_ofs, q
 	Sa	 3, TO_DOUBLET_L64TARGET__u_ofs
 VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
 PRO	TO_DOUBLET_L64				;---------- PRO TO_DOUBLET
+ hexa_show 'TO_DOUBLET_L64 ', $
 PRMS					;    debut parametrage
 	PRM S_ofs				; in
 	PRM result__ofs				; resultat de fonction
@@ -1236,17 +1263,18 @@ endPRMS					;    fin parametrage
 ELB 4
 begin:
 	La	4, -result__ofs
-	La	, 0
+	La
 	Ld	3, STANDARD.IDL.PRINT_NOD.L_PRINT_TREE_L33.TRAITE_NUM_VAL_L54.BLOCK__2._DOUBLET.SIZ
 	LI	8
 	DIV
 	La	4, -S_ofs
-	La	, 0
+	La
 	BLKMOV
 	UNLINK	 4
 	RTD	prm_siz-8
 endPRO					;---------- end PRO TO_DOUBLET
 end if
+ hexa_show 'var elab DD ', $
 VAR DD_disp, q				; variable array : pointeur aux data
 VAR DD__u, q				; variable array : useinfo pointeur au rec info
 	La 3, STANDARD.IDL.PRINT_NOD.L_PRINT_TREE_L33.TRAITE_NUM_VAL_L54.BLOCK__2._DOUBLET.use__info
@@ -1289,11 +1317,14 @@ VAR	ANON_172_39__dat, STANDARD.IDL._TREE.size
 	La , 8
 	Sa	3, DD__u				; array info ptr from function result
 
+ hexa_show ' disp ', DD_disp
+ hexa_show 'var elab NB_CARS ', $
 VAR NB_CARS_disp, d				; variable entiere
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	Sd  3,	NB_CARS_disp
 
+ hexa_show ' disp ', NB_CARS_disp
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 					; debut if
@@ -1365,7 +1396,7 @@ VAR	ANON_183_20__dat, STANDARD.IDL._TREE.size
 	BT	STANDARD.ce_raise_
 	CALL	STANDARD.IDL.IDL_MAN. ,DABS_L38
 	CALL	STANDARD.IDL.PRINT_NOD.L_PRINT_TREE_L33.TRAITE_NUM_VAL_L54.BLOCK__2. ,TO_DOUBLET_L64
-	La  ,  0
+	La
 	BLKMOV
 	La	 3, STANDARD.IDL.PRINT_NOD.L_PRINT_TREE_L33.TRAITE_NUM_VAL_L54.BLOCK__2.DD_disp	; array data start address on stack
 ; CODE_NUMERIC_LITERAL DN_INTEGER
@@ -1463,7 +1494,7 @@ L69:					; post loop LOOP__3
 	Ld	0, STANDARD._NATURAL.LST
 	CGT
 	BT	STANDARD.ce_raise_
-	Sd  2,	-result__ofs
+	Sq  2,	-result__ofs
 	UNLINK 3
 	BRA ret_lbl
 	UNLINK 3
@@ -1482,7 +1513,7 @@ L57:					; post if
 	Ld	0, STANDARD._NATURAL.LST
 	CGT
 	BT	STANDARD.ce_raise_
-	Sd  2,	-result__ofs
+	Sq  2,	-result__ofs
 	BRA ret_lbl
 ret_lbl:
 	UNLINK 2
@@ -1530,7 +1561,7 @@ L76:
 	Ld	0, STANDARD._NATURAL.LST
 	CGT
 	BT	STANDARD.ce_raise_
-	Sd  1,	-result__ofs
+	Sq  1,	-result__ofs
 	BRA ret_lbl
 	BRA	L75
 L77:
@@ -1556,12 +1587,13 @@ L77:
 	Ld	0, STANDARD._NATURAL.LST
 	CGT
 	BT	STANDARD.ce_raise_
-	Sd  1,	-result__ofs
+	Sq  1,	-result__ofs
 	BRA ret_lbl
 	BRA	L80
 L81:
 namespace	BLOCK__4
 ELB 2					;    BODY ELAB
+ hexa_show 'var elab NAM ', $
 VAR NAM_disp, q				; variable array : pointeur aux data
 VAR NAM__u, q				; variable array : useinfo pointeur au rec info
 	La 0, STANDARD._STRING.use__info
@@ -1593,6 +1625,7 @@ end namespace
 	La , 8
 	Sa	2, NAM__u				; array info ptr from function result
 
+ hexa_show ' disp ', NAM_disp
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 ; CODE & concat _STRING
@@ -1800,7 +1833,7 @@ end namespace
 	Ld	0, STANDARD._NATURAL.LST
 	CGT
 	BT	STANDARD.ce_raise_
-	Sd  1,	-result__ofs
+	Sq  1,	-result__ofs
 	UNLINK 2
 	BRA ret_lbl
 	UNLINK 2
@@ -1830,19 +1863,22 @@ L78:
 	Ld	0, STANDARD._NATURAL.LST
 	CGT
 	BT	STANDARD.ce_raise_
-	Sd  1,	-result__ofs
+	Sq  1,	-result__ofs
 	BRA ret_lbl
 	BRA	L86
 L87:
 L86:					; post if
 namespace	BLOCK__5
 ELB 2					;    BODY ELAB
+ hexa_show 'var elab NB_CARS ', $
 VAR NB_CARS_disp, d				; variable entiere
 
+ hexa_show ' disp ', NB_CARS_disp
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 namespace	BLOCK__6
 ELB 3					;    BODY ELAB
+ hexa_show 'var elab NAM ', $
 VAR NAM_disp, q				; variable array : pointeur aux data
 VAR NAM__u, q				; variable array : useinfo pointeur au rec info
 	La 0, STANDARD._STRING.use__info
@@ -1874,6 +1910,7 @@ end namespace
 	La , 8
 	Sa	3, NAM__u				; array info ptr from function result
 
+ hexa_show ' disp ', NAM_disp
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 ; CODE & concat _STRING
@@ -2053,7 +2090,7 @@ STR STR_L95, "]"				; constante string="]"
 	Ld	0, STANDARD._NATURAL.LST
 	CGT
 	BT	STANDARD.ce_raise_
-	Sd  1,	-result__ofs
+	Sq  1,	-result__ofs
 	UNLINK 2
 	BRA ret_lbl
 	BRA	L96
@@ -2099,7 +2136,7 @@ STR STR_L102, "!?TXT?!"			; constante string="!?TXT?!"
 	Ld	0, STANDARD._NATURAL.LST
 	CGT
 	BT	STANDARD.ce_raise_
-	Sd  1,	-result__ofs
+	Sq  1,	-result__ofs
 	UNLINK 2
 	BRA ret_lbl
 	BRA	L100
@@ -2107,6 +2144,7 @@ L101:
 L100:					; post if
 namespace	BLOCK__7
 ELB 3					;    BODY ELAB
+ hexa_show 'var elab NAM ', $
 VAR NAM_disp, q				; variable array : pointeur aux data
 VAR NAM__u, q				; variable array : useinfo pointeur au rec info
 	La 0, STANDARD._STRING.use__info
@@ -2130,6 +2168,7 @@ end namespace
 	La , 8
 	Sa	3, NAM__u				; array info ptr from function result
 
+ hexa_show ' disp ', NAM_disp
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 	LVA  3,	STANDARD.IDL.PRINT_NOD.L_PRINT_TREE_L33.BLOCK__5.BLOCK__7.NAM_disp	; array actual
@@ -2160,7 +2199,7 @@ L98:					; post if
 	Ld	0, STANDARD._NATURAL.LST
 	CGT
 	BT	STANDARD.ce_raise_
-	Sd  1,	-result__ofs
+	Sq  1,	-result__ofs
 	UNLINK 2
 	BRA ret_lbl
 	UNLINK 2
@@ -2182,7 +2221,7 @@ L75:
 	Ld	0, STANDARD._NATURAL.LST
 	CGT
 	BT	STANDARD.ce_raise_
-	Sd  1,	-result__ofs
+	Sq  1,	-result__ofs
 	BRA ret_lbl
 ret_lbl:
 	UNLINK 1
@@ -2193,6 +2232,7 @@ end if
 
 if defined PRINT_NODE_L34_
 PRO	PRINT_NODE_L34				;---------- PRO PRINT_NODE
+ hexa_show 'PRINT_NODE_L34 ', $
 PRMS					;    debut parametrage
 	PRM T_ofs				; in
 	PRM INDENT_ofs				; in
@@ -2201,11 +2241,13 @@ ELB 1					;    BODY ELAB
 
 if defined PRINT_SUB_L105_
 PRO	PRINT_SUB_L105				;---------- PRO PRINT_SUB
+ hexa_show 'PRINT_SUB_L105 ', $
 PRMS					;    debut parametrage
 	PRM T_ofs				; in
 	PRM IND_ofs				; in
 endPRMS					;    fin parametrage
 ELB 2					;    BODY ELAB
+ hexa_show 'var elab A_SIZ ', $
 VAR A_SIZ_disp, b				; variable entiere
 	La	 0, STANDARD.IDL.IDL_TBL.N_SPEC_disp	; array data start address on stack
 	La 2, -T_ofs
@@ -2240,6 +2282,8 @@ VAR A_SIZ_disp, b				; variable entiere
 	BT	STANDARD.ce_raise_
 	Sb  2,	A_SIZ_disp
 
+ hexa_show ' disp ', A_SIZ_disp
+ hexa_show 'var elab N_SIZ ', $
 VAR N_SIZ_disp, b				; variable entiere
 	ULb 2,	A_SIZ_disp
 	DUP
@@ -2252,6 +2296,8 @@ VAR N_SIZ_disp, b				; variable entiere
 	BT	STANDARD.ce_raise_
 	Sb  2,	N_SIZ_disp
 
+ hexa_show ' disp ', N_SIZ_disp
+ hexa_show 'var elab A_SUB ', $
 VAR A_SUB_disp, d				; variable entiere
 	La	 0, STANDARD.IDL.IDL_TBL.N_SPEC_disp	; array data start address on stack
 	La 2, -T_ofs
@@ -2278,6 +2324,8 @@ VAR A_SUB_disp, d				; variable entiere
 	Ld	, STANDARD.IDL.IDL_TBL._NODE_SPECIF.NS_FIRST_A
 	Sd  2,	A_SUB_disp
 
+ hexa_show ' disp ', A_SUB_disp
+ hexa_show 'var elab TR ', $
 VAR TR_disp, q				; variable record : pointeur aux data record
 VAR TR__u, q				; variable record : pointeur aux useinfo
 VAR TR__dat, STANDARD.IDL._TREE.size
@@ -2285,7 +2333,6 @@ VAR TR__dat, STANDARD.IDL._TREE.size
 	Sa	2, TR_disp				; record fin
 	LVA	2, STANDARD.IDL._TREE.SIZ
 	Sa	2, TR__u
-; CODE_VC_NAME DN_VARIABLE_ID
 	La  2, TR_disp
 					; store represented component PT range 0 .. 1 width 2
 	DUP
@@ -2296,6 +2343,8 @@ VAR TR__dat, STANDARD.IDL._TREE.size
 	BFI
 	Sd
 
+ hexa_show ' disp ', TR_disp
+ hexa_show 'var elab SQ ', $
 VAR SQ_disp, q				; variable record : pointeur aux data record
 VAR SQ__u, q				; variable record : pointeur aux useinfo
 VAR SQ__dat, STANDARD.IDL._SEQ_TYPE.size
@@ -2303,11 +2352,12 @@ VAR SQ__dat, STANDARD.IDL._SEQ_TYPE.size
 	Sa	2, SQ_disp				; record fin
 	LVA	2, STANDARD.IDL._SEQ_TYPE.SIZ
 	Sa	2, SQ__u
-; CODE_VC_NAME DN_VARIABLE_ID
 
+ hexa_show ' disp ', SQ_disp
 
 if defined PRINT_SUB_TREE_L106_
 PRO	PRINT_SUB_TREE_L106			;---------- PRO PRINT_SUB_TREE
+ hexa_show 'PRINT_SUB_TREE_L106 ', $
 PRMS					;    debut parametrage
 	PRM T_ofs				; in
 endPRMS					;    fin parametrage
@@ -2407,7 +2457,7 @@ VAR	ANON_290_13__dat, STANDARD.IDL._TREE.size
 	CGT
 	BT	STANDARD.ce_raise_
 	CALL	STANDARD.IDL.IDL_MAN. ,DABS_L38
-	La  ,  0
+	La
 	BLKMOV
 	La	2, STANDARD.IDL.PRINT_NOD.PRINT_NODE_L34.PRINT_SUB_L105.TR_disp
 	Ld
@@ -2693,7 +2743,7 @@ VAR	ANON_328_10__dat, STANDARD.IDL._SEQ_TYPE.size
 					; doublet resultat record anonyme
 	LVA 2,	SQ_disp
 	CALL	STANDARD.IDL.IDL_MAN. ,TAIL_L32
-	La  ,  0
+	La
 	BLKMOV
 ; CODE record equality "=" _TREE
 	LIVA 	2, STANDARD.IDL.PRINT_NOD.PRINT_NODE_L34.PRINT_SUB_L105.SQ_disp, STANDARD.IDL._SEQ_TYPE.FIRST

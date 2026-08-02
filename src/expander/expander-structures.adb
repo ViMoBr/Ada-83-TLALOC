@@ -6,7 +6,7 @@
 
 separate ( EXPANDER )
 				----------
- 	package body		STRUCTURES
+	package body		STRUCTURES
 				----------
 is
 
@@ -17,13 +17,13 @@ is
 
   procedure CODE_TRANS_WITH_INCLUDES ( COMPILATION_UNIT :TREE );
 
-			--=====================--
+			--^^^^^^^^^^^^^^^^^^^^^--
   procedure		  CODE_COMPILATION_UNIT	( COMPILATION_UNIT :TREE )
-  is			--=====================--
+  is			-------------------------
 
     UNIT_ALL_DECL		: TREE	:= D( AS_ALL_DECL, COMPILATION_UNIT );
   begin
-    CODI.CUR_LEVEL      := 0;
+    CODI.CUR_LEVEL	    := 0;
     CODI.ENCLOSING_BODY := TREE_VOID;
     THE_COMPILATION_UNIT := COMPILATION_UNIT;
 
@@ -57,11 +57,12 @@ is
     when  DN_SUBUNIT		=>
       CODE_SUBUNIT_BODY( D( AS_SUBUNIT_BODY, UNIT_ALL_DECL )  );
 
-    when others			=> raise PROGRAM_ERROR;
+    when others			=> CODI.TROU( "CODE_COMPILATION_UNIT", UNIT_ALL_DECL );			--| vague 4 : levait deja, enrichi du message TROU
+
     end case;
 
   end	CODE_COMPILATION_UNIT;
-	--=================--
+	---------------------
 
 
 
@@ -72,12 +73,12 @@ is
     CONTEXT_ELEM_SEQ	: SEQ_TYPE	:= LIST( CONTEXT_ELEM_S );
     CONTEXT_ELEM		: TREE;
 		------------------
-    procedure	INSERT_WITHED_UNIT	( DEFN :TREE )
+    procedure	INSERT_WITHED_UNIT  ( DEFN :TREE )
     is
     begin
       if  EMIT_INCLUDES  then
         declare
-	UNIT_NAME	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, DEFN ) );
+	UNIT_NAME :constant STRING	:= PRINT_NAME( D( LX_SYMREP, DEFN ) );
         begin
 	PUT_LINE( "if ~ definite " & PRINT_NAME( D( LX_SYMREP, DEFN ) ) );
 	PUT_LINE( "include '" & UNIT_NAME & ".FINC'" );
@@ -105,7 +106,7 @@ is
 	  POP( NAME_SEQ, NAME );
 
 	  declare
-	    DEFN	: TREE	:= D( SM_DEFN, NAME );
+	    DEFN  : TREE	:= D( SM_DEFN, NAME );
 	  begin
 	    if  DEFN.TY = DN_PACKAGE_ID  then
 	      INSERT_WITHED_UNIT( DEFN );
@@ -200,90 +201,92 @@ is
 
       if  GPRM.TY = DN_TYPE_DECL  then
         declare
-          GTYPE_ID   : TREE := D( AS_SOURCE_NAME, GPRM );
-          GPRM_NAME  : constant STRING := PRINT_NAME( D( LX_SYMREP, GTYPE_ID ) );
+	GTYPE_ID	 : TREE := D( AS_SOURCE_NAME, GPRM );
+	GPRM_NAME  : constant STRING := PRINT_NAME( D( LX_SYMREP, GTYPE_ID ) );
         begin
-          PUT_LINE( tab & GPRM_NAME & "__u_ofs = $" );
-          PUT_LINE( tab & "rq 1" );
+	PUT_LINE( tab & GPRM_NAME & "__u_ofs = $" );
+	PUT_LINE( tab & "rq 1" );
 
-          PUT_LINE( tab & GPRM_NAME & "__ld_ofs = $" );
-          PUT_LINE( tab & "rq 1" );
+	PUT_LINE( tab & GPRM_NAME & "__ld_ofs = $" );
+	PUT_LINE( tab & "rq 1" );
 
-          PUT_LINE( tab & GPRM_NAME & "__st_ofs = $" );
-          PUT_LINE( tab & "rq 1" );
+	PUT_LINE( tab & GPRM_NAME & "__st_ofs = $" );
+	PUT_LINE( tab & "rq 1" );
 
-          PUT_LINE( tab & GPRM_NAME & "__inadr_ofs = $" );
-          PUT_LINE( tab & "rq 1" );
+	PUT_LINE( tab & GPRM_NAME & "__inadr_ofs = $" );
+	PUT_LINE( tab & "rq 1" );
 
-          PUT_LINE( tab & GPRM_NAME & "__outadr_ofs = $" );
-          PUT_LINE( tab & "rq 1" );
+	PUT_LINE( tab & GPRM_NAME & "__outadr_ofs = $" );
+	PUT_LINE( tab & "rq 1" );
         end;
 
       elsif  GPRM.TY = DN_SUBPROG_ENTRY_DECL  then
         declare
-          SUBP_ID	: TREE		:= D( AS_SOURCE_NAME, GPRM );
-          SUBP_STR	: constant STRING	:= LETTERED_SUBNAME( PRINT_NAME( D( LX_SYMREP, SUBP_ID ) ) );
+	SUBP_ID	: TREE		:= D( AS_SOURCE_NAME, GPRM );
+	SUBP_STR  : constant STRING	:= LETTERED_SUBNAME( PRINT_NAME( D( LX_SYMREP, SUBP_ID ) ) );
 
         begin
-          PUT_LINE( tab & SUBP_STR & "__call_ofs = $" );
-          PUT_LINE( tab & "rq 1" );
+	PUT_LINE( tab & SUBP_STR & "__call_ofs = $" );
+	PUT_LINE( tab & "rq 1" );
         end;
 
       elsif  GPRM.TY = DN_IN  or else  GPRM.TY = DN_IN_OUT  or else  GPRM.TY = DN_OUT  then
         declare
-          GOBJ_SEQ	: SEQ_TYPE	:= LIST( D( AS_SOURCE_NAME_S, GPRM ) );
-          GOBJ_ID	: TREE;
+	GOBJ_SEQ  : SEQ_TYPE	:= LIST( D( AS_SOURCE_NAME_S, GPRM ) );
+	GOBJ_ID	: TREE;
 
         begin
-          while  not IS_EMPTY( GOBJ_SEQ )  loop
-            POP( GOBJ_SEQ, GOBJ_ID );
+	while  not IS_EMPTY( GOBJ_SEQ )  loop
+	  POP( GOBJ_SEQ, GOBJ_ID );
 
-            declare
-              GOBJ_NAME	: constant STRING	:= PRINT_NAME( D( LX_SYMREP, GOBJ_ID ) );
-              GOBJ_TYPE	: TREE		:= D( SM_OBJ_TYPE, GOBJ_ID );
-            begin
-              while  GOBJ_TYPE.TY = DN_PRIVATE  or else  GOBJ_TYPE.TY = DN_L_PRIVATE  loop
-                GOBJ_TYPE := D( SM_TYPE_SPEC, GOBJ_TYPE );
-              end loop;
+	  declare
+	    GOBJ_NAME	: constant STRING	:= PRINT_NAME( D( LX_SYMREP, GOBJ_ID ) );
+	    GOBJ_TYPE	: TREE		:= D( SM_OBJ_TYPE, GOBJ_ID );
+	  begin
+	    while  GOBJ_TYPE.TY = DN_PRIVATE  or else  GOBJ_TYPE.TY = DN_L_PRIVATE  loop
+	      GOBJ_TYPE := D( SM_TYPE_SPEC, GOBJ_TYPE );
+	    end loop;
 
-              if  GOBJ_TYPE.TY in CLASS_SCALAR  or else  GOBJ_TYPE.TY = DN_ACCESS  then
-                   -- Objet formel scalaire :
-                   -- slot unique X_ofs, utilisé par LVA , -X_ofs
-                   --
-                   -- Physique attendu côté instance :
-                   --     VAR X_disp, q
-                   --
-                   -- Donc :
-                   --     X_ofs = 8  =>  GFP - 8 = X_disp
+	    if  GOBJ_TYPE.TY in CLASS_SCALAR  or else  GOBJ_TYPE.TY = DN_ACCESS  then
+	         -- Objet formel scalaire :
+	         -- slot unique X_ofs, utilisé par LVA , -X_ofs
+	         --
+	         -- Physique attendu côté instance :
+	         --     VAR X_disp, q
+	         --
+	         -- Donc :
+	         --     X_ofs = 8  =>  GFP - 8 = X_disp
 
-                PUT_LINE( tab & GOBJ_NAME & "_ofs = $" );
-                PUT_LINE( tab & "rq 1" );
+	      PUT_LINE( tab & GOBJ_NAME & "_ofs = $" );
+	      PUT_LINE( tab & "rq 1" );
 
-              else
-                   -- Objet formel composite :
-                   -- doublet X_disp / X__u.
-                   --
-                   -- Physique attendu côté instance :
-                   --     VAR X_disp, q
-                   --     VAR X__u,   q
-                   --     VAR GFP_disp, q
-                   --
-                   -- Donc :
-                   --     X__u_ofs = 8   => GFP - 8  = X__u
-                   --     X_ofs    = 16  => GFP - 16 = X_disp
-                   --
-                   -- LVA , -X_ofs donne bien l'adresse du doublet.
+	    else
+	         -- Objet formel composite :
+	         -- doublet X_disp / X__u.
+	         --
+	         -- Physique attendu côté instance :
+	         --     VAR X_disp, q
+	         --     VAR X__u,   q
+	         --     VAR GFP_disp, q
+	         --
+	         -- Donc :
+	         --     X__u_ofs = 8	 => GFP - 8  = X__u
+	         --     X_ofs    = 16  => GFP - 16 = X_disp
+	         --
+	         -- LVA , -X_ofs donne bien l'adresse du doublet.
 
-                PUT_LINE( tab & GOBJ_NAME & "__u_ofs = $" );
-                PUT_LINE( tab & "rq 1" );
+	      PUT_LINE( tab & GOBJ_NAME & "__u_ofs = $" );
+	      PUT_LINE( tab & "rq 1" );
 
-                PUT_LINE( tab & GOBJ_NAME & "_ofs = $" );
-                PUT_LINE( tab & "rq 1" );
-              end if;
-            end;
-          end loop;
+	      PUT_LINE( tab & GOBJ_NAME & "_ofs = $" );
+	      PUT_LINE( tab & "rq 1" );
+	    end if;
+	  end;
+	end loop;
         end;
 
+      else
+        CODI.TROU( "CODE_GENERIC_FRAME_OFFSETS parametre generique", GPRM );					--| vague 4, HORS LISTE : un formel non couvert
       end if;
 
     end	INVERSE_RECURSE;
@@ -394,7 +397,7 @@ is
       PUT( tab & "RTD" );
       if  CODI.NO_SUBP_PARAMS = FALSE  then  PUT( tab & "prm_siz" );
         if  SOURCE_NAME.TY = DN_FUNCTION_ID  then
-          PUT( INTEGER'IMAGE( - STACK_ELEMENT_SIZE ) );							-- POUR UNE FONCTION NE PAS LIBERER LE RESULTAT
+	PUT( INTEGER'IMAGE( - STACK_ELEMENT_SIZE ) );							-- POUR UNE FONCTION NE PAS LIBERER LE RESULTAT
         end if;
       end if;
       CODI.NO_SUBP_PARAMS := SAVE_NO_SUB_PARAM;
@@ -582,6 +585,8 @@ is
       elsif  ITEM.TY in CLASS_SUBUNIT_BODY
       then  CODE_SUBUNIT_BODY( ITEM );
 
+      else
+        CODI.TROU( "CODE_ITEM_S", ITEM );							--| vague 4 : dispatch muet (fossile n 115)
       end if;
 
     end loop;
@@ -633,7 +638,9 @@ is
     begin
       if  HAS_HANDLERS  then
         if  IS_PACK_BODY  then
-	PUT_LINE( ";ANOMALIE : handlers sur corps de package non modelises" );					-- bruyant -- exceptions d'elaboration, differe
+	PUT_LINE( ";ANOMALIE : handlers sur corps de package non modelises" );				--| DEFAUT DOCUMENTE (vague 5) : bruyant volontairement
+												--| non fatal -- exceptions d'elaboration, differe
+												--| (croiser pilier 11)
 
         else
 			-- PILIER 11 : frame porteur -> contexte de reprise (push a begin:, apres
@@ -707,14 +714,15 @@ is
   procedure		CODE_TASK_BODY ( TASK_BODY :TREE )
   is
   begin
-    null;
+    CODI.TROU( "CODE_TASK_BODY (tasking hors perimetre)", TASK_BODY );					--| vague 4 : corps vide, le corps de tache etait avale
+
   end	CODE_TASK_BODY;
 	--------------
 
 
 
 		----------------------------------------------------
-		--	E X C E P T I O N S   H A N D L E R S	--
+		--	E X C E P T I O N S	  H A N D L E R S	--
 
 
 			-----------------------------
@@ -760,7 +768,8 @@ is
 	IS_OTHERS := TRUE;  SEEN_OTHERS := TRUE;							-- sem : others seul dans son choix, et dernier
 
         elsif  CHOICE.TY = DN_CHOICE_RANGE  then
-	PUT_LINE( "ANOMALIE : CHOICE_RANGE in EXCEPTIONS" );
+	PUT_LINE( "CODE_ALTERNATIVE ANOMALIE : CHOICE_RANGE in EXCEPTIONS" );					--| DEFAUT DOCUMENTE (vague 5) : ceinture
+												--| d'impossible (sem : choix = noms ou others)
         end if;
       end loop;
 
@@ -784,7 +793,7 @@ is
         CODE_ALTERNATIVE( ALTERNATIVE_ELEM );
 
       elsif  ALTERNATIVE_ELEM.TY = DN_ALTERNATIVE_PRAGMA  then
-        PUT_LINE( "ANOMALIE : DN_ALTERNATIVE_PRAGMA in EXCEPTIONS" );
+        PUT_LINE( "CODE_EXCEPTIONS_ALTERNATIVE_S ANOMALIE : DN_ALTERNATIVE_PRAGMA in EXCEPTIONS" );			--| DEFAUT DOCUMENTE (vague 5) : ceinture bruyante
       end if;
     end loop;
 
@@ -803,4 +812,3 @@ end	STRUCTURES;
 
 --	1	2	3	4	5	6	7	8	9	0	1	2
 ------------------------------------------------------------------------------------------------------------------------
-

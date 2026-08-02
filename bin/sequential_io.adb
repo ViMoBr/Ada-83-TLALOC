@@ -18,7 +18,7 @@ is					--------------
     ERR_OR_ID	: INTEGER;
 
 		------------------
-    function	CREATE_SYSTEM_CALL	( NAME :in STRING )		return INTEGER
+    function	CREATE_SYSTEM_CALL  ( NAME :in STRING )		return INTEGER
     is		------------------
     begin
       ASM_OP_2'( OPCODE => LA, LVL => 2, OFS => -8 );			-- @descripteur de NAME
@@ -117,7 +117,7 @@ is					--------------
     ERR_CODE	: INTEGER;
 
 		------------------
-    function	DELETE_SYSTEM_CALL	( NAME : STRING )		return INTEGER
+    function	DELETE_SYSTEM_CALL  ( NAME : STRING )		return INTEGER
     is		------------------
     begin
       ASM_OP_2'( OPCODE => La, LVL => 2, OFS => -8 );			-- @descripteur de NAME
@@ -217,7 +217,7 @@ is					--------------
 	-------
 
 
-			--   I N P U T   /   O U T P U T   O P E R A T I O N S
+			--   I N P U T   /	 O U T P U T   O P E R A T I O N S
 
 
 			----
@@ -227,7 +227,7 @@ is					--------------
   is			----
 
     BYTES_READ	: INTEGER;
-    SIZE_BYTES	: INTEGER	:= ELEMENT_TYPE'SIZE / SYSTEM.STORAGE_UNIT;
+    SIZE_BYTES	: INTEGER := ELEMENT_TYPE'SIZE / SYSTEM.STORAGE_UNIT;
 
 		----------------
     function	READ_SYSTEM_CALL	( FILE_ID :in INTEGER; LENGTH :in INTEGER; ADR :SYSTEM.ADDRESS )
@@ -245,8 +245,8 @@ is					--------------
 
   begin
     if  FILE.IS_OPENED = FALSE  then raise STATUS_ERROR; end if;
-    if  FILE.MODE = OUT_FILE    then raise MODE_ERROR;   end if;
-    if  FILE.AT_END_OF_FILE     then raise END_ERROR;    end if;
+    if  FILE.MODE = OUT_FILE	  then raise MODE_ERROR;   end if;
+    if  FILE.AT_END_OF_FILE	  then raise END_ERROR;    end if;
 				-- Lit a la position courante (avancement sequentiel)
     BYTES_READ := READ_SYSTEM_CALL( FILE.ID, SIZE_BYTES, ITEM'ADDRESS );
     if  BYTES_READ < SIZE_BYTES  then
@@ -264,7 +264,7 @@ is					--------------
   is			-----
 
     ERR_CODE	: INTEGER;
-    SIZE_BYTES	: INTEGER	:= ELEMENT_TYPE'SIZE / SYSTEM.STORAGE_UNIT;
+    SIZE_BYTES	: INTEGER := ELEMENT_TYPE'SIZE / SYSTEM.STORAGE_UNIT;
 
 		-----------------
     function	WRITE_SYSTEM_CALL	( FILE_ID :in INTEGER; LENGTH :in INTEGER; ADR :SYSTEM.ADDRESS )
@@ -282,7 +282,7 @@ is					--------------
 
   begin
     if  FILE.IS_OPENED = FALSE  then raise STATUS_ERROR; end if;
-    if  FILE.MODE = IN_FILE     then raise MODE_ERROR;   end if;
+    if  FILE.MODE = IN_FILE	  then raise MODE_ERROR;   end if;
 				-- Ecrit a la position courante (avancement sequentiel)
     ERR_CODE := WRITE_SYSTEM_CALL( FILE.ID, SIZE_BYTES, ITEM'ADDRESS );
 
@@ -298,7 +298,7 @@ is					--------------
     SIZ_BYTES	: INTEGER;
 
 		---------------------
-    function	GET_POS_SYSTEM_CALL	( FILE_ID :in INTEGER )		return INTEGER
+    function	GET_POS_SYSTEM_CALL ( FILE_ID :in INTEGER )		return INTEGER
     is		---------------------
     begin
       ASM_OP_2'( OPCODE => Ld, LVL => 2, OFS => -8 );
@@ -321,7 +321,7 @@ is					--------------
 
   begin
     if  FILE.IS_OPENED = FALSE  then raise STATUS_ERROR; end if;
-    if  FILE.MODE = OUT_FILE    then raise MODE_ERROR;   end if;
+    if  FILE.MODE = OUT_FILE	  then raise MODE_ERROR;   end if;
     POS_BYTES := GET_POS_SYSTEM_CALL( FILE.ID );
     SIZ_BYTES := GET_SIZE_SYSTEM_CALL( FILE.ID );
     return POS_BYTES >= SIZ_BYTES;

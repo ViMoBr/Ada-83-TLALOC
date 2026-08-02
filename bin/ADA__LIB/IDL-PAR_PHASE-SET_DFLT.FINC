@@ -1,5 +1,6 @@
 SET_DFLT = 'SET_DFLT'
 PRO	SET_DFLT_L1				;---------- PRO SET_DFLT
+ hexa_show 'SET_DFLT_L1 ', $
 PRMS					;    debut parametrage
 	PRM NODE_ofs				; in
 endPRMS					;    fin parametrage
@@ -29,7 +30,15 @@ begin:					;---------- BDY INSTRUCTIONS
 	LI	16
 	CEQ
 	BT	L7
-; CODE_CASE : choice_range non DN_RANGE a completer
+	DUP
+	LI	17
+	CGE
+	BF	L25
+	DUP
+	LI	19
+	CGT
+	BF	L8
+L25:
 	DUP
 	LI	23
 	CEQ
@@ -74,7 +83,15 @@ begin:					;---------- BDY INSTRUCTIONS
 	LI	114
 	CEQ
 	BT	L18
-; CODE_CASE : choice_range non DN_RANGE a completer
+	DUP
+	LI	132
+	CGE
+	BF	L26
+	DUP
+	LI	133
+	CGT
+	BF	L19
+L26:
 	DUP
 	LI	136
 	CEQ
@@ -87,7 +104,15 @@ begin:					;---------- BDY INSTRUCTIONS
 	LI	138
 	CEQ
 	BT	L21
-; CODE_CASE : choice_range non DN_RANGE a completer
+	DUP
+	LI	142
+	CGE
+	BF	L27
+	DUP
+	LI	149
+	CGT
+	BF	L22
+L27:
 	DUP
 	LI	199
 	CEQ
@@ -330,13 +355,13 @@ L17:
 	LVA	, STANDARD.IDL._SEQ_TYPE.FIRST
 	LI	STANDARD.IDL._TREE.size
 	LVA 0,	STANDARD.IDL.TREE_NIL_disp
-	La  ,  0
+	La
 	BLKMOV
 	DUP
 	LVA	, STANDARD.IDL._SEQ_TYPE.NEXT
 	LI	STANDARD.IDL._TREE.size
 	LVA 0,	STANDARD.IDL.TREE_NIL_disp
-	La  ,  0
+	La
 	BLKMOV
 	DROP
 	LVA 1, ANON_87_18_disp

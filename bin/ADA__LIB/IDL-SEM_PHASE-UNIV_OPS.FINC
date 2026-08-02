@@ -1,10 +1,12 @@
 UNIV_OPS = 'UNIV_OPS'
 namespace UNIV_OPS				;---------- PACKAGE (BDY)
 					;    BODY ELAB
+ hexa_show 'var elab NUM_VAL ', $
 VAR NUM_VAL_disp, d				; variable entiere
 	LI	2
 	Sd  0,	STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS.NUM_VAL_disp
 
+ hexa_show ' disp ', NUM_VAL_disp
 
 					; _UDIGIT_PAIR_TYPE RECORD TYPE INFO
 _UDIGIT_PAIR_TYPE = '_UDIGIT_PAIR_TYPE'
@@ -91,6 +93,7 @@ end namespace
 
 if defined DIGIT_MUL_L1_
 PRO	DIGIT_MUL_L1				;---------- PRO DIGIT_MUL
+ hexa_show 'DIGIT_MUL_L1 ', $
 PRMS					;    debut parametrage
 	PRM A_ofs				; in
 	PRM B_ofs				; in
@@ -98,6 +101,7 @@ PRMS					;    debut parametrage
 	PRM LOW_ofs				; out
 endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
+ hexa_show 'var elab A1 ', $
 VAR A1_disp, w				; variable entiere
 	Lw  1,	-A_ofs
 ; CODE_NUMERIC_LITERAL DN_INTEGER
@@ -109,6 +113,8 @@ VAR A1_disp, w				; variable entiere
 	DIV
 	Sw  1,	A1_disp
 
+ hexa_show ' disp ', A1_disp
+ hexa_show 'var elab B1 ', $
 VAR B1_disp, w				; variable entiere
 	Lw  1,	-B_ofs
 ; CODE_NUMERIC_LITERAL DN_INTEGER
@@ -120,6 +126,8 @@ VAR B1_disp, w				; variable entiere
 	DIV
 	Sw  1,	B1_disp
 
+ hexa_show ' disp ', B1_disp
+ hexa_show 'var elab A2 ', $
 VAR A2_disp, w				; variable entiere
 	Lw  1,	-A_ofs
 ; CODE_NUMERIC_LITERAL DN_INTEGER
@@ -131,6 +139,8 @@ VAR A2_disp, w				; variable entiere
 	MODI
 	Sw  1,	A2_disp
 
+ hexa_show ' disp ', A2_disp
+ hexa_show 'var elab B2 ', $
 VAR B2_disp, w				; variable entiere
 	Lw  1,	-B_ofs
 ; CODE_NUMERIC_LITERAL DN_INTEGER
@@ -142,6 +152,8 @@ VAR B2_disp, w				; variable entiere
 	MODI
 	Sw  1,	B2_disp
 
+ hexa_show ' disp ', B2_disp
+ hexa_show 'var elab XX ', $
 VAR XX_disp, w				; variable entiere
 	Lw 1,	A1_disp
 	Lw 1,	B2_disp
@@ -152,6 +164,8 @@ VAR XX_disp, w				; variable entiere
 	ADD
 	Sw  1,	XX_disp
 
+ hexa_show ' disp ', XX_disp
+ hexa_show 'var elab LL ', $
 VAR LL_disp, w				; variable entiere
 	Lw 1,	A2_disp
 	Lw 1,	B2_disp
@@ -170,6 +184,7 @@ VAR LL_disp, w				; variable entiere
 	ADD
 	Sw  1,	LL_disp
 
+ hexa_show ' disp ', LL_disp
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 	Lw 1,	LL_disp
@@ -212,6 +227,7 @@ end if
 
 if defined DIGIT_DIV_L4_
 PRO	DIGIT_DIV_L4				;---------- PRO DIGIT_DIV
+ hexa_show 'DIGIT_DIV_L4 ', $
 PRMS					;    debut parametrage
 	PRM H_ofs				; in
 	PRM L_ofs				; in
@@ -219,12 +235,18 @@ PRMS					;    debut parametrage
 	PRM result__ofs				; resultat de fonction
 endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
+ hexa_show 'var elab QUO ', $
 VAR QUO_disp, w				; variable entiere
 
+ hexa_show ' disp ', QUO_disp
+ hexa_show 'var elab PH ', $
 VAR PH_disp, w				; variable entiere
 
+ hexa_show ' disp ', PH_disp
+ hexa_show 'var elab PL ', $
 VAR PL_disp, w				; variable entiere
 
+ hexa_show ' disp ', PL_disp
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 					; debut if
@@ -241,7 +263,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	CEQ
 	BT	STANDARD.ne_raise_
 	DIV
-	Sw  1,	-result__ofs
+	Sq  1,	-result__ofs
 	BRA ret_lbl
 	BRA	L7
 L8:
@@ -281,7 +303,7 @@ L8:
 	DIV
 	ADD
 	CALL	STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS. ,DIGIT_DIV_L4
-	Sw  1,	-result__ofs
+	Sq  1,	-result__ofs
 	BRA ret_lbl
 	BRA	L7
 L9:
@@ -367,7 +389,7 @@ L10:					; post if
 	SUB
 	CALL	STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS. ,DIGIT_DIV_L4
 	ADD
-	Sw  1,	-result__ofs
+	Sq  1,	-result__ofs
 	BRA ret_lbl
 	BRA	L12
 L13:
@@ -389,7 +411,7 @@ L13:
 	SUB
 	CALL	STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS. ,DIGIT_DIV_L4
 	ADD
-	Sw  1,	-result__ofs
+	Sq  1,	-result__ofs
 	BRA ret_lbl
 L12:					; post if
 L7:					; post if
@@ -402,6 +424,7 @@ end if
 
 if defined U_INT_L4_
 PRO	U_INT_L4				;---------- PRO U_INT
+ hexa_show 'U_INT_L4 ', $
 PRMS					;    debut parametrage
 	PRM V_ofs				; in
 	PRM result__ofs				; resultat de fonction
@@ -974,6 +997,7 @@ L18:					; post if
 endPRO
 namespace	CAS_RETOUR_BLOC_UDIGITS
 ELB 2					;    BODY ELAB
+ hexa_show 'var elab W_LEN ', $
 VAR W_LEN_disp, b				; variable entiere
 	La 1, -V_ofs
 	LId	, 0, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.L
@@ -1006,6 +1030,8 @@ VAR W_LEN_disp, b				; variable entiere
 	BT	STANDARD.ce_raise_
 	Sb  2,	W_LEN_disp
 
+ hexa_show ' disp ', W_LEN_disp
+ hexa_show 'var elab R ', $
 VAR R_disp, q				; variable record : pointeur aux data record
 VAR R__u, q				; variable record : pointeur aux useinfo
 VAR R__dat, STANDARD.IDL._TREE.size
@@ -1013,7 +1039,6 @@ VAR R__dat, STANDARD.IDL._TREE.size
 	Sa	2, R_disp				; record fin
 	LVA	2, STANDARD.IDL._TREE.SIZ
 	Sa	2, R__u
-; CODE_VC_NAME DN_VARIABLE_ID
 	La  2, R_disp
 	LI	STANDARD.IDL._TREE.size
 VAR	ANON_113_19_disp, q
@@ -1039,10 +1064,12 @@ VAR	ANON_113_19__dat, STANDARD.IDL._TREE.size
 	La  ,  0
 	BLKMOV
 
+ hexa_show ' disp ', R_disp
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 namespace	PORTER_LE_SIGNE
 ELB 3					;    BODY ELAB
+ hexa_show 'var elab ENTETE ', $
 VAR ENTETE_disp, q				; variable record : pointeur aux data record
 VAR ENTETE__u, q				; variable record : pointeur aux useinfo
 VAR ENTETE__dat, STANDARD.IDL._TREE.size
@@ -1050,7 +1077,6 @@ VAR ENTETE__dat, STANDARD.IDL._TREE.size
 	Sa	3, ENTETE_disp				; record fin
 	LVA	3, STANDARD.IDL._TREE.SIZ
 	Sa	3, ENTETE__u
-; CODE_VC_NAME DN_VARIABLE_ID
 	La  3, ENTETE_disp
 	LI	STANDARD.IDL._TREE.size
 VAR	ANON_118_24_disp, q
@@ -1077,6 +1103,7 @@ VAR	ANON_118_24__dat, STANDARD.IDL._TREE.size
 	La  ,  0
 	BLKMOV
 
+ hexa_show ' disp ', ENTETE_disp
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 					; debut if
@@ -1127,6 +1154,7 @@ L38:					; post if
 endPRO
 namespace	COPIE_PAIRES_UDIGITS
 ELB 3					;    BODY ELAB
+ hexa_show 'var elab ROUND_LEN ', $
 VAR ROUND_LEN_disp, b			; variable entiere
 	La 1, -V_ofs
 	LId	, 0, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.L
@@ -1156,14 +1184,17 @@ VAR ROUND_LEN_disp, b			; variable entiere
 	BT	STANDARD.ce_raise_
 	Sb  3,	ROUND_LEN_disp
 
-VAR VDP_disp, q				; variable record : pointeur aux data record
+ hexa_show ' disp ', ROUND_LEN_disp
+ hexa_show 'var elab VDP ', $
+VAR VDP_disp, q				; variable record OVERLAY sur parametre
+	La  1, -V_ofs
+	La  ,  0
+	Sa	3, VDP_disp				; record data ptr at _disp (OVERLAY, data de l'actuel)
 VAR VDP__u, q				; variable record : pointeur aux useinfo
-	La	1, -V_ofs
-	La	, 0
 	LVA	3, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR_PAIRS.SIZ
 	Sa	3, VDP__u
-; CODE_VC_NAME DN_VARIABLE_ID
 
+ hexa_show ' disp ', VDP_disp
 					; sub program entry decl (in instantiation FALSE )
 if defined CAST_TREE_L40_
 ; F4A SET  cle=SOURCE  actuel=DN_RECORD
@@ -1240,6 +1271,7 @@ VAR CAST_TREE_L40TARGET__u_ofs, q
 	Sa	 3, CAST_TREE_L40TARGET__u_ofs
 VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
 PRO	CAST_TREE_L40				;---------- PRO CAST_TREE
+ hexa_show 'CAST_TREE_L40 ', $
 PRMS					;    debut parametrage
 	PRM S_ofs				; in
 	PRM result__ofs				; resultat de fonction
@@ -1247,10 +1279,10 @@ endPRMS					;    fin parametrage
 ELB 4
 begin:
 	La	4, -result__ofs
-	La	, 0
+	La
 	LI	STANDARD.IDL._TREE.size
 	La	4, -S_ofs
-	La	, 0
+	La
 	BLKMOV
 	UNLINK	 4
 	RTD	prm_siz-8
@@ -1412,7 +1444,7 @@ endPRO
 	La  ,  0
 	LI	STANDARD.IDL._TREE.size
 	LVA 2,	R_disp
-	La  ,  0
+	La
 	BLKMOV
 	UNLINK 2
 	BRA ret_lbl
@@ -1427,12 +1459,14 @@ end if
 
 if defined U_REAL_L5_
 PRO	U_REAL_L5				;---------- PRO U_REAL
+ hexa_show 'U_REAL_L5 ', $
 PRMS					;    debut parametrage
 	PRM NUMER_ofs				; in
 	PRM DENOM_ofs				; in
 	PRM result__ofs				; resultat de fonction
 endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
+ hexa_show 'var elab R ', $
 VAR R_disp, q				; variable record : pointeur aux data record
 VAR R__u, q				; variable record : pointeur aux useinfo
 VAR R__dat, STANDARD.IDL._TREE.size
@@ -1440,7 +1474,6 @@ VAR R__dat, STANDARD.IDL._TREE.size
 	Sa	1, R_disp				; record fin
 	LVA	1, STANDARD.IDL._TREE.SIZ
 	Sa	1, R__u
-; CODE_VC_NAME DN_VARIABLE_ID
 	La  1, R_disp
 	LI	STANDARD.IDL._TREE.size
 VAR	ANON_148_15_disp, q
@@ -1457,6 +1490,7 @@ VAR	ANON_148_15__dat, STANDARD.IDL._TREE.size
 	La  ,  0
 	BLKMOV
 
+ hexa_show ' disp ', R_disp
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 VAR	ANON_150_19_disp, q
@@ -1492,7 +1526,7 @@ VAR	ANON_151_19__dat, STANDARD.IDL._TREE.size
 	La  ,  0
 	LI	STANDARD.IDL._TREE.size
 	LVA 1,	R_disp
-	La  ,  0
+	La
 	BLKMOV
 	BRA ret_lbl
 ret_lbl:
@@ -1504,12 +1538,14 @@ end if
 
 if defined U_REAL_L6_
 PRO	U_REAL_L6				;---------- PRO U_REAL
+ hexa_show 'U_REAL_L6 ', $
 PRMS					;    debut parametrage
 	PRM NUMER_ofs				; in
 	PRM DENOM_ofs				; in
 	PRM result__ofs				; resultat de fonction
 endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
+ hexa_show 'var elab N_SPREAD ', $
 VAR N_SPREAD_disp, q			; variable record : pointeur aux data record
 VAR N_SPREAD__u, q				; variable record : pointeur aux useinfo
 VAR N_SPREAD__dat, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.size
@@ -1517,8 +1553,9 @@ VAR N_SPREAD__dat, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.size
 	Sa	1, N_SPREAD_disp			; record fin
 	LVA	1, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.SIZ
 	Sa	1, N_SPREAD__u
-; CODE_VC_NAME DN_VARIABLE_ID
 
+ hexa_show ' disp ', N_SPREAD_disp
+ hexa_show 'var elab D_SPREAD ', $
 VAR D_SPREAD_disp, q			; variable record : pointeur aux data record
 VAR D_SPREAD__u, q				; variable record : pointeur aux useinfo
 VAR D_SPREAD__dat, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.size
@@ -1526,8 +1563,9 @@ VAR D_SPREAD__dat, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.size
 	Sa	1, D_SPREAD_disp			; record fin
 	LVA	1, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.SIZ
 	Sa	1, D_SPREAD__u
-; CODE_VC_NAME DN_VARIABLE_ID
 
+ hexa_show ' disp ', D_SPREAD_disp
+ hexa_show 'var elab THE_REAL ', $
 VAR THE_REAL_disp, q			; variable record : pointeur aux data record
 VAR THE_REAL__u, q				; variable record : pointeur aux useinfo
 VAR THE_REAL__dat, STANDARD.IDL._TREE.size
@@ -1535,7 +1573,6 @@ VAR THE_REAL__dat, STANDARD.IDL._TREE.size
 	Sa	1, THE_REAL_disp			; record fin
 	LVA	1, STANDARD.IDL._TREE.SIZ
 	Sa	1, THE_REAL__u
-; CODE_VC_NAME DN_VARIABLE_ID
 	La  1, THE_REAL_disp
 	LI	STANDARD.IDL._TREE.size
 VAR	ANON_159_23_disp, q
@@ -1552,6 +1589,7 @@ VAR	ANON_159_23__dat, STANDARD.IDL._TREE.size
 	La  ,  0
 	BLKMOV
 
+ hexa_show ' disp ', THE_REAL_disp
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 	LVA  1,	STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS.U_REAL_L6.N_SPREAD_disp
@@ -1625,7 +1663,7 @@ L54:
 	La  ,  0
 	LI	STANDARD.IDL._TREE.size
 	LVA 0,	STANDARD.IDL.TREE_VOID_disp
-	La  ,  0
+	La
 	BLKMOV
 	BRA ret_lbl
 	BRA	L52
@@ -1676,7 +1714,7 @@ VAR	ANON_172_26__dat, STANDARD.IDL._TREE.size
 	La  ,  0
 	LI	STANDARD.IDL._TREE.size
 	LVA 1,	THE_REAL_disp
-	La  ,  0
+	La
 	BLKMOV
 	BRA ret_lbl
 ret_lbl:
@@ -1688,6 +1726,7 @@ end if
 
 if defined SPREAD_L7_
 PRO	SPREAD_L7				;---------- PRO SPREAD
+ hexa_show 'SPREAD_L7 ', $
 PRMS					;    debut parametrage
 	PRM T_ofs				; in
 	PRM V_ofs				; in out
@@ -1728,8 +1767,10 @@ VAR	exc_ctx_L56, q, 9
 	BF	L61
 namespace	BLOCK__2
 ELB 2					;    BODY ELAB
+ hexa_show 'var elab IVAL ', $
 VAR IVAL_disp, d				; variable entiere
 
+ hexa_show ' disp ', IVAL_disp
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 					; debut if
@@ -1824,6 +1865,7 @@ L68:
 L67:					; post if
 namespace	PREPARE_VECTOR_FROM_BLOCK
 ELB 2					;    BODY ELAB
+ hexa_show 'var elab ENTETE ', $
 VAR ENTETE_disp, q				; variable record : pointeur aux data record
 VAR ENTETE__u, q				; variable record : pointeur aux useinfo
 VAR ENTETE__dat, STANDARD.IDL._TREE.size
@@ -1831,7 +1873,6 @@ VAR ENTETE__dat, STANDARD.IDL._TREE.size
 	Sa	2, ENTETE_disp				; record fin
 	LVA	2, STANDARD.IDL._TREE.SIZ
 	Sa	2, ENTETE__u
-; CODE_VC_NAME DN_VARIABLE_ID
 	La  2, ENTETE_disp
 	LI	STANDARD.IDL._TREE.size
 VAR	ANON_202_25_disp, q
@@ -1858,14 +1899,17 @@ VAR	ANON_202_25__dat, STANDARD.IDL._TREE.size
 	La  ,  0
 	BLKMOV
 
-VAR VDP_disp, q				; variable record : pointeur aux data record
+ hexa_show ' disp ', ENTETE_disp
+ hexa_show 'var elab VDP ', $
+VAR VDP_disp, q				; variable record OVERLAY sur parametre
+	La  1, -V_ofs
+	La  ,  0
+	Sa	2, VDP_disp				; record data ptr at _disp (OVERLAY, data de l'actuel)
 VAR VDP__u, q				; variable record : pointeur aux useinfo
-	La	1, -V_ofs
-	La	, 0
 	LVA	2, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR_PAIRS.SIZ
 	Sa	2, VDP__u
-; CODE_VC_NAME DN_VARIABLE_ID
 
+ hexa_show ' disp ', VDP_disp
 					; sub program entry decl (in instantiation FALSE )
 if defined CAST_UDIGIT_PAIR_L70_
 ; F4A SET  cle=SOURCE  actuel=DN_RECORD
@@ -1942,6 +1986,7 @@ VAR CAST_UDIGIT_PAIR_L70TARGET__u_ofs, q
 	Sa	 2, CAST_UDIGIT_PAIR_L70TARGET__u_ofs
 VAR GFP_disp, q				; Lieu du Generic Frame Pointer 
 PRO	CAST_UDIGIT_PAIR_L70			;---------- PRO CAST_UDIGIT_PAIR
+ hexa_show 'CAST_UDIGIT_PAIR_L70 ', $
 PRMS					;    debut parametrage
 	PRM S_ofs				; in
 	PRM result__ofs				; resultat de fonction
@@ -1949,10 +1994,10 @@ endPRMS					;    fin parametrage
 ELB 3
 begin:
 	La	3, -result__ofs
-	La	, 0
+	La
 	LI	STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._UDIGIT_PAIR_TYPE.size
 	La	3, -S_ofs
-	La	, 0
+	La
 	BLKMOV
 	UNLINK	 3
 	RTD	prm_siz-8
@@ -2226,8 +2271,10 @@ L80:
 L82:
 namespace	BLOCK__3
 ELB 2					;    BODY ELAB
+ hexa_show 'var elab NN ', $
 VAR NN_disp, b				; variable entiere
 
+ hexa_show ' disp ', NN_disp
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 					; debut case
@@ -2389,16 +2436,19 @@ end if
 
 if defined SPREAD_L8_
 PRO	SPREAD_L8				;---------- PRO SPREAD
+ hexa_show 'SPREAD_L8 ', $
 PRMS					;    debut parametrage
 	PRM I_ofs				; in
 	PRM V_ofs				; in out
 endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
+ hexa_show 'var elab VAL_POS ', $
 VAR VAL_POS_disp, d				; variable entiere
 	Ld  1,	-I_ofs
 	ABS
 	Sd  1,	VAL_POS_disp
 
+ hexa_show ' disp ', VAL_POS_disp
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 					; debut if
@@ -2560,6 +2610,7 @@ end if
 
 if defined NORMALIZE_L9_
 PRO	NORMALIZE_L9				;---------- PRO NORMALIZE
+ hexa_show 'NORMALIZE_L9 ', $
 PRMS					;    debut parametrage
 	PRM V_ofs				; in out
 endPRMS					;    fin parametrage
@@ -2633,23 +2684,30 @@ end if
 
 if defined V_ADD_L10_
 PRO	V_ADD_L10				;---------- PRO V_ADD
+ hexa_show 'V_ADD_L10 ', $
 PRMS					;    debut parametrage
 	PRM A_ofs				; in
 	PRM R_ofs				; in out
 endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
+ hexa_show 'var elab ALEN ', $
 VAR ALEN_disp, d				; variable entiere
 	La 1, -A_ofs
 	LId	, 0, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.L
 	Sd  1,	ALEN_disp
 
+ hexa_show ' disp ', ALEN_disp
+ hexa_show 'var elab TEMP ', $
 VAR TEMP_disp, w				; variable entiere
 
+ hexa_show ' disp ', TEMP_disp
+ hexa_show 'var elab CARRY ', $
 VAR CARRY_disp, w				; variable entiere
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	Sw  1,	CARRY_disp
 
+ hexa_show ' disp ', CARRY_disp
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 					; debut if
@@ -2976,18 +3034,23 @@ end if
 
 if defined V_SUB_L11_
 PRO	V_SUB_L11				;---------- PRO V_SUB
+ hexa_show 'V_SUB_L11 ', $
 PRMS					;    debut parametrage
 	PRM A_ofs				; in
 	PRM R_ofs				; in out
 endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
+ hexa_show 'var elab TEMP ', $
 VAR TEMP_disp, w				; variable entiere
 
+ hexa_show ' disp ', TEMP_disp
+ hexa_show 'var elab BORROW ', $
 VAR BORROW_disp, w				; variable entiere
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	Sw  1,	BORROW_disp
 
+ hexa_show ' disp ', BORROW_disp
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 					; debut if
@@ -3251,22 +3314,33 @@ end if
 
 if defined V_MUL_L12_
 PRO	V_MUL_L12				;---------- PRO V_MUL
+ hexa_show 'V_MUL_L12 ', $
 PRMS					;    debut parametrage
 	PRM A_ofs				; in
 	PRM B_ofs				; in
 	PRM R_ofs				; in out
 endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
+ hexa_show 'var elab H ', $
 VAR H_disp, w				; variable entiere
 
+ hexa_show ' disp ', H_disp
+ hexa_show 'var elab L ', $
 VAR L_disp, w				; variable entiere
 
+ hexa_show ' disp ', L_disp
+ hexa_show 'var elab TEMP ', $
 VAR TEMP_disp, w				; variable entiere
 
+ hexa_show ' disp ', TEMP_disp
+ hexa_show 'var elab CARRY ', $
 VAR CARRY_disp, w				; variable entiere
 
+ hexa_show ' disp ', CARRY_disp
+ hexa_show 'var elab K ', $
 VAR K_disp, d				; variable entiere
 
+ hexa_show ' disp ', K_disp
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 	La 1, -R_ofs
@@ -3659,20 +3733,27 @@ end if
 
 if defined V_SCALE_L13_
 PRO	V_SCALE_L13				;---------- PRO V_SCALE
+ hexa_show 'V_SCALE_L13 ', $
 PRMS					;    debut parametrage
 	PRM A_ofs				; in
 	PRM R_ofs				; in out
 endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
+ hexa_show 'var elab H ', $
 VAR H_disp, w				; variable entiere
 
+ hexa_show ' disp ', H_disp
+ hexa_show 'var elab L ', $
 VAR L_disp, w				; variable entiere
 
+ hexa_show ' disp ', L_disp
+ hexa_show 'var elab CARRY ', $
 VAR CARRY_disp, w				; variable entiere
 ; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	Sw  1,	CARRY_disp
 
+ hexa_show ' disp ', CARRY_disp
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 VAR	IL153_disp, d				; compteur boucle LOOP__14
@@ -3813,12 +3894,14 @@ end if
 
 if defined V_DIV_L14_
 PRO	V_DIV_L14				;---------- PRO V_DIV
+ hexa_show 'V_DIV_L14 ', $
 PRMS					;    debut parametrage
 	PRM A_ofs				; in
 	PRM R_ofs				; in out
 	PRM Q_ofs				; in out
 endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
+ hexa_show 'var elab A_TRIAL ', $
 VAR A_TRIAL_disp, w				; variable entiere
 	La 1, -A_ofs
 	LIVA 	, 0, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.D
@@ -3846,12 +3929,20 @@ VAR A_TRIAL_disp, w				; variable entiere
 	ADD
 	Sw  1,	A_TRIAL_disp
 
+ hexa_show ' disp ', A_TRIAL_disp
+ hexa_show 'var elab QDIG ', $
 VAR QDIG_disp, w				; variable entiere
 
+ hexa_show ' disp ', QDIG_disp
+ hexa_show 'var elab CARRY ', $
 VAR CARRY_disp, w				; variable entiere
 
+ hexa_show ' disp ', CARRY_disp
+ hexa_show 'var elab TEMP ', $
 VAR TEMP_disp, w				; variable entiere
 
+ hexa_show ' disp ', TEMP_disp
+ hexa_show 'var elab R_PREC ', $
 VAR R_PREC_disp, q				; variable record : pointeur aux data record
 VAR R_PREC__u, q				; variable record : pointeur aux useinfo
 VAR R_PREC__dat, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.size
@@ -3859,8 +3950,9 @@ VAR R_PREC__dat, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.size
 	Sa	1, R_PREC_disp				; record fin
 	LVA	1, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.SIZ
 	Sa	1, R_PREC__u
-; CODE_VC_NAME DN_VARIABLE_ID
 
+ hexa_show ' disp ', R_PREC_disp
+ hexa_show 'var elab PPROD ', $
 VAR PPROD_disp, q				; variable record : pointeur aux data record
 VAR PPROD__u, q				; variable record : pointeur aux useinfo
 VAR PPROD__dat, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.size
@@ -3868,8 +3960,8 @@ VAR PPROD__dat, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.size
 	Sa	1, PPROD_disp				; record fin
 	LVA	1, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.SIZ
 	Sa	1, PPROD__u
-; CODE_VC_NAME DN_VARIABLE_ID
 
+ hexa_show ' disp ', PPROD_disp
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 					; debut if
@@ -3920,7 +4012,7 @@ L158:					; post if
 	La
 	LI	STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.size
 	La  1,	-R_ofs
-	La  ,  0
+	La
 	BLKMOV
 	La 1, -Q_ofs
 	LIVA 	, 0, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.S
@@ -3929,6 +4021,7 @@ L158:					; post if
 	Sw
 namespace	BLOCK__15
 ELB 2					;    BODY ELAB
+ hexa_show 'var elab DIFF ', $
 VAR DIFF_disp, d				; variable entiere
 	La 1, -R_ofs
 	LId	, 0, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.L
@@ -3940,6 +4033,7 @@ VAR DIFF_disp, d				; variable entiere
 	ADD
 	Sd  2,	DIFF_disp
 
+ hexa_show ' disp ', DIFF_disp
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 					; debut if
@@ -4332,7 +4426,7 @@ L174:					; post loop LOOP__18
 	La
 	LI	STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.size
 	LVA 1,	R_PREC_disp
-	La  ,  0
+	La
 	BLKMOV
 	LVA  1,	STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS.V_DIV_L14.PPROD_disp
 	La  1,	-A_ofs
@@ -4366,11 +4460,13 @@ end if
 
 if defined V_REM_L15_
 PRO	V_REM_L15				;---------- PRO V_REM
+ hexa_show 'V_REM_L15 ', $
 PRMS					;    debut parametrage
 	PRM A_ofs				; in
 	PRM R_ofs				; in out
 endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
+ hexa_show 'var elab INUTILE ', $
 VAR INUTILE_disp, q				; variable record : pointeur aux data record
 VAR INUTILE__u, q				; variable record : pointeur aux useinfo
 VAR INUTILE__dat, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.size
@@ -4378,8 +4474,8 @@ VAR INUTILE__dat, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.size
 	Sa	1, INUTILE_disp				; record fin
 	LVA	1, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.SIZ
 	Sa	1, INUTILE__u
-; CODE_VC_NAME DN_VARIABLE_ID
 
+ hexa_show ' disp ', INUTILE_disp
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 	LVA  1,	STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS.V_REM_L15.INUTILE_disp
@@ -4395,12 +4491,14 @@ end if
 
 if defined V_GCD_L16_
 PRO	V_GCD_L16				;---------- PRO V_GCD
+ hexa_show 'V_GCD_L16 ', $
 PRMS					;    debut parametrage
 	PRM A_ofs				; in
 	PRM B_ofs				; in
 	PRM R_ofs				; in out
 endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
+ hexa_show 'var elab S ', $
 VAR S_disp, q				; variable record : pointeur aux data record
 VAR S__u, q				; variable record : pointeur aux useinfo
 VAR S__dat, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.size
@@ -4408,20 +4506,20 @@ VAR S__dat, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.size
 	Sa	1, S_disp				; record fin
 	LVA	1, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.SIZ
 	Sa	1, S__u
-; CODE_VC_NAME DN_VARIABLE_ID
 	La  1, S_disp
 	LI	STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.size
 	La  1,	-B_ofs
 	La  ,  0
 	BLKMOV
 
+ hexa_show ' disp ', S_disp
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 	La  1,	-R_ofs
 	La
 	LI	STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.size
 	La  1,	-A_ofs
-	La  ,  0
+	La
 	BLKMOV
 LOOP__19:
 	LVA  1,	STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS.V_GCD_L16.S_disp
@@ -4506,7 +4604,7 @@ L191:
 	La
 	LI	STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.size
 	LVA 1,	S_disp
-	La  ,  0
+	La
 	BLKMOV
 	BRA ret_lbl
 	BRA	L189
@@ -4523,11 +4621,13 @@ end if
 
 if defined V_LOWEST_TERMS_L17_
 PRO	V_LOWEST_TERMS_L17			;---------- PRO V_LOWEST_TERMS
+ hexa_show 'V_LOWEST_TERMS_L17 ', $
 PRMS					;    debut parametrage
 	PRM A_ofs				; in out
 	PRM B_ofs				; in out
 endPRMS					;    fin parametrage
 ELB 1					;    BODY ELAB
+ hexa_show 'var elab GCD ', $
 VAR GCD_disp, q				; variable record : pointeur aux data record
 VAR GCD__u, q				; variable record : pointeur aux useinfo
 VAR GCD__dat, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.size
@@ -4535,8 +4635,9 @@ VAR GCD__dat, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.size
 	Sa	1, GCD_disp				; record fin
 	LVA	1, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.SIZ
 	Sa	1, GCD__u
-; CODE_VC_NAME DN_VARIABLE_ID
 
+ hexa_show ' disp ', GCD_disp
+ hexa_show 'var elab TREM ', $
 VAR TREM_disp, q				; variable record : pointeur aux data record
 VAR TREM__u, q				; variable record : pointeur aux useinfo
 VAR TREM__dat, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.size
@@ -4544,10 +4645,12 @@ VAR TREM__dat, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.size
 	Sa	1, TREM_disp				; record fin
 	LVA	1, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.SIZ
 	Sa	1, TREM__u
-; CODE_VC_NAME DN_VARIABLE_ID
 
+ hexa_show ' disp ', TREM_disp
+ hexa_show 'var elab SIGN ', $
 VAR SIGN_disp, w				; variable entiere
 
+ hexa_show ' disp ', SIGN_disp
 					;    end elab
 begin:					;---------- BDY INSTRUCTIONS
 					; debut if
@@ -4703,7 +4806,7 @@ L202:
 	La
 	LI	STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.size
 	La  1,	-A_ofs
-	La  ,  0
+	La
 	BLKMOV
 	La  1,	-A_ofs
 	LVA  1,	STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS.V_LOWEST_TERMS_L17.TREM_disp
@@ -4713,7 +4816,7 @@ L202:
 	La
 	LI	STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.size
 	La  1,	-B_ofs
-	La  ,  0
+	La
 	BLKMOV
 	La  1,	-B_ofs
 	LVA  1,	STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS.V_LOWEST_TERMS_L17.TREM_disp
@@ -4740,6 +4843,7 @@ end if
 
 if defined V_EQUAL_L18_
 PRO	V_EQUAL_L18				;---------- PRO V_EQUAL
+ hexa_show 'V_EQUAL_L18 ', $
 PRMS					;    debut parametrage
 	PRM A_ofs				; in
 	PRM B_ofs				; in
@@ -4757,7 +4861,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	BF	L206
 ; CODE_RETURN : EXPR TYPE = DN_ENUMERATION  VUE COMPLETE = DN_ENUMERATION
 	LI	0
-	Sb  1,	-result__ofs
+	Sq  1,	-result__ofs
 	BRA ret_lbl
 	BRA	L205
 L206:
@@ -4882,7 +4986,7 @@ end namespace
 	La  1, ANON_562_26_L207_D_data
 	BLKCMP
 L208:
-	Sb  1,	-result__ofs
+	Sq  1,	-result__ofs
 	BRA ret_lbl
 L205:					; post if
 ret_lbl:
@@ -4894,6 +4998,7 @@ end if
 
 if defined V_LESS_L19_
 PRO	V_LESS_L19				;---------- PRO V_LESS
+ hexa_show 'V_LESS_L19 ', $
 PRMS					;    debut parametrage
 	PRM A_ofs				; in
 	PRM B_ofs				; in
@@ -4915,7 +5020,7 @@ begin:					;---------- BDY INSTRUCTIONS
 	La 1, -B_ofs
 	LId	, 0, STANDARD.IDL.SEM_PHASE_L11.UNIV_OPS._VECTOR.L
 	CLT
-	Sb  1,	-result__ofs
+	Sq  1,	-result__ofs
 	BRA ret_lbl
 	BRA	L211
 L212:
@@ -5022,7 +5127,7 @@ LOOP__20:					; corps boucle LOOP__20
 	ADD					; add offset to start address
 	Lw
 	CLT
-	Sb  1,	-result__ofs
+	Sq  1,	-result__ofs
 	BRA ret_lbl
 	BRA	L215
 L216:
@@ -5038,7 +5143,7 @@ L215:					; post if
 L213:					; post loop LOOP__20
 ; CODE_RETURN : EXPR TYPE = DN_ENUMERATION  VUE COMPLETE = DN_ENUMERATION
 	LI	0
-	Sb  1,	-result__ofs
+	Sq  1,	-result__ofs
 	BRA ret_lbl
 ret_lbl:
 	UNLINK 1

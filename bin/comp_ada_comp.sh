@@ -87,6 +87,23 @@ debutC=$(date +%s)
 ./a83.sh ./ ../src/ada_comp/ada_comp.ads W
 ./a83.sh ./ ../src/ada_comp/ada_comp.adb W
 
+#./a83.sh ./ ../src/ada_comp/ada_comp.adb B	ne pas faire cela ADA_COMP.fas a des ajouts manuels
+#	Rappel de ces ajouts :
+#	Sa	0, EXCEPTIONS_TOP_CTX_disp
+# if ~ definite DIRECT_IO
+# include 'DIRECT_IO.FINC'
+# end if
+# if ~ definite GRMR_TBL
+# include 'GRMR_TBL.FINC'
+# end if
+# if ~ definite GRMR_OPS
+# include 'GRMR_OPS.FINC'
+# end if
+# if ~ definite LEX
+# include 'LEX.FINC'
+# end if
+# include 'ADA_COMP.FINC'
+
 
 finC=$(date +%s)
 dureeC=$((finC - debutC))
@@ -101,6 +118,7 @@ if [ "${1:-}" = "A" ]
 then
 
 cd ./ADA__LIB
+
 debutA=$(date +%s)
 
 ./fasmg -v 2 ADA_COMP.fas ADA_COMP
@@ -109,7 +127,7 @@ finA=$(date +%s)
 dureeA=$((finA - debutA))
 
 heuresA=$((dureeA / 3600))
-minuteA=$(((dureeA % 3600) / 60))
+minutesA=$(((dureeA % 3600) / 60))
 secondesA=$((dureeA % 60))
 
 printf "Durée d assemblage : %02dh %02dmin %02dsec\n" "$heuresA" "$minutesA" "$secondesA"

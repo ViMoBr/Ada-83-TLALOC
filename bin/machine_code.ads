@@ -4,7 +4,7 @@
 
 is
 
-  type ASM_OPCODE		is (ET,	OU,	NON,	OUX,	SYSCALL,	SYS_CLOCK_GETTIME,
+  type ASM_OPCODE		is (ET,	OU,	NON,	OUX,	SYSCALL,  SYS_CLOCK_GETTIME,
 			    SYS_PUT_CHAR,	SYS_PUT_STR,
 			    SYS_GET_CHAR,	SYS_GET_STR,
 			    SYS_FILE_CREATE, SYS_FILE_OPEN, SYS_FILE_SET_POS, SYS_FILE_GET_POS, SYS_FILE_GET_SIZE,
@@ -13,8 +13,8 @@ is
 			    LVA,
 			    LB,	LW,	LD,	LQ,	LA,
 			    SB,	SW,	SD,	SQ,	SA,
-			    LIB,	LIW,	LID,	LIQ,	LIA,
-			    SIB,	SIW,	SID,	SIQ,	SIA
+			    LIB,  LIW,	LID,	LIQ,	LIA,
+			    SIB,  SIW,	SID,	SIQ,	SIA
 			   );
 
   subtype ASM_OPCODE_0	is ASM_OPCODE range ET .. SYS_FILE_DELETE;
@@ -23,22 +23,22 @@ is
   subtype ASM_OPCODE_3	is ASM_OPCODE range LIB .. SIA;
 
   type ASM_OP_0		is record
-			  OPCODE	: ASM_OPCODE_0;
+			  OPCODE  : ASM_OPCODE_0;
 			end record;
 
   type ASM_OP_1		is record
-			  OPCODE	: ASM_OPCODE_1;
+			  OPCODE  : ASM_OPCODE_1;
 			  VAL	: INTEGER;
 			end record;
 
   type ASM_OP_2		is record
-			  OPCODE	: ASM_OPCODE_2;
+			  OPCODE  : ASM_OPCODE_2;
 			  LVL	: NATURAL;
 			  OFS	: INTEGER;
 			end record;
 
   type ASM_OP_3		is record
-			  OPCODE	: ASM_OPCODE_2;
+			  OPCODE  : ASM_OPCODE_2;
 			  LVL	: NATURAL;
 			  DISP	: INTEGER;
 			  OFS	: INTEGER;

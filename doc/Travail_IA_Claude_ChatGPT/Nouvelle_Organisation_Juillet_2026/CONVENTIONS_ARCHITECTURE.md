@@ -354,9 +354,15 @@ transférer le résultat depuis `[rbp]` vers `result__ofs` :
 
 CODE_EXP d'une expression composite laisse sur la pile d'opérandes :
   @DOUBLET  — objet entier (DN_USED_OBJECT_ID), appel de fonction
-              (DN_FUNCTION_CALL) ;
+              (DN_FUNCTION_CALL), QUALIFIÉ (DN_QUALIFIED — amendement
+              vague 2 du 28/07 : CODE_QUALIFIED laisse LVA _disp sur
+              ses trois branches ; la règle unique portait le trou que
+              deux sites locaux avaient déjà corrigé) ;
   @DATA nue — toute référence de composant (DN_INDEXED, DN_SELECTED,
-              DN_ALL) ; DN_SLICE construit son doublet anonyme.
+              DN_ALL) ; DN_SLICE construit son doublet anonyme dans les
+              chemins dédiés, mais CODE_EXP d'une tranche laisse
+              @data, LEN (DEUX valeurs) : refus TROU posé dans
+              CODE_COMPOSITE_DATA_ADDRESS.
 Consommation : CODE_COMPOSITE_DATA_ADDRESS, jamais de La/La ,0
 inconditionnel. Frontière de sous-programme : @doublet exclusivement
 (arguments via SELARG/INDARG pour les composants, slot résultat =
@@ -409,3 +415,23 @@ est une fonctionnalité de sûreté, pas un surcoût. Livraison de fichier
 complet uniquement sur demande explicite, et alors diff-ée contre la version
 locale avant écrasement (cf. piège n° 66). Rafraîchir les sources projet
 juste avant chaque lot.
+
+## Resultat de fonction NON CONTRAINT (C7, 01/08)
+
+Le resultat doublet se materialise PAR le corps A TRAVERS le slot :
+l'appelant alloue le doublet anonyme (+ bloc info, __u pre-pointe),
+pousse LVA anon_disp ; le CODE_RETURN du corps ecrit data_ptr a
+[slot]+0 et BLKMOV le descripteur 16 octets vers [[slot]+8] ;
+RTD prm_siz-8 laisse le slot. Tout WRAPPER (instanciation) RELAIE son
+slot recu au modele — jamais de lieu factice pour un resultat
+composite (piege n 123). Data du resultat : co-pile de l'appele,
+promue (UNLINK ne redescend pas r14).
+
+## Clause d'adresse d'objet = OVERLAY (C8, 01/08)
+
+Traitee a la DECLARATION via SM_ADDRESS (pose par sem), rien au site
+de la clause. Mecanisme par SORTE de cible (grille n 124) : equation
+fasmg (meme sorte + meme frame), LVA @slot (composite sur scalaire),
+doublet-parametre (La <niv cible>,-ofs / La ,0 — modes in et in out).
+__u de l'alias = descripteur de SA vue (la reinterpretation). Init a
+travers l'overlay : agregat seulement, sans allocation.

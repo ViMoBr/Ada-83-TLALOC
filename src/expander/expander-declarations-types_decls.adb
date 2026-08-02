@@ -28,29 +28,29 @@ is
   is			--==============--
 
     TYPE_NAME	: TREE	:= D( AS_SOURCE_NAME, TYPE_DECL );
-    TYPE_SPEC	: TREE	:= D( SM_TYPE_SPEC,	TYPE_NAME	);
+    TYPE_SPEC	: TREE	:= D( SM_TYPE_SPEC, TYPE_NAME );
   begin
-				-- SCALAR	TYPES
+				-- SCALAR TYPES
 
     if	 TYPE_SPEC.TY = DN_ENUMERATION	then  CODE_ENUMERATION_DECL	     ( TYPE_DECL );
-    elsif	 TYPE_SPEC.TY = DN_INTEGER		then  CODE_INTEGER_DECL	     ( TYPE_DECL );
-    elsif	 TYPE_SPEC.TY = DN_FIXED		then  CODE_FIXED_DECL	     ( TYPE_DECL );
-    elsif	 TYPE_SPEC.TY = DN_FLOAT		then  CODE_FLOAT_DECL	     ( TYPE_DECL );
+    elsif  TYPE_SPEC.TY = DN_INTEGER		then  CODE_INTEGER_DECL	     ( TYPE_DECL );
+    elsif  TYPE_SPEC.TY = DN_FIXED		then  CODE_FIXED_DECL	     ( TYPE_DECL );
+    elsif  TYPE_SPEC.TY = DN_FLOAT		then  CODE_FLOAT_DECL	     ( TYPE_DECL );
 
 				-- COMPOSITE TYPES
 
-    elsif	 TYPE_SPEC.TY = DN_RECORD		then  CODE_RECORD_DECL	     ( TYPE_DECL );
+    elsif  TYPE_SPEC.TY = DN_RECORD		then  CODE_RECORD_DECL	     ( TYPE_DECL );
     elsif  TYPE_SPEC.TY = DN_CONSTRAINED_RECORD	then  CODE_CONSTRAINED_RECORD_DECL ( TYPE_NAME, TYPE_SPEC );
-    elsif	 TYPE_SPEC.TY = DN_ARRAY		then  CODE_UNCONSTRAINED_ARRAY_DECL( TYPE_DECL );
-    elsif	 TYPE_SPEC.TY = DN_CONSTRAINED_ARRAY	then  CODE_CONSTRAINED_ARRAY_DECL  ( TYPE_DECL );
+    elsif  TYPE_SPEC.TY = DN_ARRAY		then  CODE_UNCONSTRAINED_ARRAY_DECL( TYPE_DECL );
+    elsif  TYPE_SPEC.TY = DN_CONSTRAINED_ARRAY	then  CODE_CONSTRAINED_ARRAY_DECL  ( TYPE_DECL );
 
 				-- ACCESS TYPES
 
-    elsif	 TYPE_SPEC.TY = DN_ACCESS		then  CODE_ACCESS_DECL	     ( TYPE_DECL );
+    elsif  TYPE_SPEC.TY = DN_ACCESS		then  CODE_ACCESS_DECL	     ( TYPE_DECL );
 
 			-- PRIVATE / LIMITED PRIVATE / INCOMPLETE TYPES
 
-    elsif	 TYPE_SPEC.TY = DN_PRIVATE  or  TYPE_SPEC.TY = DN_L_PRIVATE  then
+    elsif  TYPE_SPEC.TY = DN_PRIVATE  or  TYPE_SPEC.TY = DN_L_PRIVATE  then
 				------------------------
 				ANTICIPATE_PRIVATE_LEVEL:
       declare
@@ -64,10 +64,23 @@ is
         end if;
       end			ANTICIPATE_PRIVATE_LEVEL;
 			------------------------
-      if	CODI.DEBUG  then
-        PUT_LINE( "; EXPANDER.DECLARATIONS.CODE_TYPE_DECL : skip PRIVATE "
-		& PRINT_NAME( D( LX_SYMREP, TYPE_NAME )	) & " (deferred to full type)" );
-      end	if;
+
+      if  CODI.DEBUG  then
+        if  D( SM_TYPE_SPEC, TYPE_SPEC ) = TREE_VOID
+        and then  D( SM_DERIVED, TYPE_SPEC ) /= TREE_VOID  then
+			--| Seconde saveur : type DERIVE d'un prive (SM_TYPE_SPEC VOID,
+			--| aucune completion a attendre).  Aucun descripteur propre a
+			--| elaborer : representation du PARENT, le percage aval suit
+			--| SM_DERIVED (regle unique).  L'ancien commentaire FINC
+			--| << deferred to full type >> MENTAIT pour cette saveur.
+	PUT_LINE( "; EXPANDER.DECLARATIONS.CODE_TYPE_DECL : skip DERIVE-de-PRIVE "
+		& PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) ) & " (representation du parent, percage via SM_DERIVED)" );
+
+        else
+	PUT_LINE( "; EXPANDER.DECLARATIONS.CODE_TYPE_DECL : skip PRIVATE "
+		& PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) ) & " (deferred to full type)" );
+        end if;
+      end if;
 
     elsif  TYPE_SPEC.TY = DN_INCOMPLETE  then
 				---------------------------
@@ -80,15 +93,15 @@ is
         end if;
       end			ANTICIPATE_INCOMPLETE_LEVEL;
 			---------------------------
-      if	CODI.DEBUG  then
+      if  CODI.DEBUG  then
         PUT_LINE(	"; EXPANDER.DECLARATIONS.CODE_TYPE_DECL : skip INCOMPLETE "
-		& PRINT_NAME( D( LX_SYMREP, TYPE_NAME )	) & " (deferred to full type)" );
-      end	if;
+		& PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) ) & " (deferred to full type)" );
+      end if;
 
     else
       PUT_LINE( "; EXPANDER.DECLARATIONS.CODE_TYPE_DECL : TYPE_SPEC.TY ("
 		& NODE_NAME'IMAGE( TYPE_SPEC.TY ) & " NON FAIT POUR ) "
-		& PRINT_NAME( D( LX_SYMREP, TYPE_NAME )	)
+		& PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) )
 	        );
     end if;
 
@@ -96,40 +109,39 @@ is
 	--==============--
 
 
-
 			---------------------
   procedure		CODE_ENUMERATION_DECL	( TYPE_DECL :TREE )
   is			---------------------
 
     TYPE_ID	: TREE		:= D( AS_SOURCE_NAME, TYPE_DECL );
-    TYPE_SPEC	: TREE		:= D( SM_TYPE_SPEC,	TYPE_ID );
-    TYPE_STR	:constant	STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, TYPE_ID ) );
+    TYPE_SPEC	: TREE		:= D( SM_TYPE_SPEC, TYPE_ID );
+    TYPE_STR	:constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, TYPE_ID ) );
     MAX_REP	: INTEGER		:= INTEGER'FIRST;
     MIN_REP	: INTEGER		:= INTEGER'LAST;
 
 		-------------------
     procedure	CODE_ENUM_LITERAL_S		( ENUM_LITERAL_S :TREE )
     is
-      ENUM_LITERAL_SEQ	: SEQ_TYPE	:= LIST (	ENUM_LITERAL_S );
+      ENUM_LITERAL_SEQ	: SEQ_TYPE	:= LIST ( ENUM_LITERAL_S );
       ENUM_LITERAL_ID	: TREE;
       LAST_LITERAL		: TREE;
     begin
       while  not IS_EMPTY( ENUM_LITERAL_SEQ )  loop
         POP( ENUM_LITERAL_SEQ, ENUM_LITERAL_ID );
         declare
-	ENUM_ID_STR	:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, ENUM_LITERAL_ID ) );
+	ENUM_ID_STR	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, ENUM_LITERAL_ID ) );
 	REP		: INTEGER		:= DI( SM_REP, ENUM_LITERAL_ID );
         begin
-	if  MIN_REP > REP  then MIN_REP := REP;	end if;
-	if  MAX_REP < REP  then MAX_REP := REP;	end if;
+	if  MIN_REP > REP  then MIN_REP := REP; end if;
+	if  MAX_REP < REP  then MAX_REP := REP; end if;
 	if  ENUM_ID_STR /= "'""'"
-	then  PUT_LINE( "db" & INTEGER'IMAGE( REP ) & ","	& INTEGER'IMAGE( ENUM_ID_STR'LENGTH ) &	", """ & ENUM_ID_STR & """" );
-	else  PUT_LINE( "db" & INTEGER'IMAGE( REP ) & ","	& INTEGER'IMAGE( ENUM_ID_STR'LENGTH ) &	", ""'""""'""" );
+	then  PUT_LINE( "db" & INTEGER'IMAGE( REP ) & "," & INTEGER'IMAGE( ENUM_ID_STR'LENGTH ) & ", """ & ENUM_ID_STR & """" );
+	else  PUT_LINE( "db" & INTEGER'IMAGE( REP ) & "," & INTEGER'IMAGE( ENUM_ID_STR'LENGTH ) & ", ""'""""'""" );
 	end if;
         end;
         LAST_LITERAL := ENUM_LITERAL_ID;
-      end	loop;
-      DI(	CD_LAST, ENUM_LITERAL_S, DI (	SM_REP, LAST_LITERAL ) );
+      end loop;
+      DI( CD_LAST, ENUM_LITERAL_S, DI ( SM_REP, LAST_LITERAL ) );
 
   end	CODE_ENUM_LITERAL_S;
 	-------------------
@@ -138,7 +150,7 @@ is
     DI( CD_LEVEL,	  TYPE_SPEC, INTEGER( CODI.CUR_LEVEL ) );
     DB( CD_COMPILED,  TYPE_SPEC, TRUE );
 
-    if  CODI.DEBUG	then NEW_LINE; PUT_LINE( tab50 & "; " & TYPE_STR & " ENUMERATION TYPE INFO" ); end if;
+    if  CODI.DEBUG  then NEW_LINE; PUT_LINE( tab50 & "; " & TYPE_STR & " ENUMERATION TYPE INFO" ); end if;
 
     PUT_LINE( TYPE_STR & " = '" & TYPE_STR & "'" );
     PUT_LINE( "namespace " & TYPE_STR );
@@ -151,11 +163,11 @@ is
 	    & INTEGER'IMAGE( MIN_REP ) & ','
 	    & INTEGER'IMAGE( MAX_REP ) );
 
-    if  CODI.DEBUG	then PUT(	ASCII.HT & "; SIZ en bits !" ); end if;
+    if  CODI.DEBUG  then PUT( ASCII.HT & "; SIZ en bits !" ); end if;
     NEW_LINE;
 
     PUT_LINE( tab & "LCA" & tab & "SIZ" );
-    PUT_LINE( tab &	"Sa" & tab & IMAGE( CODI.CUR_LEVEL ) & ", use__info" );
+    PUT_LINE( tab & "Sa" & tab & IMAGE( CODI.CUR_LEVEL ) & ", use__info" );
 
     PUT_LINE( "end namespace");
 
@@ -169,41 +181,41 @@ is
   is			-----------------
 
     TYPE_ID		: TREE		:= D( AS_SOURCE_NAME, TYPE_DECL );
-    TYPE_STR		:constant	STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, TYPE_ID ) );
-    INTEGER_SPEC		: TREE		:= D( SM_TYPE_SPEC,	TYPE_ID );
+    TYPE_STR		:constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, TYPE_ID ) );
+    INTEGER_SPEC		: TREE		:= D( SM_TYPE_SPEC, TYPE_ID );
     INT_RANGE		: TREE		:= D( SM_RANGE, INTEGER_SPEC );
     EXP_FST		: TREE		:= D( AS_EXP1, INT_RANGE );
     EXP_LST		: TREE		:= D( AS_EXP2, INT_RANGE );
-    LVL_STR		:constant	STRING	:= IMAGE(	CODI.CUR_LEVEL );
+    LVL_STR		:constant STRING	:= IMAGE( CODI.CUR_LEVEL );
     SIZE_CHAR		: CHARACTER	:= OPER_SIZ_CHAR( INTEGER_SPEC );
 
   begin
-    DI( CD_LEVEL,	  INTEGER_SPEC, INTEGER( CODI.CUR_LEVEL	) );
-    DI( CD_LEVEL,	  D( SM_BASE_TYPE, INTEGER_SPEC ), INTEGER( CODI.CUR_LEVEL	) );
+    DI( CD_LEVEL,	  INTEGER_SPEC, INTEGER( CODI.CUR_LEVEL ) );
+    DI( CD_LEVEL,	  D( SM_BASE_TYPE, INTEGER_SPEC ), INTEGER( CODI.CUR_LEVEL  ) );
     DB( CD_COMPILED,  INTEGER_SPEC, TRUE );
 
-    if  CODI.DEBUG	then  NEW_LINE; PUT_LINE( tab50 & "; " & TYPE_STR & " TYPE RANGE INFO" ); end if;
+    if  CODI.DEBUG  then  NEW_LINE; PUT_LINE( tab50 & "; " & TYPE_STR & " TYPE RANGE INFO" ); end if;
 
     PUT_LINE( TYPE_STR & " = '" & TYPE_STR & "'" );
     PUT_LINE( "namespace " & TYPE_STR );
     PUT_LINE( "VAR use__info, q" );
     PUT_LINE( "VAR SIZ, d" );
-    PUT_LINE( tab &	"LVA" & tab & LVL_STR & ", SIZ" );
-    PUT_LINE( tab &	"Sa" & tab & LVL_STR & ", use__info" );
+    PUT_LINE( tab & "LVA" & tab & LVL_STR & ", SIZ" );
+    PUT_LINE( tab & "Sa" & tab & LVL_STR & ", use__info" );
 
     PUT_LINE( "VAR FST, " & SIZE_CHAR );
     PUT_LINE( "VAR LST, " & SIZE_CHAR );
 
-    PUT_LINE( tab &	"LI" & tab & IMAGE(	DI( CD_IMPL_SIZE, INTEGER_SPEC ) ) );
-    PUT_LINE( tab &	"Sd" & tab & LVL_STR & ", SIZ" );
+    PUT_LINE( tab & "LI" & tab & IMAGE( DI( CD_IMPL_SIZE, INTEGER_SPEC ) ) );
+    PUT_LINE( tab & "Sd" & tab & LVL_STR & ", SIZ" );
 
     EXPRESSIONS.CODE_EXP( EXP_FST );
-    PUT_LINE( tab &	'S' & SIZE_CHAR & tab & LVL_STR & ", FST" );
+    PUT_LINE( tab & 'S' & SIZE_CHAR & tab & LVL_STR & ", FST" );
 
     EXPRESSIONS.CODE_EXP( EXP_LST );
-    PUT_LINE( tab &	'S' & SIZE_CHAR & tab & LVL_STR & ", LST" );
+    PUT_LINE( tab & 'S' & SIZE_CHAR & tab & LVL_STR & ", LST" );
 
-    PUT_LINE( "end namespace"	);
+    PUT_LINE( "end namespace" );
 
   end	CODE_INTEGER_DECL;
 	-----------------
@@ -258,12 +270,12 @@ is
   is			---------------
 
     TYPE_ID		: TREE		:= D( AS_SOURCE_NAME, TYPE_DECL );
-    TYPE_STR		:constant	STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, TYPE_ID ) );
-    FIXED_SPEC		: TREE		:= D( SM_TYPE_SPEC,	TYPE_ID );
-    LVL_STR		:constant	STRING	:= IMAGE(	CODI.CUR_LEVEL );
+    TYPE_STR		:constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, TYPE_ID ) );
+    FIXED_SPEC		: TREE		:= D( SM_TYPE_SPEC, TYPE_ID );
+    LVL_STR		:constant STRING	:= IMAGE( CODI.CUR_LEVEL );
 
   begin
-    DI( CD_LEVEL,	  FIXED_SPEC, INTEGER( CODI.CUR_LEVEL )	);
+    DI( CD_LEVEL,	  FIXED_SPEC, INTEGER( CODI.CUR_LEVEL ) );
     DB( CD_COMPILED,  FIXED_SPEC, TRUE );
 
     EMIT_FIXED_TYPE_INFO( TYPE_STR, LVL_STR, FIXED_SPEC );
@@ -277,15 +289,15 @@ is
   is			---------------
 
     TYPE_ID		: TREE		:= D( AS_SOURCE_NAME, TYPE_DECL );
-    TYPE_STR		:constant	STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, TYPE_ID ) );
-    FLOAT_SPEC		: TREE		:= D( SM_TYPE_SPEC,	TYPE_ID );
+    TYPE_STR		:constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, TYPE_ID ) );
+    FLOAT_SPEC		: TREE		:= D( SM_TYPE_SPEC, TYPE_ID );
     SIZE_CHAR		: CHARACTER	:= OPER_SIZ_CHAR( FLOAT_SPEC );
 
   begin
-    DI( CD_LEVEL,	  FLOAT_SPEC, INTEGER( CODI.CUR_LEVEL )	);
+    DI( CD_LEVEL,	  FLOAT_SPEC, INTEGER( CODI.CUR_LEVEL ) );
     DB( CD_COMPILED,  FLOAT_SPEC, TRUE );
 
-    if  CODI.DEBUG	then  NEW_LINE; PUT_LINE( tab50 & "; " & TYPE_STR & " FLOAT TYPE INFO" ); end if;
+    if  CODI.DEBUG  then  NEW_LINE; PUT_LINE( tab50 & "; " & TYPE_STR & " FLOAT TYPE INFO" ); end if;
 
     PUT_LINE( TYPE_STR & " = '" & TYPE_STR & "'" );
     PUT_LINE( "namespace " & TYPE_STR );
@@ -315,20 +327,7 @@ is
       PUT_LINE( tab & "Sq" & tab & LVL_STR & ", LST" );
     end;
 
-
---    if  SIZE_CHAR = 'd'  then
---      PUT_LINE( "CST LST, " & SIZE_CHAR & ",  1.0E38" );							-- ATTENTION : CST ne sens inverse a cause de postpone
---      PUT_LINE( "CST FST, " & SIZE_CHAR & ", -1.0E38" );
---    elsif  SIZE_CHAR = 'q'  then
---      PUT_LINE( "CST LST, " & SIZE_CHAR & ",  1.0E308" );
---      PUT_LINE( "CST FST, " & SIZE_CHAR & ", -1.0E308" );
---    end if;
-
---    PUT_LINE( "CST SIZ, d," &	INTEGER'IMAGE( DI( CD_IMPL_SIZE, FLOAT_SPEC ) ) );
---    PUT_LINE( tab &	"LCA" & tab & "SIZ" );
---    PUT_LINE( tab &	"Sa" & tab & IMAGE( CODI.CUR_LEVEL ) & ", use__info" );
-
-    PUT_LINE( "end namespace"	);
+    PUT_LINE( "end namespace" );
 
   end	CODE_FLOAT_DECL;
 	---------------
@@ -340,48 +339,48 @@ is
   is			-----------------------------
 
     TYPE_ID		: TREE		:= D( AS_SOURCE_NAME, TYPE_DECL );
-    TYPE_ID_STR		:constant	STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, TYPE_ID ) );
-    TYPE_SPEC		: TREE		:= D( SM_TYPE_SPEC,	TYPE_ID );
+    TYPE_ID_STR		:constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, TYPE_ID ) );
+    TYPE_SPEC		: TREE		:= D( SM_TYPE_SPEC, TYPE_ID );
     INDEX_SUBTYPE_S		: SEQ_TYPE	:= LIST( D( SM_INDEX_S, TYPE_SPEC ) );
     DIM_NBR		: NATURAL		:= 1;
     TOTAL_DIMS		: NATURAL		:= 0;
     LVL			: LEVEL_NUM	renames CODI.CUR_LEVEL;
-    LVL_STR		:constant	STRING	:= IMAGE(	LVL );
+    LVL_STR		:constant STRING	:= IMAGE( LVL );
 
 		---------------
-    procedure	USEINFO_OFFSETS	( IDX_TYPE_LIST :in	out SEQ_TYPE )
+    procedure	USEINFO_OFFSETS	( IDX_TYPE_LIST :in out SEQ_TYPE )
     is		---------------
       IDX_TYPE		: TREE;
-      DIM_NBR_STR		:constant	STRING	:= IMAGE(	DIM_NBR );
+      DIM_NBR_STR		:constant STRING	:= IMAGE( DIM_NBR );
     begin
       POP( IDX_TYPE_LIST, IDX_TYPE );
 
       declare
-        IDX_TYPE_SPEC	: TREE		:= D( SM_TYPE_SPEC,	IDX_TYPE );
+        IDX_TYPE_SPEC	: TREE		:= D( SM_TYPE_SPEC, IDX_TYPE );
         IDX_TYPE_NAME	: TREE		:= D( AS_NAME, IDX_TYPE );
         IDX_TYPE_DEFN	: TREE		:= D( SM_DEFN, IDX_TYPE_NAME );
 
       begin
         TOTAL_DIMS := TOTAL_DIMS + 1;
 
-        if  not IS_EMPTY( IDX_TYPE_LIST	)  then								-- Encore des dimensions
+        if  not IS_EMPTY( IDX_TYPE_LIST )  then								-- Encore des dimensions
 	DIM_NBR := DIM_NBR + 1;
 	USEINFO_OFFSETS( IDX_TYPE_LIST );
 
-	PUT_LINE(	"SIZ_" & DIM_NBR_STR & " = $"	);
-	PUT_LINE(	tab & "rd 1 " );
-	PUT_LINE(	"FST_" & DIM_NBR_STR & " = $"	);
-	PUT_LINE(	tab & "rd 1 " );
-	PUT_LINE(	"LST_" & DIM_NBR_STR & " = $"	);
-	PUT_LINE(	tab & "rd 1 " );
+	PUT_LINE( "SIZ_" & DIM_NBR_STR & " = $" );
+	PUT_LINE( tab & "rd 1 " );
+	PUT_LINE( "FST_" & DIM_NBR_STR & " = $" );
+	PUT_LINE( tab & "rd 1 " );
+	PUT_LINE( "LST_" & DIM_NBR_STR & " = $" );
+	PUT_LINE( tab & "rd 1 " );
 
         else											-- Fini de parcourir les dimensions
-	PUT_LINE(	"COMP_SIZ = $" );
-	PUT_LINE(	tab & "rd 1 " );
-	PUT_LINE(	"FST_" & DIM_NBR_STR & " = $"	);
-	PUT_LINE(	tab & "rd 1 " );
-	PUT_LINE(	"LST_" & DIM_NBR_STR & " = $"	);
-	PUT_LINE(	tab & "rd 1 " );
+	PUT_LINE( "COMP_SIZ = $" );
+	PUT_LINE( tab & "rd 1 " );
+	PUT_LINE( "FST_" & DIM_NBR_STR & " = $" );
+	PUT_LINE( tab & "rd 1 " );
+	PUT_LINE( "LST_" & DIM_NBR_STR & " = $" );
+	PUT_LINE( tab & "rd 1 " );
 
         end if;
 
@@ -393,34 +392,34 @@ is
     DI( CD_LEVEL,	  TYPE_SPEC, INTEGER( CODI.CUR_LEVEL ) );
     DB( CD_COMPILED,  TYPE_SPEC, TRUE );
 
-    if  CODI.DEBUG	then NEW_LINE; PUT_LINE( tab50 & "; " & TYPE_ID_STR & " UNCONSTRAINED ARRAY SUBTYPE INFO" ); end if;
+    if  CODI.DEBUG  then NEW_LINE; PUT_LINE( tab50 & "; " & TYPE_ID_STR & " UNCONSTRAINED ARRAY SUBTYPE INFO" ); end if;
     PUT_LINE( TYPE_ID_STR & " = '" & TYPE_ID_STR & "'" );
     PUT_LINE( "namespace " & TYPE_ID_STR );
 
     PUT_LINE( "VAR use__info, q" );
     PUT_LINE( "VAR SIZ, d" );
-    PUT_LINE( tab &	"LVA" & tab & LVL_STR & ", SIZ" );
-    PUT_LINE( tab &	"Sa" & tab & LVL_STR & ", use__info" );
-    PUT_LINE( tab &	"LI" & tab & '1' );
-    PUT_LINE( tab &	"NEG" );
-    PUT_LINE( tab &	"Sd" & tab & LVL_STR & ", SIZ" );							-- SIZ=-1 UNCONSTRAINED
+    PUT_LINE( tab & "LVA" & tab & LVL_STR & ", SIZ" );
+    PUT_LINE( tab & "Sa" & tab & LVL_STR & ", use__info" );
+    PUT_LINE( tab & "LI" & tab & '1' );
+    PUT_LINE( tab & "NEG" );
+    PUT_LINE( tab & "Sd" & tab & LVL_STR & ", SIZ" );							-- SIZ=-1 UNCONSTRAINED
 
     PUT( "  virtual at 4" );										-- Commence apres SIZ
-    if  CODI.DEBUG	then  PUT_LINE( tab50 & "; use info offsets pour acces sur array contraint" ); end if;
+    if  CODI.DEBUG  then  PUT_LINE( tab50 & "; use info offsets pour acces sur array contraint" ); end if;
     NEW_LINE;
 
     USEINFO_OFFSETS( INDEX_SUBTYPE_S );
 
-    PUT_LINE( "  end virtual"	);									-- Commence apres SIZ
+    PUT_LINE( "  end virtual" );									-- Commence apres SIZ
 
-    PUT_LINE( "end namespace"	);
+    PUT_LINE( "end namespace" );
 
   end	CODE_UNCONSTRAINED_ARRAY_DECL;
 	-----------------------------
 
 
 		------------------
-    procedure	STATIC_BOUND_VALUE	( BOUND : TREE;  VAL : out INTEGER;  OK : out BOOLEAN )
+    procedure	STATIC_BOUND_VALUE  ( BOUND : TREE;  VAL : out INTEGER;  OK : out BOOLEAN )
     is		------------------
 	-- Valeur statique d'une borne discrete. Piege n 95a AMENDE : le
 	-- test de propriete (valeur statique presente) ne vaut que la ou
@@ -433,7 +432,7 @@ is
 
 		-------------
       procedure	LIRE_SM_VALUE	( N : TREE;  V : out INTEGER;  FOUND : out BOOLEAN )
-      is	-------------
+      is 		-------------
 	-- Prerequis : l'espece de N porte sm_value.
 	SV : TREE := D( SM_VALUE, N );
       begin
@@ -444,11 +443,14 @@ is
 	else
 	  V := 0;				FOUND := FALSE;
 	end if;
-      end	LIRE_SM_VALUE;
+
+      end LIRE_SM_VALUE;
+	-------------
+
 
 		--------------
       procedure	FOLD_BLTN_CALL	( FC : TREE;  V : out INTEGER;  FOUND : out BOOLEAN )
-      is	--------------
+      is  	--------------
 	-- Pliage minimal des operateurs PREDEFINIS entiers +, -, *
 	-- (binaires et unaires) a operandes statiques : couvre les
 	-- idiomes N-1, N+1, 2*N des bornes. La place DURABLE de ce
@@ -459,7 +461,7 @@ is
 	PRM_S	: SEQ_TYPE;
 	P1, P2	: TREE;
 	V1, V2	: INTEGER;
-	OK1, OK2	: BOOLEAN;
+	OK1, OK2  : BOOLEAN;
       begin
 	V := 0;  FOUND := FALSE;
 
@@ -480,7 +482,7 @@ is
 	  if  not OK1  then  return;  end if;
 
 	  if  IS_EMPTY( PRM_S )  then				-- unaire
-	    if    OP = """-"""  then  V := -V1;  FOUND := TRUE;
+	    if	OP = """-"""  then  V := -V1;  FOUND := TRUE;
 	    elsif OP = """+"""  then  V :=  V1;  FOUND := TRUE;
 	    end if;
 	    return;
@@ -495,7 +497,7 @@ is
 	  elsif OP = """*"""  then  V := V1 * V2;  FOUND := TRUE;
 	  end if;						-- "/" exclu : troncature a valider avant
 	end;
-      end	FOLD_BLTN_CALL;
+      end FOLD_BLTN_CALL;
 
     begin
       VAL := 0;
@@ -527,7 +529,7 @@ is
 
 	DEFN := D( SM_DEFN, BOUND );
 	if  DEFN.TY = DN_ENUMERATION_ID  or else  DEFN.TY = DN_CHARACTER_ID  then
-	  VAL := DI( SM_REP, DEFN );	OK := TRUE;
+	  VAL := DI( SM_REP, DEFN );  OK := TRUE;
 	elsif  DEFN.TY = DN_NUMBER_ID  then
 	  STATIC_BOUND_VALUE( D( SM_INIT_EXP, DEFN ), VAL, OK );	-- nombre nomme (LRM 3.2.2)
 	end if;
@@ -536,7 +538,7 @@ is
 	VAL := DI( SM_REP, BOUND );	OK := TRUE;
 
       when  others  =>
-	null;							-- borne reellement dynamique : OK = FALSE
+	null;							-- INTENTIONNEL : borne reellement dynamique : OK = FALSE
       end case;
 
     end	STATIC_BOUND_VALUE;
@@ -549,11 +551,11 @@ is
 
     DIM_NBR		: NATURAL			:= 0;
     LVL			: LEVEL_NUM		renames CODI.CUR_LEVEL;
-    LVL_STR		:constant	STRING		:= IMAGE(	CODI.CUR_LEVEL );
+    LVL_STR		:constant STRING		:= IMAGE( CODI.CUR_LEVEL );
     TOTAL_ELEMENTS		: NATURAL;
 
-    BASE_TYPE		: TREE			:= D( SM_BASE_TYPE,	TYPE_SPEC	);
-    COMP_TYPE		: TREE			:= D( SM_COMP_TYPE,	BASE_TYPE	);
+    BASE_TYPE		: TREE			:= D( SM_BASE_TYPE, TYPE_SPEC );
+    COMP_TYPE		: TREE			:= D( SM_COMP_TYPE, BASE_TYPE );
   begin
     if  COMP_TYPE.TY = DN_PRIVATE  or  COMP_TYPE.TY = DN_L_PRIVATE  then
       COMP_TYPE := D( SM_TYPE_SPEC, COMP_TYPE );
@@ -563,57 +565,119 @@ is
       COMP_SIZE_TREE	: TREE			:= TREE_VOID;
       IS_STATIC		: BOOLEAN			:= COMP_SIZE_TREE /= TREE_VOID;
       ARRAY_STATIC_SIZE	: NATURAL			:= 0;
+
+      function  TYPE_SIZE_BITS	( T :TREE )	return NATURAL;
+
+		---------------------------
+      function	CONSTRAINED_ARRAY_SIZE_BITS		( ARR :TREE )	return NATURAL
+      is		---------------------------
+        ARR_SPEC		: TREE		:= CODI.FULL_TYPE_VIEW( ARR );
+        BASE_TYPE		: TREE;
+        ELEM_TYPE		: TREE;
+        IDX_S		: SEQ_TYPE;
+        IDX_TYPE		: TREE;
+        IDX_SPEC		: TREE;
+        IDX_RANGE		: TREE;
+        LO, HI		: INTEGER;
+        LO_OK, HI_OK	: BOOLEAN;
+        TOTAL		: NATURAL;
+
+      begin
+        if  ARR_SPEC = TREE_VOID  or else  ARR_SPEC = TREE_NIL
+          or else  ARR_SPEC.TY /= DN_CONSTRAINED_ARRAY
+        then
+	TROU( "CONSTRAINED_ARRAY_SIZE_BITS erreur spec", ARR_SPEC );
+          return  0;
+        end if;
+
+        if  D( CD_IMPL_SIZE, ARR_SPEC ) /= TREE_VOID
+          and then D( CD_IMPL_SIZE, ARR_SPEC ) /= TREE_NIL
+          and then DI( CD_IMPL_SIZE, ARR_SPEC ) > 0
+
+        then
+          return NATURAL( DI( CD_IMPL_SIZE, ARR_SPEC ) );
+        end if;
+
+        BASE_TYPE := D( SM_BASE_TYPE, ARR_SPEC );
+        ELEM_TYPE := D( SM_COMP_TYPE, BASE_TYPE );
+
+        TOTAL := TYPE_SIZE_BITS( ELEM_TYPE );
+
+        if  TOTAL = 0  then
+          return  0;
+        end if;
+
+        IDX_S := LIST( D( SM_INDEX_SUBTYPE_S, ARR_SPEC ) );
+        while  not IS_EMPTY( IDX_S )  loop
+          POP( IDX_S, IDX_TYPE );
+          IDX_SPEC := CODI.FULL_TYPE_VIEW( IDX_TYPE );
+          IDX_RANGE := D( SM_RANGE, IDX_SPEC );
+
+          if  IDX_RANGE = TREE_VOID  or else  IDX_RANGE = TREE_NIL
+            or else  IDX_RANGE.TY /= DN_RANGE
+          then
+            return  0;
+          end if;
+
+          STATIC_BOUND_VALUE( D( AS_EXP1, IDX_RANGE ), LO, LO_OK );
+          STATIC_BOUND_VALUE( D( AS_EXP2, IDX_RANGE ), HI, HI_OK );
+
+          if  not ( LO_OK and HI_OK )  or else  HI < LO  then
+            return  0;
+          end if;
+
+          TOTAL := TOTAL * NATURAL( HI - LO + 1 );
+        end loop;
+
+        DI( CD_IMPL_SIZE, ARR_SPEC, INTEGER( TOTAL ) );
+        return  TOTAL;
+
+      end	CONSTRAINED_ARRAY_SIZE_BITS;
+	---------------------------
+
+
+		--------------
+      function	TYPE_SIZE_BITS ( T : TREE ) return NATURAL
+      is		--------------
+        TS  : TREE := CODI.FULL_TYPE_VIEW( T );
+        RAW : INTEGER;
+      begin
+        if  TS.TY = DN_ACCESS  or else  TS.TY = DN_FLOAT  then
+          return CODI.ADDR_SIZE * CODI.STORAGE_UNIT;
+
+        elsif  TS.TY = DN_CONSTRAINED_ARRAY  then
+          return CONSTRAINED_ARRAY_SIZE_BITS( TS );
+
+        elsif  TS.TY = DN_RECORD  or else  TS.TY = DN_CONSTRAINED_RECORD  then
+          if  TS.TY = DN_CONSTRAINED_RECORD  then
+            TS := D( SM_BASE_TYPE, TS );
+          end if;
+
+          RAW := DI( CD_IMPL_SIZE, TS );
+          if  RAW = 0  then
+            return 0;
+          end if;
+
+          return NATURAL( ( ( RAW + CODI.STORAGE_UNIT - 1 )
+                            / CODI.STORAGE_UNIT ) * CODI.STORAGE_UNIT );
+
+        else
+          RAW := DI( CD_IMPL_SIZE, TS );
+          return NATURAL( ( ( RAW + CODI.STORAGE_UNIT - 1 )
+                            / CODI.STORAGE_UNIT ) * CODI.STORAGE_UNIT );
+        end if;
+
+      end	TYPE_SIZE_BITS;
+	--------------
+
+
 		--------------
       function	COMP_SIZE_BITS	return NATURAL
       is		--------------
       begin
-        if  COMP_TYPE.TY = DN_ACCESS  then
-	return CODI.ADDR_SIZE * CODI.STORAGE_UNIT;
-        elsif  COMP_TYPE.TY = DN_FLOAT  then
-        -- Convention backend TLALOC : les flottants sont stockés en double 64 bits.
-	return CODI.ADDR_SIZE * CODI.STORAGE_UNIT;
+        return TYPE_SIZE_BITS( COMP_TYPE );
 
-        elsif  COMP_TYPE.TY = DN_RECORD
-           or  COMP_TYPE.TY = DN_CONSTRAINED_RECORD
-        then
-	-- Pilier 3.7 : composant record (contraint ou non).  La vue contrainte
-	-- anonyme (p. ex. BUF(2)) ne porte pas de CD_IMPL_SIZE : lire celui du
-	-- record de BASE, pose par CODE_RECORD_DECL (layout additif).
-	declare
-	  REC : TREE	:= COMP_TYPE;
-	  RAW : INTEGER;
-	begin
-	  if  REC.TY = DN_CONSTRAINED_RECORD  then
-	    REC := D( SM_BASE_TYPE, REC );
-	  end if;
-
-	  RAW := DI( CD_IMPL_SIZE, REC );
-
-	  if  RAW = 0  then
-	  -- Vue complete pas encore compilee (type prive, ACVC A7xxx) : la
-	  -- taille n'est pas connaissable par l'expander A CE POINT du flux,
-	  -- mais le symbole <rec>.size sera defini plus loin dans le FINC.
-	  -- Retourner 0 : le site d'emission bascule sur le symbole (fasm
-	  -- resout les references avant definition) et IS_STATIC tombe.
-	    return 0;
-	  end if;
-
-	  return ( ( RAW + CODI.STORAGE_UNIT - 1 ) / CODI.STORAGE_UNIT ) * CODI.STORAGE_UNIT;
-	end;
-
-        else
-        -- CD_IMPL_SIZE est la taille minimale en BITS posee par le front-end
-        -- (1 pour BOOLEAN, 3 pour un enumere a 7 valeurs...).  La convention
-        -- de stockage TLALOC est l'octet (piege n 10) : arrondir.
-	declare
-	  RAW : INTEGER := DI( CD_IMPL_SIZE, COMP_TYPE );
-	begin
-	  return ( ( RAW + CODI.STORAGE_UNIT - 1 ) / CODI.STORAGE_UNIT ) * CODI.STORAGE_UNIT;
-	end;
-
-        end if;
-
-      end	COMP_SIZE_BITS;
+      end COMP_SIZE_BITS;
 	--------------
 
 
@@ -624,18 +688,20 @@ is
       -- Le code d'initialisation du descripteur reste dynamique et continue
       -- d'utiliser CODE_DISCRETE_RANGE_BOUND ; seule la decision de poser
       -- CD_IMPL_SIZE est modifiee.
-      function IS_STATIC_INTEGER_BOUND ( EXP : TREE ) return BOOLEAN
-      is
+
+		-----------------------
+      function	IS_STATIC_INTEGER_BOUND	( EXP :TREE )	return BOOLEAN
+      is		-----------------------
       begin
         return EXP /= TREE_VOID and then EXP.TY = DN_NUMERIC_LITERAL;
-      end IS_STATIC_INTEGER_BOUND;
 
-      procedure STATIC_RANGE_BOUNDS
-        ( RNG       : in  TREE;
-          IS_STATIC : out BOOLEAN;
-          LO        : out INTEGER;
-          HI        : out INTEGER )
-      is
+      end	IS_STATIC_INTEGER_BOUND;
+	-----------------------
+
+		-------------------
+      procedure	STATIC_RANGE_BOUNDS	( RNG :in  TREE; IS_STATIC :out BOOLEAN; LO, HI :out INTEGER )
+      is		-------------------
+
         EXP1 : TREE := TREE_VOID;
         EXP2 : TREE := TREE_VOID;
       begin
@@ -644,33 +710,36 @@ is
         HI := -1;
 
         if RNG /= TREE_VOID and then RNG.TY = DN_RANGE then
-          EXP1 := D( AS_EXP1, RNG );
-          EXP2 := D( AS_EXP2, RNG );
+	EXP1 := D( AS_EXP1, RNG );
+	EXP2 := D( AS_EXP2, RNG );
 
-          if IS_STATIC_INTEGER_BOUND( EXP1 )
-            and then IS_STATIC_INTEGER_BOUND( EXP2 )
-          then
-            LO := DI( SM_VALUE, EXP1 );
-            HI := DI( SM_VALUE, EXP2 );
-            IS_STATIC := TRUE;
-          end if;
+	if IS_STATIC_INTEGER_BOUND( EXP1 )
+	  and then IS_STATIC_INTEGER_BOUND( EXP2 )
+	then
+	  LO := DI( SM_VALUE, EXP1 );
+	  HI := DI( SM_VALUE, EXP2 );
+	  IS_STATIC := TRUE;
+	end if;
         end if;
-      end STATIC_RANGE_BOUNDS;
+      end	STATIC_RANGE_BOUNDS;
+	-------------------
 
-      procedure MULTIPLY_STATIC_DIMENSION
-        ( LO : in INTEGER;
-          HI : in INTEGER )
-      is
+
+		-------------------------
+      procedure	MULTIPLY_STATIC_DIMENSION	( LO, HI :in INTEGER )
+      is		-------------------------
         LEN : NATURAL;
       begin
         if HI < LO then
-          LEN := 0;
+	LEN := 0;
         else
-          LEN := NATURAL( HI - LO + 1 );
+	LEN := NATURAL( HI - LO + 1 );
         end if;
 
         ARRAY_STATIC_SIZE := LEN * ARRAY_STATIC_SIZE;
-      end MULTIPLY_STATIC_DIMENSION;
+
+      end	MULTIPLY_STATIC_DIMENSION;
+	-------------------------
 
 
 		----------------------------
@@ -679,7 +748,7 @@ is
     is
       IDX_TYPE		: TREE;
       SRC_RANGE		: TREE		:= TREE_VOID;
-      DIM_NBR_STR		:constant	STRING	:= IMAGE(	DIM_NBR+1	);
+      DIM_NBR_STR		:constant STRING	:= IMAGE( DIM_NBR+1 );
     begin
       POP( IDX_TYPE_LIST, IDX_TYPE );
       if  HAS_RANGES  then
@@ -687,15 +756,15 @@ is
       end if;
       DIM_NBR := DIM_NBR + 1;
 
-      if	IS_EMPTY(	IDX_TYPE_LIST )  then
+      if  IS_EMPTY( IDX_TYPE_LIST )  then
         declare
-	ELEMENT_SIZ		: NATURAL		:= COMP_SIZE_BITS;					-- TAILLE	EN BITS
-	ELEMENT_SIZ_STR		:constant	STRING	:= IMAGE(	ELEMENT_SIZ );				-- IMAGE DE TAILLE EN BITS
+	ELEMENT_SIZ		: NATURAL		:= COMP_SIZE_BITS;					-- TAILLE EN BITS
+	ELEMENT_SIZ_STR		:constant STRING	:= IMAGE( ELEMENT_SIZ );				-- IMAGE DE TAILLE EN BITS
         begin
 	ARRAY_STATIC_SIZE := ELEMENT_SIZ;
-	PUT_LINE(	"VAR _COMP_SIZ, d" );
-	PUT_LINE(	"VAR _FST_" & DIM_NBR_STR & ", d" );
-	PUT_LINE(	"VAR _LST_" & DIM_NBR_STR & ", d" );
+	PUT_LINE( "VAR _COMP_SIZ, d" );
+	PUT_LINE( "VAR _FST_" & DIM_NBR_STR & ", d" );
+	PUT_LINE( "VAR _LST_" & DIM_NBR_STR & ", d" );
 
 	if  ELEMENT_SIZ = 0
 	  and then ( COMP_TYPE.TY = DN_RECORD  or else  COMP_TYPE.TY = DN_CONSTRAINED_RECORD )
@@ -725,11 +794,11 @@ is
 	  end;
 
 	else
-	  PUT_LINE(	tab & "LI" & tab & ELEMENT_SIZ_STR );						-- TAILLE	D'UN ELEMENT DU TABLEAU
+	  PUT_LINE(	tab & "LI" & tab & ELEMENT_SIZ_STR );						-- TAILLE D'UN ELEMENT DU TABLEAU
 	end if;
 
-	PUT_LINE(	tab & "Sd" & tab & LVL_STR & ", _COMP_SIZ" );						-- DWORD COMP_SIZ
-	PUT_LINE(	tab & "Ld" & tab & LVL_STR & ", _COMP_SIZ" );						-- recharge pour MUL suivant
+	PUT_LINE( tab & "Sd" & tab & LVL_STR & ", _COMP_SIZ" );						-- DWORD COMP_SIZ
+	PUT_LINE( tab & "Ld" & tab & LVL_STR & ", _COMP_SIZ" );						-- recharge pour MUL suivant
         end;
 
       else
@@ -739,25 +808,25 @@ is
         PUT_LINE( "VAR _FST_" & DIM_NBR_STR & ", d" );
         PUT_LINE( "VAR _LST_" & DIM_NBR_STR & ", d" );
 
-        PUT_LINE( tab & "MUL"	);
-        PUT_LINE( tab & "Sd" & tab & LVL_STR & ", _SIZ_" & DIM_NBR_STR );					-- METTRE	LA TAILLE	TRANCHE A	CELLE LAISSEE PAR LE CALCUL SUR LA DIM PRECEDENTE
+        PUT_LINE( tab & "MUL" );
+        PUT_LINE( tab & "Sd" & tab & LVL_STR & ", _SIZ_" & DIM_NBR_STR );					-- METTRE LA TAILLE TRANCHE A CELLE LAISSEE PAR LE CALCUL SUR LA DIM PRECEDENTE
         PUT_LINE( tab & "Ld" & tab & LVL_STR & ", _SIZ_" & DIM_NBR_STR );					-- recharge pour MUL suivant
-      end	if;
+      end if;
 
       if  HAS_RANGES  and then  SRC_RANGE /= TREE_VOID  then
 
         declare
-          RNG_STATIC : BOOLEAN;
-          RNG_LO     : INTEGER;
-          RNG_HI     : INTEGER;
+	RNG_STATIC : BOOLEAN;
+	RNG_LO	 : INTEGER;
+	RNG_HI	 : INTEGER;
         begin
-          STATIC_RANGE_BOUNDS( SRC_RANGE, RNG_STATIC, RNG_LO, RNG_HI );
+	STATIC_RANGE_BOUNDS( SRC_RANGE, RNG_STATIC, RNG_LO, RNG_HI );
 
-          if RNG_STATIC and then IS_STATIC then
-            MULTIPLY_STATIC_DIMENSION( RNG_LO, RNG_HI );
-          else
-            IS_STATIC := FALSE;
-          end if;
+	if RNG_STATIC and then IS_STATIC then
+	  MULTIPLY_STATIC_DIMENSION( RNG_LO, RNG_HI );
+	else
+	  IS_STATIC := FALSE;
+	end if;
         end;
 
         EXPRESSIONS.CODE_DISCRETE_RANGE_BOUND( SRC_RANGE, IS_LAST => FALSE );
@@ -779,12 +848,12 @@ is
 	end if;
 
 	EXPRESSIONS.CODE_EXP( RANGE_FIRST );
-	PUT_LINE(	tab & "Sd" & tab & LVL_STR & ", _FST_" & DIM_NBR_STR );
+	PUT_LINE( tab & "Sd" & tab & LVL_STR & ", _FST_" & DIM_NBR_STR );
 	EXPRESSIONS.CODE_EXP( RANGE_LAST );
-	PUT_LINE(	tab & "Sd" & tab & LVL_STR & ", _LST_" & DIM_NBR_STR );
+	PUT_LINE( tab & "Sd" & tab & LVL_STR & ", _LST_" & DIM_NBR_STR );
 
 	if  IS_STATIC  then
-	  ARRAY_STATIC_SIZE	:= ( DI( SM_VALUE, RANGE_LAST	) + 1 - DI( SM_VALUE, RANGE_FIRST ) ) *	ARRAY_STATIC_SIZE;
+	  ARRAY_STATIC_SIZE := ( DI( SM_VALUE, RANGE_LAST ) + 1 - DI( SM_VALUE, RANGE_FIRST ) ) * ARRAY_STATIC_SIZE;
 	end if;
         end;
 
@@ -814,7 +883,7 @@ is
 	  IS_STATIC := FALSE;
 	  EXPRESSIONS.CODE_EXP( RANGE_FIRST );
 	end if;
-	PUT_LINE(	tab & "Sd" & tab & LVL_STR & ", _FST_" & DIM_NBR_STR );
+	PUT_LINE( tab & "Sd" & tab & LVL_STR & ", _FST_" & DIM_NBR_STR );
 
 	if  OK_LST  then
 	  PUT_LINE( tab & "LI" & tab & IMAGE( V_LST ) );
@@ -822,18 +891,17 @@ is
 	  IS_STATIC := FALSE;
 	  EXPRESSIONS.CODE_EXP( RANGE_LAST );
 	end if;
-	PUT_LINE(	tab & "Sd" & tab & LVL_STR & ", _LST_" & DIM_NBR_STR );
+	PUT_LINE( tab & "Sd" & tab & LVL_STR & ", _LST_" & DIM_NBR_STR );
 
 	if  IS_STATIC  then
-	  ARRAY_STATIC_SIZE	:= ( V_LST + 1 - V_FST ) * ARRAY_STATIC_SIZE;
+	  ARRAY_STATIC_SIZE := ( V_LST + 1 - V_FST ) * ARRAY_STATIC_SIZE;
 	end if;
         end;
 
       else
         IS_STATIC := FALSE;
-        PUT_LINE( "; PROCESS_CONSTRAINED_ARRAY_TYPE_SPEC : index type non integer non traite "
-                  & NODE_NAME'IMAGE( IDX_TYPE.TY ) );
-      end	if;
+        CODI.TROU( "PROCESS_CONSTRAINED_ARRAY_TYPE_SPEC index non entier", IDX_TYPE );				--| vague 5 : bornes symboliques douteuses en aval
+      end if;
 
       PUT_LINE( tab & "Ld" & tab & LVL_STR & ", _LST_" & DIM_NBR_STR );
       PUT_LINE( tab & "Ld" & tab & LVL_STR & ", _FST_" & DIM_NBR_STR );
@@ -846,23 +914,23 @@ is
 
 
 		--------------------
-    procedure	COMPUTE_INFO_OFFSETS	( IDX_TYPE_LIST :in	out SEQ_TYPE )
+    procedure	COMPUTE_INFO_OFFSETS	( IDX_TYPE_LIST :in out SEQ_TYPE )
     is
       IDX_TYPE		: TREE;
-      DIM_NBR_STR		:constant	STRING	:= IMAGE(	DIM_NBR+1	);
+      DIM_NBR_STR		:constant STRING	:= IMAGE( DIM_NBR+1 );
     begin
       POP( IDX_TYPE_LIST, IDX_TYPE );
       DIM_NBR := DIM_NBR + 1;
 
-      if	IS_EMPTY(	IDX_TYPE_LIST )  then
-	PUT_LINE(	"COMP_SIZ = $" );
-	PUT_LINE(	tab & "rd 1 " );
-	PUT_LINE(	"FST_" & DIM_NBR_STR & " = $"	);
-	PUT_LINE(	tab & "rd 1 " );
-	PUT_LINE(	"LST_" & DIM_NBR_STR & " = $"	);
-	PUT_LINE(	tab & "rd 1 " );
+      if  IS_EMPTY( IDX_TYPE_LIST )  then
+	PUT_LINE( "COMP_SIZ = $" );
+	PUT_LINE( tab & "rd 1 " );
+	PUT_LINE( "FST_" & DIM_NBR_STR & " = $" );
+	PUT_LINE( tab & "rd 1 " );
+	PUT_LINE( "LST_" & DIM_NBR_STR & " = $" );
+	PUT_LINE( tab & "rd 1 " );
       else
-        COMPUTE_INFO_OFFSETS(	IDX_TYPE_LIST );
+        COMPUTE_INFO_OFFSETS( IDX_TYPE_LIST );
 
         PUT_LINE( "SIZ_" & DIM_NBR_STR & " = $" );
         PUT_LINE( tab & "rd 1 " );
@@ -870,13 +938,12 @@ is
         PUT_LINE( tab & "rd 1 " );
         PUT_LINE( "LST_" & DIM_NBR_STR & " = $" );
         PUT_LINE( tab & "rd 1 " );
-      end	if;
+      end if;
 
     end	COMPUTE_INFO_OFFSETS;
 	--------------------
 
   begin
---    if  COMP_TYPE.TY = DN_ACCESS  or else  COMP_TYPE.TY = DN_FLOAT  then
     if  COMP_TYPE.TY = DN_ACCESS  or else  COMP_TYPE.TY in CLASS_SCALAR  then
       IS_STATIC := TRUE;
     else
@@ -888,8 +955,8 @@ is
 
     PUT_LINE( "VAR use__info, q" );
     PUT_LINE( "VAR SIZ, d" );
-    PUT_LINE( tab &	"LVA" & tab & LVL_STR & ", SIZ" );
-    PUT_LINE( tab &	"Sa" & tab & LVL_STR & ", use__info" );
+    PUT_LINE( tab & "LVA" & tab & LVL_STR & ", SIZ" );
+    PUT_LINE( tab & "Sa" & tab & LVL_STR & ", use__info" );
 
 			-------------------
 			DESCRIPTOR_ON_STACK:
@@ -910,19 +977,19 @@ is
         end;
       end if;
 
-      PUT_LINE( tab	& "MUL" );
-      PUT_LINE( tab	& "Sd" & tab & LVL_STR & ", SIZ" );
+      PUT_LINE( tab & "MUL" );
+      PUT_LINE( tab & "Sd" & tab & LVL_STR & ", SIZ" );
 
-      if	IS_STATIC  then
-        DI( CD_IMPL_SIZE,	TYPE_SPEC,  ARRAY_STATIC_SIZE	);
-      end	if;
+      if  IS_STATIC  then
+        DI( CD_IMPL_SIZE,	TYPE_SPEC,  ARRAY_STATIC_SIZE );
+      end if;
 
       PUT_LINE( "  virtual at 4" );									-- Commence apres SIZ
       declare
         IDX_TYPE_LIST	: SEQ_TYPE	:= LIST( D( SM_INDEX_SUBTYPE_S, TYPE_SPEC ) );
       begin
         DIM_NBR := 0;
-        COMPUTE_INFO_OFFSETS(	IDX_TYPE_LIST );
+        COMPUTE_INFO_OFFSETS( IDX_TYPE_LIST );
       end;
       PUT_LINE( "  end virtual" );
 
@@ -934,9 +1001,8 @@ is
     DB( CD_COMPILED, TYPE_SPEC, TRUE );
     end;
 
-  end	  PROCESS_CONSTRAINED_ARRAY_TYPE_SPEC;
-	--===================================--
-
+  end	PROCESS_CONSTRAINED_ARRAY_TYPE_SPEC;
+	-----------------------------------
 
 
 			---------------------------
@@ -944,13 +1010,13 @@ is
   is			---------------------------
 
     TYPE_NAME		: TREE			:= D( AS_SOURCE_NAME, TYPE_DECL );
-    TYPE_NAME_STR		:constant	STRING		:= '_' & PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
-    TYPE_SPEC		: TREE			:= D( SM_TYPE_SPEC,	TYPE_NAME	);
+    TYPE_NAME_STR		:constant STRING		:= '_' & PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
+    TYPE_SPEC		: TREE			:= D( SM_TYPE_SPEC, TYPE_NAME );
 
   begin
-    if  CODI.DEBUG	then NEW_LINE; PUT_LINE( tab50 & "; array decl constrained array type info" ); end if;
+    if  CODI.DEBUG  then NEW_LINE; PUT_LINE( tab50 & "; array decl constrained array type info" ); end if;
 
-    PUT_LINE( TYPE_NAME_STR &	" = '" & TYPE_NAME_STR & "'" );
+    PUT_LINE( TYPE_NAME_STR & " = '" & TYPE_NAME_STR & "'" );
     PUT_LINE( "namespace " & TYPE_NAME_STR );
 
     if  TYPE_DECL.TY = DN_CONSTRAINED_ARRAY_DEF  then
@@ -968,10 +1034,10 @@ is
   is			----------------
 
     TYPE_ID		: TREE			:= D( AS_SOURCE_NAME, TYPE_DECL );
-    TYPE_SPEC		: TREE			:= D( SM_TYPE_SPEC,	TYPE_ID );
-    TYPE_ID_STR		:constant	STRING		:= '_' & PRINT_NAME( D( LX_SYMREP, TYPE_ID ) );
+    TYPE_SPEC		: TREE			:= D( SM_TYPE_SPEC, TYPE_ID );
+    TYPE_ID_STR		:constant STRING		:= '_' & PRINT_NAME( D( LX_SYMREP, TYPE_ID ) );
     LVL			: LEVEL_NUM		renames CODI.CUR_LEVEL;
-    LVL_STR		:constant	STRING		:= IMAGE(	LVL );
+    LVL_STR		:constant STRING		:= IMAGE( LVL );
     IS_STATIC		: BOOLEAN			:= TRUE;
     STATIC_SIZE		: NATURAL			:= 0;
 
@@ -987,7 +1053,7 @@ is
     -- MIROIR EXACT des align_* que STATOFS emet avec le meme
     -- STATIC_TYPE_ALIGN_BYTES.  Toute divergence entre ce calcul et le
     -- layout fasmg est un bug d'ecrasement memoire (cf. RPG_DATA).
-      A_BITS	: NATURAL	:= STATIC_TYPE_ALIGN_BYTES( COMP_TYPE ) * CODI.STORAGE_UNIT;
+      A_BITS	: NATURAL := STATIC_TYPE_ALIGN_BYTES( COMP_TYPE ) * CODI.STORAGE_UNIT;
     begin
       if  A_BITS > 0  then
         CUMUL := ( ( CUMUL + A_BITS - 1 ) / A_BITS ) * A_BITS;
@@ -1042,7 +1108,7 @@ is
 
 	    declare
 	      DISCR_TYPE	: TREE	:= FULL_TYPE_VIEW( D( SM_OBJ_TYPE, DISCR_ID ) );
-	      DISCR_SIZE	: NATURAL	:= STATIC_TYPE_SIZE_BITS( DISCR_TYPE );
+	      DISCR_SIZE	: NATURAL := STATIC_TYPE_SIZE_BITS( DISCR_TYPE );
 	    begin
 	      if  DISCR_SIZE = 0  then
 	        UNKNOWN := TRUE;
@@ -1056,7 +1122,7 @@ is
 	end;
         end loop;
 
-      end	ADD_DISCRIMINANTS;
+      end ADD_DISCRIMINANTS;
 	-----------------
 
 		-------------
@@ -1084,7 +1150,7 @@ is
 
 	      declare
 	        COMP_TYPE	: TREE	:= FULL_TYPE_VIEW( D( SM_OBJ_TYPE, COMP_ID ) );
-	        COMP_SIZE	: NATURAL	:= STATIC_TYPE_SIZE_BITS( COMP_TYPE );
+	        COMP_SIZE	: NATURAL := STATIC_TYPE_SIZE_BITS( COMP_TYPE );
 	      begin
 	        if  COMP_SIZE = 0  then
 		UNKNOWN := TRUE;
@@ -1107,8 +1173,8 @@ is
         begin
 	if  VP /= TREE_VOID  and then  VP /= TREE_NIL  then
 	  declare
-	    VAR_S	: SEQ_TYPE	:= LIST( D( AS_VARIANT_S, VP ) );
-	    VAR_E	: TREE;
+	    VAR_S : SEQ_TYPE	:= LIST( D( AS_VARIANT_S, VP ) );
+	    VAR_E : TREE;
 	  begin
 	    while  not IS_EMPTY( VAR_S )  loop
 	      POP( VAR_S, VAR_E );
@@ -1117,7 +1183,7 @@ is
 	        ADD_COMP_LIST( D( AS_COMP_LIST, VAR_E ) );
 
 	        if  UNKNOWN  then
-	          return;
+		return;
 	        end if;
 	      end if;
 	    end loop;
@@ -1125,7 +1191,7 @@ is
 	end if;
         end;
 
-      end	ADD_COMP_LIST;
+      end ADD_COMP_LIST;
 	-------------
 
     begin
@@ -1162,58 +1228,14 @@ is
 	-----------------------
 
 
-		------------------
-    procedure	STATIC_BOUND_VALUE_OLD		( BOUND :TREE; VAL :out INTEGER; OK :out BOOLEAN )
-    is		------------------
-	-- Valeur statique d'une borne discrete : litteral, nombre nomme,
-	-- litteral d'enumeration, ou toute expression statique annotee
-	-- par sem (SM_VALUE). Piege n 95a : on teste la PROPRIETE
-	-- (valeur statique PRESENTE), jamais l'espece du noeud ni une
-	-- sentinelle d'absence -- les VOID/NIL echouent d'eux-memes au
-	-- test positif. NB Ada 83 : pas de out sur fonction -> procedure.
-      SV		: TREE	:= D( SM_VALUE, BOUND );
-      DEFN	: TREE;
-    begin
-      VAL := 0;
-      OK  := TRUE;
-
-      if  SV.PT = HI  and then  SV.NOTY = DN_NUM_VAL  then							-- valeur immediate
-	VAL := DI( SM_VALUE, BOUND );
-	return;
-      elsif  SV.TY = DN_NUM_VAL  then									-- valeur longue
-	VAL := INTEGER'VALUE( PRINT_NUM( SV ) );
-	return;
-      end if;
-
-      if  BOUND.TY = DN_ENUMERATION_ID  or else  BOUND.TY = DN_CHARACTER_ID  then
-	VAL := DI( SM_REP, BOUND );									-- borne = litteral DEFINISSANT
-	return;											-- (SM_REP : coherent avec LI SM_REP du runtime)
-      end if;
-
-      DEFN := D( SM_DEFN, BOUND );									-- borne = used name ?
-      if  DEFN /= TREE_VOID  and then  DEFN /= TREE_NIL  then
-	if  DEFN.TY = DN_ENUMERATION_ID  or else  DEFN.TY = DN_CHARACTER_ID  then
-	  VAL := DI( SM_REP, DEFN );
-	  return;
-	elsif  DEFN.TY = DN_NUMBER_ID  then								-- nombre nomme (LRM 3.2.2)
-	  STATIC_BOUND_VALUE( D( SM_INIT_EXP, DEFN ), VAL, OK );
-	  return;
-	end if;
-      end if;
-
-      OK := FALSE;											-- borne reellement dynamique
-
-    end	STATIC_BOUND_VALUE_OLD;
-	------------------
-
-
- 			-----------------------
+			-------------------
     function		STATIC_INDEX_LENGTH		( IDX_TYPE : TREE ) return NATURAL
-    is			-----------------------
-      IDX_SPEC : TREE := FULL_TYPE_VIEW( IDX_TYPE );
-      IDX_RANGE : TREE;
-      FST       : TREE;
-      LST       : TREE;
+    is			-------------------
+
+      IDX_SPEC	: TREE	:= FULL_TYPE_VIEW( IDX_TYPE );
+      IDX_RANGE	: TREE;
+      FST		: TREE;
+      LST		: TREE;
     begin
       if  IDX_SPEC = TREE_VOID  or else  IDX_SPEC = TREE_NIL  then
         return 0;
@@ -1223,9 +1245,7 @@ is
         IDX_RANGE := D( SM_RANGE, IDX_SPEC );
 
         if  IDX_RANGE = TREE_VOID  or else  IDX_RANGE = TREE_NIL  then
-
-put_line( "; SIL : SM_RANGE absent sur " & NODE_NAME'IMAGE( IDX_SPEC.TY ) );
-
+	TROU( "STATIC_INDEX_LENGTH range vide", IDX_RANGE );
 	return 0;
         end if;
 
@@ -1244,25 +1264,20 @@ put_line( "; SIL : SM_RANGE absent sur " & NODE_NAME'IMAGE( IDX_SPEC.TY ) );
 	STATIC_BOUND_VALUE( LST, HI, HI_OK );
 
 	if  not( LO_OK and HI_OK )  then
+	  TROU( "STATIC_INDEX_LENGTH borne KO fst", FST );
+	  return  0;
 
-put_line( "; SIL : borne KO fst " & NODE_NAME'IMAGE( FST.TY ) & " lst " & NODE_NAME'IMAGE( LST.TY ) );
-
-	  return 0;
 	elsif  HI < LO  then
-
-put_line( "; SIL : HI < LO " & NODE_NAME'IMAGE( IDX_SPEC.TY ) );
-
-	  return 0;										-- tableau vide (garde existante)
+	  TROU( "STATIC_INDEX_LENGTH HI < LO", IDX_SPEC );
+	  return  0;										-- tableau vide (garde existante)
 	else
 	  return NATURAL( HI + 1 - LO );
 	end if;
         end;
+
       else
-
-put_line( "; SIL : idx_spec inattendu " & NODE_NAME'IMAGE( IDX_SPEC.TY ) );
-
-	return 0;
-
+        TROU( "STATIC_INDEX_LENGTH idx_spec inattendu", IDX_SPEC );
+        return  0;
       end if;
 
     end	STATIC_INDEX_LENGTH;
@@ -1278,7 +1293,7 @@ put_line( "; SIL : idx_spec inattendu " & NODE_NAME'IMAGE( IDX_SPEC.TY ) );
       COMP_SIZE : NATURAL;
       IDX_S     : SEQ_TYPE;
       IDX_TYPE  : TREE;
-      LEN       : NATURAL;
+      LEN	      : NATURAL;
       TOTAL     : NATURAL;
     begin
       if  ARR_SPEC = TREE_VOID  or else  ARR_SPEC = TREE_NIL
@@ -1336,8 +1351,18 @@ put_line( "; SIL : idx_spec inattendu " & NODE_NAME'IMAGE( IDX_SPEC.TY ) );
     is			---------------------
       TS : TREE := FULL_TYPE_VIEW( T );
     begin
+	--| CONTRAT DU 0 (vague 2, triage 28/07) : 0 = "taille non calculable
+	--| STATIQUEMENT", sentinelle contractuelle.  Appelants verifies le
+	--| 28/07 : ADD_DISCRIMINANTS et ADD_COMP_LIST (UNKNOWN := TRUE),
+	--| STATIC_CONSTRAINED_ARRAY_SIZE_BITS (propagation), IS_STATIC :=
+	--| FALSE (insert use__info), et le garde COMP_SIZE = 0 -> raise du
+	--| layout represente.  Les 0 LEGITIMES : type vide (garde d'entree),
+	--| DN_ARRAY non contraint.  Les 0 d'IGNORANCE (scalaire sans
+	--| CD_IMPL_SIZE, noeud hors classes) passent par TROU : en STRICT ils
+	--| levent, en RECENSEMENT ils rendent 0 (= chemin dynamique) apres
+	--| comptage.
       if  TS = TREE_VOID  or else  TS = TREE_NIL  then
-        return  0;
+        return  0;											-- INTENTIONNEL : vue vide -> non statique
       end if;
 
       if  TS.TY = DN_ACCESS  then
@@ -1355,16 +1380,18 @@ put_line( "; SIL : idx_spec inattendu " & NODE_NAME'IMAGE( IDX_SPEC.TY ) );
         return  STATIC_CONSTRAINED_ARRAY_SIZE_BITS( TS );
 
       elsif  TS.TY = DN_ARRAY  then
-        return  0;
+        return  0;											-- INTENTIONNEL : non contraint -> non statique
 
       elsif  TS.TY in CLASS_SCALAR  or else  TS.TY in CLASS_CONSTRAINED  then
         if  D( CD_IMPL_SIZE, TS ) /= TREE_VOID  then
 	return  NATURAL( DI( CD_IMPL_SIZE, TS ) );
         else
+	CODI.TROU( "STATIC_TYPE_SIZE_BITS scalaire sans CD_IMPL_SIZE", TS );					-- vague 2 : le front-end aurait du le poser
 	return  0;
         end if;
 
       else
+        CODI.TROU( "STATIC_TYPE_SIZE_BITS", TS );								-- vague 2 : noeud hors classes, 0 mentait
         return 0;
       end if;
 
@@ -1378,7 +1405,13 @@ put_line( "; SIL : idx_spec inattendu " & NODE_NAME'IMAGE( IDX_SPEC.TY ) );
     -- Scalaire : la taille de son conteneur. Tableau : l'alignement de son
     -- composant (recursif : tableau de tableaux d'octets -> 1). Record,
     -- access, inconnu : 8, conservateur (= comportement STATOFS historique).
-      TS	: TREE	:= FULL_TYPE_VIEW( T );
+    --| DEFAUT DOCUMENTE (vague 2, triage 28/07 cat. D) : le 8 par defaut
+    --| n'est PAS un trou, c'est le miroir du STATOFS fasmg (piege n 110) --
+    --| mais il est a CROISER OBLIGATOIREMENT avec le chantier n 117
+    --| (alignement 8 impose aux records representes) le jour ou l'un des
+    --| deux cotes bouge.  Ne pas resserrer ici sans son test-miroir.
+
+      TS  : TREE	:= FULL_TYPE_VIEW( T );
     begin
       if  TS = TREE_VOID  or else  TS = TREE_NIL  then
         return 8;
@@ -1386,9 +1419,9 @@ put_line( "; SIL : idx_spec inattendu " & NODE_NAME'IMAGE( IDX_SPEC.TY ) );
 
       if  TS.TY = DN_INTEGER  or else  TS.TY = DN_ENUMERATION  or else  TS.TY = DN_FIXED  then
         case  OPER_SIZ_CHAR( TS )  is
-	when 'b'	=>  return 1;
-	when 'w'	=>  return 2;
-	when 'd'	=>  return 4;
+	when 'b'		=>  return 1;
+	when 'w'		=>  return 2;
+	when 'd'		=>  return 4;
 	when others	=>  return 8;
         end case;
       end if;
@@ -1403,9 +1436,6 @@ put_line( "; SIL : idx_spec inattendu " & NODE_NAME'IMAGE( IDX_SPEC.TY ) );
 	return  STATIC_TYPE_ALIGN_BYTES( D( SM_COMP_TYPE, BASE ) );
         end;
       end if;
---     if  TS.TY = DN_ARRAY  then
---        return  STATIC_TYPE_ALIGN_BYTES( D( SM_COMP_TYPE, TS ) );
---      end if;
 
       return 8;								-- DN_FLOAT, DN_ACCESS, DN_RECORD, autres
 
@@ -1413,12 +1443,12 @@ put_line( "; SIL : idx_spec inattendu " & NODE_NAME'IMAGE( IDX_SPEC.TY ) );
 	-----------------------
 
   begin
-				-- Resolve private/incomplete	to full type
+				-- Resolve private/incomplete to full type
     if  TYPE_SPEC.TY = DN_L_PRIVATE
     or  TYPE_SPEC.TY = DN_PRIVATE
     then
       TYPE_SPEC := D( SM_TYPE_SPEC, TYPE_SPEC );
-    elsif	 TYPE_SPEC.TY = DN_INCOMPLETE	 then
+    elsif  TYPE_SPEC.TY = DN_INCOMPLETE  then
       TYPE_SPEC := D( XD_FULL_TYPE_SPEC, TYPE_SPEC );
     end if;
 
@@ -1430,26 +1460,26 @@ put_line( "; SIL : idx_spec inattendu " & NODE_NAME'IMAGE( IDX_SPEC.TY ) );
     DI( CD_LEVEL,	  TYPE_SPEC, INTEGER( CODI.CUR_LEVEL ) );
     DB( CD_COMPILED,  TYPE_SPEC, TRUE );
 
-    if  CODI.DEBUG	then NEW_LINE; PUT_LINE( tab50 & "; " & TYPE_ID_STR & " RECORD TYPE INFO" ); end if;
+    if  CODI.DEBUG  then NEW_LINE; PUT_LINE( tab50 & "; " & TYPE_ID_STR & " RECORD TYPE INFO" ); end if;
 
     PUT_LINE( TYPE_ID_STR & " = '" & TYPE_ID_STR & "'" );
     PUT_LINE( "namespace " & TYPE_ID_STR );
 
     PUT_LINE( "VAR use__info, q" );
     PUT_LINE( "VAR SIZ, d" );
-    PUT_LINE( tab &	"LVA" & tab & LVL_STR & ", SIZ" );
-    PUT_LINE( tab &	"Sa" & tab & LVL_STR & ", use__info" );
+    PUT_LINE( tab & "LVA" & tab & LVL_STR & ", SIZ" );
+    PUT_LINE( tab & "Sa" & tab & LVL_STR & ", use__info" );
 
 			------------------------
 			INSERE_LES_DISCRIMINANTS:
     declare
-      DSCRMT_DECL_S		: SEQ_TYPE	:= LIST( D( AS_DSCRMT_DECL_S,	TYPE_DECL	) );
+      DSCRMT_DECL_S		: SEQ_TYPE	:= LIST( D( AS_DSCRMT_DECL_S, TYPE_DECL ) );
       DSCRMT_DECL		: TREE;
     begin
       while  not IS_EMPTY( DSCRMT_DECL_S )  loop
-        POP( DSCRMT_DECL_S, DSCRMT_DECL	);
+        POP( DSCRMT_DECL_S, DSCRMT_DECL );
         declare
-	DISCRIMINANT_ID_S	: SEQ_TYPE	:= LIST( D( AS_SOURCE_NAME_S,	DSCRMT_DECL ) );
+	DISCRIMINANT_ID_S	: SEQ_TYPE	:= LIST( D( AS_SOURCE_NAME_S, DSCRMT_DECL ) );
 	DISCRIMINANT_ID	: TREE;
         begin
 	while  not IS_EMPTY( DISCRIMINANT_ID_S )  loop
@@ -1467,7 +1497,7 @@ put_line( "; SIL : idx_spec inattendu " & NODE_NAME'IMAGE( IDX_SPEC.TY ) );
 	  end;
 	end loop;
         end;
-      end	loop;
+      end loop;
     end	INSERE_LES_DISCRIMINANTS;
 	------------------------
 
@@ -1540,8 +1570,8 @@ put_line( "; SIL : idx_spec inattendu " & NODE_NAME'IMAGE( IDX_SPEC.TY ) );
 
 	      end		PROCESS_INSERT_ONE_COMPONENT;
 			----------------------------
-              end loop;
-            end;
+	    end loop;
+	  end;
 	end if;
         end loop;
 
@@ -1565,7 +1595,7 @@ put_line( "; SIL : idx_spec inattendu " & NODE_NAME'IMAGE( IDX_SPEC.TY ) );
 	end if;
         end;
 
-      end	INSERER_COMP_LIST;
+      end INSERER_COMP_LIST;
 	-----------------
     begin
       INSERER_COMP_LIST( D( SM_COMP_LIST, TYPE_SPEC ) );
@@ -1582,20 +1612,20 @@ put_line( "; SIL : idx_spec inattendu " & NODE_NAME'IMAGE( IDX_SPEC.TY ) );
 			-------------------------
 			TRAITER_LES_DISCRIMINANTS:
     declare
-      DSCRMT_DECL_S		: SEQ_TYPE	:= LIST( D( AS_DSCRMT_DECL_S,	TYPE_DECL	) );
+      DSCRMT_DECL_S		: SEQ_TYPE	:= LIST( D( AS_DSCRMT_DECL_S, TYPE_DECL ) );
       DSCRMT_DECL		: TREE;
     begin
       while  not IS_EMPTY( DSCRMT_DECL_S )  loop
-        POP( DSCRMT_DECL_S, DSCRMT_DECL	);
+        POP( DSCRMT_DECL_S, DSCRMT_DECL );
         declare
-	DISCRIMINANT_ID_S	: SEQ_TYPE	:= LIST( D( AS_SOURCE_NAME_S,	DSCRMT_DECL ) );
+	DISCRIMINANT_ID_S	: SEQ_TYPE	:= LIST( D( AS_SOURCE_NAME_S, DSCRMT_DECL ) );
 	DISCR_TYPE_DEFN	: TREE		:= D( SM_DEFN, D( AS_NAME, DSCRMT_DECL ) );
-	DISCR_TYPE_SPEC	: TREE		:= D( SM_TYPE_SPEC,	DISCR_TYPE_DEFN );
+	DISCR_TYPE_SPEC	: TREE		:= D( SM_TYPE_SPEC, DISCR_TYPE_DEFN );
 	DISCRIMINANT_ID	: TREE;
 	SIZE_CHAR		: CHARACTER	:= 'x';
         begin
-	if  TYPE_SPEC.TY = DN_INTEGER	 then
-	  SIZE_CHAR := OPER_SIZ_CHAR(	TYPE_SPEC	);
+	if  TYPE_SPEC.TY = DN_INTEGER  then
+	  SIZE_CHAR := OPER_SIZ_CHAR( TYPE_SPEC );
 	end if;
 	while  not IS_EMPTY( DISCRIMINANT_ID_S )  loop
 	  POP( DISCRIMINANT_ID_S, DISCRIMINANT_ID );
@@ -1625,7 +1655,7 @@ put_line( "; SIL : idx_spec inattendu " & NODE_NAME'IMAGE( IDX_SPEC.TY ) );
 
 	end loop;
         end;
-      end	loop;
+      end loop;
 
     end		TRAITER_LES_DISCRIMINANTS;
 		-------------------------
@@ -1648,7 +1678,7 @@ put_line( "; SIL : idx_spec inattendu " & NODE_NAME'IMAGE( IDX_SPEC.TY ) );
 			----------------
 			CHAMPS_REGULIERS:
 	  declare
-	    COMP_ID_S	: SEQ_TYPE	:= LIST( D( AS_SOURCE_NAME_S,	V_DECL ) );
+	    COMP_ID_S	: SEQ_TYPE	:= LIST( D( AS_SOURCE_NAME_S, V_DECL ) );
 	    COMP_ID	: TREE;
 	    COMP_TYPE	: TREE;
 
@@ -1662,8 +1692,8 @@ put_line( "; SIL : idx_spec inattendu " & NODE_NAME'IMAGE( IDX_SPEC.TY ) );
 
 	      declare
 	        COMP_TYPE_NAME	: TREE		:= D( XD_SOURCE_NAME, COMP_TYPE );
-	        COMP_TYPE_STR	:constant	STRING	:= '_'  & PRINT_NAME( D( LX_SYMREP, COMP_TYPE_NAME ) );
-	        COMP_ID_STR		:constant	STRING	:= PRINT_NAME( D( LX_SYMREP, COMP_ID ) );
+	        COMP_TYPE_STR	:constant STRING	:= '_'  & PRINT_NAME( D( LX_SYMREP, COMP_TYPE_NAME ) );
+	        COMP_ID_STR		:constant STRING	:= PRINT_NAME( D( LX_SYMREP, COMP_ID ) );
 	        COMP_SIZE		: NATURAL;
 
 	      begin
@@ -1675,24 +1705,24 @@ put_line( "; SIL : idx_spec inattendu " & NODE_NAME'IMAGE( IDX_SPEC.TY ) );
 		end if;
 
 
-	          if  COMP_SIZE < CODI.STORAGE_UNIT  then
+		if  COMP_SIZE < CODI.STORAGE_UNIT  then
 		  COMP_SIZE := CODI.STORAGE_UNIT;
-	          end if;
+		end if;
 
-	          PUT_LINE( "STATOFS " & COMP_ID_STR & ','
+		PUT_LINE( "STATOFS " & COMP_ID_STR & ','
 			& INTEGER'IMAGE( ( COMP_SIZE + CODI.STORAGE_UNIT - 1 ) / CODI.STORAGE_UNIT ) & ','
 			& INTEGER'IMAGE( STATIC_TYPE_ALIGN_BYTES( COMP_TYPE ) ) );
 
-	          ALIGN_STATIC_BITS( STATIC_SIZE, COMP_TYPE );
-	          STATIC_SIZE := STATIC_SIZE
+		ALIGN_STATIC_BITS( STATIC_SIZE, COMP_TYPE );
+		STATIC_SIZE := STATIC_SIZE
 			   + CODI.STORAGE_UNIT * ( ( COMP_SIZE + CODI.STORAGE_UNIT - 1 ) / CODI.STORAGE_UNIT );
 
 	        else
-	          PUT_LINE( "; OFFSET NON STATIQUE A FAIRE" );
+		CODI.TROU( "CHAMPS_REGULIERS : offset non statique (les offsets SUIVANTS seraient faux)" );	--| vague 5, cat. D
 	        end if;
 	      end;
 	    end loop;
-            end		CHAMPS_REGULIERS;
+	  end		CHAMPS_REGULIERS;
 			----------------
 	end if;
         end loop;
@@ -1718,19 +1748,19 @@ put_line( "; SIL : idx_spec inattendu " & NODE_NAME'IMAGE( IDX_SPEC.TY ) );
         end		CHAMPS_VARIANTES;
 			----------------
 
-      end	TRAITER_COMP_LIST;
+      end TRAITER_COMP_LIST;
 	-----------------
 
     begin
       TRAITER_COMP_LIST( D( SM_COMP_LIST, TYPE_SPEC ) );
 
-      if	IS_STATIC	 then
+      if  IS_STATIC  then
         PUT_LINE( "size = $" );
         PUT_LINE( "end virtual" );
         PUT_LINE( tab & "LI" & tab & " size*" & IMAGE( CODI.STORAGE_UNIT ) );
         PUT_LINE( tab & "Sd" & tab & LVL_STR & ", SIZ" );
         DI( CD_IMPL_SIZE, TYPE_SPEC, STATIC_SIZE );
-      end	if;
+      end if;
 
       if  D( SM_SIZE, TYPE_SPEC ) /= TREE_VOID  then
         DI( CD_IMPL_SIZE, TYPE_SPEC, DI( SM_SIZE, TYPE_SPEC ) );
@@ -1739,7 +1769,7 @@ put_line( "; SIL : idx_spec inattendu " & NODE_NAME'IMAGE( IDX_SPEC.TY ) );
     end		TRAITER_LES_CHAMPS;
 		------------------
 
-    PUT_LINE( "end namespace"	);
+    PUT_LINE( "end namespace" );
 
   end	CODE_RECORD_DECL;
 	----------------
@@ -1756,7 +1786,7 @@ put_line( "; SIL : idx_spec inattendu " & NODE_NAME'IMAGE( IDX_SPEC.TY ) );
   end ROOT_RECORD;
 
 		----------------------------
-  procedure	CODE_CONSTRAINED_RECORD_DECL	( TYPE_NAME : TREE; TYPE_SPEC : TREE )
+  procedure	CODE_CONSTRAINED_RECORD_DECL  ( TYPE_NAME : TREE; TYPE_SPEC : TREE )
   is
     TYPE_STR	:constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
     LVL_STR	:constant STRING	:= IMAGE( CODI.CUR_LEVEL );
@@ -1794,13 +1824,13 @@ put_line( "; SIL : idx_spec inattendu " & NODE_NAME'IMAGE( IDX_SPEC.TY ) );
 
       if V_DECL.TY /= DN_NULL_COMP_DECL then
         declare
-          COMP_ID_S : SEQ_TYPE := LIST( D( AS_SOURCE_NAME_S, V_DECL ) );
-          COMP_ID   : TREE;
+	COMP_ID_S : SEQ_TYPE := LIST( D( AS_SOURCE_NAME_S, V_DECL ) );
+	COMP_ID	: TREE;
         begin
-          while not IS_EMPTY( COMP_ID_S ) loop
-            POP( COMP_ID_S, COMP_ID );
-            EMIT_ALIAS( PRINT_NAME( D( LX_SYMREP, COMP_ID ) ) );
-          end loop;
+	while not IS_EMPTY( COMP_ID_S ) loop
+	  POP( COMP_ID_S, COMP_ID );
+	  EMIT_ALIAS( PRINT_NAME( D( LX_SYMREP, COMP_ID ) ) );
+	end loop;
         end;
       end if;
     end loop;
@@ -1810,16 +1840,16 @@ put_line( "; SIL : idx_spec inattendu " & NODE_NAME'IMAGE( IDX_SPEC.TY ) );
     begin
       if VP /= TREE_VOID and then VP /= TREE_NIL then
         declare
-          VAR_S : SEQ_TYPE := LIST( D( AS_VARIANT_S, VP ) );
-          VAR_E : TREE;
+	VAR_S : SEQ_TYPE := LIST( D( AS_VARIANT_S, VP ) );
+	VAR_E : TREE;
         begin
-          while not IS_EMPTY( VAR_S ) loop
-            POP( VAR_S, VAR_E );
+	while not IS_EMPTY( VAR_S ) loop
+	  POP( VAR_S, VAR_E );
 
-            if VAR_E.TY = DN_VARIANT then
-              EMIT_COMP_LIST_ALIASES( D( AS_COMP_LIST, VAR_E ) );
-            end if;
-          end loop;
+	  if VAR_E.TY = DN_VARIANT then
+	    EMIT_COMP_LIST_ALIASES( D( AS_COMP_LIST, VAR_E ) );
+	  end if;
+	end loop;
         end;
       end if;
     end;
@@ -1828,7 +1858,7 @@ put_line( "; SIL : idx_spec inattendu " & NODE_NAME'IMAGE( IDX_SPEC.TY ) );
 begin
   if BASE_REC.TY /= DN_RECORD then
     PUT_LINE( "; CODE_CONSTRAINED_RECORD_DECL : base non record "
-            & NODE_NAME'IMAGE( BASE_REC.TY ) );
+	  & NODE_NAME'IMAGE( BASE_REC.TY ) );
     raise PROGRAM_ERROR;
   end if;
 
@@ -1838,10 +1868,6 @@ begin
   if D( CD_IMPL_SIZE, BASE_REC ) /= TREE_VOID then
     DI( CD_IMPL_SIZE, TYPE_SPEC, DI( CD_IMPL_SIZE, BASE_REC ) );
   end if;
-
---  if D( CD_ALIGNMENT, BASE_REC ) /= TREE_VOID then		-- A VOIR
---    DI( CD_ALIGNMENT, TYPE_SPEC, DI( CD_ALIGNMENT, BASE_REC ) );
---  end if;
 
   if CODI.DEBUG then
     NEW_LINE;
@@ -1876,8 +1902,8 @@ begin
         DISCR_ID   : TREE;
       begin
         while not IS_EMPTY( DISCR_ID_S ) loop
-          POP( DISCR_ID_S, DISCR_ID );
-          EMIT_ALIAS( PRINT_NAME( D( LX_SYMREP, DISCR_ID ) ) );
+	POP( DISCR_ID_S, DISCR_ID );
+	EMIT_ALIAS( PRINT_NAME( D( LX_SYMREP, DISCR_ID ) ) );
         end loop;
       end;
     end loop;
@@ -1904,7 +1930,7 @@ begin
     LVL_STR		:constant STRING	:= IMAGE( CODI.CUR_LEVEL );
 
   begin
-    DI( CD_LEVEL,      TYPE_SPEC, INTEGER( CODI.CUR_LEVEL ) );
+    DI( CD_LEVEL,	   TYPE_SPEC, INTEGER( CODI.CUR_LEVEL ) );
     DB( CD_COMPILED,   TYPE_SPEC, TRUE );
 
 --  Le type access lui-même est complet immédiatement :
@@ -1930,12 +1956,12 @@ begin
         FULL_DESIG_TYPE : TREE := D( XD_FULL_TYPE_SPEC, DESIG_TYPE );
       begin
         if  FULL_DESIG_TYPE /= TREE_VOID  then
-          DESIG_TYPE := FULL_DESIG_TYPE;
+	DESIG_TYPE := FULL_DESIG_TYPE;
 
-          --  Le full type sera codé plus tard dans la même partie déclarative.
-          --  On initialise seulement son niveau pour permettre la référence
-          --  forward à CELL.use__info.
-          DI( CD_LEVEL, DESIG_TYPE, INTEGER( CODI.CUR_LEVEL ) );
+	--  Le full type sera codé plus tard dans la même partie déclarative.
+	--  On initialise seulement son niveau pour permettre la référence
+	--  forward à CELL.use__info.
+	DI( CD_LEVEL, DESIG_TYPE, INTEGER( CODI.CUR_LEVEL ) );
         end if;
       end		ACCESS_TO_INCOMPLETE;
 		--------------------
@@ -1984,7 +2010,7 @@ put_line( "; CODE_ACCESS_DECL cd_level rempli" );
 
     else
       declare
-        DESIG_NAME	: TREE		:= D( XD_SOURCE_NAME, DESIG_TYPE );
+        DESIG_NAME  : TREE		:= D( XD_SOURCE_NAME, DESIG_TYPE );
         DESIG_STR	:constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, DESIG_NAME ) );
         DESIG_LVL	:constant INTEGER	:= DI( CD_LEVEL, DESIG_TYPE );
 
@@ -2018,14 +2044,13 @@ put_line( "; CODE_ACCESS_DECL cd_level rempli" );
 	----------------
 
 
-
 				--^^^^^^^^^^^^^^^^^--
   procedure			  CODE_SUBTYPE_DECL		( SUBTYPE_DECL :TREE )
   is				---------------------
 
     SUBTYPE_ID		: TREE		:= D( AS_SOURCE_NAME, SUBTYPE_DECL) ;
-    TYPE_SPEC		: TREE		:= D( SM_TYPE_SPEC,	SUBTYPE_ID );
-    SUBTYPE_STR		:constant	STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, SUBTYPE_ID	) );
+    TYPE_SPEC		: TREE		:= D( SM_TYPE_SPEC, SUBTYPE_ID );
+    SUBTYPE_STR		:constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, SUBTYPE_ID	) );
     LVL_STR		:constant STRING	:= IMAGE( CODI.CUR_LEVEL );
   begin
     if  TYPE_SPEC.TY = DN_PRIVATE  or else  TYPE_SPEC.TY = DN_L_PRIVATE  then
@@ -2062,9 +2087,9 @@ put_line( "; CODE_ACCESS_DECL cd_level rempli" );
         INT_RANGE		: TREE		:= D( SM_RANGE, TYPE_SPEC );
         EXP_FST		: TREE		:= D( AS_EXP1, INT_RANGE );
         EXP_LST		: TREE		:= D( AS_EXP2, INT_RANGE );
-        LVL_STR		:constant	STRING	:= IMAGE(	CODI.CUR_LEVEL );
+        LVL_STR		:constant STRING	:= IMAGE( CODI.CUR_LEVEL );
         BASE_TYPE		: TREE		:= D( SM_BASE_TYPE, TYPE_SPEC );
-        BASETYPE_STR	:constant	STRING	:= '_' & PRINT_NAME( D( LX_SYMREP,
+        BASETYPE_STR	:constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP,
 					   D( XD_SOURCE_NAME, BASE_TYPE ) ) );
       begin
         if  CODI.DEBUG  then NEW_LINE; PUT_LINE( tab50 & "; " & SUBTYPE_STR & " INTEGER SUBTYPE INFO" ); end if;
@@ -2098,7 +2123,7 @@ put_line( "; CODE_ACCESS_DECL cd_level rempli" );
       end		INTEGER_SUBTYPE;
 		---------------
 
-    elsif	 TYPE_SPEC.TY = DN_ENUMERATION  then
+    elsif  TYPE_SPEC.TY = DN_ENUMERATION  then
 				-------------------
 				ENUMERATION_SUBTYPE:
       declare
@@ -2106,9 +2131,9 @@ put_line( "; CODE_ACCESS_DECL cd_level rempli" );
         ENUM_RANGE		: TREE		:= D( SM_RANGE, TYPE_SPEC );
         EXP_FST		: TREE		:= D( AS_EXP1, ENUM_RANGE );
         EXP_LST		: TREE		:= D( AS_EXP2, ENUM_RANGE );
-        LVL_STR		:constant	STRING	:= IMAGE(	CODI.CUR_LEVEL );
+        LVL_STR		:constant STRING	:= IMAGE( CODI.CUR_LEVEL );
         BASE_TYPE		: TREE		:= D( SM_BASE_TYPE, TYPE_SPEC );
-        BASETYPE_STR	:constant	STRING	:= '_' & PRINT_NAME( D( LX_SYMREP,
+        BASETYPE_STR	:constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP,
 					   D( XD_SOURCE_NAME, BASE_TYPE ) ) );
       begin
 
@@ -2156,19 +2181,12 @@ put_line( "; CODE_ACCESS_DECL cd_level rempli" );
       -- Ne surtout pas chercher AS_EXP1/AS_EXP2.
       if CODI.DEBUG then
         PUT_LINE( "; CODE_SUBTYPE_DECL : FLOAT subtype without range "
-                & SUBTYPE_STR & " treated as alias" );
+	      & SUBTYPE_STR & " treated as alias" );
       end if;
 
       -- Minimalement : le type est connu/compilé, mais aucun patron FST/LST
       -- propre n'est généré.
       DB( CD_COMPILED, TYPE_SPEC, TRUE );
-
-      -- Option utile si CD_IMPL_SIZE n'est pas posé par la sémantique :
---      if BASE_TYPE /= TREE_VOID and then BASE_TYPE.TY = DN_FLOAT then
---        if HAS_ATTR( CD_IMPL_SIZE, BASE_TYPE ) then   -- pseudo, selon tes utilitaires
---          DI( CD_IMPL_SIZE, TYPE_SPEC, DI( CD_IMPL_SIZE, BASE_TYPE ) );
---        end if;
---      end if;
 
       return;
     end if;
@@ -2223,9 +2241,9 @@ put_line( "; CODE_ACCESS_DECL cd_level rempli" );
 
     elsif  TYPE_SPEC.TY = DN_CONSTRAINED_ARRAY
     then
-      PUT_LINE( SUBTYPE_STR &	" = '" & SUBTYPE_STR & "'" );
+      PUT_LINE( SUBTYPE_STR & " = '" & SUBTYPE_STR & "'" );
       PUT( "namespace " & SUBTYPE_STR );
-      if	CODI.DEBUG  then PUT( tab50 &	"; " & SUBTYPE_STR & " CONSTRAINED ARRAY SUBTYPE INFO" ); end if;
+      if  CODI.DEBUG  then PUT( tab50 & "; " & SUBTYPE_STR & " CONSTRAINED ARRAY SUBTYPE INFO" ); end if;
       NEW_LINE;
 
       PROCESS_CONSTRAINED_ARRAY_TYPE_SPEC( TYPE_SPEC, D( AS_CONSTRAINT, D( AS_SUBTYPE_INDICATION, SUBTYPE_DECL ) ) );
