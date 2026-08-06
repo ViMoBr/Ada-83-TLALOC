@@ -11,7 +11,7 @@ use  TEXT_IO;
 	package body			IDL
 is					---
 
-  DEBUG		: BOOLEAN		:= FALSE;								--| POSITIONNE PAR LE "PRAGMA DEBUG;" (VOIR PRA_WALK)
+  DEBUG_IDL	: BOOLEAN		:= TRUE;								--| POSITIONNE PAR LE "PRAGMA DEBUG;" (VOIR PRA_WALK)
 
   package INT_IO	is new INTEGER_IO ( INTEGER );							--| POUR L'IO D'ENTIERS
 

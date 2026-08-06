@@ -182,6 +182,9 @@ is			----------
 
   T_SEQ		: SEQ_TYPE;
 begin
+  if  DEBUG_IDL  then PUT_LINE( "@AP0 S.FIRST=" & NODE_REP( S.FIRST ) & " S.NEXT=" & NODE_REP( S.NEXT )
+	& " T=" & NODE_REP( T ) );
+  end if;
   if S.FIRST = TREE_NIL then										--| LISTE VIDE
     return ( FIRST=> T , NEXT=> TREE_NIL );								--| SEQUENCE T EN TETE RIEN DERRIERE
 
@@ -190,25 +193,36 @@ begin
     DABS( 1, T_SEQ.FIRST, S.FIRST );									--| L'ELEMENT DE S EST EN TETE
     DABS( 2, T_SEQ.FIRST, T );									--| T SUIT EN FIN
     T_SEQ.NEXT := T_SEQ.FIRST;									--| SEQUENCE TETE ET SUITE CONFONDUES
+    if  DEBUG_IDL  then PUT_LINE( "@APe liste creee =" & NODE_REP( T_SEQ.FIRST ) ); end if;
 
   else												--| S EST UNE LISTE A PLUS D'UN ELEMENT
     declare
       T_TAIL	: TREE		:= S.NEXT;
       T_END	: TREE;
     begin
+      if  DEBUG_IDL  then PUT_LINE( "@AP1 T_TAIL=" & NODE_REP( T_TAIL ) ); end if;
       if S.NEXT = TREE_NIL then									--| LA SEQUENCE S N'A QU'UNE TETE
         T_TAIL := S.FIRST;										--| LA QUEUE EST LE DEBUT
       end if;
       loop
+        if  DEBUG_IDL  then PUT_LINE( "@AP2 lecture DABS 2 de " & NODE_REP( T_TAIL ) ); end if;
         T_END := DABS( 2, T_TAIL );									--| TREE DE FIN DE S
+        if  DEBUG_IDL  then PUT_LINE( "@AP3 T_END=" & NODE_REP( T_END ) ); end if;
         exit when T_END.TY /= DN_LIST;									--| SORTIE EN FIN DE LISTE (SIMPLE POINTEUR A UN ELEMENT)
         T_TAIL := T_END;										--| SUIVRE LA LISTE
       end loop;
+      if  DEBUG_IDL  then
+        PUT_LINE( "@AP4 sortie boucle T_TAIL=" & NODE_REP( T_TAIL )
+	& " T_END=" & NODE_REP( T_END ) );
+      end if;
       T_SEQ.FIRST := S.FIRST;
       T_SEQ.NEXT := MAKE( DN_LIST );									--| FABRIQUER UN ELEMENT DE LISTE
+      if  DEBUG_IDL  then PUT_LINE( "@AP5 nouvel elmt=" & NODE_REP( T_SEQ.NEXT ) ); end if;
       DABS( 1, T_SEQ.NEXT, T_END );									--| TETE DE LISTE
       DABS( 2, T_SEQ.NEXT, T );									--| QUEUE DE LISTE
+      if  DEBUG_IDL  then PUT_LINE( "@AP6 ecritures 1-2 faites" ); end if;
       DABS( 2, T_TAIL, T_SEQ.NEXT );									--| CHAINAGE
+      if  DEBUG_IDL  then PUT_LINE( "@AP7 chainage fait" ); end if;
     end;
   end if;
 

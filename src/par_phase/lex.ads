@@ -57,7 +57,8 @@ is					---
   F_COL		: NATURAL;									--| POSITION DU PREMIER CARACTERE DU LEXEME
   E_COL		: NATURAL;									--| POSITION DU DERNIER CARACTERE DU LEXEME
   LTYPE		: LEX_TYPE;									--| TYPE DU LEXEME
-   
+
+  LEX_DEBUG	: BOOLEAN		:= TRUE;
     
   procedure LEX_SCAN;
   function  TOKEN_STRING				return STRING;

@@ -946,3 +946,45 @@ instances sont expansées sur site.
     fait INC_LEVEL, toute declaration en bloc est au-dessus des
     parametres. Posee trop haut, une garde interdit aux autres
     mecanismes ce qui leur est permis. (session 1er aout)
+    
+ 126. **`namespace X` fasmg ROUVRE un namespace existant.** L'ancien " namespace _STRING" des composants
+    de record greffait _COMP_SIZ/_FST_1/_LST_1 DANS STANDARD._STRING, aux offsets exacts du layout
+    contraint : le patron pollue etait un faux descripteur auto-coherent qui amortissait TOUS les
+    __u := patron fautifs. Symptome de de-greffe : les lecteurs passent de "presque juste" (255) au
+    bruit (segfault). Tout namespace emis doit porter un nom neuf (_<comp>__type, ANON_*).
+
+127. **CD_COMPILED survit au rechargement DCL** (spec compilee puis corps) : il signifie "compile un
+    jour", jamais "label atteignable dans CE FINC". Aucune emission de bloc atteignable ne doit etre
+    gardee par lui (generalisation du n 46 aux composants ; l'elab_spec du corps re-emet TOUT).
+
+128. **La famille XD_SOURCE_NAME -> patron est close a SIX consommateurs assainis** : USEINFO record,
+    CODE_INDEXED direct, CODE_SLICE prefixe selecte, SELARG composant, SELARG nom etendu, init d'objet
+    non contraint par tranche/composant. Discriminant unique : D( SM_TYPE_SPEC, XD_SOURCE_NAME(TS) )
+    /= TS => anonyme => bloc elabore (_<obj>__type / _<comp>__type), jamais le patron. Sorties
+    legitimes du grep '_STRING.use__info' d'un FINC : le doublet de tete du patron dans _STANDRD, les
+    dead stores de classe B (pre-init ecrasee par "La ,8 / Sa __u" en fin d'elaboration), les formels
+    non contraints (info portee par l'ACTUEL). Tout le reste est un bug.
+
+129. **COVAR_ALLOCATE sur un TYPE_SPEC non contraint lit SIZ = -1 du patron** : toute branche d'init
+    de COMPILE_ARRAY_VAR appelee avec TYPE_SPEC.TY = DN_ARRAY doit passer par le modele doublet
+    (CODE_ARRAY_OPERAND / CODE_SLICE source + __u partage + LId pour la longueur), jamais par
+    PUT_TYPE_INFO_PREFIX.SIZ. Restent au refus bruyant : objet entier, qualifie non-agregat
+    (remede sur etagere : trois lignes, cf. commit 8 au journal).
+
+130. **Fenetre d'un classifieur de FINC = le segment d'elaboration**, jamais N lignes fixes : la
+    re-ecriture "from function result" de la classe B arrive apres les centaines de lignes de l'init.
+    Borner au prochain "var elab" / "begin:" / "PRO". (95% de faux VIVANTS avec la fenetre fixe.)
+
+131. **Le harnais d'un temoin ne doit pas dependre de la fonctionnalite sous test** (CHECK et verdict
+    de REC_ARR_TEST impriment par PUT successifs, sans "&"). Corollaire : le couple longueur/contenu
+    (tests 36/37) discrimine doublet sain / base non recalee -- concevoir les paires exprès.
+
+132. **L'indentation ne dit pas l'imbrication** : CODE_ARRAY_OPERAND semblait niché ("\t  procedure")
+    mais etait au niveau module -- une ligne de spec a suffi a l'exporter. Verifier le "end" suivant
+    avant de planifier une migration.
+
+133. **Forensique memoire** : data = litteral + qwords 0x00D9xxxx adjacents = zone constante (le
+    litteral suivi des CELLULES data_ptr/info_ptr voisines). x/4wx sur l'info : SIZ = 0xFFFFFFFF
+    signe le patron nu ; autre bruit = bloc ANON non rempli ou ecrase.
+
+134. **Tabulations sed grep** :Dans une classe de caractères, \t n'est une tabulation que pour GNU sed, pas pour grep : [ \t] y vaut {espace, antislash, t}. Symptôme vicieux : un pipeline sed+grep où l'extraction marche et le test échoue — le classifieur v1/v2 flaggait 100% VIVANT en silence. Toujours [[:space:]], et toujours étalonner un juge sur un cas MORT connu avant de croire ses VIVANT.

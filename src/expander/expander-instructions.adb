@@ -797,9 +797,47 @@ separate ( EXPANDER )
 		      end if;
 	      PUT_LINE( tab & "Sa" & tab & LVL_STR & ", " & ANON & "_disp" );
 
-	      PUT( tab & "La " & IMAGE( DI( CD_LEVEL, ACT_TYPE ) ) & ", " );
-	      CODI.REGIONS_PATH( TYPE_NAME );
-	      PUT_LINE( TYPE_NAME_STR & ".use__info" );
+--	      PUT( tab & "La " & IMAGE( DI( CD_LEVEL, ACT_TYPE ) ) & ", " );
+--	      CODI.REGIONS_PATH( TYPE_NAME );
+--	      PUT_LINE( TYPE_NAME_STR & ".use__info" );
+	      declare
+	        SEL_DEFN	: TREE	:= TREE_VOID;
+	        IS_ANON_COMP	: BOOLEAN	:= FALSE;
+	      begin
+	        if  ACT_PRM.TY = DN_SELECTED  then
+		SEL_DEFN := D( SM_DEFN, D( AS_DESIGNATOR, ACT_PRM ) );
+		IS_ANON_COMP := SEL_DEFN.TY = DN_COMPONENT_ID
+			and then  ACT_TYPE.TY = DN_CONSTRAINED_ARRAY
+			and then  D( SM_TYPE_SPEC, TYPE_NAME ) /= ACT_TYPE;
+	        end if;
+
+	        if  IS_ANON_COMP  then
+		-- Segfault OPEN/GET_LINE du bootstrap (aout 2026) : composant de
+		-- sous-type tableau ANONYME en actual -- XD_SOURCE_NAME remonte au
+		-- patron NON contraint (SIZ=-1, pas de _FST/_LST), historiquement
+		-- amorti par la greffe " namespace _STRING" supprimee au correctif
+		-- record.  Viser le bloc _<comp>__type ELABORE du record (meme
+		-- famille que CODE_INDEXED/CODE_SLICE) ; niveau = CD_LEVEL pose
+		-- par le producteur.  Type NOMME / record / .all : chemin
+		-- historique inchange ci-dessous.
+		PUT( tab & "La " & IMAGE( DI( CD_LEVEL, ACT_TYPE ) ) & ", " );
+		CODI.REGIONS_PATH( SEL_DEFN );
+		PUT_LINE( '_' & PRINT_NAME( D( LX_SYMREP, SEL_DEFN ) ) & "__type.use__info" );
+	        elsif  SEL_DEFN /= TREE_VOID
+	        and then  ( SEL_DEFN.TY = DN_VARIABLE_ID  or else  SEL_DEFN.TY = DN_CONSTANT_ID )
+	        then
+		-- Nom ETENDU d'objet (IDL.LIB_PATH, classif 6 aout) : reprendre le
+		-- __u de l'OBJET (son info elaboree), jamais le patron du type.
+		PUT( tab & "La " & IMAGE( DI( CD_LEVEL, SEL_DEFN ) ) & ", " );
+		CODI.REGIONS_PATH( SEL_DEFN );
+		PUT_LINE( PRINT_NAME( D( LX_SYMREP, SEL_DEFN ) ) & "__u" );
+
+	        else
+		PUT( tab & "La " & IMAGE( DI( CD_LEVEL, ACT_TYPE ) ) & ", " );
+		CODI.REGIONS_PATH( TYPE_NAME );
+		PUT_LINE( TYPE_NAME_STR & ".use__info" );
+	        end if;
+	      end;
 	      PUT_LINE( tab & "Sa" & tab & LVL_STR & ", " & ANON & "__u" );
 
 	      PUT_LINE( tab & "LVA " & LVL_STR & ", " & ANON & "_disp" );

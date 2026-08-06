@@ -1175,3 +1175,54 @@ l'etat final) ; le dump DIANA du mainteneur a tranche DEUX impasses
 (SM_ADDRESS pose ; XD_REGION bloc) — le demander TOT. Patchs :
 expander-declarations.adb SEUL (C7 + C8). Temoins verses au filet :
 INSTF1, ADDR_OV1.
+
+### Session 5-6 aout 2026 -- la famille du patron non contraint (8 commits, temoin REC_ARR_TEST)
+
+Point de depart : anomalie spec/corps du type-info de LEX.LINE_OF_SOURCE (bloc imbrique du composant
+BDY : STRING(1..MAX_STRING) absent au corps, USEINFO pointant STANDARD._STRING). Point d'arrivee :
+null_prog.adb passe lexeur et debut de parseur sur le bootstrappe (STORE_SYM correct, DN_PROCEDURE_SPEC
+construit) ; reste un CONSTRAINT_ERROR au scan de BEGIN -- chantier de la prochaine session.
+
+**Le mecanisme central, en une phrase** : l'ancien code de composant de record emettait ` namespace
+_STRING`, qui en fasmg ROUVRE le namespace STANDARD._STRING et y greffe _COMP_SIZ@+4/_FST_1@+8/_LST_1@+12
+-- exactement le layout contraint ; le patron pollue devenait un faux descripteur auto-coherent
+(FST=1/LST=255, les bornes de BDY lui-meme), et TOUS les emetteurs fautifs de __u := patron marchaient
+par accident. La de-greffe (commit 1) a transforme leurs lectures en bruit (longueurs ~4 Mo), d'ou la
+cascade : "concatenation cassee" -> segfault OPEN -> chasse aux ecrivains -> 6 consommateurs assainis.
+
+**Les 8 commits** :
+1. types_decls / composant tableau anonyme de record : bloc LOCAL _<comp>__type emis INDEPENDAMMENT de
+   CD_COMPILED (l'attribut revient TRUE au corps via rechargement DCL -- piege n 46 generalise), nomme
+   par composant (collision de deux anonymes du meme type de base eliminee), USEINFO pointe le local.
+2. CODE_INDEXED : discriminant IS_ANON_COMP (identite D(SM_TYPE_SPEC, XD_SOURCE_NAME) /= TYPE_SPEC) +
+   helper PUT_INFO_DIRECT factorisant les 4 emissions (checks FST/LST, offset, COMP_SIZ) ; producteur
+   aligne sur le meme test + CD_LEVEL pose sur le sous-type anonyme (records imbriques corrects).
+3. CODE_ARRAY_OPERAND : garde litteral-seulement elargi a BORNE_RE_EMISSIBLE (litteral, CONSTANTE,
+   nombre nomme -- immuables donc re-emissibles) ; discriminant/variable restent bruyants.
+4. CODE_SLICE prefixe DN_SELECTED : recalage @data + (FIRST(tranche)-FIRST(prefixe))*comp_size, avec
+   FIRST(prefixe) LU au bloc elabore (_<comp>__type / _<TYPE>) -- zero re-evaluation, discriminants
+   couverts par construction. Temoin 37 rouge->vert (le couple 36/37 longueur/contenu a discrimine).
+5. SELARG actual composant : __u := _<comp>__type.use__info (meme discriminant que 2 et 4).
+6. COMPILE_ARRAY_VAR, objet NON CONTRAINT initialise par TRANCHE (la forme NOM_TEXTE, cause directe du
+   segfault) : le doublet source de CODE_SLICE (info normalisee 1..len) fournit __u, la longueur (idiome
+   LId du "&") et la source du BLKMOV -- plus jamais SIZ=-1 du patron. Formes soeurs (objet entier,
+   composant, qualifie) posees en refus bruyant.
+7. SELARG nom ETENDU d'objet (IDL.LIB_PATH) : __u := le __u de l'OBJET lui-meme.
+8. Garde "composant" levee par FIX_PRE (ITEM_NAME := BLTN_TEXT_ARRAY(OP_NAME)) : CODE_ARRAY_OPERAND
+   etait DEJA au niveau module (indentation trompeuse) -- exporte au spec d'EXPRESSIONS en UNE ligne,
+   la branche composant reprend le modele tranche a l'identique. Le normalisateur "expression tableau
+   -> doublet" est desormais un SERVICE.
+
+**Methode retenue (a reutiliser)** : temoin auto-jugeant AVANT correctif (rouge->vert = preuve), harnais
+sans dependance a la fonctionnalite sous test, matrice de triage section->site, recensement des emetteurs
+DANS LES SOURCES DE L'EXPANDER (seul ecrivain au monde) plutot que dans les FINC, classifieur v2
+MORT/VIVANT (fenetre = segment d'elaboration), diff FINC avant/apres comme detecteur de collateral,
+forensique gdb (x/4wx info : SIZ=-1 signe le patron ; data en zone constante = litteral + cellules).
+
+**Observations pour la prochaine session (CONSTRAINT_ERROR au LEX_SCAN{BEGIN})** : dans la trace, les
+attributs NON renseignes du DN_PROCEDURE_ID affichent tous [DN_ALTERNATIVE_PRAGMA,P357,L86] -- y compris
+CD_LEVEL qui devrait etre un entier. Remplissage par defaut du dumper ou vraie contamination : a trancher
+en premier.
+
+**Etat** : REC_ARR_TEST 53/53 (2 runs identiques), filet vert, bootstrap lexe/parse null_prog jusqu'a IS.
+

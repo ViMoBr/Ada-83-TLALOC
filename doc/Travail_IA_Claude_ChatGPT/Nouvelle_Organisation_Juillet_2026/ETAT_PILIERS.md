@@ -1,6 +1,6 @@
 # ÉTAT DES PILIERS — tableau de bord TLALOC
 
-**Dernière mise à jour : 1 août 2026**
+**Dernière mise à jour : 6 août 2026**
 
 **Régime** : ce fichier est RÉÉCRIT à chaque clôture ; il est la seule source de
 vérité sur « où on en est ». Le récit des sessions est dans JOURNAL_SESSIONS.md,
@@ -291,9 +291,27 @@ La sémantique n'est protégée que par les programmes-témoins à sortie attend
   PREDEF_NAME de STANDARD, renommage de paquetage (garde avant
   namespace).
 
-## Prochaine séquence (arrêtée le 1/08 — bilan recensement)
+Vigilance (etat au 6 aout, apres commits 1-8) :
 
- retour aux segfaults sur FINC assainis après séquence C1-C8 "expander bruyant".
+  - INDARG (element T(I) en actual, dette n 112) et actual AGREGAT vers formel non contraint :
+    memes suspects patron, a auditer au classifieur puis remede CODE_ARRAY_OPERAND.
+  - Gardes bruyantes restantes de COMPILE_ARRAY_VAR (objet entier, qualifie non-agregat sur non
+    contraint) : remede sur etagere (3 lignes, modele commit 8).
+  - Tableaux de tableaux : temoin TBL(I)(J) a creer avant tout chantier (la forme n'est PAS au filet).
+  - T'SIZE via use__info sur type non contraint (expressions ~2956) : LECTEUR de SIZ=-1, classe C.
+  - Dead stores classe B (pre-init __u := patron ecrasee) : laids, benins -- nettoyage de confort le
+    jour de PUT_USE_INFO_REF.
+  - Chantier de cloture : CODI.PUT_USE_INFO_REF (le point unique des __u), completant le triptyque
+    TYPE_INFO_STR (noms, n 99) / CODE_ARRAY_OPERAND (doublets, commit 8) / PUT_USE_INFO_REF (__u).
+  - Branches soeurs de CODE_ARRAY_OPERAND (retour de fonction, acces designe Q1b) vers le remede
+    durable "__u -> bloc elabore" au lieu de re-evaluer.
+
+
+## Prochaine séquence (arrêtée le 6/08 — bilan recensement)
+
+  - CONSTRAINT_ERROR du bootstrappe au LEX_SCAN{BEGIN} de null_prog (prochaine session ; premiere
+    question : les attributs non renseignes affiches [DN_ALTERNATIVE_PRAGMA,P357,L86], dumper ou
+    contamination ?).
 
 1. Rédiger la note de modèle d'exécution du pilier retenu AVANT de coder.
 2. Filet complet + tag git à chaque clôture.

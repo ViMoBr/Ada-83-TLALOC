@@ -13,8 +13,8 @@ is					---
   CHAR_CONTEXT		: BOOLEAN := TRUE;
   ATTRIBUTE_CONTEXT		: BOOLEAN := FALSE;
    
-  type TOKEN_TYPE		is ( NIL, IDENT, PUNCT, QUOTE, INT, DEC, CHAR, ERROR );		--| ULEX TYPE BRUT A LA LECTURE
-  TEXT			: STRING(1 .. 255);						--| TAMPON TEXTE DE L'ULEX
+  type TOKEN_TYPE		is ( NIL, IDENT, PUNCT, QUOTE, INT, DEC, CHAR, ERROR );				--| ULEX TYPE BRUT A LA LECTURE
+  TEXT			: STRING( 1 .. 255 );							--| TAMPON TEXTE DE L'ULEX
   TOKEN_LENGTH		: NATURAL;
    
   HASH_SIZE		: constant INTEGER  := 311;
@@ -92,6 +92,13 @@ begin
   end if;
       
   TEXT( 1 ) := CHR;
+
+  if  LEX_DEBUG  then
+    NEW_LINE;
+    PUT( "LEX line<" ); PUT( SL.BDY( 1 .. LINE_LENGTH ) ); PUT( '>' ); PUT( INTEGER'IMAGE( W_COL ) ); NEW_LINE;
+    PUT( '[' ); PUT( CHR );
+  end if;
+
   TOKEN_LENGTH := 1;
   TOK_TYP := PUNCT;									--| PAR DEFAUT
   W_COL := W_COL + 1;
@@ -149,6 +156,7 @@ begin
   end case;
       
 <<SCAN_IDENT>>
+  if  LEX_DEBUG  then PUT( CHR ); end if;
   case CHR is
   when '_' =>
     goto SCAN_IDENT_UNDERLINE;
@@ -157,10 +165,15 @@ begin
   when 'a' .. 'z' =>
     CHR := CHARACTER'VAL( CHARACTER'POS( CHR ) - CASE_MAGIC );
   when others =>
+    if  LEX_DEBUG  then PUT( '[' );
+      PUT( "LEX line>" ); PUT( SL.BDY( 1 .. LINE_LENGTH ) ); PUT( '<' ); PUT( INTEGER'IMAGE( W_COL ) ); NEW_LINE;
+    end if;
+
     goto ACCEPT_TOKEN;
   end case;
   TOKEN_LENGTH := TOKEN_LENGTH + 1;
   TEXT( TOKEN_LENGTH ) := CHR;
+
   W_COL := W_COL + 1;
   if W_COL <= LINE_LENGTH then CHR := SL.BDY( W_COL );
   else CHR:=' '; end if;
@@ -619,7 +632,7 @@ begin
       if ATTRIBUTE_CONTEXT and then TOK_TYP = IDENT then							--| IDENTIFICATEUR ATTRIBUT
         LTYPE := LT_IDENTIFIER;									--| ULEX IDENTIFICATEUR
       else											--| HORS CONTEXTE D' ATTRIBUT
-        LTYPE := HASH_SEARCH( TEXT( 1..TOK_LEN ) );							--| CHERCHER LE LEX_TYPE DE MOT CLE EVENTUEL
+        LTYPE := HASH_SEARCH( TEXT( 1 .. TOK_LEN ) );							--| CHERCHER LE LEX_TYPE DE MOT CLE EVENTUEL
       end if;
       if LTYPE = LT_IDENTIFIER then									--| IDENTIFICATEUR
         if TOK_TYP = IDENT then									--| TYPE BRUT IDENTIFICATEUR
@@ -632,7 +645,9 @@ begin
   end if;
   
   ATTRIBUTE_CONTEXT := ( LTYPE = LT_APOSTROPHE );								--| APOSTROPHE PASSER EN CONTEXTE IDENTIFICATEUR ATTRIBUT
-         
+
+  if  LEX_DEBUG  then NEW_LINE; PUT_LINE( "LEX_SCAN{" & TEXT( 1 .. TOK_LEN ) & '}' ); end if;
+
 end	LEX_SCAN;
 	--------
 

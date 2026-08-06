@@ -22,8 +22,8 @@ is
   SOURCEPOS		: TREE;									--| POINTEUR VERS UN NOEUD POSITION SOURCE
   TOKENSYM		: LEX_TYPE;								--| BYTE WITH TER/NONTER REP
 
-  DEBUG_PARSE		: BOOLEAN		:= FALSE;							--| PRINT PARSE TREE WHILE PARSING
-  DEBUG_SEM		: BOOLEAN		:= FALSE;							--| PRINT SEMANTICS WHILE PARSING
+  DEBUG_PARSE		: BOOLEAN		:= TRUE;							--| PRINT PARSE TREE WHILE PARSING
+  DEBUG_SEM		: BOOLEAN		:= TRUE;							--| PRINT SEMANTICS WHILE PARSING
 
 
 		--| PILE POUR ACTIONS SEMANTIQUES CONSTRUCTIVES DE L ANALYSE SYNTAXIQUE
@@ -94,6 +94,7 @@ is
     begin
       LINE_COUNT := LINE_COUNT + 1;									--| ON VA PRENDRE UNE LIGNE DE PLUS
       GET_LINE( IFILE, SLINE.BDY, SLINE.LEN );
+      if  LEX.LEX_DEBUG  then PUT( "Source Line={" ); PUT( SLINE.BDY( 1 .. SLINE.LEN ) ); PUT( '}' ); NEW_LINE; end if;
       LAST := SLINE.LEN;
       LEX.COL := 0;											--| POUR LE LEXEUR RETOUR COLONNE 0
 
@@ -118,12 +119,20 @@ is
       GET_SOURCE_LINE;
 
       LEX_SCAN;											--| IDENTIFIER LE LEXEME OU UNE FIN DE LIGNE
+      if  DEBUG_PARSE  then PUT_LINE( "@GT1 LTYPE=" & LEX_TYPE'IMAGE( LTYPE ) ); end if;
 
       if  LTYPE /= LT_END_MARK  then
         SOURCE_LINE := MAKE( DN_SOURCELINE );								--| FABRIQUER UN NOEUD LIGNE SOURCE
+        if  DEBUG_PARSE  then
+	PUT_LINE( "@GT2 LINE_COUNT=" & INTEGER'IMAGE( LINE_COUNT ) );
+	NEW_LINE; PUT( "@GT2 noeud frais = " ); PRINT_NODE( SOURCE_LINE );
+        end if;
         DI  ( XD_NUMBER, SOURCE_LINE, LINE_COUNT );							--| METTRE LE NUMERO DE LIGNE DANS L ATTRIBUT XD_NUMBER DE CE NOEUD
+        if  DEBUG_PARSE  then NEW_LINE; PUT( "@GT2a apres DI = " ); PRINT_NODE( SOURCE_LINE ); end if;
         LIST( SOURCE_LINE, (TREE_NIL,TREE_NIL) );								--| POST FIXER LE NOEUD PAR UNE SEQUENCE VIDE
+        if  DEBUG_PARSE  then NEW_LINE; PUT( "@GT2b apres LIST = " ); PRINT_NODE( SOURCE_LINE ); end if;
         SOURCE_LIST := APPEND( SOURCE_LIST, SOURCE_LINE );							--| AJOUTER LE NOEUD LIGNE SOURCE A LA LISTE DES LIGNES SOURCES
+        if  DEBUG_PARSE  then PUT_LINE( "@GT3" ); end if;
 
         if  LAST = MAX_STRING  and then  not END_OF_LINE( IFILE )  then					--| ON EST SORTI SUR BUTEE EN FIN DE TAMPON
 	ERROR( MAKE_SOURCE_POSITION( SOURCE_LINE, SRCCOL_IDX( MAX_STRING ) ),
@@ -135,7 +144,9 @@ is
 		--------------------
 
     if  LTYPE /= LT_END_MARK  then									--| ON EST SORTI AVEC UNE UNITE LEXICALE NON FIN
+      if  DEBUG_PARSE  then PUT_LINE( "@GT3b F_COL=" & INTEGER'IMAGE( F_COL ) ); end if;
       SOURCEPOS := MAKE_SOURCE_POSITION( SOURCE_LINE, SRCCOL_IDX( F_COL ) );					--| FABRIQUER UN NOEUD POSITION SOURCE EN COLONNE DEBUT ET AVEC REFERENCE AU NOEUD LIGNE SOURCE
+      if  DEBUG_PARSE  then PUT_LINE( "@GT4" ); end if;
     end if;
     TOKENSYM := LTYPE;										--| TYPE DU LEXEME
 
@@ -668,6 +679,10 @@ begin
 
     loop
       AP := GRMR_TBL.GRMR.ST_TBL( STATE );
+      if  DEBUG_PARSE  then
+        PUT_LINE( "@PC1 STATE=" & INTEGER'IMAGE( STATE ) & " AP=" & INTEGER'IMAGE( AP )
+	& " TOK=" & INTEGER'IMAGE( LEX_TYPE'POS( TOKENSYM ) ) );
+      end if;
 
       if  AP <= 0  then
         ACTION := AP;
@@ -680,6 +695,8 @@ begin
         end loop;
         ACTION := INTEGER( GRMR_TBL.GRMR.AC_TBL( AP ) );
       end if;
+
+      if  DEBUG_PARSE  then PUT_LINE( "@PC2 ACTION=" & INTEGER'IMAGE( ACTION ) ); end if;
 
       if  ACTION > 0  then										-- CAN'T BE SEMANTICS SINCE DIDN'T INDIRECT
 
@@ -743,6 +760,7 @@ begin
 
 	if  ACTION > -10000  then  -- TRANSFER TO SEMANTIC ACTION TABLE
 	  AP := - ACTION; -- TRANSFER IN TABLE
+	  if  DEBUG_PARSE  then PUT_LINE( "@PC3 XFER AP=" & INTEGER'IMAGE( AP ) ); end if;
 	  loop
 	    ACTION := INTEGER( GRMR_TBL.GRMR.AC_TBL( AP ) );
 	    exit when  ACTION <= 0;
@@ -755,6 +773,10 @@ begin
 	  ACTION	    :=  - ACTION - 10000;
 	  NBR_OF_SYLS := ACTION/1000;
 	  ACTION	    := ACTION mod 1000; -- I.E., RULE
+	  if  DEBUG_PARSE  then
+	    PUT_LINE( "@PC4 RED NBR=" & INTEGER'IMAGE( NBR_OF_SYLS ) & " RULE=" & INTEGER'IMAGE( ACTION )
+		& " SP=" & INTEGER'IMAGE( SP ) & " SSITOP=" & INTEGER'IMAGE( SSITOP ) );
+	  end if;
 	  SP := SP - NBR_OF_SYLS; -- POP THE STACK
 	  STATE := STACK( SP ).STATE;
 	  SEMSTAK( SSITOP ).SPOS := STACK( SP+1 ).SRCPOS;
@@ -781,6 +803,7 @@ begin
 	    exit when  INTEGER( ASYM ) = ACTION;
 	  end loop;
 	  STATE := INTEGER( GRMR_TBL.GRMR.AC_TBL( AP ) );
+	  if  DEBUG_PARSE  then PUT_LINE( "@PC5 GOTO STATE=" & INTEGER'IMAGE( STATE ) ); end if;
 	  SP := SP + 1;
 	  STACK( SP ).STATE := STATE;
 	  if  NBR_OF_SYLS = 0  then

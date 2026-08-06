@@ -299,9 +299,9 @@ package body PRA_WALK is
         GET_ARGUMENT_NAME (USED_NAME_ID, ASSOC_LIST, ASSOC_EXP, NEW_ASSOC_LIST, ARGUMENT_ID_LIST);
         case LIST_ARGUMENTS'VAL (DI (XD_POS, D (SM_DEFN, ASSOC_EXP))) is
 	when OFF =>
-	  IDL.DEBUG := False;
+	  IDL.DEBUG_IDL := FALSE;
 	when ON =>
-	  IDL.DEBUG := True;
+	  IDL.DEBUG_IDL := TRUE;
         end case;
 
     end case;

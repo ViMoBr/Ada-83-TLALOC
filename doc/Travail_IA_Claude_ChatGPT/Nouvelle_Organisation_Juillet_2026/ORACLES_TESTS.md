@@ -502,3 +502,28 @@ copie, 7.2 le detecterait).
   scalaire-sur-composite ; equation cross-niveau ; clause de
   SOUS-PROGRAMME (chantier separe) ; tailles scalaires differentes
   (tolere-non-asserte).
+  
+### REC_ARR_TEST (composants tableau de record + concatenation, 5-6 aout 2026, 53 assertions)
+
+Trois unites : REC_PACK.ADS (LIGNE miroir de LINE_OF_SOURCE avec borne en constante nommee, PAIRE a
+deux sous-types anonymes du meme type de base, composants nommes S4/TVEC, variables package PATHV/NOMV),
+REC_PACK.ADB (indexations via record-PARAMETRE), REC_ARR_TEST.ADB. L'ordre de compilation EST le test
+(spec -> corps -> main = rechargement DCL). Harnais sans "&" (fonctionnalite sous test).
+Sections : S1 composant inter-unites ; S2 record local niveau>0 (CD_LEVEL) ; S3 double anonyme meme
+base (collision) ; S4 composants nommes (non-regression) ; S5 concatenation 15 formes (19 = "&" en
+actual, miroir OPEN) ; S6/S7 tranche et attributs de composant (ex-sentinelles, vertes) ; S8 formes
+ADA_COMP (package vars, formel->formel, bornes dynamiques, CREATE/OPEN reels -> fichiers ././tmp1,
+././tmp2 a purger) ; S9 objet non contraint := tranche (la forme NOM_TEXTE).
+Verdict greppable "REC_ARR_TEST PASSE", RESULTAT :  53 OK,   0 ECHECS ; DEUX executions identiques
+(piege n 67). Gardien permanent : a repasser apres toute retouche de CODE_RECORD_TYPE_DECL,
+PROCESS_CONSTRAINED_ARRAY_TYPE_SPEC, CODE_INDEXED, CODE_SLICE, SELARG, COMPILE_ARRAY_VAR ou des
+operandes du "&". La matrice de triage section->site est dans TEMOIN_REC_ARR_ORACLE.txt du depot.
+
+### Oracle permanent : classifieur use__info v2 (grep du patron)
+
+Sur tous les FINC regeneres : chaque "La ..., STANDARD._STRING.use__info" est classe MORT (le __u vise
+est re-ecrit avant la fin de son segment d'elaboration -- borne au prochain 'var elab'/'begin:'/'PRO')
+ou VIVANT. Etat de reference apres la session du 5-6 aout : ZERO vivant. Tout vivant nouveau est un
+bug par definition (piege NN+2 : les sorties legitimes sont toutes MORTES ou hors motif). Etendre au
+besoin le motif aux autres bases non contraintes du corpus.
+

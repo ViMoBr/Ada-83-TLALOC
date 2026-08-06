@@ -1082,6 +1082,9 @@ is
 	      else
       -- Repli defensif : expression qualifiee non-agregat retournant
       -- un doublet tableau ; on copie les donnees vers la destination.
+	        if  TYPE_SPEC.TY = DN_ARRAY  then
+	          CODI.TROU( "COMPILE_ARRAY_VAR init NON CONTRAINTE par qualifie non-agregat (remede : modele tranche, commit 6)", INIT_EXP );
+	        end if;
 	        COVAR_ALLOCATE;
 	        PUT_LINE( tab & "La" & tab & LVL_STR & ", " & VC_STR & "_disp" );
 	        PUT( tab & "Ld" & tab & IMAGE( TYPE_LEVEL ) & ", " );
@@ -1112,15 +1115,49 @@ is
 	  -- contrairement au repli defensif de la branche DN_QUALIFIED).
 	  -- Le designator fonction (P.F sans parametre) reste hors perimetre :
 	  -- il retombe comme avant dans la branche bruyante.
-	    COVAR_ALLOCATE;
-	    PUT_LINE( tab & "La" & tab & LVL_STR & ", " & VC_STR & "_disp" );					-- @DST
-	    PUT( tab & "Ld" & tab & IMAGE( TYPE_LEVEL ) & ", " );						-- LEN en octets : SIZ destination / 8
-	    PUT_TYPE_INFO_PREFIX;
-	    PUT_LINE( ".SIZ" );
-	    PUT_LINE( tab & "LI" & tab & '8' );
-	    PUT_LINE( tab & "DIV" );
-	    EXPRESSIONS.CODE_OBJECT_ADDRESS( INIT_EXP );							-- @SRC = @data du composant
-	    PUT_LINE( tab & "BLKMOV" );
+	    if  TYPE_SPEC.TY = DN_ARRAY  then
+	    -- OBJET NON CONTRAINT init par COMPOSANT inline (ITEM_NAME :=
+	    -- BLTN_TEXT_ARRAY(OP_NAME), TROU leve par FIX_PRE, 6 aout) : bornes
+	    -- DEDUITES du sous-type du composant.  CODE_ARRAY_OPERAND (promu au
+	    -- spec, commit 8) normalise le composant en DOUBLET -- bornes
+	    -- re-emises au perimetre du commit 3, bruyant au-dela -- puis meme
+	    -- modele que la tranche non contrainte (commit 6).
+	      PUT_LINE( "VAR " & VC_STR & "__isrc, q" );
+	      PUT_LINE( "VAR " & VC_STR & "__ilen, q" );
+	      EXPRESSIONS.CODE_ARRAY_OPERAND( INIT_EXP, VC_STR & "__init", TYPE_SPEC );		-- @doublet source
+	      PUT_LINE( tab & "Sa" & tab & LVL_STR & ", " & VC_STR & "__isrc" );
+	      PUT_LINE( tab & "La" & tab & LVL_STR & ", " & VC_STR & "__isrc" );
+	      PUT_LINE( tab & "La , 8" );
+	      PUT_LINE( tab & "Sa" & tab & LVL_STR & ", " & VC_STR & "__u" );			-- __u := info du composant normalise
+	      PUT_LINE( tab & "LId " & LVL_STR & ", " & VC_STR & "__u, " & TYPE_NAME_STR & ".LST_1" );
+	      PUT_LINE( tab & "LId " & LVL_STR & ", " & VC_STR & "__u, " & TYPE_NAME_STR & ".FST_1" );
+	      PUT_LINE( tab & "SUB" );
+	      PUT_LINE( tab & "INC" );
+	      PUT_LINE( tab & "CLAMP0" );
+	      PUT_LINE( tab & "LId " & LVL_STR & ", " & VC_STR & "__u, " & TYPE_NAME_STR & ".COMP_SIZ" );
+	      PUT_LINE( tab & "LI" & tab & '8' );
+	      PUT_LINE( tab & "DIV" );
+	      PUT_LINE( tab & "MUL" );
+	      PUT_LINE( tab & "Sa" & tab & LVL_STR & ", " & VC_STR & "__ilen" );
+	      PUT_LINE( tab & "La" & tab & LVL_STR & ", " & VC_STR & "__ilen" );
+	      PUT_LINE( tab & "CO_VAR" );
+	      PUT_LINE( tab & "Sa" & tab & LVL_STR & ", " & VC_STR & "_disp" );
+	      PUT_LINE( tab & "La" & tab & LVL_STR & ", " & VC_STR & "_disp" );			-- @DST
+	      PUT_LINE( tab & "La" & tab & LVL_STR & ", " & VC_STR & "__ilen" );			-- LEN
+	      PUT_LINE( tab & "La" & tab & LVL_STR & ", " & VC_STR & "__isrc" );
+	      PUT_LINE( tab & "La" );								-- @SRC = data_ptr du doublet
+	      PUT_LINE( tab & "BLKMOV" );
+	    else
+	      COVAR_ALLOCATE;
+	      PUT_LINE( tab & "La" & tab & LVL_STR & ", " & VC_STR & "_disp" );					-- @DST
+	      PUT( tab & "Ld" & tab & IMAGE( TYPE_LEVEL ) & ", " );						-- LEN en octets : SIZ destination / 8
+	      PUT_TYPE_INFO_PREFIX;
+	      PUT_LINE( ".SIZ" );
+	      PUT_LINE( tab & "LI" & tab & '8' );
+	      PUT_LINE( tab & "DIV" );
+	      EXPRESSIONS.CODE_OBJECT_ADDRESS( INIT_EXP );							-- @SRC = @data du composant
+	      PUT_LINE( tab & "BLKMOV" );
+	    end if;
 
 	  elsif  INIT_EXP.TY = DN_SLICE  then
 	  -- Initialiseur TRANCHE (TEMP_STRING := OP_TEXT(II..II+1), TRONQ :=
@@ -1131,16 +1168,61 @@ is
 	  -- mode SOURCE fabrique le doublet anonyme de la tranche (bornes de la
 	  -- slice) ; ensuite meme copie que le repli defensif DN_QUALIFIED :
 	  -- extraction du data_ptr par "La ,0" puis BLKMOV vers la destination.
-	    COVAR_ALLOCATE;
-	    PUT_LINE( tab & "La" & tab & LVL_STR & ", " & VC_STR & "_disp" );					-- @DST
-	    PUT( tab & "Ld" & tab & IMAGE( TYPE_LEVEL ) & ", " );						-- LEN en octets : SIZ destination / 8
-	    PUT_TYPE_INFO_PREFIX;
-	    PUT_LINE( ".SIZ" );
-	    PUT_LINE( tab & "LI" & tab & '8' );
-	    PUT_LINE( tab & "DIV" );
-	    EXPRESSIONS.CODE_SLICE( INIT_EXP, IS_DESTINATION => FALSE );					-- @doublet de la tranche
-	    PUT_LINE( tab & "La" );									-- @SRC = data_ptr du doublet
-	    PUT_LINE( tab & "BLKMOV" );
+--	    COVAR_ALLOCATE;
+--	    PUT_LINE( tab & "La" & tab & LVL_STR & ", " & VC_STR & "_disp" );					-- @DST
+--	    PUT( tab & "Ld" & tab & IMAGE( TYPE_LEVEL ) & ", " );						-- LEN en octets : SIZ destination / 8
+--	    PUT_TYPE_INFO_PREFIX;
+--	    PUT_LINE( ".SIZ" );
+--	    PUT_LINE( tab & "LI" & tab & '8' );
+--	    PUT_LINE( tab & "DIV" );
+--	    EXPRESSIONS.CODE_SLICE( INIT_EXP, IS_DESTINATION => FALSE );					-- @doublet de la tranche
+--	    PUT_LINE( tab & "La" );									-- @SRC = data_ptr du doublet
+--	    PUT_LINE( tab & "BLKMOV" );
+
+	    if  TYPE_SPEC.TY = DN_ARRAY  then
+	    -- OBJET NON CONTRAINT init par tranche (NOM_TEXTE := CMD(1..N), classif
+	    -- 6 aout, segfault OPEN) : bornes DEDUITES de la tranche (RM83 3.6.1).
+	    -- L'ancien chemin lisait SIZ=-1 du PATRON pour l'allocation et laissait
+	    -- __u sur le patron.  Le doublet source de CODE_SLICE porte l'info
+	    -- NORMALISEE 1..len dans le frame courant : __u la partage, la longueur
+	    -- s'y lit par l'idiome LId du "&".
+	      PUT_LINE( "VAR " & VC_STR & "__isrc, q" );						-- @doublet source (scratch)
+	      PUT_LINE( "VAR " & VC_STR & "__ilen, q" );						-- longueur en octets (scratch)
+	      EXPRESSIONS.CODE_SLICE( INIT_EXP, IS_DESTINATION => FALSE );
+	      PUT_LINE( tab & "Sa" & tab & LVL_STR & ", " & VC_STR & "__isrc" );
+	      PUT_LINE( tab & "La" & tab & LVL_STR & ", " & VC_STR & "__isrc" );
+	      PUT_LINE( tab & "La , 8" );
+	      PUT_LINE( tab & "Sa" & tab & LVL_STR & ", " & VC_STR & "__u" );			-- __u := info normalisee 1..len
+	      PUT_LINE( tab & "LId " & LVL_STR & ", " & VC_STR & "__u, " & TYPE_NAME_STR & ".LST_1" );
+	      PUT_LINE( tab & "LId " & LVL_STR & ", " & VC_STR & "__u, " & TYPE_NAME_STR & ".FST_1" );
+	      PUT_LINE( tab & "SUB" );
+	      PUT_LINE( tab & "INC" );
+	      PUT_LINE( tab & "CLAMP0" );
+	      PUT_LINE( tab & "LId " & LVL_STR & ", " & VC_STR & "__u, " & TYPE_NAME_STR & ".COMP_SIZ" );
+	      PUT_LINE( tab & "LI" & tab & '8' );
+	      PUT_LINE( tab & "DIV" );
+	      PUT_LINE( tab & "MUL" );
+	      PUT_LINE( tab & "Sa" & tab & LVL_STR & ", " & VC_STR & "__ilen" );
+	      PUT_LINE( tab & "La" & tab & LVL_STR & ", " & VC_STR & "__ilen" );
+	      PUT_LINE( tab & "CO_VAR" );
+	      PUT_LINE( tab & "Sa" & tab & LVL_STR & ", " & VC_STR & "_disp" );
+	      PUT_LINE( tab & "La" & tab & LVL_STR & ", " & VC_STR & "_disp" );			-- @DST
+	      PUT_LINE( tab & "La" & tab & LVL_STR & ", " & VC_STR & "__ilen" );			-- LEN
+	      PUT_LINE( tab & "La" & tab & LVL_STR & ", " & VC_STR & "__isrc" );
+	      PUT_LINE( tab & "La" );								-- @SRC = data_ptr du doublet
+	      PUT_LINE( tab & "BLKMOV" );
+	    else
+	      COVAR_ALLOCATE;
+	      PUT_LINE( tab & "La" & tab & LVL_STR & ", " & VC_STR & "_disp" );					-- @DST
+	      PUT( tab & "Ld" & tab & IMAGE( TYPE_LEVEL ) & ", " );						-- LEN en octets : SIZ destination / 8
+	      PUT_TYPE_INFO_PREFIX;
+	      PUT_LINE( ".SIZ" );
+	      PUT_LINE( tab & "LI" & tab & '8' );
+	      PUT_LINE( tab & "DIV" );
+	      EXPRESSIONS.CODE_SLICE( INIT_EXP, IS_DESTINATION => FALSE );					-- @doublet de la tranche
+	      PUT_LINE( tab & "La" );									-- @SRC = data_ptr du doublet
+	      PUT_LINE( tab & "BLKMOV" );
+	    end if;
 
 	  elsif  INIT_EXP.TY = DN_USED_OBJECT_ID
 	  or else  INIT_EXP.TY = DN_CONVERSION  then
@@ -1154,6 +1236,9 @@ is
 	  -- resultat >> des fonctions a resultat composite SUSPENDU (carnet,
 	  -- preuve CONV_DER1 v1 du 30/07) -- le bilan prescrivait cette forme
 	  -- au temoin, il precedait la preuve.
+	    if  TYPE_SPEC.TY = DN_ARRAY  then
+	      CODI.TROU( "COMPILE_ARRAY_VAR init NON CONTRAINTE par objet entier (remede : modele tranche, commit 6)", INIT_EXP );
+	    end if;
 	    COVAR_ALLOCATE;
 	    PUT_LINE( tab & "La" & tab & LVL_STR & ", " & VC_STR & "_disp" );					-- @DST
 	    PUT( tab & "Ld" & tab & IMAGE( TYPE_LEVEL ) & ", " );						-- LEN en octets : SIZ destination / 8
@@ -1278,8 +1363,17 @@ is
 	  PUT_LINE( TN_STR2 & ".size" );			     -- LEN
 	end;
 
-	EXPRESSIONS.CODE_EXP( INIT_EXP );			     -- empile @doublet source
-	PUT_LINE( tab & "La  ,  0" );				     -- @SRC = data_ptr source
+--	EXPRESSIONS.CODE_EXP( INIT_EXP );			     -- empile @doublet source
+--	PUT_LINE( tab & "La  ,  0" );				     -- @SRC = data_ptr source
+			--| TTAIL1 (7/08) : miroir du n 112 au site de DECLARATION -- le
+			--| "La ,0" inconditionnel supposait un @doublet, mais une reference
+			--| de composante (T_TAIL := S.NEXT, IDL_MAN.APPEND) produit l @data
+			--| nue : le La lisait un data comme un data_ptr, la VALEUR 32 bits
+			--| du TREE devenait l adresse source du BLKMOV (T_TAIL =
+			--| [DN_ROOT,P0,L0], puis CONSTRAINT_ERROR au check de gamme
+			--| CUR_VP := T.PG dans DABS). Regle unique n 112 :
+			--| CODE_COMPOSITE_DATA_ADDRESS discrimine le La par producteur.
+	EXPRESSIONS.CODE_COMPOSITE_DATA_ADDRESS( INIT_EXP );	     -- @SRC = @data source
 
 	PUT_LINE( tab & "BLKMOV" );
 
