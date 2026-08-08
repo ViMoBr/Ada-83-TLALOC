@@ -1432,6 +1432,25 @@ is
     FUNC_SPEC	: TREE	:= D( SM_SPEC, FUNC_DEF );
     RET_NAME	: TREE	:= D( AS_NAME, FUNC_SPEC );	 -- nom du type de retour (DN_FUNCTION_SPEC)
     RET_TS	: TREE	:= TREE_VOID;
+
+    function  RESULT_ANON_NAME  return STRING
+    is			----------------
+			--| OPDEF_TEST 7-8 / segfaults 0x45825b puis temoin : la position
+			--| d'une expression INFIXE = celle de son operande GAUCHE (meme
+			--| LX_SRCPOS sur le DN_USED_OP -- verifie au FINC du temoin :
+			--| doublet-resultat ANON_57_8 = agregat gauche ANON_57_8). Aucun
+			--| nommage positionnel ne peut les separer : suffixe par le
+			--| generateur d'etiquettes (deterministe) pour les SEULS
+			--| lieux-resultat d'appels d'operateurs -- ANON_l_c_L<n>. Les
+			--| appels non-operateurs gardent leur nom a l'octet pres.
+    begin
+      if  D( AS_NAME, CALL_NODE ).TY = DN_USED_OP  then
+	return ANONYMOUS_NAME_AT( CALL_NODE ) & '_' & NEW_LABEL;
+      else
+	return ANONYMOUS_NAME_AT( CALL_NODE );
+      end if;
+    end RESULT_ANON_NAME;
+
   begin
         -- Resoudre le type de retour jusqu'au TYPE_SPEC effectif
         if  RET_NAME /= TREE_VOID  then
@@ -1441,17 +1460,17 @@ is
 	end loop;
 
 	if  RET_TS.TY = DN_CONSTRAINED_RECORD  then						-- pilier 3.7 : vue contrainte -> base
-	  RET_TS := D( SM_BASE_TYPE, RET_TS );						-- (meme taille : layout additif ;
+	  RET_TS := D( SM_BASE_TYPE, RET_TS );							-- (meme taille : layout additif ;
 	end if;										--  symboles .size/.use__info de la base)
         end if;
 
         if  RET_TS /= TREE_VOID  and then  RET_TS.TY = DN_RECORD  then
 	-- Allouer un doublet anonyme avec son espace donnees, empiler son adresse comme result__ofs
 	declare
-	  ANON_STR  : constant STRING := ANONYMOUS_NAME_AT( CALL_NODE );
-	  TYPE_NAME : TREE		:= D( XD_SOURCE_NAME, RET_TS );
-	  TN_STR	  : constant STRING := TYPE_INFO_STR( RET_TS );
-	  LVL_STR	  : constant STRING := IMAGE( CODI.CUR_LEVEL );
+	  ANON_STR	: constant STRING	:= RESULT_ANON_NAME;
+	  TYPE_NAME	: TREE		:= D( XD_SOURCE_NAME, RET_TS );
+	  TN_STR		: constant STRING	:= TYPE_INFO_STR( RET_TS );
+	  LVL_STR		: constant STRING	:= IMAGE( CODI.CUR_LEVEL );
 	begin
 	  PUT_LINE( "VAR" & tab & ANON_STR & "_disp, q" );
 	  PUT_LINE( "VAR" & tab & ANON_STR & "__u,    q" );
@@ -1480,7 +1499,7 @@ is
 
         elsif  RET_TS /= TREE_VOID  and then  RET_TS.TY = DN_CONSTRAINED_ARRAY  then
 	  declare
-	    ANON_STR	: constant STRING	:= ANONYMOUS_NAME_AT( CALL_NODE );
+	    ANON_STR	: constant STRING	:= RESULT_ANON_NAME;
 	    TYPE_NAME	: TREE		:= D( XD_SOURCE_NAME, RET_TS );
 	    TN_STR	: constant STRING	:= TYPE_INFO_STR( RET_TS );
 	    TYPE_LVL	: constant STRING	:= IMAGE( DI( CD_LEVEL, RET_TS ) );
@@ -1701,7 +1720,7 @@ is
 	end if;
 	PUT_LINE( tab & "LI" & tab & PRINT_NUM( D( SM_VALUE, DESIGNATOR ) )	);
 
-        elsif  DESIGNATOR_DEFN.TY = DN_FUNCTION_ID
+        elsif  DESIGNATOR_DEFN.TY = DN_FUNCTION_ID  or else  DESIGNATOR_DEFN.TY = DN_OPERATOR_ID
 	then
 --	PUT( tab & "LI" & tab & "0" );
 --	if CODI.DEBUG  then  PUT( tab50 & "; lieu resultat sur pile" ); end if;
@@ -4889,7 +4908,32 @@ end;
 
 
     elsif  NAME.TY = DN_USED_OP  then
-      CODE_DN_BLTN_OPERATOR_ID;
+--      CODE_DN_BLTN_OPERATOR_ID;
+      declare
+        OP_DEFN	: TREE	:= D( SM_DEFN, NAME );
+      begin
+        if  OP_DEFN.TY = DN_OPERATOR_ID  then
+	OP_DEFN := SUBPROGRAM_ORIGIN( OP_DEFN );						-- renames d'un predefini : viser l'origine (LRM 8.5)
+        end if;
+        if  OP_DEFN.TY = DN_OPERATOR_ID  then
+			--| OPDEF_TEST (8/08, bootstrap _standrd, spin INTEGER_POW sur le
+			--| 2**15 de SHORT_INTEGER) : un operateur DEFINI PAR L'UTILISATEUR
+			--| (DN_OPERATOR_ID a vrai corps -- "**" d'UARITH sur TREE) etait
+			--| emis comme le PREDEFINI homonyme : CALL STANDARD.INTEGER_POW
+			--| recevait des @doublets (N = adresse de pile -> E astronomique),
+			--| et +,-,*,comparaisons d'UARITH devenaient ADD/SUB/MUL/CEQ sur
+			--| adresses -- poison silencieux de toute la semantique. Voie
+			--| normale d'appel : meme protocole (resultat record en doublet
+			--| anonyme) que les appels nommes comme D(...) ;
+			--| CODE_PROCEDURE_CALL ne lit que SM_DEFN et refait l'origine.
+			--| Les operateurs IMPLICITES des types derives restent en
+			--| emission par nom (branche else), gardes par OPDEF_TEST 5-6.
+	PREPARE_FUNCTION_RESULT_PLACE( OP_DEFN, FUNCTION_CALL );
+	INSTRUCTIONS.CODE_PROCEDURE_CALL( FUNCTION_CALL, NAME );
+        else
+	CODE_DN_BLTN_OPERATOR_ID;								-- predefini, ou renommage d'un predefini
+        end if;
+      end;
 
     elsif  NAME.TY = DN_SELECTED  then
       CODE_SELECTED( NAME, CONTEXT=> FUNCTION_CALL );
@@ -5359,44 +5403,61 @@ end;
         end if;
 
       elsif  COMP.TY in CLASS_EXP  then
-        declare
-	CT	: TREE	:= FULL_TYPE_VIEW( COMP_TYPE );
-        begin
-	if  CT.TY = DN_RECORD
-	or else  CT.TY = DN_CONSTRAINED_RECORD
-	or else  CT.TY = DN_CONSTRAINED_ARRAY
-	then
+        if  DEPTH < NB_DIMS  then
+			--| AGGSTR_TEST (8/08, bootstrap _standrd / SHORT_INTEGER) :
+			--| COLLECT_DIMENSIONS aplatit le tableau DE tableaux en
+			--| descendant dans le type composant ; une composante
+			--| NON-agregat couvrant les dimensions restantes (litteral de
+			--| chaine "AND", objet, appel) tombait dans la voie SCALAIRE --
+			--| SId rangeait l'@DOUBLET du litteral : BLTN_TEXT_ARRAY
+			--| recevait des tranches de pointeurs (pas de 40 octets des
+			--| blocs STR successifs), rognage '!' aveugle, symboles-poison
+			--| dedupliques, deflist de "-" vide, HEAD leve.
+			--| Copie en bloc : longueur = _STR_(DEPTH), taille du bloc des
+			--| dimensions restantes deja posee par COMPUTE_DYNAMIC_DIMS
+			--| (garde record symbolique comprise) ; source = @data par la
+			--| regle unique n 112.
+	PUT_LINE( tab & "La  " & LVL_STR & ", " & PTR_NAME( DEPTH ) );					-- destination
+	PUT_LINE( tab & "Ld  " & LVL_STR & ", " & STR_NAME( DEPTH ) );					-- longueur : bloc des dims restantes
+	CODE_COMPOSITE_DATA_ADDRESS( COMP );								-- @data source (regle n 112)
+	PUT_LINE( tab & "BLKMOV" );
+        else
+	declare
+	  CT	: TREE	:= FULL_TYPE_VIEW( COMP_TYPE );
+	begin
+	  if  CT.TY = DN_RECORD
+		or else  CT.TY = DN_CONSTRAINED_RECORD
+		or else  CT.TY = DN_CONSTRAINED_ARRAY
+	  then
 	  -- Composant COMPOSITE (ex. TREE, record represente 32 bits) :
 	  -- CODE_EXP pousse une ADRESSE (convention composite) -- SId
 	  -- stockerait l'adresse tronquee en dword, pas la valeur
 	  -- (bug PAG(RP).DATA.all := (others => TREE_VIRGIN)).
 	  -- Copie de COMP_BYTES octets, meme forme que la branche
 	  -- DN_RECORD de EMIT_ONE_COMPONENT (agregat record).
-	  PUT_LINE( tab & "La  " & LVL_STR & ", " & PTR_NAME( DEPTH ) );					-- destination
---	  PUT_LINE( tab & "LI" & tab & IMAGE( COMP_BYTES ) );						-- longueur
-	  if  CT.TY = DN_RECORD  and then  not REPRESENTED_ITEMS.HAS_RECORD_REP( CT )  then
-	    PUT( tab & "LI" & tab );
-	    CODI.REGIONS_PATH( D( XD_SOURCE_NAME, CT ) );
-	    PUT_LINE( TYPE_INFO_STR( CT ) & ".size" );							-- longueur symbolique (cf. 7.1)
+	    PUT_LINE( tab & "La  " & LVL_STR & ", " & PTR_NAME( DEPTH ) );					-- destination
+	    if  CT.TY = DN_RECORD  and then  not REPRESENTED_ITEMS.HAS_RECORD_REP( CT )  then
+	      PUT( tab & "LI" & tab );
+	      CODI.REGIONS_PATH( D( XD_SOURCE_NAME, CT ) );
+	      PUT_LINE( TYPE_INFO_STR( CT ) & ".size" );							-- longueur symbolique (cf. 7.1)
 
-	  else
-	    PUT_LINE( tab & "LI" & tab & IMAGE( COMP_BYTES ) );						-- longueur
-	  end if;
-
---	  EXPRESSIONS.CODE_EXP( COMP );								-- @source
+	    else
+	      PUT_LINE( tab & "LI" & tab & IMAGE( COMP_BYTES ) );						-- longueur
+	    end if;
 			--| SECV1 (7/08) : CODE_EXP d un objet composite pousse l @DOUBLET
 			--| (LVA X_disp) -- BLKMOV copiait le POINTEUR data_ptr dans chaque
 			--| element (residu uniforme = bas d adresse de X__dat ; c est la
 			--| valeur [DN_ITERATION_ID,P6996,L102] des cellules "vierges" du
 			--| bootstrappe).  Regle unique n 112 : source BLKMOV = @data,
 			--| soit CODE_COMPOSITE_DATA_ADDRESS (CODE_EXP + La discrimine).
-	  CODE_COMPOSITE_DATA_ADDRESS( COMP );								-- @data source
-	  PUT_LINE( tab & "BLKMOV" );
-	else
-	  EXPRESSIONS.CODE_EXP( COMP );
-	  PUT_LINE( tab & "SI" & EXP_TYPE_CHAR( COMP ) & "  " & LVL_STR & ", " & PTR_NAME( DEPTH ) & ", 0" );
-	end if;
-        end;
+	    CODE_COMPOSITE_DATA_ADDRESS( COMP );							-- @data source
+	    PUT_LINE( tab & "BLKMOV" );
+	  else
+	    EXPRESSIONS.CODE_EXP( COMP );
+	    PUT_LINE( tab & "SI" & EXP_TYPE_CHAR( COMP ) & "  " & LVL_STR & ", " & PTR_NAME( DEPTH ) & ", 0" );
+	  end if;
+	end;
+        end if;
 
       else
         TROU( "agregat tableau : composante non geree", COMP );						--| vague 5 : composante non emise, donnees fausses

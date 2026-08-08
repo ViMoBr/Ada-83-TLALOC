@@ -1,6 +1,6 @@
 # ÉTAT DES PILIERS — tableau de bord TLALOC
 
-**Dernière mise à jour : 6 août 2026**
+**Dernière mise à jour : 7 août 2026**
 
 **Régime** : ce fichier est RÉÉCRIT à chaque clôture ; il est la seule source de
 vérité sur « où on en est ». Le récit des sessions est dans JOURNAL_SESSIONS.md,
@@ -40,7 +40,7 @@ La sémantique n'est protégée que par les programmes-témoins à sortie attend
 | 14.2.3 / 14.2.5 SEQUENTIAL_IO, DIRECT_IO | validés tous types ; **témoins DIRECT_IO_TEST et SEQ_IO_TEST repris auto jugeant ** |
 | 9.6 CALENDAR | CLOS avec témoin (TIME_OF/SPLIT/opérateurs/rollover/CLOCK ; 1900/2100 → CONSTRAINT_ERROR attendus) | 12 juillet |
 |CHECKS RUNTIME|PÉRIMÈTRE 1 CLOS Amont du pilier 11 : comparer-et-brancher vers deux trampolines uniques (ce_raise_/ne_raise_, wrapper FAS). Checks livrés et jugés : gamme scalaire aux SEPT sites (affectation, init de déclaration, param in, return, conversion, qualification, corps générique partagé via GFP/_ENUM_USE_INFO), longueurs des logiques composites (dette D3-contrôle SOLDÉE), index (quatre variantes de CODE_INDEXED), division par zéro (/, mod, rem → NUMERIC_ERROR, fidélité LRM 83). Commutateur global CODI.CHECKS_ENABLED — défaut TRUE, RÉGIME PERMANENT ; OFF réservé au tri des fossiles. Élision : sous-type = type de base (comparaison de nœuds) + garde n° 80 (sous-types anonymes) + statique prouvé. Témoins : CHK_TEST0/1, CHK_LEN0, CHK_IDX0, CHK_DIV0, CHK_ANON0, CHK_CSTPRM0/1/2, CHK_PREDEF0. Filet + ACVC verts checks ON et OFF. Note : NOTE_MODELE_CHECKS v1.4. Campagne de fossiles associée (voir PIEGES n° 80–84) : IDENT_* de l'ACVC ressuscités (n° 81, actuels constants fantômes — trois familles), oscillation fasmg BT/BF soldée (n° 82, tous sauts rel32), amorçage STANDARD réparé (n° 83, LINK 0 avant _STANDRD), lecture des formels génériques in-out réparée (n° 84, adaptateurs INADR/OUTADR branchés côté lecture). DETTES PÉRIMÈTRE 2 (consignées, note §8) : overflow (NUMERIC_ERROR après chaque op — coût), STORAGE_ERROR (bump allocator), gamme fixed/float (bornes fixed élaborées SCALÉES : comparaison directe possible), discriminants (avec pilier 3.7 bis), null access sur .all, checks d'élaboration (PROGRAM_ERROR), copy-back des out (6.4.1 côté retour), contraintes ANONYMES d'objet (n° 80-a), pragma SUPPRESS, élision d'index statique (affaire de l'optimiseur futur).
-| Bootstrap : auto-assemblage ADA_COMP (fasmg) | plus d'erreur de symbole ; convergence multi-passes en cours à la clôture de session — consigner le nombre de passes au premier succès (référence n° 106) ; dette CD_PARAM_SIZE=0 des sous-programmes withés (n° 103) | 18 juillet 2026 |
+| Bootstrap : **Jalon bootstrap (7 aout 2026)** | TLALOC(TLALOC) execute la phase syntaxique de null_prog.adb a l identique BIT-EXACT de TLALOC(gnat) (diff integral des traces instrumentees, 732 lignes, zero divergence apres normalisation CRLF). Cellules de pages vierges = DN_VIRGIN conformes. Prerequis du jalon suivant (null_prog en W) : compilation complete de _standrd.ads en bibliotheque par le bootstrappe (LIB_PHASE l exige). | 18 juillet 2026 |
 
 ## Fondations absentes (piliers non ouverts)
 
@@ -305,6 +305,20 @@ Vigilance (etat au 6 aout, apres commits 1-8) :
     TYPE_INFO_STR (noms, n 99) / CODE_ARRAY_OPERAND (doublets, commit 8) / PUT_USE_INFO_REF (__u).
   - Branches soeurs de CODE_ARRAY_OPERAND (retour de fonction, acces designe Q1b) vers le remede
     durable "__u -> bloc elabore" au lieu de re-evaluer.
+
+Vigilances versees/mises a jour 7 août 2026 :
+- Famille n 112 : 4 occurrences connues et soldees, audit grep du
+  reliquat recommande AVANT le gros de LIB/SEM_PHASE (piege n 129) ;
+  site "A VERIFIER" restant dans expander-instructions
+  (DESTINATION_SELECTED, tableau non-agregat), aucun temoin ne
+  l exerce.
+- CD_IMPL_SIZE des DN_RECORD ordinaires faux (64) : contourne aux
+  deux sites agregat (taille symbolique), poseur types_decls a
+  auditer, autres consommateurs de COMP_SIZE_BITS a recenser
+  (piege n 130).
+- Runtime TEXT_IO bootstrappe en CRLF : tolerance fasmg a verifier au
+  premier FINC produit par le bootstrappe ; normalisation obligatoire
+  des diffs de traces (piege n 131).
 
 
 ## Prochaine séquence (arrêtée le 6/08 — bilan recensement)

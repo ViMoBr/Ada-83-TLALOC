@@ -55,7 +55,49 @@ is
       CODE_PACKAGE_BODY( UNIT_ALL_DECL );
 
     when  DN_SUBUNIT		=>
-      CODE_SUBUNIT_BODY( D( AS_SUBUNIT_BODY, UNIT_ALL_DECL )  );
+--      CODE_SUBUNIT_BODY( D( AS_SUBUNIT_BODY, UNIT_ALL_DECL )  );
+			--| Niveau de depart du subunit : reprendre le niveau enregistre par
+			--| l'unite PARENTE sur la premiere declaration (stub ou spec), meme
+			--| canal bibliotheque que CD_LABEL.  Invariant : CD_LEVEL d'un id de
+			--| sous-programme = niveau d'EXECUTION de son corps (pose apres
+			--| INC_LEVEL).  Un package separe n'a PAS de cd_level (schema DIANA :
+			--| dn_package_id n'en porte aucun) ; sans frame, son niveau = celui du
+			--| sous-programme englobant le plus proche (remontee XD_REGION, les
+			--| packages sont transparents ; TREE_VOID = bibliotheque).  Demarrer a 0
+			--| n'etait juste que pour les subunits de bibliotheque (parent sans
+			--| frame) : un subunit de SOUS-PROGRAMME (idl-sem_phase-*.adb) se
+			--| compilait un cran trop haut et son LINK ecrasait le display du
+			--| parent -- segfault ENUM_IMAGE de FIX_PRE (La 1, use__info -> 0).
+      declare
+        SUB_BODY		: TREE	:= D( AS_SUBUNIT_BODY, UNIT_ALL_DECL );
+        FIRST_DECL_ID	: TREE	:= D( SM_FIRST, D( AS_SOURCE_NAME, SUB_BODY ) );
+      begin
+        if  SUB_BODY.TY = DN_SUBPROGRAM_BODY  then
+	CODI.CUR_LEVEL := DI( CD_LEVEL, FIRST_DECL_ID ) - 1;					-- l'INC_LEVEL du corps retablira CD_LEVEL ; -1 sur une valeur non posee (0) => CONSTRAINT_ERROR : bruyant
+
+        elsif  SUB_BODY.TY = DN_PACKAGE_BODY  then
+--	CODI.CUR_LEVEL := DI( CD_LEVEL, FIRST_DECL_ID );					-- pas de frame propre : niveau du contexte du stub
+	declare
+	  REGION : TREE := D( XD_REGION, FIRST_DECL_ID );
+	begin
+	  while  REGION /= TREE_VOID  and then  REGION.TY = DN_PACKAGE_ID  loop		-- packages transparents (y compris STANDARD -> TREE_VOID ensuite)
+	    REGION := D( XD_REGION, REGION );
+	  end loop;
+	  if  REGION = TREE_VOID  then
+	    CODI.CUR_LEVEL := 0;								-- chaine de packages jusqu'a la bibliotheque : cas test_subunit, inchange
+	  elsif  REGION.TY = DN_PROCEDURE_ID  or  REGION.TY = DN_FUNCTION_ID
+	     or  REGION.TY = DN_OPERATOR_ID  then
+	    CODI.CUR_LEVEL := DI( CD_LEVEL, REGION );						-- niveau d'execution du frame du sous-programme = niveau de ses declarations
+	  else
+	    CODI.TROU( "CODE_COMPILATION_UNIT region de subunit package", REGION );		-- generique / task : hors corpus, refus bruyant
+	  end if;
+	end;
+
+       else
+	CODI.TROU( "CODE_COMPILATION_UNIT subunit non couvert", SUB_BODY );			-- task body separe : hors corpus, refus bruyant
+        end if;
+        CODE_SUBUNIT_BODY( SUB_BODY );
+      end;
 
     when others			=> CODI.TROU( "CODE_COMPILATION_UNIT", UNIT_ALL_DECL );			--| vague 4 : levait deja, enrichi du message TROU
 
@@ -396,7 +438,8 @@ is
 
       PUT( tab & "RTD" );
       if  CODI.NO_SUBP_PARAMS = FALSE  then  PUT( tab & "prm_siz" );
-        if  SOURCE_NAME.TY = DN_FUNCTION_ID  then
+--        if  SOURCE_NAME.TY = DN_FUNCTION_ID  then
+        if  SOURCE_NAME.TY = DN_FUNCTION_ID  or  SOURCE_NAME.TY = DN_OPERATOR_ID  then
 	PUT( INTEGER'IMAGE( - STACK_ELEMENT_SIZE ) );							-- POUR UNE FONCTION NE PAS LIBERER LE RESULTAT
         end if;
       end if;

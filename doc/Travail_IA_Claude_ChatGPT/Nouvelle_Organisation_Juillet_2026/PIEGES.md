@@ -988,3 +988,44 @@ instances sont expansées sur site.
     signe le patron nu ; autre bruit = bloc ANON non rempli ou ecrase.
 
 134. **Tabulations sed grep** :Dans une classe de caractères, \t n'est une tabulation que pour GNU sed, pas pour grep : [ \t] y vaut {espace, antislash, t}. Symptôme vicieux : un pipeline sed+grep où l'extraction marche et le test échoue — le classifieur v1/v2 flaggait 100% VIVANT en silence. Toujours [[:space:]], et toujours étalonner un juge sur un cas MORT connu avant de croire ses VIVANT.
+
+135. **La regle unique n 112 a des consommateurs retardataires --
+    occurrences 3 et 4 dans la meme session.** (a) EMIT_ONE_COMP
+    (composante composite d agregat tableau) : le correctif "SId ->
+    BLKMOV" d une session anterieure prenait CODE_EXP nu comme
+    source ; pour un objet entier c est l @DOUBLET -> chaque element
+    recevait les octets du data_ptr. SIGNATURE MEMORABLE : valeur
+    UNIFORME dans toutes les cellules d un remplissage = pointeur
+    copie comme donnee (un vrai residu memoire n est pas uniforme).
+    (b) COMPILE_RECORD_VAR (init de declaration) : "La ,0"
+    inconditionnel apres CODE_EXP -- juste pour l appel de fonction
+    (@doublet), faux pour une reference de composante (@data nue) :
+    la VALEUR de la source devient l adresse source du BLKMOV
+    (T := S.NEXT difforme, motif APPEND). Ne s etait jamais vu car
+    la quasi-totalite des inits record du corpus sont des appels de
+    fonction (X : TREE := D(...)). REMEDE UNIQUE :
+    CODE_COMPOSITE_DATA_ADDRESS, qui discrimine le La par producteur.
+    AUDIT DU RESTE DE LA FAMILLE RECOMMANDE : grep CODE_EXP suivi de
+    La/BLKMOV hors regle unique ; site "A VERIFIER" connu dans
+    DESTINATION_SELECTED (tableau non-agregat). (session 7 aout)
+
+136. **CD_IMPL_SIZE d un DN_RECORD ordinaire vaut 64 quel que soit le
+    nombre de champs** -- COMP_SIZE_BITS le croit et taille les
+    agregats tableau-de-records a 8 octets (longueur BLKMOV ET pas
+    d avance). Le record REPRESENTE (TREE, 32) est juste, donc le
+    bootstrap ne mordait pas. Contournement au consommateur : taille
+    symbolique _TYPE.size (modele EMIT_ONE_COMPONENT), longueur et
+    pas TOUJOURS DE CONCERT (une seule des deux = pire que le bug).
+    Poseur (types_decls) a auditer au chantier tailles ; recenser
+    alors les AUTRES consommateurs de COMP_SIZE_BITS sur des records
+    (CODE_INDEXED, CODE_SLICE...). (session 7 aout)
+
+137. **Le runtime TEXT_IO du binaire bootstrappe termine ses lignes
+    en CR+LF** (gnat : LF). Deux consequences : (a) tout diff de
+    traces gnat/bootstrappe doit NORMALISER (tr -d bslash-r + rognage
+    des blancs de queue), sinon "tout differe" -- a failli masquer
+    l identite bit-exacte des traces PAR_PHASE ; (b) les FINC que le
+    bootstrappe PRODUIRA en mode W porteront ce CRLF : verifier la
+    tolerance fasmg au premier FINC bootstrappe, et trancher l origine
+    (NEW_LINE du TEXT_IO runtime, source hors contexte projet a ce
+    jour). (session 7 aout)

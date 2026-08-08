@@ -1,0 +1,46 @@
+#COMMANDE AU COMPILATEUR
+ <pre>
+ </pre>
+ 
+#PROGRAMME SOUMIS AU COMPILATEUR
+<pre> 
+
+</pre>
+
+#REMARQUES
+
+
+#INSTRUCTION SEGFAULT 0x4028d8
+ <pre>
+
+</pre>
+
+#REGISTRES AU SEGFAULT
+<pre>
+
+</pre>
+
+#STACK AU SEGFAULT
+<pre>
+
+</pre>
+
+#BACKTRACE ET MAP
+<pre>
+
+</pre>
+
+#SOURCE ADA 83 SECTION EN SEGFAULT
+<pre>
+
+</pre>
+
+#SECTION LLIR CONTENANT LE SEGFAULT DANS _xxxx.FINC
+<pre>
+
+ </pre>
+
+#SECTION LLIR APPELANTE DANS xxxx.FINC
+<pre>
+
+</pre>

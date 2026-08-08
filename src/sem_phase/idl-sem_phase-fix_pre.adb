@@ -105,9 +105,11 @@ procedure FIX_PRE is
       ABORT_RUN ( "BAD TYPE FOR SUBTYPE_INDICATION" );
       raise PROGRAM_ERROR;
     end TYPE_SPEC_FOR_SUBTYPE;
-    --|---------------------------------------------------------------------------------------------
-    --|	PROCEDURE WALK
-    procedure WALK ( NODE, PARENT, REGION :TREE ) is
+
+
+			----
+    procedure		WALK		( NODE, PARENT, REGION :TREE )
+    is			----
       use MAKE_NOD;
     begin
       case NODE.TY is
@@ -657,11 +659,42 @@ procedure FIX_PRE is
 			LX_SYMREP => SYM,
 			SM_OPERATOR	=> OP_CLASS'POS ( OP_NAME )
 			);
+if  DEBUG_SEM  then
+	     PUT( "@PD1 " );
+	     PUT( OP_CLASS'IMAGE( OP_NAME ) );
+	     PUT( " [" );
+	     PUT( ITEM_NAME );
+	     PUT( "] L =" );
+	     PUT( INTEGER'IMAGE( ITEM_LENGTH ) );
+	     PUT( " SYM = " );
+	     PUT( NODE_REP( SYM ) );
+	     PUT( " " );
+	     PUT_LINE( PRINT_NAME( SYM ) );
+end if;
+
 	     NEW_ID_LIST := APPEND ( NEW_ID_LIST, NEW_ID );				--| PREFIXER À LA LISTE DES IDS
 	     LIST ( SYM, INSERT ( LIST ( SYM ), NEW_ID ) );				--| CHANGER LA XD_DEFLIST PAR UNE AUGMENTEE EN FIN DE L'ID CREÉ
 	  end;
          end loop;
-      
+
+if  DEBUG_SEM  then
+        declare
+	    MOINS	: TREE	:= FIND_SYM( """-""" );
+         begin
+	    PUT( "@PD3 " );
+	    if MOINS = TREE_VOID then
+	       PUT_LINE( "SYMBOLE MOINS ABSENT DE LA TABLE" );
+	    elsif IS_EMPTY( LIST( MOINS ) ) then
+	       PUT( NODE_REP( MOINS ) );
+	       PUT_LINE( " DEFLIST VIDE" );
+	    else
+	       PUT( NODE_REP( MOINS ) );
+	       PUT( " DEFLIST TETE = " );
+	       PUT_LINE( NODE_REP( HEAD( LIST( MOINS ) ) ) );
+	    end if;
+         end;
+end if;
+
          ID_LIST := NEW_ID_LIST;							--| RENDRE LA LISTE DES IDS
          
       end MAKE_PREDEF_IDS;

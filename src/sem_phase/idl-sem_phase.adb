@@ -10,6 +10,7 @@ separate( IDL )
 		procedure			SEM_PHASE
 is					---------
 
+  DEBUG_SEM	:constant BOOLEAN	:= TRUE;
 
 				--------
 		package		SEM_GLOB

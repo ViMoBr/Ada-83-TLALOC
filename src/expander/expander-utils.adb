@@ -968,7 +968,7 @@ end	SUBPROGRAM_ORIGIN;
   is			----------------
 
     REGION	: TREE		:= D( XD_REGION, ID );
-    RGN_NAME	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, REGION ) );
+    RGN_NAME	:constant STRING	:= LETTERED_SUBNAME( PRINT_NAME( D( LX_SYMREP, REGION ) ) );
 
   begin
     if  RGN_NAME = "STANDARD"  or  RGN_NAME = "_STANDRD" then
@@ -987,7 +987,7 @@ end	SUBPROGRAM_ORIGIN;
 
       PUT( RGN_NAME );
 
-      if  REGION.TY = DN_PROCEDURE_ID  or  REGION.TY = DN_FUNCTION_ID  then
+      if  REGION.TY = DN_PROCEDURE_ID  or  REGION.TY = DN_FUNCTION_ID  or  REGION.TY = DN_OPERATOR_ID  then
         PUT( '_' & LABEL_STR( LABEL_TYPE( DI( CD_LABEL, REGION ) ) ) );
 
       elsif  REGION.TY = DN_GENERIC_ID  and then
@@ -1022,7 +1022,7 @@ end	SUBPROGRAM_ORIGIN;
       elsif SUB_NAME = """+"""  then return "_PLUS_";
       elsif SUB_NAME = """-"""  then return "_MINUS_";
       elsif SUB_NAME = """&"""  then return "_CONC_";
-      elsif SUB_NAME = """=\"""   then return "_EQ_";
+      elsif SUB_NAME = """="""   then return "_EQ_";
       elsif SUB_NAME = """AND"""  then return "_AND_";
       elsif SUB_NAME = """OR"""   then return "_OR_";
       elsif SUB_NAME = """XOR"""  then return "_XOR_";

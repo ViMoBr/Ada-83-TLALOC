@@ -527,3 +527,50 @@ ou VIVANT. Etat de reference apres la session du 5-6 aout : ZERO vivant. Tout vi
 bug par definition (piege NN+2 : les sorties legitimes sont toutes MORTES ou hors motif). Etendre au
 besoin le motif aux autres bases non contraintes du corpus.
 
+### SECV1 (agregat others vers .all, 7 aout 2026, 3 etages)
+
+Isole le motif exact de ALLOC_PAGE : X.all := (others => V) sur
+array(0..127). Etage A : element record ORDINAIRE (2 INTEGER), valeur
+constante -- juge aussi la taille (piege n 130). Etage B : element
+record REPRESENTE 32 bits calque du TREE, valeur = constante
+declarative. Etage C : idem B, valeur construite localement.
+```
+A: 0 B: 0 C: 0
+SECV1 OK
+```
+Oracle du filet = la ligne "SECV1 OK". Grille diagnostique en cas de
+rechute : A seul rouge = taille (n 130) ; B rouge C vert = lecture de
+constante representee ; les trois rouges a 128 = source @doublet
+(n 129a). Gardien permanent de EMIT_ONE_COMP, COMPUTE_DYNAMIC_DIMS et
+de la regle unique cote agregats ; a repasser apres toute retouche de
+CODE_ARRAY_AGGREGATE ou de CODE_COMPOSITE_DATA_ADDRESS.
+
+### TTAIL1 (init de declaration record depuis composante, 7 aout 2026, 3 etages)
+
+Isole le motif d IDL_MAN.APPEND (T_TAIL := S.NEXT). Etage A :
+T : RB := S_PRM.NEXT, record represente 32 bits, composante d un
+parametre formel. Etage C : meme motif, record ordinaire. Etage F :
+T : RB := MK_B (appel de fonction) -- producteur @doublet, sentinelle
+de NON-REGRESSION de la discrimination.
+```
+A OK
+C OK
+F OK
+TTAIL1 OK
+```
+Oracle du filet = la ligne "TTAIL1 OK". Oracle negatif historique
+(avant C8) : "A ECHEC" puis SEGFAULT a C (BLKMOV depuis une adresse =
+la valeur entiere de la composante). Gardien permanent du site d init
+de COMPILE_RECORD_VAR ; si F casse un jour, c est la discrimination de
+CODE_COMPOSITE_DATA_ADDRESS elle-meme qui a un trou.
+
+### Sondes @GT/@PC/@AP (hors filet, outil de diagnostic bootstrap)
+
+Posees dans idl-par_phase.adb (@GT1-4 fin de GET_TOKEN, @PC1-5
+dispatch/reductions/goto, dumps du noeud ligne frais) et
+idl-idl_man.adb (@AP0-7, @APe : operandes d APPEND pas a pas).
+EN PLACE a la cloture du 7 aout, gardees par DEBUG_PARSE cote
+par_phase. Protocole de re-usage (premier run W du bootstrappe) :
+run gnat-W = reference (existe, trace du 7/08) ; run boot-W ;
+normaliser CRLF (piege n 131) ; diff ; premiere divergence = point
+d entree du chantier. Retrait final par grep @GT/@PC/@AP.

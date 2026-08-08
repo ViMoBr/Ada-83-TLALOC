@@ -1226,3 +1226,90 @@ en premier.
 
 **Etat** : REC_ARR_TEST 53/53 (2 runs identiques), filet vert, bootstrap lexe/parse null_prog jusqu'a IS.
 
+## Session 7 aout 2026 -- PAR_PHASE bootstrappee BIT-EXACTE sur null_prog
+## (CONSTRAINT_ERROR au LEX_SCAN{BEGIN} soldee ; famille n 112,
+## occurrences 3 et 4 ; pieges 129-131)
+
+Fil complet, du symptome a la racine -- quatre niveaux d indirection :
+CONSTRAINT_ERROR sec apres LEX_SCAN{BEGIN} -> fenetre GET_TOKEN/dispatch
+(sondes @GT1-4/@PC1-5, commits 1-2) -> fenetre DI/LIST/APPEND (@GT2a/2b,
+commit 3) -> 3e APPEND, branche else premier passage (@AP0-7, commit 4)
+-> T_TAIL := S.NEXT rendu difforme des l INITIALISATION -> PG=0 ->
+check de gamme perimetre 1 CUR_VP := T.PG (VPG_NUM 1..MAX_VPG) dans
+DABS. Le site de check pressenti etait le bon ; le poison venait de
+plus haut.
+
+En chemin, la question ouverte de la session precedente (attributs non
+renseignes affiches [DN_ALTERNATIVE_PRAGMA,P357,L86] : dumper ou
+contamination ?) est TRANCHEE par le diff gnat/bootstrappe : dumper --
+print_nod parcourt tous les slots du genre, gnat montre DN_VIRGIN aux
+memes slots. MAIS le residu bootstrappe etait UNIFORME, et un residu
+uniforme n est pas un residu : c etait la boucle de remplissage
+(others => TREE_VIRGIN) d ALLOC_PAGE qui tournait avec une source
+fausse. Temoin SECV1 (3 etages A record ordinaire / B represente 32
+bits / C valeur locale) : ECHEC 128/128/128 -> lecture du FINC : la
+source du BLKMOV etait LVA X_disp (l @doublet) au lieu de La X_disp
+(le data_ptr) -- chaque cellule recevait le bas d adresse de X__dat.
+C est la valeur [DN_ITERATION_ID,P6996,L102] des cellules "vierges".
+
+Deux miscompilations DISTINCTES de la meme famille n 112 se
+superposaient donc : (a) source de composante composite d agregat
+tableau -- EMIT_ONE_COMP emettait CODE_EXP nu, le correctif anterieur
+(commentaire "bug PAG(RP).DATA.all") avait remplace SId par BLKMOV
+mais viole la regle unique sur la source ; spectaculaire (pages non
+vierges) mais INOFFENSIVE pour null_prog ; (b) init de DECLARATION
+record -- COMPILE_RECORD_VAR faisait CODE_EXP + "La ,0" inconditionnel,
+juste pour un producteur d @doublet (appel de fonction : les milliers
+de X : TREE := D(...) marchaient), faux pour une reference de
+composante (@data nue) : la VALEUR 32 bits du TREE devenait l adresse
+source -- le vrai tueur. Sans le temoin SECV1, corriger (a) et
+conclure trop vite etait le piege naturel.
+
+Correctifs (3 commits, 4 modifications) :
+- C6 (expander-expressions, EMIT_ONE_COMP) : source BLKMOV par
+  CODE_COMPOSITE_DATA_ADDRESS -- 3e amendement de la regle unique.
+- C7 (expander-expressions, COMPUTE_DYNAMIC_DIMS + EMIT_ONE_COMP) :
+  CD_IMPL_SIZE d un DN_RECORD ordinaire = 64 quel que soit le nombre
+  de champs (LI 8 pour un record de 16 octets) -> taille SYMBOLIQUE
+  _TYPE.size, modele EMIT_ONE_COMPONENT, appliquee DE CONCERT a la
+  longueur et au pas _STR (garde identique : DN_RECORD non represente ;
+  le TREE represente garde le numerique, 32 juste). Contournement au
+  consommateur ; poseur a auditer (types_decls), dette au carnet.
+- C8 (expander-declarations, COMPILE_RECORD_VAR) : init par la regle
+  unique (CODE_COMPOSITE_DATA_ADDRESS remplace CODE_EXP + La ,0).
+  Temoin TTAIL1 avant correctif : A ECHEC puis SEGFAULT a C (BLKMOV
+  depuis l adresse 33 -- coherent) ; apres : A/C/F OK.
+
+Verdict : TLALOC(TLALOC) mene null_prog.adb au bout de la phase
+syntaxique. Diff des traces integrales gnat/bootstrappe : IDENTIQUES A
+L OCTET PRES sur toute la portion syntaxique (732 lignes -- etats,
+actions, numeros de pages/lignes de noeuds, dumps), apres normalisation
+des fins de ligne : la trace bootstrappee est en CRLF (runtime TEXT_IO,
+piege n 131) et le diff brut disait "tout differe". Fausse alerte
+geree en fin de session : le supplement du listing gnat etait LIB_PHASE
+et suivantes (option W cote gnat, S cote bootstrappe) -- lecon de
+protocole : comparer a OPTIONS IDENTIQUES.
+
+Methode : la chaine sondes-encadrantes -> diff gnat/boot -> temoin
+minimal -> lecture FINC -> correctif d une ligne a fonctionne trois
+fois de suite dans la meme session. Trois occurrences de la famille
+n 112 en trois chantiers successifs : AUDIT PREVENTIF recommande
+(grep des CODE_EXP suivis de La/BLKMOV hors regle unique) avant ou
+pendant l ouverture de LIB/SEM_PHASE, qui multiplient les copies de
+TREE/SEQ. Site frere deja marque "A VERIFIER" dans
+expander-instructions (DESTINATION_SELECTED, tableau non-agregat).
+
+**Etat de sortie** : PAR_PHASE bootstrappe bit-exact sur null_prog ;
+SECV1 et TTAIL1 au filet ; sondes @GT/@PC (idl-par_phase), @AP
+(idl-idl_man) ENCORE EN PLACE (retrait par grep @GT/@PC/@AP quand le
+chantier suivant n en aura plus besoin -- elles resserviront telles
+quelles au premier run W). Patchs : expander-expressions.adb (C6, C7),
+expander-declarations.adb (C8).
+
+**Suite (deux voies, a arbitrer)** : (1) securiser l acquis syntaxique
+-- option P apres PAR_PHASE (dump DIANA syntax-only), diff gnat/boot
+du dump, corpus de sources au-dela de null_prog ; (2) attaquer la
+compilation complete (W) de _standrd.ads par le bootstrappe --
+prerequis de TOUT null_prog en W (LIB_PHASE exige la bibliotheque).
+Pour (2), prevoir l upload LIB_PHASE/SEM_PHASE selon l INDEX, et la
+reference gnat-W existe deja (trace du 7/08, sondes comprises).

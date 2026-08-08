@@ -1102,7 +1102,8 @@ is
 	    EXPRESSIONS.CODE_EXP( INIT_EXP );
 
 	  elsif  ( INIT_EXP.TY = DN_SELECTED
-		  and then  D( SM_DEFN, D( AS_DESIGNATOR, INIT_EXP ) ).TY /= DN_FUNCTION_ID )
+		  and then  D( SM_DEFN, D( AS_DESIGNATOR, INIT_EXP ) ).TY /= DN_FUNCTION_ID
+		  and then  D( SM_DEFN, D( AS_DESIGNATOR, INIT_EXP ) ).TY /= DN_OPERATOR_ID )
 	    or else  INIT_EXP.TY = DN_INDEXED
 	  then
 	  -- Initialiseur composant tableau INLINE (TXT := HTABLE(I).HN) : le
@@ -2638,7 +2639,8 @@ end if;
 	if  CODI.NO_SUBP_PARAMS  then
 	  PUT_LINE( tab & "RTD" );
 	else
-	  if  SOURCE_NAME.TY = DN_FUNCTION_ID  then
+--	  if  SOURCE_NAME.TY = DN_FUNCTION_ID  then
+	  if  SOURCE_NAME.TY = DN_FUNCTION_ID  or  SOURCE_NAME.TY = DN_OPERATOR_ID  then		-- symetrie avec l'epilogue des corps reels (un operateur est une fonction)
 	    PUT_LINE( tab & "RTD" & tab & "prm_siz-8" );
 	  else
 	    PUT_LINE( tab & "RTD" & tab & "prm_siz" );
