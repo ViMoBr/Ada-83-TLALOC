@@ -55,7 +55,6 @@ is
       CODE_PACKAGE_BODY( UNIT_ALL_DECL );
 
     when  DN_SUBUNIT		=>
---      CODE_SUBUNIT_BODY( D( AS_SUBUNIT_BODY, UNIT_ALL_DECL )  );
 			--| Niveau de depart du subunit : reprendre le niveau enregistre par
 			--| l'unite PARENTE sur la premiere declaration (stub ou spec), meme
 			--| canal bibliotheque que CD_LABEL.  Invariant : CD_LEVEL d'un id de
@@ -76,7 +75,6 @@ is
 	CODI.CUR_LEVEL := DI( CD_LEVEL, FIRST_DECL_ID ) - 1;					-- l'INC_LEVEL du corps retablira CD_LEVEL ; -1 sur une valeur non posee (0) => CONSTRAINT_ERROR : bruyant
 
         elsif  SUB_BODY.TY = DN_PACKAGE_BODY  then
---	CODI.CUR_LEVEL := DI( CD_LEVEL, FIRST_DECL_ID );					-- pas de frame propre : niveau du contexte du stub
 	declare
 	  REGION : TREE := D( XD_REGION, FIRST_DECL_ID );
 	begin

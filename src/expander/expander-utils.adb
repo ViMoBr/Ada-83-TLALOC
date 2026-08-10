@@ -153,11 +153,6 @@ is					-----
   begin
     CUR_LEVEL := CUR_LEVEL + 1;
 
---    if DEBUG then put_line( "inc lvl cur= " & LEVEL_NUM'IMAGE( CUR_LEVEL ) ); end if;
-
---   exception
---     when CONSTRAINT_ERROR => raise STATIC_LEVEL_OVERFLOW;
-
   end	INC_LEVEL;
 	---------
 
@@ -169,11 +164,6 @@ is					-----
   begin
     CUR_LEVEL := CUR_LEVEL - 1;
 
---    if DEBUG then put_line( "dec lvl cur= " & LEVEL_NUM'IMAGE( CUR_LEVEL ) ); end if;
-
---   exception
---     when CONSTRAINT_ERROR => raise STATIC_LEVEL_UNDERFLOW;
---
   end	DEC_LEVEL;
 	---------
 
@@ -607,7 +597,6 @@ is					-----
 
 	if  OBJ_TYPE.TY in CLASS_SCALAR  or else  OBJ_TYPE.TY = DN_ACCESS  then
 	  PUT_LINE( tab & OPER_LOAD_STR( OBJ_TYPE ) & " ," & tab & "-" & DEFN_STR & "_ofs" );
---	  PUT_LINE( tab & "L" & OPER_SIZ_CHAR( OBJ_TYPE ) & " ," & tab & "-" & DEFN_STR & "_ofs" );
 
 	else
 	  PUT_LINE( tab & "LVA ," & tab & "-" & DEFN_STR & "_ofs" );
@@ -620,33 +609,29 @@ is					-----
     if  DEFN.TY in CLASS_PARAM_NAME  then								-- in_id in_out_id out_id
       if  (DEFN.TY = DN_IN_ID) and (D( SM_OBJ_TYPE, DEFN ).TY in CLASS_SCALAR
 			or else D( SM_OBJ_TYPE, DEFN ).TY = DN_ACCESS)	then
+
 				-------------------
 				SCALAR_IN_PARAMETER:
---	declare
---	SIZ_CHAR  : CHARACTER	:= OPER_SIZ_CHAR( D( SM_OBJ_TYPE, DEFN ) );
-
         begin
---	PUT( tab & "L" & SIZ_CHAR & ' ' & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' );
 	PUT( tab & OPER_LOAD_STR( D( SM_OBJ_TYPE, DEFN ) ) & ' ' & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' );
-	PUT( tab & '-' & PRINT_NAME( D( LX_SYMREP, DEFN ) ) );							-- ATTENTION signe offset de params opposé aux vars
+	PUT( tab & '-' & PRINT_NAME( D( LX_SYMREP, DEFN ) ) );						-- ATTENTION signe offset de params opposé aux vars
 	PUT_LINE( "_ofs" );										-- offset de parametre scalaire
-        end	SCALAR_IN_PARAMETER;
-		-------------------
+
+        end		SCALAR_IN_PARAMETER;
+			-------------------
 
       elsif  D( SM_OBJ_TYPE, DEFN ).TY in CLASS_SCALAR
 	or else  D( SM_OBJ_TYPE, DEFN ).TY = DN_ACCESS  then						-- out/in_out SCALAIRE lu en expression :
-			----------------------								-- le slot contient l'ADRESSE, dereferencer
-			SCALAR_REF_PARAMETER:								-- (meme geste que la re-passe out->in de
---	declare											-- CODE_PROCEDURE_CALL). Piege n° 80.
---	SIZ_CHAR  : CHARACTER	:= OPER_SIZ_CHAR( D( SM_OBJ_TYPE, DEFN ) );
 
+				--------------------							-- le slot contient l'ADRESSE, dereferencer
+				SCALAR_REF_PARAMETER:							-- (meme geste que la re-passe out->in de
         begin
---	PUT( tab & "LI" & SIZ_CHAR & ' ' & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' );
 	PUT( tab & OPER_LOADI_STR( D( SM_OBJ_TYPE, DEFN ) ) & ' ' & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' );
 	PUT( tab & '-' & PRINT_NAME( D( LX_SYMREP, DEFN ) ) );
 	PUT_LINE( "_ofs" );
-        end	SCALAR_REF_PARAMETER;
-		----------------------
+
+        end		SCALAR_REF_PARAMETER;
+			--------------------
 
       else											-- pas scalaire ou out in/out
         PUT( tab & "La " & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' & tab );
@@ -664,15 +649,14 @@ is					-----
         end loop;
 
         if DEFN.TY in CLASS_VC_NAME  and then  DB( SM_RENAMES_OBJ, DEFN )  then
-			---------------
-			MANAGE_RENAMING:
+				---------------
+				MANAGE_RENAMING:
 	declare
 	  OBJ_LEVEL	: LEVEL_NUM	:= DI( CD_LEVEL, DEFN );
 	  OBJ_STR		: constant STRING	:= PRINT_NAME( D( LX_SYMREP, DEFN ) );
 	begin
 
 	  if  OBJ_TYPE.TY in CLASS_SCALAR  or else OBJ_TYPE.TY = DN_ACCESS  then
---	    PUT( tab & "LI" & OPER_SIZ_CHAR( OBJ_TYPE ) & tab & IMAGE( OBJ_LEVEL ) & ", " );
 	    PUT( tab & OPER_LOADI_STR( OBJ_TYPE ) & tab & IMAGE( OBJ_LEVEL ) & ", " );
 	    REGIONS_PATH( DEFN );
 	    PUT_LINE( OBJ_STR & "_disp, 0" );
@@ -681,17 +665,16 @@ is					-----
 	  end if;
 
 	  return;
-	end	MANAGE_RENAMING;
-		---------------
+
+	end		MANAGE_RENAMING;
+			---------------
         end if;
 
         if  OBJ_TYPE.TY in CLASS_SCALAR  or else OBJ_TYPE.TY = DN_ACCESS  then
 	declare
---	  SIZ_CHAR	: CHARACTER	:= OPER_SIZ_CHAR( OBJ_TYPE );
 	  DEFN_LVL	: INTEGER		:= DI( CD_LEVEL, DEFN );
 
 	begin
---	  PUT( tab & "L" & SIZ_CHAR & ' ' & IMAGE( DEFN_LVL ) & ',' & tab );
 	  PUT( tab & OPER_LOAD_STR( OBJ_TYPE ) & ' ' & IMAGE( DEFN_LVL ) & ',' & tab );
 	  if  DEFN_LVL /= INTEGER( CUR_LEVEL )  or else  D( XD_REGION, DEFN ).TY = DN_PACKAGE_ID  then
 	    REGIONS_PATH( DEFN );

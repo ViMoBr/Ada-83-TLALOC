@@ -1313,3 +1313,39 @@ compilation complete (W) de _standrd.ads par le bootstrappe --
 prerequis de TOUT null_prog en W (LIB_PHASE exige la bibliotheque).
 Pour (2), prevoir l upload LIB_PHASE/SEM_PHASE selon l INDEX, et la
 reference gnat-W existe deja (trace du 7/08, sondes comprises).
+
+## Sessions 8-9 aout 2026 -- campagne du segfault 0x4028d8 : POINT FIXE
+## ATTEINT SUR _standrd.ads
+
+Juge final : FINC(TLALOC(TLALOC)) IDENTIQUE A L'OCTET PRES a
+FINC(TLALOC(gnat)) sur _standrd.ads -- 18 932 octets, CRLF pres, cmp muet.
+Le bootstrappe execute PAR + SEM + EXPANDER complets sur la spec standard.
+
+Familles closes, dans l'ordre de la chaine (pieges 138 a 143) :
+138 subunits a parent porteur de frame (CUR_LEVEL, canal CD_LEVEL +
+    remontee XD_REGION) -- gardien SUBLVL_TEST ;
+139 agregat de tableau DE tableaux, composante non-agregat en voie
+    scalaire (garde de profondeur EMIT_ONE_COMP) -- gardien AGGSTR_TEST ;
+140 operateurs UTILISATEUR emis comme predefinis (dispatch DN_USED_OP) +
+    trois raccords de nommage (appel lettre, REGIONS_PATH, table "=") ;
+141 collision des doublets anonymes sur infixe (suffixe NEW_LABEL --
+    lecon : le nommage positionnel ne peut pas separer une expression de
+    son operande gauche) ;
+142 UN OPERATEUR EST UNE FONCTION : epilogue RTD prm_siz-8 + appel
+    prefixe + init selectionne (recensement grep au piege) -- gardien
+    OPDEF_TEST 1-8 ;
+143 STATIC_TYPE_ALIGN_BYTES et pragma PACK (patch V.M. ; desaccord
+    type-info/consommateurs A CITER ICI apres les 4 greps du lot) --
+    gardien PACKV_TEST ; PRINT_NUM disculpee par RECSTR_TEST et
+    RECSTR2_TEST (verts d'origine, au filet).
+
+Lecons de methode gravees : deux familles peuvent partager un symptome
+(141 masquee par 142) -- re-deriver la chaine causale a chaque crash ; une
+boucle infinie while-decrementante = parametre astronomique = chercher le
+site d'appel ; un alignement ne corrompt jamais seul -- nommer le
+desaccord.
+
+Sondes @PD et @PN retirees. Suivant en file : segfault de _standrd.adb
+(corps de la bibliotheque standard), meme protocole.
+
+Incidemment : calendar.adb corrigé : conversions de type explicites dans les fonctions de comparaison (elle partaient en récursion infinie sans les conversions DURATION).

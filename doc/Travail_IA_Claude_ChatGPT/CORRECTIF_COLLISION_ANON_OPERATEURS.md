@@ -195,8 +195,11 @@ BLOC À INSÉRER :
     les references de facon degeneree, @ nul propage dans D/DABS,
     segfault 0x45825b (La sur VAL). Invisible avant le piege n 140 :
     le chemin builtin n'allouait pas de doublet-resultat d'operateur.
-    Nommage bascule sur le LEXEME de l'operateur (DN_USED_OP porte sa
-    propre LX_SRCPOS, unique). AUDITS RECOMMANDES : (a)
+    Le LEXEME n'offre pas d'issue : LX_SRCPOS du DN_USED_OP = debut
+    d'expression = position de l'operande gauche (verifie au FINC).
+    Unicite par SUFFIXE hors position : ANON_l_c_L<n> via NEW_LABEL
+    (deterministe), pour les seuls lieux-resultat d'operateurs.
+    AUDITS RECOMMANDES : (a)
     PREPARE_ARRAY_RESULT_PLACE garde CALL_NODE -- un operateur
     utilisateur rendant un tableau NON contraint recollisionnerait
     (hors corpus) ; (b) defense assembleur : faire aboyer la macro VAR

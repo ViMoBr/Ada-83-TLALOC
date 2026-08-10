@@ -1029,3 +1029,113 @@ instances sont expansées sur site.
     tolerance fasmg au premier FINC bootstrappe, et trancher l origine
     (NEW_LINE du TEXT_IO runtime, source hors contexte projet a ce
     jour). (session 7 aout)
+
+138. **CUR_LEVEL := 0 en tete de TOUTE unite — faux pour un subunit
+    dont le parent porte un frame.** Un subunit de la PROCEDURE
+    SEM_PHASE se compilait au niveau de son parent ; a l'execution son
+    LINK ecrasait display[parent] et tout acces montant lisait le
+    frame du subunit (use__info = 0, ENUM_IMAGE derefere 0+16 :
+    SIGSEGV 0x4028d8). Sain par accident pour les subunits de
+    bibliotheque (parent package, base 0) — PAR/LIB_PHASE passaient.
+    Canal de correction : CD_LEVEL de la premiere declaration (stub /
+    spec), qui traverse la bibliotheque comme CD_LABEL ; poseur ajoute
+    au stub de package (pas de frame : niveau du contexte). Signature
+    gdb : registre = petite constante exacte d'un LI de la sequence
+    appelante (ici 0x10) = base nulle + offset. Gardien : SUBLVL_TEST.
+    (session 7 aout, lot subunits)
+
+139. **Agregat d'un tableau DE tableaux : COLLECT_DIMENSIONS aplatit en
+    multi-dim, et une composante NON-agregat couvrant les dimensions
+    restantes (litteral de chaine, objet, appel) tombait dans la voie
+    scalaire d'EMIT_ONE_COMP** -- SId rangeait l'@doublet du litteral :
+    contenu = tranches de pointeurs (pas constant entre elements = ecart
+    des blocs STR), positions et strides JUSTES. Symptome bootstrap :
+    BLTN_TEXT_ARRAY empoisonne, symboles d'operateurs doublons, deflist
+    de "-" vide, HEAD leve au premier DN_FUNCTION_CALL (SHORT_INTEGER
+    de _standrd). Garde de profondeur posee : DEPTH < NB_DIMS et
+    non-agregat => copie en bloc, longueur _STR_(DEPTH), source regle
+    n 112. Gardien : AGGSTR_TEST (checks 2-10). AUDIT RECOMMANDE :
+    EMIT_ONE_COMPONENT (agregat RECORD) avec composante tableau-de-
+    tableaux, et agregats MIXTES (K_A => "AND", K_B => ('O','R','!')) --
+    le second membre passe par la voie agregat imbrique, non couvert
+    par le temoin. (session 8 aout)
+
+140. **Operateur DEFINI PAR L'UTILISATEUR emis comme le predefini
+    homonyme.** Le dispatch DN_USED_OP envoyait tout a
+    CODE_DN_BLTN_OPERATOR_ID, dont le garde acceptait DN_OPERATOR_ID :
+    emission PAR NOM ("**" -> CALL INTEGER_POW, "+" -> ADD...) sur les
+    @doublets des operandes records. Symptome bootstrap : spin
+    d'INTEGER_POW (N = adresse de pile, E astronomique, code de la
+    boucle PROUVE correct au desassemblage) au 2**15 de SHORT_INTEGER ;
+    et poison SILENCIEUX de tous les +,-,*,comparaisons d'UARITH.
+    Discrimination posee au dispatch : SUBPROGRAM_ORIGIN d'abord (un
+    renames d'un predefini reste par nom), puis DN_OPERATOR_ID a vrai
+    corps -> voie normale d'appel de fonction (protocole D(...)).
+    Frontiere : les operateurs IMPLICITES des types derives restent
+    par nom -- gardes par OPDEF_TEST 5-6. Lecon de methode : une
+    boucle "infinie" while-decrementante = parametre d'entree
+    astronomique = chercher le SITE D'APPEL, pas la boucle.
+     Raccord de nommage : l'APPEL passe par LETTERED_SUBNAME comme le
+    PRO (l'un sans l'autre = identifiant fasmg invalide '+'_Lnn) ;
+    typo latent de la table sur "=" corrige au meme lot.
+    Gardien : OPDEF_TEST. (session 8 aout 2026)
+
+    effet comportemental assumé du correctif : tout opérateur utilisateur
+    dont le corps applique le même opérateur au même type sans conversion
+    récursait légitimement ; calendar.adb corrigé en conséquence.
+
+141. **Doublet anonyme nomme par position source : COLLISION sur un
+    appel d'operateur infixe.** La position d'une expression infixe =
+    celle de son operande GAUCHE ; si cet operande est un appel a
+    resultat record, PREPARE_FUNCTION_RESULT_PLACE emettait DEUX
+    VAR ANON_l_c homonymes dans le namespace -- fasmg multi-passes lie
+    les references de facon degeneree, @ nul propage dans D/DABS,
+    segfault 0x45825b (La sur VAL). Invisible avant le piege n 140 :
+    le chemin builtin n'allouait pas de doublet-resultat d'operateur.
+    Le LEXEME n'offre pas d'issue : LX_SRCPOS du DN_USED_OP = debut
+    d'expression = position de l'operande gauche (verifie au FINC).
+    Unicite par SUFFIXE hors position : ANON_l_c_L<n> via NEW_LABEL
+    (deterministe), pour les seuls lieux-resultat d'operateurs.
+     AUDITS RECOMMANDES : (a)
+    PREPARE_ARRAY_RESULT_PLACE garde CALL_NODE -- un operateur
+    utilisateur rendant un tableau NON contraint recollisionnerait
+    (hors corpus) ; (b) defense assembleur : faire aboyer la macro VAR
+    de codi sur une redefinition dans le meme namespace -- la
+    collision etait un silence fasmg. Gardien : OPDEF_TEST 7-8.
+    (session 8 aout)
+
+142. **UN OPERATEUR EST UNE FONCTION : tout test DN_FUNCTION_ID d'un
+    emetteur doit inclure DN_OPERATOR_ID.** Cinquieme et sixieme faces
+    du territoire du piege n 140 : l'epilogue RTD testait
+    DN_FUNCTION_ID seul -- un corps d'operateur recevait RTD prm_siz
+    (epilogue de PROCEDURE), le slot resultat etait depile, et le La
+    de l'appelant dereferencait le LI de taille reste au sommet
+    (segfault rax = 8 = _PAIRE.size, temoin OPDEF). Trois freres
+    corriges au meme lot : epilogue des corps synthetises, appel
+    PREFIXE PKG."op"(..) de CODE_SELECTED (retombee silencieuse), init
+    par appel selectionne. Recensement mecanique de la famille :
+    grep DN_FUNCTION_ID expander*.adb | grep -v DN_OPERATOR_ID --
+    a repasser apres tout nouveau test de genre de sous-programme ;
+    les seuls survivants legitimes sont les unites de bibliotheque
+    (un operateur ne peut pas en etre une). Lecon jumelle du n 141 :
+    la collision ANON etait reelle mais MASQUEE par ce trou -- deux
+    familles peuvent partager un meme symptome, corriger la premiere
+    ne dispense pas de re-deriver la chaine causale sur le crash
+    suivant. Gardien : OPDEF_TEST 1-8 complet. (session 8 aout)
+    
+   143. **STATIC_TYPE_ALIGN_BYTES ignorait pragma PACK : les tableaux
+    packes recevaient l'alignement de leur composant.** Symptome
+    bootstrap : U_VALUE/UARITH corrompait les universels a >= 2
+    doublets (quads hauts recopies en bas -- 2**31-1 lu 2100214748),
+    6 lignes de diff sur le FINC bootstrappe de _standrd, PRINT_NUM
+    innocente (RECSTR/RECSTR2 verts). Garde posee : tableau packe ->
+    alignement 1 (la garde teste la BASE : les sous-types contraints
+    remontent a SM_IS_PACKED). DESACCORD DES DEUX PARTIES nomme au
+    journal (type-info _VECTOR vs consommateurs UNIV_OPS) -- un
+    alignement seul ne corrompt pas. MIROIRS a honorer : STATOFS
+    fasmg (n 110) et chantier n 117 (l'en-tete de la fonction
+    l'exigeait). RESERVE vague 4 : DB(SM_IS_PACKED) sur attribut
+    vierge doit rendre FALSE -- cellules vierges non nulles sous
+    bootstrappe (note SECV1). Gardien : PACKV_TEST ; RECSTR_TEST et
+    RECSTR2_TEST restent au filet (squelette et chair de PRINT_NUM).
+    (session 9 aout)

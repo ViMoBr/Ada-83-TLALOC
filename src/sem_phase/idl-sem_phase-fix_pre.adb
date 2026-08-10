@@ -6,52 +6,67 @@
 with text_io; use text_io;
 
 separate( IDL.SEM_PHASE )
---|-------------------------------------------------------------------------------------------------
---|		PROCEDURE FIX_PRE
---|-------------------------------------------------------------------------------------------------
-procedure FIX_PRE is
+
+			-------
+procedure			FIX_PRE
+is			-------
    
-  --|-----------------------------------------------------------------------------------------------
-  --|		FUNCTION COPY_NODE
-  function COPY_NODE ( NODE : TREE ) return TREE is
+
+		---------
+  function	COPY_NODE		( NODE : TREE )	return TREE
+  is		---------
   begin
-    if NODE.PT = HI or NODE.PT = S then return NODE;					--| PAS DE COPIE DE BLOC ATTRIBUTS DANS CES CAS
+    if  NODE.PT = HI  or  NODE.PT = S  then return  NODE;							--| PAS DE COPIE DE BLOC ATTRIBUTS DANS CES CAS
     else
       declare
         LEN	: ATTR_NBR	:= DABS( 0, NODE ).NSIZ;
         RESULT	: TREE		:= MAKE( NODE.TY, LEN );
       begin
-        for I in 0 .. LEN loop
+        for  I in 0 .. LEN  loop
 	DABS( I, RESULT, DABS( I, NODE ) );
         end loop;
-        return RESULT;
+        return  RESULT;
       end;
     end if;
-  end COPY_NODE;
-  --|-----------------------------------------------------------------------------------------------
-  --|		PROCEDURE ABORT_RUN
-  procedure ABORT_RUN ( MSG :STRING ) is
+
+  end	COPY_NODE;
+	---------
+
+
+		---------
+  procedure	ABORT_RUN		( MSG :STRING )
+  is		---------
   begin
     SET_OUTPUT( STANDARD_OUTPUT );
     PUT( "**** " );
     PUT_LINE( MSG );
-  end ABORT_RUN;
-  --|-----------------------------------------------------------------------------------------------
-  --|	PROCEDURE DEFINE_ID
-   procedure DEFINE_ID ( ID :TREE ) is
-   begin
-     if ID.TY not in CLASS_ENUM_LITERAL and then ID.TY /= DN_CONSTANT_ID then
-       PUT_LINE( PRINT_NAME( D( LX_SYMREP, ID ) ) );
-     end if;
-     LIST( D( LX_SYMREP, ID ), SINGLETON( ID ) );						--| METTRE LE SINGLETON ID DANS LA XD_DEFLIST DU SYMBOLE (DOUBLE CHAÎNAGE ENTRE LES DEUX)
-   end DEFINE_ID;
-   --|----------------------------------------------------------------------------------------------
-   --|	PROCEDURE HEAD_DEFN
-   function HEAD_DEFN ( USED_ID_OR_SYMREP :TREE ) return TREE is
+
+  end	ABORT_RUN;
+	---------
+
+
+		---------
+  procedure	DEFINE_ID		( ID :TREE )
+  is		---------
+  begin
+   if ID.TY not in CLASS_ENUM_LITERAL and then ID.TY /= DN_CONSTANT_ID then
+     PUT_LINE( PRINT_NAME( D( LX_SYMREP, ID ) ) );
+   end if;
+   LIST( D( LX_SYMREP, ID ), SINGLETON( ID ) );								--| METTRE LE SINGLETON ID DANS LA XD_DEFLIST DU SYMBOLE (DOUBLE CHAÎNAGE ENTRE LES DEUX)
+
+  end	DEFINE_ID;
+	---------
+
+
+		---------
+    function	HEAD_DEFN ( USED_ID_OR_SYMREP :TREE ) return TREE
+    is		---------
+
      SYMREP	: TREE	:= USED_ID_OR_SYMREP;
      DEFLIST	: SEQ_TYPE;
+
    begin
-     if USED_ID_OR_SYMREP.TY /= DN_SYMBOL_REP then					--| UN USED_NAME_ID OU USED_OBJECT_ID
+     if USED_ID_OR_SYMREP.TY /= DN_SYMBOL_REP then							--| UN USED_NAME_ID OU USED_OBJECT_ID
        SYMREP := D( LX_SYMREP, USED_ID_OR_SYMREP );
      end if;
      DEFLIST := LIST( SYMREP );
@@ -63,90 +78,100 @@ procedure FIX_PRE is
      else
        return HEAD( DEFLIST );
      end if;
-  end HEAD_DEFN;
-    --|---------------------------------------------------------------------------------------------
-    --|	PROCEDURE GET_BASE_TYPE
-    function GET_BASE_TYPE ( TYPE_SPEC :TREE ) return TREE is
-    begin
-      if TYPE_SPEC.TY in CLASS_NON_TASK then
-        return D( SM_BASE_TYPE, TYPE_SPEC );
-      else
-        return TYPE_SPEC;
-      end if;
-    end GET_BASE_TYPE;
-    --|---------------------------------------------------------------------------------------------
-    --|	PROCEDURE TYPE_SPEC_FOR_SUBTYPE
-    function TYPE_SPEC_FOR_SUBTYPE ( SUBTYPE_INDICATION :TREE ) return TREE is
-      CONSTRAINT		: TREE;
-      NAME		: TREE;
-      BASE_TYPE		: TREE;
-      use MAKE_NOD;
-    begin
-      if SUBTYPE_INDICATION.TY = DN_SUBTYPE_INDICATION then
-        CONSTRAINT := D( AS_CONSTRAINT, SUBTYPE_INDICATION );
-        NAME := D( AS_NAME, SUBTYPE_INDICATION );
-      else
-        CONSTRAINT := TREE_VOID;
-        NAME := SUBTYPE_INDICATION;
-      end if;
+
+  end	HEAD_DEFN;
+	---------
+
+
+		-------------
+  function	GET_BASE_TYPE	( TYPE_SPEC :TREE )		return TREE
+  is		-------------
+  begin
+    if  TYPE_SPEC.TY in CLASS_NON_TASK  then
+      return  D( SM_BASE_TYPE, TYPE_SPEC );
+    else
+      return  TYPE_SPEC;
+    end if;
+
+  end	GET_BASE_TYPE;
+	-------------
+
+
+		---------------------
+  function	TYPE_SPEC_FOR_SUBTYPE	( SUBTYPE_INDICATION :TREE )		return TREE
+  is		---------------------
+
+    CONSTRAINT		: TREE;
+    NAME			: TREE;
+    BASE_TYPE		: TREE;
+    use MAKE_NOD;
+
+  begin
+    if SUBTYPE_INDICATION.TY = DN_SUBTYPE_INDICATION then
+      CONSTRAINT := D( AS_CONSTRAINT, SUBTYPE_INDICATION );
+      NAME := D( AS_NAME, SUBTYPE_INDICATION );
+    else
+      CONSTRAINT := TREE_VOID;
+      NAME := SUBTYPE_INDICATION;
+    end if;
       
-      BASE_TYPE := D( SM_TYPE_SPEC, D( SM_DEFN, NAME ) );
-      if CONSTRAINT = TREE_VOID then
-        return BASE_TYPE;
-      elsif BASE_TYPE.TY = DN_INTEGER then
-        D( SM_TYPE_SPEC, CONSTRAINT, BASE_TYPE);
-        D( SM_EXP_TYPE, D ( AS_EXP1, CONSTRAINT), BASE_TYPE );
-        D( SM_EXP_TYPE, D ( AS_EXP2, CONSTRAINT), BASE_TYPE );
-        return MAKE_INTEGER (
-		SM_RANGE => CONSTRAINT,
-		SM_BASE_TYPE => BASE_TYPE,
-		XD_SOURCE_NAME => D( XD_SOURCE_NAME, BASE_TYPE ) );
-      end if;
-      ABORT_RUN ( "BAD TYPE FOR SUBTYPE_INDICATION" );
-      raise PROGRAM_ERROR;
-    end TYPE_SPEC_FOR_SUBTYPE;
+    BASE_TYPE := D( SM_TYPE_SPEC, D( SM_DEFN, NAME ) );
+    if CONSTRAINT = TREE_VOID then
+      return BASE_TYPE;
+    elsif BASE_TYPE.TY = DN_INTEGER then
+      D( SM_TYPE_SPEC, CONSTRAINT, BASE_TYPE);
+      D( SM_EXP_TYPE, D( AS_EXP1, CONSTRAINT ), BASE_TYPE );
+      D( SM_EXP_TYPE, D( AS_EXP2, CONSTRAINT ), BASE_TYPE );
+      return  MAKE_INTEGER( SM_RANGE => CONSTRAINT, SM_BASE_TYPE => BASE_TYPE,
+			XD_SOURCE_NAME => D( XD_SOURCE_NAME, BASE_TYPE ) );
+    end if;
+    ABORT_RUN( "BAD TYPE FOR SUBTYPE_INDICATION" );
+    raise PROGRAM_ERROR;
+
+  end	TYPE_SPEC_FOR_SUBTYPE;
+	---------------------
 
 
 			----
-    procedure		WALK		( NODE, PARENT, REGION :TREE )
-    is			----
-      use MAKE_NOD;
-    begin
-      case NODE.TY is
+  procedure		WALK		( NODE, PARENT, REGION :TREE )
+  is			----
+    use MAKE_NOD;
+  begin
+    case NODE.TY is
          
-      when DN_VOID =>
+    when DN_VOID =>
         null;
          
-      when DN_CONSTANT_ID =>
+    when DN_CONSTANT_ID =>
         DEFINE_ID( NODE );
         D( XD_REGION, NODE, REGION );
          
-      when DN_ENUMERATION_ID | DN_CHARACTER_ID =>
+    when DN_ENUMERATION_ID | DN_CHARACTER_ID =>
         DEFINE_ID( NODE );
         D( XD_REGION, NODE, REGION );
          
-      when DN_TYPE_ID =>
+    when DN_TYPE_ID =>
         DEFINE_ID( NODE );
         D( SM_FIRST, NODE, NODE);
         D( XD_REGION, NODE, REGION );
          
-      when DN_SUBTYPE_ID =>
+    when DN_SUBTYPE_ID =>
         DEFINE_ID( NODE );
         D( XD_REGION, NODE, REGION );
          
-      when DN_PACKAGE_ID =>
+    when DN_PACKAGE_ID =>
         DEFINE_ID( NODE );
         D( SM_FIRST, NODE, NODE);
         D( SM_SPEC, NODE, D ( AS_HEADER, PARENT ) );
         D( SM_UNIT_DESC, NODE, TREE_VOID );
         D( XD_REGION, NODE, REGION );
          
-      when DN_EXCEPTION_ID =>
+    when DN_EXCEPTION_ID =>
         DEFINE_ID( NODE );
         D( SM_RENAMES_EXC, NODE, TREE_VOID );
         D( XD_REGION, NODE, REGION );
          
-      when DN_CONSTANT_DECL =>
+    when DN_CONSTANT_DECL =>
         declare
 	SOURCE_NAME_S	: constant TREE := D( AS_SOURCE_NAME_S, NODE );
 	EXP		: constant TREE := D( AS_EXP, NODE );
@@ -163,14 +188,14 @@ procedure FIX_PRE is
 	end;
         end;
          
-      when DN_EXCEPTION_DECL =>
+    when DN_EXCEPTION_DECL =>
         declare
 	SOURCE_NAME_S	: constant TREE	:= D( AS_SOURCE_NAME_S, NODE );
         begin
 	WALK( SOURCE_NAME_S, NODE, REGION );
         end;
          
-      when DN_TYPE_DECL =>
+    when DN_TYPE_DECL =>
         declare
 	SOURCE_NAME	: constant TREE	:= D( AS_SOURCE_NAME, NODE );
 	DSCRMT_DECL_S	: constant TREE	:= D( AS_DSCRMT_DECL_S, NODE );
@@ -186,7 +211,7 @@ procedure FIX_PRE is
 	end if;
         end;
          
-      when DN_SUBTYPE_DECL =>
+    when DN_SUBTYPE_DECL =>
         declare
 	SOURCE_NAME	: constant TREE := D( AS_SOURCE_NAME, NODE );
 	SUBTYPE_INDICATION  : constant TREE := D( AS_SUBTYPE_INDICATION, NODE );
@@ -202,7 +227,7 @@ procedure FIX_PRE is
 	end if;
         end;
          
-	  when DN_PACKAGE_DECL =>
+    when DN_PACKAGE_DECL =>
 	     declare
 	        SOURCE_NAME : constant TREE := D ( AS_SOURCE_NAME, NODE );
 	        HEADER	: constant TREE := D ( AS_HEADER, NODE );
@@ -213,7 +238,7 @@ procedure FIX_PRE is
 	        WALK ( UNIT_KIND, NODE, REGION => SOURCE_NAME );
 	     end;
          
-	  when DN_LENGTH_ENUM_REP =>
+    when DN_LENGTH_ENUM_REP =>
 	     declare
 	        NAME	: constant TREE	:= D ( AS_NAME, NODE );
 	        EXP	: constant TREE	:= D ( AS_EXP, NODE );
@@ -226,7 +251,7 @@ procedure FIX_PRE is
 	        D ( CD_IMPL_SIZE, D ( SM_TYPE_SPEC, D ( SM_DEFN, D ( AS_NAME, NAME))), D ( SM_VALUE, EXP ) );
 	     end;
          
-	  when DN_PRAGMA =>
+    when DN_PRAGMA =>
 	     declare
 	        USED_NAME_ID	: constant TREE := D ( AS_USED_NAME_ID, NODE );
 	        GENERAL_ASSOC_S	: constant TREE := D ( AS_GENERAL_ASSOC_S, NODE );
@@ -237,7 +262,7 @@ procedure FIX_PRE is
 	        DB ( SM_IS_PACKED, D ( SM_TYPE_SPEC, D ( SM_DEFN, HEAD ( LIST ( GENERAL_ASSOC_S ) ) ) ), TRUE );
 	     end;
          
-	  when DN_ENUMERATION_DEF =>
+    when DN_ENUMERATION_DEF =>
 	     declare
 	        ENUM_LITERAL_S	: constant TREE	:= D ( AS_ENUM_LITERAL_S, NODE);
 	        RANGE_NODE  : TREE	:= MAKE ( DN_RANGE );
@@ -283,7 +308,7 @@ procedure FIX_PRE is
 	        D ( SM_TYPE_SPEC, RANGE_NODE, ENUMERATION );
 	     end;
          
-	  when DN_SUBTYPE_INDICATION =>
+    when DN_SUBTYPE_INDICATION =>
 	     declare
 	        CONSTRAINT  : constant TREE	:= D ( AS_CONSTRAINT, NODE );
 	        NAME	: constant TREE	:= D ( AS_NAME, NODE );
@@ -298,7 +323,7 @@ procedure FIX_PRE is
 		 );
 	     end;
          
-	  when DN_INTEGER_DEF =>
+    when DN_INTEGER_DEF =>
 	     declare
 	        use UARITH;
 	        CONSTRAINT  : constant TREE	:= D ( AS_CONSTRAINT, NODE );
@@ -313,7 +338,7 @@ procedure FIX_PRE is
 	        D ( SM_BASE_TYPE, INTEGER_NODE, INTEGER_NODE);
 	     end;
          
-	  when DN_FLOAT_DEF =>
+    when DN_FLOAT_DEF =>
 	     declare
 	        use UARITH;
 	     
@@ -332,7 +357,7 @@ procedure FIX_PRE is
 	        D ( SM_BASE_TYPE, FLOAT_NODE, FLOAT_NODE );
 	     end;
          
-	  when DN_FIXED_DEF =>
+    when DN_FIXED_DEF =>
 	     declare
 	        use UARITH;
 	        CONSTRAINT  : constant TREE	:= D ( AS_CONSTRAINT, NODE );
@@ -348,7 +373,7 @@ procedure FIX_PRE is
 	        D ( CD_IMPL_SMALL, FIXED_NODE, D ( SM_ACCURACY, FIXED_NODE ) );
 	     end;
          
-	  when DN_UNCONSTRAINED_ARRAY_DEF =>
+    when DN_UNCONSTRAINED_ARRAY_DEF =>
 	     declare
 	        SUBTYPE_INDICATION	: constant TREE	:= D ( AS_SUBTYPE_INDICATION, NODE );
 	        INDEX_S	: constant TREE	:= D ( AS_INDEX_S, NODE );
@@ -365,7 +390,7 @@ procedure FIX_PRE is
 	        D ( SM_BASE_TYPE, ARRAY_NODE, ARRAY_NODE );
 	     end;
          
-	  when DN_USED_CHAR =>
+    when DN_USED_CHAR =>
 	     declare
 	        DEFN: TREE := HEAD_DEFN ( NODE);
 	     begin
@@ -377,7 +402,7 @@ procedure FIX_PRE is
 						    DEFN)));
 	     end;
          
-	  when DN_USED_OBJECT_ID =>
+    when DN_USED_OBJECT_ID =>
 	     declare
 	        DEFN	: TREE	:= HEAD_DEFN ( NODE );
 	     begin
@@ -388,7 +413,7 @@ procedure FIX_PRE is
 	        end if;
 	     end;
          
-	  when DN_FUNCTION_CALL =>
+    when DN_FUNCTION_CALL =>
 	     declare
 	        use UARITH;
 	        use PRENAME;
@@ -443,7 +468,7 @@ procedure FIX_PRE is
 
 	     end;
          
-	  when DN_NUMERIC_LITERAL =>
+    when DN_NUMERIC_LITERAL =>
 	     declare
 	        VALUE	: TREE	:= UARITH.U_VALUE( PRINT_NAME( D( LX_NUMREP, NODE ) ) );
 	     begin
@@ -457,7 +482,7 @@ procedure FIX_PRE is
 	        D( SM_VALUE, NODE, VALUE );
 	     end;
          
-	  when DN_RANGE =>
+    when DN_RANGE =>
 	     declare
 	        EXP1	: constant TREE := D( AS_EXP1, NODE );
 	        EXP2	: constant TREE := D( AS_EXP2, NODE );
@@ -467,14 +492,14 @@ procedure FIX_PRE is
 	        D( SM_TYPE_SPEC, NODE, GET_BASE_TYPE( D( SM_EXP_TYPE, EXP1 ) ) );
 	     end;
          
-	  when DN_DISCRETE_SUBTYPE =>
+    when DN_DISCRETE_SUBTYPE =>
 	     declare
 	        SUBTYPE_INDICATION	: constant TREE := D( AS_SUBTYPE_INDICATION, NODE );
 	     begin
 	        WALK( SUBTYPE_INDICATION, NODE, REGION );
 	     end;
          
-	  when DN_FLOAT_CONSTRAINT =>
+    when DN_FLOAT_CONSTRAINT =>
 	     declare
 	        EXP	: constant TREE := D( AS_EXP, NODE );
 	        RANGE_NODE  : constant TREE := D( AS_RANGE, NODE );
@@ -483,7 +508,7 @@ procedure FIX_PRE is
 	        WALK( RANGE_NODE, NODE, REGION );
 	     end;
          
-	  when DN_FIXED_CONSTRAINT =>
+    when DN_FIXED_CONSTRAINT =>
 	     declare
 	        EXP	: constant TREE := D( AS_EXP, NODE );
 	        RANGE_NODE  : constant TREE := D( AS_RANGE, NODE );
@@ -492,24 +517,24 @@ procedure FIX_PRE is
 	        WALK( RANGE_NODE, NODE, REGION );
 	     end;
          
-	  when DN_PACKAGE_SPEC =>
+    when DN_PACKAGE_SPEC =>
 	     declare
 	        DECL_S1 : constant TREE := D ( AS_DECL_S1, NODE );
 	        DECL_S2 : constant TREE := D ( AS_DECL_S2, NODE );
 	     begin
 	        WALK ( DECL_S1, NODE, REGION );
 	        WALK ( DECL_S2, NODE, REGION );
-	        LIST ( D ( AS_DECL_S2, NODE), (TREE_NIL,TREE_NIL) );		--| PAS DE PARTIE PRIVEE (REP SPECS SEULEMENT)
+	        LIST ( D ( AS_DECL_S2, NODE), (TREE_NIL,TREE_NIL) );					--| PAS DE PARTIE PRIVEE (REP SPECS SEULEMENT)
 	     end;
          
-	  when DN_COMPILATION =>
+    when DN_COMPILATION =>
 	     declare
 	        COMPLTN_UNIT_S : constant TREE := D ( AS_COMPLTN_UNIT_S, NODE );
 	     begin
 	        WALK ( COMPLTN_UNIT_S, NODE, REGION );
 	     end;
          
-	  when DN_COMPILATION_UNIT =>
+    when DN_COMPILATION_UNIT =>
 	     declare
 	        CONTEXT_ELEM_S	: constant TREE := D ( AS_CONTEXT_ELEM_S, NODE );
 	        ALL_DECL	: constant TREE := D ( AS_ALL_DECL, NODE );
@@ -523,7 +548,7 @@ procedure FIX_PRE is
 	        D ( XD_LIB_NAME, NODE, STORE_SYM ( "_STANDRD.DCL" ) );
 	     end;
          
-	  when DN_INDEX =>
+    when DN_INDEX =>
 	     declare
 	        NAME	: constant TREE := D ( AS_NAME, NODE );
 	     begin
@@ -537,7 +562,7 @@ procedure FIX_PRE is
 		 );
 	     end;
          
-	  when others =>
+    when others =>
 	     declare
 	        ITEM_LIST	: SEQ_TYPE;
 	        ITEM_NODE	: TREE;
@@ -563,12 +588,14 @@ procedure FIX_PRE is
 	        end case;
 	     end;
          
-         end case;
+    end case;
 
-      end WALK;
-      --|-------------------------------------------------------------------------------------------
-      --| PROCEDURE MAKE_PREDEF_IDS
-       procedure MAKE_PREDEF_IDS ( ID_LIST :out SEQ_TYPE ) is
+  end	WALK;
+	----
+
+		---------------
+  procedure	MAKE_PREDEF_IDS	( ID_LIST :out SEQ_TYPE )
+  is		---------------
          use PRENAME;
       
          NEW_ID_LIST	: SEQ_TYPE	:= (TREE_NIL, TREE_NIL);
@@ -577,7 +604,8 @@ procedure FIX_PRE is
          NEW_ARG		: TREE;
          ITEM_LENGTH	: NATURAL;
          use MAKE_NOD;
-      begin
+
+  begin
          for PRAGMA_NAME in DEFINED_PRAGMAS loop
 	  NEW_ARG_LIST := (TREE_NIL, TREE_NIL);
 	  if PRAGMA_NAME = LIST or PRAGMA_NAME = PRENAME.DEBUG then
@@ -640,8 +668,8 @@ procedure FIX_PRE is
 			LX_SYMREP => SYM,
 			XD_POS	=> DEFINED_ATTRIBUTES'POS ( ATTRIBUTE_NAME )
 			);
-	     NEW_ID_LIST := APPEND ( NEW_ID_LIST, NEW_ID );				--| PREFIXER À LA LISTE DES IDS
-	     LIST ( SYM, INSERT ( LIST ( SYM ), NEW_ID ) );				--| CHANGER LA XD_DEFLIST PAR UNE AUGMENTEE EN FIN DE L'ID CREÉ
+	     NEW_ID_LIST := APPEND ( NEW_ID_LIST, NEW_ID );						--| PREFIXER À LA LISTE DES IDS
+	     LIST ( SYM, INSERT ( LIST ( SYM ), NEW_ID ) );						--| CHANGER LA XD_DEFLIST PAR UNE AUGMENTEE EN FIN DE L'ID CREÉ
 	  end;
          end loop;
       
@@ -659,46 +687,14 @@ procedure FIX_PRE is
 			LX_SYMREP => SYM,
 			SM_OPERATOR	=> OP_CLASS'POS ( OP_NAME )
 			);
-if  DEBUG_SEM  then
-	     PUT( "@PD1 " );
-	     PUT( OP_CLASS'IMAGE( OP_NAME ) );
-	     PUT( " [" );
-	     PUT( ITEM_NAME );
-	     PUT( "] L =" );
-	     PUT( INTEGER'IMAGE( ITEM_LENGTH ) );
-	     PUT( " SYM = " );
-	     PUT( NODE_REP( SYM ) );
-	     PUT( " " );
-	     PUT_LINE( PRINT_NAME( SYM ) );
-end if;
-
-	     NEW_ID_LIST := APPEND ( NEW_ID_LIST, NEW_ID );				--| PREFIXER À LA LISTE DES IDS
-	     LIST ( SYM, INSERT ( LIST ( SYM ), NEW_ID ) );				--| CHANGER LA XD_DEFLIST PAR UNE AUGMENTEE EN FIN DE L'ID CREÉ
+	     NEW_ID_LIST := APPEND ( NEW_ID_LIST, NEW_ID );						--| PREFIXER À LA LISTE DES IDS
+	     LIST ( SYM, INSERT ( LIST ( SYM ), NEW_ID ) );						--| CHANGER LA XD_DEFLIST PAR UNE AUGMENTEE EN FIN DE L'ID CREÉ
 	  end;
          end loop;
-
-if  DEBUG_SEM  then
-        declare
-	    MOINS	: TREE	:= FIND_SYM( """-""" );
-         begin
-	    PUT( "@PD3 " );
-	    if MOINS = TREE_VOID then
-	       PUT_LINE( "SYMBOLE MOINS ABSENT DE LA TABLE" );
-	    elsif IS_EMPTY( LIST( MOINS ) ) then
-	       PUT( NODE_REP( MOINS ) );
-	       PUT_LINE( " DEFLIST VIDE" );
-	    else
-	       PUT( NODE_REP( MOINS ) );
-	       PUT( " DEFLIST TETE = " );
-	       PUT_LINE( NODE_REP( HEAD( LIST( MOINS ) ) ) );
-	    end if;
-         end;
-end if;
-
-         ID_LIST := NEW_ID_LIST;							--| RENDRE LA LISTE DES IDS
+         ID_LIST := NEW_ID_LIST;									--| RENDRE LA LISTE DES IDS
          
-      end MAKE_PREDEF_IDS;
-   
+  end	MAKE_PREDEF_IDS;
+	---------------
    
 begin
   declare
@@ -706,9 +702,9 @@ begin
     PREDEF_ID_LIST		: SEQ_TYPE;
   begin
     USER_ROOT := D( XD_USER_ROOT, TREE_ROOT );
-    MAKE_PREDEF_IDS( PREDEF_ID_LIST );							--| NOEUDS STANDARD POUR LES NOMS PREDEFINIS
+    MAKE_PREDEF_IDS( PREDEF_ID_LIST );									--| NOEUDS STANDARD POUR LES NOMS PREDEFINIS
       
-    WALK( D( XD_STRUCTURE, USER_ROOT ), PARENT => TREE_VOID, REGION => TREE_VOID );		--| PARCOURIR L'ARBRE SYNTAXIQUE DU _STANDRD
+    WALK( D( XD_STRUCTURE, USER_ROOT ), PARENT => TREE_VOID, REGION => TREE_VOID );				--| PARCOURIR L'ARBRE SYNTAXIQUE DU _STANDRD
       
     declare
       INTEGER_ID		: TREE	:= HEAD_DEFN( STORE_SYM( "INTEGER" ) );
@@ -726,12 +722,12 @@ begin
       D ( SM_BASE_TYPE, DURATION_SPEC, DURATION_BASE_SPEC );
       DB( SM_IS_ANONYMOUS, DURATION_BASE_SPEC, TRUE );
       D ( XD_SOURCE_NAME, DURATION_BASE_SPEC, DURATION_ID );
-      D ( SM_TYPE_SPEC, D( SM_RANGE, DURATION_SPEC ), DURATION_BASE_SPEC );			--| SOUS TYPE CONTRAINTE D'ETENDUE POUR DURATION
+      D ( SM_TYPE_SPEC, D( SM_RANGE, DURATION_SPEC ), DURATION_BASE_SPEC );					--| SOUS TYPE CONTRAINTE D'ETENDUE POUR DURATION
     end;
       
     declare
       ADDRESS_ID	: TREE	:= HEAD_DEFN( STORE_SYM( "_ADDRESS" ) );
-      BASE_SPEC	: TREE	:= D( SM_TYPE_SPEC, D( SM_TYPE_SPEC, ADDRESS_ID ) );		--| ID DE TYPE ANCÊTRE DANS SM_TYPE_SPEC
+      BASE_SPEC	: TREE	:= D( SM_TYPE_SPEC, D( SM_TYPE_SPEC, ADDRESS_ID ) );				--| ID DE TYPE ANCÊTRE DANS SM_TYPE_SPEC
       NEW_SPEC	: TREE	:= COPY_NODE( BASE_SPEC );
     begin
       D( XD_SOURCE_NAME, NEW_SPEC, ADDRESS_ID );
@@ -741,12 +737,17 @@ begin
     end;
       
     declare
-      PACK_SYM	: TREE	:= HEAD_DEFN( STORE_SYM( "_STANDRD" ) );			--| CHERCHER LE SYMBOLE NOM DU PACKAGE _STANDRD EN VERIFIANT QU'IL A UNE DEFLIST
+      PACK_SYM	: TREE	:= HEAD_DEFN( STORE_SYM( "_STANDRD" ) );					--| CHERCHER LE SYMBOLE NOM DU PACKAGE _STANDRD EN VERIFIANT QU'IL A UNE DEFLIST
       HEADER		: TREE := D( SM_SPEC, PACK_SYM );
     begin
-      LIST( D( AS_DECL_S2, HEADER ), PREDEF_ID_LIST );					--| IDENTIFICATEURS EN PARTIE PRIVEE
+      LIST( D( AS_DECL_S2, HEADER ), PREDEF_ID_LIST );							--| IDENTIFICATEURS EN PARTIE PRIVEE
     end;
          
   end;
---|-------------------------------------------------------------------------------------------------
-end FIX_PRE;
+
+end	FIX_PRE;
+	-------
+
+------------------------------------------------------------------------------------------------------------------------
+--	1	2	3	4	5	6	7	8	9	0	1	2
+

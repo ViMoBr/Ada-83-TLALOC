@@ -5,27 +5,30 @@
 --	1	2	3	4	5	6	7	8	9	0	1	2
 
 separate (IDL.SEM_PHASE)
-    --|----------------------------------------------------------------------------------------------
-    --| REQ_UTIL
-    --|----------------------------------------------------------------------------------------------
-package body REQ_UTIL is
+
+					--------
+package body				REQ_UTIL
+is					--------
   use SET_UTIL;
   use DEF_UTIL;
 
-    --|----------------------------------------------------------------------------------------------
-    --| REQ_GENE
-    --|----------------------------------------------------------------------------------------------
-  package body REQ_GENE is
+				--------
+  package body			REQ_GENE
+  is				--------
 
-      --||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-      --|
-    procedure REQ_DEF_XXX (EXP : TREE; DEFSET : in out DEFSET_TYPE) is
+			-----------
+    procedure		REQ_DEF_XXX	( EXP :TREE; DEFSET :in out DEFSET_TYPE )
+    is			-----------
 	      -- REMOVE FROM DEFSET THOSE INTERPRETATIONS FOR WHICH IS_XXX FALSE
 
-      function REQUIRE_XXX (DEFSET : DEFSET_TYPE) return DEFSET_TYPE is
+		-----------
+      function	REQUIRE_XXX	( DEFSET :DEFSET_TYPE )	return DEFSET_TYPE
+      is		-----------
+
         SET_TAIL : DEFSET_TYPE;
         SET_HEAD : DEFINTERP_TYPE;
         NEW_TAIL : DEFSET_TYPE;
+
       begin
         SET_TAIL := DEFSET;
         POP (SET_TAIL, SET_HEAD);
@@ -45,7 +48,8 @@ package body REQ_UTIL is
 	return NEW_TAIL;
         end if;
 
-      end REQUIRE_XXX;
+      end	REQUIRE_XXX;
+	-----------
 
     begin
       if IS_EMPTY (DEFSET) then
@@ -55,15 +59,22 @@ package body REQ_UTIL is
       if IS_EMPTY (DEFSET) then
         ERROR (D (LX_SRCPOS, EXP), MESSAGE);
       end if;
-    end REQ_DEF_XXX;
-      --||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-      --|
-    procedure REQ_TYPE_XXX (EXP : TREE; TYPESET : in out TYPESET_TYPE) is	     --| ENLÈVE DE TYPESET LES INTERPRETATIONS QUI ONT IS_XXX FAUSSE
 
-      function REQUIRE_XXX (TYPESET : TYPESET_TYPE) return TYPESET_TYPE is
+    end	REQ_DEF_XXX;
+	-----------
+
+			------------
+    procedure		REQ_TYPE_XXX	( EXP :TREE; TYPESET :in out TYPESET_TYPE )			--| ENLÈVE DE TYPESET LES INTERPRETATIONS QUI ONT IS_XXX FAUSSE
+    is			------------
+
+		-----------
+      function	REQUIRE_XXX	( TYPESET :TYPESET_TYPE )	return TYPESET_TYPE
+      is		-----------
+
         SET_TAIL : TYPESET_TYPE;
         SET_HEAD : TYPEINTERP_TYPE;
         NEW_TAIL : TYPESET_TYPE;
+
       begin
         SET_TAIL := TYPESET;
         POP (SET_TAIL, SET_HEAD);
@@ -83,7 +94,8 @@ package body REQ_UTIL is
 	return NEW_TAIL;
         end if;
 
-      end REQUIRE_XXX;
+      end	REQUIRE_XXX;
+	-----------
 
     begin
       if IS_EMPTY (TYPESET) then
@@ -93,13 +105,17 @@ package body REQ_UTIL is
       if IS_EMPTY (TYPESET) then
         ERROR (D (LX_SRCPOS, EXP), MESSAGE);
       end if;
-    end REQ_TYPE_XXX;
 
-  end REQ_GENE;
+    end	REQ_TYPE_XXX;
+	------------
 
-      --||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-      --|
-  function GET_BASE_STRUCT (TYPE_SPEC : TREE) return TREE is
+  end	REQ_GENE;
+	--------
+
+		---------------
+  function	GET_BASE_STRUCT	( TYPE_SPEC :TREE )		return TREE
+  is		---------------
+
     BASE_STRUCT : TREE;
     BASE_ID     : TREE;
     BASE_REGION : TREE;

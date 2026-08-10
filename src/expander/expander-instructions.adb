@@ -797,9 +797,6 @@ separate ( EXPANDER )
 		      end if;
 	      PUT_LINE( tab & "Sa" & tab & LVL_STR & ", " & ANON & "_disp" );
 
---	      PUT( tab & "La " & IMAGE( DI( CD_LEVEL, ACT_TYPE ) ) & ", " );
---	      CODI.REGIONS_PATH( TYPE_NAME );
---	      PUT_LINE( TYPE_NAME_STR & ".use__info" );
 	      declare
 	        SEL_DEFN	: TREE	:= TREE_VOID;
 	        IS_ANON_COMP	: BOOLEAN	:= FALSE;
@@ -1068,8 +1065,10 @@ separate ( EXPANDER )
 	-----------------------------
 
   begin
-    if  IS_IN_CURRENT_GENERIC( PROC_ID )  then
-      PUT( tab & "La " & INTEGER'IMAGE( CODI.GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );
+    if  IS_IN_CURRENT_GENERIC( PROC_ID )  and then  not EXPRESSIONS.IS_GENERIC_FORMAL_SUBPROGRAM( PROC_ID )
+    then
+      PUT( tab & "La " & INTEGER'IMAGE( CODI.CUR_LEVEL ) & ',' & tab & "-GFP_ofs" );
+--      PUT( tab & "La " & INTEGER'IMAGE( CODI.GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );
       if  CODI.DEBUG  then PUT( tab50 & "; propagation GFP generique" ); end if;
       NEW_LINE;
     end if;
@@ -1083,7 +1082,8 @@ separate ( EXPANDER )
     end if;
 
     if  EXPRESSIONS.IS_GENERIC_FORMAL_SUBPROGRAM( PROC_ID )  then
-      PUT_LINE( tab & "La " & IMAGE( CODI.GENERIC_BASE_LEVEL + 1 ) & "," & tab & "-GFP_ofs" );
+      PUT_LINE( tab & "La " & IMAGE( CODI.CUR_LEVEL ) & "," & tab & "-GFP_ofs" );
+--      PUT_LINE( tab & "La " & IMAGE( CODI.GENERIC_BASE_LEVEL + 1 ) & "," & tab & "-GFP_ofs" );
       PUT_LINE( tab & "La ," & tab & "-" & SUB_NAME & "__call_ofs" );
       PUT_LINE( tab & "CALLI" );
 
@@ -2206,11 +2206,7 @@ separate ( EXPANDER )
       EXITED_LOOP_LEVEL	: LEVEL_NUM	:= LEVEL_NUM( DI( CD_LEVEL, LOOP_STM ) );
       AFTER_LOOP_LABEL	: LABEL_TYPE	:= LABEL_TYPE( DI( CD_AFTER_LOOP, LOOP_STM ) );
     begin
-      if EXP = TREE_VOID then
-
---	if EXITED_LOOP_LEVEL /= CODI.CUR_LEVEL then
---	PUT_LINE( tab & "UNLINK" & tab & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL+1 - EXITED_LOOP_LEVEL ) );
---	end if;
+      if  EXP = TREE_VOID  then
         for  L in reverse EXITED_LOOP_LEVEL + 1 .. CODI.CUR_LEVEL  loop					-- UNLINK par NIVEAU (bug compte-comme-niveau
 	if  CODI.HANDLER_CTX_AT( L )  then  CODI.EXC_POP;  end if;						-- corrige) + pop des blocs proteges traverses
 	PUT_LINE( tab & "UNLINK" & LEVEL_NUM'IMAGE( L ) );
@@ -2224,7 +2220,6 @@ separate ( EXPANDER )
 	  SKIP_LBL	:constant STRING	:= NEW_LABEL;
 	begin
 	  PUT_LINE( tab & "BF" & tab & SKIP_LBL );
---	  PUT_LINE( tab & "UNLINK" & tab & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL+1 - EXITED_LOOP_LEVEL ) );
 
 	  for  L in reverse EXITED_LOOP_LEVEL + 1 .. CODI.CUR_LEVEL  loop
 	    if  CODI.HANDLER_CTX_AT( L )  then  CODI.EXC_POP;  end if;

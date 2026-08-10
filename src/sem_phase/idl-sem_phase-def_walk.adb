@@ -65,9 +65,6 @@ is					--------
       return TREE_VOID;
     end if;
 
--- put_line( "; def_walk.EVAL_TYPE_DEF ligne 62 ID.TY= " & NODE_NAME'IMAGE( ID.TY ) & "  ID= " & PRINT_NAME( D(LX_SYMREP, ID ) ) );
-
-
 	      -- GET BASE TYPE IN CASE IT IS PRIVATE, L_PRIVATE OR INCOMPLETE
     if ID.TY = DN_TYPE_ID and then D( SM_FIRST, ID ) /= ID then
       BASE_TYPE := D (SM_TYPE_SPEC, D (SM_FIRST, ID));
@@ -425,7 +422,6 @@ is					--------
         DERIVED_BASE		: TREE;
         MAX_MANTISSA_SIZE		: INTEGER		:= DI( CD_IMPL_SIZE, PREDEFINED_LONG_INTEGER ) - 1;	-- 63 bits sur 64 bits machine
         POWER_MAX_MANTISSA		:constant TREE	:= U_VAL( 2 )**U_VAL( MAX_MANTISSA_SIZE );		-- 2**63
- --	TYPE_MANTISSA_SIZE		: INTEGER;							-- A VOIR : Mantisse juste nécessaire
         TYPE_IMPL_SMALL		: TREE;								-- Plus grande puissance de 2 inferieure ou egale a ACCURACY
 
       begin
@@ -587,9 +583,6 @@ is					--------
 
 --  MODIF V.MORIN 18/6/2025 pour DN_COMPONENT_ID
 --
-
---put_line(	"; def_walk ligne 594 ID.TY= " & NODE_NAME'IMAGE( ID.TY ) );
-
 	if  ID.TY = DN_VARIABLE_ID  or  ID.TY = DN_COMPONENT_ID  then					-- IF THIS DEF WAS PART OF A VARIABLE DECLARATION
 	  DB( SM_IS_ANONYMOUS, TYPE_SPEC, TRUE );							-- MARK TYPE_SPEC ANONYMOUS
 	end if;
@@ -695,16 +688,10 @@ is					--------
 	SUBTYPE_SPEC	: TREE;
         begin
 
---put_line( "DEF_WALK 694 SUBTYPE_INDICATION" );
---print_nod.print_node( SUBTYPE_INDICATION );
-
 				-- EVALUATE THE PARENT TYPE
 	PARENT_TYPE := EVAL_SUBTYPE_INDICATION( SUBTYPE_INDICATION );
 	PARENT_TYPE := GET_BASE_STRUCT( PARENT_TYPE );
 	RESOLVE_SUBTYPE_INDICATION( SUBTYPE_INDICATION, PARENT_SUBTYPE );
-
---put_line( "DEF_WALK 702 PARENT_SUBTYPE" );
---print_nod.print_node( PARENT_TYPE );
 
 				-- CHECK THAT PARENT TYPE IS DERIVABLE AT THIS POINT
 	if PARENT_TYPE.TY not in CLASS_DERIVABLE_SPEC then
@@ -721,8 +708,6 @@ is					--------
 	  return TREE_VOID;
 	end if;
 
---	  BASE_TYPE := D( SM_BASE_TYPE, PARENT_TYPE );
-
 				-- MAKE DERIVED TYPE SPEC
 	TYPE_SPEC := COPY_NODE( GET_BASE_STRUCT( PARENT_TYPE ) );
 	D( XD_SOURCE_NAME, TYPE_SPEC, ID );
@@ -730,11 +715,6 @@ is					--------
 	  BASE_TYPE := TYPE_SPEC;
 	end if;
 	D( SM_DERIVED, TYPE_SPEC, PARENT_TYPE );
-
---put_line( "DEF_WALK 732 TYPE_SPEC" );
---print_nod.print_node( TYPE_SPEC );
-
-
 
 				-- IF TYPE IS AN ENUMERATION TYPE (AND NOT GENERIC (<>))
 	if TYPE_SPEC.TY = DN_ENUMERATION and then D (SM_LITERAL_S, TYPE_SPEC) /= TREE_VOID then
@@ -780,21 +760,12 @@ is					--------
 	    NODE_HASH : NODE_HASH_TYPE;
 
 	  begin
-
 					      -- ENTER RECORD DECLARATIVE REGION
 	    RECORD_REGION_DEF := GET_DEF_FOR_ID( ID );
 	    ENTER_REGION( RECORD_REGION_DEF, H, S );
 
-
---put_line( "DEF_WALK 787 TYPE_SPEC" );
---print_nod.print_node( TYPE_SPEC );
-
 					      -- COPY THE RECORD STRUCTURE USING GENERIC SUBSTITUTION
 	    SUBSTITUTE_ATTRIBUTES( TYPE_SPEC, NODE_HASH, H );
-
-
---put_line( "DEF_WALK 794 TYPE_SPEC" );
---print_nod.print_node( TYPE_SPEC );
 
 					      -- LEAVE RECORD DECLARATIVE REGION
 	    LEAVE_REGION( RECORD_REGION_DEF, S );

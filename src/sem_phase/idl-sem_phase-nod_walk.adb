@@ -704,7 +704,6 @@ is					--------
         end;
 
       when DN_SUBTYPE_DECL =>
---put_line( "; NOD_WALK 709 dn_subtype_decl" );
         declare
 	SOURCE_NAME        : TREE	:= D (AS_SOURCE_NAME, NODE);
 	SUBTYPE_INDICATION : TREE	:= D (AS_SUBTYPE_INDICATION, NODE);

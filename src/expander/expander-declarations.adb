@@ -14,6 +14,7 @@ is
   package CODI	renames EXPANDER.UTILS;
   use CODI;
 
+
   -------			-----------
   package			TYPES_DECLS
   -------			-----------
@@ -29,8 +30,10 @@ is
   ---	-----------
   package body TYPES_DECLS is separate;
 
+
   procedure CODE_REP	( REP :TREE );
   procedure CODE_USE_PRAGMA	( USE_PRAGMA :TREE );
+
 
 
 			--^^^^^^^^^--
@@ -71,16 +74,14 @@ is
 	--===========--
 
 
-
 			-------------------
   procedure		CODE_NULL_COMP_DECL		( NULL_COMP_DECL :TREE )
-  is
+  is			-------------------
   begin
     null;											--| INTENTIONNEL : composant null, aucun code
 
   end	CODE_NULL_COMP_DECL;
 	-------------------
-
 
 
 			------------
@@ -1169,16 +1170,6 @@ is
 	  -- mode SOURCE fabrique le doublet anonyme de la tranche (bornes de la
 	  -- slice) ; ensuite meme copie que le repli defensif DN_QUALIFIED :
 	  -- extraction du data_ptr par "La ,0" puis BLKMOV vers la destination.
---	    COVAR_ALLOCATE;
---	    PUT_LINE( tab & "La" & tab & LVL_STR & ", " & VC_STR & "_disp" );					-- @DST
---	    PUT( tab & "Ld" & tab & IMAGE( TYPE_LEVEL ) & ", " );						-- LEN en octets : SIZ destination / 8
---	    PUT_TYPE_INFO_PREFIX;
---	    PUT_LINE( ".SIZ" );
---	    PUT_LINE( tab & "LI" & tab & '8' );
---	    PUT_LINE( tab & "DIV" );
---	    EXPRESSIONS.CODE_SLICE( INIT_EXP, IS_DESTINATION => FALSE );					-- @doublet de la tranche
---	    PUT_LINE( tab & "La" );									-- @SRC = data_ptr du doublet
---	    PUT_LINE( tab & "BLKMOV" );
 
 	    if  TYPE_SPEC.TY = DN_ARRAY  then
 	    -- OBJET NON CONTRAINT init par tranche (NOM_TEXTE := CMD(1..N), classif
@@ -1363,9 +1354,6 @@ is
 	  CODI.REGIONS_PATH( TYPE_NAME2 );
 	  PUT_LINE( TN_STR2 & ".size" );			     -- LEN
 	end;
-
---	EXPRESSIONS.CODE_EXP( INIT_EXP );			     -- empile @doublet source
---	PUT_LINE( tab & "La  ,  0" );				     -- @SRC = data_ptr source
 			--| TTAIL1 (7/08) : miroir du n 112 au site de DECLARATION -- le
 			--| "La ,0" inconditionnel supposait un @doublet, mais une reference
 			--| de composante (T_TAIL := S.NEXT, IDL_MAN.APPEND) produit l @data
@@ -2162,52 +2150,45 @@ is
 
 				-----------------
 				ACTUAL_SUBPROGRAM:
-        declare
-	FORMAL_ID		: TREE		:= D( AS_SOURCE_NAME, FORMAL );
-	FORMAL_STR	: constant STRING	:= PRINT_NAME( D( LX_SYMREP, FORMAL_ID ) );
-	FORMAL_SPEC	: TREE		:= D( AS_HEADER, FORMAL );
-	BRIDGE_STR	:constant STRING	:= FORMAL_STR & "__bridge_" & NEW_LABEL;
-	ACTUAL_SUBP	: TREE		:= ACTUAL;
-	ACTUAL_DEFN	: TREE		:= ACTUAL_NAME_DEFN( ACTUAL );
-
-        begin
-	if  ACTUAL_SUBP.TY = DN_ASSOC  then
-	  ACTUAL_SUBP := D( AS_EXP, ACTUAL_SUBP );
-	end if;
-
-	if  ACTUAL_DEFN.TY = DN_ENTRY_ID  then
-	  PUT_LINE( "VAR " & LETTERED_SUBNAME( FORMAL_STR )  & "__call_ofs, q" );
-
-	elsif  ACTUAL_DEFN.TY = DN_BLTN_OPERATOR_ID  then
-	  PUT_LINE( "VAR " & LETTERED_SUBNAME( FORMAL_STR )  & "__call_ofs, q" );
-
-	elsif  ACTUAL_DEFN.TY = DN_ENUMERATION_ID  or  ACTUAL_DEFN.TY = DN_CHARACTER_ID  then
-	  PUT_LINE( "VAR " & FORMAL_STR & "_disp, q" );
-	  PUT_LINE( tab & "LI" & tab & IMAGE( DI( SM_POS, ACTUAL_DEFN ) ) );
-	  PUT_LINE( tab & "Sb " & LVL_STR & ", " & FORMAL_STR & "_disp" );
-
-	else
-
 	declare
-	  ACTUAL_STR	:constant STRING	:= LETTERED_SUBNAME( PRINT_NAME( D( LX_SYMREP, ACTUAL_DEFN ) ) )
+	  FORMAL_ID	: TREE		:= D( AS_SOURCE_NAME, FORMAL );
+	  FORMAL_STR	: constant STRING	:= PRINT_NAME( D( LX_SYMREP, FORMAL_ID ) );
+	  FORMAL_SPEC	: TREE		:= D( AS_HEADER, FORMAL );
+	  BRIDGE_STR	:constant STRING	:= FORMAL_STR & "__bridge_" & NEW_LABEL;
+	  ACTUAL_SUBP	: TREE		:= ACTUAL;
+	  ACTUAL_DEFN	: TREE		:= ACTUAL_NAME_DEFN( ACTUAL );
+
+	begin
+	  if  ACTUAL_SUBP.TY = DN_ASSOC  then
+	    ACTUAL_SUBP := D( AS_EXP, ACTUAL_SUBP );
+	  end if;
+
+	  if  ACTUAL_DEFN.TY = DN_ENTRY_ID  then
+	    PUT_LINE( "VAR " & LETTERED_SUBNAME( FORMAL_STR )  & "__call_ofs, q" );
+
+	  elsif  ACTUAL_DEFN.TY = DN_BLTN_OPERATOR_ID  then
+	    PUT_LINE( "VAR " & LETTERED_SUBNAME( FORMAL_STR )  & "__call_ofs, q" );
+
+	  elsif  ACTUAL_DEFN.TY = DN_ENUMERATION_ID  or  ACTUAL_DEFN.TY = DN_CHARACTER_ID  then
+	    PUT_LINE( "VAR " & FORMAL_STR & "_disp, q" );
+	    PUT_LINE( tab & "LI" & tab & IMAGE( DI( SM_POS, ACTUAL_DEFN ) ) );
+	    PUT_LINE( tab & "Sb " & LVL_STR & ", " & FORMAL_STR & "_disp" );
+
+	  else
+
+	    declare
+	      ACTUAL_STR	:constant STRING	:= LETTERED_SUBNAME( PRINT_NAME( D( LX_SYMREP, ACTUAL_DEFN ) ) )
 					   & "_L" & IMAGE( DI( CD_LABEL, ACTUAL_DEFN ) );
-	  SUBNAME_STR	:constant string	:= LETTERED_SUBNAME( FORMAL_STR );
-begin
+	      SUBNAME_STR	:constant string	:= LETTERED_SUBNAME( FORMAL_STR );
+	    begin
+	      PUT_LINE( "VAR " & SUBNAME_STR & "__call_ofs, q" );
+	      PUT( tab & "LSPA" & tab );
+	      CODI.REGIONS_PATH( ACTUAL_DEFN );
+	      PUT_LINE( " ," & ACTUAL_STR );
+	      PUT_LINE( tab & "Sa" & tab & LVL_STR & ", " & SUBNAME_STR & "__call_ofs" );
 
---	  CODE_GENERIC_SUBPROGRAM_BRIDGE( BRIDGE_STR  => BRIDGE_STR,
---	      FORMAL      => FORMAL,
---	      FORMAL_ID   => FORMAL_ID,
---	      FORMAL_SPEC => FORMAL_SPEC,
---	      ACTUAL      => ACTUAL_SUBP );
-
-	  PUT_LINE( "VAR " & SUBNAME_STR & "__call_ofs, q" );
-	  PUT( tab & "LSPA" & tab );
-	  CODI.REGIONS_PATH( ACTUAL_DEFN );
-	  PUT_LINE( " ," & ACTUAL_STR );
-	  PUT_LINE( tab & "Sa" & tab & LVL_STR & ", " & SUBNAME_STR & "__call_ofs" );
-
-end;
-end if;
+	    end;
+	  end if;
 	end	ACTUAL_SUBPROGRAM;
 		-----------------
 
@@ -2393,11 +2374,6 @@ end if;
 	  end if;
 	end;
 
-
---	declare
---	  MODEL_DEFN	: TREE	:= D( SM_DEFN, CODI.INSTANTIATION_MODEL_NAME );
---	  MODEL_SPEC	: TREE	:= D( SM_SPEC, MODEL_DEFN );
---	begin
 	  if  MODEL_DEFN.TY = DN_GENERIC_ID
 	      and then  PRINT_NAME( D( LX_SYMREP, MODEL_DEFN ) ) = "UNCHECKED_CONVERSION"
 	  then
@@ -2516,19 +2492,14 @@ end if;
   -- result__ofs est un résultat scalaire.
 	  PUT_LINE( tab & "La" & tab & IMAGE( CODI.CUR_LEVEL ) & ", -S_ofs" );
 	  PUT_LINE( tab & "La" );
-
   -- Lire les octets bruts avec la taille du type cible.
 	  PUT_LINE( tab & OPER_LOAD_STR( DST_TYPE ) );
---  PUT_LINE( tab & "L" & OPER_SIZ_CHAR( DST_TYPE ) );
-
   -- Stocker dans le slot résultat.
 	  PUT_LINE( tab & "S" & OPER_SIZ_CHAR( DST_TYPE ) & tab & IMAGE( CODI.CUR_LEVEL ) & ", -result__ofs" );
 
 	  else
 	    PUT_LINE( "; UNCHECKED_CONVERSION : cas non encore gere "
-		  & NODE_NAME'IMAGE( SRC_TYPE.TY )
-		  & " -> "
-		  & NODE_NAME'IMAGE( DST_TYPE.TY ) );
+		  & NODE_NAME'IMAGE( SRC_TYPE.TY ) & " -> " & NODE_NAME'IMAGE( DST_TYPE.TY ) );
 	    raise PROGRAM_ERROR;
 	  end if;
 	      end CODE_UNCHECKED_CONVERSION_INSTANCE;
@@ -2639,7 +2610,6 @@ end if;
 	if  CODI.NO_SUBP_PARAMS  then
 	  PUT_LINE( tab & "RTD" );
 	else
---	  if  SOURCE_NAME.TY = DN_FUNCTION_ID  then
 	  if  SOURCE_NAME.TY = DN_FUNCTION_ID  or  SOURCE_NAME.TY = DN_OPERATOR_ID  then		-- symetrie avec l'epilogue des corps reels (un operateur est une fonction)
 	    PUT_LINE( tab & "RTD" & tab & "prm_siz-8" );
 	  else

@@ -1435,6 +1435,13 @@ is
 	if  BASE = TREE_VOID  or else  BASE = TREE_NIL  then
 	  BASE := TS;
 	end if;
+    -- Un tableau PACKED ne doit pas introduire l'alignement naturel
+    -- de son type composant entre ses composants ni lorsqu'il est
+    -- lui-même composant d'un record.
+	if  BASE.TY = DN_ARRAY  and then  DB( SM_IS_PACKED, BASE )  then
+	  return 1;
+	end if;
+
 	return  STATIC_TYPE_ALIGN_BYTES( D( SM_COMP_TYPE, BASE ) );
         end;
       end if;
@@ -1587,18 +1594,6 @@ is
 		    PUT_LINE( COMP_TYPE_STR & ".use__info" );
 		  end if;
 		end;
-
---	        if  COMP_TYPE.TY = DN_CONSTRAINED_ARRAY  then
---		if  not DB( CD_COMPILED, COMP_TYPE )  then
---		  PUT_LINE( COMP_ID_STR & " = '" & COMP_ID_STR & "'" );
---		  PUT_LINE( " namespace " & COMP_TYPE_STR );
---		  PROCESS_CONSTRAINED_ARRAY_TYPE_SPEC( COMP_TYPE );
---		end if;
-
---		PUT( "USEINFO " & LVL_STR & ", " & COMP_ID_STR & ", " );
---		PUT( tab & "La " & IMAGE( DI( CD_LEVEL, COMP_TYPE ) ) & ", " );
---		REGIONS_PATH( D( XD_SOURCE_NAME, D( SM_TYPE_SPEC, COMP_TYPE_NAME ) ) );
---		PUT_LINE( COMP_TYPE_STR & ".use__info" );
 
 	        else
 		PUT( "USEINFO " & LVL_STR & ", " & COMP_ID_STR & ", " );
@@ -1836,9 +1831,9 @@ is
     LVL_STR	:constant STRING	:= IMAGE( CODI.CUR_LEVEL );
 
 
-  BASE_REC  : TREE := ROOT_RECORD( TYPE_SPEC );
-  BASE_NAME : TREE := D( XD_SOURCE_NAME, BASE_REC );
-  BASE_STR  : constant STRING := '_' & PRINT_NAME( D( LX_SYMREP, BASE_NAME ) );
+    BASE_REC	: TREE		:= ROOT_RECORD( TYPE_SPEC );
+    BASE_NAME	: TREE		:= D( XD_SOURCE_NAME, BASE_REC );
+    BASE_STR	: constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, BASE_NAME ) );
 
   procedure EMIT_BASE_PREFIX is
   begin
@@ -1977,7 +1972,7 @@ begin
     DI( CD_LEVEL,	   TYPE_SPEC, INTEGER( CODI.CUR_LEVEL ) );
     DB( CD_COMPILED,   TYPE_SPEC, TRUE );
 
---  Le type access lui-même est complet immédiatement :
+  --  Le type access lui-même est complet immédiatement :
   --  sa représentation est toujours un pointeur machine.
   --  En revanche, le type désigné peut encore être une vue privée
   --  ou un incomplete.
@@ -2016,13 +2011,9 @@ begin
 	and then DESIG_TYPE.TY /= DN_L_PRIVATE
 	and then DESIG_TYPE.TY /= DN_INCOMPLETE
     then
-put_line( "; CODE_ACCESS_DECL cd_level void ? " & boolean'image( D( CD_LEVEL, DESIG_TYPE )= TREE_VOID ) );
       if  D( CD_LEVEL, DESIG_TYPE ).PT = P  and then  D( CD_LEVEL, DESIG_TYPE ).TY = DN_VIRGIN  then
       --  Cas : access vers un full type connu sémantiquement,
       --  mais déclaré/codé plus loin dans la même région.
-
-put_line( "; CODE_ACCESS_DECL cd_level rempli" );
-
         DI( CD_LEVEL, DESIG_TYPE, INTEGER( CODI.CUR_LEVEL ) );
         DESIG_IS_FORWARD := TRUE;
       end if;

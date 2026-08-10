@@ -564,6 +564,70 @@ la valeur entiere de la composante). Gardien permanent du site d init
 de COMPILE_RECORD_VAR ; si F casse un jour, c est la discrimination de
 CODE_COMPOSITE_DATA_ADDRESS elle-meme qui a un trou.
 
+### SUBLVL_TEST (lot subunits, 7 aout 2026, 5 assertions)
+
+Trois unites : sublvl_test.adb + subunit de sous-programme (INTERNE) +
+subunit de corps de package (COEUR). Couvre : niveau lexical des
+subunits a parent PORTEUR DE FRAME — 'IMAGE d'enumere du parent en
+initialisation (site FIX_PRE du bootstrap), lectures/ecritures
+montantes d'objet, appel montant (CHECK), sous-programme d'un corps
+de package separe. Ordre de compilation : parent puis subunits.
+Attendu : « RESULTAT : 5 OK, 0 ECHECS / SUBLVL_TEST PASSE ».
+Gardien du piege n 138 ; a repasser apres toute retouche de
+CODE_COMPILATION_UNIT, des stubs ou du couple LINK/display.
+
+### AGGSTR_TEST (lot agregats tableau-de-tableaux, 8 aout 2026, 10 assertions)
+
+Une unite : aggstr_test.adb. Couvre : agregat NOMME desordonne et agregat
+POSITIONNEL d'un tableau constant indexe par enumere a composantes STRING(1..3)
+rembourrees '!', dans un package spec au niveau 1 (motif PRENAME/
+BLTN_TEXT_ARRAY) -- init d'objet depuis element indexe, double indexation
+caractere, egalite composite, affectation vers STRING_3, boucle de rognage.
+Attendu : « RESULTAT : 10 OK, 0 ECHECS / AGGSTR_TEST PASSE ». Historique :
+rouge 9/10 avant correctif (seul ITEM'LENGTH passait -- positions justes,
+contenu pointeurs). Gardien du piege n 139 ; a repasser apres toute retouche
+de CODE_ARRAY_AGGREGATE, COLLECT_DIMENSIONS, EMIT_ONE_COMP ou de la regle
+n 112 (CODE_COMPOSITE_DATA_ADDRESS).
+
+### OPDEF_TEST (lot operateurs utilisateur, 8 aout 2026, 6 assertions)
+
+Une unite : opdef_test.adb. Couvre : operateurs definis par l'utilisateur
+sur type record ("+" binaire, "**" mixte record x entier -- le motif du spin
+UARITH --, "<" vers BOOLEAN, resultats records en doublets anonymes) ET la
+frontiere des operateurs IMPLICITES d'un type derive d'INTEGER (checks 5-6),
+qui doivent rester en emission predefinie. Attendu : « RESULTAT : 6 OK,
+0 ECHECS / OPDEF_TEST PASSE ». Historique : rouge 1-4 avant correctif
+(emission par nom sur @doublets), 5-6 verts des l'origine. Gardien du piege
+n 140 ; a repasser apres toute retouche du dispatch DN_USED_OP, de
+CODE_DN_BLTN_OPERATOR_ID, de SUBPROGRAM_ORIGIN ou du protocole d'appel
+de fonction.
+
+### RECSTR_TEST et RECSTR2_TEST (lot chiffres longs, 8-9 aout 2026, 4+6 assertions)
+
+Deux unites jumelles : recstr_test.adb (SQUELETTE de RECURSE_DOUBLETS --
+recursion sans parametre, variable montante mutee, deux constantes STRING
+locales d'appels, recursion en tete de catenation chainee) et
+recstr2_test.adb (la CHAIR : tranches pleines de constantes en catenation,
+agregat STRING'(1..COMPL => '0') a bornes dynamiques et VIDES, SHORT
+represente 16 bits, mod 10_000, donnees de 2147483647). Historique :
+VERTS D'ORIGINE tous deux -- ce sont les temoins qui ont DISCULPE PRINT_NUM
+et retourne le soupcon vers UARITH/alignement (piege n 143). Attendu :
+« 4 OK / RECSTR_TEST PASSE » et « 6 OK / RECSTR2_TEST PASSE ». A repasser
+apres toute retouche des catenations, des constantes dynamiques, des
+tranches ou de CO_VAR.
+
+### PACKV_TEST (lot alignement packe, 9 aout 2026, 6 assertions)
+
+Une unite : packv_test.adb. Record pragma PACK au motif VECTOR d'UNIV_OPS
+(L, S, tableau packe d'UD 16 bits) : ecriture indexee chiffre a chiffre,
+relecture, copie record entiere, non-aliasing apres copie, egalites de
+tranches packees. Gardien du piege n 143 (STATIC_TYPE_ALIGN_BYTES et
+pragma PACK). Historique : pose APRES le patch (rouge d'avant-patch non
+capture -- constate vert 6/6 sur T1 patche). Attendu : « RESULTAT : 6 OK,
+0 ECHECS / PACKV_TEST PASSE ». A repasser apres toute retouche de
+STATIC_TYPE_ALIGN_BYTES, du layout des records packes, de STATOFS ou du
+chantier n 117.
+
 ### Sondes @GT/@PC/@AP (hors filet, outil de diagnostic bootstrap)
 
 Posees dans idl-par_phase.adb (@GT1-4 fin de GET_TOKEN, @PC1-5

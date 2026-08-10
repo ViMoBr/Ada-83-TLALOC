@@ -521,27 +521,6 @@ is
   end;
 
 
-
---  procedure CODE_ADRESSE ( ADRESSE :TREE ) is
---  begin
---    case ADRESSE.TY is
---    when DN_VARIABLE_ID =>
---null;--	   GEN_PUSH_DATA ( A, DI (CD_COMP_UNIT, ADRESSE ), LEVEL_NUM(DI ( CD_LEVEL, ADRESSE )), DI ( CD_OFFSET, ADRESSE ) );
---    when DN_IN_ID =>
---null;--	   GEN_PUSH_DATA ( A, 0,  LEVEL_NUM(DI ( CD_LEVEL, ADRESSE )), DI ( CD_OFFSET, ADRESSE ) );
---    when DN_IN_OUT_ID | DN_OUT_ID =>
---null;--	   GEN_PUSH_DATA ( A, 0, LEVEL_NUM(DI( CD_LEVEL, ADRESSE )), DI( CD_VAL_OFFSET, ADRESSE ) );
---    when DN_INDEXED =>
---     EXPRESSIONS.CODE_INDEXED ( ADRESSE );
---    when DN_USED_OBJECT_ID =>
---      CODE_ADRESSE ( D( SM_DEFN, ADRESSE ) );
---    when others =>
---    PUT_LINE ( "!!! CODE_ADRESSE : OBJECT.TY ILLICITE " & NODE_NAME'IMAGE ( ADRESSE.TY ) );
---      raise PROGRAM_ERROR;
---    end case;
---  end;
-
-
 			----------------------
   procedure		CODE_SELECT_ALT_PRAGMA	( SELECT_ALT_PRAGMA :TREE )
   is			----------------------
