@@ -1139,3 +1139,58 @@ instances sont expansées sur site.
     bootstrappe (note SECV1). Gardien : PACKV_TEST ; RECSTR_TEST et
     RECSTR2_TEST restent au filet (squelette et chair de PRINT_NUM).
     (session 9 aout)
+    
+144. **GFP lu au niveau GENERIC_BASE_LEVEL+1 avec l'offset LOCAL : faux
+    des qu'un sous-programme est IMBRIQUE dans le corps generique.**
+    Chaque PRO d'un corps generique porte son propre PRM GFP_ofs
+    (CODE_PARAM_S) et le symbole GFP_ofs se resout au PRM du PRO
+    COURANT (namespace fasmg) : le niveau doit etre CUR_LEVEL, jamais
+    GENERIC_BASE_LEVEL+1 (egaux seulement a l'imbrication 1, d'ou la
+    survie du bug jusqu'au premier generique a fonction interne
+    recursive). Melange niveau externe / offset interne = lecture d'un
+    AUTRE PRM du frame englobant (REQ_UTIL : TYPESET, une adresse de
+    pile) ; [pseudo-GFP - 24] via IS_XXX__call_ofs -> CALLI dans la
+    pile (T2 sur _standrd.adb, REQUIRE_XXX recursif). Corrige aux deux
+    sites exerces (CODE_PROCEDURE_CALL : propagation + CALLI formel).
+    JUMEAUX NON EXERCES consignes, meme famille, recensement mecanique :
+    grep -n "GENERIC_BASE_LEVEL" expander*.adb | grep "GFP_ofs"
+    (~21 sites : LOAD_MEM et CODE_USED_OBJECT_ID pour les objets
+    formels, use__info des types formels — 'SIZE 'SMALL 'WIDTH
+    FIRST/LAST, conversions et litteraux fixed —, init de locale de
+    type formel, STORE_OR_CALLI, MACHINE_CODE) — tous faux au meme
+    titre si l'acces part d'un sous-programme imbrique dans le corps
+    partage. RESERVE : depuis un bloc declare d'un corps generique,
+    CUR_LEVEL est le niveau du BLOC (frame propre SANS PRM GFP) — il
+    faudrait le niveau du PRO englobant ; non exerce, meme famille que
+    le bug de niveau des thunks (journal A35801B). Gardien :
+    T2 ./ _standrd.adb M + diff FINC de REQ_UTIL. (session 10 aout)
+
+145. ** OPERAND_DATA_ADDRESS
+(CODE_RECORD_EQUALITY) ** copie locale divergente de la règle n°112
+jamais rebranchée + DN_PARENTHESIZED absent de la règle unique ;
+opérande gauche d'égalité TREE « ( A op B ) = U_VAL(1) » chargé comme
+adresse de doublet -> comparaisons BOOLEAN d'UARITH à FAUX permanent ->
+« INTEGER TYPE TOO LARGE » sur tout type entier à borne 'LAST sous T2.
+Diagnostic : sondes @IB1/@IB3 (valeurs saines, six booléens FFFFFF ->
+mecanisme amont des donnees), FINC croisés site/corps, arithmétique des
+labels ancrée par _NOT__L38. Gardien : OPB_TEST 11-12 (rouge capturé
+« 11 OK, 1 ECHECS »). Recensement mécanique de la famille : grep des
+discriminations par espèce sur producteurs d'@doublet HORS
+CODE_COMPOSITE_DATA_ADDRESS ; auditer aussi les AUTRES consommateurs
+d'espèces qui ne déballent ni CONVERSION ni PARENTHESIZED.
+Annexe : élaboration « R : STRING := littéral » ALIASE le littéral
+(pas de copie) — dormant, à recenser séparément.
+
+146. ** agrégat affecté à une TRANCHE ** CODE_ASSIGN
+jetait (DROP) la longueur de tranche et CODE_ARRAY_AGGREGATE remplissait
+aux bornes du TYPE depuis le début de tranche : queue de tableau écrasée
++ (bas_tranche − FST) octets au-delà. Symptôme : segfault UNLINK de
+WRITE_LIB (cellule LINK = 8×TRUE = 0x0101...), dépendant de HIGH_BLOCK
+(_standrd immune, fermetures transitives touchées). Diagnostic : hardware
+watchpoint sur la cellule LINK -> écriture prise sur le fait dans
+MARK_DONT_MOVE_PAGES ; FINC : DROP de len_dst + _FST_1/_LST_1 littéraux
+du type. Correctif : contrainte applicable = celle de la tranche (RM83
+4.3.2), range de tranche passée à l'agrégat, dimension 1 surchargée.
+Gardien : SLAGG_TEST (rouge 5 OK/3 ECHECS capturé). À recenser : autres
+consommateurs d'agrégats qui jettent une longueur déjà calculée
+(grep DROP au voisinage de CODE_AGGREGATE).

@@ -1941,7 +1941,12 @@ elsif  DESIGNATOR_DEFN.TY in CLASS_PARAM_NAME  then
       declare
         E	: TREE	:= EXP;
       begin
-        while  E.TY = DN_CONVERSION  loop
+			--| n 112, 5e occurrence (UARITH "<="/">=" BOOLEAN, FINC _LE__L31,
+			--| erreur type A text_io/direct_io) : DN_PARENTHESIZED est
+			--| TRANSPARENT pour la forme du resultat (CODE_PARENTHESIZED =
+			--| CODE_EXP de l'AS_EXP) -- meme statut que la conversion C1-ter :
+			--| classer le producteur sur l'operande deballe.
+        while  E.TY = DN_CONVERSION  or else  E.TY = DN_PARENTHESIZED  loop
 			--| C1-ter (temoin CONV_DER1 30/07, echecs S1 1-3 + S3 au FINC) :
 			--| la conversion composite est une IDENTITE (C1), donc TRANSPARENTE
 			--| pour la FORME du resultat -- classer le producteur sur son
@@ -4057,11 +4062,19 @@ elsif  DESIGNATOR_DEFN.TY in CLASS_PARAM_NAME  then
         raise PROGRAM_ERROR;
       end if;
 
-      CODE_EXP( E );
+			--| n 112, 5e occurrence : cette discrimination locale etait
+			--| l'ANCETRE de la regle unique (cf. en-tete de
+			--| CODE_COMPOSITE_DATA_ADDRESS) mais n'avait jamais ete
+			--| rebranchee dessus -- DN_PARENTHESIZED (motif UARITH
+			--| « ( LEFT <= RIGHT ) = U_VAL(1) ») passait sans La : le Ld
+			--| chargeait l'adresse du doublet, CEQ toujours faux.
+			--| La garde agregat ci-dessus reste locale (hors contrat regle).
+      CODE_COMPOSITE_DATA_ADDRESS( E );							-- @data par la regle n 112
 
-      if  E.TY = DN_USED_OBJECT_ID  or else  E.TY = DN_FUNCTION_CALL  then
-        PUT_LINE( tab & "La  ,  0" );							-- @doublet -> data_ptr
-      end if;
+--      CODE_EXP( E );
+--      if  E.TY = DN_USED_OBJECT_ID  or else  E.TY = DN_FUNCTION_CALL  then
+--        PUT_LINE( tab & "La  ,  0" );							-- @doublet -> data_ptr
+--      end if;
     end	OPERAND_DATA_ADDRESS;
 	--------------------
 
@@ -4887,7 +4900,7 @@ elsif  DESIGNATOR_DEFN.TY in CLASS_PARAM_NAME  then
 -- The procedure is still an assigning aggregate: the destination data address
 -- is expected on top of the LLIR stack and is consumed by the generated code.
 
-  procedure		CODE_ARRAY_AGGREGATE	( AGGREGATE, TYPE_SPEC :TREE )
+  procedure		CODE_ARRAY_AGGREGATE	( AGGREGATE, TYPE_SPEC :TREE; DST_SLICE_RANGE :TREE := TREE_VOID )
   is			--------------------
 
     MAX_DIMS	: constant NATURAL  := 8;
@@ -5434,6 +5447,21 @@ elsif  DESIGNATOR_DEFN.TY in CLASS_PARAM_NAME  then
     end if;
 
     COLLECT_DIMENSIONS( AGGREGATE, TYPE_SPEC );
+			--| n 146 (segfault WRITE_LIB, DONT_MOVE(H+1..MAX) := (others=>TRUE)) :
+			--| cible TRANCHE -- la contrainte applicable de l'agregat est celle
+			--| de la TRANCHE (RM83 4.3.2), pas celle du type tableau : remplir
+			--| aux bornes du type ecrasait la queue du tableau + (bas_tranche -
+			--| FST_type) octets au-dela (cellule LINK -> UNLINK segfault).
+			--| Dimension 1 seule (tranches 1-dim, RM83 4.1.2) ; dims aplaties
+			--| suivantes inchangees.  Bornes de tranche re-evaluees ici (2e fois
+			--| apres CODE_SLICE) : pures dans le corpus.
+    if  DST_SLICE_RANGE /= TREE_VOID  then
+      DIM_TBL( 1 ).FST_EXP := D( AS_EXP1, DST_SLICE_RANGE );
+      DIM_TBL( 1 ).LST_EXP := D( AS_EXP2, DST_SLICE_RANGE );
+      if  DIM_TBL( 1 ).FST_EXP = TREE_VOID  or else  DIM_TBL( 1 ).LST_EXP = TREE_VOID  then
+        TROU( "agregat vers tranche : range sans AS_EXP1/AS_EXP2", DST_SLICE_RANGE );
+      end if;
+    end if;
 
     COMP_TYPE := FULL_TYPE_VIEW( COMP_TYPE );
     COMP_BITS  := COMP_SIZE_BITS( COMP_TYPE );
@@ -5451,7 +5479,8 @@ elsif  DESIGNATOR_DEFN.TY in CLASS_PARAM_NAME  then
 
 
 				--------------
-  procedure			CODE_AGGREGATE		( AGGREGATE, TYPE_SPEC :TREE )
+  procedure			CODE_AGGREGATE		( AGGREGATE, TYPE_SPEC :TREE;
+							  DST_SLICE_RANGE :TREE := TREE_VOID )
   is				--------------
 
     EFFECTIVE_TYPE		: TREE			:= TYPE_SPEC;
@@ -5473,7 +5502,7 @@ elsif  DESIGNATOR_DEFN.TY in CLASS_PARAM_NAME  then
     end if;
 
     if  EFFECTIVE_TYPE.TY = DN_CONSTRAINED_ARRAY  or  TYPE_SPEC.TY = DN_ARRAY  then				-- L'adresse de debut data est deja empilee
-      CODE_ARRAY_AGGREGATE( AGGREGATE, EFFECTIVE_TYPE );
+      CODE_ARRAY_AGGREGATE( AGGREGATE, EFFECTIVE_TYPE, DST_SLICE_RANGE );
 
     elsif  EFFECTIVE_TYPE.TY = DN_RECORD  then								-- L'adresse du doublet est deja empilee
       declare

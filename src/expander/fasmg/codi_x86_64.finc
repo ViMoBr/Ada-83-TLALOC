@@ -1306,7 +1306,7 @@ macro			UNLINK?	lvl				; DISPOSE VARS LOCALES ET RESTORE FRAME PTR
   FP_IN_RBP	lvl						; (throw locals)
   POP_RAX
   RAX_IN_FP	lvl						; (restore stored FP)
-			; Gerer la co-pile pour liberer les allocations de taille dynamique eventuelles
+			; A FAIRE Gerer la co-pile pour liberer les allocations de taille dynamique eventuelles
 
   db 0x4D, 0x8B, 0x6D, 0x00						; mov r13, [r13]
 end macro
@@ -2147,7 +2147,7 @@ Elf64_Phdr:
 	p_vaddr		dq 0x00400078
 	p_paddr		dq 0
 	p_filesz		dq ASM_SIZE				; juste le necessaire code/constantes dans le fichier
-	p_memsz		dq ASM_SIZE + 128 * 1024*1024			; 128 Mo au dessus du code et des constantes (pour la co-pile)
+	p_memsz		dq ASM_SIZE + 1024 * 1024*1024		; 1 Go au dessus du code et des constantes (pour la co-pile)
 	p_align		dq 4096
 
 

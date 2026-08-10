@@ -2172,7 +2172,7 @@ separate ( EXPANDER )
 
         if  SRC_EXP.TY = DN_AGGREGATE  then
 	PUT_LINE( tab & "DROP" );
-	EXPRESSIONS.CODE_AGGREGATE( SRC_EXP, D( SM_EXP_TYPE, DST_NAME ) );
+	EXPRESSIONS.CODE_AGGREGATE( SRC_EXP, D( SM_EXP_TYPE, DST_NAME ), D( AS_DISCRETE_RANGE, DST_NAME ) );
 
         elsif SRC_EXP.TY = DN_SLICE then
       -- Source slice : laisse @src, len_src
