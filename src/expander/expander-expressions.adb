@@ -679,8 +679,27 @@ is
 				-----------
     end if;
 
+--    if  NAME.TY = DN_SELECTED  then
+--      CODE_SELECTED( NAME, IS_SOURCE=> FALSE );
+--      NAME := D( AS_DESIGNATOR, NAME );
+--    end if;
     if  NAME.TY = DN_SELECTED  then
-      CODE_SELECTED( NAME, IS_SOURCE=> FALSE );
+			--| n 148 (segfaults T2 lot goto : lex, lib_phase, err_phase,
+			--| expressions, declarations, ada_comp -- 12/08) : DOUBLE
+			--| EMPILEMENT de l'@data pour un prefixe NOM ETENDU PKG.ARR(I).
+			--| CODE_SELECTED empilait l'adresse de la table, puis la queue
+			--| commune (ARRAY_DEFN /= DN_COMPONENT_ID) la RE-empilait --
+			--| fuite +1 par reference, resorbee aux frontieres d'instruction
+			--| SAUF quand elle nait dans un bloc de parametres : le calle
+			--| lisait -result__ofs = @table nue, SIq corrompait [table+0]
+			--| en silence et le BLKMOV d'info de CODE_RETURN visait
+			--| [table+8] (petit champ de l'element 1) -- stos sur 0x1.
+			--| Empreinte FINC : deux "La n, ...ARR_disp" CONSECUTIFS.
+			--| Seul le COMPOSANT (R.A(N)) doit pre-empiler l'adresse --
+			--| meme predicat que la queue commune : DN_COMPONENT_ID.
+      if  D( SM_DEFN, D( AS_DESIGNATOR, NAME ) ).TY = DN_COMPONENT_ID  then
+	CODE_SELECTED( NAME, IS_SOURCE=> FALSE );
+      end if;
       NAME := D( AS_DESIGNATOR, NAME );
     end if;
 
@@ -4599,6 +4618,18 @@ elsif  DESIGNATOR_DEFN.TY in CLASS_PARAM_NAME  then
 	if  PRM1_TYPE = TREE_VOID  or else  PRM1_TYPE.TY = DN_VOID  then					-- litteral/agregat : regarder l'autre operande
 	  PRM1_TYPE := D( SM_EXP_TYPE, PRM_2 );
 	end if;
+----
+	if  PRM1_TYPE /= TREE_VOID
+	  and then ( PRM1_TYPE.TY = DN_PRIVATE  or else  PRM1_TYPE.TY = DN_L_PRIVATE
+			or else  PRM1_TYPE.TY = DN_INCOMPLETE )
+	  and then ( not( CODI.IN_GENERIC_BODY )
+		or else  not( IS_GENERIC_FORMAL_TYPE( D( XD_SOURCE_NAME, PRM1_TYPE ) ) ) )
+	then
+	  if CODI.DEBUG then PUT_LINE( "; F1 AVANT " & NODE_NAME'IMAGE( PRM1_TYPE.TY ) & ' ' & OP_STR ); end if;
+	  PRM1_TYPE := FULL_TYPE_VIEW( PRM1_TYPE );							--| F1 (temoin RECEQ2 11/08) : regle unique de percage --
+	  if CODI.DEBUG then PUT_LINE( "; F1 APRES " & NODE_NAME'IMAGE( PRM1_TYPE.TY ) ); end if;
+	end if;											--| suit SM_DERIVED, couvre DN_L_PRIVATE (meme garde que
+----
 	if  PRM1_TYPE /= TREE_VOID
 	  and then ( PRM1_TYPE.TY = DN_ARRAY  or  PRM1_TYPE.TY = DN_CONSTRAINED_ARRAY )
 	then

@@ -628,6 +628,104 @@ capture -- constate vert 6/6 sur T1 patche). Attendu : « RESULTAT : 6 OK,
 STATIC_TYPE_ALIGN_BYTES, du layout des records packes, de STATOFS ou du
 chantier n 117.
 
+### OPB_TEST (lot operateurs BOOLEAN sur record represente, 11 aout 2026, 12 assertions)
+
+Une unite : opb_test.adb. Couvre : record represente 32 bits calque sur
+TREE (rep clause at mod 4, TOUTES composantes a l'octet 0 -- les deux
+seules formes couvertes par l'expander, cf. gardes recensees en session),
+operateurs utilisateur ">="/"<=" a resultat BOOLEAN sous les quatre
+formes d'appel (condition de if, affectation a BOOLEAN, parametre
+effectif, appel depuis sous-programme imbrique), paire HOMONYME
+NODE/BOOLEAN (resolution en presence des deux freres, checks 1-10), et
+le motif UARITH exact : egalite de records representes dont l'operande
+gauche est un APPEL D'OPERATEUR PARENTHESE ( LEFT >= RIGHT ) = MK(1)
+(checks 11-12). Attendu : « RESULTAT : 12 OK, 0 ECHECS / OPB_TEST
+PASSE ». Historique : checks 1-10 verts d'origine (protocole scalaire et
+homonymes disculpes par l'echelle de fidelite), check 11 rouge capture
+« 11 OK, 1 ECHECS » avant correctif F1, 12/12 apres. Gardien du piege
+n 145 (5e occurrence de la regle n 112 : DN_PARENTHESIZED transparent
+pour la forme du resultat + OPERAND_DATA_ADDRESS rebranchee sur la regle
+unique) ; a repasser apres toute retouche de CODE_COMPOSITE_DATA_ADDRESS,
+CODE_RECORD_EQUALITY, du dispatch DN_USED_OP ou du protocole d'appel.
+
+### SLAGG_TEST (lot agregat vers tranche, 11 aout 2026, 8 assertions)
+
+Une unite : slagg_test.adb. Couvre : agregat (others => X) affecte a une
+TRANCHE a bornes DYNAMIQUES (variable K), composant BOOLEAN, deux vagues
+FALSE/TRUE au motif exact de WRITE_LIB.MARK_DONT_MOVE_PAGES. Detection
+FONCTIONNELLE (relectures du tableau, aucun pari sur la disposition
+memoire) : le remplissage aux bornes du TYPE ecrase la queue du tableau
+a l'interieur. Attendu : « RESULTAT : 8 OK, 0 ECHECS / SLAGG_TEST
+PASSE ». Historique : rouge capture « 6 OK, 2 ECHECS » (checks 4-5)
+avant correctif W1 -- le check 8, prevu rouge, etait BLANCHI par le
+second debordement compensant le premier (les deux vagues debordaient,
+la seconde re-ecrasait en FALSE ce que la premiere avait sali) ; lecon :
+deux instances du meme bug peuvent se masquer fonctionnellement, le
+watchpoint les voyait toutes deux. Gardien du piege n 146 (contrainte
+applicable = celle de la tranche, RM83 4.3.2 ; DIM_TBL(1) surchargee par
+AS_DISCRETE_RANGE du DN_SLICE) ; a repasser apres toute retouche de
+CODE_ASSIGN (voie DN_SLICE), CODE_ARRAY_AGGREGATE, COLLECT_DIMENSIONS
+ou CODE_SLICE.
+
+### COPILE_TEST (lot capacite co-pile, 11 aout 2026, 4 assertions)
+
+Une unite : copile_test.adb. Temoin de CAPACITE (reclasse) : phase 1 =
+30 000 000 d'appels d'une fonction triviale (bosse >= 240 Mo -- la
+co-pile ne rend jamais r14, 8 octets par LINK a vie du processus,
+n 147) ; phase 2 = 200 000 appels a tableau local de taille dynamique
+(CO_VAR). Attendu sous arene 1 Go : « RESULTAT : 4 OK, 0 ECHECS /
+COPILE_TEST PASSE » en quelques secondes. Historique : segfault sous
+l'arene 128 Mo d'origine (capture de l'epuisement) ; a aussi servi de
+contre-exemple de methode -- sa phase 2 consommait les CO_VAR dans le
+frame allocateur et avait donc VALIDE A TORT la restauration de r14 a
+l'UNLINK (tentative R1, revoquee) : il ne teste PAS le contrat
+d'evasion, c'est le role de STRRET_TEST. A repasser apres tout
+changement de p_memsz ou des macros LINK/UNLINK/ELB.
+
+### STRRET_TEST (lot contrat d'evasion co-pile, 11 aout 2026, 7 assertions)
+
+Une unite : strret_test.adb. LE gardien du contrat d'evasion (n 147) :
+les fonctions a resultat dynamique (STRING) laissent leurs donnees sur
+la co-pile DU CALLE et l'appelant les consomme APRES le retour. Couvre :
+resultat STRING passe directement a l'appel suivant (le cas _standrd --
+le LINK du consommateur alloue au-dessus de l'evade), longueur/contenu
+d'un evade simple, catenation de DEUX resultats de fonction (deux evades
+vivants simultanement), imbrication F(G(..)) et F(F(G(..))), copie
+immediate puis appel interpose. Attendu : « RESULTAT : 7 OK, 0 ECHECS /
+STRRET_TEST PASSE ». Historique : vert sous le regime a bosse ; c'est
+le temoin qui AURAIT invalide la tentative R1 avant tout build (sous R1
+les tetes des chaines retournees etaient ecrasees -- constate sur
+_standrd : noms manges puis PROGRAM_ERROR). VERT OBLIGATOIRE sous TOUT
+remaniement futur de la co-pile (retour glissant, marques de relache,
+toute restauration de r14) : ce temoin passe AVANT le build de T2 dans
+l'ordre des oracles.
+
+### diff_finc.sh (oracle de point fixe, 11 aout 2026, outillage)
+
+Script dans /bin : confronte chaque FINC de ./ADA__LIB/ADA__LIB (produits
+T2) a son homonyme de ./ADA__LIB (produits T1), CRLF normalise (piege
+n 131) ; rapport dans ./diff_finc/RAPPORT.txt, diffs complets conserves
+par fichier divergent. Verdict binaire « POINT FIXE PREDEFINIS :
+ATTEINT / NON ATTEINT ». Doctrine : l'oracle de point fixe PRIME sur
+l'oracle d'execution -- une divergence sur un FINC qui « passe » est une
+miscompilation latente (le n 145 a vecu ainsi) ; toute divergence passe
+devant tout nouveau chantier. Etat au 11 aout : 10/10 identiques,
+53 FINC cote T1 seulement (les sources du compilateur -- la liste de
+courses de T3).
+
+### Sondes @IB1/@IB3 (hors filet, diagnostic erreur type A)
+
+Posees dans idl-sem_phase-def_walk.adb (DN_INTEGER_DEF), gardees par
+DEBUG_SEM : @IB1 = valeurs LOWER/UPPER_BOUND et PREDEFINED_INTEGER_
+FIRST/LAST via PRINT_NUM ; @IB3 = les six booleens de la cascade
+SHORT/INTEGER/LONG en chaine TFTTTT (reference T1). La variante @IB2
+(BOOLEAN'IMAGE sur appel d'operateur) a ete RETIREE : elle levait
+PROGRAM_ERROR sous T2 -- decouverte annexe consignee en session
+(territoire n 140-142, temoin a ecrire le jour venu). EN PLACE a la
+cloture du 11 aout ; retrait par grep @IB une fois la campagne T3
+entamee (elles ne touchent pas les FINC produits, seulement la
+verbosite de T2).
+
 ### Sondes @GT/@PC/@AP (hors filet, outil de diagnostic bootstrap)
 
 Posees dans idl-par_phase.adb (@GT1-4 fin de GET_TOKEN, @PC1-5

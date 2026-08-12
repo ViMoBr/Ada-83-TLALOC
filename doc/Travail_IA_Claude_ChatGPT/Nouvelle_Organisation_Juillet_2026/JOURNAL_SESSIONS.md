@@ -1402,3 +1402,194 @@ Suivant en file : les packages predefinis, meme protocole en boucle --
 essai de compilation T2, correction des segfaults s'il y en a,
 comparaison des FINC T1/T2 (CRLF pres). Objectif de campagne :
 recompiler avec T2 tout ce que T1 compile et obtenir les MEMES FINC.
+
+## Session 11 aout 2026 -- CAMPAGNE DES PREDEFINIS : trois chantiers
+## (pieges 145, 146, 147), POINT FIXE ATTEINT SUR LES 10 BIBLIOTHEQUES
+## (15 compilations : 10 specs + 5 corps)
+
+Etat d'entree : specs passant sauf text_io/direct_io.ads (« INTEGER TYPE
+TOO LARGE FOR IMPLEMENTATION » sur COUNT, absent sous T1) ; corps tous
+en segfault (calendar/direct_io/sequential_io en WRITE_LIB, text_io en
+sem_phase). Protocole de session : livraisons en ancre/suppression/
+remplacement groupees par commit avec oracle.
+
+CHANTIER 1 -- erreur type A (piege 145). Sondes en escalier dans
+DEF_WALK/DN_INTEGER_DEF : @IB1 (valeurs quatre a quatre IDENTIQUES --
+donnees innocentees, GET_STATIC_VALUE et relecture _STANDRD hors de
+cause) ; @IB2 avorte (BOOLEAN'IMAGE sur appel d'operateur ->
+PROGRAM_ERROR runtime : decouverte annexe consignee, territoire
+140-142) ; @IB3 = FFFFFF (les SIX comparaisons fausses, y compris
+0 >= -32768 : trois configurations mathematiques disjointes -> aucune
+corruption de donnees ne les uniformise -> le resultat BOOLEAN ne
+parvient jamais a l'appelant). Temoin OPB en echelle de fidelite :
+protocole scalaire nu 8/8, homonymes 10/10 -- la miscompilation est
+contextuelle. Lecture FINC croisee : site d'appel _LE__L31/_GE__L32
+(arithmetique des labels ancree par _NOT__L38 -- les extraits
+_LE__L27/_GE__L29 etaient les freres TREE, prouve par CODE_RETURN
+DN_RECORD et l'ordre d'empilement des operandes), corps BOOLEAN enfin
+extraits : l'operande GAUCHE de l'egalite record fait CALL puis Ld SANS
+La -- il charge les 32 bits bas de l'ADRESSE du doublet, CEQ toujours
+faux. Cause : ( LEFT <= RIGHT ) est un DN_PARENTHESIZED (parentheses
+OBLIGATOIRES entre relationnels), et OPERAND_DATA_ADDRESS -- copie
+locale DIVERGENTE de la regle n 112, jamais rebranchee sur
+CODE_COMPOSITE_DATA_ADDRESS dont elle est l'ancetre nomme -- discrimine
+par espece sans deballer. La regle unique elle-meme ne deballait pas
+PARENTHESIZED (freres latents, p.ex. T : TREE := (D(...))). Correctif
+F1 : la regle apprend DN_PARENTHESIZED dans la boucle de deballage
+(meme statut que la conversion C1-ter, meme AS_EXP) ; OPERAND_DATA_
+ADDRESS delegue a la regle (garde agregat conservee). Gardien OPB 11-12
+rouge capture « 11 OK, 1 ECHECS ». Resultat : les 10 specs passent,
+@IB3 = TFTTTT.
+
+CHANTIER 2 -- segfault WRITE_LIB (piege 146), trois corps d'un coup.
+Poison 0x0101010101010101 = HUIT TRUE ; hardware watchpoint sur la
+cellule LINK -> ecriture prise sur le fait dans MARK_DONT_MOVE_PAGES,
+cliche a sept octets sur huit (remplissage octet par octet, boucle SIb).
+FINC en toutes lettres : CODE_ASSIGN (cible DN_SLICE) calcule @dst ET
+len_dst puis DROP la longueur ; CODE_ARRAY_AGGREGATE recalcule aux
+bornes DU TYPE (_FST_1 = 0 litteral, _LST_1 = MAX_VPG) et remplit
+LEN(type) composants depuis le debut de tranche : debordement de
+(bas_tranche - FST_type) octets au-dela + queue de tableau ecrasee a
+l'interieur. Explique tout : _standrd immune (aucun with, HIGH_BLOCK
+petit), fermetures transitives touchees, find pile negatif du premier
+dossier (les frames vivent dans la zone statique, r13 = 0x18e4a60).
+Correctif W1 : contrainte applicable = celle de la TRANCHE (RM83
+4.3.2) ; AS_DISCRETE_RANGE du DN_SLICE passee en parametre defaute
+TREE_VOID a CODE_AGGREGATE -> CODE_ARRAY_AGGREGATE surcharge DIM_TBL(1)
+seule (tranches 1-dim, RM83 4.1.2) ; toute la machinerie aval devient
+juste ; bornes re-evaluees (pures dans le corpus, consigne). Gardien
+SLAGG rouge capture « 6 OK, 2 ECHECS » -- le check 8 prevu rouge etait
+BLANCHI par le second debordement compensant le premier (lecon : deux
+instances du meme bug peuvent se masquer fonctionnellement). Resultat :
+calendar/direct_io/sequential_io.adb passent.
+
+CHANTIER 3 -- segfault text_io.adb (piege 147), le seul au RUNTIME.
+Crash au LINK du prologue de DABS avec r14 = 0x8DD0000 TOUT ROND = fin
+d'arene, r13 = r14-8, profondeur C de 32 seulement : EPUISEMENT sans
+profondeur. Lecture de codi_x86_64.finc : la co-pile est declaree
+« desallouee a la maniere de la pile usuelle » (doc), EXC_RAISE restaure
+bien r14 (« balaye frames abandonnes »), mais la macro UNLINK annonce en
+commentaire « liberer les allocations » et n'est suivie QUE du depilage
+de chaine : r14 n'est JAMAIS rendu sur le chemin normal (TODO annonce
+non implemente). Allocateur a bosse : 8 octets par LINK + tous les
+CO_VAR, a vie du processus -- text_io (plus gros corps) creve les
+128 Mo (p_memsz). TENTATIVE R1 (mov r14,r13 a l'UNLINK) REVOQUEE :
+casse le CONTRAT D'EVASION -- les resultats STRING des fonctions vivent
+sur la co-pile du calle et sont consommes apres retour ; sous R1 le
+LINK du consommateur ecrasait leurs tetes (constate sur _standrd :
+noms manges, PROGRAM_ERROR). COPILE_TEST avait valide le mauvais
+contrat (CO_VAR consommes dans le frame allocateur). Decision R2 :
+UNLINK d'origine + commentaire n 147 (le prochain lecteur ne retombera
+pas dans le piege d'une ligne), arene 128 Mo -> 1 Go (reservation
+PT_LOAD, pages au toucher, fuite bornee par processus = par unite
+compilee), vrai chantier documente pour plus tard (retour glissant --
+recommande : deux sites seulement, CODE_RETURN dynamique + UNLINK --
+ou marques de relache type ss_mark/ss_release). Gardien STRRET_TEST
+(contrat d'evasion, 7 assertions) : vert obligatoire sous tout
+remaniement futur, PASSE AVANT le build dans l'ordre des oracles.
+Resultat : text_io.adb passe.
+
+JUGE FINAL DE CAMPAGNE : diff_finc.sh (nouvel outillage, oracle de
+point fixe) -- 10 FINC sur 10 IDENTIQUES a la reference T1 (CRLF pres),
+0 divergent, 0 manquant. POINT FIXE PREDEFINIS ATTEINT. 53 FINC cote
+T1 seulement = les sources du compilateur = la liste de courses de T3.
+
+Annexes consignees en route (reserves, pas de chantier ouvert) :
+garde at-mod de CODE_RECORD_REP testee par IDENTITE de noeud au lieu de
+l'espece (un source SANS at mod tombe en TROU « non statique » --
+fossile, meme lecon que les cellules vierges non nulles de SECV1) ;
+CODE_LOAD_REP_COMPONENT refuse byte_offset non nul (couverture
+documentee, refus propre) ; l'elaboration R : STRING := litteral ALIASE
+le litteral sans copie (dormant) ; double endPRO des blocs declare
+(tolere fasmg, fossile n 142 possible) ; BOOLEAN'IMAGE sur appel
+d'operateur utilisateur -> PROGRAM_ERROR runtime (territoire 140-142,
+temoin a ecrire le jour venu).
+
+Lecons de methode gravees : les temoins de RUNTIME doivent couvrir les
+contrats d'EVASION, pas seulement les contrats locaux (l'echec de R1
+vaut la lecon) ; l'oracle de POINT FIXE prime sur l'oracle d'execution
+(une divergence FINC qui « passe » est une dette qui murit -- le n 145
+en fut une) ; une valeur uniforme n'est pas toujours un pointeur ou un
+remplissage de recopie -- huit octets 0x01 etaient huit TRUE (completer
+la grille du n 135) ; et deux instances d'un meme bug peuvent se
+compenser fonctionnellement (SLAGG check 8) -- le watchpoint, lui, voit
+tout.
+
+Suivant en file : T3 -- compilation par T2 des ~53 sources du
+compilateur. Premier essai deja fait : grande majorite des modules
+passent ; le reste = erreurs Ada 83 detectees par la semantique de T2,
+a confronter au LRM (legitimes ? divergences T1/T2 ?). Prealables en
+parallele : mesure de calibrage co-pile (r14 en fin de text_io.adb --
+sem_phase.adb sera plusieurs fois plus gourmand, savoir si 1 Go tient
+ou si le retour glissant devient prerequis de T3) ; retrait des sondes
+@IB ; objectif terminal inchange : FINC(T2(sources)) IDENTIQUES a
+FINC(T1(sources)), diff_finc.sh un cran plus haut.
+
+# Session 11-12/08/2026 — « NOT VISIBLE BY SELECTION » au bootstrap : F1
+
+## Symptome de depart
+T2 (TLALOC compile par T1) rejette « NOT VISIBLE BY SELECTION » les
+littéraux d'enumeration selectionnes (SEQ_IO.IN_FILE, DA.LX_SRCPOS,
+PRENAME.COUNT...) dans 6 unites ; T1 (gnat) accepte. Code legal
+(LRM 8.3, 4.1.3, 12.3, 3.5.1) : divergence de bootstrap.
+
+## Methode
+Temoins minimaux VISEL/VISEL2 (litteral selecte : paquetage, renommage,
+instance, case, sous use ; controles non-litteraux) -> reproduction en
+3 unites. Sondes differentielles T1s/T2s dans FIND_SELECTED_VISIBILITY
+(19 modifications, modele piege n 78), eclatees en primitives prouvees
+apres crashes frame-sensibles. Divergence unique exposee :
+SONDEB2 NE=TRUE sur singleton -> le littéral se croit homographe de
+lui-meme dans le bloc discard -> elimine.
+
+## Cause (F1)
+`TEMP_DEFINTERP /= OLD_DEFINTERP`, DEFINTERP_TYPE is new TREE
+(SET_UTIL, prive complete par derivation). Finc : LVA/LVA/CNE —
+comparaison d'ADRESSES de doublets. L'aiguillage COMPOSITE_OPERATORS
+(expander-expressions ~4600) teste le genre NOMINAL
+(DN_RECORD/DN_ARRAY...) : un derive/prive n'y repond pas -> chute dans
+le chemin scalaire (CODE_EXP empile l'@doublet, CEQ/CNE brut).
+
+## Correctif
+Percage FULL_TYPE_VIEW de PRM1_TYPE avant les tests de genre
+(6e occurrence de la regle unique, garde C1-bis), v2 : gate par genre
+(DN_PRIVATE / DN_L_PRIVATE / DN_INCOMPLETE) apres incident
+« !! PAS D ATTRIBUT XD_SOURCE_NAME » sur DN_ANY_INTEGER (TEXT_IO,
+corps generiques). Verifie au finc : AVANT DN_PRIVATE -> APRES
+DN_RECORD -> CODE record equality (@A Ld @B Ld CEQ, postlude LI 1/OUX
+pour /=).
+
+## Resultat
+T2 refabrique compile TOUTES les unites precedemment en faute.
+Restent 6 SEGFAULTS (lex, lib_phase, err_phase, expander-expressions,
+expander-declarations, ada_comp) -> prochaine session.
+
+## Verrous et temoins
+- RECEQ_TEST  (14 OK) : records directs — STABLE, au depot.
+- RECEQ4_TEST (19 OK attendus) : + derives par conversion (R8/R9) —
+  verrou F1, au depot.
+- DARREQ_TEST (3 OK) : tableaux derives — STABLE, au depot.
+- VISEL/VISEL2 : verrous de la selection des litteraux, au depot.
+- receq2 v1 : reproducteur F4 (conserver tel quel, ne PAS corriger).
+
+## Registre des fossiles
+- F1 egalite des derives de record : CORRIGE (cette session).
+- F2 composition A5 (D->deref->CEQ->ENUM_IMAGE sous slot resultat),
+  PROGRAM_ERROR frame-sensible : OUVERT, dossier finc partiel.
+- F3 BOOLEAN'IMAGE sur predefinis jamais prouve sous codegen TLALOC :
+  OBSERVATION.
+- F4 agregat d'un type derive -> segfault elaboration : OUVERT,
+  reproducteur receq2 v1.
+- F5 egalite tableaux derives : INVALIDE par DARREQ — FERME.
+- F6 fonction a resultat PRIVE/DERIVE de record (protocole de retour
+  composite manque — RET_TS.TY nominal, expressions ~1449/1549/1818,
+  meme famille que F1) : OUVERT — suspect n 1 de l'instabilite
+  RECEQ2B/RECEQ3 (PK.MK2), a instruire avec les 6 segfaults.
+
+## Programme prochaine session
+1. Les 6 segfaults de T2comp — commencer par lex.adb (petit) ;
+   hypotheses croisees F2/F4/F6 a garder sous la main.
+2. F6 : temoin fonction-a-resultat-derive + audit des trois sites
+   RET_TS ; puis reintegrer R10 au verrou RECEQ.
+3. F4 : correctif agregat de derive (SM_COMP_LIST via percage).
+4. Si propre : point fixe T2 -> T3.

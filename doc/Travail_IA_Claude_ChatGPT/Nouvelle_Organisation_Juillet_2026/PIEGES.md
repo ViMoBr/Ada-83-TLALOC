@@ -1194,3 +1194,18 @@ du type. Correctif : contrainte applicable = celle de la tranche (RM83
 Gardien : SLAGG_TEST (rouge 5 OK/3 ECHECS capturé). À recenser : autres
 consommateurs d'agrégats qui jettent une longueur déjà calculée
 (grep DROP au voisinage de CODE_AGGREGATE).
+
+147. **  co-pile = allocateur à bosse par
+processus ** l'UNLINK ne rend pas r14, ET NE DOIT PAS le rendre : les
+résultats dynamiques des fonctions vivent sur la co-pile du callé et
+sont consommés après retour (contrat d'évasion). Tentative R1
+(restauration à l'UNLINK) révoquée : écrasait les têtes des STRING
+retournées (_standrd, noms mangés, PROGRAM_ERROR). Symptôme initial :
+segfault d'épuisement au LINK sur la plus grosse unité (text_io.adb,
+r14 = fin d'arène, profondeur faible). Traitement : plafond 128 Mo ->
+1 Go (p_memsz), fuite bornée par unité compilée. Gardiens : STRRET_TEST
+(contrat d'évasion — vert obligatoire sous tout remaniement futur),
+COPILE_TEST (capacité). Chantier ouvert : récupération saine (retour
+glissant ou marques de relâche). Leçon de méthode : les témoins de
+runtime doivent couvrir les contrats d'ÉVASION.
+
