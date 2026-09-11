@@ -42,7 +42,9 @@
 ;	  RDX -> a3  (x13)  auxiliaire
 ;	  RSI -> a4  (x14)  param syscall
 ;	  RDI -> a5  (x15)  param syscall
-;	  LR  -> ra  (x1)   link register, pousse manuellement sur sp pour CALL/RET
+;	  ra (x1) n'est PAS utilise par CALL/RTD : la LLIR maintient une micro-pile explicite
+;	  d'adresses de retour sur sp (16 octets par appel), comme x30 sur arm64 -- c'est ce qui
+;	  permet a EXC_RAISE de derouler les retours des frames abandonnes en restaurant sp.
 ;	  scratch interne : t0 (x5), t1 (x6), t2 (x7)
 
 postpone							; sera fait en toute toute fin car c'est le premier postpone
@@ -86,7 +88,7 @@ end macro
 	; Le sp processeur reste en bas de pile pour gerer une micro-pile descendante des adresses de CALL/RET uniquement.
 	; ATTENTION : sur RISC-V Linux, sp doit etre aligne sur 16 octets sous peine de SIGBUS sur certains acces.
 	; On reserve donc 16 octets par CALL au lieu de 8 (sur les 16 octets, seul un qword sert
-	; effectivement a stocker ra, l'autre est du padding d'alignement).
+	; effectivement a stocker l'adresse de retour, l'autre est du padding d'alignement).
 	;
 	; Attention : s0 pointe sur la derniere valeur empilee (qword)
 	; AUTRE PROBLEME DE PILE : Les variables dont on connaît la taille a la compilation s'accomodent bien a
@@ -339,6 +341,29 @@ macro			QUAD_CONST	rd, val
   end if
 end macro
 
+;			..........................
+macro			QUAD_ADDR	rd, val
+;			..........................
+;	Materialise une ADRESSE (symbole, reference avant possible) dans rd.
+;	TAILLE FIXE : lui + addiw, TOUJOURS deux instructions (l'image ELF est chargee
+;	sous 2 GiB : org 0x400000, code + constantes). L'addiw re-etend le signe du
+;	resultat 32 bits, ce qui rend la compensation hi20 = 0x80000 inoffensive.
+;	L'assert garde l'hypothese ; QUAD_CONST reste reservee aux IMMEDIATS
+;	(taille f(val), pieges 88 et 157 : jamais de taille dependant d'une valeur
+;	de la passe precedente).
+  assert (val) >= 0 & (val) <= 0x7FFFFFFF
+  local lo12a, hi20a
+  lo12a = (val) and 0xFFF
+  if lo12a and 0x800
+    hi20a = (((val) - (lo12a - 0x1000)) shr 12) and 0xFFFFF
+    lo12a = lo12a - 0x1000
+  else
+    hi20a = ((val) shr 12) and 0xFFFFF
+  end if
+  dd 0x00000037 or (hi20a shl 12) or (rd shl 7)				; lui rd, hi20
+  dd 0x0000001B or ((lo12a and 0xFFF) shl 20) or (rd shl 15) or (rd shl 7)	; addiw rd, rd, lo12
+end macro
+
 ;-----------------------------------------------------------------------------------------------------------------------
 ;	L O A D	/   S T O	R E   Q W	O R D   A V E C   O F	F S E T   ( I N T E R N E )
 ;-----------------------------------------------------------------------------------------------------------------------
@@ -398,6 +423,7 @@ macro			RV_BRANCH	funct3*, rs1*, rs2*, lbl*
   b11  = (disp shr 11) and 1
   dd 0x00000063 or (b12 shl 31) or (b105 shl 25) or (rs2 shl 20) or (rs1 shl 15) or (funct3 shl 12) or (b41 shl 8) or (b11 shl 7)
   disp = lbl - $ + 4
+  assert (disp mod 4) = 0 & disp >= -4096 & disp <= 4094
 end macro
 ;			.......................
 macro			FP_IN_RAX		lvl
@@ -641,7 +667,7 @@ macro			LIF	val				; Load Immediate Float (IEEE 754 double 64 bits sur la pile e
   local bits
   virtual at 0
     dq val
-    load bits qword from 0
+    load bits:qword from 0
   end virtual
   QUAD_CONST 10, bits
   PUSH_RAX
@@ -655,8 +681,8 @@ end macro
 ;			---------------------
 macro			LCA	ptr, disp:0			; Load Constant Address
 ;			---------------------
-;	Materialise une adresse 64 bits dans a0 et l'empile.
-  QUAD_CONST	10, ptr+disp
+;	Materialise une adresse dans a0 (QUAD_ADDR, taille fixe : 2 instructions) et l'empile.
+  QUAD_ADDR	10, (ptr)+(disp)
   PUSH_RAX
 end macro
 
@@ -669,7 +695,7 @@ macro			LSPA	prefix, subname			; Load SubProgram Address de .elab, en armant l'a
       prefix#subname#_ = prefix#subname#.elab
     end if
   end postpone
-  QUAD_CONST	10, prefix#subname#_
+  QUAD_ADDR	10, prefix#subname#_					; adresse absolue du sous-programme dans a0 (taille fixe)
   PUSH_RAX
 end macro
 ;			------------------------
@@ -679,13 +705,13 @@ macro			LVA	lvl:-1, disp:0			; Load Variable Address pour lvl et disp
 ;	x86 : lea rax, [base + disp] ; RISC-V : addi a0, a0, disp (12 bits signe)
 ;	ou via QUAD_CONST + add pour les grandes valeurs.
   BASE_IN_RAX	lvl
-  if disp = 0
+  if (disp) = 0
 ;	a0 deja a la bonne valeur
-  else if disp >= -2048  &  disp <= 2047
+  else if (disp) >= -2048  &  (disp) <= 2047
 ;	addi a0, a0, disp
-    dd 0x00050513 or ((disp and 0xFFF) shl 20)
+    dd 0x00050513 or (((disp) and 0xFFF) shl 20)
   else
-    QUAD_CONST	5, disp						; t0 = disp
+    QUAD_CONST	5, (disp)						; t0 = disp
     dd 0x00550533							; add a0, a0, t0
   end if
   PUSH_RAX
@@ -697,12 +723,12 @@ macro			LIVA	lvl:-1, disp:0, ofs:0		; Load Indirect Variable Address
 ;	Empile l'adresse de la variable pointee par l adresse au deplacement disp du frame de lvl,
 ;	a laquelle on ajoute ofs.
   INDIRECT_BASE_IN_RAX	lvl, disp
-  if ofs = 0
+  if (ofs) = 0
 ;	a0 deja a la bonne valeur
-  else if ofs >= -2048  &  ofs <= 2047
-    dd 0x00050513 or ((ofs and 0xFFF) shl 20)				; addi a0, a0, ofs
+  else if (ofs) >= -2048  &  (ofs) <= 2047
+    dd 0x00050513 or (((ofs) and 0xFFF) shl 20)				; addi a0, a0, ofs
   else
-    QUAD_CONST	5, ofs
+    QUAD_CONST	5, (ofs)
     dd 0x00550533							; add a0, a0, t0
   end if
   PUSH_RAX
@@ -1259,14 +1285,78 @@ end macro
 ;	C O N V E	R S I O N	S   E N T	I E R  <->  F I X E D
 ;-----------------------------------------------------------------------------------------------------------------------
 
+
+;			--------------
+macro			SDIV128_64_POS				; Division signee 128/64 : (a3:a0) / a1, avec a1 > 0
+;			--------------				; Sortie : a0 = quotient signe, a3 = reste signe ; a1 preserve
+;	Homologue de la macro arm64 du meme nom (x86 : imul/idiv sur RDX:RAX).
+;	Chemin rapide si a3:a0 est deja l'extension de signe d'un entier 64 bits.
+;	Sinon division non signee des valeurs absolues sur 64 iterations, puis restauration du signe.
+;	Clobbers : a2, a4, t0, t1, t2. Branchements internes en B-type (RV_BRANCH), tous locaux.
+  local slow, boucle, soustraire, suite, fin
+
+; Produit deja representable sur 64 bits signes ?
+  dd 0x43F55293							; srai t0, a0, 63
+  RV_BRANCH	1, 13, 5, slow					; bne  a3, t0, slow
+
+; Chemin rapide : division materielle 64/64, reste par rem.
+  dd 0x02B54633							; div  a2, a0, a1
+  dd 0x02B566B3							; rem  a3, a0, a1
+  dd 0x00060513							; mv   a0, a2
+  RV_BRANCH	0, 0, 0, fin					; beq  x0, x0, fin
+
+slow:
+; Masque de signe du dividende 128 (a4, conserve), puis valeur absolue 128 bits :
+; (a3:a0) := (a3:a0) xor (a4:a4) - (a4:a4), l'emprunt de la soustraction basse passe par t0.
+  dd 0x43F6D713							; srai a4, a3, 63
+  dd 0x00E54533							; xor  a0, a0, a4
+  dd 0x00E6C6B3							; xor  a3, a3, a4
+  dd 0x00E532B3							; sltu t0, a0, a4		emprunt de (a0 - a4)
+  dd 0x40E50533							; sub  a0, a0, a4
+  dd 0x40E686B3							; sub  a3, a3, a4
+  dd 0x405686B3							; sub  a3, a3, t0
+
+; Division non signee 128/64.
+; a3 = reste courant, a2 = bits bas du dividende, a0 = quotient, t1 = compteur.
+  dd 0x00050613							; mv   a2, a0
+  dd 0x00000513							; mv   a0, x0
+  dd 0x04000313							; addi t1, x0, 64
+
+boucle:
+  dd 0x03F6D293							; srli t0, a3, 63		bit sortant de a3 (129e bit du reste decale)
+  dd 0x03F65393							; srli t2, a2, 63
+  dd 0x00169693							; slli a3, a3, 1
+  dd 0x0076E6B3							; or   a3, a3, t2
+  dd 0x00161613							; slli a2, a2, 1
+  dd 0x00151513							; slli a0, a0, 1
+  RV_BRANCH	1, 5, 0, soustraire				; bne  t0, x0, soustraire	(b.cs de l'arm64)
+  RV_BRANCH	6, 13, 11, suite					; bltu a3, a1, suite	(b.lo de l'arm64)
+
+soustraire:
+  dd 0x40B686B3							; sub  a3, a3, a1
+  dd 0x00156513							; ori  a0, a0, 1
+
+suite:
+  dd 0xFFF30313							; addi t1, t1, -1
+  RV_BRANCH	1, 6, 0, boucle					; bne  t1, x0, boucle
+
+; Restaurer le signe du quotient et du reste.
+  dd 0x00E54533							; xor  a0, a0, a4
+  dd 0x40E50533							; sub  a0, a0, a4
+  dd 0x00E6C6B3							; xor  a3, a3, a4
+  dd 0x40E686B3							; sub  a3, a3, a4
+
+fin:
+end macro
 ;			-----
 macro			CVTIX					; Conversion de l'entier I en FIXED X de SMALL = NUMER/DENOM
 ;			-----					; Sont empiles I puis DENOM puis NUMER (I.D.N)
   POP_RBX								; a1 = NUMER : diviseur
   POP_RCX								; a2 = DENOM : multiplicateur
   POP_RAX								; a0 = I : multiplicande
-  dd 0x02C50533							; mul a0, a0, a2		produit 64 bits bas
-  dd 0x02B54533							; div a0, a0, a1		quotient signe
+  dd 0x02C516B3							; mulh a3, a0, a2		produit 128 bits : haut
+  dd 0x02C50533							; mul  a0, a0, a2		produit 128 bits : bas
+  SDIV128_64_POS
   PUSH_RAX							; Resultat FIXED X sur 64 bits
 end macro
 ;			-----
@@ -1275,21 +1365,21 @@ macro			CVTXI					; Conversion du FIXED X de SMALL = NUMER/DENOM en INTEGER I
   POP_RBX								; a1 = DENOM : diviseur
   POP_RCX								; a2 = NUMER : multiplicateur
   POP_RAX								; a0 = X : multiplicande
-  dd 0x02C502B3							; mul  t0, a0, a2		produit 64 bits bas
-  dd 0x02B2C533							; div  a0, t0, a1		quotient tronque
-  dd 0x02B2E6B3							; rem  a3, t0, a1		reste signe
+  dd 0x02C516B3							; mulh a3, a0, a2		produit 128 bits : haut
+  dd 0x02C50533							; mul  a0, a0, a2		produit 128 bits : bas
+  SDIV128_64_POS							; a0 = quotient tronque, a3 = reste signe
 
-  dd 0x43F6D613							; srai a2, a3, 63		masque signe du reste
-  dd 0x00C6C6B3							; xor  a3, a3, a2
-  dd 0x40C686B3							; sub  a3, a3, a2		abs(reste)
+  dd 0x43F6D713							; srai a4, a3, 63		masque signe du reste
+  dd 0x00E6C6B3							; xor  a3, a3, a4
+  dd 0x40E686B3							; sub  a3, a3, a4		abs(reste)
 
   dd 0x0015F313							; andi t1, a1, 1		bit impair du denominateur
   dd 0x0015D593							; srli a1, a1, 1
-  dd 0x006585B3							; add  a1, a1, t1		ceil(DENOM/2)
+  dd 0x006585B3							; add  a1, a1, t1		ceil(DENOM/2)  (shr + adc de la reference x86)
 
   dd 0x00B6E663							; bltu a3, a1, +12		si abs(reste) < demi, pas d'arrondi
-  dd 0x00166613							; ori  a2, a2, 1		+1 si reste positif, -1 si negatif
-  dd 0x00C50533							; add  a0, a0, a2		arrondi loin de zero au demi
+  dd 0x00176713							; ori  a4, a4, 1		+1 si reste positif, -1 si negatif
+  dd 0x00E50533							; add  a0, a0, a4		arrondi loin de zero au demi
   PUSH_RAX							; Resultat INTEGER I sur 64 bits
 end macro
 
@@ -1457,6 +1547,7 @@ macro			BRA	lbl				; inconditionnel, saut long PC-relatif
   dd 0x00000297 or (hi20 shl 12)					; auipc t0, hi20
   dd 0x00028067 or ((lo12 and 0xFFF) shl 20)			; jalr x0, lo12(t0)
   rel = lbl - $ + 8							; PC de l'AUIPC = $-8
+  assert (rel mod 4) = 0 & rel >= -0x80000000 & rel <= 0x7FFFFFFF
 end macro
 
 ;			-------------
@@ -1480,50 +1571,47 @@ end macro
 ;			-------------------------
 macro			CALL	prefix, subname			; CALL direct longue portee
 ;			-------------------------
-; Sauvegarde ra sur la micro-pile 16-octets alignee, puis AUIPC+JALR.
+; RISC-V n'empile pas l'adresse de retour. Pour conserver EXACTEMENT le modele
+; LLIR/x86 (et arm64), on gere explicitement la micro-pile par sp : chaque appel
+; reserve 16 octets (alignement), range l'adresse de retour a [sp], puis branche.
+; RTD depile cette adresse. Ainsi une restauration de sp par EXC_RAISE deroule
+; aussi les retours des frames abandonnes, sans avoir a sauver ra dans le contexte.
+; (L'ancienne forme 'sd ra / jalr ra / ld ra' laissait ra dans un etat quelconque
+; apres un deroulage : le RTD du frame porteur du handler retournait dans le vide.)
+; L'adresse de retour est PC-relative (auipc t0, 0 ; addi t0, t0, 24 : la 6e
+; instruction apres l'auipc, le BRA en occupant deux) : taille FIXE de 24 octets
+; par CALL, aucun label,
+; aucune dependance a une valeur de passe precedente (contrat SIZE_OF = ENCODE).
   postpone
     if ~definite prefix#subname#_
       prefix#subname#_ = prefix#subname#.elab
     end if
   end postpone
 
+  dd 0x00000297							; auipc t0, 0		(t0 = adresse de cet auipc)
+  dd 0x01828293							; addi t0, t0, 24	(adresse de retour = apres le jalr du BRA)
   dd 0xFF010113							; addi sp, sp, -16
-  dd 0x00113023							; sd ra, 0(sp)
-
-  local rel, lo12, hi20
-  lo12 = rel and 0xFFF
-  if lo12 and 0x800
-    hi20 = ((rel - (lo12 - 0x1000)) shr 12) and 0xFFFFF
-    lo12 = lo12 - 0x1000
-  else
-    hi20 = (rel shr 12) and 0xFFFFF
-  end if
-  dd 0x00000297 or (hi20 shl 12)					; auipc t0, hi20
-  dd 0x000280E7 or ((lo12 and 0xFFF) shl 20)			; jalr ra, lo12(t0)
-  rel = prefix#subname#_ - $ + 8					; PC de l'AUIPC = $-8
-
-  dd 0x00013083							; ld ra, 0(sp)
-  dd 0x01010113							; addi sp, sp, 16
+  dd 0x00513023							; sd t0, 0(sp)
+  BRA prefix#subname#_						; auipc t1 + jalr x0 (8 octets, +/-2 GiB)
 end macro
 
 ;			-----
 macro			CALLI					; CALL indirect par valeur empilee
 ;			-----
-;	Depile l'adresse cible dans a0, sauvegarde ra sur sp, jalr ra, a0, restaure ra.
+;	Depile l'adresse cible dans a0, empile l'adresse de retour sur la micro-pile sp, saute.
   POP_RAX								; a0 = adresse cible
+  dd 0x00000297							; auipc t0, 0		(t0 = adresse de cet auipc)
+  dd 0x01428293							; addi t0, t0, 20	(adresse de retour = apres le jalr)
   dd 0xFF010113							; addi sp, sp, -16
-  dd 0x00113023							; sd ra, 0(sp)
-  dd 0x000500E7							; jalr ra, 0(a0)	(opcode 0x67, funct3=0, rs1=10, rd=1)
-  dd 0x00013083							; ld ra, 0(sp)
-  dd 0x01010113							; addi sp, sp, 16
+  dd 0x00513023							; sd t0, 0(sp)
+  dd 0x00050067							; jalr x0, 0(a0)
 end macro
 
 ;			--------------------
 macro			RTD	param_size:0
 ;			--------------------
-;	Desallouer param_size octets de la pile de travail puis retour (ret = jalr x0, 0(ra)).
-;	L'adresse de retour est dans ra ; le 'CALL' du caller s'occupera de
-;	restaurer le ra du niveau encore au-dessus.
+;	Desallouer param_size octets de la pile de travail puis retour par la micro-pile sp
+;	(adresse de retour rangee par CALL/CALLI ; 16 octets par appel).
   prm_size = param_size						; evaluer l'argument textuel (prm_siz-8) AVANT toute negation : and prime sur + - en fasmg
   assert prm_size >= 0
   if prm_size <> 0
@@ -1535,7 +1623,9 @@ macro			RTD	param_size:0
       dd 0x40540433							; sub s0, s0, t0  (funct7=0x20, rs1=8, rs2=5, rd=8)
     end if
   end if
-  dd 0x00008067							; ret  (jalr x0, 0(ra))
+  dd 0x00013283							; ld t0, 0(sp)		adresse de retour LLIR
+  dd 0x01010113							; addi sp, sp, 16
+  dd 0x00028067							; jalr x0, 0(t0)
 end macro
 
 
@@ -1582,8 +1672,24 @@ macro			UNLINK	lvl				; DISPOSE VARS LOCALES ET RESTORE FRAME PTR
   FP_IN_RBP	lvl						; throw locals : s0 = FP(lvl)
   POP_RAX								; depiler l'ancien FP sauvegarde
   RAX_IN_FP	lvl						; restaurer l'entree lvl du display
-;	Liberer le frame de co-pile : ld s3, 0(s3)
+;	La co-pile N'EST PAS rendue ici (n 147, contrat d'evasion) : les donnees d'un
+;	resultat de fonction TABLEAU vivent dans la region de ce frame et sont consommees
+;	par l'appelant APRES le retour. La variante UNLINKR ci-dessous rend la co-pile ;
+;	c'est l'EXPANDER qui choisit (EXIT_UNLINK_MNEMONIC) selon le type de resultat.
   dd 0x0009B983							; ld s3, 0(s3)  (rs1=19, rd=19)
+end macro
+
+;			--------------
+macro			UNLINKR	lvl				; UNLINK + LIBERATION DE LA CO-PILE (s2 redescend a la cellule LINK de ce frame)
+;			--------------
+  FP_IN_RBP	lvl						; throw locals : s0 = FP(lvl)
+  POP_RAX								; depiler l'ancien FP sauvegarde
+  RAX_IN_FP	lvl						; restaurer l'entree lvl du display
+;	Chantier co-pile (n 163) : rendre TOUT ce que ce frame a alloue, cellule LINK comprise.
+;	INTERDIT pour un frame de fonction a resultat TABLEAU (contrat d'evasion n 147) :
+;	l'expander n'emet UNLINKR que si le resultat est copie chez l'appelant avant l'epilogue.
+  dd 0x00098913							; mv s2, s3	(sommet := cellule LINK de ce frame = s2 d'avant LINK)
+  dd 0x0009B983							; ld s3, 0(s3)	(frame de co-pile anterieur)
 end macro
 
 ;			----------------------
@@ -1645,9 +1751,9 @@ end macro
 macro			END_BLOC_DEF	siz, fst, lst		; Fin : pose le ENUM_USE_INFO etendu
 ;			---------------------------------
 IMAGES.data_end = $
+  align_q
 IMAGES.info = $
   dd 8*(IMAGES.data_end - IMAGES.data), 8, 1, IMAGES.data_end - IMAGES.data
-  align_q
 SIZ = $
   dd siz
 FST = $

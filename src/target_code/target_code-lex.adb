@@ -26,6 +26,8 @@
 ------------------------------------------------------------------------------------------------------------------------
 --	1	2	3	4	5	6	7	8	9	0	1	2
 
+with IDL;
+
 separate ( TARGET_CODE )
 
 					---
@@ -640,10 +642,10 @@ is					---
         FAULT( "nom d'include non clos" );
       end if;
 
-      if  L2 - F2 >= 30  and then  LINE( F2 .. F2 + 29 ) = "../../src/expander/fasmg/codi_"  then								--| le codi est l'IMPLEMENTATION de TARGET_CODE,
-        if  LINE( F2 + 30 .. L2 - 1 ) /= CODI_NAME  then									--| ... de la cible CHOISIE : un .fas qui declare
-          FAULT( "include codi_" & LINE( F2 + 30 .. L2 - 1 )								--| un autre codi est refuse (jamais un binaire
-		 & " : cible choisie " & CPU_KIND'IMAGE( TARGET_CPU ) );						--| arm pour un .fas x86, ni l'inverse)
+      if  L2 - F2 >= 30  and then  LINE( F2 .. F2 + 29 ) = "../../src/expander/fasmg/codi_"  then			--| le codi est l'IMPLEMENTATION de TARGET_CODE,
+        if  LINE( F2 + 30 .. L2 - 1 ) /= CODI_NAME  then							--| ... de la cible CHOISIE : un .fas qui declare
+          FAULT( "include codi_" & LINE( F2 + 30 .. L2 - 1 )						--| un autre codi est refuse (jamais un binaire
+		 & " : cible choisie " & CPU_KIND'IMAGE( TARGET_CPU ) );					--| arm pour un .fas x86, ni l'inverse)
         end if;
         return;											--| internalisee : ne jamais le parser (TC-04) ;
       end if;											--| fasmg, lui, lit cet include — meme .fas, deux
@@ -655,11 +657,11 @@ is					---
       FTOP := FTOP + 1;
 
       begin
-        OPEN( FILES( FTOP ), IN_FILE, LINE( F2 .. L2 - 1 ) );						--| repertoire courant = ADA__LIB
+        OPEN( FILES( FTOP ), IN_FILE, IDL.LIB_PATH( 1 .. IDL.LIB_PATH_LENGTH ) & LINE( F2 .. L2 - 1 ) );		--| repertoire LIB_PATH
       exception
         when NAME_ERROR =>
 	FTOP := FTOP - 1;
-	FAULT( "include introuvable : " & LINE( F2 .. L2 - 1 ) );
+	FAULT( "include introuvable : " & IDL.LIB_PATH( 1 .. IDL.LIB_PATH_LENGTH ) & LINE( F2 .. L2 - 1 ) );
       end;
       return;
     end if;
@@ -801,11 +803,11 @@ is					---
     FTOP := 1;
 
     begin
-      OPEN( FILES( 1 ), IN_FILE, FAS_NAME );
+      OPEN( FILES( 1 ), IN_FILE, IDL.LIB_PATH( 1 .. IDL.LIB_PATH_LENGTH ) & FAS_NAME );
     exception
       when  NAME_ERROR =>
         FTOP := 0;
-        FAULT( "source introuvable : " & FAS_NAME );
+        FAULT( "source introuvable : " & IDL.LIB_PATH( 1 .. IDL.LIB_PATH_LENGTH ) & FAS_NAME );
     end;
 
     while  FTOP > 0  loop

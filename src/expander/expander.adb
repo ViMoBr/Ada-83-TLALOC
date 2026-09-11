@@ -21,7 +21,7 @@ is
 
 			-- FLAGS DE DEBOGAGE ET AVERTISSEMENTS DE NON IMPLEMENTATION
 
-    DEBUG				: BOOLEAN		:= TRUE;
+    DEBUG				: BOOLEAN		:= FALSE;
     GENERATE_BINARY_MAP		: BOOLEAN		:= TRUE;
 
 			--| DISCIPLINE TROU() (briefing expander bruyant, fossile n 115) :
@@ -601,7 +601,7 @@ FIND_DOT_IF_ANY_AND_UPCASE:
 
 	PUT_LINE( tab & "LINK" & tab & "0, loc_siz" );
 
-	PUT_LINE( "include '../../bin/ADA__LIB/_STANDRD.FINC'" );
+	PUT_LINE( "include '_STANDRD.FINC'" );
 
    -- PILIER 11 EXCEPTIONS : contexte-sentinelle en fond de la pile des contextes de reprise
 	PUT_LINE( tab & "EXC_MACH" & tab & "0, EXC_CTX0__dat" );						-- photo niveau 0 (NXT_LVL=1 : FP(0))

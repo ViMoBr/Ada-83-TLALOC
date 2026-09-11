@@ -709,30 +709,6 @@ package body EXPRESO is
 					   SM_BASE_TYPE	  => D( SM_BASE_TYPE, DESIG_STRUCT ),
 					   XD_SOURCE_NAME	  => D( XD_SOURCE_NAME, DESIG_STRUCT )		-- anonyme pas de vrai source name
 					);
--- MODIF V.MORIN 18/6/2025
---	  DB( SM_IS_ANONYMOUS, NEW_TYPE_SPEC, TRUE );
-				----------------
---				ANON_SOURCE_NAME:
---	  declare
---	    SPOS		: TREE		:= D( LX_SRCPOS, EXP );
---	    IML		:constant STRING	:= INTEGER'IMAGE( DI( XD_NUMBER, GET_SOURCE_LINE( SPOS ) ) );
---	    IMC		:constant STRING	:= SRCCOL_IDX'IMAGE( GET_SOURCE_COL( SPOS ) );
---	    ANON_LC_STR	:constant STRING	:= "ANON_" & IML( 2 .. IML'LENGTH ) & '_' & IMC( 2 .. IMC'LENGTH );
---	    SUBTYPE_ID	: TREE		:= MAKE_SUBTYPE_ID( LX_SRCPOS => TREE_VOID,
---						LX_SYMREP => STORE_TEXT( ANON_LC_STR ),
---						SM_TYPE_SPEC => NEW_TYPE_SPEC,
---						XD_REGION => TREE_VOID
---						);
---	  begin
---DEBUG_STOP;
-
---	    D( XD_SOURCE_NAME, NEW_TYPE_SPEC, SUBTYPE_ID );
---	    end	ANON_SOURCE_NAME;
-		----------------
-
---put_line( "; EXPRESO.RESOLVE_SUBTYPE_INDICATION line 727 xd_source_name design struct = " & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, DESIG_STRUCT ) ) ) );
---put_line( "; EXPRESO.RESOLVE_SUBTYPE_INDICATION line 727 xd_source_name new type spec = " & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, NEW_TYPE_SPEC ) ) ) );
-
 	end;
 
         else

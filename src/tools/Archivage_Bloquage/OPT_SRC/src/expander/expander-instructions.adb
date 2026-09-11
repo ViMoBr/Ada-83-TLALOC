@@ -29,9 +29,9 @@ separate ( EXPANDER )
     end;
   end	CODE_STM_S;
 
-
-  procedure			CODE_STM_ELEM		( STM_ELEM :TREE )
-  is
+			-------------
+  procedure		CODE_STM_ELEM		( STM_ELEM :TREE )
+  is			-------------
   begin
 
     if STM_ELEM.TY in CLASS_STM then
@@ -40,65 +40,64 @@ separate ( EXPANDER )
     elsif STM_ELEM.TY = DN_STM_PRAGMA then
       CODE_STM_PRAGMA( STM_ELEM );
 
+    else
+      CODI.TROU( "CODE_STM_ELEM", STM_ELEM );								--| vague 3 : dispatch muet (fossile n 115)
     end if;
+
   end	CODE_STM_ELEM;
+	-------------
 
-
-
-  procedure			CODE_STM_PRAGMA		( STM_PRAGMA :TREE )
-  is
+			---------------
+  procedure		CODE_STM_PRAGMA		( STM_PRAGMA :TREE )
+  is			---------------
   begin
-    null;
+    null;												--| INTENTIONNEL (partiel) : aucun pragma d'instruction
+												--| n'a d'effet de code dans le perimetre actuel ; si un
+												--| pragma devient signifiant (SUPPRESS, INLINE...), le
+												--| trier ICI au lieu d'elargir ce null (triage 28/07)
   end;
 
 
 
-				--====--
-  procedure			CODE_STM			( STM :TREE )
-  is
+				--^^^^^^^^--
+  procedure			  CODE_STM		( STM :TREE )
+  is				------------
   begin
-
-    if STM.TY = DN_LABELED
-    then
+    if STM.TY = DN_LABELED  then
       CODE_LABELED( STM );
 
-    elsif STM.TY = DN_NULL_STM
-    then
+    elsif STM.TY = DN_NULL_STM  then
       CODE_NULL_STM( STM );
 
-    elsif STM.TY = DN_ACCEPT
-    then
+    elsif STM.TY = DN_ACCEPT  then
       CODE_ACCEPT( STM );
 
-    elsif STM.TY = DN_TERMINATE
-    then
+    elsif STM.TY = DN_TERMINATE  then
       CODE_TERMINATE( STM );
 
-    elsif STM.TY = DN_ABORT
-    then
+    elsif STM.TY = DN_ABORT  then
       CODE_ABORT( STM );
 
-    elsif STM.TY in CLASS_CLAUSES_STM
-    then
+    elsif STM.TY in CLASS_CLAUSES_STM  then
       CODE_CLAUSES_STM( STM );
 
-    elsif STM.TY in CLASS_BLOCK_LOOP
-    then
+    elsif STM.TY in CLASS_BLOCK_LOOP  then
       CODE_BLOCK_LOOP( STM );
 
-    elsif STM.TY in CLASS_ENTRY_STM
-    then
+    elsif STM.TY in CLASS_ENTRY_STM  then
       CODE_ENTRY_STM( STM );
 
-    elsif STM.TY in CLASS_STM_WITH_NAME
-    then
+    elsif STM.TY in CLASS_STM_WITH_NAME  then
       CODE_STM_WITH_NAME( STM );
 
-    elsif STM.TY in CLASS_STM_WITH_EXP
-    then
+    elsif STM.TY in CLASS_STM_WITH_EXP  then
       CODE_STM_WITH_EXP( STM );
 
+    else
+      CODI.TROU( "CODE_STM", STM );									--| vague 3 : dispatch muet (fossile n 115)
+
     end if;
+
   end	CODE_STM;
 	--====--
 
@@ -150,7 +149,7 @@ separate ( EXPANDER )
 	  PUT_LINE( LABEL_STR( CODI.GOTO_PENDING( I ).LBL_G ) & ':' );
 	  for  L in reverse CODI.CUR_LEVEL + 1 .. CODI.GOTO_PENDING( I ).LEVEL  loop
 	    if  CODI.GOTO_PENDING( I ).CTX( L )  then  CODI.EXC_POP;  end if;
-	    PUT_LINE( tab & "UNLINK" & LEVEL_NUM'IMAGE( L ) );
+	    PUT_LINE( tab & "UNLINKR" & LEVEL_NUM'IMAGE( L ) );
 	  end loop;
 	  PUT_LINE( tab & "BRA" & tab & LX_STR );
 	  CODI.GOTO_PENDING( I ).TARGET := TREE_VOID;					-- raccord resolu
@@ -171,46 +170,49 @@ separate ( EXPANDER )
       end;
     end loop;
 
-    CODE_STM( D( AS_STM, LABELED ) );							-- l'instruction etiquetee elle-meme
+    CODE_STM( D( AS_STM, LABELED ) );									-- l'instruction etiquetee elle-meme
 
   end	CODE_LABELED;
 	------------
 
-
-  procedure			CODE_NULL_STM		( NULL_STM :TREE )
-  is
+			-------------
+  procedure		CODE_NULL_STM		( NULL_STM :TREE )
+  is			-------------
   begin
-    null;
+    null;												--| INTENTIONNEL : le null Ada, aucun code a emettre
   end	CODE_NULL_STM;
+	-------------
 
-
-
-  procedure			CODE_ACCEPT		( ADA_ACCEPT :TREE )
-  is
+			-----------
+  procedure		CODE_ACCEPT		( ADA_ACCEPT :TREE )
+  is			-----------
   begin
-    null;
+    CODI.TROU( "CODE_ACCEPT (tasking hors perimetre)", ADA_ACCEPT );						--| vague 3 : corps vide, l'instruction etait avalee
+
   end	CODE_ACCEPT;
+	-----------
 
-
-
-  procedure			CODE_TERMINATE		( ADA_TERMINATE :TREE )
-  is
+			--------------
+  procedure		CODE_TERMINATE		( ADA_TERMINATE :TREE )
+  is			--------------
   begin
-    null;
+    CODI.TROU( "CODE_TERMINATE (tasking hors perimetre)", ADA_TERMINATE );					--| vague 3 : corps vide, l'instruction etait avalee
+
   end	CODE_TERMINATE;
+	--------------
 
-
-
-  procedure			CODE_ABORT		( ADA_ABORT :TREE )
-  is
+			----------
+  procedure		CODE_ABORT		( ADA_ABORT :TREE )
+  is			----------
   begin
-    null;
+    CODI.TROU( "CODE_ABORT (tasking hors perimetre)", ADA_ABORT );					--| vague 3 : corps vide, l'instruction etait avalee
+
   end	CODE_ABORT;
+	----------
 
-
-
-  procedure			CODE_CLAUSES_STM		( CLAUSES_STM :TREE )
-  is
+			----------------
+  procedure		CODE_CLAUSES_STM		( CLAUSES_STM :TREE )
+  is			----------------
   begin
     if CLAUSES_STM.TY = DN_IF
     then
@@ -220,12 +222,15 @@ separate ( EXPANDER )
     then
       CODE_SELECTIVE_WAIT( CLAUSES_STM );
 
+    else
+      CODI.TROU( "CODE_CLAUSES_STM", CLAUSES_STM );						--| vague 3, HORS LISTE triage : dispatch muet
     end if;
+
   end	CODE_CLAUSES_STM;
+	----------------
 
-
-				-------
-  procedure			CODE_IF			( ADA_IF :TREE )
+			-------
+  procedure		CODE_IF			( ADA_IF :TREE )
   is
     POST_IF_LBL	:constant STRING	:= NEW_LABEL;
   begin
@@ -241,17 +246,18 @@ separate ( EXPANDER )
 	-------
 
 
-		-----------------------
-  procedure	CODE_SELECT_ALTERNATIVE	( SELECT_ALTERNATIVE :TREE )
-  is
+			-----------------------
+  procedure		CODE_SELECT_ALTERNATIVE	( SELECT_ALTERNATIVE :TREE )
+  is			-----------------------
   begin
-    null;
-  end;
+    CODI.TROU( "CODE_SELECT_ALTERNATIVE (tasking hors perimetre)", SELECT_ALTERNATIVE );			--| vague 3 : corps vide, l'instruction etait avalee
 
+  end	CODE_SELECT_ALTERNATIVE;
+	-----------------------
 
 		-----------------------
   procedure	CODE_TEST_CLAUSE_ELEM_S	( TEST_CLAUSE_ELEM_S :TREE; STM_END_LBL :STRING )
-  is
+  is		-----------------------
     TEST_CLAUSE_ELEM_SEQ	: SEQ_TYPE	:= LIST( TEST_CLAUSE_ELEM_S );
     TEST_CLAUSE_ELEM	: TREE;
   begin
@@ -267,16 +273,17 @@ separate ( EXPANDER )
       elsif  TEST_CLAUSE_ELEM.TY = DN_SELECT_ALT_PRAGMA  then
         CODE_SELECT_ALT_PRAGMA( TEST_CLAUSE_ELEM );
 
+      else
+        CODI.TROU( "CODE_TEST_CLAUSE_ELEM_S", TEST_CLAUSE_ELEM );						--| vague 3, HORS LISTE triage : dispatch muet
       end if;
-
     end loop;
 
   end	CODE_TEST_CLAUSE_ELEM_S;
 	-----------------------
 
 
-		----------------
-  procedure	CODE_COND_CLAUSE		( COND_CLAUSE :TREE; STM_END_LBL :STRING )
+			----------------
+  procedure		CODE_COND_CLAUSE		( COND_CLAUSE :TREE; STM_END_LBL :STRING )
   is
   begin
     declare
@@ -294,16 +301,19 @@ separate ( EXPANDER )
 	----------------
 
 
-  procedure			CODE_SELECTIVE_WAIT		( SELECTIVE_WAIT :TREE )
-  is
+			-------------------
+  procedure		CODE_SELECTIVE_WAIT		( SELECTIVE_WAIT :TREE )
+  is			-------------------
   begin
-    null;
+    CODI.TROU( "CODE_SELECTIVE_WAIT (tasking hors perimetre)", SELECTIVE_WAIT );				--| vague 3 : corps vide, l'instruction etait avalee
+
   end	CODE_SELECTIVE_WAIT;
+	-------------------
 
 
-
-  procedure			CODE_BLOCK_LOOP		( BLOCK_LOOP :TREE )
-  is
+			---------------
+  procedure		CODE_BLOCK_LOOP		( BLOCK_LOOP :TREE )
+  is			---------------
   begin
 
     if BLOCK_LOOP.TY = DN_LOOP
@@ -314,8 +324,11 @@ separate ( EXPANDER )
     then
       CODE_BLOCK( BLOCK_LOOP );
 
+    else
+      CODI.TROU( "CODE_BLOCK_LOOP", BLOCK_LOOP );								--| vague 3, HORS LISTE triage : dispatch muet
     end if;
   end	CODE_BLOCK_LOOP;
+	---------------
 
 
 				---------
@@ -387,17 +400,13 @@ separate ( EXPANDER )
 
 --			VERIFIER POUR NULL RANGE
 
-
-
         PUT( tab & OPER_LOAD_STR( ITERATION_TYPE ) & ' ' & LVL_STR & ',' & tab & ITERATION_ID_VARSTR );
---	PUT( tab & "L" & TYPE_CHAR & ' ' & LVL_STR & ',' & tab & ITERATION_ID_VARSTR );
         if  CODI.DEBUG  then
 	PUT( tab50 & "; test null range " & LOOP_LBL_STR );
         end if;
         NEW_LINE;
         PUT_LINE( tab & OPER_LOAD_STR( ITERATION_TYPE ) & ' ' & LVL_STR
 		& ',' & tab & "LMT_" & ITERATION_ID_VARSTR );
---	PUT_LINE( tab & "L" & TYPE_CHAR & ' ' & LVL_STR & ',' & tab & "LMT_" & ITERATION_ID_VARSTR );
         PUT_LINE( tab & "CGT" );
         PUT_LINE( tab & "BT" & tab & AFTER_LOOP_LBL_STR );
 
@@ -405,13 +414,11 @@ separate ( EXPANDER )
 
         if  ITERATION.TY = DN_REVERSE  then
 	PUT( tab & OPER_LOAD_STR( ITERATION_TYPE ) & ' ' & LVL_STR & ',' & tab & ITERATION_ID_VARSTR );
---	PUT( tab & "L" & TYPE_CHAR & ' ' & LVL_STR & ',' & tab & ITERATION_ID_VARSTR );
 	if  CODI.DEBUG  then
 	  PUT( tab50 & "; inversion range " & LOOP_LBL_STR );
 	end if;
 	NEW_LINE;
 	PUT_LINE( tab & OPER_LOAD_STR( ITERATION_TYPE ) & ' ' & LVL_STR & ',' & tab & "LMT_" & ITERATION_ID_VARSTR );
---	PUT_LINE( tab & "L" & TYPE_CHAR & ' ' & LVL_STR & ',' & tab & "LMT_" & ITERATION_ID_VARSTR );
 	PUT_LINE( tab & "S" & TYPE_CHAR & ' ' & LVL_STR & ',' & tab & ITERATION_ID_VARSTR );
 	PUT_LINE( tab & "S" & TYPE_CHAR & ' ' & LVL_STR & ',' & tab & "LMT_" & ITERATION_ID_VARSTR );
         end if;
@@ -428,21 +435,18 @@ separate ( EXPANDER )
 --			TEST DE SORTIE
 
         PUT( tab & OPER_LOAD_STR( ITERATION_TYPE ) & ' ' & LVL_STR & ',' & tab & ITERATION_ID_VARSTR );
---	PUT( tab & "L" & TYPE_CHAR & ' ' & LVL_STR & ',' & tab & ITERATION_ID_VARSTR );
         if  CODI.DEBUG  then
 	PUT( tab50 & "; test de sortie " & LOOP_LBL_STR );
         end if;
         NEW_LINE;
         PUT_LINE( tab & OPER_LOAD_STR( ITERATION_TYPE ) & ' ' & LVL_STR
 		& ',' & tab & "LMT_" & ITERATION_ID_VARSTR );
---	PUT_LINE( tab & "L" & TYPE_CHAR & ' ' & LVL_STR & ',' & tab & "LMT_" & ITERATION_ID_VARSTR );
         PUT_LINE( tab & "CEQ" );
         PUT_LINE( tab & "BT" & tab & AFTER_LOOP_LBL_STR );
 
 --			MISE A JOUR DU COMPTEUR
 
         PUT( tab & OPER_LOAD_STR( ITERATION_TYPE ) & ' ' & LVL_STR & ',' & tab & ITERATION_ID_VARSTR );
---	PUT( tab & "L" & TYPE_CHAR & ' ' & LVL_STR & ',' & tab & ITERATION_ID_VARSTR );
         if  CODI.DEBUG  then
 	PUT( tab50 & "; mise a jour compteur " & LOOP_LBL_STR );
         end if;
@@ -454,6 +458,9 @@ separate ( EXPANDER )
         elsif  ITERATION.TY = DN_REVERSE  then
 	PUT_LINE( tab & "DEC" );
 
+        else
+	CODI.TROU( "FOR_OR_REVERSE_LOOP iteration", ITERATION );						--| vague 3, HORS LISTE : sans INC/DEC la boucle
+												--| generee serait INFINIE en silence
         end if;
         PUT_LINE( tab & "S" & TYPE_CHAR & ' ' & LVL_STR & ',' & tab & ITERATION_ID_VARSTR );
 
@@ -477,8 +484,8 @@ separate ( EXPANDER )
 	---------
 
 
-				----------
-  procedure			CODE_BLOCK		( BLOCK :TREE )
+			----------
+  procedure		CODE_BLOCK		( BLOCK :TREE )
   is
     LOOP_NAME_ID	: TREE		:= D( AS_SOURCE_NAME, BLOCK );
     PROC_LBL	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, LOOP_NAME_ID ) );
@@ -486,16 +493,17 @@ separate ( EXPANDER )
     PUT_LINE( "namespace" & tab &  PROC_LBL );
     INC_LEVEL;
     STRUCTURES.CODE_BLOCK_BODY( D( AS_BLOCK_BODY, BLOCK ) );
-    PUT_LINE( tab & "UNLINK" & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL ) );					-- RESTAURER LE DISPLAY ET LA PILE APRES LE BLOC
+    PUT_LINE( tab & "UNLINKR" & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL ) );						-- RESTAURER LE DISPLAY, LA PILE ET LA CO-PILE APRES LE BLOC (n 163)
     DEC_LEVEL;
     PUT_LINE( "endPRO" );										-- POUR CALCUL DU LOC_SIZ AVANT FERMETURE DU NAMESPACE
 
   end	CODE_BLOCK;
+	----------
 
 
-
-  procedure			CODE_ENTRY_STM		( ENTRY_STM :TREE )
-  is
+			--------------
+  procedure		CODE_ENTRY_STM		( ENTRY_STM :TREE )
+  is			--------------
   begin
 
     if  ENTRY_STM.TY = DN_COND_ENTRY  then
@@ -504,44 +512,48 @@ separate ( EXPANDER )
     elsif  ENTRY_STM.TY = DN_TIMED_ENTRY  then
       CODE_TIMED_ENTRY ( ENTRY_STM );
 
+    else
+      CODI.TROU( "CODE_ENTRY_STM", ENTRY_STM );								--| vague 3, HORS LISTE triage : dispatch muet
     end if;
   end	CODE_ENTRY_STM;
+	--------------
 
 
-
-  procedure			CODE_COND_ENTRY		( COND_ENTRY :TREE )
-  is
+			---------------
+  procedure		CODE_COND_ENTRY		( COND_ENTRY :TREE )
+  is			---------------
   begin
-    null;
+    CODI.TROU( "CODE_COND_ENTRY (tasking hors perimetre)", COND_ENTRY );					--| vague 3 : corps vide, l'instruction etait avalee
   end	CODE_COND_ENTRY;
+	---------------
 
 
-
-  procedure			CODE_TIMED_ENTRY		( TIMED_ENTRY :TREE )
-  is
+			----------------
+  procedure		CODE_TIMED_ENTRY		( TIMED_ENTRY :TREE )
+  is			----------------
   begin
-    null;
+    CODI.TROU( "CODE_TIMED_ENTRY (tasking hors perimetre)", TIMED_ENTRY );					--| vague 3 : corps vide, l'instruction etait avalee
   end	CODE_TIMED_ENTRY;
+	----------------
 
-
-
- procedure			CODE_STM_WITH_NAME		( STM_WITH_NAME :TREE )
-  is
+			------------------
+  procedure		CODE_STM_WITH_NAME		( STM_WITH_NAME :TREE )
+  is			------------------
   begin
-    if  STM_WITH_NAME.TY = DN_GOTO
-    then
+    if  STM_WITH_NAME.TY = DN_GOTO  then
       CODE_GOTO( STM_WITH_NAME );
 
-    elsif  STM_WITH_NAME.TY = DN_RAISE
-    then
+    elsif  STM_WITH_NAME.TY = DN_RAISE  then
       CODE_RAISE( STM_WITH_NAME );
 
-    elsif  STM_WITH_NAME.TY in CLASS_CALL_STM
-    then
+    elsif  STM_WITH_NAME.TY in CLASS_CALL_STM  then
       CODE_CALL_STM( STM_WITH_NAME );
 
+    else
+      CODI.TROU( "CODE_STM_WITH_NAME", STM_WITH_NAME );						--| vague 3 : dispatch muet (fossile n 115)
     end if;
   end	CODE_STM_WITH_NAME;
+	------------------
 
 
 			---------
@@ -590,21 +602,22 @@ separate ( EXPANDER )
 	---------
 
 
-				----------
-  procedure			CODE_RAISE		( ADA_RAISE :TREE )
+			----------
+  procedure		CODE_RAISE		( ADA_RAISE :TREE )
   is
     NAME  : TREE	:= D( AS_NAME, ADA_RAISE );
   begin
     if  NAME = TREE_VOID  then									-- raise; nu (LRM 11.3) -- forme confirmee au dump E-C
       if  CODI.HANDLER_LVL < 0  then
-        PUT_LINE( "ANOMALIE : raise nu hors handler" );							-- sem le garantit ; ceinture bruyante
-
+        PUT_LINE( "ANOMALIE : raise nu hors handler" );							--| DEFAUT DOCUMENTE (vague 5) : ceinture d'impossible
+												--| (sem le garantit), bruyante non fatale
       else
-        PUT_LINE( tab & "La " & IMAGE( CODI.HANDLER_LVL ) & ',' & tab
+        PUT_LINE( tab & "LA " & IMAGE( CODI.HANDLER_LVL ) & ',' & tab
 			& "exc_ctx_" & LABEL_STR( CODI.HANDLER_CTX_SUF ) );				-- l'exception DU handler, pas la globale
-        PUT_LINE( tab & "Sa" & tab & "0, STANDARD.EXCEPTIONS_CURRENT_disp" );
+        PUT_LINE( tab & "SA" & tab & "0, STANDARD.EXCEPTIONS_CURRENT_disp" );
         PUT_LINE( tab & "BRA" & tab & "STANDARD.exc_raise_" );
       end if;
+
     else
       declare
         EXCEPTION_ID    : TREE  := CODI.EXCEPTION_ID_OF( NAME );						-- resout selected + renames (LRM 8.5);
@@ -612,7 +625,7 @@ separate ( EXPANDER )
         PUT( tab & "LCA" & tab );
         CODI.REGIONS_PATH( EXCEPTION_ID );
         PUT_LINE( PRINT_NAME( D( LX_SYMREP, EXCEPTION_ID ) ) & "__exc.data_ptr" );				-- l'ADRESSE fait identite
-        PUT_LINE( tab & "Sa" & tab & "0, STANDARD.EXCEPTIONS_CURRENT_disp" );
+        PUT_LINE( tab & "SA" & tab & "0, STANDARD.EXCEPTIONS_CURRENT_disp" );
         PUT_LINE( tab & "BRA" & tab & "STANDARD.exc_raise_" );						-- derouler
       end;
     end if;
@@ -623,17 +636,19 @@ separate ( EXPANDER )
 
 			---------------
   procedure		CODE_ENTRY_CALL	( ENTRY_CALL :TREE )
-  is
+  is			---------------
   begin
-    null;
+    CODI.TROU( "CODE_ENTRY_CALL (tasking hors perimetre)", ENTRY_CALL );					--| vague 3 : corps vide, l'appel etait avale
   end	CODE_ENTRY_CALL;
 	---------------
 
 
-				-------------
-  procedure			CODE_CALL_STM		( CALL_STM :TREE )
-  is
+			-------------
+  procedure		CODE_CALL_STM		( CALL_STM :TREE )
+  is			-------------
+
     NAME_ID		: TREE	:= D( AS_NAME, CALL_STM );
+
   begin
     while  NAME_ID.TY = DN_SELECTED  loop
       NAME_ID := D( AS_DESIGNATOR, NAME_ID );
@@ -645,6 +660,8 @@ separate ( EXPANDER )
     elsif  CALL_STM.TY = DN_ENTRY_CALL  then
       CODE_ENTRY_CALL ( CALL_STM );
 
+    else
+      CODI.TROU( "CODE_CALL_STM", CALL_STM );							--| vague 3 : dispatch muet (fossile n 115)
     end if;
 
   end	CODE_CALL_STM;
@@ -656,7 +673,7 @@ separate ( EXPANDER )
     NORM_ACT_PRM_S  : SEQ_TYPE	:= LIST( D( SM_NORMALIZED_PARAM_S, PROCEDURE_CALL ) );
 
     PROC_ID	: TREE		:= SUBPROGRAM_ORIGIN( D( SM_DEFN, USED_NAME_ID ) );
-    SUB_NAME	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, PROC_ID ) );
+    SUB_NAME	:constant STRING	:= LETTERED_SUBNAME( PRINT_NAME( D( LX_SYMREP, PROC_ID ) ) );
     LBL		: LABEL_TYPE	:= LABEL_TYPE( DI( CD_LABEL, PROC_ID ) );
 
     SPEC_PRM_GRP_S  : SEQ_TYPE	:= LIST( D( AS_PARAM_S, D( SM_SPEC, PROC_ID) ) );
@@ -721,11 +738,11 @@ separate ( EXPANDER )
 	PUT_LINE( "VAR" & tab & ANON & "_disp, q" );
 	PUT_LINE( "VAR" & tab & ANON & "__u,   q" );
 
-	PUT_LINE( tab & "Sa  " & LVL_STR & ", " & ANON & "_disp" );		-- consomme l'@element de CODE_EXP
-	PUT( tab & "La  " & IMAGE( DI( CD_LEVEL, FRM_TYPE ) ) & ", " );
+	PUT_LINE( tab & "SA  " & LVL_STR & ", " & ANON & "_disp" );		-- consomme l'@element de CODE_EXP
+	PUT( tab & "LA  " & IMAGE( DI( CD_LEVEL, FRM_TYPE ) ) & ", " );
 	CODI.REGIONS_PATH( TYPE_NAME );
 	PUT_LINE( TN_STR & ".use__info" );
-	PUT_LINE( tab & "Sa  " & LVL_STR & ", " & ANON & "__u" );
+	PUT_LINE( tab & "SA  " & LVL_STR & ", " & ANON & "__u" );
 
 	PUT_LINE( tab & "LVA " & LVL_STR & ", " & ANON & "_disp" );		-- @doublet, a la place de l'@data
         end;
@@ -754,7 +771,15 @@ separate ( EXPANDER )
 	    ACT_TYPE := D( SM_TYPE_SPEC, ACT_TYPE );
 	  end loop;
 
-	  if  ACT_TYPE.TY = DN_ARRAY  or else  ACT_TYPE.TY = DN_CONSTRAINED_ARRAY  or  else ACT_TYPE.TY = DN_RECORD
+	  if  ACT_TYPE.TY = DN_CONSTRAINED_RECORD  then
+			--| Vague 2 (n 112, dette commune SELARG/INDARG) : vue contrainte
+			--| absente du test composite -- l'actuel serait retombe dans la
+			--| branche scalaire (adresse seule, pas de doublet).  Refus
+			--| bruyant ; remede le jour du temoin : use__info de la BASE
+			--| (pilier 3.7) dans le doublet SELARG.
+	    CODI.TROU( "SELARG actuel selecte de vue record contrainte", ACT_TYPE );
+
+	  elsif  ACT_TYPE.TY = DN_ARRAY  or else  ACT_TYPE.TY = DN_CONSTRAINED_ARRAY  or  else ACT_TYPE.TY = DN_RECORD
 	  then
 	    declare
 	      ANON	:constant STRING	:= "SELARG_" & NEW_LABEL;
@@ -770,12 +795,47 @@ separate ( EXPANDER )
 		      else
 		        EXPRESSIONS.CODE_OBJECT_ADDRESS( ACT_PRM );
 		      end if;
-	      PUT_LINE( tab & "Sa" & tab & LVL_STR & ", " & ANON & "_disp" );
+	      PUT_LINE( tab & "SA" & tab & LVL_STR & ", " & ANON & "_disp" );
 
-	      PUT( tab & "La " & IMAGE( DI( CD_LEVEL, ACT_TYPE ) ) & ", " );
-	      CODI.REGIONS_PATH( TYPE_NAME );
-	      PUT_LINE( TYPE_NAME_STR & ".use__info" );
-	      PUT_LINE( tab & "Sa" & tab & LVL_STR & ", " & ANON & "__u" );
+	      declare
+	        SEL_DEFN	: TREE	:= TREE_VOID;
+	        IS_ANON_COMP	: BOOLEAN := FALSE;
+	      begin
+	        if  ACT_PRM.TY = DN_SELECTED  then
+		SEL_DEFN := D( SM_DEFN, D( AS_DESIGNATOR, ACT_PRM ) );
+		IS_ANON_COMP := SEL_DEFN.TY = DN_COMPONENT_ID
+			and then  ACT_TYPE.TY = DN_CONSTRAINED_ARRAY
+			and then  D( SM_TYPE_SPEC, TYPE_NAME ) /= ACT_TYPE;
+	        end if;
+
+	        if  IS_ANON_COMP  then
+		-- Segfault OPEN/GET_LINE du bootstrap (aout 2026) : composant de
+		-- sous-type tableau ANONYME en actual -- XD_SOURCE_NAME remonte au
+		-- patron NON contraint (SIZ=-1, pas de _FST/_LST), historiquement
+		-- amorti par la greffe " namespace _STRING" supprimee au correctif
+		-- record.  Viser le bloc _<comp>__type ELABORE du record (meme
+		-- famille que CODE_INDEXED/CODE_SLICE) ; niveau = CD_LEVEL pose
+		-- par le producteur.  Type NOMME / record / .all : chemin
+		-- historique inchange ci-dessous.
+		PUT( tab & "LA " & IMAGE( DI( CD_LEVEL, ACT_TYPE ) ) & ", " );
+		CODI.REGIONS_PATH( SEL_DEFN );
+		PUT_LINE( '_' & PRINT_NAME( D( LX_SYMREP, SEL_DEFN ) ) & "__type.use__info" );
+	        elsif  SEL_DEFN /= TREE_VOID
+	        and then  ( SEL_DEFN.TY = DN_VARIABLE_ID  or else  SEL_DEFN.TY = DN_CONSTANT_ID )
+	        then
+		-- Nom ETENDU d'objet (IDL.LIB_PATH, classif 6 aout) : reprendre le
+		-- __u de l'OBJET (son info elaboree), jamais le patron du type.
+		PUT( tab & "LA " & IMAGE( DI( CD_LEVEL, SEL_DEFN ) ) & ", " );
+		CODI.REGIONS_PATH( SEL_DEFN );
+		PUT_LINE( PRINT_NAME( D( LX_SYMREP, SEL_DEFN ) ) & "__u" );
+
+	        else
+		PUT( tab & "LA " & IMAGE( DI( CD_LEVEL, ACT_TYPE ) ) & ", " );
+		CODI.REGIONS_PATH( TYPE_NAME );
+		PUT_LINE( TYPE_NAME_STR & ".use__info" );
+	        end if;
+	      end;
+	      PUT_LINE( tab & "SA" & tab & LVL_STR & ", " & ANON & "__u" );
 
 	      PUT_LINE( tab & "LVA " & LVL_STR & ", " & ANON & "_disp" );
 	    end;
@@ -855,8 +915,8 @@ separate ( EXPANDER )
 		if  HAS_GENERIC_TYPE  then								-- Mais a type generique
 		  PUT_LINE( tab & "LVA " & IMAGE( DI( CD_LEVEL, DEFN ) ) & ','
 		    & tab & '-' & PRINT_NAME( D( LX_SYMREP, DEFN ) ) & "_ofs" );
-		  PUT_LINE( tab & "La" & LEVEL_NUM'IMAGE( CODI.GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );
-		  PUT_LINE( tab & "La ," & tab & '-'
+		  PUT_LINE( tab & "LA" & LEVEL_NUM'IMAGE( CODI.GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );
+		  PUT_LINE( tab & "LA ," & tab & '-'
 			& PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, D( SM_OBJ_TYPE, DEFN ) ) ) )
 			& "__ld_ofs" );
 		  PUT_LINE( tab & "CALLI" );
@@ -887,13 +947,13 @@ separate ( EXPANDER )
 			& '-' & DEFN_STR & "_ofs" );
 	        else
 	      -- out/inout -> in composite : le slot contient deja l'adresse, la propager
-		PUT_LINE( tab & "La " & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' & tab
+		PUT_LINE( tab & "LA " & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' & tab
 			& '-' & DEFN_STR & "_ofs" );
 	        end if;
 	      end;
 	    else
 	      -- out/inout -> out/inout : propager l'adresse
-	      PUT_LINE( tab & "La " & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' & tab
+	      PUT_LINE( tab & "LA " & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' & tab
 		      & '-' & DEFN_STR & "_ofs" );
 	    end if;
 
@@ -911,16 +971,28 @@ separate ( EXPANDER )
 	    end;
 
 	  elsif  DEFN.TY = DN_ENUMERATION_ID  then							-- Appel avec un énuméré
-	    PUT_LINE( tab & "LI" & ' ' & INTEGER'IMAGE( DI( SM_POS, DEFN ) ) );
+	    PUT_LINE( tab & "LI" & ' ' & INTEGER'IMAGE( DI( SM_REP, DEFN ) ) );				--| Reclassement n 3 : SM_POS -> SM_REP, alignement sur
+												--| la convention valeur (expressions:368, pliage bornes).
+												--| Divergence relevee par l'audit n 117 de seance ;
+												--| rep = pos sur tout le corpus actuel -> diff FINC vide.
 
-	  elsif  DEFN.TY = DN_COMPONENT_ID  then							-- Appel avec un énuméré
+	  elsif  DEFN.TY = DN_COMPONENT_ID  then							-- Appel avec une composante
+			--| Vague 3, DECOUVERTE : ce site emettait un "LI " SANS
+			--| OPERANDE -- ligne FINC cassee, erreur d'assemblage
+			--| differee au lieu d'un signal au site.
+	    CODI.TROU( "INVERSE_RECURSE_ON_PARAMETERS actuel DN_COMPONENT_ID (LI sans operande)", DEFN );
 
-	    PUT_LINE( tab & "LI" & ' ' );
-
+	  elsif  DEFN.TY = DN_NUMBER_ID  then								-- Appel avec un nombre nomme
+	    EXPRESSIONS.CODE_EXP( D( SM_INIT_EXP, DEFN ) );						--| plie A L'USAGE — idiome expressions:450
+												--| (CODE_USED_OBJECT_ID) ; mode in seul,
+												--| rvalue empilee = protocole attendu.
+												--| Temoins : numarg_test +
+												--| TARGET_CODE.EMITS ( Q64( ENTRY_PT ) ).
 	  else
-	    PUT_LINE( tab & "; CODE_PROCEDURE_CALL.INVERSE_RECURSE_ON_PARAMETERS : DEFN.TY NON FAIT "
-		    & NODE_NAME'IMAGE( DEFN.TY ) );
-
+			--| Vague 3, DECOUVERTE (etait liste vague 5, mais c'est une
+			--| frontiere d'appel) : demi-bruyant, l'actuel n'etait PAS
+			--| empile -- desequilibre du protocole d'appel garanti.
+	    CODI.TROU( "INVERSE_RECURSE_ON_PARAMETERS DEFN non fait", DEFN );
 	  end if;
 	end;
 
@@ -949,15 +1021,15 @@ separate ( EXPANDER )
 	  PUT_LINE( tab & "VAR " & ANONYMOUS_STR & "__u, q" );
 	  PUT( tab & "VAR " & ANONYMOUS_STR & "__dat, " );
 	  CODI.REGIONS_PATH( TYPE_NAME );
-	  PUT_LINE( TYPE_NAME_STR & ".SIZ" );
+	  PUT_LINE( TYPE_NAME_STR & ".SIZ__" );
 
 	  PUT_LINE( tab & "LVA " & IMAGE( CODI.CUR_LEVEL ) & ", " & ANONYMOUS_STR & "__dat" );
-	  PUT_LINE( tab & "Sa " & IMAGE( CODI.CUR_LEVEL ) & ", " & ANONYMOUS_STR & "_disp" );
+	  PUT_LINE( tab & "SA " & IMAGE( CODI.CUR_LEVEL ) & ", " & ANONYMOUS_STR & "_disp" );
 
-	  PUT( tab & "La " & IMAGE( DI( CD_LEVEL, TYPE_SPEC ) ) & ", " );
+	  PUT( tab & "LA " & IMAGE( DI( CD_LEVEL, TYPE_SPEC ) ) & ", " );
 	  CODI.REGIONS_PATH( TYPE_NAME );
 	  PUT_LINE( TYPE_NAME_STR & ".use__info" );
-	  PUT_LINE( tab & "Sa " & IMAGE( CODI.CUR_LEVEL ) & ", " & ANONYMOUS_STR & "__u" );
+	  PUT_LINE( tab & "SA " & IMAGE( CODI.CUR_LEVEL ) & ", " & ANONYMOUS_STR & "__u" );
 
 	  PUT_LINE( tab & "LVA " & IMAGE( CODI.CUR_LEVEL ) & ", " & ANONYMOUS_STR & "__dat" );
 	  EXPRESSIONS.CODE_AGGREGATE( ACT_PRM, TYPE_SPEC );
@@ -965,11 +1037,19 @@ separate ( EXPANDER )
 	end;
 
         elsif  ACT_PRM.TY = DN_INDEXED  then								-- COMPOSANT INDEXE EN ACTUAL
+
 	if  FRM_PRM_ID.TY = DN_IN_ID  then
 	  EXPRESSIONS.CODE_EXP( ACT_PRM );								-- in : rvalue (scalaire charge, composite laisse @)
-	  WRAP_COMPOSITE_ACTUAL_DOUBLET( FRM_PRM_ID, ACT_PRM );			-- composite : @data -> @doublet
+	  WRAP_COMPOSITE_ACTUAL_DOUBLET( FRM_PRM_ID, ACT_PRM );						-- composite : @data -> @doublet
+
 	else
-	  EXPRESSIONS.CODE_OBJECT_ADDRESS( ACT_PRM );							-- out / in out : adresse seule (par reference)
+	  EXPRESSIONS.CODE_OBJECT_ADDRESS( ACT_PRM );							-- out / in out : @element (par reference)
+	  WRAP_COMPOSITE_ACTUAL_DOUBLET( FRM_PRM_ID, ACT_PRM );						--| n 112 INDARG paye (aout 2026) : composite
+												--| indexe out/in-out normalise en doublet,
+												--| use__info de la base (pilier 3.7).  No-op
+												--| scalaire (historique).  Temoins :
+												--| indarg_test + TARGET_CODE.LEX
+												--| ( OPEN( FILES( FTOP ), ... ) ).
 	end if;
 
         else
@@ -988,8 +1068,9 @@ separate ( EXPANDER )
 	-----------------------------
 
   begin
-    if  IS_IN_CURRENT_GENERIC( PROC_ID )  then
-      PUT( tab & "La " & INTEGER'IMAGE( CODI.GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );
+    if  IS_IN_CURRENT_GENERIC( PROC_ID )  and then  not EXPRESSIONS.IS_GENERIC_FORMAL_SUBPROGRAM( PROC_ID )
+    then
+      PUT( tab & "LA " & INTEGER'IMAGE( CODI.GFP_LEVEL ) & ',' & tab & "-GFP_ofs" );
       if  CODI.DEBUG  then PUT( tab50 & "; propagation GFP generique" ); end if;
       NEW_LINE;
     end if;
@@ -1003,8 +1084,8 @@ separate ( EXPANDER )
     end if;
 
     if  EXPRESSIONS.IS_GENERIC_FORMAL_SUBPROGRAM( PROC_ID )  then
-      PUT_LINE( tab & "La " & IMAGE( CODI.GENERIC_BASE_LEVEL + 1 ) & "," & tab & "-GFP_ofs" );
-      PUT_LINE( tab & "La ," & tab & "-" & SUB_NAME & "__call_ofs" );
+      PUT_LINE( tab & "LA " & IMAGE( CODI.GFP_LEVEL ) & "," & tab & "-GFP_ofs" );
+      PUT_LINE( tab & "LA ," & tab & "-" & SUB_NAME & "__call_ofs" );
       PUT_LINE( tab & "CALLI" );
 
     else
@@ -1038,6 +1119,8 @@ separate ( EXPANDER )
     then
       CODE_STM_WITH_EXP_NAME( STM_WITH_EXP );
 
+    else
+      CODI.TROU( "CODE_STM_WITH_EXP", STM_WITH_EXP );							--| vague 3 : dispatch muet (fossile n 115)
     end if;
 
   end	CODE_STM_WITH_EXP;
@@ -1056,10 +1139,12 @@ separate ( EXPANDER )
 			---------------------
 			STORE_FUNCTION_RESULT:
         declare
-	EXPR_TYPE		: TREE		:= D ( SM_EXP_TYPE, EXP );
-	FULL_TYPE		: TREE		:= CODI.FULL_TYPE_VIEW( EXPR_TYPE );
-	RETURN_SUBTYPE	: TREE	:= D( SM_TYPE_SPEC,
-					D( SM_DEFN, D( AS_NAME, D( AS_HEADER, CODI.ENCLOSING_BODY ) ) ) );
+	EXPR_TYPE		: TREE	:= D ( SM_EXP_TYPE, EXP );
+	FULL_TYPE		: TREE	:= CODI.FULL_TYPE_VIEW( EXPR_TYPE );
+	ENCLOSING_NAME	: TREE	:= D( AS_NAME, D( AS_HEADER, CODI.ENCLOSING_BODY ) );
+	DEFN		: TREE	:= D( SM_DEFN, CODI.LAST_OF_SELECTED( ENCLOSING_NAME ) );
+	RETURN_SUBTYPE	: TREE	:= D( SM_TYPE_SPEC, DEFN );
+
         begin
 	if  CODI.DEBUG  then
 	  PUT_LINE( "; CODE_RETURN : EXPR TYPE = " & NODE_NAME'IMAGE( EXPR_TYPE.TY )
@@ -1076,8 +1161,20 @@ separate ( EXPANDER )
 	    EXPRESSIONS.CODE_RANGE_CHECK( RETURN_SUBTYPE );
 	  end if;
 
-	  PUT_LINE( tab & "S" & CODI.OPER_SIZ_CHAR( FULL_TYPE ) & ' ' & INTEGER'IMAGE( ENCLOSING_LEVEL )
-			& ',' & tab & "-result__ofs" );
+--	  PUT_LINE( tab & "S" & CODI.OPER_SIZ_CHAR( FULL_TYPE ) & ' ' & INTEGER'IMAGE( ENCLOSING_LEVEL )
+--			& ',' & tab & "-result__ofs" );
+			--| FIX 30/07 (paye par POW1 v2, B**3 = -27) : le slot resultat est
+			--| une cellule de 8 octets relue BRUTE par l'appelant apres RTD
+			--| (aucune re-extension de signe) ; l'ecrire a la taille memoire du
+			--| type (Sd/Sw/Sb selon OPER_SIZ_CHAR) laisse les bits hauts a
+			--| zero -- tout resultat de fonction scalaire NEGATIF etait faux.
+			--| Latent depuis toujours : le corpus ne retourne jamais de
+			--| negatif (tailles, comptes, positions).  La valeur en pile est
+			--| deja un 64 bits SIGNE complet (Ld etend, LI est quadval, MUL
+			--| est imul 64) : ecrire le slot PLEIN, Sq, toujours -- l'acces
+			--| (Sa = Sq) ne change pas.  Les VARIABLES d/w/b ne sont pas
+			--| concernees : leurs relectures re-etendent (FETCH_DWORD signe).
+	  PUT_LINE( tab & "SQ " & INTEGER'IMAGE( ENCLOSING_LEVEL ) & ',' & tab & "-result__ofs" );
 
 	elsif  FULL_TYPE.TY = DN_ARRAY  or  FULL_TYPE.TY = DN_CONSTRAINED_ARRAY
 	or     EXP.TY = DN_STRING_LITERAL								-- return "..." : SM_EXP_TYPE est DN_VOID
@@ -1104,9 +1201,18 @@ separate ( EXPANDER )
 		-- le doublet anonyme (info aux offsets standard, bornes REELLES de la
 		-- tranche conservees -- semantique Ada d'une tranche).
 	      EXPRESSIONS.CODE_SLICE( EXP, IS_DESTINATION => FALSE );
+
+	    elsif  EXP.TY = DN_INDEXED  or else  EXP.TY = DN_SELECTED  or else  EXP.TY = DN_ALL  then
+			--| Vague 2 (n 112, dette AUDITS) : la mecanique ci-dessous
+			--| suppose @doublet_src ; une reference de composant (return
+			--| TAB2D(I)) laisse @data nue -- trou jamais exerce, refus
+			--| bruyant pose.  Remede le jour du temoin : doublet anonyme
+			--| a la WRAP_COMPOSITE_ACTUAL_DOUBLET (use__info du type).
+	      CODI.TROU( "CODE_RETURN tableau : source reference de composant (@data)", EXP );
+
 	    else
 	      EXPRESSIONS.CODE_EXP( EXP );
-	    end if;    -- Pile : @doublet_src
+	    end if;										-- Pile : @doublet_src
 
     -- doublet_src = [data_ptr_src : q, info_ptr_src : q]
     -- result__ofs contient @doublet_dest, initialisé par l'appelant.
@@ -1115,25 +1221,25 @@ separate ( EXPANDER )
 	    declare
 	      INFO_SRC : constant STRING := "RET_INFO_" & NEW_LABEL;
 	    begin
-	      PUT_LINE( "VAR" & tab & INFO_SRC & ", q" );
+	      PUT_LINE( "VAR" & tab & INFO_SRC & ", Q" );
 
 		-- Copier data_ptr : data_ptr_dest <- data_ptr_src
 		-- EXP laisse @doublet_src sur pile ; on en garde une copie.
 	      PUT_LINE( tab & "DUP" );
-	      PUT_LINE( tab & "La  ,  0" );
-	      PUT_LINE( tab & "SIq  " & RES_LVL_STR & ", -result__ofs,  0" );
+	      PUT_LINE( tab & "LA  ,  0" );
+	      PUT_LINE( tab & "SIQ  " & RES_LVL_STR & ", -result__ofs,  0" );
 
       -- Sauver info_ptr_src = [@doublet_src + 8].
 	      PUT_LINE( tab & "DUP" );
-	      PUT_LINE( tab & "La  ,  8" );
-	      PUT_LINE( tab & "Sa  " & SRC_LVL_STR & ", " & INFO_SRC );
+	      PUT_LINE( tab & "LA  ,  8" );
+	      PUT_LINE( tab & "SA  " & SRC_LVL_STR & ", " & INFO_SRC );
 	      PUT_LINE( tab & "DROP" );
 
       -- Copier 16 octets d'info vers info_ptr_dest = [@doublet_dest + 8].
-	      PUT_LINE( tab & "La  " & RES_LVL_STR & ", -result__ofs" );
-	      PUT_LINE( tab & "La  ,  8" );
+	      PUT_LINE( tab & "LA  " & RES_LVL_STR & ", -result__ofs" );
+	      PUT_LINE( tab & "LA  ,  8" );
 	      PUT_LINE( tab & "LI" & tab & "16" );
-	      PUT_LINE( tab & "La  " & SRC_LVL_STR & ", " & INFO_SRC );
+	      PUT_LINE( tab & "LA  " & SRC_LVL_STR & ", " & INFO_SRC );
 	      PUT_LINE( tab & "BLKMOV" );
 	    end;
 	  end;
@@ -1164,15 +1270,15 @@ separate ( EXPANDER )
 	      if  EXP.TY = DN_AGGREGATE  then
 	      -- result__ofs contient l'adresse du doublet alloue par l'appelant
 	      -- Extraire data_ptr (offset 0 du doublet) pour CODE_AGGREGATE
-	        PUT_LINE( tab & "La  " & LVL_STR & ',' & tab & "-result__ofs" );
-	        PUT_LINE( tab & "La  ,  0" );			    -- data_ptr = [doublet + 0]
+	        PUT_LINE( tab & "LA  " & LVL_STR & ',' & tab & "-result__ofs" );
+	        PUT_LINE( tab & "LA  ,  0" );			    -- data_ptr = [doublet + 0]
 	        EXPRESSIONS.CODE_AGGREGATE( EXP, TYPE_SPEC );
 
 	      else
 	      -- EXP est une variable ou expression composite : BLKMOV vers la destination
 	      -- Destination : data_ptr du doublet result__ofs
-	        PUT_LINE( tab & "La  " & LVL_STR & ',' & tab & "-result__ofs" );
-	        PUT_LINE( tab & "La  ,  0" );			    -- @DST = data_ptr du doublet appelant
+	        PUT_LINE( tab & "LA  " & LVL_STR & ',' & tab & "-result__ofs" );
+	        PUT_LINE( tab & "LA  ,  0" );			    -- @DST = data_ptr du doublet appelant
 
 	        PUT( tab & "LI" & tab );
 	        CODI.REGIONS_PATH( TYPE_NAME );
@@ -1197,6 +1303,10 @@ separate ( EXPANDER )
 		---------------------
       end if;
 
+		-- Chantier co-pile (n 163) : les blocs traverses par un return gardent
+		-- UNLINK (pas UNLINKR) -- la valeur rendue peut vivre dans leur region
+		-- (declare T : STRING := ... begin return T & T; end).  C'est l'epilogue
+		-- ret_lbl du frame (EXIT_UNLINK_MNEMONIC) qui tranche pour tout le frame.
 		-- PILIER 11 : depiler le contexte de chaque bloc protege traverse
 		-- (note v2 par. 5bis).  Dans un HANDLER le drapeau du niveau est faux
 		-- (contexte deja depile) : rien n'est emis pour ce bloc-la.
@@ -1215,17 +1325,19 @@ separate ( EXPANDER )
 	-----------
 
 
-
-  procedure			CODE_DELAY		( ADA_DELAY :TREE )
-  is
+			----------
+  procedure		CODE_DELAY		( ADA_DELAY :TREE )
+  is			----------
   begin
-    null;
+    CODI.TROU( "CODE_DELAY", ADA_DELAY );								--| vague 3 : corps vide, l'instruction etait avalee
+
   end	CODE_DELAY;
+	----------
 
 
-				---------
-  procedure			CODE_CASE			( ADA_CASE :TREE )
-  is				---------
+			---------
+  procedure		CODE_CASE			( ADA_CASE :TREE )
+  is			---------
 
     CASE_EXP		: TREE		:= D( AS_EXP, ADA_CASE );
     ALTERNATIVE_S		: TREE		:= D( AS_ALTERNATIVE_S, ADA_CASE );
@@ -1249,11 +1361,13 @@ separate ( EXPANDER )
       end loop;
 
       return FALSE;
+
     end	ALTERNATIVE_HAS_OTHERS;
+	----------------------
 
-
+			---------------------------
     procedure		ALLOCATE_ALTERNATIVE_LABELS
-    is
+    is			---------------------------
       ALT_SEQ		: SEQ_TYPE	:= LIST( ALTERNATIVE_S );
       ALT_ELEM		: TREE;
       CHOICE_S		: TREE;
@@ -1274,56 +1388,80 @@ separate ( EXPANDER )
 	end if;
 
         elsif ALT_ELEM.TY = DN_ALTERNATIVE_PRAGMA then
-	null;
+	null;											--| INTENTIONNEL : pragma d'alternative, aucun code
+
+        else
+	CODI.TROU( "CODE_CASE.ALLOCATE_ALTERNATIVE_LABELS", ALT_ELEM );					--| vague 3 : boucle d'alternatives muette
         end if;
       end loop;
+
     end	ALLOCATE_ALTERNATIVE_LABELS;
+	---------------------------
 
-
+			--------------------
     procedure		CODE_CHOICE_EXP_TEST	( CHOICE :TREE; ALT_LBL :LABEL_TYPE )
-    is
+    is			--------------------
       CHOICE_EXP	: TREE		:= D( AS_EXP, CHOICE );
     begin
       PUT_LINE( tab & "DUP" );					-- garde le selecteur case
       EXPRESSIONS.CODE_EXP( CHOICE_EXP );			-- valeur du choix
       PUT_LINE( tab & "CEQ" );
       PUT_LINE( tab & "BT" & tab & LABEL_STR( ALT_LBL ) );
+
     end	CODE_CHOICE_EXP_TEST;
+	--------------------
 
-
+			----------------------
     procedure		CODE_CHOICE_RANGE_TEST	( CHOICE :TREE; ALT_LBL :LABEL_TYPE )
-    is
+    is			----------------------
+
       DISCRETE_RANGE	: TREE		:= D( AS_DISCRETE_RANGE, CHOICE );
       NEXT_CHOICE_LBL	: constant STRING	:= NEW_LABEL;
+
     begin
-      if DISCRETE_RANGE.TY = DN_RANGE then
+      if  DISCRETE_RANGE.TY = DN_RANGE  or else  DISCRETE_RANGE.TY = DN_DISCRETE_SUBTYPE  then
+			--| Chantier C2 (recensement 28/07, 82 traversees ; temoin
+			--| CASE_ST1) : choix = MARQUE DE SOUS-TYPE, LRM 5.4 -- la marque
+			--| denote son intervalle.  MEME fenetre CGE/CGT/BF que DN_RANGE,
+			--| bornes par la regle exportee CODE_DISCRETE_RANGE_BOUND, qui
+			--| rend CODE_EXP(AS_EXP1/2) sur un DN_RANGE : emission de la
+			--| forme historique INCHANGEE par construction (oracle : diff
+			--| FINC corpus = fenetres AJOUTEES aux 82 sites, rien d'autre).
+			--| Les choix de case sont STATIQUES (LRM 5.4(4)) : re-evaluer
+			--| les bornes du SM_RANGE de la marque est sur.  Reste au TROU :
+			--| DN_RANGE_ATTRIBUTE en choix (aucune traversee au recensement).
 
         -- Test borne basse : selector >= first
         PUT_LINE( tab & "DUP" );
-        EXPRESSIONS.CODE_EXP( D( AS_EXP1, DISCRETE_RANGE ) );
+        EXPRESSIONS.CODE_DISCRETE_RANGE_BOUND( DISCRETE_RANGE, IS_LAST => FALSE );
         PUT_LINE( tab & "CGE" );
         PUT_LINE( tab & "BF" & tab & NEXT_CHOICE_LBL );
 
         -- Test borne haute : not (selector > last)
         PUT_LINE( tab & "DUP" );
-        EXPRESSIONS.CODE_EXP( D( AS_EXP2, DISCRETE_RANGE ) );
+        EXPRESSIONS.CODE_DISCRETE_RANGE_BOUND( DISCRETE_RANGE, IS_LAST => TRUE );
         PUT_LINE( tab & "CGT" );
         PUT_LINE( tab & "BF" & tab & LABEL_STR( ALT_LBL ) );
 
         PUT_LINE( NEXT_CHOICE_LBL & ':' );
 
       else
-        PUT_LINE( "; CODE_CASE : choice_range non DN_RANGE a completer" );
+        CODI.TROU( "CODE_CASE forme de choix-intervalle", DISCRETE_RANGE );					--| vague 5 : aucun test emis, l'alternative
+												--| ne serait JAMAIS appariee
       end if;
+
     end	CODE_CHOICE_RANGE_TEST;
+	----------------------
 
-
+			----------------------
     procedure		CODE_ALTERNATIVE_TESTS	( ALTERNATIVE :TREE )
-    is
+    is			----------------------
+
       CHOICE_S		: TREE		:= D( AS_CHOICE_S, ALTERNATIVE );
       CHOICE_SEQ	: SEQ_TYPE	:= LIST( CHOICE_S );
       CHOICE		: TREE;
       ALT_LBL		: LABEL_TYPE	:= LABEL_TYPE( DI( CD_LABEL, CHOICE_S ) );
+
     begin
       while not IS_EMPTY( CHOICE_SEQ ) loop
         POP( CHOICE_SEQ, CHOICE );
@@ -1335,19 +1473,24 @@ separate ( EXPANDER )
 	CODE_CHOICE_RANGE_TEST( CHOICE, ALT_LBL );
 
         elsif CHOICE.TY = DN_CHOICE_OTHERS then
-	null;						-- traite apres tous les tests
+	null;											-- INTENTIONNEL : traite apres tous les tests
 
         else
-	PUT_LINE( "; CODE_CASE : choix inconnu" );
+	CODI.TROU( "CODE_ALTERNATIVE_TESTS forme de choix", CHOICE );					--| vague 5 : demi-bruyant hors lexique de grep,
+												--| pris par la verification de fini
         end if;
       end loop;
+
     end	CODE_ALTERNATIVE_TESTS;
+	----------------------
 
-
+			--------------
     procedure		CODE_ALL_TESTS
-    is
+    is			--------------
+
       ALT_SEQ		: SEQ_TYPE	:= LIST( ALTERNATIVE_S );
       ALT_ELEM		: TREE;
+
     begin
       while not IS_EMPTY( ALT_SEQ ) loop
         POP( ALT_SEQ, ALT_ELEM );
@@ -1356,17 +1499,24 @@ separate ( EXPANDER )
 	CODE_ALTERNATIVE_TESTS( ALT_ELEM );
 
         elsif ALT_ELEM.TY = DN_ALTERNATIVE_PRAGMA then
-	null;
+	null;											--| INTENTIONNEL : pragma d'alternative, aucun code
+
+        else
+	CODI.TROU( "CODE_CASE.CODE_ALL_TESTS", ALT_ELEM );						--| vague 3 : boucle d'alternatives muette
         end if;
       end loop;
+
     end	CODE_ALL_TESTS;
+	--------------
 
-
+			---------------------
     procedure		CODE_ALTERNATIVE_BODY	( ALTERNATIVE :TREE )
-    is
+    is			---------------------
+
       CHOICE_S		: TREE		:= D( AS_CHOICE_S, ALTERNATIVE );
       ALT_LBL		: LABEL_TYPE	:= LABEL_TYPE( DI( CD_LABEL, CHOICE_S ) );
       IS_OTHERS_ALT : BOOLEAN := ALTERNATIVE_HAS_OTHERS( ALTERNATIVE );
+
     begin
       PUT_LINE( LABEL_STR( ALT_LBL ) & ':' );
 
@@ -1378,13 +1528,17 @@ separate ( EXPANDER )
 
       CODE_STM_S( D( AS_STM_S, ALTERNATIVE ) );
       PUT_LINE( tab & "BRA" & tab & POST_CASE_LBL );
+
     end	CODE_ALTERNATIVE_BODY;
+	---------------------
 
-
+			---------------
     procedure		CODE_ALL_BODIES
-    is
+    is			---------------
+
       ALT_SEQ		: SEQ_TYPE	:= LIST( ALTERNATIVE_S );
       ALT_ELEM		: TREE;
+
     begin
       while not IS_EMPTY( ALT_SEQ ) loop
         POP( ALT_SEQ, ALT_ELEM );
@@ -1393,11 +1547,15 @@ separate ( EXPANDER )
 	CODE_ALTERNATIVE_BODY( ALT_ELEM );
 
         elsif ALT_ELEM.TY = DN_ALTERNATIVE_PRAGMA then
-	null;
+	null;											--| INTENTIONNEL : pragma d'alternative, aucun code
+
+        else
+	CODI.TROU( "CODE_CASE.CODE_ALL_BODIES", ALT_ELEM );						--| vague 3 : boucle d'alternatives muette
         end if;
       end loop;
-    end	CODE_ALL_BODIES;
 
+    end	CODE_ALL_BODIES;
+	---------------
 
   begin
     if CODI.DEBUG then
@@ -1438,21 +1596,20 @@ separate ( EXPANDER )
   procedure		CODE_STM_WITH_EXP_NAME	( STM_WITH_EXP_NAME :TREE )
   is			----------------------
   begin
-    if  STM_WITH_EXP_NAME.TY = DN_CODE
-    then
+    if  STM_WITH_EXP_NAME.TY = DN_CODE  then
       CODE_CODE( STM_WITH_EXP_NAME );
 
-    elsif  STM_WITH_EXP_NAME.TY = DN_ASSIGN
-    then
+    elsif  STM_WITH_EXP_NAME.TY = DN_ASSIGN  then
       CODE_ASSIGN( STM_WITH_EXP_NAME );
 
-    elsif  STM_WITH_EXP_NAME.TY = DN_EXIT
-    then
+    elsif  STM_WITH_EXP_NAME.TY = DN_EXIT  then
       CODE_EXIT( STM_WITH_EXP_NAME );
 
+    else
+      CODI.TROU( "CODE_STM_WITH_EXP_NAME", STM_WITH_EXP_NAME );					--| vague 3 : dispatch muet (fossile n 115)
     end if;
   end	CODE_STM_WITH_EXP_NAME;
-
+	----------------------
 
 				---------
   procedure			CODE_CODE			( CODE :TREE )
@@ -1605,7 +1762,7 @@ separate ( EXPANDER )
 
         case  TYPE_SPEC.TY  is
         when  DN_ACCESS =>
-	PUT_LINE( tab & "Sa" );
+	PUT_LINE( tab & "SA" );
 
         when  DN_ENUMERATION | DN_INTEGER | DN_FIXED | DN_FLOAT =>
 	PUT_LINE( tab & "S" & CODI.OPER_SIZ_CHAR( TYPE_SPEC ) );						-- Juste stocker la valeur sur pile
@@ -1642,12 +1799,19 @@ separate ( EXPANDER )
 	if  DST_TYPE.TY = DN_RECORD  then
 	  PUT( tab & "LI" & tab );
 	  CODI.REGIONS_PATH( D( XD_SOURCE_NAME, DST_TYPE ) );
+
 	  PUT_LINE( '_' & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, DST_TYPE ) ) ) & ".size" );
 	  if  SRC_EXP.TY = DN_AGGREGATE  then
 	    EXPRESSIONS.CODE_AGGREGATE( SRC_EXP, DST_TYPE );
+
 	  else
-	    EXPRESSIONS.CODE_EXP( SRC_EXP );			-- A VERIFIER POUR EXPRESSIONS.CODE_COMPOSITE_DATA_ADDRESS( SRC_EXP );
-	    PUT_LINE( tab & "La" );
+			--| Vague 2 (n 112) : le "A VERIFIER" est verifie -- le La
+			--| inconditionnel etait un trou (source reference de composant
+			--| = @data nue, le La lisait un data comme un data_ptr).
+			--| Regle unique.  Diff FINC : identique sur les sources
+			--| @doublet, La retire sur les sources @data (bug latent paye).
+	    EXPRESSIONS.CODE_COMPOSITE_DATA_ADDRESS( SRC_EXP );
+
 	    PUT_LINE( tab & "BLKMOV" );
 	  end if;
 
@@ -1696,18 +1860,14 @@ separate ( EXPANDER )
 
 	  if  SRC_EXP.TY = DN_AGGREGATE  then
 	    EXPRESSIONS.CODE_AGGREGATE( SRC_EXP, DST_TYPE );
+
 	  else
 	    PUT( tab & "LI" & tab );
 	    CODI.REGIONS_PATH( D( XD_SOURCE_NAME, DST_TYPE ) );
 	    PUT_LINE( '_' & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, DST_TYPE ) ) ) & ".size" );
-	    EXPRESSIONS.CODE_EXP( SRC_EXP );
 
-	    if  SRC_EXP.TY = DN_USED_OBJECT_ID
-	     or else  SRC_EXP.TY = DN_FUNCTION_CALL
-	     or else  SRC_EXP.TY = DN_QUALIFIED						-- pilier 3.7 : sources laissant @doublet
-	    then
-	      PUT_LINE( tab & "La" );							-- @doublet -> data_ptr
-	    end if;
+	    EXPRESSIONS.CODE_COMPOSITE_DATA_ADDRESS( SRC_EXP );				--| vague 2 (n 112) : discrimination locale -> regle unique
+										--| (QUALIFIED desormais dans la regle) ; diff FINC = orthographe seule
 
 	    PUT_LINE( tab & "BLKMOV" );
 	  end if;
@@ -1720,8 +1880,7 @@ separate ( EXPANDER )
 	    PUT( tab & "LI" & tab );
 	    CODI.REGIONS_PATH( D( XD_SOURCE_NAME, DST_TYPE ) );
 	    PUT_LINE( '_' & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, DST_TYPE ) ) ) & ".size" );
-	    EXPRESSIONS.CODE_EXP( SRC_EXP );		-- A VERIFIER POUR EXPRESSIONS.CODE_COMPOSITE_DATA_ADDRESS( SRC_EXP );
---	    PUT_LINE( tab & "La" );
+	    EXPRESSIONS.CODE_EXP( SRC_EXP );						-- A VERIFIER POUR EXPRESSIONS.CODE_COMPOSITE_DATA_ADDRESS( SRC_EXP );
 	    PUT_LINE( tab & "BLKMOV" );
 	  end if;
 
@@ -1745,7 +1904,7 @@ separate ( EXPANDER )
 	  INDEXED_TYPE := D( SM_TYPE_SPEC, INDEXED_TYPE );
 	end loop;
 
-	if  INDEXED_TYPE.TY = DN_CONSTRAINED_RECORD  then						-- pilier 3.7 : vue contrainte -> base
+	if  INDEXED_TYPE.TY = DN_CONSTRAINED_RECORD  then							-- pilier 3.7 : vue contrainte -> base
 	  INDEXED_TYPE := D( SM_BASE_TYPE, INDEXED_TYPE );
 	end if;
 
@@ -1758,20 +1917,35 @@ separate ( EXPANDER )
 		or else  INDEXED_TYPE.TY = DN_CONSTRAINED_RECORD
 		or else  INDEXED_TYPE.TY = DN_CONSTRAINED_ARRAY
 	then
-	  PUT( tab & "LI" & tab );
-	  CODI.REGIONS_PATH( D( XD_SOURCE_NAME, INDEXED_TYPE ) );
-	  PUT_LINE( '_' & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, INDEXED_TYPE ) ) ) & ".size" );
+	  if  SRC_EXP.TY = DN_STRING_LITERAL  then
+			--| FIX v3 30/07 (SLICE1 : le v2 emettait LI 0 -- CD_IMPL_SIZE
+			--| n'est PAS pose sur les sous-types composants, et DI rend 0
+			--| sans aboyer, contrairement a CD_LEVEL : incoherence des
+			--| defauts d'attributs, notee).  Pour un LITTERAL, la longueur
+			--| juste et DISPONIBLE est celle du litteral : LX_SYMREP contient
+			--| les guillemets (cf. CODE_STRING_LITERAL, 'FIRST+1..'LAST-1),
+			--| donc 'LENGTH - 2.  Source : STR + LCA data_ptr + La (idiome
+			--| de la branche destination-objet).
+	    declare
+	      LIT_LEN	:constant INTEGER	:= PRINT_NAME( D( LX_SYMREP, SRC_EXP ) )'LENGTH - 2;
+	    begin
+	      PUT_LINE( tab & "LI" & tab & IMAGE( LIT_LEN ) );					-- LEN = longueur du litteral (octets)
+	      EXPRESSIONS.CODE_STRING_LITERAL( SRC_EXP, IDL.ANONYMOUS_NAME_AT( SRC_EXP ) );
+	      PUT_LINE( tab & "LCA" & tab & IDL.ANONYMOUS_NAME_AT( SRC_EXP ) & ".data_ptr" );
+	      PUT_LINE( tab & "LA" );							-- @SRC = data_ptr
+	      PUT_LINE( tab & "BLKMOV" );
+	    end;
 
-	  EXPRESSIONS.CODE_EXP( SRC_EXP );								-- Pour DN_INDEXED : laisse @SRC
+	  elsif  INDEXED_TYPE.TY = DN_CONSTRAINED_ARRAY  then
+	    CODI.TROU( "CODE_ASSIGN composant TABLEAU indexe, source non litterale (LEN indisponible : CD_IMPL_SIZE absent des sous-types composants)", DST_NAME );
 
-	  if  SRC_EXP.TY = DN_USED_OBJECT_ID
-	   or else  SRC_EXP.TY = DN_FUNCTION_CALL
-	   or else  SRC_EXP.TY = DN_QUALIFIED								-- pilier 3.7 : sources laissant @doublet
-	  then
-	    PUT_LINE( tab & "La" );									-- @doublet -> data_ptr
+	  else
+	    PUT( tab & "LI" & tab );								-- record : .size existe (nomme par construction)
+	    CODI.REGIONS_PATH( D( XD_SOURCE_NAME, INDEXED_TYPE ) );
+	    PUT_LINE( '_' & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, INDEXED_TYPE ) ) ) & ".size" );
+	    EXPRESSIONS.CODE_COMPOSITE_DATA_ADDRESS( SRC_EXP );					--| vague 2 (n 112) : regle unique
+	    PUT_LINE( tab & "BLKMOV" );
 	  end if;
-
-	  PUT_LINE( tab & "BLKMOV" );
 
 	else
 	  EXPRESSIONS.CODE_EXP( SRC_EXP );
@@ -1817,8 +1991,8 @@ separate ( EXPANDER )
 	    begin
 	        -- Charger l'adresse de ST via le GFP
 	        -- Utiliser le niveau du parametre (= niveau de la procedure, pas du bloc declare)
-	      PUT_LINE( tab & "La " & INTEGER'IMAGE( CODI.GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );
-	      PUT_LINE( tab & "La ," & tab & '-' & FORMAL_TYPE_NAME & "__st_ofs" );
+	      PUT_LINE( tab & "LA " & INTEGER'IMAGE( CODI.GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );
+	      PUT_LINE( tab & "LA ," & tab & '-' & FORMAL_TYPE_NAME & "__st_ofs" );
 	      PUT_LINE( tab & "CALLI" );
 	    end;
 	  else
@@ -1828,10 +2002,9 @@ separate ( EXPANDER )
 		--------------
 
         begin
-				-- Resolve private to full type
-	if  NAME_TYPE.TY = DN_L_PRIVATE  or  NAME_TYPE.TY = DN_PRIVATE  then
-	  NAME_TYPE := D( SM_TYPE_SPEC, NAME_TYPE );
-	end if;
+				-- Resolve private to full type -- regle unique de percage (suit
+				-- SM_DERIVED : temoin CONV_DER1 30/07, DS := DSET(S), derive d'un prive)
+	NAME_TYPE := CODI.FULL_TYPE_VIEW( NAME_TYPE );
 
 	if  DEFN.TY in CLASS_VC_NAME  and then  DB( SM_RENAMES_OBJ, DEFN )  then
 				--------------
@@ -1864,7 +2037,7 @@ separate ( EXPANDER )
 	  else
 			-- Convention BLKMOV : pile = @DST, LEN, @SRC.
 	    CODI.LOAD_MEM( DEFN );									-- @doublet destination (variable ou parametre)
-	    PUT_LINE( tab & "La" );									-- @DST = data_ptr (offset 0 du doublet)
+	    PUT_LINE( tab & "LA" );									-- @DST = data_ptr (offset 0 du doublet)
 
         -- LEN (octets) lu dynamiquement dans le descripteur de la DESTINATION :
         -- SIZ (bits, dword a l'offset 0 du bloc info) / STORAGE_UNIT.
@@ -1875,11 +2048,11 @@ separate ( EXPANDER )
 	    if  DEFN.TY in CLASS_PARAM_NAME  then							-- idiome CODE_LENGTH, chemin parametre
 	      PUT_LINE( tab & "LVA" & tab & IMAGE( DI( CD_LEVEL, DEFN ) )
 			& ", -" & PRINT_NAME( D( LX_SYMREP, DEFN ) ) & "_ofs" );
-	      PUT_LINE( tab & "LIa" & tab & ", ," & INTEGER'IMAGE( CODI.ADDR_SIZE ) );				-- @info
-	      PUT_LINE( tab & "Ld" & tab & ", 0" );							-- SIZ (bits)
+	      PUT_LINE( tab & "LIA" & tab & ", ," & INTEGER'IMAGE( CODI.ADDR_SIZE ) );				-- @info
+	      PUT_LINE( tab & "LD" & tab & ", 0" );							-- SIZ (bits)
 
 	    else											-- idiome CODE_LENGTH, chemin variable
-	      PUT( tab & "LId" & tab & IMAGE( DI( CD_LEVEL, DEFN ) ) & ", " );
+	      PUT( tab & "LID" & tab & IMAGE( DI( CD_LEVEL, DEFN ) ) & ", " );
 	      if  DI( CD_LEVEL, DEFN ) /= INTEGER( CODI.CUR_LEVEL )  then					-- uplevel : chemin absolu
 	        CODI.REGIONS_PATH( DEFN );								-- (! traverse mal une region generique, cf. PIEGES)
 	      end if;										-- local : nom relatif, comme l'elaboration
@@ -1893,7 +2066,7 @@ separate ( EXPANDER )
 	    if  SRC_EXP.TY = DN_STRING_LITERAL  then
 	      EXPRESSIONS.CODE_STRING_LITERAL( SRC_EXP, IDL.ANONYMOUS_NAME_AT( SRC_EXP ) );
 	      PUT_LINE( tab & "LCA" & tab & IDL.ANONYMOUS_NAME_AT( SRC_EXP ) & ".data_ptr" );			-- @SRC (idiome concat, l. 2550)
-	      PUT_LINE( tab & "La" );									-- @SRC = data_ptr  <<< LIGNE AJOUTEE
+	      PUT_LINE( tab & "LA" );									-- @SRC = data_ptr  <<< LIGNE AJOUTEE
 
 	    elsif  SRC_EXP.TY = DN_SLICE  then
 	      EXPRESSIONS.CODE_SLICE( SRC_EXP, IS_DESTINATION => TRUE );					-- @src, len_src
@@ -1901,8 +2074,6 @@ separate ( EXPANDER )
 
 	    else
 	      EXPRESSIONS.CODE_COMPOSITE_DATA_ADDRESS( SRC_EXP );
---	      EXPRESSIONS.CODE_EXP( SRC_EXP );								-- @doublet (variable, concat, appel de fonction, qualifie)
---	      PUT_LINE( tab & "La" );									-- @SRC = data_ptr
 	    end if;
 
 	    PUT_LINE( tab & "BLKMOV" );
@@ -1913,7 +2084,7 @@ separate ( EXPANDER )
 	  if  ST_VIA_CALLI  then
 	    PUT_LINE( tab & "LVA " & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ','
 		    & tab & '-' & PRINT_NAME( D( LX_SYMREP, DEFN ) ) & "_ofs" );
-	    PUT_LINE( tab & "La" );
+	    PUT_LINE( tab & "LA" );
 	  end if;
 	  EXPRESSIONS.CODE_EXP( SRC_EXP );
 	  EXPRESSIONS.CODE_RANGE_CHECK( NAME_TYPE );							-- PILIER CHECKS : gamme du sous-type de la vue
@@ -1925,7 +2096,7 @@ separate ( EXPANDER )
 
 	      PUT_LINE( tab & "LVA " & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ','
 		    & tab & '-' & PRINT_NAME( D( LX_SYMREP, DEFN ) ) & "_ofs" );
-	      PUT_LINE( tab & "La" );
+	      PUT_LINE( tab & "LA" );
 
 	  end if;
 
@@ -1942,12 +2113,12 @@ separate ( EXPANDER )
 	    end if;
 
 	    if  DEFN.TY = DN_COMPONENT_ID  then
-	      PUT_LINE( "; !!! ASSIGN DST COMPONENT_ID DN_RECORD A FAIRE" );
-
+	      CODI.TROU( "DESTINATION_USED_OBJECT_ID affectation : destination composant record", DEFN );		--| vague 5 : rien charge, le La ,0 d'apres
+												--| dereferencait n'importe quoi
 	    else
 	      CODI.LOAD_MEM( DEFN );									-- @variable (adresse du doublet @data @use__info)
 	    end if;
-	    PUT_LINE( tab & "La" );									-- @DST (adresse des data)
+	    PUT_LINE( tab & "LA" );									-- @DST (adresse des data)
 
 	    if  SRC_EXP.TY = DN_AGGREGATE  then
 	      EXPRESSIONS.CODE_AGGREGATE( SRC_EXP, REC_TYPE );
@@ -1958,8 +2129,6 @@ separate ( EXPANDER )
 	      PUT_LINE( '_' & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, NAME_TYPE ) ) ) & ".size" );		-- LEN (taille en octets, calculee par FASM)
 
 	      EXPRESSIONS.CODE_COMPOSITE_DATA_ADDRESS( SRC_EXP );
---	      EXPRESSIONS.CODE_EXP( SRC_EXP );								-- @variable (adresse du doublet)
---	      PUT_LINE( tab & "La" );									-- @SRC (adresse des data)
 	      PUT_LINE( tab & "BLKMOV" );								-- COPY_BLOCK  @DST LEN @SRC
 	    end if;
 	  end;
@@ -1967,7 +2136,7 @@ separate ( EXPANDER )
 	else											-- AUTRE TYPE SCALAIRE (type formel generique, etc.)
 	  if  ST_VIA_CALLI  then
 	    PUT_LINE( tab & "LVA " & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' & tab & '-' & PRINT_NAME( D( LX_SYMREP, DEFN ) ) & "_ofs" );
-	    PUT_LINE( tab & "La" );
+	    PUT_LINE( tab & "LA" );
 	  end if;
 	  EXPRESSIONS.CODE_EXP( SRC_EXP );
 
@@ -1980,10 +2149,10 @@ separate ( EXPANDER )
 	  then
 	    declare
 	      LA_GFP	:constant STRING
-			 := tab & "LVa" & INTEGER'IMAGE( INTEGER( CODI.GENERIC_BASE_LEVEL ) + 1 )
+			 := tab & "LVA" & INTEGER'IMAGE( INTEGER( CODI.GENERIC_BASE_LEVEL ) + 1 )
 			  & ',' & tab & "-GFP_ofs";
 	      CHN_LID	:constant STRING
-			 := tab & "LId , -"
+			 := tab & "LID , -"
 			  & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, NAME_TYPE ) ) )
 			  & "__u_ofs, STANDARD._ENUM_USE_INFO";
 	    begin
@@ -2010,7 +2179,7 @@ separate ( EXPANDER )
 
         if  SRC_EXP.TY = DN_AGGREGATE  then
 	PUT_LINE( tab & "DROP" );
-	EXPRESSIONS.CODE_AGGREGATE( SRC_EXP, D( SM_EXP_TYPE, DST_NAME ) );
+	EXPRESSIONS.CODE_AGGREGATE( SRC_EXP, D( SM_EXP_TYPE, DST_NAME ), D( AS_DISCRETE_RANGE, DST_NAME ) );
 
         elsif SRC_EXP.TY = DN_SLICE then
       -- Source slice : laisse @src, len_src
@@ -2024,8 +2193,6 @@ separate ( EXPANDER )
 
         else
 	EXPRESSIONS.CODE_COMPOSITE_DATA_ADDRESS( SRC_EXP );
---	EXPRESSIONS.CODE_EXP( SRC_EXP );
---	PUT_LINE( tab & "La" );
 	PUT_LINE( tab & "BLKMOV" );									-- COPY_BLOCK;	- @DST @SRC LEN
         end if;
 
@@ -2046,14 +2213,10 @@ separate ( EXPANDER )
       EXITED_LOOP_LEVEL	: LEVEL_NUM	:= LEVEL_NUM( DI( CD_LEVEL, LOOP_STM ) );
       AFTER_LOOP_LABEL	: LABEL_TYPE	:= LABEL_TYPE( DI( CD_AFTER_LOOP, LOOP_STM ) );
     begin
-      if EXP = TREE_VOID then
-
---	if EXITED_LOOP_LEVEL /= CODI.CUR_LEVEL then
---	PUT_LINE( tab & "UNLINK" & tab & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL+1 - EXITED_LOOP_LEVEL ) );
---	end if;
+      if  EXP = TREE_VOID  then
         for  L in reverse EXITED_LOOP_LEVEL + 1 .. CODI.CUR_LEVEL  loop					-- UNLINK par NIVEAU (bug compte-comme-niveau
 	if  CODI.HANDLER_CTX_AT( L )  then  CODI.EXC_POP;  end if;						-- corrige) + pop des blocs proteges traverses
-	PUT_LINE( tab & "UNLINK" & LEVEL_NUM'IMAGE( L ) );
+	PUT_LINE( tab & "UNLINKR" & LEVEL_NUM'IMAGE( L ) );						-- n 163 : les blocs quittes rendent leur co-pile
         end loop;
         PUT_LINE( tab & "BRA" & tab & LABEL_STR( AFTER_LOOP_LABEL ) );
 
@@ -2064,11 +2227,10 @@ separate ( EXPANDER )
 	  SKIP_LBL	:constant STRING	:= NEW_LABEL;
 	begin
 	  PUT_LINE( tab & "BF" & tab & SKIP_LBL );
---	  PUT_LINE( tab & "UNLINK" & tab & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL+1 - EXITED_LOOP_LEVEL ) );
 
 	  for  L in reverse EXITED_LOOP_LEVEL + 1 .. CODI.CUR_LEVEL  loop
 	    if  CODI.HANDLER_CTX_AT( L )  then  CODI.EXC_POP;  end if;
-	    PUT_LINE( tab & "UNLINK" & LEVEL_NUM'IMAGE( L ) );
+	    PUT_LINE( tab & "UNLINKR" & LEVEL_NUM'IMAGE( L ) );
 	  end loop;
 
 	  PUT_LINE( tab & "BRA" & tab & LABEL_STR( AFTER_LOOP_LABEL ) );

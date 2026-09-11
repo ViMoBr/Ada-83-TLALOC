@@ -367,15 +367,15 @@ is					-----
   package				RISCV64_TARGET
   is				--------------
 
-    TRAITS	:constant TARGET_TRAITS								--| A POSER avec codi_riscv64.finc : seuls
-		:= ( E_MACHINE		=> 243,							--| E_MACHINE, PAD et CALL_FRAME sont acquis
+    TRAITS	:constant TARGET_TRAITS
+		:= ( E_MACHINE		=> 243,							--| EM_RISCV
 		     ORIG			=> 16#400000#,
 		     ENTRY_POINT		=> 16#400078#,
-		     PAD_BYTE		=> 0,
-		     CALL_FRAME		=> 16,
-		     MEMSZ_RESERVE		=> 1 * 1024 * 1024 * 1024,					--| provisoire
-		     PROLOGUE_SIZE		=> 0,							--| provisoire
-		     BRA_SIZE		=> 8 );							--| provisoire (auipc + jalr)
+		     PAD_BYTE		=> 0,							--| padding zero (data, not code)
+		     CALL_FRAME		=> 16,							--| micro-pile sp, 16 par appel (codi v2 : CALL/RTD)
+		     MEMSZ_RESERVE		=> 1 * 1024 * 1024 * 1024,					--| TAILLE_COPILE 1 Gio (codi_riscv64)
+		     PROLOGUE_SIZE		=> 80,							--| 20 mots de 32 bits
+		     BRA_SIZE		=> 8 );							--| auipc + jalr
 
     function  SIZE_OF		( E :IR.ELT_ID )		return SYMBOLS.VALUE_TYPE;
     procedure ENCODE		( E :IR.ELT_ID );
@@ -471,13 +471,16 @@ is					-----
         D1	: constant SYMBOLS.VALUE_TYPE
 			:= SYMBOLS.VALUE_OF( SYMBOLS.RESOLVE( "IMAGES.data_end" ) );
       begin
+        while  ( ORG + SYMBOLS.VALUE_TYPE( TOP ) ) mod 8 /= 0  loop
+	B( TR.PAD_BYTE );										--| align_q AVANT info (C-AL1) : bourrage de la cible
+        end loop;
+        if  ORG + SYMBOLS.VALUE_TYPE( TOP ) /= SYMBOLS.VALUE_OF( SYMBOLS.RESOLVE( "IMAGES.info" ) )  then
+          FAULT( "END_BLOC_DEF : info emis ailleurs qu'a l'adresse posee a P2B" );
+        end if;
         D32( INTEGER( 8 * ( D1 - D0 ) ) );								--| info : longueur en BITS
         D32( 8 );
         D32( 1 );
         D32( INTEGER( D1 - D0 ) );
-        while  ( ORG + SYMBOLS.VALUE_TYPE( TOP ) ) mod 8 /= 0  loop
-	B( TR.PAD_BYTE );										--| align_q : bourrage de la cible
-        end loop;
         D32( INTEGER( OPV( E, 1, 0 ) ) );								--| SIZ (en bits pour un enumere)
         D32( INTEGER( OPV( E, 2, 0 ) ) );								--| FST
         D32( INTEGER( OPV( E, 3, 0 ) ) );								--| LST
@@ -778,21 +781,21 @@ is					-----
 			 CUR + SYMBOLS.VALUE_TYPE( TR.BRA_SIZE ) );
 	  SYMBOLS.USE_SCOPE( IR.SCOPE_OF( E ) );
 
-	elsif  LEX.IMAGE( IR.MNEMO_OF( E ) ) = "END_BLOC_DEF"  then						--| ENUM_USE_INFO etendu : info a CUR, align_q
-	  declare											--| NOP apres info, SIZ/FST/LST/pad (dd) puis
+	elsif  LEX.IMAGE( IR.MNEMO_OF( E ) ) = "END_BLOC_DEF"  then						--| ENUM_USE_INFO etendu : align_q puis info a CUR+PS
+	  declare											--| SIZ/FST/LST/pad (dd) puis
 	    PS		: SYMBOLS.VALUE_TYPE;							--| data_ptr/info_ptr (dq) ; skip = fin, cible
 	  begin											--| du BRA d'ouverture
-	    PS := ( 8 - ( ( CUR + 16 ) mod 8 ) ) mod 8;
-	    SYMBOLS.ENTER_SCOPE( "IMAGES" );
+	    PS := ( 8 - ( CUR mod 8 ) ) mod 8;								--| align_q AVANT info (C-AL1) : meme total
+	    SYMBOLS.ENTER_SCOPE( "IMAGES" );								--| qu'avant, 16 mod 8 = 0 -> SIZE_OF intact
 	    SYMBOLS.SET_VALUE( SYMBOLS.DECLARE_SYM( "data_end", SYMBOLS.CODE_LABEL ), CUR );
-	    SYMBOLS.SET_VALUE( SYMBOLS.DECLARE_SYM( "info", SYMBOLS.CODE_LABEL ), CUR );
-	    SYMBOLS.SET_VALUE( SYMBOLS.DECLARE_SYM( "data_ptr", SYMBOLS.CODE_LABEL ), CUR + 16 + PS + 16 );
-	    SYMBOLS.SET_VALUE( SYMBOLS.DECLARE_SYM( "info_ptr", SYMBOLS.CODE_LABEL ), CUR + 16 + PS + 24 );
-	    SYMBOLS.SET_VALUE( SYMBOLS.DECLARE_SYM( "skip", SYMBOLS.CODE_LABEL ), CUR + 16 + PS + 32 );
+	    SYMBOLS.SET_VALUE( SYMBOLS.DECLARE_SYM( "info", SYMBOLS.CODE_LABEL ), CUR + PS );
+	    SYMBOLS.SET_VALUE( SYMBOLS.DECLARE_SYM( "data_ptr", SYMBOLS.CODE_LABEL ), CUR + PS + 32 );
+	    SYMBOLS.SET_VALUE( SYMBOLS.DECLARE_SYM( "info_ptr", SYMBOLS.CODE_LABEL ), CUR + PS + 40 );
+	    SYMBOLS.SET_VALUE( SYMBOLS.DECLARE_SYM( "skip", SYMBOLS.CODE_LABEL ), CUR + PS + 48 );
 	    SYMBOLS.USE_SCOPE( IR.SCOPE_OF( E ) );
-	    SYMBOLS.SET_VALUE( SYMBOLS.DECLARE_SYM( "SIZ", SYMBOLS.CODE_LABEL ), CUR + 16 + PS );
-	    SYMBOLS.SET_VALUE( SYMBOLS.DECLARE_SYM( "FST", SYMBOLS.CODE_LABEL ), CUR + 16 + PS + 4 );
-	    SYMBOLS.SET_VALUE( SYMBOLS.DECLARE_SYM( "LST", SYMBOLS.CODE_LABEL ), CUR + 16 + PS + 8 );
+	    SYMBOLS.SET_VALUE( SYMBOLS.DECLARE_SYM( "SIZ", SYMBOLS.CODE_LABEL ), CUR + PS + 16 );
+	    SYMBOLS.SET_VALUE( SYMBOLS.DECLARE_SYM( "FST", SYMBOLS.CODE_LABEL ), CUR + PS + 20 );
+	    SYMBOLS.SET_VALUE( SYMBOLS.DECLARE_SYM( "LST", SYMBOLS.CODE_LABEL ), CUR + PS + 24 );
 	  end;
 	end if;
 	CURADDR := CUR;										--| adresse du point d'appel (alignements inline)

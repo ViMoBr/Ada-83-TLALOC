@@ -94,6 +94,7 @@ is
     begin
       LINE_COUNT := LINE_COUNT + 1;									--| ON VA PRENDRE UNE LIGNE DE PLUS
       GET_LINE( IFILE, SLINE.BDY, SLINE.LEN );
+      if  LEX.LEX_DEBUG  then PUT( "Source Line={" ); PUT( SLINE.BDY( 1 .. SLINE.LEN ) ); PUT( '}' ); NEW_LINE; end if;
       LAST := SLINE.LEN;
       LEX.COL := 0;											--| POUR LE LEXEUR RETOUR COLONNE 0
 
@@ -118,12 +119,20 @@ is
       GET_SOURCE_LINE;
 
       LEX_SCAN;											--| IDENTIFIER LE LEXEME OU UNE FIN DE LIGNE
+      if  DEBUG_PARSE  then PUT_LINE( "@GT1 LTYPE=" & LEX_TYPE'IMAGE( LTYPE ) ); end if;
 
       if  LTYPE /= LT_END_MARK  then
         SOURCE_LINE := MAKE( DN_SOURCELINE );								--| FABRIQUER UN NOEUD LIGNE SOURCE
+        if  DEBUG_PARSE  then
+	PUT_LINE( "@GT2 LINE_COUNT=" & INTEGER'IMAGE( LINE_COUNT ) );
+	NEW_LINE; PUT( "@GT2 noeud frais = " ); PRINT_NODE( SOURCE_LINE );
+        end if;
         DI  ( XD_NUMBER, SOURCE_LINE, LINE_COUNT );							--| METTRE LE NUMERO DE LIGNE DANS L ATTRIBUT XD_NUMBER DE CE NOEUD
+        if  DEBUG_PARSE  then NEW_LINE; PUT( "@GT2a apres DI = " ); PRINT_NODE( SOURCE_LINE ); end if;
         LIST( SOURCE_LINE, (TREE_NIL,TREE_NIL) );								--| POST FIXER LE NOEUD PAR UNE SEQUENCE VIDE
+        if  DEBUG_PARSE  then NEW_LINE; PUT( "@GT2b apres LIST = " ); PRINT_NODE( SOURCE_LINE ); end if;
         SOURCE_LIST := APPEND( SOURCE_LIST, SOURCE_LINE );							--| AJOUTER LE NOEUD LIGNE SOURCE A LA LISTE DES LIGNES SOURCES
+        if  DEBUG_PARSE  then PUT_LINE( "@GT3" ); end if;
 
         if  LAST = MAX_STRING  and then  not END_OF_LINE( IFILE )  then					--| ON EST SORTI SUR BUTEE EN FIN DE TAMPON
 	ERROR( MAKE_SOURCE_POSITION( SOURCE_LINE, SRCCOL_IDX( MAX_STRING ) ),
@@ -135,7 +144,9 @@ is
 		--------------------
 
     if  LTYPE /= LT_END_MARK  then									--| ON EST SORTI AVEC UNE UNITE LEXICALE NON FIN
+      if  DEBUG_PARSE  then PUT_LINE( "@GT3b F_COL=" & INTEGER'IMAGE( F_COL ) ); end if;
       SOURCEPOS := MAKE_SOURCE_POSITION( SOURCE_LINE, SRCCOL_IDX( F_COL ) );					--| FABRIQUER UN NOEUD POSITION SOURCE EN COLONNE DEBUT ET AVEC REFERENCE AU NOEUD LIGNE SOURCE
+      if  DEBUG_PARSE  then PUT_LINE( "@GT4" ); end if;
     end if;
     TOKENSYM := LTYPE;										--| TYPE DU LEXEME
 
@@ -628,31 +639,32 @@ begin
 
 
 				-----------
-  procedure			DEBUG_PRINT		( TXT : STRING )
+    procedure			DEBUG_PRINT		( TXT : STRING )
 				-----------
-  is
-  begin
-    for  I in 2 .. SP  loop
-      PUT("  ");
-    end loop;
-    PUT( 's' & POSITIVE'IMAGE( STATE ) & '~' );
-    if  2 * SP + TXT'LENGTH > 77  then
-      PUT_LINE( TXT( TXT'FIRST .. 77 - 2 * SP ) );
-    else
-      PUT_LINE( TXT );
-    end if;
+    is
+    begin
+      for  I in 2 .. SP  loop
+        PUT("  ");
+      end loop;
+      PUT( 's' & POSITIVE'IMAGE( STATE ) & '~' );
+      if  2 * SP + TXT'LENGTH > 77  then
+        PUT_LINE( TXT( TXT'FIRST .. 77 - 2 * SP ) );
+      else
+        PUT_LINE( TXT );
+      end if;
 
-  end	DEBUG_PRINT;
+    end	DEBUG_PRINT;
 	-----------
 
 
 				-----------
-  procedure			DEBUG_PRINT		( V : TREE )
-				-----------
-  is
-  begin
-    DEBUG_PRINT( PRINT_NAME( V ) );
-  end DEBUG_PRINT;
+    procedure			DEBUG_PRINT		( V : TREE )
+    is				-----------
+    begin
+      DEBUG_PRINT( PRINT_NAME( V ) );
+
+    end	DEBUG_PRINT;
+	-----------
 
   begin
     LTYPE	    := LT_END_MARK;										--| INITIALISER A LIGNE VIDE
@@ -667,6 +679,10 @@ begin
 
     loop
       AP := GRMR_TBL.GRMR.ST_TBL( STATE );
+      if  DEBUG_PARSE  then
+        PUT_LINE( "@PC1 STATE=" & INTEGER'IMAGE( STATE ) & " AP=" & INTEGER'IMAGE( AP )
+	& " TOK=" & INTEGER'IMAGE( LEX_TYPE'POS( TOKENSYM ) ) );
+      end if;
 
       if  AP <= 0  then
         ACTION := AP;
@@ -679,6 +695,8 @@ begin
         end loop;
         ACTION := INTEGER( GRMR_TBL.GRMR.AC_TBL( AP ) );
       end if;
+
+      if  DEBUG_PARSE  then PUT_LINE( "@PC2 ACTION=" & INTEGER'IMAGE( ACTION ) ); end if;
 
       if  ACTION > 0  then										-- CAN'T BE SEMANTICS SINCE DIDN'T INDIRECT
 
@@ -711,7 +729,13 @@ begin
 	  if  AUXA.KIND /= NODE_ELMT  then
 	    PUT_LINE( "FIN COMPILE MAIS SEMSTAK(1) PAS UN NOEUD." );
 	  else											--| SAUVER L'ARBRE SYNTAXIQUE DANS LE XD_STRUCTURE DU USER_ROOT
+
+--put_line( "TEST avant D( XD_STRUCTURE, USER_ROOT," );
+
 	    D( XD_STRUCTURE, USER_ROOT, AUXA.ELMT );
+
+--put_line( "TEST apres D( XD_STRUCTURE, USER_ROOT," );
+
 	    if  DEBUG_PARSE  then PRINT_NODE( D( XD_STRUCTURE, USER_ROOT ) ); end if;
 	  end if;
 	end if;
@@ -736,6 +760,7 @@ begin
 
 	if  ACTION > -10000  then  -- TRANSFER TO SEMANTIC ACTION TABLE
 	  AP := - ACTION; -- TRANSFER IN TABLE
+	  if  DEBUG_PARSE  then PUT_LINE( "@PC3 XFER AP=" & INTEGER'IMAGE( AP ) ); end if;
 	  loop
 	    ACTION := INTEGER( GRMR_TBL.GRMR.AC_TBL( AP ) );
 	    exit when  ACTION <= 0;
@@ -748,13 +773,23 @@ begin
 	  ACTION	    :=  - ACTION - 10000;
 	  NBR_OF_SYLS := ACTION/1000;
 	  ACTION	    := ACTION mod 1000; -- I.E., RULE
+	  if  DEBUG_PARSE  then
+	    PUT_LINE( "@PC4 RED NBR=" & INTEGER'IMAGE( NBR_OF_SYLS ) & " RULE=" & INTEGER'IMAGE( ACTION )
+		& " SP=" & INTEGER'IMAGE( SP ) & " SSITOP=" & INTEGER'IMAGE( SSITOP ) );
+	  end if;
 	  SP := SP - NBR_OF_SYLS; -- POP THE STACK
 	  STATE := STACK( SP ).STATE;
 	  SEMSTAK( SSITOP ).SPOS := STACK( SP+1 ).SRCPOS;
 	  if  NODE_CREATED  and then  SEMSTAK( SSITOP ).KIND = NODE_ELMT
 	      and then  SEMSTAK( SSITOP ).ELMT /= TREE_VOID
 	  then
+
+--put_line( "TEST avant D( LX_SRCPOS, SEMSTAK( SSITOP ) SSITOP =" & INTEGER'IMAGE( SSITOP ) );
+
 	    D( LX_SRCPOS, SEMSTAK( SSITOP ).ELMT, SEMSTAK( SSITOP ).SPOS);
+
+--put_line( "TEST apres D( LX_SRCPOS, SEMSTAK( SSITOP )" );
+
 	  end if;
 	        -- FIND GOTO FOR NONTERMINAL IN THIS STATE
 	  AP := GRMR_TBL.GRMR.ST_TBL( STATE );
@@ -768,6 +803,7 @@ begin
 	    exit when  INTEGER( ASYM ) = ACTION;
 	  end loop;
 	  STATE := INTEGER( GRMR_TBL.GRMR.AC_TBL( AP ) );
+	  if  DEBUG_PARSE  then PUT_LINE( "@PC5 GOTO STATE=" & INTEGER'IMAGE( STATE ) ); end if;
 	  SP := SP + 1;
 	  STACK( SP ).STATE := STATE;
 	  if  NBR_OF_SYLS = 0  then
@@ -804,8 +840,16 @@ begin
 --put_line( "TEST post CREATE_IDL_TREE_FILE" );
 
   USER_ROOT := MAKE( DN_USER_ROOT );									--| CREER UN NOEUD RACINE SECONDAIRE DU TYPE DN_USER_ROOT
+
+--put_line( "TEST avant D( XD_USER_ROOT" );
+
   D( XD_USER_ROOT,  TREE_ROOT, USER_ROOT );								--| NOEUD USER_ROOT DANS LE CHAMP XD_USER_ROOT DU NOEUD TREE_ROOT
+
+--put_line( "TEST avant D( XD_SOURCENAME" );
+
   D( XD_SOURCENAME, USER_ROOT, STORE_TEXT( NOM_TEXTE ) );							--| NOM DU SOURCE DANS LE CHAMP XD_XOURCENAME DU NOEUD USER_ROOT
+
+--put_line( "TEST avant PARSE_COMPILATION" );
 
   PARSE_COMPILATION;										--| EFFECTUER LA PHASE D'ANALYSE SYNTAXIQUE DU SOURCE
 

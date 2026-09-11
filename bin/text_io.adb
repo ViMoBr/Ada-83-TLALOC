@@ -16,6 +16,101 @@ is					-------
   STD_OUTPUT		: FILE_TYPE;
 
 
+			-- Tampons d'entree-sortie par descripteur Linux (hors LRM).
+			-- Indexes par FILE.ID et non loges dans FILE_TYPE, dont les
+			-- valeurs sont copiees (DEFAULT_OUTPUT := FILE). Un ID hors
+			-- table prend l'ancien chemin : un syscall par PUT_RAW/GET_RAW.
+
+  BUF_SIZE		:constant		:= 16_384;
+  MAX_BUF_ID		:constant		:= 15;
+  subtype BUF_LEN		is INTEGER range 0 .. BUF_SIZE;
+
+  type IO_BUFFER		is record
+			  DATA		: STRING( 1 .. BUF_SIZE );
+			  OUT_LEN		: BUF_LEN;						-- DATA( 1 .. OUT_LEN ) en attente d'ecriture
+			  IN_POS		: BUF_LEN;						-- octets deja consommes en lecture
+			  IN_LEN		: BUF_LEN;						-- DATA( IN_POS+1 .. IN_LEN ) restent a lire
+			end record;
+
+  BUFS			: array( 0 .. MAX_BUF_ID ) of IO_BUFFER;
+
+
+			---------
+  procedure		WRITE_RAW		( ID :INTEGER; ITEM :STRING )				-- write( ID, ITEM ) direct, sans tampon
+  is			---------
+
+    ERR_CODE	: INTEGER;
+
+		-----------------
+    function	WRITE_SYSTEM_CALL		( FILE_ID :INTEGER; LENGTH :POSITIVE )		return INTEGER
+    is		-----------------
+    begin
+      ASM_OP_2'( OPCODE => Ld, LVL => 2, OFS => -16 );							-- LENGTH en -16
+      ASM_OP_2'( OPCODE => LIa, LVL => 1, OFS => -16 );							-- @CHARS sur parametre ITEM de WRITE_RAW
+      ASM_OP_2'( OPCODE => Ld, LVL => 2, OFS => -8 );							-- ID
+      ASM_OP_0'( OPCODE => SYS_FILE_WRITE );
+      ASM_OP_2'( OPCODE => SD, LVL => 2, OFS => -24 );							-- Retour du resultat syscall
+
+    end	WRITE_SYSTEM_CALL;
+	-----------------
+  begin
+    if  ITEM'LENGTH = 0  then return; end if;
+    ERR_CODE := WRITE_SYSTEM_CALL( ID, ITEM'LENGTH );
+
+  end	WRITE_RAW;
+	---------
+
+
+			--------
+  function		READ_RAW		( ID :INTEGER; ITEM :STRING )	return INTEGER		-- read( ID, ITEM ) direct, rend le nombre d'octets lus
+  is			--------
+
+		----------------
+    function	READ_SYSTEM_CALL		( FILE_ID :INTEGER; LENGTH :POSITIVE )		return INTEGER
+    is		----------------
+    begin
+      ASM_OP_2'( OPCODE => Ld, LVL => 2, OFS => -16 );							-- LENGTH en -16
+      ASM_OP_2'( OPCODE => LIa, LVL => 1, OFS => -16 );							-- @CHARS sur parametre ITEM de READ_RAW
+      ASM_OP_2'( OPCODE => Ld, LVL => 2, OFS => -8 );							-- ID
+      ASM_OP_0'( OPCODE => SYS_FILE_READ );
+      ASM_OP_2'( OPCODE => SD, LVL => 2, OFS => -24 );							-- Retour du nombre d'octets lus
+
+    end	READ_SYSTEM_CALL;
+	----------------
+  begin
+    return READ_SYSTEM_CALL( ID, ITEM'LENGTH );
+
+  end	READ_RAW;
+	--------
+
+
+			---------
+  procedure		FLUSH_OUT		( ID :INTEGER )						-- vide le tampon de sortie de l'ID
+  is			---------
+  begin
+    if  ID < 0  or else  ID > MAX_BUF_ID  then return; end if;
+    if  BUFS( ID ).OUT_LEN > 0  then
+      WRITE_RAW( ID, BUFS( ID ).DATA( 1 .. BUFS( ID ).OUT_LEN ) );
+      BUFS( ID ).OUT_LEN := 0;
+    end if;
+
+  end	FLUSH_OUT;
+	---------
+
+
+			------------
+  procedure		RESET_BUFFER	( ID :INTEGER )						-- oublie tout (ouverture, fermeture, reset, delete)
+  is			------------
+  begin
+    if  ID < 0  or else  ID > MAX_BUF_ID  then return; end if;
+    BUFS( ID ).OUT_LEN := 0;
+    BUFS( ID ).IN_POS  := 0;
+    BUFS( ID ).IN_LEN  := 0;
+
+  end	RESET_BUFFER;
+	------------
+
+
 			--   F I L E   M A N A G E M E N T
 
 
@@ -44,6 +139,7 @@ is					-------
     if  FILE.IS_OPENED  then raise STATUS_ERROR; end if;					-- LRM 14.2.1(4)
     ERR_OR_ID := CREATE_SYSTEM_CALL( NAME );
     if  ERR_OR_ID >= 0  then
+      RESET_BUFFER( ERR_OR_ID );
       FILE.ID := ERR_OR_ID;
       FILE.NAME( 1 .. NAME'LENGTH ) := NAME;
       FILE.NAME_LEN := NAME'LENGTH;
@@ -91,6 +187,7 @@ is					-------
     if  FILE.IS_OPENED  then raise STATUS_ERROR; end if;					-- LRM 14.2.1(4)
     ERR_OR_ID := OPEN_SYSTEM_CALL( NAME );
     if  ERR_OR_ID >= 0  then
+      RESET_BUFFER( ERR_OR_ID );
       FILE.ID := ERR_OR_ID;
       FILE.NAME( 1 .. NAME'LENGTH ) := NAME;
       FILE.NAME_LEN := NAME'LENGTH;
@@ -132,7 +229,9 @@ is					-------
 
   begin
     if  FILE.IS_OPENED = FALSE  then raise STATUS_ERROR; end if;
+    FLUSH_OUT( FILE.ID );									-- ce qui attend dans le tampon part avant la fermeture
     ERR_CODE := CLOSE_SYSTEM_CALL( FILE.ID );
+    RESET_BUFFER( FILE.ID );
     FILE.ID := -1;
     FILE.IS_OPENED := FALSE;
 
@@ -161,6 +260,7 @@ is					-------
   begin
     if  FILE.IS_OPENED = FALSE  then raise STATUS_ERROR; end if;
     ERR_CODE := DELETE_SYSTEM_CALL( FILE.NAME( 1 .. FILE.NAME_LEN ) );
+    RESET_BUFFER( FILE.ID );								-- rien a ecrire : le fichier n'existe plus
     FILE.IS_OPENED := FALSE;
 
   end	DELETE;
@@ -187,7 +287,9 @@ is					-------
 
   begin
     if  FILE.IS_OPENED = FALSE  then raise STATUS_ERROR; end if;
+    FLUSH_OUT( FILE.ID );									-- ecrire a l'ancienne position avant de revenir au debut
     ERR_CODE := SEEK_SYSTEM_CALL( FILE.ID );
+    RESET_BUFFER( FILE.ID );								-- la lecture anticipee ne vaut plus
     FILE.MODE := MODE;
     FILE.PAGE := 1;
     FILE.LINE := 1;
@@ -334,9 +436,9 @@ is					-------
 		-- RAW, lui, n'appelle jamais le niveau public.
 
 
-			---
+			-------
   procedure		GET_RAW		( FILE :in FILE_TYPE; ITEM :out CHARACTER )
-  is			---
+  is			-------
 
     BYTES_READ	: INTEGER;
 
@@ -357,24 +459,41 @@ is					-------
     if  FILE.HAS_LOOK_AHEAD  then
       ITEM := FILE.LOOK_AHEAD;
       FILE.HAS_LOOK_AHEAD := FALSE;
+
     elsif  FILE.ID = -1  then										-- standard console input
       ASM_OP_2'( OPCODE => La, LVL => 1, OFS => -16 );							-- push @ITEM : charge l'adresse destination (out param GET level 1 offset -16)
       ASM_OP_0'( OPCODE => SYS_GET_CHAR );								-- get console char
-    else
+
+    elsif  FILE.ID > MAX_BUF_ID  then									-- descripteur hors table : ancien chemin
       BYTES_READ := READ_SYSTEM_CALL( FILE.ID );								-- general file
       if  BYTES_READ = 0  then
         FILE.AT_END_OF_FILE := TRUE;
         ITEM := ASCII.NUL;
       end if;
+
+    else												-- fichier tamponne : blocs de BUF_SIZE
+      if  BUFS( FILE.ID ).IN_POS >= BUFS( FILE.ID ).IN_LEN  then
+        BYTES_READ := READ_RAW( FILE.ID, BUFS( FILE.ID ).DATA );
+        if  BYTES_READ < 0  then BYTES_READ := 0; end if;						-- erreur assimilee a la fin de fichier
+        BUFS( FILE.ID ).IN_LEN := BYTES_READ;
+        BUFS( FILE.ID ).IN_POS := 0;
+      end if;
+      if  BUFS( FILE.ID ).IN_LEN = 0  then
+        FILE.AT_END_OF_FILE := TRUE;
+        ITEM := ASCII.NUL;
+      else
+        BUFS( FILE.ID ).IN_POS := BUFS( FILE.ID ).IN_POS + 1;
+        ITEM := BUFS( FILE.ID ).DATA( BUFS( FILE.ID ).IN_POS );
+      end if;
     end if;
 
   end	GET_RAW;
-	----
+	-------
 
 
-			---
+			-------
   procedure		PUT_RAW		( FILE :in FILE_TYPE; ITEM :in CHARACTER )
-  is			---
+  is			-------
 
     ERR_CODE	: INTEGER;
 
@@ -394,12 +513,20 @@ is					-------
     if  FILE.ID = -1  then										-- standard console output
       ASM_OP_2'( OPCODE => LB, LVL => 1, OFS => -16 );
       ASM_OP_0'( OPCODE => SYS_PUT_CHAR );
-    else
+
+    elsif  FILE.ID > MAX_BUF_ID  then									-- descripteur hors table : ancien chemin
       ERR_CODE := WRITE_SYSTEM_CALL( FILE.ID );								-- general file
+
+    else												-- fichier tamponne
+      if  BUFS( FILE.ID ).OUT_LEN = BUF_SIZE  then
+        FLUSH_OUT( FILE.ID );
+      end if;
+      BUFS( FILE.ID ).OUT_LEN := BUFS( FILE.ID ).OUT_LEN + 1;
+      BUFS( FILE.ID ).DATA( BUFS( FILE.ID ).OUT_LEN ) := ITEM;
     end if;
 
   end	PUT_RAW;
-	----
+	-------
 
 
 			-------
@@ -425,12 +552,24 @@ is					-------
     if  FILE.ID = -1  then
       ASM_OP_2'( OPCODE => LA, LVL => 1, OFS => -16 );
       ASM_OP_0'( OPCODE => SYS_PUT_STR );
-    else
+
+    elsif  FILE.ID > MAX_BUF_ID  then									-- descripteur hors table : ancien chemin
       ERR_CODE := WRITE_SYSTEM_CALL( FILE.ID, ITEM'LENGTH );
+
+    else												-- fichier tamponne
+      if  ITEM'LENGTH > BUF_SIZE - BUFS( FILE.ID ).OUT_LEN  then					-- ne tient pas derriere ce qui attend
+        FLUSH_OUT( FILE.ID );
+      end if;
+      if  ITEM'LENGTH > BUF_SIZE  then									-- ne tiendra jamais : ecriture directe
+        WRITE_RAW( FILE.ID, ITEM );
+      else
+        BUFS( FILE.ID ).DATA( BUFS( FILE.ID ).OUT_LEN + 1 .. BUFS( FILE.ID ).OUT_LEN + ITEM'LENGTH ) := ITEM;
+        BUFS( FILE.ID ).OUT_LEN := BUFS( FILE.ID ).OUT_LEN + ITEM'LENGTH;
+      end if;
     end if;
 
   end	PUT_RAW;
-	---
+	-------
 
 
 
@@ -1075,24 +1214,24 @@ is					-------
   begin
     if  FILE.IS_OPENED = FALSE  then raise STATUS_ERROR; end if;
     if  FILE.MODE /= IN_FILE  then raise MODE_ERROR; end if;
-    if  FILE.ID = -1  then									-- standard console input : utiliser SYS_GET_STR (mode canonique avec echo)
-      ASM_OP_2'( OPCODE => La, LVL => 1, OFS => -24 );					-- push @LAST  (adresse du parametre out LAST)
-      ASM_OP_2'( OPCODE => La, LVL => 1, OFS => -16 );					-- push @ITEM descripteur (adresse du parametre out ITEM = descripteur string)
-      ASM_OP_0'( OPCODE => SYS_GET_STR );							-- lit une ligne stdin avec echo, stocke longueur dans LAST
+    if  FILE.ID = -1  then										-- standard console input : utiliser SYS_GET_STR (mode canonique avec echo)
+      ASM_OP_2'( OPCODE => La, LVL => 1, OFS => -24 );							-- push @LAST  (adresse du parametre out LAST)
+      ASM_OP_2'( OPCODE => La, LVL => 1, OFS => -16 );							-- push @ITEM descripteur (adresse du parametre out ITEM = descripteur string)
+      ASM_OP_0'( OPCODE => SYS_GET_STR );								-- lit une ligne stdin avec echo, stocke longueur dans LAST
     else
-      if  FILE.AT_END_OF_FILE  then raise END_ERROR; end if;				-- LRM 14.3.6(12)
+      if  FILE.AT_END_OF_FILE  then raise END_ERROR; end if;						-- LRM 14.3.6(12)
       LAST := ITEM'FIRST - 1;
       loop
         exit when  POS > ITEM'LAST;
         exit when  FILE.AT_END_OF_FILE;
         GET_RAW( FILE, CH );
-        exit when  FILE.AT_END_OF_FILE;							-- fin de fichier = fin de ligne implicite
-        if  CH = ASCII.LF  then							-- terminateur de ligne consomme
+        exit when  FILE.AT_END_OF_FILE;									-- fin de fichier = fin de ligne implicite
+        if  CH = ASCII.LF  then									-- terminateur de ligne consomme
 	FILE.LINE := FILE.LINE + 1;
 	FILE.COL  := 1;
 	exit;
         end if;
-        if  CH = ASCII.FF  then							-- terminateur de page consomme
+        if  CH = ASCII.FF  then									-- terminateur de page consomme
 	FILE.PAGE := FILE.PAGE + 1;
 	FILE.LINE := 1;
 	FILE.COL  := 1;
@@ -4541,6 +4680,12 @@ begin
 
   DEFAULT_INPUT		:= STD_INPUT;
   DEFAULT_OUTPUT		:= STD_OUTPUT;
+
+  for  ID in 0 .. MAX_BUF_ID  loop									-- VARzone non zeroee : compteurs a 0 explicitement
+    BUFS( ID ).OUT_LEN := 0;
+    BUFS( ID ).IN_POS  := 0;
+    BUFS( ID ).IN_LEN  := 0;
+  end loop;
 
 end	TEXT_IO;
 	-------

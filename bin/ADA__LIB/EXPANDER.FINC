@@ -27,38 +27,37 @@ include 'TEXT_IO.FINC'
 display 'including trans withed unit TEXT_IO.FINC', 10
 end if
 EXPANDER = 'EXPANDER'
-PRO	EXPANDER_L1				;---------- PRO EXPANDER
+PRO	EXPANDER_L1
  hexa_show 'EXPANDER_L1 ', $
-PRMS					;    debut parametrage
-	PRM NOM_TEXTE_ofs				; in
-endPRMS					;    fin parametrage
-ELB 1					;    BODY ELAB
-					; sub program entry decl (in instantiation FALSE )
+PRMS
+	PRM NOM_TEXTE_ofs
+endPRMS
+ELB 1
+
 UTILS = 'UTILS'
-namespace UTILS				;---------- PACKAGE DECLARATION
-					; CODE_PACKAGE_SPEC
+namespace UTILS
+
  hexa_show ' spec ', $
  hexa_show 'var elab DEBUG ', $
-VAR DEBUG_disp, B				; variable bool char enum
-	LI	1
+VAR DEBUG_disp, B
+	LI	0
 	SB  1,	STANDARD.EXPANDER_L1.UTILS.DEBUG_disp
 
  hexa_show ' disp ', DEBUG_disp
  hexa_show 'var elab GENERATE_BINARY_MAP ', $
-VAR GENERATE_BINARY_MAP_disp, B		; variable bool char enum
+VAR GENERATE_BINARY_MAP_disp, B
 	LI	1
 	SB  1,	STANDARD.EXPANDER_L1.UTILS.GENERATE_BINARY_MAP_disp
 
  hexa_show ' disp ', GENERATE_BINARY_MAP_disp
  hexa_show 'var elab TROU_RECENSEMENT ', $
-VAR TROU_RECENSEMENT_disp, B			; variable bool char enum
+VAR TROU_RECENSEMENT_disp, B
 	LI	0
 	SB  1,	STANDARD.EXPANDER_L1.UTILS.TROU_RECENSEMENT_disp
 
  hexa_show ' disp ', TROU_RECENSEMENT_disp
  hexa_show 'var elab TROU_COUNT ', $
-VAR TROU_COUNT_disp, D			; variable entiere
-; CODE_NUMERIC_LITERAL DN_INTEGER
+VAR TROU_COUNT_disp, D
 	LI	0
 	DUP
 	LD	0, STANDARD._NATURAL.FST
@@ -71,12 +70,10 @@ VAR TROU_COUNT_disp, D			; variable entiere
 	SD  1,	STANDARD.EXPANDER_L1.UTILS.TROU_COUNT_disp
 
  hexa_show ' disp ', TROU_COUNT_disp
-					; sub program entry decl (in instantiation FALSE )
+
 VAR TAB_disp, Q
 	LVA	0, STANDARD.ASCII.HT_disp
 	SA	1, TAB_disp
-
-					; _LABEL_TYPE TYPE RANGE INFO
 _LABEL_TYPE = '_LABEL_TYPE'
 namespace _LABEL_TYPE
 VAR use__info, Q
@@ -87,15 +84,11 @@ VAR FST, D
 VAR LST, D
 	LI	32
 	SD	1, SIZ__
-; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	SD	1, FST
-; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
 	LI	10000
 	SD	1, LST
 end namespace
-
-					; _UNIT_NUM INTEGER SUBTYPE INFO
 _UNIT_NUM = '_UNIT_NUM'
 namespace _UNIT_NUM
 VAR use__info, Q
@@ -106,16 +99,12 @@ VAR FST, D
 VAR LST, D
 	LI	32
 	SD	1, SIZ__
-; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	SD	1, FST
-; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
 	LI	2
-; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	11
 	DEC
 	SHL
-; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
 	LI	1
 	SUB
 	SD	1, LST
@@ -123,8 +112,6 @@ VAR PARENT__u, Q
 	LA	0, STANDARD._INTEGER.use__info
 	SA	1, PARENT__u
 end namespace
-
-					; _LEVEL_NUM INTEGER SUBTYPE INFO
 _LEVEL_NUM = '_LEVEL_NUM'
 namespace _LEVEL_NUM
 VAR use__info, Q
@@ -135,16 +122,12 @@ VAR FST, D
 VAR LST, D
 	LI	32
 	SD	1, SIZ__
-; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	SD	1, FST
-; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
 	LI	2
-; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	5
 	DEC
 	SHL
-; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
 	LI	1
 	SUB
 	SD	1, LST
@@ -152,8 +135,6 @@ VAR PARENT__u, Q
 	LA	0, STANDARD._INTEGER.use__info
 	SA	1, PARENT__u
 end namespace
-
-					; _OFFSET_VAL INTEGER SUBTYPE INFO
 _OFFSET_VAL = '_OFFSET_VAL'
 namespace _OFFSET_VAL
 VAR use__info, Q
@@ -164,24 +145,18 @@ VAR FST, D
 VAR LST, D
 	LI	32
 	SD	1, SIZ__
-; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
 	LI	2
-; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	15
 	DEC
 	SHL
-; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
 	LI	1
 	SUB
 	NEG
 	SD	1, FST
-; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
 	LI	2
-; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	15
 	DEC
 	SHL
-; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
 	LI	1
 	SUB
 	SD	1, LST
@@ -189,8 +164,6 @@ VAR PARENT__u, Q
 	LA	0, STANDARD._INTEGER.use__info
 	SA	1, PARENT__u
 end namespace
-
-					; _LOOP_CODE ENUMERATION TYPE INFO
 _LOOP_CODE = '_LOOP_CODE'
 namespace _LOOP_CODE
 VAR use__info, Q
@@ -200,32 +173,31 @@ db 1, 2, "GT"
 db 2, 3, "INC"
 db 3, 2, "LT"
 END_BLOC_DEF 8, 0, 3
-	; SIZ en bits !
+
 	LCA	SIZ
 	SA	1, use__info
 end namespace
  hexa_show 'var elab OUTPUT_CODE ', $
-VAR OUTPUT_CODE_disp, B			; variable bool char enum
+VAR OUTPUT_CODE_disp, B
 	LI	1
 	SB  1,	STANDARD.EXPANDER_L1.UTILS.OUTPUT_CODE_disp
 
  hexa_show ' disp ', OUTPUT_CODE_disp
  hexa_show 'var elab IN_GENERIC_INSTANTIATION ', $
-VAR IN_GENERIC_INSTANTIATION_disp, B		; variable bool char enum
+VAR IN_GENERIC_INSTANTIATION_disp, B
 	LI	0
 	SB  1,	STANDARD.EXPANDER_L1.UTILS.IN_GENERIC_INSTANTIATION_disp
 
  hexa_show ' disp ', IN_GENERIC_INSTANTIATION_disp
  hexa_show 'var elab INSTANTIATION_MODEL_NAME ', $
-VAR INSTANTIATION_MODEL_NAME_disp, Q		; variable record : pointeur aux data record
-VAR INSTANTIATION_MODEL_NAME__u, Q		; variable record : pointeur aux useinfo
+VAR INSTANTIATION_MODEL_NAME_disp, Q
+VAR INSTANTIATION_MODEL_NAME__u, Q
 VAR INSTANTIATION_MODEL_NAME__dat, STANDARD.IDL._TREE.size
 	LVA	1, INSTANTIATION_MODEL_NAME__dat
-	SA	1, INSTANTIATION_MODEL_NAME_disp		; record fin
+	SA	1, INSTANTIATION_MODEL_NAME_disp
 	LVA	1, STANDARD.IDL._TREE.SIZ__
 	SA	1, INSTANTIATION_MODEL_NAME__u
 	LA  1, INSTANTIATION_MODEL_NAME_disp
-					; store represented component PT range 0 .. 1 width 2
 	DUP
 	LD
 	LI	0
@@ -236,31 +208,30 @@ VAR INSTANTIATION_MODEL_NAME__dat, STANDARD.IDL._TREE.size
 
  hexa_show ' disp ', INSTANTIATION_MODEL_NAME_disp
  hexa_show 'var elab GENERIC_MODEL_DECL_SEQ ', $
-VAR GENERIC_MODEL_DECL_SEQ_disp, Q		; variable record : pointeur aux data record
-VAR GENERIC_MODEL_DECL_SEQ__u, Q		; variable record : pointeur aux useinfo
+VAR GENERIC_MODEL_DECL_SEQ_disp, Q
+VAR GENERIC_MODEL_DECL_SEQ__u, Q
 VAR GENERIC_MODEL_DECL_SEQ__dat, STANDARD.IDL._SEQ_TYPE.size
 	LVA	1, GENERIC_MODEL_DECL_SEQ__dat
-	SA	1, GENERIC_MODEL_DECL_SEQ_disp		; record fin
+	SA	1, GENERIC_MODEL_DECL_SEQ_disp
 	LVA	1, STANDARD.IDL._SEQ_TYPE.SIZ__
 	SA	1, GENERIC_MODEL_DECL_SEQ__u
 
  hexa_show ' disp ', GENERIC_MODEL_DECL_SEQ_disp
  hexa_show 'var elab IN_GENERIC_BODY ', $
-VAR IN_GENERIC_BODY_disp, B			; variable bool char enum
+VAR IN_GENERIC_BODY_disp, B
 	LI	0
 	SB  1,	STANDARD.EXPANDER_L1.UTILS.IN_GENERIC_BODY_disp
 
  hexa_show ' disp ', IN_GENERIC_BODY_disp
  hexa_show 'var elab ENCLOSING_GENERIC ', $
-VAR ENCLOSING_GENERIC_disp, Q			; variable record : pointeur aux data record
-VAR ENCLOSING_GENERIC__u, Q			; variable record : pointeur aux useinfo
+VAR ENCLOSING_GENERIC_disp, Q
+VAR ENCLOSING_GENERIC__u, Q
 VAR ENCLOSING_GENERIC__dat, STANDARD.IDL._TREE.size
 	LVA	1, ENCLOSING_GENERIC__dat
-	SA	1, ENCLOSING_GENERIC_disp			; record fin
+	SA	1, ENCLOSING_GENERIC_disp
 	LVA	1, STANDARD.IDL._TREE.SIZ__
 	SA	1, ENCLOSING_GENERIC__u
 	LA  1, ENCLOSING_GENERIC_disp
-					; store represented component PT range 0 .. 1 width 2
 	DUP
 	LD
 	LI	0
@@ -271,8 +242,7 @@ VAR ENCLOSING_GENERIC__dat, STANDARD.IDL._TREE.size
 
  hexa_show ' disp ', ENCLOSING_GENERIC_disp
  hexa_show 'var elab GENERIC_BASE_LEVEL ', $
-VAR GENERIC_BASE_LEVEL_disp, D		; variable entiere
-; CODE_NUMERIC_LITERAL DN_INTEGER
+VAR GENERIC_BASE_LEVEL_disp, D
 	LI	0
 	DUP
 	LD	1, STANDARD.EXPANDER_L1.UTILS._LEVEL_NUM.FST
@@ -286,16 +256,15 @@ VAR GENERIC_BASE_LEVEL_disp, D		; variable entiere
 
  hexa_show ' disp ', GENERIC_BASE_LEVEL_disp
  hexa_show 'var elab IN_SPEC_UNIT ', $
-VAR IN_SPEC_UNIT_disp, B			; variable bool char enum
+VAR IN_SPEC_UNIT_disp, B
 
  hexa_show ' disp ', IN_SPEC_UNIT_disp
  hexa_show 'var elab CUR_LEVEL ', $
-VAR CUR_LEVEL_disp, D			; variable entiere
+VAR CUR_LEVEL_disp, D
 
  hexa_show ' disp ', CUR_LEVEL_disp
  hexa_show 'var elab GFP_LEVEL ', $
-VAR GFP_LEVEL_disp, D			; variable entiere
-; CODE_NUMERIC_LITERAL DN_INTEGER
+VAR GFP_LEVEL_disp, D
 	LI	0
 	DUP
 	LD	1, STANDARD.EXPANDER_L1.UTILS._LEVEL_NUM.FST
@@ -309,8 +278,7 @@ VAR GFP_LEVEL_disp, D			; variable entiere
 
  hexa_show ' disp ', GFP_LEVEL_disp
  hexa_show 'var elab CUR_OFFSET ', $
-VAR CUR_OFFSET_disp, D			; variable entiere
-; CODE_NUMERIC_LITERAL DN_INTEGER
+VAR CUR_OFFSET_disp, D
 	LI	0
 	DUP
 	LD	1, STANDARD.EXPANDER_L1.UTILS._OFFSET_VAL.FST
@@ -325,7 +293,7 @@ VAR CUR_OFFSET_disp, D			; variable entiere
  hexa_show ' disp ', CUR_OFFSET_disp
  hexa_show 'var elab HANDLER_CTX_AT ', $
 _HANDLER_CTX_AT__type = '_HANDLER_CTX_AT__type'
-namespace _HANDLER_CTX_AT__type		; array var constrained array type info
+namespace _HANDLER_CTX_AT__type
 VAR use__info, Q
 VAR SIZ__, D
 	LVA	1, SIZ__
@@ -336,16 +304,12 @@ VAR _LST_1, D
 	LI	8
 	SD	1, _COMP_SIZ
 	LD	1, _COMP_SIZ
-; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	SD	1, _FST_1
-; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
 	LI	2
-; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	5
 	DEC
 	SHL
-; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
 	LI	1
 	SUB
 	SD	1, _LST_1
@@ -365,18 +329,17 @@ LST_1 = $
 	rd 1 
   end virtual
 end namespace
-VAR HANDLER_CTX_AT_disp, Q			; variable array : pointeur aux data
-VAR HANDLER_CTX_AT__u, Q			; variable array : useinfo pointeur au rec info
+VAR HANDLER_CTX_AT_disp, Q
+VAR HANDLER_CTX_AT__u, Q
 	LA 1, _HANDLER_CTX_AT__type.use__info
-	SA	1, HANDLER_CTX_AT__u			; array info ptr at __u
+	SA	1, HANDLER_CTX_AT__u
 	LD	1, _HANDLER_CTX_AT__type.SIZ__
 	LI	8
 	DIV
 	CO_VAR
-	SA	1, HANDLER_CTX_AT_disp			; array data ptr at _disp
-					; array data aggregate
+	SA	1, HANDLER_CTX_AT_disp
+
 	LA	1, HANDLER_CTX_AT_disp
-					; Assign_array_aggregate dynamic type DN_CONSTRAINED_ARRAY
 namespace ANON_86_57_aga
   VAR _FST_1, D
   VAR _LST_1, D
@@ -386,16 +349,12 @@ namespace ANON_86_57_aga
   VAR _CNT_1, D
   VAR _EMIS_1, D
 end namespace
-; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	SD  1, ANON_86_57_aga._FST_1
-; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
 	LI	2
-; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	5
 	DEC
 	SHL
-; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
 	LI	1
 	SUB
 	SD  1, ANON_86_57_aga._LST_1
@@ -439,28 +398,24 @@ L4:
 
  hexa_show ' disp ', HANDLER_CTX_AT_disp
  hexa_show 'var elab HANDLER_LVL ', $
-VAR HANDLER_LVL_disp, D			; variable entiere
-; CODE_NUMERIC_LITERAL DN_INTEGER
+VAR HANDLER_LVL_disp, D
 	LI	1
 	NEG
 	SD  1,	STANDARD.EXPANDER_L1.UTILS.HANDLER_LVL_disp
 
  hexa_show ' disp ', HANDLER_LVL_disp
  hexa_show 'var elab HANDLER_CTX_SUF ', $
-VAR HANDLER_CTX_SUF_disp, D			; variable entiere
-; CODE_NUMERIC_LITERAL DN_INTEGER
+VAR HANDLER_CTX_SUF_disp, D
 	LI	0
 	SD  1,	STANDARD.EXPANDER_L1.UTILS.HANDLER_CTX_SUF_disp
 
  hexa_show ' disp ', HANDLER_CTX_SUF_disp
  hexa_show 'var elab CHECKS_ENABLED ', $
-VAR CHECKS_ENABLED_disp, B			; variable bool char enum
+VAR CHECKS_ENABLED_disp, B
 	LI	1
 	SB  1,	STANDARD.EXPANDER_L1.UTILS.CHECKS_ENABLED_disp
 
  hexa_show ' disp ', CHECKS_ENABLED_disp
-
-					; _GOTO_LBL_IDX INTEGER SUBTYPE INFO
 _GOTO_LBL_IDX = '_GOTO_LBL_IDX'
 namespace _GOTO_LBL_IDX
 VAR use__info, Q
@@ -471,18 +426,14 @@ VAR FST, D
 VAR LST, D
 	LI	32
 	SD	1, SIZ__
-; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	SD	1, FST
-; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
 	LI	64
 	SD	1, LST
 VAR PARENT__u, Q
 	LA	0, STANDARD._INTEGER.use__info
 	SA	1, PARENT__u
 end namespace
-
-					; array decl constrained array type info
 _LVL_SET = '_LVL_SET'
 namespace _LVL_SET
 VAR use__info, Q
@@ -495,16 +446,12 @@ VAR _LST_1, D
 	LI	8
 	SD	1, _COMP_SIZ
 	LD	1, _COMP_SIZ
-; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	SD	1, _FST_1
-; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
 	LI	2
-; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	5
 	DEC
 	SHL
-; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
 	LI	1
 	SUB
 	SD	1, _LST_1
@@ -524,8 +471,6 @@ LST_1 = $
 	rd 1 
   end virtual
 end namespace
-
-					; _GOTO_LBL_REC RECORD TYPE INFO
 _GOTO_LBL_REC = '_GOTO_LBL_REC'
 namespace _GOTO_LBL_REC
 VAR use__info, Q
@@ -536,7 +481,7 @@ USEINFO 1, ID, 	LA 0, STANDARD.IDL._TREE.use__info
 USEINFO 1, LBL, 	LA 1, STANDARD.EXPANDER_L1.UTILS._LABEL_TYPE.use__info
 USEINFO 1, DEFINED, 	LA 0, STANDARD._BOOLEAN.use__info
 USEINFO 1, LEVEL, 	LA 1, STANDARD.EXPANDER_L1.UTILS._LEVEL_NUM.use__info
-virtual at 0				; calcul des offsets statiques
+virtual at 0
 STATOFS ID, 4, 8
 STATOFS LBL, 4, 4
 STATOFS DEFINED, 1, 1
@@ -548,7 +493,7 @@ end virtual
 end namespace
  hexa_show 'var elab GOTO_LABELS ', $
 _GOTO_LABELS__type = '_GOTO_LABELS__type'
-namespace _GOTO_LABELS__type			; array var constrained array type info
+namespace _GOTO_LABELS__type
 VAR use__info, Q
 VAR SIZ__, D
 	LVA	1, SIZ__
@@ -559,10 +504,8 @@ VAR _LST_1, D
 	LI	128
 	SD	1, _COMP_SIZ
 	LD	1, _COMP_SIZ
-; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SD	1, _FST_1
-; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
 	LI	64
 	SD	1, _LST_1
 	LD	1, _LST_1
@@ -581,20 +524,19 @@ LST_1 = $
 	rd 1 
   end virtual
 end namespace
-VAR GOTO_LABELS_disp, Q			; variable array : pointeur aux data
-VAR GOTO_LABELS__u, Q			; variable array : useinfo pointeur au rec info
+VAR GOTO_LABELS_disp, Q
+VAR GOTO_LABELS__u, Q
 	LA 1, _GOTO_LABELS__type.use__info
-	SA	1, GOTO_LABELS__u			; array info ptr at __u
+	SA	1, GOTO_LABELS__u
 	LD	1, _GOTO_LABELS__type.SIZ__
 	LI	8
 	DIV
 	CO_VAR
-	SA	1, GOTO_LABELS_disp			; array data ptr at _disp
+	SA	1, GOTO_LABELS_disp
 
  hexa_show ' disp ', GOTO_LABELS_disp
  hexa_show 'var elab GOTO_LBL_TOP ', $
-VAR GOTO_LBL_TOP_disp, D			; variable entiere
-; CODE_NUMERIC_LITERAL DN_INTEGER
+VAR GOTO_LBL_TOP_disp, D
 	LI	0
 	DUP
 	LD	1, STANDARD.EXPANDER_L1.UTILS._GOTO_LBL_IDX.FST
@@ -608,8 +550,7 @@ VAR GOTO_LBL_TOP_disp, D			; variable entiere
 
  hexa_show ' disp ', GOTO_LBL_TOP_disp
  hexa_show 'var elab GOTO_BODY_BASE ', $
-VAR GOTO_BODY_BASE_disp, D			; variable entiere
-; CODE_NUMERIC_LITERAL DN_INTEGER
+VAR GOTO_BODY_BASE_disp, D
 	LI	0
 	DUP
 	LD	1, STANDARD.EXPANDER_L1.UTILS._GOTO_LBL_IDX.FST
@@ -622,8 +563,6 @@ VAR GOTO_BODY_BASE_disp, D			; variable entiere
 	SD  1,	STANDARD.EXPANDER_L1.UTILS.GOTO_BODY_BASE_disp
 
  hexa_show ' disp ', GOTO_BODY_BASE_disp
-
-					; _GOTO_PEND_REC RECORD TYPE INFO
 _GOTO_PEND_REC = '_GOTO_PEND_REC'
 namespace _GOTO_PEND_REC
 VAR use__info, Q
@@ -634,7 +573,7 @@ USEINFO 1, TARGET, 	LA 0, STANDARD.IDL._TREE.use__info
 USEINFO 1, LBL_G, 	LA 1, STANDARD.EXPANDER_L1.UTILS._LABEL_TYPE.use__info
 USEINFO 1, LEVEL, 	LA 1, STANDARD.EXPANDER_L1.UTILS._LEVEL_NUM.use__info
 USEINFO 1, CTX, 	LA 1, STANDARD.EXPANDER_L1.UTILS._LVL_SET.use__info
-virtual at 0				; calcul des offsets statiques
+virtual at 0
 STATOFS TARGET, 4, 8
 STATOFS LBL_G, 4, 4
 STATOFS LEVEL, 4, 4
@@ -646,7 +585,7 @@ end virtual
 end namespace
  hexa_show 'var elab GOTO_PENDING ', $
 _GOTO_PENDING__type = '_GOTO_PENDING__type'
-namespace _GOTO_PENDING__type			; array var constrained array type info
+namespace _GOTO_PENDING__type
 VAR use__info, Q
 VAR SIZ__, D
 	LVA	1, SIZ__
@@ -657,10 +596,8 @@ VAR _LST_1, D
 	LI	128
 	SD	1, _COMP_SIZ
 	LD	1, _COMP_SIZ
-; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SD	1, _FST_1
-; CODE_NUMERIC_LITERAL DN_UNIVERSAL_INTEGER
 	LI	64
 	SD	1, _LST_1
 	LD	1, _LST_1
@@ -679,20 +616,19 @@ LST_1 = $
 	rd 1 
   end virtual
 end namespace
-VAR GOTO_PENDING_disp, Q			; variable array : pointeur aux data
-VAR GOTO_PENDING__u, Q			; variable array : useinfo pointeur au rec info
+VAR GOTO_PENDING_disp, Q
+VAR GOTO_PENDING__u, Q
 	LA 1, _GOTO_PENDING__type.use__info
-	SA	1, GOTO_PENDING__u			; array info ptr at __u
+	SA	1, GOTO_PENDING__u
 	LD	1, _GOTO_PENDING__type.SIZ__
 	LI	8
 	DIV
 	CO_VAR
-	SA	1, GOTO_PENDING_disp			; array data ptr at _disp
+	SA	1, GOTO_PENDING_disp
 
  hexa_show ' disp ', GOTO_PENDING_disp
  hexa_show 'var elab GOTO_PEND_TOP ', $
-VAR GOTO_PEND_TOP_disp, D			; variable entiere
-; CODE_NUMERIC_LITERAL DN_INTEGER
+VAR GOTO_PEND_TOP_disp, D
 	LI	0
 	DUP
 	LD	1, STANDARD.EXPANDER_L1.UTILS._GOTO_LBL_IDX.FST
@@ -706,8 +642,7 @@ VAR GOTO_PEND_TOP_disp, D			; variable entiere
 
  hexa_show ' disp ', GOTO_PEND_TOP_disp
  hexa_show 'var elab GOTO_PEND_BASE ', $
-VAR GOTO_PEND_BASE_disp, D			; variable entiere
-; CODE_NUMERIC_LITERAL DN_INTEGER
+VAR GOTO_PEND_BASE_disp, D
 	LI	0
 	DUP
 	LD	1, STANDARD.EXPANDER_L1.UTILS._GOTO_LBL_IDX.FST
@@ -720,24 +655,23 @@ VAR GOTO_PEND_BASE_disp, D			; variable entiere
 	SD  1,	STANDARD.EXPANDER_L1.UTILS.GOTO_PEND_BASE_disp
 
  hexa_show ' disp ', GOTO_PEND_BASE_disp
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
+
+
  hexa_show 'var elab NO_SUBP_PARAMS ', $
-VAR NO_SUBP_PARAMS_disp, B			; variable bool char enum
+VAR NO_SUBP_PARAMS_disp, B
 	LI	1
 	SB  1,	STANDARD.EXPANDER_L1.UTILS.NO_SUBP_PARAMS_disp
 
  hexa_show ' disp ', NO_SUBP_PARAMS_disp
  hexa_show 'var elab ENCLOSING_BODY ', $
-VAR ENCLOSING_BODY_disp, Q			; variable record : pointeur aux data record
-VAR ENCLOSING_BODY__u, Q			; variable record : pointeur aux useinfo
+VAR ENCLOSING_BODY_disp, Q
+VAR ENCLOSING_BODY__u, Q
 VAR ENCLOSING_BODY__dat, STANDARD.IDL._TREE.size
 	LVA	1, ENCLOSING_BODY__dat
-	SA	1, ENCLOSING_BODY_disp			; record fin
+	SA	1, ENCLOSING_BODY_disp
 	LVA	1, STANDARD.IDL._TREE.SIZ__
 	SA	1, ENCLOSING_BODY__u
 	LA  1, ENCLOSING_BODY_disp
-					; store represented component PT range 0 .. 1 width 2
 	DUP
 	LD
 	LI	0
@@ -748,21 +682,20 @@ VAR ENCLOSING_BODY__dat, STANDARD.IDL._TREE.size
 
  hexa_show ' disp ', ENCLOSING_BODY_disp
  hexa_show 'var elab CHOICE_OTHERS_FLAG ', $
-VAR CHOICE_OTHERS_FLAG_disp, B		; variable bool char enum
+VAR CHOICE_OTHERS_FLAG_disp, B
 	LI	0
 	SB  1,	STANDARD.EXPANDER_L1.UTILS.CHOICE_OTHERS_FLAG_disp
 
  hexa_show ' disp ', CHOICE_OTHERS_FLAG_disp
  hexa_show 'var elab LOOP_STM_S ', $
-VAR LOOP_STM_S_disp, Q			; variable record : pointeur aux data record
-VAR LOOP_STM_S__u, Q			; variable record : pointeur aux useinfo
+VAR LOOP_STM_S_disp, Q
+VAR LOOP_STM_S__u, Q
 VAR LOOP_STM_S__dat, STANDARD.IDL._TREE.size
 	LVA	1, LOOP_STM_S__dat
-	SA	1, LOOP_STM_S_disp			; record fin
+	SA	1, LOOP_STM_S_disp
 	LVA	1, STANDARD.IDL._TREE.SIZ__
 	SA	1, LOOP_STM_S__u
 	LA  1, LOOP_STM_S_disp
-					; store represented component PT range 0 .. 1 width 2
 	DUP
 	LD
 	LI	0
@@ -773,23 +706,22 @@ VAR LOOP_STM_S__dat, STANDARD.IDL._TREE.size
 
  hexa_show ' disp ', LOOP_STM_S_disp
  hexa_show 'var elab LOOP_OP_INC_DEC ', $
-VAR LOOP_OP_INC_DEC_disp, B			; variable entiere
+VAR LOOP_OP_INC_DEC_disp, B
 
  hexa_show ' disp ', LOOP_OP_INC_DEC_disp
  hexa_show 'var elab LOOP_OP_GT_LT ', $
-VAR LOOP_OP_GT_LT_disp, B			; variable entiere
+VAR LOOP_OP_GT_LT_disp, B
 
  hexa_show ' disp ', LOOP_OP_GT_LT_disp
  hexa_show 'var elab TYPE_SYMREP ', $
-VAR TYPE_SYMREP_disp, Q			; variable record : pointeur aux data record
-VAR TYPE_SYMREP__u, Q			; variable record : pointeur aux useinfo
+VAR TYPE_SYMREP_disp, Q
+VAR TYPE_SYMREP__u, Q
 VAR TYPE_SYMREP__dat, STANDARD.IDL._TREE.size
 	LVA	1, TYPE_SYMREP__dat
-	SA	1, TYPE_SYMREP_disp			; record fin
+	SA	1, TYPE_SYMREP_disp
 	LVA	1, STANDARD.IDL._TREE.SIZ__
 	SA	1, TYPE_SYMREP__u
 	LA  1, TYPE_SYMREP_disp
-					; store represented component PT range 0 .. 1 width 2
 	DUP
 	LD
 	LI	0
@@ -799,217 +731,211 @@ VAR TYPE_SYMREP__dat, STANDARD.IDL._TREE.size
 	SD
 
  hexa_show ' disp ', TYPE_SYMREP_disp
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 STR OPERAND_OVERFLOW__exc, "OPERAND_OVERFLOW"
 ; EXC_LBL	L37
 end namespace
 
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
+
+
+
 EXPRESSIONS = 'EXPRESSIONS'
-namespace EXPRESSIONS			;---------- PACKAGE DECLARATION
-					; CODE_PACKAGE_SPEC
+namespace EXPRESSIONS
+
  hexa_show ' spec ', $
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ; EXC_LBL	L78
 end namespace
-
 include 'EXPANDER-UTILS.FINC'
 display 'including sub unit EXPANDER-UTILS.FINC', 10
 REPRESENTED_ITEMS = 'REPRESENTED_ITEMS'
-namespace REPRESENTED_ITEMS			;---------- PACKAGE DECLARATION
-					; CODE_PACKAGE_SPEC
+namespace REPRESENTED_ITEMS
+
  hexa_show ' spec ', $
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
+
+
+
+
+
+
+
+
+
+
 ; EXC_LBL	L89
 end namespace
-
 include 'EXPANDER-REPRESENTED_ITEMS.FINC'
 display 'including sub unit EXPANDER-REPRESENTED_ITEMS.FINC', 10
 DECLARATIONS = 'DECLARATIONS'
-namespace DECLARATIONS			;---------- PACKAGE DECLARATION
-					; CODE_PACKAGE_SPEC
+namespace DECLARATIONS
+
  hexa_show ' spec ', $
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ; EXC_LBL	L115
 end namespace
-
 include 'EXPANDER-DECLARATIONS.FINC'
 display 'including sub unit EXPANDER-DECLARATIONS.FINC', 10
 INSTRUCTIONS = 'INSTRUCTIONS'
-namespace INSTRUCTIONS			;---------- PACKAGE DECLARATION
-					; CODE_PACKAGE_SPEC
+namespace INSTRUCTIONS
+
  hexa_show ' spec ', $
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ; EXC_LBL	L149
 end namespace
-
 include 'EXPANDER-EXPRESSIONS.FINC'
 display 'including sub unit EXPANDER-EXPRESSIONS.FINC', 10
 STRUCTURES = 'STRUCTURES'
-namespace STRUCTURES			;---------- PACKAGE DECLARATION
-					; CODE_PACKAGE_SPEC
+namespace STRUCTURES
+
  hexa_show ' spec ', $
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
-					; sub program entry decl (in instantiation FALSE )
+
+
+
+
+
+
+
+
 ; EXC_LBL	L158
 end namespace
-
 include 'EXPANDER-STRUCTURES.FINC'
 display 'including sub unit EXPANDER-STRUCTURES.FINC', 10
 include 'EXPANDER-INSTRUCTIONS.FINC'
 display 'including sub unit EXPANDER-INSTRUCTIONS.FINC', 10
 
 if defined CODE_ROOT_L38_
-PRO	CODE_ROOT_L38				;---------- PRO CODE_ROOT
+PRO	CODE_ROOT_L38
  hexa_show 'CODE_ROOT_L38 ', $
-PRMS					;    debut parametrage
-	PRM ROOT_ofs				; in
-endPRMS					;    fin parametrage
-ELB 2					;    BODY ELAB
+PRMS
+	PRM ROOT_ofs
+endPRMS
+ELB 2
  hexa_show 'var elab USER_ROOT ', $
-VAR USER_ROOT_disp, Q			; variable record : pointeur aux data record
-VAR USER_ROOT__u, Q				; variable record : pointeur aux useinfo
+VAR USER_ROOT_disp, Q
+VAR USER_ROOT__u, Q
 VAR USER_ROOT__dat, STANDARD.IDL._TREE.size
 	LVA	2, USER_ROOT__dat
-	SA	2, USER_ROOT_disp			; record fin
+	SA	2, USER_ROOT_disp
 	LVA	2, STANDARD.IDL._TREE.SIZ__
 	SA	2, USER_ROOT__u
 	LA  2, USER_ROOT_disp
@@ -1022,7 +948,7 @@ VAR	ANON_419_33__dat, STANDARD.IDL._TREE.size
 	LA  0, STANDARD.IDL._TREE.use__info
 	SA  2, ANON_419_33__u
 	LVA 2, ANON_419_33_disp
-					; doublet resultat record anonyme
+
 	LA  2,	-ROOT_ofs
 	LI  1
 	CALL	STANDARD.IDL. ,D_L17
@@ -1031,11 +957,11 @@ VAR	ANON_419_33__dat, STANDARD.IDL._TREE.size
 
  hexa_show ' disp ', USER_ROOT_disp
  hexa_show 'var elab COMPILATION ', $
-VAR COMPILATION_disp, Q			; variable record : pointeur aux data record
-VAR COMPILATION__u, Q			; variable record : pointeur aux useinfo
+VAR COMPILATION_disp, Q
+VAR COMPILATION__u, Q
 VAR COMPILATION__dat, STANDARD.IDL._TREE.size
 	LVA	2, COMPILATION__dat
-	SA	2, COMPILATION_disp			; record fin
+	SA	2, COMPILATION_disp
 	LVA	2, STANDARD.IDL._TREE.SIZ__
 	SA	2, COMPILATION__u
 	LA  2, COMPILATION_disp
@@ -1048,8 +974,8 @@ VAR	ANON_420_35__dat, STANDARD.IDL._TREE.size
 	LA  0, STANDARD.IDL._TREE.use__info
 	SA  2, ANON_420_35__u
 	LVA 2, ANON_420_35_disp
-					; doublet resultat record anonyme
-	LVA  2,	STANDARD.EXPANDER_L1.CODE_ROOT_L38.USER_ROOT_disp	; array actual
+
+	LVA  2,	STANDARD.EXPANDER_L1.CODE_ROOT_L38.USER_ROOT_disp
 	LI  158
 	CALL	STANDARD.IDL. ,D_L17
 	LA
@@ -1057,11 +983,11 @@ VAR	ANON_420_35__dat, STANDARD.IDL._TREE.size
 
  hexa_show ' disp ', COMPILATION_disp
  hexa_show 'var elab COMPLTN_UNIT_S ', $
-VAR COMPLTN_UNIT_S_disp, Q			; variable record : pointeur aux data record
-VAR COMPLTN_UNIT_S__u, Q			; variable record : pointeur aux useinfo
+VAR COMPLTN_UNIT_S_disp, Q
+VAR COMPLTN_UNIT_S__u, Q
 VAR COMPLTN_UNIT_S__dat, STANDARD.IDL._TREE.size
 	LVA	2, COMPLTN_UNIT_S__dat
-	SA	2, COMPLTN_UNIT_S_disp			; record fin
+	SA	2, COMPLTN_UNIT_S_disp
 	LVA	2, STANDARD.IDL._TREE.SIZ__
 	SA	2, COMPLTN_UNIT_S__u
 	LA  2, COMPLTN_UNIT_S_disp
@@ -1074,24 +1000,24 @@ VAR	ANON_421_39__dat, STANDARD.IDL._TREE.size
 	LA  0, STANDARD.IDL._TREE.use__info
 	SA  2, ANON_421_39__u
 	LVA 2, ANON_421_39_disp
-					; doublet resultat record anonyme
-	LVA  2,	STANDARD.EXPANDER_L1.CODE_ROOT_L38.COMPILATION_disp	; array actual
+
+	LVA  2,	STANDARD.EXPANDER_L1.CODE_ROOT_L38.COMPILATION_disp
 	LI  136
 	CALL	STANDARD.IDL. ,D_L17
 	LA
 	BLKMOV
 
  hexa_show ' disp ', COMPLTN_UNIT_S_disp
-					;    end elab
-begin:					;---------- BDY INSTRUCTIONS
+
+begin:
 namespace	BLOCK__1
-ELB 3					;    BODY ELAB
+ELB 3
  hexa_show 'var elab COMPLTN_UNIT_SEQ ', $
-VAR COMPLTN_UNIT_SEQ_disp, Q			; variable record : pointeur aux data record
-VAR COMPLTN_UNIT_SEQ__u, Q			; variable record : pointeur aux useinfo
+VAR COMPLTN_UNIT_SEQ_disp, Q
+VAR COMPLTN_UNIT_SEQ__u, Q
 VAR COMPLTN_UNIT_SEQ__dat, STANDARD.IDL._SEQ_TYPE.size
 	LVA	3, COMPLTN_UNIT_SEQ__dat
-	SA	3, COMPLTN_UNIT_SEQ_disp			; record fin
+	SA	3, COMPLTN_UNIT_SEQ_disp
 	LVA	3, STANDARD.IDL._SEQ_TYPE.SIZ__
 	SA	3, COMPLTN_UNIT_SEQ__u
 	LA  3, COMPLTN_UNIT_SEQ_disp
@@ -1104,23 +1030,22 @@ VAR	ANON_424_38__dat, STANDARD.IDL._SEQ_TYPE.size
 	LA  0, STANDARD.IDL._SEQ_TYPE.use__info
 	SA  3, ANON_424_38__u
 	LVA 3, ANON_424_38_disp
-					; doublet resultat record anonyme
-	LVA  2,	STANDARD.EXPANDER_L1.CODE_ROOT_L38.COMPLTN_UNIT_S_disp	; array actual
+
+	LVA  2,	STANDARD.EXPANDER_L1.CODE_ROOT_L38.COMPLTN_UNIT_S_disp
 	CALL	STANDARD.IDL. ,LIST_L22
 	LA
 	BLKMOV
 
  hexa_show ' disp ', COMPLTN_UNIT_SEQ_disp
  hexa_show 'var elab COMPLTN_UNIT ', $
-VAR COMPLTN_UNIT_disp, Q			; variable record : pointeur aux data record
-VAR COMPLTN_UNIT__u, Q			; variable record : pointeur aux useinfo
+VAR COMPLTN_UNIT_disp, Q
+VAR COMPLTN_UNIT__u, Q
 VAR COMPLTN_UNIT__dat, STANDARD.IDL._TREE.size
 	LVA	3, COMPLTN_UNIT__dat
-	SA	3, COMPLTN_UNIT_disp			; record fin
+	SA	3, COMPLTN_UNIT_disp
 	LVA	3, STANDARD.IDL._TREE.SIZ__
 	SA	3, COMPLTN_UNIT__u
 	LA  3, COMPLTN_UNIT_disp
-					; store represented component PT range 0 .. 1 width 2
 	DUP
 	LD
 	LI	0
@@ -1130,10 +1055,10 @@ VAR COMPLTN_UNIT__dat, STANDARD.IDL._TREE.size
 	SD
 
  hexa_show ' disp ', COMPLTN_UNIT_disp
-					;    end elab
-begin:					;---------- BDY INSTRUCTIONS
+
+begin:
 LOOP__2:
-	LI	0					; lieu resultat sur pile
+	LI	0
 	LVA 3,	COMPLTN_UNIT_SEQ_disp
 	CALL	STANDARD.IDL. ,IS_EMPTY_L23
 	LI	1
@@ -1142,7 +1067,6 @@ LOOP__2:
 	LVA  3,	STANDARD.EXPANDER_L1.CODE_ROOT_L38.BLOCK__1.COMPLTN_UNIT_disp
 	LVA  3,	STANDARD.EXPANDER_L1.CODE_ROOT_L38.BLOCK__1.COMPLTN_UNIT_SEQ_disp
 	CALL	STANDARD.IDL. ,POP_L24
-; CODE & concat _STRING
 VAR	ANON_429_32_L164_G_data, Q
 VAR	ANON_429_32_L164_G_info, Q
 VAR	ANON_429_49_L164_D_data, Q
@@ -1199,7 +1123,7 @@ VAR	ANON_429_61__dat, STANDARD.IDL._TREE.size
 	LA  0, STANDARD.IDL._TREE.use__info
 	SA  3, ANON_429_61__u
 	LVA 3, ANON_429_61_disp
-					; doublet resultat record anonyme
+
 	LVA 3,	COMPLTN_UNIT_disp
 	LI  143
 	CALL	STANDARD.IDL. ,D_L17
@@ -1252,102 +1176,102 @@ VAR	ANON_429_61__dat, STANDARD.IDL._TREE.size
 	CALL	STANDARD.EXPANDER_L1.STRUCTURES. ,CODE_COMPILATION_UNIT_L150
 	CALL	STANDARD.EXPANDER_L1.UTILS. ,CLOSE_OUTPUT_FILE_L8
 	BRA	LOOP__2
-L163:					; post loop LOOP__2
+L163:
 	UNLINKR 3
 endPRO
 ret_lbl:
 	UNLINKR 2
 	RTD	prm_siz
 excep:
-endPRO					;---------- end PRO CODE_ROOT
+endPRO
 end if
 
 if defined CODE_CONTEXT_PRAGMA_L165_
-PRO	CODE_CONTEXT_PRAGMA_L165			;---------- PRO CODE_CONTEXT_PRAGMA
+PRO	CODE_CONTEXT_PRAGMA_L165
  hexa_show 'CODE_CONTEXT_PRAGMA_L165 ', $
-PRMS					;    debut parametrage
-	PRM CONTEXT_PRAGMA_ofs			; in
-endPRMS					;    fin parametrage
-ELB 2					;    BODY ELAB
-					;    end elab
-begin:					;---------- BDY INSTRUCTIONS
+PRMS
+	PRM CONTEXT_PRAGMA_ofs
+endPRMS
+ELB 2
+
+begin:
 ret_lbl:
 	UNLINKR 2
 	RTD	prm_siz
 excep:
-endPRO					;---------- end PRO CODE_CONTEXT_PRAGMA
+endPRO
 end if
 
 if defined CODE_BLOCK_MASTER_L168_
-PRO	CODE_BLOCK_MASTER_L168			;---------- PRO CODE_BLOCK_MASTER
+PRO	CODE_BLOCK_MASTER_L168
  hexa_show 'CODE_BLOCK_MASTER_L168 ', $
-PRMS					;    debut parametrage
-	PRM BLOCK_MASTER_ofs			; in
-endPRMS					;    fin parametrage
-ELB 2					;    BODY ELAB
-					;    end elab
-begin:					;---------- BDY INSTRUCTIONS
+PRMS
+	PRM BLOCK_MASTER_ofs
+endPRMS
+ELB 2
+
+begin:
 	LA  2,	-BLOCK_MASTER_ofs
-STR STR_L171, "CODE_BLOCK_MASTER (tasking/masters hors perimetre)"	; constante string="CODE_BLOCK_MASTER (tasking/masters hors perimetre)"
+STR STR_L171, "CODE_BLOCK_MASTER (tasking/masters hors perimetre)"
 	LCA	STR_L171.data_ptr
 	CALL	STANDARD.EXPANDER_L1.UTILS. ,TROU_L2
 ret_lbl:
 	UNLINKR 2
 	RTD	prm_siz
 excep:
-endPRO					;---------- end PRO CODE_BLOCK_MASTER
+endPRO
 end if
 
 if defined CODE_DERIVED_SUBPROG_L172_
-PRO	CODE_DERIVED_SUBPROG_L172			;---------- PRO CODE_DERIVED_SUBPROG
+PRO	CODE_DERIVED_SUBPROG_L172
  hexa_show 'CODE_DERIVED_SUBPROG_L172 ', $
-PRMS					;    debut parametrage
-	PRM DERIVED_SUBPROG_ofs			; in
-endPRMS					;    fin parametrage
-ELB 2					;    BODY ELAB
-					;    end elab
-begin:					;---------- BDY INSTRUCTIONS
+PRMS
+	PRM DERIVED_SUBPROG_ofs
+endPRMS
+ELB 2
+
+begin:
 	LA  2,	-DERIVED_SUBPROG_ofs
-STR STR_L175, "CODE_DERIVED_SUBPROG"		; constante string="CODE_DERIVED_SUBPROG"
+STR STR_L175, "CODE_DERIVED_SUBPROG"
 	LCA	STR_L175.data_ptr
 	CALL	STANDARD.EXPANDER_L1.UTILS. ,TROU_L2
 ret_lbl:
 	UNLINKR 2
 	RTD	prm_siz
 excep:
-endPRO					;---------- end PRO CODE_DERIVED_SUBPROG
+endPRO
 end if
 
 if defined CODE_IMPLICIT_NOT_EQ_L176_
-PRO	CODE_IMPLICIT_NOT_EQ_L176			;---------- PRO CODE_IMPLICIT_NOT_EQ
+PRO	CODE_IMPLICIT_NOT_EQ_L176
  hexa_show 'CODE_IMPLICIT_NOT_EQ_L176 ', $
-PRMS					;    debut parametrage
-	PRM IMPLICIT_NOT_EQ_ofs			; in
-endPRMS					;    fin parametrage
-ELB 2					;    BODY ELAB
-					;    end elab
-begin:					;---------- BDY INSTRUCTIONS
+PRMS
+	PRM IMPLICIT_NOT_EQ_ofs
+endPRMS
+ELB 2
+
+begin:
 ret_lbl:
 	UNLINKR 2
 	RTD	prm_siz
 excep:
-endPRO					;---------- end PRO CODE_IMPLICIT_NOT_EQ
+endPRO
 end if
 
 if defined CODE_SUBTYPE_INDICATION_L179_
-PRO	CODE_SUBTYPE_INDICATION_L179		;---------- PRO CODE_SUBTYPE_INDICATION
+PRO	CODE_SUBTYPE_INDICATION_L179
  hexa_show 'CODE_SUBTYPE_INDICATION_L179 ', $
-PRMS					;    debut parametrage
-	PRM SUBTYPE_INDICATION_ofs			; in
-	PRM TYPE_DECL_ofs				; in
-endPRMS					;    fin parametrage
-ELB 2					;    BODY ELAB
+PRMS
+	PRM SUBTYPE_INDICATION_ofs
+	PRM TYPE_DECL_ofs
+endPRMS
+ELB 2
  hexa_show 'var elab TYPE_ID ', $
-VAR TYPE_ID_disp, Q				; variable record : pointeur aux data record
-VAR TYPE_ID__u, Q				; variable record : pointeur aux useinfo
+VAR TYPE_ID_disp, Q
+VAR TYPE_ID__u, Q
 VAR TYPE_ID__dat, STANDARD.IDL._TREE.size
 	LVA	2, TYPE_ID__dat
-	SA	2, TYPE_ID_disp				; record fin
+	SA	2, TYPE_ID_disp
 	LVA	2, STANDARD.IDL._TREE.SIZ__
 	SA	2, TYPE_ID__u
 	LA  2, TYPE_ID_disp
@@ -1360,7 +1284,7 @@ VAR	ANON_490_25__dat, STANDARD.IDL._TREE.size
 	LA  0, STANDARD.IDL._TREE.use__info
 	SA  2, ANON_490_25__u
 	LVA 2, ANON_490_25_disp
-					; doublet resultat record anonyme
+
 	LA  2,	-TYPE_DECL_ofs
 	LI  20
 	CALL	STANDARD.IDL. ,D_L17
@@ -1369,11 +1293,11 @@ VAR	ANON_490_25__dat, STANDARD.IDL._TREE.size
 
  hexa_show ' disp ', TYPE_ID_disp
  hexa_show 'var elab INTEGER_SPEC ', $
-VAR INTEGER_SPEC_disp, Q			; variable record : pointeur aux data record
-VAR INTEGER_SPEC__u, Q			; variable record : pointeur aux useinfo
+VAR INTEGER_SPEC_disp, Q
+VAR INTEGER_SPEC__u, Q
 VAR INTEGER_SPEC__dat, STANDARD.IDL._TREE.size
 	LVA	2, INTEGER_SPEC__dat
-	SA	2, INTEGER_SPEC_disp			; record fin
+	SA	2, INTEGER_SPEC_disp
 	LVA	2, STANDARD.IDL._TREE.SIZ__
 	SA	2, INTEGER_SPEC__u
 	LA  2, INTEGER_SPEC_disp
@@ -1386,7 +1310,7 @@ VAR	ANON_491_30__dat, STANDARD.IDL._TREE.size
 	LA  0, STANDARD.IDL._TREE.use__info
 	SA  2, ANON_491_30__u
 	LVA 2, ANON_491_30_disp
-					; doublet resultat record anonyme
+
 	LVA 2,	TYPE_ID_disp
 	LI  33
 	CALL	STANDARD.IDL. ,D_L17
@@ -1394,10 +1318,9 @@ VAR	ANON_491_30__dat, STANDARD.IDL._TREE.size
 	BLKMOV
 
  hexa_show ' disp ', INTEGER_SPEC_disp
-					;    end elab
-begin:					;---------- BDY INSTRUCTIONS
+
+begin:
 	LD	1, STANDARD.EXPANDER_L1.UTILS.CUR_LEVEL_disp
-; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
 	LVA 2,	INTEGER_SPEC_disp
 	LI  28
 	CALL	STANDARD.IDL. ,DI_L20
@@ -1409,19 +1332,18 @@ ret_lbl:
 	UNLINKR 2
 	RTD	prm_siz
 excep:
-endPRO					;---------- end PRO CODE_SUBTYPE_INDICATION
+endPRO
 end if
 
 if defined CODE_OBJECT_L39_
-PRO	CODE_OBJECT_L39				;---------- PRO CODE_OBJECT
+PRO	CODE_OBJECT_L39
  hexa_show 'CODE_OBJECT_L39 ', $
-PRMS					;    debut parametrage
-	PRM OBJECT_ofs				; in
-endPRMS					;    fin parametrage
-ELB 2					;    BODY ELAB
-					;    end elab
-begin:					;---------- BDY INSTRUCTIONS
-					; debut case
+PRMS
+	PRM OBJECT_ofs
+endPRMS
+ELB 2
+
+begin:
 	LA 2, -OBJECT_ofs
 	LA	-1, 0
 	LD
@@ -1460,7 +1382,6 @@ begin:					;---------- BDY INSTRUCTIONS
 	BRA	L191
 L185:
 	DROP
-; CODE & concat _STRING
 VAR	ANON_505_17_L192_G_data, Q
 VAR	ANON_505_17_L192_G_info, Q
 VAR	ANON_505_124_L192_D_data, Q
@@ -1475,7 +1396,6 @@ namespace ANON_505_17_L192_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-; CODE & concat _STRING
 VAR	ANON_505_17_L193_G_data, Q
 VAR	ANON_505_17_L193_G_info, Q
 VAR	ANON_505_85_L193_D_data, Q
@@ -1490,7 +1410,6 @@ namespace ANON_505_17_L193_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-; CODE & concat _STRING
 VAR	ANON_505_17_L194_G_data, Q
 VAR	ANON_505_17_L194_G_info, Q
 VAR	ANON_505_79_L194_D_data, Q
@@ -1505,7 +1424,6 @@ namespace ANON_505_17_L194_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-; CODE & concat _STRING
 VAR	ANON_505_17_L195_G_data, Q
 VAR	ANON_505_17_L195_G_info, Q
 VAR	ANON_505_73_L195_D_data, Q
@@ -1520,7 +1438,6 @@ namespace ANON_505_17_L195_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-; CODE & concat _STRING
 VAR	ANON_505_17_L196_G_data, Q
 VAR	ANON_505_17_L196_G_info, Q
 VAR	ANON_505_31_L196_D_data, Q
@@ -1535,7 +1452,6 @@ namespace ANON_505_17_L196_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-; CODE & concat _STRING
 VAR	ANON_505_17_L197_G_data, Q
 VAR	ANON_505_17_L197_G_info, Q
 VAR	ANON_505_23_L197_D_data, Q
@@ -1585,7 +1501,7 @@ end namespace
 	INC
 	CLAMP0
 	SA  2, ANON_505_17_L197_G_len
-STR ANON_505_23_L197_D, "LA "			; constante string="LA "
+STR ANON_505_23_L197_D, "LA "
 	LCA	ANON_505_23_L197_D.data_ptr
 	DUP
 	LA  ,  0
@@ -1652,7 +1568,7 @@ end namespace
 	LVA 2, ANON_505_31_info.SIZ__
 	SA  2, ANON_505_31__u
 	LVA 2, ANON_505_31_disp
-	LI	0					; lieu resultat sur pile
+	LI	0
 	LA  2,	-OBJECT_ofs
 	LI  28
 	CALL	STANDARD.IDL. ,DI_L21
@@ -1886,7 +1802,7 @@ VAR	ANON_505_97__dat, STANDARD.IDL._TREE.size
 	LA  0, STANDARD.IDL._TREE.use__info
 	SA  2, ANON_505_97__u
 	LVA 2, ANON_505_97_disp
-					; doublet resultat record anonyme
+
 	LA  2,	-OBJECT_ofs
 	LI  13
 	CALL	STANDARD.IDL. ,D_L17
@@ -1945,7 +1861,7 @@ VAR	ANON_505_97__dat, STANDARD.IDL._TREE.size
 	INC
 	CLAMP0
 	SA  2, ANON_505_17_L192_G_len
-STR ANON_505_124_L192_D, "_disp"		; constante string="_disp"
+STR ANON_505_124_L192_D, "_disp"
 	LCA	ANON_505_124_L192_D.data_ptr
 	DUP
 	LA  ,  0
@@ -1994,7 +1910,6 @@ STR ANON_505_124_L192_D, "_disp"		; constante string="_disp"
 	BRA	L184
 L186:
 	DROP
-; CODE & concat _STRING
 VAR	ANON_508_17_L198_G_data, Q
 VAR	ANON_508_17_L198_G_info, Q
 VAR	ANON_508_86_L198_D_data, Q
@@ -2009,7 +1924,6 @@ namespace ANON_508_17_L198_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-; CODE & concat _STRING
 VAR	ANON_508_17_L199_G_data, Q
 VAR	ANON_508_17_L199_G_info, Q
 VAR	ANON_508_80_L199_D_data, Q
@@ -2024,7 +1938,6 @@ namespace ANON_508_17_L199_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-; CODE & concat _STRING
 VAR	ANON_508_17_L200_G_data, Q
 VAR	ANON_508_17_L200_G_info, Q
 VAR	ANON_508_74_L200_D_data, Q
@@ -2039,7 +1952,6 @@ namespace ANON_508_17_L200_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-; CODE & concat _STRING
 VAR	ANON_508_17_L201_G_data, Q
 VAR	ANON_508_17_L201_G_info, Q
 VAR	ANON_508_32_L201_D_data, Q
@@ -2054,7 +1966,6 @@ namespace ANON_508_17_L201_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-; CODE & concat _STRING
 VAR	ANON_508_17_L202_G_data, Q
 VAR	ANON_508_17_L202_G_info, Q
 VAR	ANON_508_23_L202_D_data, Q
@@ -2104,7 +2015,7 @@ end namespace
 	INC
 	CLAMP0
 	SA  2, ANON_508_17_L202_G_len
-STR ANON_508_23_L202_D, "LVA "		; constante string="LVA "
+STR ANON_508_23_L202_D, "LVA "
 	LCA	ANON_508_23_L202_D.data_ptr
 	DUP
 	LA  ,  0
@@ -2171,7 +2082,7 @@ end namespace
 	LVA 2, ANON_508_32_info.SIZ__
 	SA  2, ANON_508_32__u
 	LVA 2, ANON_508_32_disp
-	LI	0					; lieu resultat sur pile
+	LI	0
 	LA  2,	-OBJECT_ofs
 	LI  28
 	CALL	STANDARD.IDL. ,DI_L21
@@ -2405,7 +2316,7 @@ VAR	ANON_508_98__dat, STANDARD.IDL._TREE.size
 	LA  0, STANDARD.IDL._TREE.use__info
 	SA  2, ANON_508_98__u
 	LVA 2, ANON_508_98_disp
-					; doublet resultat record anonyme
+
 	LA  2,	-OBJECT_ofs
 	LI  13
 	CALL	STANDARD.IDL. ,D_L17
@@ -2457,7 +2368,6 @@ VAR	ANON_508_98__dat, STANDARD.IDL._TREE.size
 	BRA	L184
 L187:
 	DROP
-; CODE & concat _STRING
 VAR	ANON_511_17_L203_G_data, Q
 VAR	ANON_511_17_L203_G_info, Q
 VAR	ANON_511_86_L203_D_data, Q
@@ -2472,7 +2382,6 @@ namespace ANON_511_17_L203_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-; CODE & concat _STRING
 VAR	ANON_511_17_L204_G_data, Q
 VAR	ANON_511_17_L204_G_info, Q
 VAR	ANON_511_80_L204_D_data, Q
@@ -2487,7 +2396,6 @@ namespace ANON_511_17_L204_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-; CODE & concat _STRING
 VAR	ANON_511_17_L205_G_data, Q
 VAR	ANON_511_17_L205_G_info, Q
 VAR	ANON_511_74_L205_D_data, Q
@@ -2502,7 +2410,6 @@ namespace ANON_511_17_L205_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-; CODE & concat _STRING
 VAR	ANON_511_17_L206_G_data, Q
 VAR	ANON_511_17_L206_G_info, Q
 VAR	ANON_511_32_L206_D_data, Q
@@ -2517,7 +2424,6 @@ namespace ANON_511_17_L206_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-; CODE & concat _STRING
 VAR	ANON_511_17_L207_G_data, Q
 VAR	ANON_511_17_L207_G_info, Q
 VAR	ANON_511_23_L207_D_data, Q
@@ -2567,7 +2473,7 @@ end namespace
 	INC
 	CLAMP0
 	SA  2, ANON_511_17_L207_G_len
-STR ANON_511_23_L207_D, "LVA "		; constante string="LVA "
+STR ANON_511_23_L207_D, "LVA "
 	LCA	ANON_511_23_L207_D.data_ptr
 	DUP
 	LA  ,  0
@@ -2634,7 +2540,7 @@ end namespace
 	LVA 2, ANON_511_32_info.SIZ__
 	SA  2, ANON_511_32__u
 	LVA 2, ANON_511_32_disp
-	LI	0					; lieu resultat sur pile
+	LI	0
 	LA  2,	-OBJECT_ofs
 	LI  28
 	CALL	STANDARD.IDL. ,DI_L21
@@ -2868,7 +2774,7 @@ VAR	ANON_511_98__dat, STANDARD.IDL._TREE.size
 	LA  0, STANDARD.IDL._TREE.use__info
 	SA  2, ANON_511_98__u
 	LVA 2, ANON_511_98_disp
-					; doublet resultat record anonyme
+
 	LA  2,	-OBJECT_ofs
 	LI  13
 	CALL	STANDARD.IDL. ,D_L17
@@ -2933,7 +2839,7 @@ VAR	ANON_517_20__dat, STANDARD.IDL._TREE.size
 	LA  0, STANDARD.IDL._TREE.use__info
 	SA  2, ANON_517_20__u
 	LVA 2, ANON_517_20_disp
-					; doublet resultat record anonyme
+
 	LA  2,	-OBJECT_ofs
 	LI  89
 	CALL	STANDARD.IDL. ,D_L17
@@ -2941,7 +2847,6 @@ VAR	ANON_517_20__dat, STANDARD.IDL._TREE.size
 	BRA	L184
 L190:
 	DROP
-; CODE & concat _STRING
 VAR	ANON_520_17_L208_G_data, Q
 VAR	ANON_520_17_L208_G_info, Q
 VAR	ANON_521_55_L208_D_data, Q
@@ -2956,7 +2861,6 @@ namespace ANON_520_17_L208_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-; CODE & concat _STRING
 VAR	ANON_520_17_L209_G_data, Q
 VAR	ANON_520_17_L209_G_info, Q
 VAR	ANON_521_16_L209_D_data, Q
@@ -2971,7 +2875,6 @@ namespace ANON_520_17_L209_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-; CODE & concat _STRING
 VAR	ANON_520_17_L210_G_data, Q
 VAR	ANON_520_17_L210_G_info, Q
 VAR	ANON_521_10_L210_D_data, Q
@@ -2986,7 +2889,6 @@ namespace ANON_520_17_L210_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-; CODE & concat _STRING
 VAR	ANON_520_17_L211_G_data, Q
 VAR	ANON_520_17_L211_G_info, Q
 VAR	ANON_520_74_L211_D_data, Q
@@ -3001,7 +2903,6 @@ namespace ANON_520_17_L211_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-; CODE & concat _STRING
 VAR	ANON_520_17_L212_G_data, Q
 VAR	ANON_520_17_L212_G_info, Q
 VAR	ANON_520_32_L212_D_data, Q
@@ -3016,7 +2917,6 @@ namespace ANON_520_17_L212_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-; CODE & concat _STRING
 VAR	ANON_520_17_L213_G_data, Q
 VAR	ANON_520_17_L213_G_info, Q
 VAR	ANON_520_23_L213_D_data, Q
@@ -3066,7 +2966,7 @@ end namespace
 	INC
 	CLAMP0
 	SA  2, ANON_520_17_L213_G_len
-STR ANON_520_23_L213_D, "LIA "		; constante string="LIA "
+STR ANON_520_23_L213_D, "LIA "
 	LCA	ANON_520_23_L213_D.data_ptr
 	DUP
 	LA  ,  0
@@ -3133,7 +3033,7 @@ end namespace
 	LVA 2, ANON_520_32_info.SIZ__
 	SA  2, ANON_520_32__u
 	LVA 2, ANON_520_32_disp
-	LI	0					; lieu resultat sur pile
+	LI	0
 	LA  2,	-OBJECT_ofs
 	LI  28
 	CALL	STANDARD.IDL. ,DI_L21
@@ -3367,7 +3267,7 @@ VAR	ANON_521_28__dat, STANDARD.IDL._TREE.size
 	LA  0, STANDARD.IDL._TREE.use__info
 	SA  2, ANON_521_28__u
 	LVA 2, ANON_521_28_disp
-					; doublet resultat record anonyme
+
 	LA  2,	-OBJECT_ofs
 	LI  13
 	CALL	STANDARD.IDL. ,D_L17
@@ -3426,7 +3326,7 @@ VAR	ANON_521_28__dat, STANDARD.IDL._TREE.size
 	INC
 	CLAMP0
 	SA  2, ANON_520_17_L208_G_len
-STR ANON_521_55_L208_D, "_disp"		; constante string="_disp"
+STR ANON_521_55_L208_D, "_disp"
 	LCA	ANON_521_55_L208_D.data_ptr
 	DUP
 	LA  ,  0
@@ -3474,7 +3374,6 @@ STR ANON_521_55_L208_D, "_disp"		; constante string="_disp"
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
 	BRA	L184
 L191:
-; CODE & concat _STRING
 VAR	ANON_524_17_L214_G_data, Q
 VAR	ANON_524_17_L214_G_info, Q
 VAR	ANON_524_67_L214_D_data, Q
@@ -3489,7 +3388,7 @@ namespace ANON_524_17_L214_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-STR ANON_524_17_L214_G, "!!! LOAD_OBJECT_ADDRESS : OBJECT.TY ILLICITE "	; constante string="!!! LOAD_OBJECT_ADDRESS : OBJECT.TY ILLICITE "
+STR ANON_524_17_L214_G, "!!! LOAD_OBJECT_ADDRESS : OBJECT.TY ILLICITE "
 	LCA	ANON_524_17_L214_G.data_ptr
 	DUP
 	LA  ,  0
@@ -3572,46 +3471,45 @@ end namespace
 	BRA	STANDARD.exc_raise_
 	BRA	L184
 L184:
-					; fin case
 ret_lbl:
 	UNLINKR 2
 	RTD	prm_siz
 excep:
-endPRO					;---------- end PRO CODE_OBJECT
+endPRO
 end if
 
 if defined CODE_SELECT_ALT_PRAGMA_L40_
-PRO	CODE_SELECT_ALT_PRAGMA_L40		;---------- PRO CODE_SELECT_ALT_PRAGMA
+PRO	CODE_SELECT_ALT_PRAGMA_L40
  hexa_show 'CODE_SELECT_ALT_PRAGMA_L40 ', $
-PRMS					;    debut parametrage
-	PRM SELECT_ALT_PRAGMA_ofs			; in
-endPRMS					;    fin parametrage
-ELB 2					;    BODY ELAB
-					;    end elab
-begin:					;---------- BDY INSTRUCTIONS
+PRMS
+	PRM SELECT_ALT_PRAGMA_ofs
+endPRMS
+ELB 2
+
+begin:
 ret_lbl:
 	UNLINKR 2
 	RTD	prm_siz
 excep:
-endPRO					;---------- end PRO CODE_SELECT_ALT_PRAGMA
+endPRO
 end if
 
 if defined CODE_EXCEPTION_ID_L41_
-PRO	CODE_EXCEPTION_ID_L41			;---------- PRO CODE_EXCEPTION_ID
+PRO	CODE_EXCEPTION_ID_L41
  hexa_show 'CODE_EXCEPTION_ID_L41 ', $
-PRMS					;    debut parametrage
-	PRM EXCEPTION_ID_ofs			; in
-endPRMS					;    fin parametrage
-ELB 2					;    BODY ELAB
-					;    end elab
-begin:					;---------- BDY INSTRUCTIONS
+PRMS
+	PRM EXCEPTION_ID_ofs
+endPRMS
+ELB 2
+
+begin:
 namespace	BLOCK__3
-ELB 3					;    BODY ELAB
+ELB 3
  hexa_show 'var elab LBL ', $
-VAR LBL_disp, Q				; variable array : pointeur aux data
-VAR LBL__u, Q				; variable array : useinfo pointeur au rec info
+VAR LBL_disp, Q
+VAR LBL__u, Q
 	LA 0, STANDARD._STRING.use__info
-	SA	3, LBL__u				; array info ptr at __u
+	SA	3, LBL__u
 VAR	ANON_543_31_disp, Q
 VAR	ANON_543_31__u,   Q
 namespace ANON_543_31_info
@@ -3626,14 +3524,13 @@ end namespace
 	CALL	STANDARD.EXPANDER_L1.UTILS. ,NEW_LABEL_L15
 	DUP
 	LA
-	SA	3, LBL_disp				; array data ptr from function result
+	SA	3, LBL_disp
 	LA , 8
-	SA	3, LBL__u				; array info ptr from function result
+	SA	3, LBL__u
 
  hexa_show ' disp ', LBL_disp
-					;    end elab
-begin:					;---------- BDY INSTRUCTIONS
-; CODE & concat _STRING
+
+begin:
 VAR	ANON_545_17_L221_G_data, Q
 VAR	ANON_545_17_L221_G_info, Q
 VAR	ANON_545_33_L221_D_data, Q
@@ -3648,7 +3545,6 @@ namespace ANON_545_17_L221_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-; CODE & concat _STRING
 VAR	ANON_545_17_L222_G_data, Q
 VAR	ANON_545_17_L222_G_info, Q
 VAR	ANON_545_27_L222_D_data, Q
@@ -3663,7 +3559,7 @@ namespace ANON_545_17_L222_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-STR ANON_545_17_L222_G, "; EXL"		; constante string="; EXL"
+STR ANON_545_17_L222_G, "; EXL"
 	LCA	ANON_545_17_L222_G.data_ptr
 	DUP
 	LA  ,  0
@@ -3805,25 +3701,24 @@ ret_lbl:
 	UNLINKR 2
 	RTD	prm_siz
 excep:
-endPRO					;---------- end PRO CODE_EXCEPTION_ID
+endPRO
 end if
 
 if defined DBGSTOP_L1_
-PRO	DBGSTOP_L1				;---------- PRO DBGSTOP
+PRO	DBGSTOP_L1
  hexa_show 'DBGSTOP_L1 ', $
-ELB 2					;    BODY ELAB
-					;    end elab
-begin:					;---------- BDY INSTRUCTIONS
+ELB 2
+
+begin:
 ret_lbl:
 	UNLINKR 2
 	RTD
 excep:
-endPRO					;---------- end PRO DBGSTOP
+endPRO
 end if
-					;    end elab
-begin:					;---------- BDY INSTRUCTIONS
-					; debut if
-; CODE composite "=" _STRING
+
+begin:
+
 VAR	ANON_555_7_L229_G_data, Q
 VAR	ANON_555_7_L229_G_info, Q
 VAR	ANON_555_7_L229_G_len,  Q
@@ -3842,7 +3737,7 @@ VAR	ANON_555_7_L229_G_len,  Q
 VAR	ANON_555_19_L229_D_data, Q
 VAR	ANON_555_19_L229_D_info, Q
 VAR	ANON_555_19_L229_D_len,  Q
-STR ANON_555_19_L229_D, ""			; constante string=""
+STR ANON_555_19_L229_D, ""
 	LCA	ANON_555_19_L229_D.data_ptr
 	DUP
 	LA  ,  0
@@ -3867,7 +3762,6 @@ STR ANON_555_19_L229_D, ""			; constante string=""
 	BLKCMP
 L230:
 	BF	L228
-; CODE & concat _STRING
 VAR	ANON_556_25_L231_G_data, Q
 VAR	ANON_556_25_L231_G_info, Q
 VAR	ANON_556_56_L231_D_data, Q
@@ -3883,14 +3777,13 @@ namespace ANON_556_25_L231_R_info
   VAR _LST_1, D
 end namespace
 	LA 0, STANDARD.IDL.LIB_PATH_disp
-; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	LID 0, STANDARD.IDL.LIB_PATH__u, STANDARD._STRING.FST_1
 	SUB
 	LI	1
 	MUL
 	ADD
-namespace ANON_556_25			; ensemble doublet @data/@info pour slice anonyme source
+namespace ANON_556_25
 VAR ANON_556_25_disp, Q
 VAR ANON_556_25__u, Q
 VAR SIZ__, D
@@ -3902,7 +3795,6 @@ VAR _LST_1, D
 	SA	1, ANON_556_25__u
 	LI	8
 	SD	1, COMP_SIZ
-; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SD	1, _FST_1
 	LD 0,	STANDARD.IDL.LIB_PATH_LENGTH_disp
@@ -3928,7 +3820,7 @@ end namespace
 	INC
 	CLAMP0
 	SA  1, ANON_556_25_L231_G_len
-STR ANON_556_56_L231_D, "$$$.TMP"		; constante string="$$$.TMP"
+STR ANON_556_56_L231_D, "$$$.TMP"
 	LCA	ANON_556_56_L231_D.data_ptr
 	DUP
 	LA  ,  0
@@ -3974,27 +3866,26 @@ STR ANON_556_56_L231_D, "$$$.TMP"		; constante string="$$$.TMP"
 	BLKMOV
 	LVA 1, ANON_556_25_L231_R_disp
 	CALL	STANDARD.IDL. ,OPEN_IDL_TREE_FILE_L6
-					; debut if
-	LI	0					; lieu resultat sur pile
-	LVA  0,	STANDARD.IDL.TREE_ROOT_disp		; array actual
+
+	LI	0
+	LVA  0,	STANDARD.IDL.TREE_ROOT_disp
 	LI  3
 	CALL	STANDARD.IDL. ,DI_L21
-; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	CEQ
 	BF	L233
-	LVA  0,	STANDARD.IDL.TREE_ROOT_disp		; array actual
+	LVA  0,	STANDARD.IDL.TREE_ROOT_disp
 	CALL	STANDARD.EXPANDER_L1. ,CODE_ROOT_L38
 	BRA	L232
 L233:
-L232:					; post if
+L232:
 	CALL	STANDARD.IDL. ,CLOSE_IDL_TREE_FILE_L7
 	BRA	L227
 L228:
 namespace	CREATE_FAS_MAIN_FILE
-ELB 2					;    BODY ELAB
+ELB 2
  hexa_show 'var elab LAST_NAME_CHAR ', $
-VAR LAST_NAME_CHAR_disp, D			; variable entiere
+VAR LAST_NAME_CHAR_disp, D
 	LVA	1, -NOM_TEXTE_ofs
 	LIA	, , 8
 	LD	, _STRING.FST_1
@@ -4011,7 +3902,7 @@ VAR LAST_NAME_CHAR_disp, D			; variable entiere
  hexa_show ' disp ', LAST_NAME_CHAR_disp
  hexa_show 'var elab UPPER_NAME ', $
 _UPPER_NAME__type = '_UPPER_NAME__type'
-namespace _UPPER_NAME__type			; array var constrained array type info
+namespace _UPPER_NAME__type
 VAR use__info, Q
 VAR SIZ__, D
 	LVA	2, SIZ__
@@ -4046,37 +3937,37 @@ LST_1 = $
 	rd 1 
   end virtual
 end namespace
-VAR UPPER_NAME_disp, Q			; variable array : pointeur aux data
-VAR UPPER_NAME__u, Q			; variable array : useinfo pointeur au rec info
+VAR UPPER_NAME_disp, Q
+VAR UPPER_NAME__u, Q
 	LA 2, _UPPER_NAME__type.use__info
-	SA	2, UPPER_NAME__u			; array info ptr at __u
+	SA	2, UPPER_NAME__u
 	LD	2, _UPPER_NAME__type.SIZ__
 	LI	8
 	DIV
 	CO_VAR
-	SA	2, UPPER_NAME_disp			; array data ptr at _disp
+	SA	2, UPPER_NAME_disp
 
  hexa_show ' disp ', UPPER_NAME_disp
-					;    end elab
-begin:					;---------- BDY INSTRUCTIONS
-VAR	IL237_disp, D				; compteur boucle FIND_DOT_IF_ANY_AND_UPCASE
+
+begin:
+VAR	IL237_disp, D
 	LVA	1, -NOM_TEXTE_ofs
 	LIA	, , 8
 	LD	, _STRING.FST_1
 	SD  2,	IL237_disp
-VAR	LMT_IL237_disp, D			; limite boucle FIND_DOT_IF_ANY_AND_UPCASE
+VAR	LMT_IL237_disp, D
 	LVA	1, -NOM_TEXTE_ofs
 	LIA	, , 8
 	LD	, _STRING.LST_1
 	SD  2,	LMT_IL237_disp
-	LD  2,	IL237_disp				; test null range FIND_DOT_IF_ANY_AND_UPCASE
+	LD  2,	IL237_disp
 	LD  2,	LMT_IL237_disp
 	CGT
 	BT	L236
-FIND_DOT_IF_ANY_AND_UPCASE:			; corps boucle FIND_DOT_IF_ANY_AND_UPCASE
-					; debut if
+FIND_DOT_IF_ANY_AND_UPCASE:
+
 	LVA	1, -NOM_TEXTE_ofs
-	LIA	, , 0				; array data start address on stack
+	LIA	, , 0
 	LD 2,	IL237_disp
 	DUP
 	LVA	1, -NOM_TEXTE_ofs
@@ -4092,21 +3983,21 @@ FIND_DOT_IF_ANY_AND_UPCASE:			; corps boucle FIND_DOT_IF_ANY_AND_UPCASE
 	BT	STANDARD.ce_raise_
 	LVA	1, -NOM_TEXTE_ofs
 	LIA	, 0,  8
-	LD	, STANDARD._STRING.FST_1			; (index - FST_1) * SIZ_1
+	LD	, STANDARD._STRING.FST_1
 	SUB
 	LVA	1, -NOM_TEXTE_ofs
 	LIA	, , 8
 	LD	, STANDARD._STRING.COMP_SIZ
-	LI	8
-	DIV
+	LI	3
+	SAR
 	MUL
-	ADD					; add offset to start address
+	ADD
 	ULB
 	LI	97
 	CGE
 	LI	122
 	LVA	1, -NOM_TEXTE_ofs
-	LIA	, , 0				; array data start address on stack
+	LIA	, , 0
 	LD 2,	IL237_disp
 	DUP
 	LVA	1, -NOM_TEXTE_ofs
@@ -4122,20 +4013,20 @@ FIND_DOT_IF_ANY_AND_UPCASE:			; corps boucle FIND_DOT_IF_ANY_AND_UPCASE
 	BT	STANDARD.ce_raise_
 	LVA	1, -NOM_TEXTE_ofs
 	LIA	, 0,  8
-	LD	, STANDARD._STRING.FST_1			; (index - FST_1) * SIZ_1
+	LD	, STANDARD._STRING.FST_1
 	SUB
 	LVA	1, -NOM_TEXTE_ofs
 	LIA	, , 8
 	LD	, STANDARD._STRING.COMP_SIZ
-	LI	8
-	DIV
+	LI	3
+	SAR
 	MUL
-	ADD					; add offset to start address
+	ADD
 	ULB
 	CGE
 	ET
 	BF	L239
-	LA	 2, STANDARD.EXPANDER_L1.CREATE_FAS_MAIN_FILE.UPPER_NAME_disp	; array data start address on stack
+	LA	 2, STANDARD.EXPANDER_L1.CREATE_FAS_MAIN_FILE.UPPER_NAME_disp
 	LD 2,	IL237_disp
 	DUP
 	LID	2, STANDARD.EXPANDER_L1.CREATE_FAS_MAIN_FILE.UPPER_NAME__u, STANDARD._STRING.FST_1
@@ -4145,16 +4036,16 @@ FIND_DOT_IF_ANY_AND_UPCASE:			; corps boucle FIND_DOT_IF_ANY_AND_UPCASE
 	LID	2, STANDARD.EXPANDER_L1.CREATE_FAS_MAIN_FILE.UPPER_NAME__u, STANDARD._STRING.LST_1
 	CGT
 	BT	STANDARD.ce_raise_
-	LID	2, STANDARD.EXPANDER_L1.CREATE_FAS_MAIN_FILE.UPPER_NAME__u, STANDARD._STRING.FST_1	; (index - FST_1) * SIZ_1
+	LID	2, STANDARD.EXPANDER_L1.CREATE_FAS_MAIN_FILE.UPPER_NAME__u, STANDARD._STRING.FST_1
 	SUB
 	LID	2, STANDARD.EXPANDER_L1.CREATE_FAS_MAIN_FILE.UPPER_NAME__u, STANDARD._STRING.COMP_SIZ
-	LI	8
-	DIV
+	LI	3
+	SAR
 	MUL
-	ADD					; add offset to start address
+	ADD
 	LI	65
 	LVA	1, -NOM_TEXTE_ofs
-	LIA	, , 0				; array data start address on stack
+	LIA	, , 0
 	LD 2,	IL237_disp
 	DUP
 	LVA	1, -NOM_TEXTE_ofs
@@ -4170,15 +4061,15 @@ FIND_DOT_IF_ANY_AND_UPCASE:			; corps boucle FIND_DOT_IF_ANY_AND_UPCASE
 	BT	STANDARD.ce_raise_
 	LVA	1, -NOM_TEXTE_ofs
 	LIA	, 0,  8
-	LD	, STANDARD._STRING.FST_1			; (index - FST_1) * SIZ_1
+	LD	, STANDARD._STRING.FST_1
 	SUB
 	LVA	1, -NOM_TEXTE_ofs
 	LIA	, , 8
 	LD	, STANDARD._STRING.COMP_SIZ
-	LI	8
-	DIV
+	LI	3
+	SAR
 	MUL
-	ADD					; add offset to start address
+	ADD
 	ULB
 	ADD
 	LI	97
@@ -4186,7 +4077,7 @@ FIND_DOT_IF_ANY_AND_UPCASE:			; corps boucle FIND_DOT_IF_ANY_AND_UPCASE
 	SB
 	BRA	L238
 L239:
-	LA	 2, STANDARD.EXPANDER_L1.CREATE_FAS_MAIN_FILE.UPPER_NAME_disp	; array data start address on stack
+	LA	 2, STANDARD.EXPANDER_L1.CREATE_FAS_MAIN_FILE.UPPER_NAME_disp
 	LD 2,	IL237_disp
 	DUP
 	LID	2, STANDARD.EXPANDER_L1.CREATE_FAS_MAIN_FILE.UPPER_NAME__u, STANDARD._STRING.FST_1
@@ -4196,15 +4087,15 @@ L239:
 	LID	2, STANDARD.EXPANDER_L1.CREATE_FAS_MAIN_FILE.UPPER_NAME__u, STANDARD._STRING.LST_1
 	CGT
 	BT	STANDARD.ce_raise_
-	LID	2, STANDARD.EXPANDER_L1.CREATE_FAS_MAIN_FILE.UPPER_NAME__u, STANDARD._STRING.FST_1	; (index - FST_1) * SIZ_1
+	LID	2, STANDARD.EXPANDER_L1.CREATE_FAS_MAIN_FILE.UPPER_NAME__u, STANDARD._STRING.FST_1
 	SUB
 	LID	2, STANDARD.EXPANDER_L1.CREATE_FAS_MAIN_FILE.UPPER_NAME__u, STANDARD._STRING.COMP_SIZ
-	LI	8
-	DIV
+	LI	3
+	SAR
 	MUL
-	ADD					; add offset to start address
+	ADD
 	LVA	1, -NOM_TEXTE_ofs
-	LIA	, , 0				; array data start address on stack
+	LIA	, , 0
 	LD 2,	IL237_disp
 	DUP
 	LVA	1, -NOM_TEXTE_ofs
@@ -4220,20 +4111,20 @@ L239:
 	BT	STANDARD.ce_raise_
 	LVA	1, -NOM_TEXTE_ofs
 	LIA	, 0,  8
-	LD	, STANDARD._STRING.FST_1			; (index - FST_1) * SIZ_1
+	LD	, STANDARD._STRING.FST_1
 	SUB
 	LVA	1, -NOM_TEXTE_ofs
 	LIA	, , 8
 	LD	, STANDARD._STRING.COMP_SIZ
-	LI	8
-	DIV
+	LI	3
+	SAR
 	MUL
-	ADD					; add offset to start address
+	ADD
 	ULB
 	SB
-L238:					; post if
+L238:
 	LVA	1, -NOM_TEXTE_ofs
-	LIA	, , 0				; array data start address on stack
+	LIA	, , 0
 	LD 2,	IL237_disp
 	DUP
 	LVA	1, -NOM_TEXTE_ofs
@@ -4249,15 +4140,15 @@ L238:					; post if
 	BT	STANDARD.ce_raise_
 	LVA	1, -NOM_TEXTE_ofs
 	LIA	, 0,  8
-	LD	, STANDARD._STRING.FST_1			; (index - FST_1) * SIZ_1
+	LD	, STANDARD._STRING.FST_1
 	SUB
 	LVA	1, -NOM_TEXTE_ofs
 	LIA	, , 8
 	LD	, STANDARD._STRING.COMP_SIZ
-	LI	8
-	DIV
+	LI	3
+	SAR
 	MUL
-	ADD					; add offset to start address
+	ADD
 	ULB
 	LI	46
 	CEQ
@@ -4272,27 +4163,26 @@ L238:					; post if
 	CGT
 	BT	STANDARD.ce_raise_
 	SD  2,	LAST_NAME_CHAR_disp
-	LD  2,	IL237_disp				; test de sortie FIND_DOT_IF_ANY_AND_UPCASE
+	LD  2,	IL237_disp
 	LD  2,	LMT_IL237_disp
 	CEQ
 	BT	L236
-	LD  2,	IL237_disp				; mise a jour compteur FIND_DOT_IF_ANY_AND_UPCASE
+	LD  2,	IL237_disp
 	INC
 	SD  2,	IL237_disp
-	BRA	FIND_DOT_IF_ANY_AND_UPCASE		; iteration suivante FIND_DOT_IF_ANY_AND_UPCASE
-L236:					; post loop FIND_DOT_IF_ANY_AND_UPCASE
+	BRA	FIND_DOT_IF_ANY_AND_UPCASE
+L236:
 namespace	BLOCK__4
-ELB 3					;    BODY ELAB
+ELB 3
  hexa_show 'var elab F ', $
-VAR F_disp, Q				; variable record : pointeur aux data record
-VAR F__u, Q				; variable record : pointeur aux useinfo
+VAR F_disp, Q
+VAR F__u, Q
 VAR F__dat, STANDARD.TEXT_IO._FILE_TYPE.size
 	LVA	3, F__dat
-	SA	3, F_disp				; record fin
+	SA	3, F_disp
 	LVA	3, STANDARD.TEXT_IO._FILE_TYPE.SIZ__
 	SA	3, F__u
 	LIVA 3, STANDARD.EXPANDER_L1.CREATE_FAS_MAIN_FILE.BLOCK__4.F_disp, STANDARD.TEXT_IO._FILE_TYPE.ID
-; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	NEG
 	SD
@@ -4306,15 +4196,12 @@ VAR F__dat, STANDARD.TEXT_IO._FILE_TYPE.size
 	ULD 0,	STANDARD.TEXT_IO.UNBOUNDED_disp
 	SD
 	LIVA 3, STANDARD.EXPANDER_L1.CREATE_FAS_MAIN_FILE.BLOCK__4.F_disp, STANDARD.TEXT_IO._FILE_TYPE.PAGE
-; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SD
 	LIVA 3, STANDARD.EXPANDER_L1.CREATE_FAS_MAIN_FILE.BLOCK__4.F_disp, STANDARD.TEXT_IO._FILE_TYPE.LINE
-; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SD
 	LIVA 3, STANDARD.EXPANDER_L1.CREATE_FAS_MAIN_FILE.BLOCK__4.F_disp, STANDARD.TEXT_IO._FILE_TYPE.COL
-; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SD
 	LIVA 3, STANDARD.EXPANDER_L1.CREATE_FAS_MAIN_FILE.BLOCK__4.F_disp, STANDARD.TEXT_IO._FILE_TYPE.IS_DEFAULT_IO
@@ -4340,7 +4227,7 @@ VAR NOM_FAS__u, Q
 	LI	1
 	MUL
 	ADD
-namespace ANON_583_34			; ensemble doublet @data/@info pour slice anonyme source
+namespace ANON_583_34
 VAR ANON_583_34_disp, Q
 VAR ANON_583_34__u, Q
 VAR SIZ__, D
@@ -4371,8 +4258,8 @@ end namespace
 	SA	3, NOM_FAS_disp
 	LA	, 8
 	SA	3, NOM_FAS__u
-					;    end elab
-begin:					;---------- BDY INSTRUCTIONS
+
+begin:
 VAR	exc_ctx_L241, q, 11
 	LA	0, STANDARD.EXCEPTIONS_TOP_CTX_disp
 	SA  3,	exc_ctx_L241
@@ -4381,9 +4268,8 @@ VAR	exc_ctx_L241, q, 11
 	EXC_MACH  3,	exc_ctx_L241
 	LVA  3,	exc_ctx_L241
 	SA	0, STANDARD.EXCEPTIONS_TOP_CTX_disp
-STR STR_L243, ""				; constante string=""
+STR STR_L243, ""
 	LCA	STR_L243.data_ptr
-; CODE & concat _STRING
 VAR	ANON_586_27_L244_G_data, Q
 VAR	ANON_586_27_L244_G_info, Q
 VAR	ANON_587_17_L244_D_data, Q
@@ -4398,7 +4284,6 @@ namespace ANON_586_27_L244_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-; CODE & concat _STRING
 VAR	ANON_586_27_L245_G_data, Q
 VAR	ANON_586_27_L245_G_info, Q
 VAR	ANON_587_6_L245_D_data, Q
@@ -4414,7 +4299,7 @@ namespace ANON_586_27_L245_R_info
   VAR _LST_1, D
 end namespace
 	LA 0, STANDARD.IDL.LIB_PATH_disp
-namespace ANON_586_27			; ensemble doublet @data/@info pour slice anonyme source
+namespace ANON_586_27
 VAR ANON_586_27_disp, Q
 VAR ANON_586_27__u, Q
 VAR SIZ__, D
@@ -4426,7 +4311,6 @@ VAR _LST_1, D
 	SA	3, ANON_586_27__u
 	LI	8
 	SD	3, COMP_SIZ
-; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SD	3, _FST_1
 	LD	0, STANDARD.IDL.LIB_PATH_LENGTH_disp
@@ -4507,7 +4391,7 @@ end namespace
 	INC
 	CLAMP0
 	SA  3, ANON_586_27_L244_G_len
-STR ANON_587_17_L244_D, ".fas"		; constante string=".fas"
+STR ANON_587_17_L244_D, ".fas"
 	LCA	ANON_587_17_L244_D.data_ptr
 	DUP
 	LA  ,  0
@@ -4557,7 +4441,6 @@ STR ANON_587_17_L244_D, ".fas"		; constante string=".fas"
 	CALL	STANDARD.TEXT_IO. ,OPEN_L2
 	LVA  3,	STANDARD.EXPANDER_L1.CREATE_FAS_MAIN_FILE.BLOCK__4.F_disp
 	CALL	STANDARD.TEXT_IO. ,CLOSE_L3
-; CODE & concat _STRING
 VAR	ANON_589_19_L246_G_data, Q
 VAR	ANON_589_19_L246_G_info, Q
 VAR	ANON_589_94_L246_D_data, Q
@@ -4572,7 +4455,6 @@ namespace ANON_589_19_L246_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-; CODE & concat _STRING
 VAR	ANON_589_19_L247_G_data, Q
 VAR	ANON_589_19_L247_G_info, Q
 VAR	ANON_589_83_L247_D_data, Q
@@ -4587,7 +4469,6 @@ namespace ANON_589_19_L247_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-; CODE & concat _STRING
 VAR	ANON_589_19_L248_G_data, Q
 VAR	ANON_589_19_L248_G_info, Q
 VAR	ANON_589_40_L248_D_data, Q
@@ -4602,7 +4483,7 @@ namespace ANON_589_19_L248_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-STR ANON_589_19_L248_G, "TLALOC/Ada 83 - "	; constante string="TLALOC/Ada 83 - "
+STR ANON_589_19_L248_G, "TLALOC/Ada 83 - "
 	LCA	ANON_589_19_L248_G.data_ptr
 	DUP
 	LA  ,  0
@@ -4616,7 +4497,7 @@ STR ANON_589_19_L248_G, "TLALOC/Ada 83 - "	; constante string="TLALOC/Ada 83 - "
 	CLAMP0
 	SA  3, ANON_589_19_L248_G_len
 	LA 0, STANDARD.IDL.LIB_PATH_disp
-namespace ANON_589_40			; ensemble doublet @data/@info pour slice anonyme source
+namespace ANON_589_40
 VAR ANON_589_40_disp, Q
 VAR ANON_589_40__u, Q
 VAR SIZ__, D
@@ -4628,7 +4509,6 @@ VAR _LST_1, D
 	SA	3, ANON_589_40__u
 	LI	8
 	SD	3, COMP_SIZ
-; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SD	3, _FST_1
 	LD	0, STANDARD.IDL.LIB_PATH_LENGTH_disp
@@ -4752,7 +4632,7 @@ end namespace
 	INC
 	CLAMP0
 	SA  3, ANON_589_19_L246_G_len
-STR ANON_589_94_L246_D, ".fas already exists"	; constante string=".fas already exists"
+STR ANON_589_94_L246_D, ".fas already exists"
 	LCA	ANON_589_94_L246_D.data_ptr
 	DUP
 	LA  ,  0
@@ -4811,9 +4691,8 @@ L241:
 	BT	L250
 	BRA	L251
 L250:
-STR STR_L252, ""				; constante string=""
+STR STR_L252, ""
 	LCA	STR_L252.data_ptr
-; CODE & concat _STRING
 VAR	ANON_592_23_L253_G_data, Q
 VAR	ANON_592_23_L253_G_info, Q
 VAR	ANON_593_16_L253_D_data, Q
@@ -4828,7 +4707,6 @@ namespace ANON_592_23_L253_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-; CODE & concat _STRING
 VAR	ANON_592_23_L254_G_data, Q
 VAR	ANON_592_23_L254_G_info, Q
 VAR	ANON_593_6_L254_D_data, Q
@@ -4844,7 +4722,7 @@ namespace ANON_592_23_L254_R_info
   VAR _LST_1, D
 end namespace
 	LA 0, STANDARD.IDL.LIB_PATH_disp
-namespace ANON_592_23			; ensemble doublet @data/@info pour slice anonyme source
+namespace ANON_592_23
 VAR ANON_592_23_disp, Q
 VAR ANON_592_23__u, Q
 VAR SIZ__, D
@@ -4856,7 +4734,6 @@ VAR _LST_1, D
 	SA	3, ANON_592_23__u
 	LI	8
 	SD	3, COMP_SIZ
-; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SD	3, _FST_1
 	LD	0, STANDARD.IDL.LIB_PATH_LENGTH_disp
@@ -4937,7 +4814,7 @@ end namespace
 	INC
 	CLAMP0
 	SA  3, ANON_592_23_L253_G_len
-STR ANON_593_16_L253_D, ".fas"		; constante string=".fas"
+STR ANON_593_16_L253_D, ".fas"
 	LCA	ANON_593_16_L253_D.data_ptr
 	DUP
 	LA  ,  0
@@ -4987,7 +4864,6 @@ STR ANON_593_16_L253_D, ".fas"		; constante string=".fas"
 	CALL	STANDARD.TEXT_IO. ,CREATE_L1
 	LVA 3,	F_disp
 	CALL	STANDARD.TEXT_IO. ,SET_OUTPUT_L12
-; CODE & concat _STRING
 VAR	ANON_595_12_L255_G_data, Q
 VAR	ANON_595_12_L255_G_info, Q
 VAR	ANON_595_18_L255_D_data, Q
@@ -5037,7 +4913,7 @@ end namespace
 	INC
 	CLAMP0
 	SA  3, ANON_595_12_L255_G_len
-STR ANON_595_18_L255_D, "include '../../src/expander/fasmg/codi_x86_64.finc'"	; constante string="include '../../src/expander/fasmg/codi_x86_64.finc'"
+STR ANON_595_18_L255_D, "include '../../src/expander/fasmg/codi_x86_64.finc'"
 	LCA	ANON_595_18_L255_D.data_ptr
 	DUP
 	LA  ,  0
@@ -5083,22 +4959,21 @@ STR ANON_595_18_L255_D, "include '../../src/expander/fasmg/codi_x86_64.finc'"	; 
 	BLKMOV
 	LVA 3, ANON_595_12_L255_R_disp
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-STR STR_L256, "STANDARD = 'STANDARD'"		; constante string="STANDARD = 'STANDARD'"
+STR STR_L256, "STANDARD = 'STANDARD'"
 	LCA	STR_L256.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-STR STR_L257, "namespace STANDARD"		; constante string="namespace STANDARD"
+STR STR_L257, "namespace STANDARD"
 	LCA	STR_L257.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-STR STR_L258, "  virtual at 8"		; constante string="  virtual at 8"
+STR STR_L258, "  virtual at 8"
 	LCA	STR_L258.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-STR STR_L259, "    VARzone::"			; constante string="    VARzone::"
+STR STR_L259, "    VARzone::"
 	LCA	STR_L259.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-STR STR_L260, "  end virtual"			; constante string="  end virtual"
+STR STR_L260, "  end virtual"
 	LCA	STR_L260.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-; CODE & concat _STRING
 VAR	ANON_602_12_L261_G_data, Q
 VAR	ANON_602_12_L261_G_info, Q
 VAR	ANON_602_33_L261_D_data, Q
@@ -5113,7 +4988,6 @@ namespace ANON_602_12_L261_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-; CODE & concat _STRING
 VAR	ANON_602_12_L262_G_data, Q
 VAR	ANON_602_12_L262_G_info, Q
 VAR	ANON_602_27_L262_D_data, Q
@@ -5128,7 +5002,6 @@ namespace ANON_602_12_L262_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-; CODE & concat _STRING
 VAR	ANON_602_12_L263_G_data, Q
 VAR	ANON_602_12_L263_G_info, Q
 VAR	ANON_602_18_L263_D_data, Q
@@ -5178,7 +5051,7 @@ end namespace
 	INC
 	CLAMP0
 	SA  3, ANON_602_12_L263_G_len
-STR ANON_602_18_L263_D, "LINK"		; constante string="LINK"
+STR ANON_602_18_L263_D, "LINK"
 	LCA	ANON_602_18_L263_D.data_ptr
 	DUP
 	LA  ,  0
@@ -5312,7 +5185,7 @@ end namespace
 	INC
 	CLAMP0
 	SA  3, ANON_602_12_L261_G_len
-STR ANON_602_33_L261_D, "0, loc_siz"		; constante string="0, loc_siz"
+STR ANON_602_33_L261_D, "0, loc_siz"
 	LCA	ANON_602_33_L261_D.data_ptr
 	DUP
 	LA  ,  0
@@ -5358,10 +5231,9 @@ STR ANON_602_33_L261_D, "0, loc_siz"		; constante string="0, loc_siz"
 	BLKMOV
 	LVA 3, ANON_602_12_L261_R_disp
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-STR STR_L264, "include '../../bin/ADA__LIB/_STANDRD.FINC'"	; constante string="include '../../bin/ADA__LIB/_STANDRD.FINC'"
+STR STR_L264, "include '_STANDRD.FINC'"
 	LCA	STR_L264.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-; CODE & concat _STRING
 VAR	ANON_607_12_L265_G_data, Q
 VAR	ANON_607_12_L265_G_info, Q
 VAR	ANON_607_37_L265_D_data, Q
@@ -5376,7 +5248,6 @@ namespace ANON_607_12_L265_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-; CODE & concat _STRING
 VAR	ANON_607_12_L266_G_data, Q
 VAR	ANON_607_12_L266_G_info, Q
 VAR	ANON_607_31_L266_D_data, Q
@@ -5391,7 +5262,6 @@ namespace ANON_607_12_L266_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-; CODE & concat _STRING
 VAR	ANON_607_12_L267_G_data, Q
 VAR	ANON_607_12_L267_G_info, Q
 VAR	ANON_607_18_L267_D_data, Q
@@ -5441,7 +5311,7 @@ end namespace
 	INC
 	CLAMP0
 	SA  3, ANON_607_12_L267_G_len
-STR ANON_607_18_L267_D, "EXC_MACH"		; constante string="EXC_MACH"
+STR ANON_607_18_L267_D, "EXC_MACH"
 	LCA	ANON_607_18_L267_D.data_ptr
 	DUP
 	LA  ,  0
@@ -5575,7 +5445,7 @@ end namespace
 	INC
 	CLAMP0
 	SA  3, ANON_607_12_L265_G_len
-STR ANON_607_37_L265_D, "0, EXC_CTX0__dat"	; constante string="0, EXC_CTX0__dat"
+STR ANON_607_37_L265_D, "0, EXC_CTX0__dat"
 	LCA	ANON_607_37_L265_D.data_ptr
 	DUP
 	LA  ,  0
@@ -5621,7 +5491,6 @@ STR ANON_607_37_L265_D, "0, EXC_CTX0__dat"	; constante string="0, EXC_CTX0__dat"
 	BLKMOV
 	LVA 3, ANON_607_12_L265_R_disp
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-; CODE & concat _STRING
 VAR	ANON_608_12_L268_G_data, Q
 VAR	ANON_608_12_L268_G_info, Q
 VAR	ANON_608_32_L268_D_data, Q
@@ -5636,7 +5505,6 @@ namespace ANON_608_12_L268_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-; CODE & concat _STRING
 VAR	ANON_608_12_L269_G_data, Q
 VAR	ANON_608_12_L269_G_info, Q
 VAR	ANON_608_26_L269_D_data, Q
@@ -5651,7 +5519,6 @@ namespace ANON_608_12_L269_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-; CODE & concat _STRING
 VAR	ANON_608_12_L270_G_data, Q
 VAR	ANON_608_12_L270_G_info, Q
 VAR	ANON_608_18_L270_D_data, Q
@@ -5701,7 +5568,7 @@ end namespace
 	INC
 	CLAMP0
 	SA  3, ANON_608_12_L270_G_len
-STR ANON_608_18_L270_D, "LCA"			; constante string="LCA"
+STR ANON_608_18_L270_D, "LCA"
 	LCA	ANON_608_18_L270_D.data_ptr
 	DUP
 	LA  ,  0
@@ -5835,7 +5702,7 @@ end namespace
 	INC
 	CLAMP0
 	SA  3, ANON_608_12_L268_G_len
-STR ANON_608_32_L268_D, "exc_uncaught_"		; constante string="exc_uncaught_"
+STR ANON_608_32_L268_D, "exc_uncaught_"
 	LCA	ANON_608_32_L268_D.data_ptr
 	DUP
 	LA  ,  0
@@ -5881,7 +5748,6 @@ STR ANON_608_32_L268_D, "exc_uncaught_"		; constante string="exc_uncaught_"
 	BLKMOV
 	LVA 3, ANON_608_12_L268_R_disp
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-; CODE & concat _STRING
 VAR	ANON_609_12_L271_G_data, Q
 VAR	ANON_609_12_L271_G_info, Q
 VAR	ANON_609_31_L271_D_data, Q
@@ -5896,7 +5762,6 @@ namespace ANON_609_12_L271_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-; CODE & concat _STRING
 VAR	ANON_609_12_L272_G_data, Q
 VAR	ANON_609_12_L272_G_info, Q
 VAR	ANON_609_25_L272_D_data, Q
@@ -5911,7 +5776,6 @@ namespace ANON_609_12_L272_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-; CODE & concat _STRING
 VAR	ANON_609_12_L273_G_data, Q
 VAR	ANON_609_12_L273_G_info, Q
 VAR	ANON_609_18_L273_D_data, Q
@@ -5961,7 +5825,7 @@ end namespace
 	INC
 	CLAMP0
 	SA  3, ANON_609_12_L273_G_len
-STR ANON_609_18_L273_D, "SA"			; constante string="SA"
+STR ANON_609_18_L273_D, "SA"
 	LCA	ANON_609_18_L273_D.data_ptr
 	DUP
 	LA  ,  0
@@ -6095,7 +5959,7 @@ end namespace
 	INC
 	CLAMP0
 	SA  3, ANON_609_12_L271_G_len
-STR ANON_609_31_L271_D, "0, EXC_CTX0__dat + _EXCEPTION_CONTEXT.DISPATCH"	; constante string="0, EXC_CTX0__dat + _EXCEPTION_CONTEXT.DISPATCH"
+STR ANON_609_31_L271_D, "0, EXC_CTX0__dat + _EXCEPTION_CONTEXT.DISPATCH"
 	LCA	ANON_609_31_L271_D.data_ptr
 	DUP
 	LA  ,  0
@@ -6141,7 +6005,6 @@ STR ANON_609_31_L271_D, "0, EXC_CTX0__dat + _EXCEPTION_CONTEXT.DISPATCH"	; const
 	BLKMOV
 	LVA 3, ANON_609_12_L271_R_disp
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-; CODE & concat _STRING
 VAR	ANON_610_12_L274_G_data, Q
 VAR	ANON_610_12_L274_G_info, Q
 VAR	ANON_610_32_L274_D_data, Q
@@ -6156,7 +6019,6 @@ namespace ANON_610_12_L274_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-; CODE & concat _STRING
 VAR	ANON_610_12_L275_G_data, Q
 VAR	ANON_610_12_L275_G_info, Q
 VAR	ANON_610_26_L275_D_data, Q
@@ -6171,7 +6033,6 @@ namespace ANON_610_12_L275_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-; CODE & concat _STRING
 VAR	ANON_610_12_L276_G_data, Q
 VAR	ANON_610_12_L276_G_info, Q
 VAR	ANON_610_18_L276_D_data, Q
@@ -6221,7 +6082,7 @@ end namespace
 	INC
 	CLAMP0
 	SA  3, ANON_610_12_L276_G_len
-STR ANON_610_18_L276_D, "LVA"			; constante string="LVA"
+STR ANON_610_18_L276_D, "LVA"
 	LCA	ANON_610_18_L276_D.data_ptr
 	DUP
 	LA  ,  0
@@ -6355,7 +6216,7 @@ end namespace
 	INC
 	CLAMP0
 	SA  3, ANON_610_12_L274_G_len
-STR ANON_610_32_L274_D, "0, EXC_CTX0__dat"	; constante string="0, EXC_CTX0__dat"
+STR ANON_610_32_L274_D, "0, EXC_CTX0__dat"
 	LCA	ANON_610_32_L274_D.data_ptr
 	DUP
 	LA  ,  0
@@ -6401,7 +6262,6 @@ STR ANON_610_32_L274_D, "0, EXC_CTX0__dat"	; constante string="0, EXC_CTX0__dat"
 	BLKMOV
 	LVA 3, ANON_610_12_L274_R_disp
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-; CODE & concat _STRING
 VAR	ANON_611_12_L277_G_data, Q
 VAR	ANON_611_12_L277_G_info, Q
 VAR	ANON_611_31_L277_D_data, Q
@@ -6416,7 +6276,6 @@ namespace ANON_611_12_L277_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-; CODE & concat _STRING
 VAR	ANON_611_12_L278_G_data, Q
 VAR	ANON_611_12_L278_G_info, Q
 VAR	ANON_611_25_L278_D_data, Q
@@ -6431,7 +6290,6 @@ namespace ANON_611_12_L278_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-; CODE & concat _STRING
 VAR	ANON_611_12_L279_G_data, Q
 VAR	ANON_611_12_L279_G_info, Q
 VAR	ANON_611_18_L279_D_data, Q
@@ -6481,7 +6339,7 @@ end namespace
 	INC
 	CLAMP0
 	SA  3, ANON_611_12_L279_G_len
-STR ANON_611_18_L279_D, "SA"			; constante string="SA"
+STR ANON_611_18_L279_D, "SA"
 	LCA	ANON_611_18_L279_D.data_ptr
 	DUP
 	LA  ,  0
@@ -6615,7 +6473,7 @@ end namespace
 	INC
 	CLAMP0
 	SA  3, ANON_611_12_L277_G_len
-STR ANON_611_31_L277_D, "0, EXCEPTIONS_TOP_CTX_disp"	; constante string="0, EXCEPTIONS_TOP_CTX_disp"
+STR ANON_611_31_L277_D, "0, EXCEPTIONS_TOP_CTX_disp"
 	LCA	ANON_611_31_L277_D.data_ptr
 	DUP
 	LA  ,  0
@@ -6661,7 +6519,6 @@ STR ANON_611_31_L277_D, "0, EXCEPTIONS_TOP_CTX_disp"	; constante string="0, EXCE
 	BLKMOV
 	LVA 3, ANON_611_12_L277_R_disp
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-; CODE & concat _STRING
 VAR	ANON_613_12_L280_G_data, Q
 VAR	ANON_613_12_L280_G_info, Q
 VAR	ANON_613_36_L280_D_data, Q
@@ -6676,7 +6533,6 @@ namespace ANON_613_12_L280_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-; CODE & concat _STRING
 VAR	ANON_613_12_L281_G_data, Q
 VAR	ANON_613_12_L281_G_info, Q
 VAR	ANON_613_26_L281_D_data, Q
@@ -6691,7 +6547,7 @@ namespace ANON_613_12_L281_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-STR ANON_613_12_L281_G, "include '"		; constante string="include '"
+STR ANON_613_12_L281_G, "include '"
 	LCA	ANON_613_12_L281_G.data_ptr
 	DUP
 	LA  ,  0
@@ -6759,7 +6615,7 @@ STR ANON_613_12_L281_G, "include '"		; constante string="include '"
 	INC
 	CLAMP0
 	SA  3, ANON_613_12_L280_G_len
-STR ANON_613_36_L280_D, ".FINC'"		; constante string=".FINC'"
+STR ANON_613_36_L280_D, ".FINC'"
 	LCA	ANON_613_36_L280_D.data_ptr
 	DUP
 	LA  ,  0
@@ -6805,7 +6661,6 @@ STR ANON_613_36_L280_D, ".FINC'"		; constante string=".FINC'"
 	BLKMOV
 	LVA 3, ANON_613_12_L280_R_disp
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-; CODE & concat _STRING
 VAR	ANON_614_12_L282_G_data, Q
 VAR	ANON_614_12_L282_G_info, Q
 VAR	ANON_614_59_L282_D_data, Q
@@ -6820,7 +6675,6 @@ namespace ANON_614_12_L282_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-; CODE & concat _STRING
 VAR	ANON_614_12_L283_G_data, Q
 VAR	ANON_614_12_L283_G_info, Q
 VAR	ANON_614_49_L283_D_data, Q
@@ -6835,7 +6689,6 @@ namespace ANON_614_12_L283_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-; CODE & concat _STRING
 VAR	ANON_614_12_L284_G_data, Q
 VAR	ANON_614_12_L284_G_info, Q
 VAR	ANON_614_33_L284_D_data, Q
@@ -6850,7 +6703,6 @@ namespace ANON_614_12_L284_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-; CODE & concat _STRING
 VAR	ANON_614_12_L285_G_data, Q
 VAR	ANON_614_12_L285_G_info, Q
 VAR	ANON_614_27_L285_D_data, Q
@@ -6865,7 +6717,6 @@ namespace ANON_614_12_L285_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-; CODE & concat _STRING
 VAR	ANON_614_12_L286_G_data, Q
 VAR	ANON_614_12_L286_G_info, Q
 VAR	ANON_614_18_L286_D_data, Q
@@ -6915,7 +6766,7 @@ end namespace
 	INC
 	CLAMP0
 	SA  3, ANON_614_12_L286_G_len
-STR ANON_614_18_L286_D, "CALL"		; constante string="CALL"
+STR ANON_614_18_L286_D, "CALL"
 	LCA	ANON_614_18_L286_D.data_ptr
 	DUP
 	LA  ,  0
@@ -7049,7 +6900,7 @@ end namespace
 	INC
 	CLAMP0
 	SA  3, ANON_614_12_L284_G_len
-STR ANON_614_33_L284_D, "STANDARD., "		; constante string="STANDARD., "
+STR ANON_614_33_L284_D, "STANDARD., "
 	LCA	ANON_614_33_L284_D.data_ptr
 	DUP
 	LA  ,  0
@@ -7160,7 +7011,7 @@ STR ANON_614_33_L284_D, "STANDARD., "		; constante string="STANDARD., "
 	INC
 	CLAMP0
 	SA  3, ANON_614_12_L282_G_len
-STR ANON_614_59_L282_D, "_L1"			; constante string="_L1"
+STR ANON_614_59_L282_D, "_L1"
 	LCA	ANON_614_59_L282_D.data_ptr
 	DUP
 	LA  ,  0
@@ -7206,7 +7057,6 @@ STR ANON_614_59_L282_D, "_L1"			; constante string="_L1"
 	BLKMOV
 	LVA 3, ANON_614_12_L282_R_disp
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-; CODE & concat _STRING
 VAR	ANON_615_12_L287_G_data, Q
 VAR	ANON_615_12_L287_G_info, Q
 VAR	ANON_615_18_L287_D_data, Q
@@ -7256,7 +7106,7 @@ end namespace
 	INC
 	CLAMP0
 	SA  3, ANON_615_12_L287_G_len
-STR ANON_615_18_L287_D, "SYS_EXIT"		; constante string="SYS_EXIT"
+STR ANON_615_18_L287_D, "SYS_EXIT"
 	LCA	ANON_615_18_L287_D.data_ptr
 	DUP
 	LA  ,  0
@@ -7302,10 +7152,9 @@ STR ANON_615_18_L287_D, "SYS_EXIT"		; constante string="SYS_EXIT"
 	BLKMOV
 	LVA 3, ANON_615_12_L287_R_disp
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-STR STR_L288, "exc_raise_:"			; constante string="exc_raise_:"
+STR STR_L288, "exc_raise_:"
 	LCA	STR_L288.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-; CODE & concat _STRING
 VAR	ANON_619_12_L289_G_data, Q
 VAR	ANON_619_12_L289_G_info, Q
 VAR	ANON_619_38_L289_D_data, Q
@@ -7320,7 +7169,6 @@ namespace ANON_619_12_L289_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-; CODE & concat _STRING
 VAR	ANON_619_12_L290_G_data, Q
 VAR	ANON_619_12_L290_G_info, Q
 VAR	ANON_619_32_L290_D_data, Q
@@ -7335,7 +7183,6 @@ namespace ANON_619_12_L290_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-; CODE & concat _STRING
 VAR	ANON_619_12_L291_G_data, Q
 VAR	ANON_619_12_L291_G_info, Q
 VAR	ANON_619_18_L291_D_data, Q
@@ -7385,7 +7232,7 @@ end namespace
 	INC
 	CLAMP0
 	SA  3, ANON_619_12_L291_G_len
-STR ANON_619_18_L291_D, "EXC_RAISE"		; constante string="EXC_RAISE"
+STR ANON_619_18_L291_D, "EXC_RAISE"
 	LCA	ANON_619_18_L291_D.data_ptr
 	DUP
 	LA  ,  0
@@ -7519,7 +7366,7 @@ end namespace
 	INC
 	CLAMP0
 	SA  3, ANON_619_12_L289_G_len
-STR ANON_619_38_L289_D, "EXCEPTIONS_TOP_CTX_disp"	; constante string="EXCEPTIONS_TOP_CTX_disp"
+STR ANON_619_38_L289_D, "EXCEPTIONS_TOP_CTX_disp"
 	LCA	ANON_619_38_L289_D.data_ptr
 	DUP
 	LA  ,  0
@@ -7565,10 +7412,9 @@ STR ANON_619_38_L289_D, "EXCEPTIONS_TOP_CTX_disp"	; constante string="EXCEPTIONS
 	BLKMOV
 	LVA 3, ANON_619_12_L289_R_disp
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-STR STR_L292, "exc_uncaught_:"		; constante string="exc_uncaught_:"
+STR STR_L292, "exc_uncaught_:"
 	LCA	STR_L292.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-; CODE & concat _STRING
 VAR	ANON_621_12_L293_G_data, Q
 VAR	ANON_621_12_L293_G_info, Q
 VAR	ANON_621_32_L293_D_data, Q
@@ -7583,7 +7429,6 @@ namespace ANON_621_12_L293_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-; CODE & concat _STRING
 VAR	ANON_621_12_L294_G_data, Q
 VAR	ANON_621_12_L294_G_info, Q
 VAR	ANON_621_26_L294_D_data, Q
@@ -7598,7 +7443,6 @@ namespace ANON_621_12_L294_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-; CODE & concat _STRING
 VAR	ANON_621_12_L295_G_data, Q
 VAR	ANON_621_12_L295_G_info, Q
 VAR	ANON_621_18_L295_D_data, Q
@@ -7648,7 +7492,7 @@ end namespace
 	INC
 	CLAMP0
 	SA  3, ANON_621_12_L295_G_len
-STR ANON_621_18_L295_D, "STR"			; constante string="STR"
+STR ANON_621_18_L295_D, "STR"
 	LCA	ANON_621_18_L295_D.data_ptr
 	DUP
 	LA  ,  0
@@ -7782,7 +7626,7 @@ end namespace
 	INC
 	CLAMP0
 	SA  3, ANON_621_12_L293_G_len
-STR ANON_621_32_L293_D, "EXC_MSG__, 'EXCEPTION NON RATTRAPEE : '"	; constante string="EXC_MSG__, 'EXCEPTION NON RATTRAPEE : '"
+STR ANON_621_32_L293_D, "EXC_MSG__, 'EXCEPTION NON RATTRAPEE : '"
 	LCA	ANON_621_32_L293_D.data_ptr
 	DUP
 	LA  ,  0
@@ -7828,7 +7672,6 @@ STR ANON_621_32_L293_D, "EXC_MSG__, 'EXCEPTION NON RATTRAPEE : '"	; constante st
 	BLKMOV
 	LVA 3, ANON_621_12_L293_R_disp
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-; CODE & concat _STRING
 VAR	ANON_622_12_L296_G_data, Q
 VAR	ANON_622_12_L296_G_info, Q
 VAR	ANON_622_32_L296_D_data, Q
@@ -7843,7 +7686,6 @@ namespace ANON_622_12_L296_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-; CODE & concat _STRING
 VAR	ANON_622_12_L297_G_data, Q
 VAR	ANON_622_12_L297_G_info, Q
 VAR	ANON_622_26_L297_D_data, Q
@@ -7858,7 +7700,6 @@ namespace ANON_622_12_L297_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-; CODE & concat _STRING
 VAR	ANON_622_12_L298_G_data, Q
 VAR	ANON_622_12_L298_G_info, Q
 VAR	ANON_622_18_L298_D_data, Q
@@ -7908,7 +7749,7 @@ end namespace
 	INC
 	CLAMP0
 	SA  3, ANON_622_12_L298_G_len
-STR ANON_622_18_L298_D, "STR"			; constante string="STR"
+STR ANON_622_18_L298_D, "STR"
 	LCA	ANON_622_18_L298_D.data_ptr
 	DUP
 	LA  ,  0
@@ -8042,7 +7883,7 @@ end namespace
 	INC
 	CLAMP0
 	SA  3, ANON_622_12_L296_G_len
-STR ANON_622_32_L296_D, "EXC_NL__, 10"		; constante string="EXC_NL__, 10"
+STR ANON_622_32_L296_D, "EXC_NL__, 10"
 	LCA	ANON_622_32_L296_D.data_ptr
 	DUP
 	LA  ,  0
@@ -8088,7 +7929,6 @@ STR ANON_622_32_L296_D, "EXC_NL__, 10"		; constante string="EXC_NL__, 10"
 	BLKMOV
 	LVA 3, ANON_622_12_L296_R_disp
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-; CODE & concat _STRING
 VAR	ANON_623_12_L299_G_data, Q
 VAR	ANON_623_12_L299_G_info, Q
 VAR	ANON_623_32_L299_D_data, Q
@@ -8103,7 +7943,6 @@ namespace ANON_623_12_L299_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-; CODE & concat _STRING
 VAR	ANON_623_12_L300_G_data, Q
 VAR	ANON_623_12_L300_G_info, Q
 VAR	ANON_623_26_L300_D_data, Q
@@ -8118,7 +7957,6 @@ namespace ANON_623_12_L300_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-; CODE & concat _STRING
 VAR	ANON_623_12_L301_G_data, Q
 VAR	ANON_623_12_L301_G_info, Q
 VAR	ANON_623_18_L301_D_data, Q
@@ -8168,7 +8006,7 @@ end namespace
 	INC
 	CLAMP0
 	SA  3, ANON_623_12_L301_G_len
-STR ANON_623_18_L301_D, "LCA"			; constante string="LCA"
+STR ANON_623_18_L301_D, "LCA"
 	LCA	ANON_623_18_L301_D.data_ptr
 	DUP
 	LA  ,  0
@@ -8302,7 +8140,7 @@ end namespace
 	INC
 	CLAMP0
 	SA  3, ANON_623_12_L299_G_len
-STR ANON_623_32_L299_D, "EXC_MSG__.data_ptr"	; constante string="EXC_MSG__.data_ptr"
+STR ANON_623_32_L299_D, "EXC_MSG__.data_ptr"
 	LCA	ANON_623_32_L299_D.data_ptr
 	DUP
 	LA  ,  0
@@ -8348,7 +8186,6 @@ STR ANON_623_32_L299_D, "EXC_MSG__.data_ptr"	; constante string="EXC_MSG__.data_
 	BLKMOV
 	LVA 3, ANON_623_12_L299_R_disp
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-; CODE & concat _STRING
 VAR	ANON_624_12_L302_G_data, Q
 VAR	ANON_624_12_L302_G_info, Q
 VAR	ANON_624_18_L302_D_data, Q
@@ -8398,7 +8235,7 @@ end namespace
 	INC
 	CLAMP0
 	SA  3, ANON_624_12_L302_G_len
-STR ANON_624_18_L302_D, "SYS_PUT_STR"		; constante string="SYS_PUT_STR"
+STR ANON_624_18_L302_D, "SYS_PUT_STR"
 	LCA	ANON_624_18_L302_D.data_ptr
 	DUP
 	LA  ,  0
@@ -8444,7 +8281,6 @@ STR ANON_624_18_L302_D, "SYS_PUT_STR"		; constante string="SYS_PUT_STR"
 	BLKMOV
 	LVA 3, ANON_624_12_L302_R_disp
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-; CODE & concat _STRING
 VAR	ANON_625_12_L303_G_data, Q
 VAR	ANON_625_12_L303_G_info, Q
 VAR	ANON_625_31_L303_D_data, Q
@@ -8459,7 +8295,6 @@ namespace ANON_625_12_L303_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-; CODE & concat _STRING
 VAR	ANON_625_12_L304_G_data, Q
 VAR	ANON_625_12_L304_G_info, Q
 VAR	ANON_625_25_L304_D_data, Q
@@ -8474,7 +8309,6 @@ namespace ANON_625_12_L304_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-; CODE & concat _STRING
 VAR	ANON_625_12_L305_G_data, Q
 VAR	ANON_625_12_L305_G_info, Q
 VAR	ANON_625_18_L305_D_data, Q
@@ -8524,7 +8358,7 @@ end namespace
 	INC
 	CLAMP0
 	SA  3, ANON_625_12_L305_G_len
-STR ANON_625_18_L305_D, "LA"			; constante string="LA"
+STR ANON_625_18_L305_D, "LA"
 	LCA	ANON_625_18_L305_D.data_ptr
 	DUP
 	LA  ,  0
@@ -8658,7 +8492,7 @@ end namespace
 	INC
 	CLAMP0
 	SA  3, ANON_625_12_L303_G_len
-STR ANON_625_31_L303_D, "0, EXCEPTIONS_CURRENT_disp"	; constante string="0, EXCEPTIONS_CURRENT_disp"
+STR ANON_625_31_L303_D, "0, EXCEPTIONS_CURRENT_disp"
 	LCA	ANON_625_31_L303_D.data_ptr
 	DUP
 	LA  ,  0
@@ -8704,7 +8538,6 @@ STR ANON_625_31_L303_D, "0, EXCEPTIONS_CURRENT_disp"	; constante string="0, EXCE
 	BLKMOV
 	LVA 3, ANON_625_12_L303_R_disp
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-; CODE & concat _STRING
 VAR	ANON_626_12_L306_G_data, Q
 VAR	ANON_626_12_L306_G_info, Q
 VAR	ANON_626_18_L306_D_data, Q
@@ -8754,7 +8587,7 @@ end namespace
 	INC
 	CLAMP0
 	SA  3, ANON_626_12_L306_G_len
-STR ANON_626_18_L306_D, "SYS_PUT_STR"		; constante string="SYS_PUT_STR"
+STR ANON_626_18_L306_D, "SYS_PUT_STR"
 	LCA	ANON_626_18_L306_D.data_ptr
 	DUP
 	LA  ,  0
@@ -8800,7 +8633,6 @@ STR ANON_626_18_L306_D, "SYS_PUT_STR"		; constante string="SYS_PUT_STR"
 	BLKMOV
 	LVA 3, ANON_626_12_L306_R_disp
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-; CODE & concat _STRING
 VAR	ANON_627_12_L307_G_data, Q
 VAR	ANON_627_12_L307_G_info, Q
 VAR	ANON_627_32_L307_D_data, Q
@@ -8815,7 +8647,6 @@ namespace ANON_627_12_L307_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-; CODE & concat _STRING
 VAR	ANON_627_12_L308_G_data, Q
 VAR	ANON_627_12_L308_G_info, Q
 VAR	ANON_627_26_L308_D_data, Q
@@ -8830,7 +8661,6 @@ namespace ANON_627_12_L308_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-; CODE & concat _STRING
 VAR	ANON_627_12_L309_G_data, Q
 VAR	ANON_627_12_L309_G_info, Q
 VAR	ANON_627_18_L309_D_data, Q
@@ -8880,7 +8710,7 @@ end namespace
 	INC
 	CLAMP0
 	SA  3, ANON_627_12_L309_G_len
-STR ANON_627_18_L309_D, "LCA"			; constante string="LCA"
+STR ANON_627_18_L309_D, "LCA"
 	LCA	ANON_627_18_L309_D.data_ptr
 	DUP
 	LA  ,  0
@@ -9014,7 +8844,7 @@ end namespace
 	INC
 	CLAMP0
 	SA  3, ANON_627_12_L307_G_len
-STR ANON_627_32_L307_D, "EXC_NL__.data_ptr"	; constante string="EXC_NL__.data_ptr"
+STR ANON_627_32_L307_D, "EXC_NL__.data_ptr"
 	LCA	ANON_627_32_L307_D.data_ptr
 	DUP
 	LA  ,  0
@@ -9060,7 +8890,6 @@ STR ANON_627_32_L307_D, "EXC_NL__.data_ptr"	; constante string="EXC_NL__.data_pt
 	BLKMOV
 	LVA 3, ANON_627_12_L307_R_disp
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-; CODE & concat _STRING
 VAR	ANON_628_12_L310_G_data, Q
 VAR	ANON_628_12_L310_G_info, Q
 VAR	ANON_628_18_L310_D_data, Q
@@ -9110,7 +8939,7 @@ end namespace
 	INC
 	CLAMP0
 	SA  3, ANON_628_12_L310_G_len
-STR ANON_628_18_L310_D, "SYS_PUT_STR"		; constante string="SYS_PUT_STR"
+STR ANON_628_18_L310_D, "SYS_PUT_STR"
 	LCA	ANON_628_18_L310_D.data_ptr
 	DUP
 	LA  ,  0
@@ -9156,7 +8985,6 @@ STR ANON_628_18_L310_D, "SYS_PUT_STR"		; constante string="SYS_PUT_STR"
 	BLKMOV
 	LVA 3, ANON_628_12_L310_R_disp
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-; CODE & concat _STRING
 VAR	ANON_629_12_L311_G_data, Q
 VAR	ANON_629_12_L311_G_info, Q
 VAR	ANON_629_37_L311_D_data, Q
@@ -9171,7 +8999,6 @@ namespace ANON_629_12_L311_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-; CODE & concat _STRING
 VAR	ANON_629_12_L312_G_data, Q
 VAR	ANON_629_12_L312_G_info, Q
 VAR	ANON_629_31_L312_D_data, Q
@@ -9186,7 +9013,6 @@ namespace ANON_629_12_L312_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-; CODE & concat _STRING
 VAR	ANON_629_12_L313_G_data, Q
 VAR	ANON_629_12_L313_G_info, Q
 VAR	ANON_629_18_L313_D_data, Q
@@ -9236,7 +9062,7 @@ end namespace
 	INC
 	CLAMP0
 	SA  3, ANON_629_12_L313_G_len
-STR ANON_629_18_L313_D, "SYS_EXIT"		; constante string="SYS_EXIT"
+STR ANON_629_18_L313_D, "SYS_EXIT"
 	LCA	ANON_629_18_L313_D.data_ptr
 	DUP
 	LA  ,  0
@@ -9370,7 +9196,7 @@ end namespace
 	INC
 	CLAMP0
 	SA  3, ANON_629_12_L311_G_len
-STR ANON_629_37_L311_D, "1"			; constante string="1"
+STR ANON_629_37_L311_D, "1"
 	LCA	ANON_629_37_L311_D.data_ptr
 	DUP
 	LA  ,  0
@@ -9416,10 +9242,9 @@ STR ANON_629_37_L311_D, "1"			; constante string="1"
 	BLKMOV
 	LVA 3, ANON_629_12_L311_R_disp
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-STR STR_L314, "ce_raise_:"			; constante string="ce_raise_:"
+STR STR_L314, "ce_raise_:"
 	LCA	STR_L314.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-; CODE & concat _STRING
 VAR	ANON_636_12_L315_G_data, Q
 VAR	ANON_636_12_L315_G_info, Q
 VAR	ANON_636_32_L315_D_data, Q
@@ -9434,7 +9259,6 @@ namespace ANON_636_12_L315_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-; CODE & concat _STRING
 VAR	ANON_636_12_L316_G_data, Q
 VAR	ANON_636_12_L316_G_info, Q
 VAR	ANON_636_26_L316_D_data, Q
@@ -9449,7 +9273,6 @@ namespace ANON_636_12_L316_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-; CODE & concat _STRING
 VAR	ANON_636_12_L317_G_data, Q
 VAR	ANON_636_12_L317_G_info, Q
 VAR	ANON_636_18_L317_D_data, Q
@@ -9499,7 +9322,7 @@ end namespace
 	INC
 	CLAMP0
 	SA  3, ANON_636_12_L317_G_len
-STR ANON_636_18_L317_D, "LCA"			; constante string="LCA"
+STR ANON_636_18_L317_D, "LCA"
 	LCA	ANON_636_18_L317_D.data_ptr
 	DUP
 	LA  ,  0
@@ -9633,7 +9456,7 @@ end namespace
 	INC
 	CLAMP0
 	SA  3, ANON_636_12_L315_G_len
-STR ANON_636_32_L315_D, "CONSTRAINT_ERROR__exc.data_ptr"	; constante string="CONSTRAINT_ERROR__exc.data_ptr"
+STR ANON_636_32_L315_D, "CONSTRAINT_ERROR__exc.data_ptr"
 	LCA	ANON_636_32_L315_D.data_ptr
 	DUP
 	LA  ,  0
@@ -9679,7 +9502,6 @@ STR ANON_636_32_L315_D, "CONSTRAINT_ERROR__exc.data_ptr"	; constante string="CON
 	BLKMOV
 	LVA 3, ANON_636_12_L315_R_disp
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-; CODE & concat _STRING
 VAR	ANON_637_12_L318_G_data, Q
 VAR	ANON_637_12_L318_G_info, Q
 VAR	ANON_637_31_L318_D_data, Q
@@ -9694,7 +9516,6 @@ namespace ANON_637_12_L318_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-; CODE & concat _STRING
 VAR	ANON_637_12_L319_G_data, Q
 VAR	ANON_637_12_L319_G_info, Q
 VAR	ANON_637_25_L319_D_data, Q
@@ -9709,7 +9530,6 @@ namespace ANON_637_12_L319_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-; CODE & concat _STRING
 VAR	ANON_637_12_L320_G_data, Q
 VAR	ANON_637_12_L320_G_info, Q
 VAR	ANON_637_18_L320_D_data, Q
@@ -9759,7 +9579,7 @@ end namespace
 	INC
 	CLAMP0
 	SA  3, ANON_637_12_L320_G_len
-STR ANON_637_18_L320_D, "SA"			; constante string="SA"
+STR ANON_637_18_L320_D, "SA"
 	LCA	ANON_637_18_L320_D.data_ptr
 	DUP
 	LA  ,  0
@@ -9893,7 +9713,7 @@ end namespace
 	INC
 	CLAMP0
 	SA  3, ANON_637_12_L318_G_len
-STR ANON_637_31_L318_D, "0, EXCEPTIONS_CURRENT_disp"	; constante string="0, EXCEPTIONS_CURRENT_disp"
+STR ANON_637_31_L318_D, "0, EXCEPTIONS_CURRENT_disp"
 	LCA	ANON_637_31_L318_D.data_ptr
 	DUP
 	LA  ,  0
@@ -9939,7 +9759,6 @@ STR ANON_637_31_L318_D, "0, EXCEPTIONS_CURRENT_disp"	; constante string="0, EXCE
 	BLKMOV
 	LVA 3, ANON_637_12_L318_R_disp
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-; CODE & concat _STRING
 VAR	ANON_638_12_L321_G_data, Q
 VAR	ANON_638_12_L321_G_info, Q
 VAR	ANON_638_32_L321_D_data, Q
@@ -9954,7 +9773,6 @@ namespace ANON_638_12_L321_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-; CODE & concat _STRING
 VAR	ANON_638_12_L322_G_data, Q
 VAR	ANON_638_12_L322_G_info, Q
 VAR	ANON_638_26_L322_D_data, Q
@@ -9969,7 +9787,6 @@ namespace ANON_638_12_L322_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-; CODE & concat _STRING
 VAR	ANON_638_12_L323_G_data, Q
 VAR	ANON_638_12_L323_G_info, Q
 VAR	ANON_638_18_L323_D_data, Q
@@ -10019,7 +9836,7 @@ end namespace
 	INC
 	CLAMP0
 	SA  3, ANON_638_12_L323_G_len
-STR ANON_638_18_L323_D, "BRA"			; constante string="BRA"
+STR ANON_638_18_L323_D, "BRA"
 	LCA	ANON_638_18_L323_D.data_ptr
 	DUP
 	LA  ,  0
@@ -10153,7 +9970,7 @@ end namespace
 	INC
 	CLAMP0
 	SA  3, ANON_638_12_L321_G_len
-STR ANON_638_32_L321_D, "exc_raise_"		; constante string="exc_raise_"
+STR ANON_638_32_L321_D, "exc_raise_"
 	LCA	ANON_638_32_L321_D.data_ptr
 	DUP
 	LA  ,  0
@@ -10199,10 +10016,9 @@ STR ANON_638_32_L321_D, "exc_raise_"		; constante string="exc_raise_"
 	BLKMOV
 	LVA 3, ANON_638_12_L321_R_disp
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-STR STR_L324, "ne_raise_:"			; constante string="ne_raise_:"
+STR STR_L324, "ne_raise_:"
 	LCA	STR_L324.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-; CODE & concat _STRING
 VAR	ANON_640_12_L325_G_data, Q
 VAR	ANON_640_12_L325_G_info, Q
 VAR	ANON_640_32_L325_D_data, Q
@@ -10217,7 +10033,6 @@ namespace ANON_640_12_L325_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-; CODE & concat _STRING
 VAR	ANON_640_12_L326_G_data, Q
 VAR	ANON_640_12_L326_G_info, Q
 VAR	ANON_640_26_L326_D_data, Q
@@ -10232,7 +10047,6 @@ namespace ANON_640_12_L326_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-; CODE & concat _STRING
 VAR	ANON_640_12_L327_G_data, Q
 VAR	ANON_640_12_L327_G_info, Q
 VAR	ANON_640_18_L327_D_data, Q
@@ -10282,7 +10096,7 @@ end namespace
 	INC
 	CLAMP0
 	SA  3, ANON_640_12_L327_G_len
-STR ANON_640_18_L327_D, "LCA"			; constante string="LCA"
+STR ANON_640_18_L327_D, "LCA"
 	LCA	ANON_640_18_L327_D.data_ptr
 	DUP
 	LA  ,  0
@@ -10416,7 +10230,7 @@ end namespace
 	INC
 	CLAMP0
 	SA  3, ANON_640_12_L325_G_len
-STR ANON_640_32_L325_D, "NUMERIC_ERROR__exc.data_ptr"	; constante string="NUMERIC_ERROR__exc.data_ptr"
+STR ANON_640_32_L325_D, "NUMERIC_ERROR__exc.data_ptr"
 	LCA	ANON_640_32_L325_D.data_ptr
 	DUP
 	LA  ,  0
@@ -10462,7 +10276,6 @@ STR ANON_640_32_L325_D, "NUMERIC_ERROR__exc.data_ptr"	; constante string="NUMERI
 	BLKMOV
 	LVA 3, ANON_640_12_L325_R_disp
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-; CODE & concat _STRING
 VAR	ANON_641_12_L328_G_data, Q
 VAR	ANON_641_12_L328_G_info, Q
 VAR	ANON_641_31_L328_D_data, Q
@@ -10477,7 +10290,6 @@ namespace ANON_641_12_L328_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-; CODE & concat _STRING
 VAR	ANON_641_12_L329_G_data, Q
 VAR	ANON_641_12_L329_G_info, Q
 VAR	ANON_641_25_L329_D_data, Q
@@ -10492,7 +10304,6 @@ namespace ANON_641_12_L329_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-; CODE & concat _STRING
 VAR	ANON_641_12_L330_G_data, Q
 VAR	ANON_641_12_L330_G_info, Q
 VAR	ANON_641_18_L330_D_data, Q
@@ -10542,7 +10353,7 @@ end namespace
 	INC
 	CLAMP0
 	SA  3, ANON_641_12_L330_G_len
-STR ANON_641_18_L330_D, "SA"			; constante string="SA"
+STR ANON_641_18_L330_D, "SA"
 	LCA	ANON_641_18_L330_D.data_ptr
 	DUP
 	LA  ,  0
@@ -10676,7 +10487,7 @@ end namespace
 	INC
 	CLAMP0
 	SA  3, ANON_641_12_L328_G_len
-STR ANON_641_31_L328_D, "0, EXCEPTIONS_CURRENT_disp"	; constante string="0, EXCEPTIONS_CURRENT_disp"
+STR ANON_641_31_L328_D, "0, EXCEPTIONS_CURRENT_disp"
 	LCA	ANON_641_31_L328_D.data_ptr
 	DUP
 	LA  ,  0
@@ -10722,7 +10533,6 @@ STR ANON_641_31_L328_D, "0, EXCEPTIONS_CURRENT_disp"	; constante string="0, EXCE
 	BLKMOV
 	LVA 3, ANON_641_12_L328_R_disp
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-; CODE & concat _STRING
 VAR	ANON_642_12_L331_G_data, Q
 VAR	ANON_642_12_L331_G_info, Q
 VAR	ANON_642_32_L331_D_data, Q
@@ -10737,7 +10547,6 @@ namespace ANON_642_12_L331_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-; CODE & concat _STRING
 VAR	ANON_642_12_L332_G_data, Q
 VAR	ANON_642_12_L332_G_info, Q
 VAR	ANON_642_26_L332_D_data, Q
@@ -10752,7 +10561,6 @@ namespace ANON_642_12_L332_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-; CODE & concat _STRING
 VAR	ANON_642_12_L333_G_data, Q
 VAR	ANON_642_12_L333_G_info, Q
 VAR	ANON_642_18_L333_D_data, Q
@@ -10802,7 +10610,7 @@ end namespace
 	INC
 	CLAMP0
 	SA  3, ANON_642_12_L333_G_len
-STR ANON_642_18_L333_D, "BRA"			; constante string="BRA"
+STR ANON_642_18_L333_D, "BRA"
 	LCA	ANON_642_18_L333_D.data_ptr
 	DUP
 	LA  ,  0
@@ -10936,7 +10744,7 @@ end namespace
 	INC
 	CLAMP0
 	SA  3, ANON_642_12_L331_G_len
-STR ANON_642_32_L331_D, "exc_raise_"		; constante string="exc_raise_"
+STR ANON_642_32_L331_D, "exc_raise_"
 	LCA	ANON_642_32_L331_D.data_ptr
 	DUP
 	LA  ,  0
@@ -10982,16 +10790,16 @@ STR ANON_642_32_L331_D, "exc_raise_"		; constante string="exc_raise_"
 	BLKMOV
 	LVA 3, ANON_642_12_L331_R_disp
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-STR STR_L334, " virtual VARzone"		; constante string=" virtual VARzone"
+STR STR_L334, " virtual VARzone"
 	LCA	STR_L334.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-STR STR_L335, "   loc_siz = $"		; constante string="   loc_siz = $"
+STR STR_L335, "   loc_siz = $"
 	LCA	STR_L335.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-STR STR_L336, "  end virtual"			; constante string="  end virtual"
+STR STR_L336, "  end virtual"
 	LCA	STR_L336.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
-STR STR_L337, "end namespace"			; constante string="end namespace"
+STR STR_L337, "end namespace"
 	LCA	STR_L337.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
 	LVA  3,	STANDARD.EXPANDER_L1.CREATE_FAS_MAIN_FILE.BLOCK__4.F_disp
@@ -11004,10 +10812,9 @@ VAR	ANON_650_14__dat, STANDARD.TEXT_IO._FILE_TYPE.size
 	LA  0, STANDARD.TEXT_IO._FILE_TYPE.use__info
 	SA  3, ANON_650_14__u
 	LVA 3, ANON_650_14_disp
-					; doublet resultat record anonyme
+
 	CALL	STANDARD.TEXT_IO. ,STANDARD_OUTPUT_L14
 	CALL	STANDARD.TEXT_IO. ,SET_OUTPUT_L12
-; CODE & concat _STRING
 VAR	ANON_651_12_L338_G_data, Q
 VAR	ANON_651_12_L338_G_info, Q
 VAR	ANON_651_87_L338_D_data, Q
@@ -11022,7 +10829,6 @@ namespace ANON_651_12_L338_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-; CODE & concat _STRING
 VAR	ANON_651_12_L339_G_data, Q
 VAR	ANON_651_12_L339_G_info, Q
 VAR	ANON_651_76_L339_D_data, Q
@@ -11037,7 +10843,6 @@ namespace ANON_651_12_L339_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-; CODE & concat _STRING
 VAR	ANON_651_12_L340_G_data, Q
 VAR	ANON_651_12_L340_G_info, Q
 VAR	ANON_651_33_L340_D_data, Q
@@ -11052,7 +10857,7 @@ namespace ANON_651_12_L340_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-STR ANON_651_12_L340_G, "TLALOC/Ada 83 - "	; constante string="TLALOC/Ada 83 - "
+STR ANON_651_12_L340_G, "TLALOC/Ada 83 - "
 	LCA	ANON_651_12_L340_G.data_ptr
 	DUP
 	LA  ,  0
@@ -11066,7 +10871,7 @@ STR ANON_651_12_L340_G, "TLALOC/Ada 83 - "	; constante string="TLALOC/Ada 83 - "
 	CLAMP0
 	SA  3, ANON_651_12_L340_G_len
 	LA 0, STANDARD.IDL.LIB_PATH_disp
-namespace ANON_651_33			; ensemble doublet @data/@info pour slice anonyme source
+namespace ANON_651_33
 VAR ANON_651_33_disp, Q
 VAR ANON_651_33__u, Q
 VAR SIZ__, D
@@ -11078,7 +10883,6 @@ VAR _LST_1, D
 	SA	3, ANON_651_33__u
 	LI	8
 	SD	3, COMP_SIZ
-; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SD	3, _FST_1
 	LD	0, STANDARD.IDL.LIB_PATH_LENGTH_disp
@@ -11202,7 +11006,7 @@ end namespace
 	INC
 	CLAMP0
 	SA  3, ANON_651_12_L338_G_len
-STR ANON_651_87_L338_D, ".fas created"		; constante string=".fas created"
+STR ANON_651_87_L338_D, ".fas created"
 	LCA	ANON_651_87_L338_D.data_ptr
 	DUP
 	LA  ,  0
@@ -11257,9 +11061,9 @@ L242:
 endPRO
 	UNLINKR 2
 endPRO
-L227:					; post if
+L227:
 ret_lbl:
 	UNLINKR 1
 	RTD	prm_siz
 excep:
-endPRO					;---------- end PRO EXPANDER
+endPRO

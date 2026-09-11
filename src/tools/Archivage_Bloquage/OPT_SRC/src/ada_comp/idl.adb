@@ -11,7 +11,7 @@ use  TEXT_IO;
 	package body			IDL
 is					---
 
-  DEBUG		: BOOLEAN		:= FALSE;								--| POSITIONNE PAR LE "PRAGMA DEBUG;" (VOIR PRA_WALK)
+  DEBUG_IDL	: BOOLEAN		:= FALSE;								--| POSITIONNE PAR LE "PRAGMA DEBUG;" (VOIR PRA_WALK)
 
   package INT_IO	is new INTEGER_IO ( INTEGER );							--| POUR L'IO D'ENTIERS
 
@@ -25,7 +25,7 @@ is					---
     subtype VPG_IDX			is PAGE_IDX range 0 .. MAX_VPG;
     subtype VPG_NUM			is VPG_IDX  range 1 .. MAX_VPG;
 
-    MAX_RPG			: constant	:= 50;						--| PAGES PHYSIQUES (REELLES)
+    MAX_RPG			: constant	:= 16_384;					--| PAGES PHYSIQUES (REELLES)
     type RPG_IDX			is new INTEGER range 0 .. MAX_RPG;					--|
     subtype RPG_NUM			is RPG_IDX     range 1 .. MAX_RPG;
 
@@ -178,6 +178,47 @@ is					---
 	-------
   use IDL_TBL;
 
+			--------------------------------------------------------
+			-- Rangs des attributs pre-calcules : ATTR_RANK( NN )( AN )
+			-- est le rang de l'attribut AN dans un noeud NN (0 si absent),
+			-- LIST_RANK( NN ) le rang du premier attribut liste (0 si
+			-- aucun). Remplace le balayage lineaire de A_SPEC a chaque
+			-- acces (D, DABS, LIST) : construit une fois, au premier acces.
+			--------------------------------------------------------
+
+  type ATTR_RANKS		is array( ATTRIBUTE_NAME ) of ATTR_NBR;
+  ATTR_RANK		: array( NODE_NAME ) of ATTR_RANKS;
+  LIST_RANK		: array( NODE_NAME ) of ATTR_NBR;
+  ATTR_RANK_READY		: BOOLEAN		:= FALSE;
+
+
+			---------------
+  procedure		BUILD_ATTR_RANK
+  is			---------------
+
+    APOS		: INTEGER;
+  begin
+    for NN in NODE_NAME loop
+      for AN in ATTRIBUTE_NAME loop
+        ATTR_RANK( NN )( AN ) := 0;
+      end loop;
+      LIST_RANK( NN ) := 0;
+      APOS := N_SPEC( NN ).NS_FIRST_A;
+      for I in 1 .. N_SPEC( NN ).NS_SIZE loop								--| MEME PARCOURS QUE L'ANCIEN D
+        if ATTR_RANK( NN )( A_SPEC( APOS ).ATTR ) = 0 then						--| PREMIER RANG CONSERVE (COMME LE BALAYAGE)
+	ATTR_RANK( NN )( A_SPEC( APOS ).ATTR ) := I;
+        end if;
+        if A_SPEC( APOS ).IS_LIST and then LIST_RANK( NN ) = 0 then
+	LIST_RANK( NN ) := I;
+        end if;
+        APOS := APOS + 1;
+      end loop;
+    end loop;
+    ATTR_RANK_READY := TRUE;
+
+  end	BUILD_ATTR_RANK;
+	---------------
+
 
   package body PAGE_MAN		is separate;
   package body IDL_TBL		is separate;
@@ -301,17 +342,33 @@ is					---
   procedure		 D		( AN :ATTRIBUTE_NAME; T :TREE; V :TREE )
   is			---
 
-    APOS		: INTEGER		:= N_SPEC( T.TY ).NS_FIRST_A;						--| INDICE DE PREMIER ATTRIBUT DANS LA TABLE DE TOUS LES ATTRIBUTS DE TOUS LES NOEUDS
+    RANG		: ATTR_NBR;
+    RN		: RPG_IDX;									-- DABS INLINE
+
   begin
-    for I in 1 .. N_SPEC( T.TY ).NS_SIZE loop								--| BALAYAGE SUR LES ATTRIBUTS DU NOEUD POINTE PAR T
-      if A_SPEC( APOS ).ATTR = AN then									--| SI C'EST L'ATTRIBUT CHERCHE
-        DABS( I, T, V );										--| REMPLIR LE CHAMP
-        return;
-      end if;
-      APOS := APOS + 1;										--| MONTER AU CHAMP SUIVANT
-    end loop;
+    if  not ATTR_RANK_READY  then BUILD_ATTR_RANK; end if;
+    RANG := ATTR_RANK( T.TY )( AN );									--| RANG DE L'ATTRIBUT DANS CE TYPE DE NOEUD (0 : ABSENT)
+    if  RANG /= 0  then
+
+--      DABS( RANG, T, V );										--| REMPLIR LE CHAMP
+-- DABS INLINE
+  if T.PG /= CUR_VP then										--| LA PAGE QUI NOUS INTERESSE N'EST PAS COURANTE
+    CUR_VP := T.PG;											--| LA MENTIONNER COMME COURANTE
+    RN := ASSOC_PAGE( CUR_VP );									--| SON ASSOCIEE PHYSIQUE EST LA RN
+    if RN = 0 then											--| SI HORS MEMOIRE
+      CUR_RP := READ_PAGE ( CUR_VP );									--| ASSURER LA PAGE PHYSIQUE
+    else												--| NON FLOTTANTE
+      CUR_RP := RN;											--| PAGE REELLE COURANTE
+    end if;
+  end if;
+
+  PAG( CUR_RP ).DATA.all( T.LN + RANG ) := V;								--| ECRIRE
+  PAG( CUR_RP ).CHANGED := TRUE;									--| MENTIONNEE CHANGEE (ON Y A ECRIT ! )
+--
+     return;
+    end if;
     PUT_LINE( "; !! PROCEDURE D : PAS D ATTRIBUT " & ATTR_IMAGE( AN ) & " DANS " & NODE_REP( T ) );			--| L'ATTRIBUT N'A PAS ETE TROUVE POUR LE NOEUD
-    raise PROGRAM_ERROR;										--| ERREUR
+    raise  PROGRAM_ERROR;										--| ERREUR
   end	D;
 	---
 
@@ -320,16 +377,29 @@ is					---
   function		 D		( AN :ATTRIBUTE_NAME; T :TREE ) return TREE
   is			---
 
-    APOS		: INTEGER		:= N_SPEC( T.TY ).NS_FIRST_A;						--| INDICE DE PREMIER ATTRIBUT DANS LA TABLE DE TOUS LES ATTRIBUTS DE TOUS LES NOEUDS
+    RANG		: ATTR_NBR;
+    RN		: RPG_IDX;		-- DABS INLINE
   begin
-    for I in 1 .. N_SPEC( T.TY ).NS_SIZE loop								--| BALAYAGE SUR LES ATTRIBUTS DU NOEUD POINTE PAR T
-      if A_SPEC( APOS ).ATTR = AN then									--| SI C'EST L'ATTRIBUT CHERCHE
-        return DABS( I, T );										--| RENDRE LE CHAMP
-      end if;
-      APOS := APOS + 1;										--| MONTER AU CHAMP SUIVANT
-    end loop;
+    if  not ATTR_RANK_READY  then BUILD_ATTR_RANK; end if;
+    RANG := ATTR_RANK( T.TY )( AN );									--| RANG DE L'ATTRIBUT DANS CE TYPE DE NOEUD (0 : ABSENT)
+    if  RANG /= 0  then
+
+--      return  DABS( RANG, T );									--| RENDRE LE CHAMP
+-- DABS INLINE
+  if T.PG /= CUR_VP then										--| LA PAGE DE T N'EST PAS LA COURANTE
+    CUR_VP := T.PG;											--| LA MENTIONNER COMME COURANTE
+    RN := ASSOC_PAGE( CUR_VP );									--| PAGE REELLE ASSOCIEE : RN
+    if RN = 0 then											--| SI HORS MEMOIRE
+      CUR_RP := READ_PAGE( CUR_VP );									--| ASSURER LA PAGE PHYSIQUE
+    else												--| NON FLOTTANTE
+      CUR_RP := RN;											--| PAGE REELLE COURANTE
+    end if;
+  end if;
+  return PAG( CUR_RP ).DATA.all( T.LN + RANG );								--| LIRE
+--
+    end if;
     PUT_LINE( "; !! FUNCTION D : PAS D ATTRIBUT " & ATTR_IMAGE( AN ) & " DANS " & NODE_REP( T ) );			--| L'ATTRIBUT N'A PAS ETE TROUVE POUR LE NOEUD
-    raise PROGRAM_ERROR;										--| ERREUR
+    raise  PROGRAM_ERROR;										--| ERREUR
 
   end	 D;
 	---
@@ -439,14 +509,13 @@ is					---
   function		LIST		( T :TREE )	return SEQ_TYPE
   is			----
 
-    A_IDX		: INTEGER		:= N_SPEC( T.TY ).NS_FIRST_A;
+    RANG		: ATTR_NBR;
   begin
-    for I in 1 .. N_SPEC( T.TY ).NS_SIZE loop
-      if A_SPEC( A_IDX ).IS_LIST then
-        return (FIRST=> DABS ( I, T ) , NEXT=> TREE_NIL );
-      end if;
-      A_IDX := A_IDX + 1;
-    end loop;
+    if  not ATTR_RANK_READY  then BUILD_ATTR_RANK; end if;
+    RANG := LIST_RANK( T.TY );										--| RANG DU PREMIER ATTRIBUT LISTE (0 : AUCUN)
+    if  RANG /= 0  then
+      return  (FIRST=> DABS ( RANG, T ) , NEXT=> TREE_NIL );
+    end if;
 
     PUT_LINE( "!! IL N Y A PAS DE LISTE ASSOCIEE AU NOEUD " & NODE_REP( T ) );
     raise PROGRAM_ERROR;

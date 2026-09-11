@@ -24,6 +24,52 @@ is					-----
   GA_COUNT	: NATURAL := 0;
 
 
+			--^^^^--
+  procedure		  TROU			( SITE :STRING; NOEUD :TREE := TREE_VOID )
+  is			--------
+
+	-- Signal maison des manques de capacite. Ecrit "; !! TROU ..."
+	-- dans le FINC (traçabilite : grep TROU = inventaire vivant)
+	-- ET le meme message sur la console (lecon n 96 : un
+	-- commentaire FINC n'est vu par personne), puis leve
+	-- PROGRAM_ERROR -- mode STRICT, defaut. En RECENSEMENT :
+	-- compte, logue, continue.
+	-- HYPOTHESE : la sortie courante est le FINC (vrai de tous les
+	-- sites CODE_*). Si FS est ferme (hors expansion d'unite), on
+	-- ecrit seulement sur la console.
+
+    function	MSG		return STRING
+    is
+    begin
+      if  NOEUD = TREE_VOID  then
+        return  "!! TROU " & SITE;
+      else
+        return  "!! TROU " & SITE & " : " & NODE_NAME'IMAGE( NOEUD.TY );
+      end if;
+    end MSG;
+
+  begin
+    TROU_COUNT := TROU_COUNT + 1;
+
+    if  IS_OPEN( FS )  then
+      PUT_LINE( "; " & MSG );									-- dans le FINC (sortie courante)
+      SET_OUTPUT( STANDARD_OUTPUT );
+      NEW_LINE;
+      PUT_LINE( MSG );									-- sur la console
+      SET_OUTPUT( FS );									-- retour au FINC
+    else
+      NEW_LINE;
+      PUT_LINE( MSG );									-- deja sur la console
+    end if;
+
+    if  not TROU_RECENSEMENT  then
+      raise PROGRAM_ERROR;
+    end if;
+
+  end	TROU;
+	----
+
+
 			--^^^^^^^^^^^^^^^^--
   procedure		  OPEN_OUTPUT_FILE		( FILE_NAME :STRING )
   is			--------------------
@@ -32,6 +78,8 @@ is					-----
     CREATE ( FS, OUT_FILE, FILE_NAME( FILE_NAME'FIRST .. FILE_NAME'LAST-4 ) & ".FINC" );				-- FASM INCLUDE
     SET_OUTPUT ( FS );										-- CODAGE SUR SORTIE STANDARD
     INT_LABEL := 1;
+
+    TROU_COUNT := 0;										-- RAZ COMPTAGE DES TROUS D'IMPLEMENTATION PAR UNITE
 
   end	OPEN_OUTPUT_FILE;
 	----------------
@@ -43,6 +91,11 @@ is					-----
 
   begin
     SET_OUTPUT ( STANDARD_OUTPUT );
+
+    if  TROU_COUNT > 0  then
+      PUT_LINE( "!!" & NATURAL'IMAGE( TROU_COUNT ) & " TROU(s) traverses -- FINC SUSPECT" );
+    end if;
+
     CLOSE ( FS );
 
   end	CLOSE_OUTPUT_FILE;
@@ -100,11 +153,6 @@ is					-----
   begin
     CUR_LEVEL := CUR_LEVEL + 1;
 
---    if DEBUG then put_line( "inc lvl cur= " & LEVEL_NUM'IMAGE( CUR_LEVEL ) ); end if;
-
---   exception
---     when CONSTRAINT_ERROR => raise STATIC_LEVEL_OVERFLOW;
-
   end	INC_LEVEL;
 	---------
 
@@ -116,11 +164,6 @@ is					-----
   begin
     CUR_LEVEL := CUR_LEVEL - 1;
 
---    if DEBUG then put_line( "dec lvl cur= " & LEVEL_NUM'IMAGE( CUR_LEVEL ) ); end if;
-
---   exception
---     when CONSTRAINT_ERROR => raise STATIC_LEVEL_UNDERFLOW;
---
   end	DEC_LEVEL;
 	---------
 
@@ -141,8 +184,7 @@ is					-----
     when DN_FLOAT			=> return ADDR_SIZE;			-- 8 octets = 64 bits IEEE 754 double
     when DN_L_PRIVATE		=> return TYPE_SIZE( D( SM_TYPE_SPEC, TYPE_SPEC ) );
     when others =>
-      PUT_LINE( "CODAGE_INTERMEDIAIRE.TYPE_SIZE : TYPE_SPEC.TY ILLICITE " & NODE_NAME'IMAGE( TYPE_SPEC.TY ) );
---      raise PROGRAM_ERROR;
+      TROU( "TYPE_SIZE type illicite", TYPE_SPEC );
     end case;
     return 0;
 
@@ -178,7 +220,23 @@ is					-----
   begin
     loop
       if R.TY = DN_PRIVATE or else R.TY = DN_L_PRIVATE then
-        R := D( SM_TYPE_SPEC, R );
+        if  D( SM_TYPE_SPEC, R ) /= TREE_VOID  then
+	R := D( SM_TYPE_SPEC, R );
+
+        elsif  D( SM_DERIVED, R ) /= TREE_VOID  then
+			--| Seconde saveur DIANA de `private`/`l_private` (grammaire
+			--| diana_NODES : SM_DERIVED en tete d'attributs) : type DERIVE
+			--| d'un type prive, declare HORS du paquetage -- SM_TYPE_SPEC
+			--| est VOID et aucune completion ne viendra.  La vue pleine est
+			--| celle du PARENT : representation identique (LRM 3.4, meme
+			--| doctrine que C1).  Precedent maison : ROOT_RECORD suit deja
+			--| SM_DERIVED (n 120b).  Decouverte temoin CONV_DER1 30/07
+			--| (ERREUR CODE_VC_NAME TYPE_SPEC.TY = DN_VOID sur DS : DSET).
+	R := D( SM_DERIVED, R );
+
+        else
+	return R;								-- ni completion ni parent : anomalie, bruyante en aval
+        end if;
 
       elsif R.TY = DN_INCOMPLETE then
         R := D( XD_FULL_TYPE_SPEC, R );
@@ -300,9 +358,7 @@ is					-----
       PUT_LINE( ASCII.HT & "LI" & ASCII.HT &  INTEGER'IMAGE( TYPE_SIZE( TYPE_SPEC ) ) );
 
     else
-      PUT_LINE( "ERREUR LOAD_TYPE_SIZE : TYPE_SPEC NON CONTRAINT" );
-      raise PROGRAM_ERROR;
-
+      TROU( "LOAD_TYPE_SIZE type non contraint", TYPE_SPEC );
     end if;
 
   end	  LOAD_TYPE_SIZE;
@@ -313,7 +369,7 @@ is					-----
   function		  OPER_SIZ_CHAR		( DEFN :TREE )		return CHARACTER
   is			--=============--
   begin
-    if  DEFN.TY = DN_FLOAT  or  DEFN.TY = DN_ACCESS  then return 'q'; end if;
+    if  DEFN.TY = DN_FLOAT  or  DEFN.TY = DN_ACCESS  then return 'Q'; end if;
 
     declare
       TS		: TREE		:= DEFN;
@@ -330,19 +386,16 @@ is					-----
       end if;
       SIZ := DI( CD_IMPL_SIZE, TS );
 
---    declare
---      SIZ		: NATURAL		:= DI( CD_IMPL_SIZE, DEFN );
---    begin
       if  SIZ <= 0  then PUT_LINE( "'; EXPANDER.UTILS.OPER_SIZ_CHAR SIZ = 0 ! "
 	& NODE_NAME'IMAGE( DEFN.TY )
 	& ' ' & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, DEFN ) ) )
 	);
       raise  PROGRAM_ERROR;
       end if;
-      if	 SIZ <= 8		then return 'b';
-      elsif SIZ <= 16	then return 'w';
-      elsif SIZ <= 32	then return 'd';
-      elsif SIZ <= 64	then return 'q';
+      if	 SIZ <= 8		then return 'B';
+      elsif SIZ <= 16	then return 'W';
+      elsif SIZ <= 32	then return 'D';
+      elsif SIZ <= 64	then return 'Q';
       else
         PUT_LINE( "'; EXPANDER.UTILS.OPER_SIZ_CHAR : taille > 64 bits -- operande non scalaire ? "
 	  & NODE_NAME'IMAGE( DEFN.TY ) );
@@ -362,15 +415,15 @@ is					-----
 
   begin
     -- Les flottants sont toujours en double IEEE 754 = 64 bits = qword
-    if  EXP_TYPE.TY = DN_FLOAT  or  EXP_TYPE.TY = DN_ACCESS then return 'q'; end if;
+    if  EXP_TYPE.TY = DN_FLOAT  or  EXP_TYPE.TY = DN_ACCESS then return 'Q'; end if;
     declare
       SIZ		: NATURAL		:= DI( CD_IMPL_SIZE, EXP_TYPE );
     begin
-    if	 SIZ <= 8		then return 'b';
-    elsif  SIZ <= 16	then return 'w';
-    elsif  SIZ <= 32	then return 'd';
-    elsif  SIZ <= 64	then return 'q';
-    else return 'v';
+    if	 SIZ <= 8		then return 'B';
+    elsif  SIZ <= 16	then return 'W';
+    elsif  SIZ <= 32	then return 'D';
+    elsif  SIZ <= 64	then return 'Q';
+    else return 'V';
     end if;
     end;
 
@@ -485,7 +538,7 @@ is					-----
   is			-----------------
     C	: CHARACTER	:= OPER_SIZ_CHAR( DEFN );
   begin
-    if  C /= 'q'  and then  IS_UNSIGNED_TYPE( DEFN )  then
+    if  C /= 'Q'  and then  IS_UNSIGNED_TYPE( DEFN )  then
       return "UL" & C;
     else
       return "L" & C;
@@ -500,7 +553,7 @@ is					-----
   is			------------------
     C	: CHARACTER	:= OPER_SIZ_CHAR( DEFN );
   begin
-    if  C /= 'q'  and then  IS_UNSIGNED_TYPE( DEFN )  then
+    if  C /= 'Q'  and then  IS_UNSIGNED_TYPE( DEFN )  then
       return "ULI" & C;
     else
       return "LI" & C;
@@ -526,11 +579,11 @@ is					-----
       begin
 
         if  HAS_GENERIC_TYPE  then
-	PUT_LINE( tab & "La " & IMAGE( CODI.GENERIC_BASE_LEVEL + 1 ) & "," & tab & "-GFP_ofs" );
+	PUT_LINE( tab & "LA " & IMAGE( CODI.GENERIC_BASE_LEVEL + 1 ) & "," & tab & "-GFP_ofs" );
 	PUT_LINE( tab & "LVA ," & tab & "-" & DEFN_STR & "_ofs" );
 
-	PUT_LINE( tab & "La" & LEVEL_NUM'IMAGE( CODI.GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );
-	PUT_LINE( tab & "La ," & tab & '-'
+	PUT_LINE( tab & "LA" & LEVEL_NUM'IMAGE( CODI.GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );
+	PUT_LINE( tab & "LA ," & tab & '-'
 			& PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, D( SM_OBJ_TYPE, DEFN ) ) ) )
 			& "__ld_ofs" );
 	PUT_LINE( tab & "CALLI" );
@@ -540,11 +593,10 @@ is					-----
 	  OBJ_TYPE := D( SM_TYPE_SPEC, OBJ_TYPE );
 	end loop;
 
-	PUT_LINE( tab & "La " & IMAGE( CODI.GENERIC_BASE_LEVEL + 1 ) & "," & tab & "-GFP_ofs" );
+	PUT_LINE( tab & "LA " & IMAGE( CODI.GENERIC_BASE_LEVEL + 1 ) & "," & tab & "-GFP_ofs" );
 
 	if  OBJ_TYPE.TY in CLASS_SCALAR  or else  OBJ_TYPE.TY = DN_ACCESS  then
 	  PUT_LINE( tab & OPER_LOAD_STR( OBJ_TYPE ) & " ," & tab & "-" & DEFN_STR & "_ofs" );
---	  PUT_LINE( tab & "L" & OPER_SIZ_CHAR( OBJ_TYPE ) & " ," & tab & "-" & DEFN_STR & "_ofs" );
 
 	else
 	  PUT_LINE( tab & "LVA ," & tab & "-" & DEFN_STR & "_ofs" );
@@ -557,36 +609,32 @@ is					-----
     if  DEFN.TY in CLASS_PARAM_NAME  then								-- in_id in_out_id out_id
       if  (DEFN.TY = DN_IN_ID) and (D( SM_OBJ_TYPE, DEFN ).TY in CLASS_SCALAR
 			or else D( SM_OBJ_TYPE, DEFN ).TY = DN_ACCESS)	then
+
 				-------------------
 				SCALAR_IN_PARAMETER:
---	declare
---	SIZ_CHAR  : CHARACTER	:= OPER_SIZ_CHAR( D( SM_OBJ_TYPE, DEFN ) );
-
         begin
---	PUT( tab & "L" & SIZ_CHAR & ' ' & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' );
 	PUT( tab & OPER_LOAD_STR( D( SM_OBJ_TYPE, DEFN ) ) & ' ' & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' );
-	PUT( tab & '-' & PRINT_NAME( D( LX_SYMREP, DEFN ) ) );							-- ATTENTION signe offset de params opposé aux vars
+	PUT( tab & '-' & PRINT_NAME( D( LX_SYMREP, DEFN ) ) );						-- ATTENTION signe offset de params opposé aux vars
 	PUT_LINE( "_ofs" );										-- offset de parametre scalaire
-        end	SCALAR_IN_PARAMETER;
-		-------------------
+
+        end		SCALAR_IN_PARAMETER;
+			-------------------
 
       elsif  D( SM_OBJ_TYPE, DEFN ).TY in CLASS_SCALAR
 	or else  D( SM_OBJ_TYPE, DEFN ).TY = DN_ACCESS  then						-- out/in_out SCALAIRE lu en expression :
-			----------------------								-- le slot contient l'ADRESSE, dereferencer
-			SCALAR_REF_PARAMETER:								-- (meme geste que la re-passe out->in de
---	declare											-- CODE_PROCEDURE_CALL). Piege n° 80.
---	SIZ_CHAR  : CHARACTER	:= OPER_SIZ_CHAR( D( SM_OBJ_TYPE, DEFN ) );
 
+				--------------------							-- le slot contient l'ADRESSE, dereferencer
+				SCALAR_REF_PARAMETER:							-- (meme geste que la re-passe out->in de
         begin
---	PUT( tab & "LI" & SIZ_CHAR & ' ' & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' );
 	PUT( tab & OPER_LOADI_STR( D( SM_OBJ_TYPE, DEFN ) ) & ' ' & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' );
 	PUT( tab & '-' & PRINT_NAME( D( LX_SYMREP, DEFN ) ) );
 	PUT_LINE( "_ofs" );
-        end	SCALAR_REF_PARAMETER;
-		----------------------
+
+        end		SCALAR_REF_PARAMETER;
+			--------------------
 
       else											-- pas scalaire ou out in/out
-        PUT( tab & "La " & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' & tab );
+        PUT( tab & "LA " & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ',' & tab );
         PUT( '-' & PRINT_NAME( D( LX_SYMREP, DEFN ) ) );							-- ATTENTION signe offset de params opposé aux vars
         PUT_LINE( "_ofs" );										-- offset de parametre adresse
 
@@ -601,15 +649,14 @@ is					-----
         end loop;
 
         if DEFN.TY in CLASS_VC_NAME  and then  DB( SM_RENAMES_OBJ, DEFN )  then
-			---------------
-			MANAGE_RENAMING:
+				---------------
+				MANAGE_RENAMING:
 	declare
 	  OBJ_LEVEL	: LEVEL_NUM	:= DI( CD_LEVEL, DEFN );
 	  OBJ_STR		: constant STRING	:= PRINT_NAME( D( LX_SYMREP, DEFN ) );
 	begin
 
 	  if  OBJ_TYPE.TY in CLASS_SCALAR  or else OBJ_TYPE.TY = DN_ACCESS  then
---	    PUT( tab & "LI" & OPER_SIZ_CHAR( OBJ_TYPE ) & tab & IMAGE( OBJ_LEVEL ) & ", " );
 	    PUT( tab & OPER_LOADI_STR( OBJ_TYPE ) & tab & IMAGE( OBJ_LEVEL ) & ", " );
 	    REGIONS_PATH( DEFN );
 	    PUT_LINE( OBJ_STR & "_disp, 0" );
@@ -618,17 +665,16 @@ is					-----
 	  end if;
 
 	  return;
-	end	MANAGE_RENAMING;
-		---------------
+
+	end		MANAGE_RENAMING;
+			---------------
         end if;
 
         if  OBJ_TYPE.TY in CLASS_SCALAR  or else OBJ_TYPE.TY = DN_ACCESS  then
 	declare
---	  SIZ_CHAR	: CHARACTER	:= OPER_SIZ_CHAR( OBJ_TYPE );
 	  DEFN_LVL	: INTEGER		:= DI( CD_LEVEL, DEFN );
 
 	begin
---	  PUT( tab & "L" & SIZ_CHAR & ' ' & IMAGE( DEFN_LVL ) & ',' & tab );
 	  PUT( tab & OPER_LOAD_STR( OBJ_TYPE ) & ' ' & IMAGE( DEFN_LVL ) & ',' & tab );
 	  if  DEFN_LVL /= INTEGER( CUR_LEVEL )  or else  D( XD_REGION, DEFN ).TY = DN_PACKAGE_ID  then
 	    REGIONS_PATH( DEFN );
@@ -784,9 +830,9 @@ end	SUBPROGRAM_ORIGIN;
   procedure		EXC_POP
   is			-------									-- PILIER 11 : EXC_TOP := EXC_TOP.PREV_CTX
   begin
-    PUT_LINE( tab & "La 0," & tab & "STANDARD.EXCEPTIONS_TOP_CTX_disp" );
-    PUT_LINE( tab & "La , 0" );									-- PREV_CTX (offset 0)
-    PUT_LINE( tab & "Sa 0," & tab & "STANDARD.EXCEPTIONS_TOP_CTX_disp" );
+    PUT_LINE( tab & "LA 0," & tab & "STANDARD.EXCEPTIONS_TOP_CTX_disp" );
+    PUT_LINE( tab & "LA , 0" );									-- PREV_CTX (offset 0)
+    PUT_LINE( tab & "SA 0," & tab & "STANDARD.EXCEPTIONS_TOP_CTX_disp" );
 
   end	EXC_POP;
 	-------
@@ -905,7 +951,7 @@ end	SUBPROGRAM_ORIGIN;
   is			----------------
 
     REGION	: TREE		:= D( XD_REGION, ID );
-    RGN_NAME	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, REGION ) );
+    RGN_NAME	:constant STRING	:= LETTERED_SUBNAME( PRINT_NAME( D( LX_SYMREP, REGION ) ) );
 
   begin
     if  RGN_NAME = "STANDARD"  or  RGN_NAME = "_STANDRD" then
@@ -924,7 +970,7 @@ end	SUBPROGRAM_ORIGIN;
 
       PUT( RGN_NAME );
 
-      if  REGION.TY = DN_PROCEDURE_ID  or  REGION.TY = DN_FUNCTION_ID  then
+      if  REGION.TY = DN_PROCEDURE_ID  or  REGION.TY = DN_FUNCTION_ID  or  REGION.TY = DN_OPERATOR_ID  then
         PUT( '_' & LABEL_STR( LABEL_TYPE( DI( CD_LABEL, REGION ) ) ) );
 
       elsif  REGION.TY = DN_GENERIC_ID  and then
@@ -959,7 +1005,7 @@ end	SUBPROGRAM_ORIGIN;
       elsif SUB_NAME = """+"""  then return "_PLUS_";
       elsif SUB_NAME = """-"""  then return "_MINUS_";
       elsif SUB_NAME = """&"""  then return "_CONC_";
-      elsif SUB_NAME = """=\"""   then return "_EQ_";
+      elsif SUB_NAME = """="""   then return "_EQ_";
       elsif SUB_NAME = """AND"""  then return "_AND_";
       elsif SUB_NAME = """OR"""   then return "_OR_";
       elsif SUB_NAME = """XOR"""  then return "_XOR_";
@@ -995,6 +1041,44 @@ end	SUBPROGRAM_ORIGIN;
 
   end	LAST_OF_SELECTED;
 	----------------
+
+
+			--^^^^^^^^^^^^^^^^^^^^--
+  function		  EXIT_UNLINK_MNEMONIC	( HEADER :TREE )	return STRING
+  is			------------------------
+		-- Chantier co-pile (n 109/147/163) : mnemonique de l'epilogue d'un
+		-- frame de sous-programme (ret_lbl des corps, wrappers d'instanciation).
+		-- UNLINKR rend la co-pile (r14 := r13) : procedures, fonctions a
+		-- resultat scalaire / access / record -- le resultat est COPIE chez
+		-- l'appelant avant l'epilogue.  UNLINK garde : fonctions a resultat
+		-- TABLEAU (CODE_RETURN copie le data_ptr, PAS les donnees : contrat
+		-- d'evasion, gardien STRRET_TEST) et toute sorte non prouvee sure
+		-- (formel generique en corps partage, vue privee non percee) :
+		-- le comportement historique est toujours le repli.
+    RESULT_TS	: TREE;
+  begin
+    if  HEADER = TREE_VOID  or else  HEADER.TY /= DN_FUNCTION_SPEC  then
+      return "UNLINKR";										-- procedure : rien n'evade
+    end if;
+
+    RESULT_TS := D( SM_TYPE_SPEC, D( SM_DEFN, LAST_OF_SELECTED( D( AS_NAME, HEADER ) ) ) );
+    if  RESULT_TS = TREE_VOID  or else  RESULT_TS = TREE_NIL  then
+      return "UNLINK";										-- non prouvable : garder
+    end if;
+    RESULT_TS := FULL_TYPE_VIEW( RESULT_TS );
+
+    if  RESULT_TS.TY in CLASS_SCALAR
+    or else  RESULT_TS.TY = DN_ACCESS
+    or else  RESULT_TS.TY = DN_RECORD
+    or else  RESULT_TS.TY = DN_CONSTRAINED_RECORD
+    then
+      return "UNLINKR";
+    else
+      return "UNLINK";										-- DN_ARRAY / DN_CONSTRAINED_ARRAY / autre : contrat d'evasion
+    end if;
+
+  end	EXIT_UNLINK_MNEMONIC;
+	--------------------
 
 
 	-----

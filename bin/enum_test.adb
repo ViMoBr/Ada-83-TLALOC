@@ -57,7 +57,7 @@ begin
   end;
 
   -- === V2. PUT avec WIDTH (visuel) ===
-  PUT_LINE( "=== V2. PUT avec WIDTH (attendu [      BLEU] [     ROUGE]) ===" );
+  PUT_LINE( "=== V2. PUT avec WIDTH (attendu [BLEU      ] [ROUGE     ]) ===" );
   PUT( "[" );  IO_COULEUR.PUT( BLEU, WIDTH => 10 );   PUT_LINE( "]" );
   PUT( "[" );  IO_COULEUR.PUT( ROUGE, WIDTH => 10 );  PUT_LINE( "]" );
 

@@ -19,8 +19,21 @@ is
 			-----
   is
 
-    DEBUG				: BOOLEAN		:= TRUE;
-    GENERATE_BINARY_MAP		: BOOLEAN		:= FALSE;
+			-- FLAGS DE DEBOGAGE ET AVERTISSEMENTS DE NON IMPLEMENTATION
+
+    DEBUG				: BOOLEAN		:= FALSE;
+    GENERATE_BINARY_MAP		: BOOLEAN		:= TRUE;
+
+			--| DISCIPLINE TROU() (briefing expander bruyant, fossile n 115) :
+			--| tout manque de capacite se signale AU SITE, dans le FINC ET
+			--| sur la console (lecon n 96), puis leve PROGRAM_ERROR.
+    TROU_RECENSEMENT		: BOOLEAN		:= FALSE;						--| TRUE : loguer SANS lever -- un run complet donne
+												--| l'inventaire des trous vivants du corpus ; le FINC
+												--| produit est alors FAUX (pile potentiellement
+												--| desequilibree), il ne sert qu'a l'inventaire.
+    TROU_COUNT			: NATURAL		:= 0;						--| trous traverses dans l'unite courante
+
+    procedure TROU ( SITE :STRING; NOEUD :TREE := TREE_VOID );
 
     tab				: CHARACTER	renames ASCII.HT;
 
@@ -60,6 +73,10 @@ is
     IN_SPEC_UNIT			: BOOLEAN;
 
     CUR_LEVEL			: LEVEL_NUM;							--| NIVEAU D'IMBRICATION COURANT
+    GFP_LEVEL			: LEVEL_NUM		:= 0;					--| NIVEAU DU PRO (ou corps de package generique) ENGLOBANT :
+												--| frame porteur du PRM GFP_ofs (piege n 144). Pose par
+												--| CODE_SUBPROGRAM_BODY / CODE_PACKAGE_BODY, JAMAIS par
+												--| CODE_BLOCK : un bloc declare a son frame mais pas de PRM.
     CUR_OFFSET			: OFFSET_VAL		:= 0;
 
 
@@ -81,10 +98,10 @@ is
 			--| contextes ; le raccord (EXC_POP + UNLINK) est emis par
 			--| CODE_LABELED, qui connait les deux niveaux.
 
-    MAX_GOTO_LABELS		: constant		:= 64;					--| NB MAX D'ETIQUETTES GOTO PAR IMBRICATION DE CORPS
+    MAX_GOTO_LABELS		: constant		:= 64;						--| NB MAX D'ETIQUETTES GOTO PAR IMBRICATION DE CORPS
     subtype GOTO_LBL_IDX	is NATURAL		range 0 .. MAX_GOTO_LABELS;
 
-    type LVL_SET		is array( LEVEL_NUM ) of BOOLEAN;					--| photo de HANDLER_CTX_AT au site d'un goto
+    type LVL_SET		is array( LEVEL_NUM ) of BOOLEAN;						--| photo de HANDLER_CTX_AT au site d'un goto
 
     type GOTO_LBL_REC	is record
 			  ID		: TREE;							--| le DN_LABEL_ID (cle, egalite TREE)
@@ -106,10 +123,10 @@ is
 
     GOTO_PENDING			: array( 1 .. MAX_GOTO_LABELS ) of GOTO_PEND_REC;
     GOTO_PEND_TOP			: GOTO_LBL_IDX	:= 0;
-    GOTO_PEND_BASE			: GOTO_LBL_IDX	:= 0;					--| base du corps courant
+    GOTO_PEND_BASE			: GOTO_LBL_IDX	:= 0;						--| base du corps courant
 
-    function  GOTO_LABEL_ENTRY	( LABEL_ID :TREE )		return GOTO_LBL_IDX;	--| trouve ou cree l'entree du corps courant
-    procedure GOTO_CHECK_BODY_END;							--| ceinture bruyante : raccord jamais resolu
+    function  GOTO_LABEL_ENTRY	( LABEL_ID :TREE )		return GOTO_LBL_IDX;			--| trouve ou cree l'entree du corps courant
+    procedure GOTO_CHECK_BODY_END;									--| ceinture bruyante : raccord jamais resolu
 
 												--| -1 : hors handler (raise nu = ANOMALIE).
     NO_SUBP_PARAMS			: BOOLEAN			:= TRUE;					--| pour prms et prm_siz
@@ -129,8 +146,8 @@ is
     function  OPER_SIZ_CHAR		( DEFN :TREE )			return CHARACTER;
     function  EXP_TYPE_CHAR		( EXP :TREE )			return CHARACTER;
     function  IS_UNSIGNED_TYPE	( DEFN :TREE )			return BOOLEAN;			--| borne basse statique du type de BASE >= 0
-    function  OPER_LOAD_STR		( DEFN :TREE )			return STRING;			--| "Lb".."Lq" ou "ULb".."ULd" selon le signe
-    function  OPER_LOADI_STR		( DEFN :TREE )			return STRING;			--| "LIb".."LIq" ou "ULIb".."ULId" idem
+    function  OPER_LOAD_STR		( DEFN :TREE )			return STRING;			--| "LB".."LQ" ou "ULB".."ULD" selon le signe
+    function  OPER_LOADI_STR		( DEFN :TREE )			return STRING;			--| "LIB".."LIQ" ou "ULIB".."ULID" idem
 
     function  NEW_LABEL						return LABEL_TYPE;
     function  NEW_LABEL						return STRING;
@@ -165,6 +182,8 @@ is
 
     function  LAST_OF_SELECTED	( NAME_ID :TREE )			return TREE;
 
+    function  EXIT_UNLINK_MNEMONIC	( HEADER :TREE )			return STRING;			--| chantier co-pile (n 163) : "UNLINKR" (rend la co-pile) ou "UNLINK" (garde : resultat tableau)
+
     OPERAND_OVERFLOW		: exception;
 
 
@@ -192,9 +211,10 @@ is
     procedure CODE_SELECTED		( SELECTED	:TREE; IS_SOURCE :BOOLEAN := TRUE; CONTEXT :TREE := TREE_VOID );
     procedure CODE_SLICE		( SLICE		:TREE; IS_DESTINATION :BOOLEAN := TRUE );
     procedure CODE_STATIC_FIXED_VALUE	( VALUE, FIXED_TYPE :TREE );
-    procedure CODE_AGGREGATE		( AGGREGATE, TYPE_SPEC	:TREE );
+    procedure CODE_AGGREGATE		( AGGREGATE, TYPE_SPEC	:TREE; DST_SLICE_RANGE :TREE := TREE_VOID );
     procedure CODE_OBJECT_ADDRESS	( NAME : TREE );
     procedure CODE_COMPOSITE_DATA_ADDRESS( EXP : TREE );
+    procedure CODE_ARRAY_OPERAND	( E :TREE; ANON :STRING; CONTEXT_TYPE :TREE );
     function  IS_GENERIC_FORMAL_TYPE	( TYPE_DEFN	:TREE )		return BOOLEAN;
     function  IS_GENERIC_FORMAL_OBJECT  ( DEFN		:TREE )		return BOOLEAN;
     function  IS_GENERIC_FORMAL_SUBPROGRAM( ID		:TREE )		return BOOLEAN;
@@ -418,32 +438,50 @@ is
 	---------
 
 
-
-  procedure CODE_CONTEXT_PRAGMA ( CONTEXT_PRAGMA :TREE ) is
+			-------------------
+  procedure		CODE_CONTEXT_PRAGMA		( CONTEXT_PRAGMA :TREE )
+  is			-------------------
   begin
-    null;
-  end;
+    null;												--| INTENTIONNEL (partiel) : pragma de contexte sans
+												--| effet de code ; trier ICI si l'un devient signifiant
+  end	CODE_CONTEXT_PRAGMA;
+	-------------------
 
 
-
-  procedure CODE_BLOCK_MASTER ( BLOCK_MASTER :TREE ) is
+			-----------------
+  procedure		CODE_BLOCK_MASTER		( BLOCK_MASTER :TREE )
+  is			-----------------
   begin
-    null;
-  end;
+    TROU( "CODE_BLOCK_MASTER (tasking/masters hors perimetre)", BLOCK_MASTER );					--| vague 4 : corps vide
+
+  end	CODE_BLOCK_MASTER;
+	-----------------
 
 
-
-  procedure CODE_DERIVED_SUBPROG ( DERIVED_SUBPROG :TREE ) is
+			--------------------
+  procedure		CODE_DERIVED_SUBPROG	( DERIVED_SUBPROG :TREE )
+  is			--------------------
   begin
-    null;
-  end;
+			--| Vague 4 : semantique REELLE non couverte -- SUBPROGRAM_ORIGIN
+			--| ne suit que les chaines de RENAMES, pas la derivation : un
+			--| appel au sous-programme derive viserait un label jamais emis.
+    TROU( "CODE_DERIVED_SUBPROG", DERIVED_SUBPROG );
+
+  end	CODE_DERIVED_SUBPROG;
+	--------------------
 
 
-
-  procedure CODE_IMPLICIT_NOT_EQ ( IMPLICIT_NOT_EQ :TREE ) is
+			--------------------
+  procedure		CODE_IMPLICIT_NOT_EQ	( IMPLICIT_NOT_EQ :TREE )
+  is			--------------------
   begin
-    null;
-  end;
+    null;												--| INTENTIONNEL (elucide vague 4) : le "/=" implicite est
+												--| resolu AU SITE D'USAGE par symbole d'operateur
+												--| (expressions : egalites scalaires, BLKCMP, records) --
+												--| rien a declarer ici
+
+  end	CODE_IMPLICIT_NOT_EQ;
+	--------------------
 
 
 			-----------------------
@@ -464,7 +502,7 @@ is
   begin
     case OBJECT.TY is
     when DN_VARIABLE_ID =>
-      PUT_LINE( tab & "La " & INTEGER'IMAGE( DI( CD_LEVEL, OBJECT ) ) & ',' & tab & PRINT_NAME( D( LX_SYMREP, OBJECT ) ) & "_disp" );
+      PUT_LINE( tab & "LA " & INTEGER'IMAGE( DI( CD_LEVEL, OBJECT ) ) & ',' & tab & PRINT_NAME( D( LX_SYMREP, OBJECT ) ) & "_disp" );
 
     when DN_IN_ID =>
       PUT_LINE( tab & "LVA " & INTEGER'IMAGE( DI( CD_LEVEL, OBJECT ) ) & ',' & tab & PRINT_NAME( D( LX_SYMREP, OBJECT ) ) );
@@ -479,7 +517,7 @@ is
       CODE_OBJECT( D( SM_DEFN, OBJECT ) );
 
     when DN_CONSTANT_ID =>
-      PUT_LINE( tab & "LIa " & INTEGER'IMAGE( DI( CD_LEVEL, OBJECT ) ) & ','
+      PUT_LINE( tab & "LIA " & INTEGER'IMAGE( DI( CD_LEVEL, OBJECT ) ) & ','
 	      & tab & PRINT_NAME( D( LX_SYMREP, OBJECT ) ) & "_disp" );					-- LOAD CONSTANT ADDRESS
 
     when others =>
@@ -489,33 +527,14 @@ is
   end;
 
 
-
-  procedure CODE_ADRESSE ( ADRESSE :TREE ) is
+			----------------------
+  procedure		CODE_SELECT_ALT_PRAGMA	( SELECT_ALT_PRAGMA :TREE )
+  is			----------------------
   begin
-    case ADRESSE.TY is
-    when DN_VARIABLE_ID =>
-null;--	   GEN_PUSH_DATA ( A, DI (CD_COMP_UNIT, ADRESSE ), LEVEL_NUM(DI ( CD_LEVEL, ADRESSE )), DI ( CD_OFFSET, ADRESSE ) );
-    when DN_IN_ID =>
-null;--	   GEN_PUSH_DATA ( A, 0,  LEVEL_NUM(DI ( CD_LEVEL, ADRESSE )), DI ( CD_OFFSET, ADRESSE ) );
-    when DN_IN_OUT_ID | DN_OUT_ID =>
-null;--	   GEN_PUSH_DATA ( A, 0, LEVEL_NUM(DI( CD_LEVEL, ADRESSE )), DI( CD_VAL_OFFSET, ADRESSE ) );
-    when DN_INDEXED =>
-      EXPRESSIONS.CODE_INDEXED ( ADRESSE );
-    when DN_USED_OBJECT_ID =>
-      CODE_ADRESSE ( D( SM_DEFN, ADRESSE ) );
-    when others =>
-    PUT_LINE ( "!!! CODE_ADRESSE : OBJECT.TY ILLICITE " & NODE_NAME'IMAGE ( ADRESSE.TY ) );
-      raise PROGRAM_ERROR;
-    end case;
-  end;
+    null;												--| INTENTIONNEL : pragma d'alternative select, aucun code
 
-
-
-  procedure CODE_SELECT_ALT_PRAGMA ( SELECT_ALT_PRAGMA :TREE ) is
-  begin
-    null;
-  end;
-
+  end	CODE_SELECT_ALT_PRAGMA;
+	----------------------
 
 
   procedure CODE_EXCEPTION_ID ( EXCEPTION_ID :TREE ) is
@@ -523,16 +542,13 @@ null;--	   GEN_PUSH_DATA ( A, 0, LEVEL_NUM(DI( CD_LEVEL, ADRESSE )), DI( CD_VAL_
     declare
       LBL :constant STRING := NEW_LABEL;
     begin
---      DI ( CD_LABEL, EXCEPTION_ID, INTEGER ( LBL ) );
-PUT_LINE( "; EXL" & tab & LBL );
---      EMIT ( EXL, LBL, S=> PRINT_NAME ( D ( LX_SYMREP, EXCEPTION_ID ) ),
---	     COMMENT=> "NUMERO D EXCEPTION SUR DECLARATION" );
+      PUT_LINE( "; EXL" & tab & LBL );
     end;
   end;
 
 
 
-  procedure DBGSTOP is begin null; end;
+  procedure DBGSTOP is begin null; end;									--| INTENTIONNEL : crochet de point d'arret debogueur
 
 
 begin
@@ -590,9 +606,9 @@ FIND_DOT_IF_ANY_AND_UPCASE:
    -- PILIER 11 EXCEPTIONS : contexte-sentinelle en fond de la pile des contextes de reprise
 	PUT_LINE( tab & "EXC_MACH" & tab & "0, EXC_CTX0__dat" );						-- photo niveau 0 (NXT_LVL=1 : FP(0))
 	PUT_LINE( tab & "LCA" & tab & "exc_uncaught_" );
-	PUT_LINE( tab & "Sa" & tab & "0, EXC_CTX0__dat + _EXCEPTION_CONTEXT.DISPATCH" );
+	PUT_LINE( tab & "SA" & tab & "0, EXC_CTX0__dat + _EXCEPTION_CONTEXT.DISPATCH" );
 	PUT_LINE( tab & "LVA" & tab & "0, EXC_CTX0__dat" );
-	PUT_LINE( tab & "Sa" & tab & "0, EXCEPTIONS_TOP_CTX_disp" );					-- (PREV_CTX de la sentinelle : jamais lu)
+	PUT_LINE( tab & "SA" & tab & "0, EXCEPTIONS_TOP_CTX_disp" );					-- (PREV_CTX de la sentinelle : jamais lu)
 
 	PUT_LINE( "include '" & NOM_FAS & ".FINC'" );
 	PUT_LINE( tab & "CALL" & tab & "STANDARD., " & NOM_FAS & "_L1" );
@@ -606,7 +622,7 @@ FIND_DOT_IF_ANY_AND_UPCASE:
 	PUT_LINE( tab & "STR" & tab & "EXC_NL__, 10" );
 	PUT_LINE( tab & "LCA" & tab & "EXC_MSG__.data_ptr" );
 	PUT_LINE( tab & "SYS_PUT_STR" );
-	PUT_LINE( tab & "La" & tab & "0, EXCEPTIONS_CURRENT_disp" );					-- le symbole EST son diagnostic
+	PUT_LINE( tab & "LA" & tab & "0, EXCEPTIONS_CURRENT_disp" );					-- le symbole EST son diagnostic
 	PUT_LINE( tab & "SYS_PUT_STR" );
 	PUT_LINE( tab & "LCA" & tab & "EXC_NL__.data_ptr" );
 	PUT_LINE( tab & "SYS_PUT_STR" );
@@ -618,11 +634,11 @@ FIND_DOT_IF_ANY_AND_UPCASE:
     -- couvre le saut depuis toute profondeur d'expression, comme pour raise.
 	PUT_LINE( "ce_raise_:" );									-- CONSTRAINT_ERROR
 	PUT_LINE( tab & "LCA" & tab & "CONSTRAINT_ERROR__exc.data_ptr" );
-	PUT_LINE( tab & "Sa" & tab & "0, EXCEPTIONS_CURRENT_disp" );
+	PUT_LINE( tab & "SA" & tab & "0, EXCEPTIONS_CURRENT_disp" );
 	PUT_LINE( tab & "BRA" & tab & "exc_raise_" );
 	PUT_LINE( "ne_raise_:" );									-- NUMERIC_ERROR (utilise a partir de E-E)
 	PUT_LINE( tab & "LCA" & tab & "NUMERIC_ERROR__exc.data_ptr" );
-	PUT_LINE( tab & "Sa" & tab & "0, EXCEPTIONS_CURRENT_disp" );
+	PUT_LINE( tab & "SA" & tab & "0, EXCEPTIONS_CURRENT_disp" );
 	PUT_LINE( tab & "BRA" & tab & "exc_raise_" );
 
 

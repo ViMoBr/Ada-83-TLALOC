@@ -1,26 +1,25 @@
 ERR_PHASE = 'ERR_PHASE'
-PRO	ERR_PHASE_L12				;---------- PRO ERR_PHASE
+PRO	ERR_PHASE_L12
  hexa_show 'ERR_PHASE_L12 ', $
-PRMS					;    debut parametrage
-	PRM ACCES_TEXTE_ofs			; in
-endPRMS					;    fin parametrage
-ELB 1					;    BODY ELAB
+PRMS
+	PRM ACCES_TEXTE_ofs
+endPRMS
+ELB 1
  hexa_show 'var elab FULL_LIST ', $
-VAR FULL_LIST_disp, B			; variable bool char enum
+VAR FULL_LIST_disp, B
 	LI	0
 	SB  1,	FULL_LIST_disp
 
  hexa_show ' disp ', FULL_LIST_disp
  hexa_show 'var elab IFILE ', $
-VAR IFILE_disp, Q				; variable record : pointeur aux data record
-VAR IFILE__u, Q				; variable record : pointeur aux useinfo
+VAR IFILE_disp, Q
+VAR IFILE__u, Q
 VAR IFILE__dat, STANDARD.TEXT_IO._FILE_TYPE.size
 	LVA	1, IFILE__dat
-	SA	1, IFILE_disp				; record fin
+	SA	1, IFILE_disp
 	LVA	1, STANDARD.TEXT_IO._FILE_TYPE.SIZ__
 	SA	1, IFILE__u
 	LIVA 1, STANDARD.IDL.ERR_PHASE_L12.IFILE_disp, STANDARD.TEXT_IO._FILE_TYPE.ID
-; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	NEG
 	SD
@@ -34,15 +33,12 @@ VAR IFILE__dat, STANDARD.TEXT_IO._FILE_TYPE.size
 	ULD 0,	STANDARD.TEXT_IO.UNBOUNDED_disp
 	SD
 	LIVA 1, STANDARD.IDL.ERR_PHASE_L12.IFILE_disp, STANDARD.TEXT_IO._FILE_TYPE.PAGE
-; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SD
 	LIVA 1, STANDARD.IDL.ERR_PHASE_L12.IFILE_disp, STANDARD.TEXT_IO._FILE_TYPE.LINE
-; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SD
 	LIVA 1, STANDARD.IDL.ERR_PHASE_L12.IFILE_disp, STANDARD.TEXT_IO._FILE_TYPE.COL
-; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SD
 	LIVA 1, STANDARD.IDL.ERR_PHASE_L12.IFILE_disp, STANDARD.TEXT_IO._FILE_TYPE.IS_DEFAULT_IO
@@ -60,8 +56,7 @@ VAR IFILE__dat, STANDARD.TEXT_IO._FILE_TYPE.size
 
  hexa_show ' disp ', IFILE_disp
  hexa_show 'var elab LINE_COUNT ', $
-VAR LINE_COUNT_disp, D			; variable entiere
-; CODE_NUMERIC_LITERAL DN_INTEGER
+VAR LINE_COUNT_disp, D
 	LI	0
 	DUP
 	LD	0, STANDARD._NATURAL.FST
@@ -75,12 +70,11 @@ VAR LINE_COUNT_disp, D			; variable entiere
 
  hexa_show ' disp ', LINE_COUNT_disp
  hexa_show 'var elab ERR_COUNT ', $
-VAR ERR_COUNT_disp, D			; variable entiere
+VAR ERR_COUNT_disp, D
 
  hexa_show ' disp ', ERR_COUNT_disp
-					;    end elab
-begin:					;---------- BDY INSTRUCTIONS
-; CODE & concat _STRING
+
+begin:
 VAR	ANON_19_24_L3_G_data, Q
 VAR	ANON_19_24_L3_G_info, Q
 VAR	ANON_19_61_L3_D_data, Q
@@ -96,7 +90,7 @@ namespace ANON_19_24_L3_R_info
   VAR _LST_1, D
 end namespace
 	LA 0, STANDARD.IDL.LIB_PATH_disp
-namespace ANON_19_24			; ensemble doublet @data/@info pour slice anonyme source
+namespace ANON_19_24
 VAR ANON_19_24_disp, Q
 VAR ANON_19_24__u, Q
 VAR SIZ__, D
@@ -108,7 +102,6 @@ VAR _LST_1, D
 	SA	1, ANON_19_24__u
 	LI	8
 	SD	1, COMP_SIZ
-; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SD	1, _FST_1
 	LD 0,	STANDARD.IDL.LIB_PATH_LENGTH_disp
@@ -134,7 +127,7 @@ end namespace
 	INC
 	CLAMP0
 	SA  1, ANON_19_24_L3_G_len
-STR ANON_19_61_L3_D, "$$$.TMP"		; constante string="$$$.TMP"
+STR ANON_19_61_L3_D, "$$$.TMP"
 	LCA	ANON_19_61_L3_D.data_ptr
 	DUP
 	LA  ,  0
@@ -180,8 +173,8 @@ STR ANON_19_61_L3_D, "$$$.TMP"		; constante string="$$$.TMP"
 	BLKMOV
 	LVA 1, ANON_19_24_L3_R_disp
 	CALL	STANDARD.IDL. ,OPEN_IDL_TREE_FILE_L6
-	LI	0					; lieu resultat sur pile
-	LVA  0,	STANDARD.IDL.TREE_ROOT_disp		; array actual
+	LI	0
+	LVA  0,	STANDARD.IDL.TREE_ROOT_disp
 	LI  3
 	CALL	STANDARD.IDL. ,DI_L21
 	DUP
@@ -193,16 +186,14 @@ STR ANON_19_61_L3_D, "$$$.TMP"		; constante string="$$$.TMP"
 	CGT
 	BT	STANDARD.ce_raise_
 	SD  1,	ERR_COUNT_disp
-					; debut if
+
 	LD 1,	ERR_COUNT_disp
-; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	0
 	CEQ
 	BF	L5
 	BRA	L7
 	BRA	L4
 L5:
-; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	DUP
 	ULD	0, STANDARD.TEXT_IO._POSITIVE_COUNT.FST
@@ -213,21 +204,21 @@ L5:
 	CGT
 	BT	STANDARD.ce_raise_
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
-L4:					; post if
-STR STR_L8, ""				; constante string=""
+L4:
+STR STR_L8, ""
 	LCA	STR_L8.data_ptr
 	LA  1,	-ACCES_TEXTE_ofs
 	LI  0
 	LVA  1,	STANDARD.IDL.ERR_PHASE_L12.IFILE_disp
 	CALL	STANDARD.TEXT_IO. ,OPEN_L2
 namespace	BLOCK__1
-ELB 2					;    BODY ELAB
+ELB 2
  hexa_show 'var elab SOURCE_LIST ', $
-VAR SOURCE_LIST_disp, Q			; variable record : pointeur aux data record
-VAR SOURCE_LIST__u, Q			; variable record : pointeur aux useinfo
+VAR SOURCE_LIST_disp, Q
+VAR SOURCE_LIST__u, Q
 VAR SOURCE_LIST__dat, STANDARD.IDL._SEQ_TYPE.size
 	LVA	2, SOURCE_LIST__dat
-	SA	2, SOURCE_LIST_disp			; record fin
+	SA	2, SOURCE_LIST_disp
 	LVA	2, STANDARD.IDL._SEQ_TYPE.SIZ__
 	SA	2, SOURCE_LIST__u
 	LA  2, SOURCE_LIST_disp
@@ -240,39 +231,38 @@ VAR	ANON_28_32__dat, STANDARD.IDL._SEQ_TYPE.size
 	LA  0, STANDARD.IDL._SEQ_TYPE.use__info
 	SA  2, ANON_28_32__u
 	LVA 2, ANON_28_32_disp
-					; doublet resultat record anonyme
-	LVA  0,	STANDARD.IDL.TREE_ROOT_disp		; array actual
+
+	LVA  0,	STANDARD.IDL.TREE_ROOT_disp
 	CALL	STANDARD.IDL. ,LIST_L22
 	LA
 	BLKMOV
 
  hexa_show ' disp ', SOURCE_LIST_disp
  hexa_show 'var elab ERRORLIST ', $
-VAR ERRORLIST_disp, Q			; variable record : pointeur aux data record
-VAR ERRORLIST__u, Q				; variable record : pointeur aux useinfo
+VAR ERRORLIST_disp, Q
+VAR ERRORLIST__u, Q
 VAR ERRORLIST__dat, STANDARD.IDL._SEQ_TYPE.size
 	LVA	2, ERRORLIST__dat
-	SA	2, ERRORLIST_disp			; record fin
+	SA	2, ERRORLIST_disp
 	LVA	2, STANDARD.IDL._SEQ_TYPE.SIZ__
 	SA	2, ERRORLIST__u
 
  hexa_show ' disp ', ERRORLIST_disp
  hexa_show 'var elab SOURCENBR ', $
-VAR SOURCENBR_disp, D			; variable entiere
-; CODE_NUMERIC_LITERAL DN_INTEGER
+VAR SOURCENBR_disp, D
 	LI	0
 	SD  2,	SOURCENBR_disp
 
  hexa_show ' disp ', SOURCENBR_disp
  hexa_show 'var elab NB_PREFIX_CHARS ', $
-VAR NB_PREFIX_CHARS_disp, D			; variable entiere
+VAR NB_PREFIX_CHARS_disp, D
 
  hexa_show ' disp ', NB_PREFIX_CHARS_disp
-					;    end elab
-begin:					;---------- BDY INSTRUCTIONS
+
+begin:
 LOOP__2:
-					; debut if
-	LI	0					; lieu resultat sur pile
+
+	LI	0
 	LVA 2,	SOURCE_LIST_disp
 	CALL	STANDARD.IDL. ,IS_EMPTY_L23
 	BF	L13
@@ -280,7 +270,6 @@ LOOP__2:
 	SD  2,	SOURCENBR_disp
 	LVA 2,	ERRORLIST_disp
 	LA
-					; Assign_record_aggregate type DN_RECORD
 	DUP
 	LVA	, STANDARD.IDL._SEQ_TYPE.FIRST
 	LI	STANDARD.IDL._TREE.size
@@ -297,17 +286,16 @@ LOOP__2:
 	BRA	L12
 L13:
 namespace	BLOCK__3
-ELB 3					;    BODY ELAB
+ELB 3
  hexa_show 'var elab SOURCELINE ', $
-VAR SOURCELINE_disp, Q			; variable record : pointeur aux data record
-VAR SOURCELINE__u, Q			; variable record : pointeur aux useinfo
+VAR SOURCELINE_disp, Q
+VAR SOURCELINE__u, Q
 VAR SOURCELINE__dat, STANDARD.IDL._TREE.size
 	LVA	3, SOURCELINE__dat
-	SA	3, SOURCELINE_disp			; record fin
+	SA	3, SOURCELINE_disp
 	LVA	3, STANDARD.IDL._TREE.SIZ__
 	SA	3, SOURCELINE__u
 	LA  3, SOURCELINE_disp
-					; store represented component PT range 0 .. 1 width 2
 	DUP
 	LD
 	LI	0
@@ -317,12 +305,12 @@ VAR SOURCELINE__dat, STANDARD.IDL._TREE.size
 	SD
 
  hexa_show ' disp ', SOURCELINE_disp
-					;    end elab
-begin:					;---------- BDY INSTRUCTIONS
+
+begin:
 	LVA  3,	STANDARD.IDL.ERR_PHASE_L12.BLOCK__1.BLOCK__3.SOURCELINE_disp
 	LVA  2,	STANDARD.IDL.ERR_PHASE_L12.BLOCK__1.SOURCE_LIST_disp
 	CALL	STANDARD.IDL. ,POP_L24
-	LI	0					; lieu resultat sur pile
+	LI	0
 	LVA 3,	SOURCELINE_disp
 	LI  7
 	CALL	STANDARD.IDL. ,DI_L21
@@ -338,14 +326,14 @@ VAR	ANON_44_15__dat, STANDARD.IDL._SEQ_TYPE.size
 	LA  0, STANDARD.IDL._SEQ_TYPE.use__info
 	SA  3, ANON_44_15__u
 	LVA 3, ANON_44_15_disp
-					; doublet resultat record anonyme
+
 	LVA 3,	SOURCELINE_disp
 	CALL	STANDARD.IDL. ,LIST_L22
 	LA
 	BLKMOV
 	UNLINKR 3
 endPRO
-L12:					; post if
+L12:
 LOOP__4:
 	LD 1,	STANDARD.IDL.ERR_PHASE_L12.LINE_COUNT_disp
 	LD 2,	SOURCENBR_disp
@@ -353,7 +341,7 @@ LOOP__4:
 	DUP
 	BF	L17
 	DROP
-	LI	0					; lieu resultat sur pile
+	LI	0
 	LVA 1,	STANDARD.IDL.ERR_PHASE_L12.IFILE_disp
 	CALL	STANDARD.TEXT_IO. ,END_OF_FILE_L37
 	LI	1
@@ -361,7 +349,6 @@ LOOP__4:
 L17:
 	BF	L16
 	LD 1,	STANDARD.IDL.ERR_PHASE_L12.LINE_COUNT_disp
-; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	ADD
 	DUP
@@ -373,12 +360,11 @@ L17:
 	CGT
 	BT	STANDARD.ce_raise_
 	SD  1,	STANDARD.IDL.ERR_PHASE_L12.LINE_COUNT_disp
-					; debut if
-	LI	0					; lieu resultat sur pile
+
+	LI	0
 	LVA 1,	STANDARD.IDL.ERR_PHASE_L12.IFILE_disp
 	CALL	STANDARD.TEXT_IO. ,END_OF_LINE_L29
 	BF	L19
-; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	DUP
 	ULD	0, STANDARD.TEXT_IO._POSITIVE_COUNT.FST
@@ -390,10 +376,9 @@ L17:
 	BT	STANDARD.ce_raise_
 	LVA 1,	STANDARD.IDL.ERR_PHASE_L12.IFILE_disp
 	CALL	STANDARD.TEXT_IO. ,SKIP_LINE_L27
-					; debut if
+
 	ULB 1,	STANDARD.IDL.ERR_PHASE_L12.FULL_LIST_disp
 	BF	L21
-; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	DUP
 	ULD	0, STANDARD.TEXT_IO._POSITIVE_COUNT.FST
@@ -406,14 +391,14 @@ L17:
 	CALL	STANDARD.TEXT_IO. ,NEW_LINE_L26
 	BRA	L20
 L21:
-L20:					; post if
+L20:
 	BRA	L18
 L19:
 namespace	BLOCK__5
-ELB 3					;    BODY ELAB
+ELB 3
  hexa_show 'var elab SLINE ', $
 _SLINE__type = '_SLINE__type'
-namespace _SLINE__type			; array var constrained array type info
+namespace _SLINE__type
 VAR use__info, Q
 VAR SIZ__, D
 	LVA	3, SIZ__
@@ -424,10 +409,8 @@ VAR _LST_1, D
 	LI	8
 	SD	3, _COMP_SIZ
 	LD	3, _COMP_SIZ
-; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SD	3, _FST_1
-; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	256
 	SD	3, _LST_1
 	LD	3, _LST_1
@@ -446,40 +429,40 @@ LST_1 = $
 	rd 1 
   end virtual
 end namespace
-VAR SLINE_disp, Q				; variable array : pointeur aux data
-VAR SLINE__u, Q				; variable array : useinfo pointeur au rec info
+VAR SLINE_disp, Q
+VAR SLINE__u, Q
 	LA 3, _SLINE__type.use__info
-	SA	3, SLINE__u				; array info ptr at __u
+	SA	3, SLINE__u
 	LD	3, _SLINE__type.SIZ__
 	LI	8
 	DIV
 	CO_VAR
-	SA	3, SLINE_disp				; array data ptr at _disp
+	SA	3, SLINE_disp
 
  hexa_show ' disp ', SLINE_disp
  hexa_show 'var elab LAST ', $
-VAR LAST_disp, D				; variable entiere
+VAR LAST_disp, D
 
  hexa_show ' disp ', LAST_disp
-					;    end elab
-begin:					;---------- BDY INSTRUCTIONS
+
+begin:
 	LVA  3,	STANDARD.IDL.ERR_PHASE_L12.BLOCK__1.BLOCK__5.LAST_disp
 	LVA  3,	STANDARD.IDL.ERR_PHASE_L12.BLOCK__1.BLOCK__5.SLINE_disp
 	LVA 1,	STANDARD.IDL.ERR_PHASE_L12.IFILE_disp
 	CALL	STANDARD.TEXT_IO. ,GET_LINE_L57
-VAR	IL25_disp, D				; compteur boucle LOOP__8
+VAR	IL25_disp, D
 	LID	3, STANDARD.IDL.ERR_PHASE_L12.BLOCK__1.BLOCK__5.SLINE__u, STANDARD._STRING.FST_1
 	SD  3,	IL25_disp
-VAR	LMT_IL25_disp, D			; limite boucle LOOP__8
+VAR	LMT_IL25_disp, D
 	LD 3,	LAST_disp
 	SD  3,	LMT_IL25_disp
-	LD  3,	IL25_disp				; test null range LOOP__8
+	LD  3,	IL25_disp
 	LD  3,	LMT_IL25_disp
 	CGT
 	BT	L24
-LOOP__8:					; corps boucle LOOP__8
-					; debut if
-	LA	 3, STANDARD.IDL.ERR_PHASE_L12.BLOCK__1.BLOCK__5.SLINE_disp	; array data start address on stack
+LOOP__8:
+
+	LA	 3, STANDARD.IDL.ERR_PHASE_L12.BLOCK__1.BLOCK__5.SLINE_disp
 	LD 3,	IL25_disp
 	DUP
 	LID	3, STANDARD.IDL.ERR_PHASE_L12.BLOCK__1.BLOCK__5.SLINE__u, STANDARD._STRING.FST_1
@@ -489,18 +472,18 @@ LOOP__8:					; corps boucle LOOP__8
 	LID	3, STANDARD.IDL.ERR_PHASE_L12.BLOCK__1.BLOCK__5.SLINE__u, STANDARD._STRING.LST_1
 	CGT
 	BT	STANDARD.ce_raise_
-	LID	3, STANDARD.IDL.ERR_PHASE_L12.BLOCK__1.BLOCK__5.SLINE__u, STANDARD._STRING.FST_1	; (index - FST_1) * SIZ_1
+	LID	3, STANDARD.IDL.ERR_PHASE_L12.BLOCK__1.BLOCK__5.SLINE__u, STANDARD._STRING.FST_1
 	SUB
 	LID	3, STANDARD.IDL.ERR_PHASE_L12.BLOCK__1.BLOCK__5.SLINE__u, STANDARD._STRING.COMP_SIZ
-	LI	8
-	DIV
+	LI	3
+	SAR
 	MUL
-	ADD					; add offset to start address
+	ADD
 	ULB
 	LI	 9
 	CEQ
 	BF	L27
-	LA	 3, STANDARD.IDL.ERR_PHASE_L12.BLOCK__1.BLOCK__5.SLINE_disp	; array data start address on stack
+	LA	 3, STANDARD.IDL.ERR_PHASE_L12.BLOCK__1.BLOCK__5.SLINE_disp
 	LD 3,	IL25_disp
 	DUP
 	LID	3, STANDARD.IDL.ERR_PHASE_L12.BLOCK__1.BLOCK__5.SLINE__u, STANDARD._STRING.FST_1
@@ -510,33 +493,33 @@ LOOP__8:					; corps boucle LOOP__8
 	LID	3, STANDARD.IDL.ERR_PHASE_L12.BLOCK__1.BLOCK__5.SLINE__u, STANDARD._STRING.LST_1
 	CGT
 	BT	STANDARD.ce_raise_
-	LID	3, STANDARD.IDL.ERR_PHASE_L12.BLOCK__1.BLOCK__5.SLINE__u, STANDARD._STRING.FST_1	; (index - FST_1) * SIZ_1
+	LID	3, STANDARD.IDL.ERR_PHASE_L12.BLOCK__1.BLOCK__5.SLINE__u, STANDARD._STRING.FST_1
 	SUB
 	LID	3, STANDARD.IDL.ERR_PHASE_L12.BLOCK__1.BLOCK__5.SLINE__u, STANDARD._STRING.COMP_SIZ
-	LI	8
-	DIV
+	LI	3
+	SAR
 	MUL
-	ADD					; add offset to start address
+	ADD
 	LI	32
 	SB
 	BRA	L26
 L27:
-L26:					; post if
-	LD  3,	IL25_disp				; test de sortie LOOP__8
+L26:
+	LD  3,	IL25_disp
 	LD  3,	LMT_IL25_disp
 	CEQ
 	BT	L24
-	LD  3,	IL25_disp				; mise a jour compteur LOOP__8
+	LD  3,	IL25_disp
 	INC
 	SD  3,	IL25_disp
-	BRA	LOOP__8				; iteration suivante LOOP__8
-L24:					; post loop LOOP__8
-					; debut if
+	BRA	LOOP__8
+L24:
+
 	ULB 1,	STANDARD.IDL.ERR_PHASE_L12.FULL_LIST_disp
 	DUP
 	BT	L30
 	DROP
-	LI	0					; lieu resultat sur pile
+	LI	0
 	LVA 2,	STANDARD.IDL.ERR_PHASE_L12.BLOCK__1.ERRORLIST_disp
 	CALL	STANDARD.IDL. ,IS_EMPTY_L23
 	LI	1
@@ -559,7 +542,6 @@ L30:
 	LD	0, STANDARD.TEXT_IO._NUMBER_BASE.LST
 	CGT
 	BT	STANDARD.ce_raise_
-; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	DUP
 	LD	0, STANDARD.TEXT_IO._FIELD.FST
@@ -571,12 +553,11 @@ L30:
 	BT	STANDARD.ce_raise_
 	LD 1,	STANDARD.IDL.ERR_PHASE_L12.LINE_COUNT_disp
 	CALL	STANDARD.IDL.INT_IO. ,PUT_L64
-STR STR_L32, ":  "				; constante string=":  "
+STR STR_L32, ":  "
 	LCA	STR_L32.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
-	LI	0					; lieu resultat sur pile
+	LI	0
 	CALL	STANDARD.TEXT_IO. ,COL_L44
-; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
 	DUP
 	LD	0, STANDARD._NATURAL.FST
 	CLT
@@ -585,7 +566,6 @@ STR STR_L32, ":  "				; constante string=":  "
 	LD	0, STANDARD._NATURAL.LST
 	CGT
 	BT	STANDARD.ce_raise_
-; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SUB
 	DUP
@@ -598,14 +578,13 @@ STR STR_L32, ":  "				; constante string=":  "
 	BT	STANDARD.ce_raise_
 	SD  2,	STANDARD.IDL.ERR_PHASE_L12.BLOCK__1.NB_PREFIX_CHARS_disp
 	LA 3, STANDARD.IDL.ERR_PHASE_L12.BLOCK__1.BLOCK__5.SLINE_disp
-; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	LID 3, STANDARD.IDL.ERR_PHASE_L12.BLOCK__1.BLOCK__5.SLINE__u, STANDARD._STRING.FST_1
 	SUB
 	LI	1
 	MUL
 	ADD
-namespace ANON_69_16			; ensemble doublet @data/@info pour slice anonyme source
+namespace ANON_69_16
 VAR ANON_69_16_disp, Q
 VAR ANON_69_16__u, Q
 VAR SIZ__, D
@@ -617,7 +596,6 @@ VAR _LST_1, D
 	SA	3, ANON_69_16__u
 	LI	8
 	SD	3, COMP_SIZ
-; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SD	3, _FST_1
 	LD 3,	LAST_disp
@@ -635,31 +613,30 @@ end namespace
 	CALL	STANDARD.TEXT_IO. ,PUT_LINE_L60
 	BRA	L28
 L29:
-L28:					; post if
+L28:
 	UNLINKR 3
 endPRO
-L18:					; post if
+L18:
 	BRA	LOOP__4
-L16:					; post loop LOOP__4
+L16:
 LOOP__6:
-	LI	0					; lieu resultat sur pile
+	LI	0
 	LVA 2,	ERRORLIST_disp
 	CALL	STANDARD.IDL. ,IS_EMPTY_L23
 	LI	1
 	OUX
 	BF	L33
 namespace	BLOCK__7
-ELB 3					;    BODY ELAB
+ELB 3
  hexa_show 'var elab ERROR ', $
-VAR ERROR_disp, Q				; variable record : pointeur aux data record
-VAR ERROR__u, Q				; variable record : pointeur aux useinfo
+VAR ERROR_disp, Q
+VAR ERROR__u, Q
 VAR ERROR__dat, STANDARD.IDL._TREE.size
 	LVA	3, ERROR__dat
-	SA	3, ERROR_disp				; record fin
+	SA	3, ERROR_disp
 	LVA	3, STANDARD.IDL._TREE.SIZ__
 	SA	3, ERROR__u
 	LA  3, ERROR_disp
-					; store represented component PT range 0 .. 1 width 2
 	DUP
 	LD
 	LI	0
@@ -670,15 +647,15 @@ VAR ERROR__dat, STANDARD.IDL._TREE.size
 
  hexa_show ' disp ', ERROR_disp
  hexa_show 'var elab COL ', $
-VAR COL_disp, D				; variable entiere
+VAR COL_disp, D
 
  hexa_show ' disp ', COL_disp
-					;    end elab
-begin:					;---------- BDY INSTRUCTIONS
+
+begin:
 	LVA  3,	STANDARD.IDL.ERR_PHASE_L12.BLOCK__1.BLOCK__7.ERROR_disp
 	LVA  2,	STANDARD.IDL.ERR_PHASE_L12.BLOCK__1.ERRORLIST_disp
 	CALL	STANDARD.IDL. ,POP_L24
-	LI	0					; lieu resultat sur pile
+	LI	0
 VAR	ANON_81_34_disp, Q
 VAR	ANON_81_34__u,    Q
 VAR	ANON_81_34__dat, STANDARD.IDL._TREE.size
@@ -687,42 +664,39 @@ VAR	ANON_81_34__dat, STANDARD.IDL._TREE.size
 	LA  0, STANDARD.IDL._TREE.use__info
 	SA  3, ANON_81_34__u
 	LVA 3, ANON_81_34_disp
-					; doublet resultat record anonyme
+
 	LVA 3,	ERROR_disp
 	LI  9
 	CALL	STANDARD.IDL. ,D_L17
 	CALL	STANDARD.IDL.IDL_MAN. ,GET_SOURCE_COL_L44
-; CODE CONVERSION SOURCE DN_INTEGER TARGET DN_INTEGER
 	SD  3,	COL_disp
-VAR	NL37_disp, D				; compteur boucle LOOP__9
-; CODE_NUMERIC_LITERAL DN_INTEGER
+VAR	NL37_disp, D
 	LI	1
 	SD  3,	NL37_disp
-VAR	LMT_NL37_disp, D			; limite boucle LOOP__9
+VAR	LMT_NL37_disp, D
 	LD 2,	STANDARD.IDL.ERR_PHASE_L12.BLOCK__1.NB_PREFIX_CHARS_disp
 	LD 3,	COL_disp
 	ADD
-; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	SUB
 	SD  3,	LMT_NL37_disp
-	LD  3,	NL37_disp				; test null range LOOP__9
+	LD  3,	NL37_disp
 	LD  3,	LMT_NL37_disp
 	CGT
 	BT	L36
-LOOP__9:					; corps boucle LOOP__9
+LOOP__9:
 	LI	32
 	CALL	STANDARD.TEXT_IO. ,PUT_L52
-	LD  3,	NL37_disp				; test de sortie LOOP__9
+	LD  3,	NL37_disp
 	LD  3,	LMT_NL37_disp
 	CEQ
 	BT	L36
-	LD  3,	NL37_disp				; mise a jour compteur LOOP__9
+	LD  3,	NL37_disp
 	INC
 	SD  3,	NL37_disp
-	BRA	LOOP__9				; iteration suivante LOOP__9
-L36:					; post loop LOOP__9
-STR STR_L38, "^ col "			; constante string="^ col "
+	BRA	LOOP__9
+L36:
+STR STR_L38, "^ col "
 	LCA	STR_L38.data_ptr
 	CALL	STANDARD.TEXT_IO. ,PUT_L56
 	LD 0,	STANDARD.IDL.INT_IO.DEFAULT_BASE_disp
@@ -734,7 +708,6 @@ STR STR_L38, "^ col "			; constante string="^ col "
 	LD	0, STANDARD.TEXT_IO._NUMBER_BASE.LST
 	CGT
 	BT	STANDARD.ce_raise_
-; CODE_NUMERIC_LITERAL DN_INTEGER
 	LI	1
 	DUP
 	LD	0, STANDARD.TEXT_IO._FIELD.FST
@@ -746,7 +719,6 @@ STR STR_L38, "^ col "			; constante string="^ col "
 	BT	STANDARD.ce_raise_
 	LD 3,	COL_disp
 	CALL	STANDARD.IDL.INT_IO. ,PUT_L64
-; CODE & concat _STRING
 VAR	ANON_85_12_L39_G_data, Q
 VAR	ANON_85_12_L39_G_info, Q
 VAR	ANON_85_19_L39_D_data, Q
@@ -761,7 +733,7 @@ namespace ANON_85_12_L39_R_info
   VAR _FST_1, D
   VAR _LST_1, D
 end namespace
-STR ANON_85_12_L39_G, ": "			; constante string=": "
+STR ANON_85_12_L39_G, ": "
 	LCA	ANON_85_12_L39_G.data_ptr
 	DUP
 	LA  ,  0
@@ -793,7 +765,7 @@ VAR	ANON_85_31__dat, STANDARD.IDL._TREE.size
 	LA  0, STANDARD.IDL._TREE.use__info
 	SA  3, ANON_85_31__u
 	LVA 3, ANON_85_31_disp
-					; doublet resultat record anonyme
+
 	LVA 3,	ERROR_disp
 	LI  10
 	CALL	STANDARD.IDL. ,D_L17
@@ -845,13 +817,13 @@ VAR	ANON_85_31__dat, STANDARD.IDL._TREE.size
 	UNLINKR 3
 endPRO
 	BRA	LOOP__6
-L33:					; post loop LOOP__6
+L33:
 	LD 2,	SOURCENBR_disp
 	LI	002147483647
 	CEQ
 	BT	L11
 	BRA	LOOP__2
-L11:					; post loop LOOP__2
+L11:
 	UNLINKR 2
 endPRO
 	LVA  1,	STANDARD.IDL.ERR_PHASE_L12.IFILE_disp
@@ -863,4 +835,4 @@ ret_lbl:
 	UNLINKR 1
 	RTD	prm_siz
 excep:
-endPRO					;---------- end PRO ERR_PHASE
+endPRO

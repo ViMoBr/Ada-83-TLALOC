@@ -17,9 +17,9 @@ is
   package CODI	renames EXPANDER.UTILS;
   use CODI;
 
-				--====--
-  procedure			CODE_EXP			( EXP :TREE )
-  is
+				--^^^^^^^^--
+  procedure			  CODE_EXP		( EXP :TREE )
+  is				------------
   begin
     if EXP.TY in CLASS_NAME  then
       CODE_NAME( EXP );
@@ -27,9 +27,12 @@ is
     elsif  EXP.TY in CLASS_EXP_EXP  then
       CODE_EXP_EXP( EXP );
 
+    else
+      TROU( "CODE_EXP", EXP );
     end if;
+
   end	CODE_EXP;
-	--====--
+	--------
 
 
 				---------
@@ -38,10 +41,12 @@ is
 
 			---------------
     procedure		CODE_DESIGNATOR		( DESIGNATOR : TREE )
-    is
+    is			---------------
+
 		--------------
       procedure	CODE_USED_NAME		( USED_NAME :TREE )
-      is
+      is		--------------
+
       begin
 
         if USED_NAME.TY = DN_USED_OP  then
@@ -50,13 +55,16 @@ is
         elsif USED_NAME.TY = DN_USED_NAME_ID  then
 	CODE_USED_NAME_ID( USED_NAME );
 
+        else
+	TROU( "CODE_USED_NAME", USED_NAME );
         end if;
+
       end CODE_USED_NAME;
 	--------------
 
 		----------------
       procedure	CODE_USED_OBJECT		( USED_OBJECT :TREE )
-      is
+      is		----------------
       begin
 
         if USED_OBJECT.TY = DN_USED_CHAR  then
@@ -65,7 +73,10 @@ is
         elsif USED_OBJECT.TY = DN_USED_OBJECT_ID  then
 	CODE_USED_OBJECT_ID( USED_OBJECT );
 
+        else
+	TROU( "CODE_USED_OBJECT", USED_OBJECT );
         end if;
+
       end CODE_USED_OBJECT;
 	----------------
 
@@ -76,17 +87,22 @@ is
       elsif  DESIGNATOR.TY in CLASS_USED_OBJECT  then
         CODE_USED_OBJECT( NAME );
 
+      else
+        TROU( "CODE_DESIGNATOR", DESIGNATOR );
       end if;
+
     end	CODE_DESIGNATOR;
 	---------------
 
+
 			-------------
     procedure		CODE_NAME_EXP		( NAME_EXP :TREE )
-    is
+    is			-------------
 
 		-------------
       procedure	CODE_NAME_VAL		( NAME_VAL : TREE )
-      is
+      is		-------------
+
       begin
         if  NAME_VAL.TY = DN_SELECTED  then
 	CODE_SELECTED( NAME_VAL );
@@ -97,7 +113,10 @@ is
         elsif  NAME_VAL.TY = DN_FUNCTION_CALL  then
 	CODE_FUNCTION_CALL( NAME_VAL );
 
+        else
+	TROU( "CODE_NAME_VAL", NAME_VAL );
         end if;
+
       end CODE_NAME_VAL;
 	-------------
 
@@ -112,14 +131,27 @@ is
       elsif  NAME_EXP.TY = DN_INDEXED  then
         CODE_INDEXED( NAME_EXP );									-- LAISSE UNE ADRESSE
         if  D( SM_EXP_TYPE, NAME_EXP ).TY in CLASS_SCALAR  then
---	PUT_LINE( tab & "L" & OPER_SIZ_CHAR( D( SM_EXP_TYPE, NAME_EXP ) ) );
 	PUT_LINE( tab & OPER_LOAD_STR( D( SM_EXP_TYPE, NAME_EXP ) ) );
         end if;
 
       elsif  NAME_EXP.TY = DN_SLICE  then
-        CODE_SLICE( NAME_EXP );
+			--| Segfault 0x46ff17 (ERR_PHASE sur null_prog, TO_CHN_L187 d'idl.adb,
+			--| 03/08) : une tranche en position de VALEUR (ici l'actual d'une
+			--| instance UNCHECKED_CONVERSION, DN_CONVERSION sur tranche) passait
+			--| par le mode destination -- @data, LEN, DEUX valeurs -- et l'appel
+			--| partait avec un push de trop : -S_ofs recevait LEN (=24) et le
+			--| La du corps synthetise le dereferencait.  CODE_EXP est un
+			--| producteur de VALEUR : une tranche y suit la regle n 112
+			--| (@doublet, mode source), comme aux quatre sites qui contournaient
+			--| deja ce defaut (return, init d'objet, actual nu, alias).  Les
+			--| consommateurs de @data+LEN appellent tous CODE_SLICE directement
+			--| (IS_DESTINATION => TRUE explicite) : inchanges.
+        CODE_SLICE( NAME_EXP, IS_DESTINATION => FALSE );
 
+      else
+        TROU( "CODE_NAME_EXP", NAME_EXP );
       end if;
+
     end	CODE_NAME_EXP;
 	-------------
 
@@ -130,7 +162,10 @@ is
     elsif  NAME.TY in CLASS_NAME_EXP  then
       CODE_NAME_EXP( NAME );
 
+    else
+      TROU( "CODE_NAME", NAME );
     end if;
+
   end	CODE_NAME;
 	---------
 
@@ -141,13 +176,16 @@ is
 
 			------------
     procedure		CODE_EXP_VAL		( EXP_VAL :TREE )
-    is
+    is			------------
+
 		----------------
       procedure	CODE_EXP_VAL_EXP		( EXP_VAL_EXP :TREE )
-      is
-	        --------------
-        procedure CODE_QUAL_CONV	( QUAL_CONV :TREE )
-        is
+      is		----------------
+
+		--------------
+        procedure	CODE_QUAL_CONV	( QUAL_CONV :TREE )
+        is	--------------
+
         begin
 
 	if  QUAL_CONV.TY = DN_CONVERSION  then
@@ -156,22 +194,29 @@ is
 	elsif  QUAL_CONV.TY = DN_QUALIFIED  then
 	  CODE_QUALIFIED( QUAL_CONV );
 
+	else
+	  TROU( "CODE_QUAL_CONV", QUAL_CONV );
 	end if;
+
         end	CODE_QUAL_CONV;
 		--------------
 
-	        ---------------
-        procedure CODE_MEMBERSHIP	( MEMBERSHIP :TREE )
-        is
-        begin
 
+		---------------
+        procedure	CODE_MEMBERSHIP	( MEMBERSHIP :TREE )
+        is	---------------
+
+        begin
 	if  MEMBERSHIP.TY = DN_RANGE_MEMBERSHIP  then
 	  CODE_RANGE_MEMBERSHIP( MEMBERSHIP );
 
 	elsif  MEMBERSHIP.TY = DN_TYPE_MEMBERSHIP  then
 	  CODE_TYPE_MEMBERSHIP( MEMBERSHIP );
 
+	else
+	  TROU( "CODE_MEMBERSHIP", MEMBERSHIP );
 	end if;
+
         end	CODE_MEMBERSHIP;
 		---------------
 
@@ -185,10 +230,12 @@ is
         elsif EXP_VAL_EXP.TY = DN_PARENTHESIZED then
 	CODE_PARENTHESIZED( EXP_VAL_EXP );
 
+        else
+	TROU( "CODE_EXP_VAL_EXP", EXP_VAL_EXP );
         end if;
 
       end CODE_EXP_VAL_EXP;
-      ----------------
+	----------------
 
     begin
       if  EXP_VAL.TY in CLASS_EXP_VAL_EXP  then
@@ -203,21 +250,44 @@ is
       elsif  EXP_VAL.TY = DN_SHORT_CIRCUIT  then
         CODE_SHORT_CIRCUIT( EXP_VAL );
 
+      else
+        TROU( "CODE_EXP_VAL", EXP_VAL );
       end if;
+
     end	CODE_EXP_VAL;
 	------------
 
+
 			------------
     procedure		CODE_AGG_EXP		( AGG_EXP, TYPE_SPEC_HINT :TREE )
-    is
+    is			------------
     begin
       if AGG_EXP.TY = DN_AGGREGATE  then
         CODE_AGGREGATE( AGG_EXP, TYPE_SPEC_HINT );
 
       elsif AGG_EXP.TY = DN_STRING_LITERAL  then
-        CODE_STRING_LITERAL( AGG_EXP, ANONYMOUS_NAME_AT( AGG_EXP ) );
+			--| Segfault RETMICRO1/RETSLICE (BUF(1..9) := "NULL_PROG", 03/08) :
+			--| CODE_EXP d'un litteral emettait la constante STR SANS RIEN
+			--| EMPILER -- tous les sites qui marchent (operande, actuel, init,
+			--| qualifie, branches litteral des affectations objet et indexee)
+			--| contournent CODE_EXP avec leur propre STR+LCA ; seule
+			--| l'affectation a destination TRANCHE tombait ici via
+			--| CODE_COMPOSITE_DATA_ADDRESS, et son BLKMOV partait sans source.
+			--| CODE_EXP est un producteur de VALEUR : le litteral rejoint la
+			--| regle n 112 en poussant son @doublet STATIQUE (LCA .data_ptr) ;
+			--| l'extraction (La) est chez CODE_COMPOSITE_DATA_ADDRESS, amendee
+			--| dans le meme commit.
+        declare
+	ANON	:constant STRING	:= ANONYMOUS_NAME_AT( AGG_EXP );
+        begin
+	CODE_STRING_LITERAL( AGG_EXP, ANON );
+	PUT_LINE( tab & "LCA" & tab & ANON & ".data_ptr" );					-- @doublet statique du litteral
+        end;
 
+      else
+        TROU( "CODE_AGG_EXP", AGG_EXP );
       end if;
+
     end	CODE_AGG_EXP;
 	------------
 
@@ -234,6 +304,8 @@ is
     elsif EXP_EXP.TY = DN_SUBTYPE_ALLOCATOR  then
       CODE_SUBTYPE_ALLOCATOR( EXP_EXP );
 
+    else
+      TROU( "CODE_EXP_EXP", EXP_EXP );
     end if;
 
   end	CODE_EXP_EXP;
@@ -245,8 +317,10 @@ is
   is				------------
     DEFN		: TREE		:= D( SM_DEFN, USED_OP ) ;
     SYM		: TREE		:= D( LX_SYMREP, DEFN );
+
   begin
-    put_line( "; used op " & PRINT_NAME( SYM ) );
+    TROU( "CODE_USED_OP " & PRINT_NAME( SYM ) );
+
   end	CODE_USED_OP;
 	------------
 
@@ -258,9 +332,12 @@ is
     declare
       DEFN	: TREE	:= D( SM_DEFN,   USED_NAME_ID );
       SYMREP	: TREE	:= D( LX_SYMREP, USED_NAME_ID );
+
     begin
       if DEFN.TY = DN_EXCEPTION_ID then
-null;--	     declare
+        null;	-- INTENTIONNEL : nom d'exception employe comme NOM --
+		-- rien a emettre ici, les usages porteurs (raise nomme,
+		-- choix de handler) passent par EXCEPTION_ID_OF.
 
       elsif DEFN.TY = DN_PACKAGE_ID then
         if not DB( CD_COMPILED, DEFN ) then
@@ -283,8 +360,12 @@ null;--	     declare
 	  DB  ( CD_COMPILED,   DEFN, TRUE );
 	end;
         end if;
+
+      else
+        TROU( "CODE_USED_NAME_ID", DEFN );
       end if;
     end;
+
   end	CODE_USED_NAME_ID;
 	-----------------
 
@@ -294,6 +375,7 @@ null;--	     declare
   is				--------------
   begin
     PUT_LINE( tab & "LI" & tab & IMAGE( DI( SM_VALUE, USED_CHAR ) ) );
+
   end	CODE_USED_CHAR;
 	--------------
 
@@ -301,21 +383,24 @@ null;--	     declare
 				-------------------
   procedure			CODE_USED_OBJECT_ID		( USED_OBJECT_ID :TREE )
   is				-------------------
+
     DEFN		: TREE		:= D( SM_DEFN, USED_OBJECT_ID ) ;
+
   begin
     case DEFN.TY is
+
     when DN_CONSTANT_ID | DN_VARIABLE_ID	=> CODE_VC_ID( DEFN );
+
     when DN_ITERATION_ID			=>
       declare
         ITERATION_ID	: TREE		renames DEFN;
         ITERATION_ID_STR	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, ITERATION_ID ) );
         ITERATION_ID_TAG	: LABEL_TYPE	:= LABEL_TYPE( DI( CD_OFFSET, ITERATION_ID ) );
         ITERATION_ID_VARSTR	:constant STRING	:= ITERATION_ID_STR & LABEL_STR( ITERATION_ID_TAG ) & "_disp";
---	TYPE_CHAR		: CHARACTER	:= OPER_SIZ_CHAR( D( SM_OBJ_TYPE, ITERATION_ID ) );
+
       begin
         PUT_LINE( tab & OPER_LOAD_STR( D( SM_OBJ_TYPE, ITERATION_ID ) )
 		& INTEGER'IMAGE( DI( CD_LEVEL, ITERATION_ID ) ) & ',' & tab & ITERATION_ID_VARSTR );
---	PUT_LINE( tab & "L" & TYPE_CHAR & tab & IMAGE( DI( CD_LEVEL, ITERATION_ID ) ) & ", " & ITERATION_ID_VARSTR );
       end;
 
     when DN_ENUMERATION_ID | DN_CHARACTER_ID	=> PUT_LINE( tab & "LI" & tab & IMAGE( DI( SM_REP, DEFN ) ) );
@@ -328,35 +413,45 @@ null;--	     declare
         PUT_LINE( tab & "LVA " & INTEGER'IMAGE( DI( CD_LEVEL, DEFN ) ) & ','
 		    & tab & '-' & PRINT_NAME( D( LX_SYMREP, DEFN ) ) & "_ofs" );
 
------
-        PUT_LINE( tab & "La " & IMAGE( GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );
+        PUT_LINE( tab & "LA " & IMAGE( GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );
 
         if  DEFN.TY = DN_IN_ID  then
-	PUT_LINE( tab & "La ," & tab & '-' & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, D( SM_OBJ_TYPE, DEFN ) ) ) ) & "__inadr_ofs" );
+	PUT_LINE( tab & "LA ," & tab & '-'
+	  & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, D( SM_OBJ_TYPE, DEFN ) ) ) ) & "__inadr_ofs" );
         else
-	PUT_LINE( tab & "La ," & tab & '-' & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, D( SM_OBJ_TYPE, DEFN ) ) ) ) & "__outadr_ofs" );
+	PUT_LINE( tab & "LA ," & tab & '-'
+	  & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, D( SM_OBJ_TYPE, DEFN ) ) ) ) & "__outadr_ofs" );
         end if;
         PUT_LINE( tab & "CALLI" );
------
 
-        PUT_LINE( tab & "La " & LEVEL_NUM'IMAGE( CODI.GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );
-        PUT_LINE( tab & "La ," & tab & '-' & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, D( SM_OBJ_TYPE, DEFN ) ) ) )
-			& "__ld_ofs" );
+        PUT_LINE( tab & "LA " & LEVEL_NUM'IMAGE( CODI.GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );
+        PUT_LINE( tab & "LA ," & tab & '-'
+	& PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, D( SM_OBJ_TYPE, DEFN ) ) ) ) & "__ld_ofs" );
         PUT_LINE( tab & "CALLI" );
 
       else
         LOAD_MEM( DEFN );
-
       end if;
 
     when DN_OUT_ID				=>
-	PUT_LINE( "; CODE_USED_OBJECT_ID : OUT_ID a faire " );
+			--| Chantier C3 (recensement 28/07, 2 traversees types_decls ;
+			--| temoin OUT_RD1) : RELECTURE d'un out apres ecriture, toleree
+			--| par le front-end (illegale en Ada 83 strict, LRM 6.2 -- le
+			--| corpus en vit).  Protocole n 91/94 : le slot d'un out scalaire
+			--| contient l'ADRESSE de la valeur, exactement comme in out --
+			--| MEME chemin, LOAD_MEM (qui traite deja CLASS_PARAM_NAME).
+      if  not CODI.IN_GENERIC_BODY  then
+        LOAD_MEM( DEFN );
+      else
+	TROU( "CODE_USED_OBJECT_ID lecture d'un OUT en corps generique", DEFN );				--| C3 : zero traversee observee en corps
+												--| generique, on ne benit pas (n 122)
+      end if;
 
     when DN_NUMBER_ID			=>
 	CODE_EXP( D( SM_INIT_EXP, DEFN ) );
 
     when DN_DISCRIMINANT_ID			=>
-	PUT_LINE( "; CODE_USED_OBJECT_ID : DISCRIMINANT_ID a faire " );
+	TROU( "CODE_USED_OBJECT_ID discriminant (contexte expression, rien empile)", DEFN );			--| vague 5
 
     when others => PUT_LINE( "; CODE_USED_OBJECT_ID : " & NODE_NAME'IMAGE( DEFN.TY ) & " pas gere !" );
 	raise PROGRAM_ERROR;
@@ -379,8 +474,8 @@ null;--	     declare
 
     if  DESIG_TYPE.TY in CLASS_SCALAR  or else DESIG_TYPE.TY = DN_ACCESS  then
       PUT_LINE( tab & OPER_LOAD_STR( DESIG_TYPE ) );
---      PUT_LINE( tab & "L" & OPER_SIZ_CHAR( DESIG_TYPE ) );
     end if;
+
   end	CODE_ALL;
 	--------
 
@@ -393,6 +488,8 @@ null;--	     declare
 
   begin
     if  NAME.TY = DN_USED_OBJECT_ID  then
+					----------------------
+					NAME_DN_USED_OBJECT_ID:
       declare
         ACCESS_TYPE		: TREE	:= D( SM_EXP_TYPE, NAME );
       begin
@@ -415,7 +512,6 @@ null;--	     declare
         -- Ici DESIG_TYPE doit être T1, donc DN_CONSTRAINED_ARRAY
 	  declare
 	    DESIG_NAME     : TREE := D( XD_SOURCE_NAME, DESIG_TYPE );
---	    TYPE_NAME_STR  : constant STRING := '_' & PRINT_NAME( D( LX_SYMREP, DESIG_NAME ) );
 	    TYPE_NAME_STR  : constant STRING := TYPE_INFO_STR( DESIG_TYPE );
 	    TYPE_LVL       : INTEGER := DI( CD_LEVEL, DESIG_TYPE );
 	    INDEX_NUM      : INTEGER := 1;
@@ -431,26 +527,26 @@ null;--	     declare
 	    -- PILIER CHECKS (E-C) : FST_n <= index <= LST_n (LRM 4.1.1)
 	    if  CODI.CHECKS_ENABLED  then
 	      PUT_LINE( tab & "DUP" );
-	      PUT( tab & "Ld" & tab & INTEGER'IMAGE( TYPE_LVL ) & ", " );
+	      PUT( tab & "LD" & tab & INTEGER'IMAGE( TYPE_LVL ) & ", " );
 	      REGIONS_PATH( DESIG_NAME );
 	      PUT_LINE( TYPE_NAME_STR & "._FST_" & INDEX_NUM_IMG );
 	      PUT_LINE( tab & "CLT" );
 	      PUT_LINE( tab & "BT" & tab & "STANDARD.ce_raise_" );
 	      PUT_LINE( tab & "DUP" );
-	      PUT( tab & "Ld" & tab & INTEGER'IMAGE( TYPE_LVL ) & ", " );
+	      PUT( tab & "LD" & tab & INTEGER'IMAGE( TYPE_LVL ) & ", " );
 	      REGIONS_PATH( DESIG_NAME );
 	      PUT_LINE( TYPE_NAME_STR & "._LST_" & INDEX_NUM_IMG );
 	      PUT_LINE( tab & "CGT" );
 	      PUT_LINE( tab & "BT" & tab & "STANDARD.ce_raise_" );
 	    end if;
 
-	    PUT( tab & "Ld" & tab & INTEGER'IMAGE( TYPE_LVL ) & ", " );
+	    PUT( tab & "LD" & tab & INTEGER'IMAGE( TYPE_LVL ) & ", " );
 	    REGIONS_PATH( DESIG_NAME );
 	    PUT_LINE( TYPE_NAME_STR & "._FST_" & INDEX_NUM_IMG );
 
 	    PUT_LINE( tab & "SUB" );
 
-	    PUT( tab & "Ld" & tab & INTEGER'IMAGE( TYPE_LVL ) & ", " );
+	    PUT( tab & "LD" & tab & INTEGER'IMAGE( TYPE_LVL ) & ", " );
 	    REGIONS_PATH( DESIG_NAME );
 	    if  INDEX_NUM < NB_DIMS  then
 	      PUT_LINE( TYPE_NAME_STR & ".SIZ_" & INDEX_NUM_IMG );
@@ -458,8 +554,16 @@ null;--	     declare
 	      PUT_LINE( TYPE_NAME_STR & "._COMP_SIZ" );
 	    end if;
 
-	    PUT_LINE( tab & "LI" & tab & IMAGE( CODI.STORAGE_UNIT ) );
-	    PUT_LINE( tab & "DIV" );
+	    if  CODI.STORAGE_UNIT = 8  then
+	      PUT_LINE( tab & "LI" & tab & "3" );
+	      PUT_LINE( tab & "SAR" );									-- bits -> octets : /8 = >>3 (SIZ >= 0)
+	    else
+	      PUT_LINE( tab & "LI" & tab & IMAGE( CODI.STORAGE_UNIT ) );
+	      PUT_LINE( tab & "DIV" );									-- En STORAGE_UNIT
+	    end if;
+
+--	    PUT_LINE( tab & "LI" & tab & IMAGE( CODI.STORAGE_UNIT ) );
+--	    PUT_LINE( tab & "DIV" );
 	    PUT_LINE( tab & "MUL" );
 	    PUT_LINE( tab & "ADD" );
 
@@ -494,14 +598,16 @@ null;--	     declare
 	  end;
 	end;
         end if;
-      end;
+      end				NAME_DN_USED_OBJECT_ID;
+				----------------------
     end if;
 
     if  NAME.TY = DN_ALL  then
+					-----------
+					NAME_DN_ALL:
       declare
         EXP_TYPE		: TREE		:= D( SM_EXP_TYPE, NAME );
         EXP_TYPE_NAME	: TREE		:= D( XD_SOURCE_NAME, EXP_TYPE );
---	TYPE_NAME_STR	:constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, EXP_TYPE_NAME ) );
         TYPE_NAME_STR	:constant STRING	:= TYPE_INFO_STR( EXP_TYPE );
         TYPE_LVL		: INTEGER		:= DI( CD_LEVEL, EXP_TYPE );
         INDEX_NUM		: INTEGER		:= 1;
@@ -517,26 +623,26 @@ null;--	     declare
 	-- PILIER CHECKS (E-C) : FST_n <= index <= LST_n (LRM 4.1.1)
 	if  CODI.CHECKS_ENABLED  then
 	  PUT_LINE( tab & "DUP" );
-	  PUT( tab & "Ld" & tab & INTEGER'IMAGE( TYPE_LVL ) & ", " );
+	  PUT( tab & "LD" & tab & INTEGER'IMAGE( TYPE_LVL ) & ", " );
 	  REGIONS_PATH( EXP_TYPE_NAME );
 	  PUT_LINE( TYPE_NAME_STR & "._FST_" & INDEX_NUM_IMG );
 	  PUT_LINE( tab & "CLT" );
 	  PUT_LINE( tab & "BT" & tab & "STANDARD.ce_raise_" );
 	  PUT_LINE( tab & "DUP" );
-	  PUT( tab & "Ld" & tab & INTEGER'IMAGE( TYPE_LVL ) & ", " );
+	  PUT( tab & "LD" & tab & INTEGER'IMAGE( TYPE_LVL ) & ", " );
 	  REGIONS_PATH( EXP_TYPE_NAME );
 	  PUT_LINE( TYPE_NAME_STR & "._LST_" & INDEX_NUM_IMG );
 	  PUT_LINE( tab & "CGT" );
 	  PUT_LINE( tab & "BT" & tab & "STANDARD.ce_raise_" );
 	end if;
 
-	PUT( tab & "Ld" & tab & INTEGER'IMAGE( TYPE_LVL ) & ", " );
+	PUT( tab & "LD" & tab & INTEGER'IMAGE( TYPE_LVL ) & ", " );
 	REGIONS_PATH( EXP_TYPE_NAME );
 	PUT_LINE( TYPE_NAME_STR & "._FST_" & INDEX_NUM_IMG );
 
 	PUT_LINE( tab & "SUB" );
 
-	PUT( tab & "Ld" & tab & INTEGER'IMAGE( TYPE_LVL ) & ", " );
+	PUT( tab & "LD" & tab & INTEGER'IMAGE( TYPE_LVL ) & ", " );
 	REGIONS_PATH( EXP_TYPE_NAME );
 	if  INDEX_NUM < NB_DIMS  then
 	  PUT_LINE( TYPE_NAME_STR & ".SIZ_" & INDEX_NUM_IMG );
@@ -544,8 +650,15 @@ null;--	     declare
 	  PUT_LINE( TYPE_NAME_STR & "._COMP_SIZ" );
 	end if;
 
-	PUT_LINE( tab & "LI" & tab & IMAGE( CODI.STORAGE_UNIT ) );
-	PUT_LINE( tab & "DIV" );
+	if  CODI.STORAGE_UNIT = 8  then
+	  PUT_LINE( tab & "LI" & tab & "3" );
+	  PUT_LINE( tab & "SAR" );									-- bits -> octets : /8 = >>3 (SIZ >= 0)
+	else
+	  PUT_LINE( tab & "LI" & tab & IMAGE( CODI.STORAGE_UNIT ) );
+	  PUT_LINE( tab & "DIV" );									-- En STORAGE_UNIT
+	end if;
+--	PUT_LINE( tab & "LI" & tab & IMAGE( CODI.STORAGE_UNIT ) );
+--	PUT_LINE( tab & "DIV" );
 	PUT_LINE( tab & "MUL" );
 	PUT_LINE( tab & "ADD" );
 
@@ -553,7 +666,7 @@ null;--	     declare
 		-----
 
       begin
-        CODE_OBJECT_ADDRESS( NAME );							-- @data pointee par l'access
+        CODE_OBJECT_ADDRESS( NAME );									-- @data pointee par l'access
 
         declare
 	CNT_SEQ	: SEQ_TYPE	:= LIST( D( AS_EXP_S, INDEXED ) );
@@ -577,15 +690,37 @@ null;--	     declare
         end;
 
         return;
-      end;
+      end				NAME_DN_ALL;
+				-----------
     end if;
 
+--    if  NAME.TY = DN_SELECTED  then
+--      CODE_SELECTED( NAME, IS_SOURCE=> FALSE );
+--      NAME := D( AS_DESIGNATOR, NAME );
+--    end if;
     if  NAME.TY = DN_SELECTED  then
-      CODE_SELECTED( NAME, IS_SOURCE=> FALSE );
+			--| n 148 (segfaults T2 lot goto : lex, lib_phase, err_phase,
+			--| expressions, declarations, ada_comp -- 12/08) : DOUBLE
+			--| EMPILEMENT de l'@data pour un prefixe NOM ETENDU PKG.ARR(I).
+			--| CODE_SELECTED empilait l'adresse de la table, puis la queue
+			--| commune (ARRAY_DEFN /= DN_COMPONENT_ID) la RE-empilait --
+			--| fuite +1 par reference, resorbee aux frontieres d'instruction
+			--| SAUF quand elle nait dans un bloc de parametres : le calle
+			--| lisait -result__ofs = @table nue, SIq corrompait [table+0]
+			--| en silence et le BLKMOV d'info de CODE_RETURN visait
+			--| [table+8] (petit champ de l'element 1) -- stos sur 0x1.
+			--| Empreinte FINC : deux "LA n, ...ARR_disp" CONSECUTIFS.
+			--| Seul le COMPOSANT (R.A(N)) doit pre-empiler l'adresse --
+			--| meme predicat que la queue commune : DN_COMPONENT_ID.
+      if  D( SM_DEFN, D( AS_DESIGNATOR, NAME ) ).TY = DN_COMPONENT_ID  then
+	CODE_SELECTED( NAME, IS_SOURCE=> FALSE );
+      end if;
       NAME := D( AS_DESIGNATOR, NAME );
     end if;
 
     if  NAME.TY = DN_INDEXED  then
+					---------------
+					NAME_DN_INDEXED:
     declare
       PREFIX_TYPE	   : TREE := D( SM_EXP_TYPE, NAME );
       PREFIX_BASE_TYPE : TREE;
@@ -636,26 +771,26 @@ null;--	     declare
          -- PILIER CHECKS (E-C) : FST_n <= index <= LST_n (LRM 4.1.1)
          if  CODI.CHECKS_ENABLED  then
 	  PUT_LINE( tab & "DUP" );
-	  PUT( tab & "Ld" & tab & INTEGER'IMAGE( TYPE_LVL ) & ", " );
+	  PUT( tab & "LD" & tab & INTEGER'IMAGE( TYPE_LVL ) & ", " );
 	  REGIONS_PATH( PREFIX_TYPE_NAME );
 	  PUT_LINE( TYPE_NAME_STR(1 .. TYPE_NAME_LEN) & "._FST_" & INDEX_NUM_IMG );
 	  PUT_LINE( tab & "CLT" );
 	  PUT_LINE( tab & "BT" & tab & "STANDARD.ce_raise_" );
 	  PUT_LINE( tab & "DUP" );
-	  PUT( tab & "Ld" & tab & INTEGER'IMAGE( TYPE_LVL ) & ", " );
+	  PUT( tab & "LD" & tab & INTEGER'IMAGE( TYPE_LVL ) & ", " );
 	  REGIONS_PATH( PREFIX_TYPE_NAME );
 	  PUT_LINE( TYPE_NAME_STR(1 .. TYPE_NAME_LEN) & "._LST_" & INDEX_NUM_IMG );
 	  PUT_LINE( tab & "CGT" );
 	  PUT_LINE( tab & "BT" & tab & "STANDARD.ce_raise_" );
          end if;
 
-         PUT( tab & "Ld" & tab & INTEGER'IMAGE( TYPE_LVL ) & ", " );
+         PUT( tab & "LD" & tab & INTEGER'IMAGE( TYPE_LVL ) & ", " );
          REGIONS_PATH( PREFIX_TYPE_NAME );
          PUT_LINE( TYPE_NAME_STR(1 .. TYPE_NAME_LEN) & "._FST_" & INDEX_NUM_IMG );
 
          PUT_LINE( tab & "SUB" );
 
-         PUT( tab & "Ld" & tab & INTEGER'IMAGE( TYPE_LVL ) & ", " );
+         PUT( tab & "LD" & tab & INTEGER'IMAGE( TYPE_LVL ) & ", " );
          REGIONS_PATH( PREFIX_TYPE_NAME );
 
          if  INDEX_NUM < NB_DIMS  then
@@ -664,10 +799,18 @@ null;--	     declare
 	  PUT_LINE( TYPE_NAME_STR(1 .. TYPE_NAME_LEN) & "._COMP_SIZ" );
          end if;
 
-         PUT_LINE( tab & "LI" & tab & IMAGE( CODI.STORAGE_UNIT ) );
-         PUT_LINE( tab & "DIV" );
-         PUT_LINE( tab & "MUL" );
-         PUT_LINE( tab & "ADD" );
+        if  CODI.STORAGE_UNIT = 8  then
+	PUT_LINE( tab & "LI" & tab & "3" );
+	PUT_LINE( tab & "SAR" );									-- bits -> octets : /8 = >>3 (SIZ >= 0)
+        else
+	PUT_LINE( tab & "LI" & tab & IMAGE( CODI.STORAGE_UNIT ) );
+	PUT_LINE( tab & "DIV" );									-- En STORAGE_UNIT
+        end if;
+--	PUT_LINE( tab & "LI" & tab & IMAGE( CODI.STORAGE_UNIT ) );
+--	PUT_LINE( tab & "DIV" );
+        PUT_LINE( tab & "MUL" );
+        PUT_LINE( tab & "ADD" );
+
       end INDEX;
 
     begin
@@ -710,7 +853,8 @@ null;--	     declare
       end;
 
         return;
-      end;
+      end				NAME_DN_INDEXED;
+				---------------
     end if;
 
     if  NAME.TY = DN_FUNCTION_CALL  then
@@ -718,10 +862,10 @@ null;--	     declare
       -- TOKEN( TOKEN'FIRST ), function TOKEN return STRING (IDL.READ_GRMR).
       -- Forme RESOLUE par le semantiseur (assoc_s vide, SM_DEFN=FUNCTION_ID),
       -- pas un reliquat d'ambiguite appel/indexation.
-      -- Modele : CODE_EXP(appel) laisse @doublet anonyme (PREPARE_ARRAY_RETURN) ;
+      -- Modele : CODE_EXP(appel) laisse @doublet anonyme (PREPARE_ARRAY_RESULT_PLACE) ;
       -- bornes runtime dans <anon>_info (_FST_1/_LST_1/_COMP_SIZ, 1-dim, dette D6).
       declare
-        ANON      :constant STRING := ANONYMOUS_NAME_AT( NAME );   -- MEME nom que PREPARE_ARRAY_RETURN
+        ANON      :constant STRING := ANONYMOUS_NAME_AT( NAME );   -- MEME nom que PREPARE_ARRAY_RESULT_PLACE
         LVL_STR   :constant STRING := IMAGE( CODI.CUR_LEVEL );
         INDEX_NUM : INTEGER := 1;
         NB_DIMS   : INTEGER := 0;
@@ -733,27 +877,36 @@ null;--	     declare
 	-- PILIER CHECKS (E-C) : FST_1 <= index <= LST_1 (LRM 4.1.1)
 	if  CODI.CHECKS_ENABLED  then
 	  PUT_LINE( tab & "DUP" );
-	  PUT_LINE( tab & "Ld" & tab & LVL_STR & ", " & ANON & "_info._FST_" & INDEX_NUM_IMG );
+	  PUT_LINE( tab & "LD" & tab & LVL_STR & ", " & ANON & "_info._FST_" & INDEX_NUM_IMG );
 	  PUT_LINE( tab & "CLT" );
 	  PUT_LINE( tab & "BT" & tab & "STANDARD.ce_raise_" );
 	  PUT_LINE( tab & "DUP" );
-	  PUT_LINE( tab & "Ld" & tab & LVL_STR & ", " & ANON & "_info._LST_" & INDEX_NUM_IMG );
+	  PUT_LINE( tab & "LD" & tab & LVL_STR & ", " & ANON & "_info._LST_" & INDEX_NUM_IMG );
 	  PUT_LINE( tab & "CGT" );
 	  PUT_LINE( tab & "BT" & tab & "STANDARD.ce_raise_" );
 	end if;
 
-	PUT_LINE( tab & "Ld" & tab & LVL_STR & ", " & ANON & "_info._FST_" & INDEX_NUM_IMG );
+	PUT_LINE( tab & "LD" & tab & LVL_STR & ", " & ANON & "_info._FST_" & INDEX_NUM_IMG );
 	PUT_LINE( tab & "SUB" );
-	PUT_LINE( tab & "Ld" & tab & LVL_STR & ", " & ANON & "_info._COMP_SIZ" );
-	PUT_LINE( tab & "LI" & tab & IMAGE( CODI.STORAGE_UNIT ) );
-	PUT_LINE( tab & "DIV" );
+	PUT_LINE( tab & "LD" & tab & LVL_STR & ", " & ANON & "_info._COMP_SIZ" );
+
+	if  CODI.STORAGE_UNIT = 8  then
+	  PUT_LINE( tab & "LI" & tab & "3" );
+	  PUT_LINE( tab & "SAR" );									-- bits -> octets : /8 = >>3 (SIZ >= 0)
+	else
+	  PUT_LINE( tab & "LI" & tab & IMAGE( CODI.STORAGE_UNIT ) );
+	  PUT_LINE( tab & "DIV" );									-- En STORAGE_UNIT
+	end if;
+
+--	PUT_LINE( tab & "LI" & tab & IMAGE( CODI.STORAGE_UNIT ) );
+--	PUT_LINE( tab & "DIV" );
 	PUT_LINE( tab & "MUL" );
 	PUT_LINE( tab & "ADD" );
         end INDEX;
 
       begin
         CODE_EXP( NAME );			 -- appel : laisse @doublet anonyme
-        PUT_LINE( tab & "La" );		 -- @doublet -> data_ptr (pilier 3.7)
+        PUT_LINE( tab & "LA" );		 -- @doublet -> data_ptr (pilier 3.7)
 
         declare
 	CNT_SEQ : SEQ_TYPE := LIST( D( AS_EXP_S, INDEXED ) );
@@ -787,17 +940,44 @@ null;--	     declare
 
 
     declare
-    ARRAY_DEFN		: TREE			:= D( SM_DEFN, NAME );
-    EXP_TYPE		: TREE			:= D( SM_EXP_TYPE, NAME );
-    EXP_TYPE_NAME		: TREE			:= D( XD_SOURCE_NAME, EXP_TYPE );
-    ARRAY_NAME		:constant STRING		:= PRINT_NAME( D( LX_SYMREP, NAME ) );
-    TYPE_NAME_STR		:constant STRING		:= TYPE_INFO_STR( EXP_TYPE );
-    ARRAY_LVL		: INTEGER			:= 0;
-    TYPE_LVL		: INTEGER			:= DI( CD_LEVEL, EXP_TYPE );
-    INDEX_NUM		: INTEGER			:= 1;
-    NB_DIMS		: INTEGER			:= 0;
-    IS_PARAM		: BOOLEAN			:= FALSE;
-    USE_TYPE_INFO_DIRECT	: BOOLEAN			:= FALSE;
+      ARRAY_DEFN		: TREE			:= D( SM_DEFN, NAME );
+      EXP_TYPE		: TREE			:= D( SM_EXP_TYPE, NAME );
+      EXP_TYPE_NAME		: TREE			:= D( XD_SOURCE_NAME, EXP_TYPE );
+      ARRAY_NAME		:constant STRING		:= PRINT_NAME( D( LX_SYMREP, NAME ) );
+      TYPE_NAME_STR		:constant STRING		:= TYPE_INFO_STR( EXP_TYPE );
+      ARRAY_LVL		: INTEGER			:= 0;
+      TYPE_LVL		: INTEGER			:= DI( CD_LEVEL, EXP_TYPE );
+      INDEX_NUM		: INTEGER			:= 1;
+      NB_DIMS		: INTEGER			:= 0;
+      IS_PARAM		: BOOLEAN			:= FALSE;
+      USE_TYPE_INFO_DIRECT	: BOOLEAN			:= FALSE;
+      IS_ANON_COMP		:constant BOOLEAN		:= ARRAY_DEFN.TY = DN_COMPONENT_ID
+					and then  D( SM_TYPE_SPEC, EXP_TYPE_NAME ) /= EXP_TYPE;
+
+		---------------
+      procedure	PUT_INFO_DIRECT	( FIELD :STRING;  EOL :BOOLEAN := TRUE )
+      is		---------------
+      -- Reference "type info direct" du cas R.A(N) (ARRAY_DEFN = DN_COMPONENT_ID).
+      -- Composant de sous-type tableau ANONYME : XD_SOURCE_NAME remonte au type
+      -- de base (STANDARD._STRING), dont le patron NON contraint n'a ni _FST_n
+      -- ni _COMP_SIZ (et que l'ancien " namespace _STRING" du record polluait
+      -- en fasmg) -> viser le bloc LOCAL _<comp>__type emis dans le namespace
+      -- du record par CODE_RECORD_TYPE_DECL ; REGIONS_PATH d'un DN_COMPONENT_ID
+      -- fournit le prefixe ..._<RECORD>. (meme idiome que le LIVA de
+      -- CODE_SELECTED).  Type/sous-type NOMME : chemin historique inchange.
+      begin
+	PUT( tab & "LD" & tab & INTEGER'IMAGE( TYPE_LVL ) & ", " );
+	if  IS_ANON_COMP  then
+	  REGIONS_PATH( ARRAY_DEFN );
+	  PUT( '_' & PRINT_NAME( D( LX_SYMREP, ARRAY_DEFN ) ) & "__type" & FIELD );
+	else
+	  REGIONS_PATH( EXP_TYPE_NAME );
+	  PUT( TYPE_NAME_STR & FIELD );
+	end if;
+	if  EOL  then  NEW_LINE;  end if;
+
+      end PUT_INFO_DIRECT;
+	---------------
 
 		-----
       procedure	INDEX	( EXP :TREE )
@@ -817,18 +997,16 @@ null;--	     declare
 
 	if  IS_PARAM  then
 	  PUT_LINE( tab & "LVA" & tab &	LVL_IMG & ", -" & ARRAY_NAME & "_ofs" );
-	  PUT_LINE( tab & "LIa" & tab & ", 0, " & INTEGER'IMAGE( CODI.ADDR_SIZE ) );
-	  PUT( tab & "Ld" & tab & ", " );
+	  PUT_LINE( tab & "LIA" & tab & ", 0, " & INTEGER'IMAGE( CODI.ADDR_SIZE ) );
+	  PUT( tab & "LD" & tab & ", " );
 	  REGIONS_PATH( EXP_TYPE_NAME );
 	  PUT_LINE( TYPE_NAME_STR & ".FST_" & INDEX_NUM_IMG );
 
 	elsif  USE_TYPE_INFO_DIRECT  then
-	  PUT( tab & "Ld" & tab & INTEGER'IMAGE( TYPE_LVL ) & ", " );
-	  REGIONS_PATH( EXP_TYPE_NAME );
-	  PUT_LINE( TYPE_NAME_STR & "._FST_" & INDEX_NUM_IMG );
+	  PUT_INFO_DIRECT( "._FST_" & INDEX_NUM_IMG );
 
 	else
-	  PUT( tab & "LId" & tab & LVL_IMG & ", " );
+	  PUT( tab & "LID" & tab & LVL_IMG & ", " );
 	  REGIONS_PATH( ARRAY_DEFN );
 	  PUT( ARRAY_NAME & "__u" & ", " );
 	  REGIONS_PATH( EXP_TYPE_NAME );
@@ -842,18 +1020,16 @@ null;--	     declare
 
 	if  IS_PARAM  then
 	  PUT_LINE( tab & "LVA" & tab & LVL_IMG & ", -" & ARRAY_NAME & "_ofs" );
-	  PUT_LINE( tab & "LIa" & tab & ", 0, " & INTEGER'IMAGE( CODI.ADDR_SIZE ) );
-	  PUT( tab & "Ld" & tab & ", " );
+	  PUT_LINE( tab & "LIA" & tab & ", 0, " & INTEGER'IMAGE( CODI.ADDR_SIZE ) );
+	  PUT( tab & "LD" & tab & ", " );
 	  REGIONS_PATH( EXP_TYPE_NAME );
 	  PUT_LINE( TYPE_NAME_STR & ".LST_" & INDEX_NUM_IMG );
 
 	elsif  USE_TYPE_INFO_DIRECT  then
-	  PUT( tab & "Ld" & tab & INTEGER'IMAGE( TYPE_LVL ) & ", " );
-	  REGIONS_PATH( EXP_TYPE_NAME );
-	  PUT_LINE( TYPE_NAME_STR & "._LST_" & INDEX_NUM_IMG );
+	  PUT_INFO_DIRECT( "._LST_" & INDEX_NUM_IMG );
 
 	else
-	  PUT( tab & "LId" & tab & LVL_IMG & ", " );
+	  PUT( tab & "LID" & tab & LVL_IMG & ", " );
 	  REGIONS_PATH( ARRAY_DEFN );
 	  PUT( ARRAY_NAME & "__u" );
 	  PUT( ", " );
@@ -869,18 +1045,16 @@ null;--	     declare
         if  IS_PARAM  then
 
 	PUT_LINE( tab & "LVA" & tab & LVL_IMG & ", -" & ARRAY_NAME & "_ofs" );
-	PUT_LINE( tab & "LIa" & tab & ", 0, " & INTEGER'IMAGE( CODI.ADDR_SIZE ) );
-	PUT( tab & "Ld" & tab & ", " );
+	PUT_LINE( tab & "LIA" & tab & ", 0, " & INTEGER'IMAGE( CODI.ADDR_SIZE ) );
+	PUT( tab & "LD" & tab & ", " );
 	REGIONS_PATH( EXP_TYPE_NAME );
 	PUT( TYPE_NAME_STR & ".FST_" & INDEX_NUM_IMG );
 
         elsif  USE_TYPE_INFO_DIRECT  then
-	PUT( tab & "Ld" & tab & INTEGER'IMAGE( TYPE_LVL ) & ", " );
-	REGIONS_PATH( EXP_TYPE_NAME );
-	PUT( TYPE_NAME_STR & "._FST_" & INDEX_NUM_IMG );
+	PUT_INFO_DIRECT( "._FST_" & INDEX_NUM_IMG, EOL => FALSE );
 
         else
-	PUT( tab & "LId" & tab & LVL_IMG & ", " );
+	PUT( tab & "LID" & tab & LVL_IMG & ", " );
 	REGIONS_PATH( ARRAY_DEFN );
 	PUT( ARRAY_NAME & "__u" );
 	PUT( ", " );
@@ -896,8 +1070,8 @@ null;--	     declare
         -- Charger COMP_SIZ depuis useinfo
         if  IS_PARAM  then
 	PUT_LINE( tab & "LVA" & tab & LVL_IMG & ", -" & ARRAY_NAME & "_ofs" );
-	PUT_LINE( tab & "LIa" & tab & ", ," & INTEGER'IMAGE( CODI.ADDR_SIZE ) );
-	PUT( tab & "Ld" & tab & ", " );
+	PUT_LINE( tab & "LIA" & tab & ", ," & INTEGER'IMAGE( CODI.ADDR_SIZE ) );
+	PUT( tab & "LD" & tab & ", " );
 	REGIONS_PATH( EXP_TYPE_NAME );
 	if  INDEX_NUM < NB_DIMS  then
 	  PUT_LINE( TYPE_NAME_STR & ".SIZ_" & INDEX_NUM_IMG );		-- En bits
@@ -906,16 +1080,14 @@ null;--	     declare
 	end if;
 
         elsif  USE_TYPE_INFO_DIRECT  then
-	PUT( tab & "Ld" & tab & INTEGER'IMAGE( TYPE_LVL ) & ", " );
-	REGIONS_PATH( EXP_TYPE_NAME );
 	if  INDEX_NUM < NB_DIMS  then
-	  PUT_LINE( TYPE_NAME_STR & ".SIZ_" & INDEX_NUM_IMG );		-- En bits
+	  PUT_INFO_DIRECT( ".SIZ_" & INDEX_NUM_IMG );			-- En bits
 	else
-	  PUT_LINE( TYPE_NAME_STR & "._COMP_SIZ" );			-- En bits
+	  PUT_INFO_DIRECT( "._COMP_SIZ" );				-- En bits
 	end if;
 
         else
-	PUT( tab & "LId" & tab & LVL_IMG & ", " );
+	PUT( tab & "LID" & tab & LVL_IMG & ", " );
 	REGIONS_PATH( ARRAY_DEFN );
 	PUT( ARRAY_NAME & "__u" );
 	PUT( ", " );
@@ -928,8 +1100,15 @@ null;--	     declare
 
         end if;
 
-        PUT_LINE( tab & "LI" & tab & IMAGE( CODI.STORAGE_UNIT ) );
-        PUT_LINE( tab & "DIV" );									-- En STORAGE_UNIT
+        if  CODI.STORAGE_UNIT = 8  then
+	PUT_LINE( tab & "LI" & tab & "3" );
+	PUT_LINE( tab & "SAR" );									-- bits -> octets : /8 = >>3 (SIZ >= 0)
+        else
+	PUT_LINE( tab & "LI" & tab & IMAGE( CODI.STORAGE_UNIT ) );
+	PUT_LINE( tab & "DIV" );									-- En STORAGE_UNIT
+        end if;
+--	PUT_LINE( tab & "LI" & tab & IMAGE( CODI.STORAGE_UNIT ) );
+--	PUT_LINE( tab & "DIV" );									-- En STORAGE_UNIT
         PUT_LINE( tab & "MUL" );
         PUT( tab & "ADD" );
         if  CODI.DEBUG  then PUT( tab50 & "; add offset to start address" ); end if;
@@ -947,11 +1126,11 @@ null;--	     declare
 	-- Parametre composite : charger ptr_data via le doublet
 	IS_PARAM := TRUE;
 	PUT_LINE( tab & "LVA" & tab & IMAGE( ARRAY_LVL ) & ", -" & ARRAY_NAME & "_ofs" );
-	PUT(  tab & "LIa" & tab & ", , 0" );
+	PUT(  tab & "LIA" & tab & ", , 0" );
 
         else
 	-- Variable locale : acces direct a _disp dans le frame
-	PUT(  tab & "La" & tab & INTEGER'IMAGE( ARRAY_LVL ) & ", " );
+	PUT(  tab & "LA" & tab & INTEGER'IMAGE( ARRAY_LVL ) & ", " );
 	REGIONS_PATH( ARRAY_DEFN );
 	PUT( ARRAY_NAME & "_disp" );	      end if;
         if  CODI.DEBUG  then PUT( tab50 & "; array data start address on stack" ); end if;
@@ -968,7 +1147,6 @@ null;--	     declare
 
       end if;
 
-----
       declare
         CNT_SEQ	: SEQ_TYPE	:= LIST( D( AS_EXP_S, INDEXED ) );
         DUMMY	: TREE;
@@ -978,8 +1156,6 @@ null;--	     declare
 	NB_DIMS := NB_DIMS + 1;
         end loop;
       end;
----
-
 
       declare
         EXP_SEQ	: SEQ_TYPE	:= LIST( D( AS_EXP_S, INDEXED ) );
@@ -997,14 +1173,38 @@ null;--	     declare
 	------------
 
 
+		--------------
+    function	COMP_SIZE_BITS	( T : TREE )	return INTEGER
+    is		--------------
+      E	: TREE	:= CODI.FULL_TYPE_VIEW( T );
+    begin
+      if  E.TY = DN_ACCESS  then
+        return CODI.ADDR_SIZE * CODI.STORAGE_UNIT;
+
+      elsif  E.TY = DN_FLOAT  then
+        return CODI.ADDR_SIZE * CODI.STORAGE_UNIT;
+
+      else
+        -- CD_IMPL_SIZE est la taille minimale en BITS posee par le front-end
+        -- (1 pour BOOLEAN, 3 pour un enumere a 7 valeurs...).  La convention
+        -- de stockage TLALOC est l'octet (piege n 10) : arrondir.
+        declare
+	RAW : INTEGER := DI( CD_IMPL_SIZE, E );
+        begin
+	return ( ( RAW + CODI.STORAGE_UNIT - 1 ) / CODI.STORAGE_UNIT ) * CODI.STORAGE_UNIT;
+        end;
+      end if;
+
+    end	COMP_SIZE_BITS;
+	--------------
+
+
 				----------
   procedure			CODE_SLICE		( SLICE :TREE; IS_DESTINATION :BOOLEAN := TRUE )
   is				----------
     NAME			: TREE	:= D( AS_NAME, SLICE );
     DISCRETE_RANGE		: TREE	:= D( AS_DISCRETE_RANGE, SLICE );
     SLICE_TYPE		: TREE	:= D( SM_EXP_TYPE, SLICE );
---    SLICE_COMP_TYPE		: TREE	:= D( SM_COMP_TYPE, SLICE_TYPE );
---    COMP_SIZE		: INTEGER := DI( CD_IMPL_SIZE, SLICE_COMP_TYPE );
     SLICE_ARRAY_TYPE	: TREE	:= SLICE_TYPE;
     SLICE_COMP_TYPE		: TREE;
     COMP_SIZE		: INTEGER;
@@ -1018,10 +1218,49 @@ null;--	     declare
     end if;
 
     SLICE_COMP_TYPE := D( SM_COMP_TYPE, SLICE_ARRAY_TYPE );
-    COMP_SIZE := DI( CD_IMPL_SIZE, SLICE_COMP_TYPE );
+    COMP_SIZE := COMP_SIZE_BITS( SLICE_COMP_TYPE );
 
     if  NAME.TY = DN_SELECTED  then
-      CODE_SELECTED( NAME );
+      CODE_SELECTED( NAME );							-- @data de la BASE du composant
+
+      declare
+        SEL_DESIGNATOR	: TREE	:= D( AS_DESIGNATOR, NAME );
+        SEL_DEFN		: TREE	:= D( SM_DEFN, SEL_DESIGNATOR );
+      begin
+        if  SEL_DEFN.TY = DN_COMPONENT_ID
+        and then  FULL_TYPE_VIEW( D( SM_EXP_TYPE, NAME ) ).TY = DN_CONSTRAINED_ARRAY
+        then
+	-- Temoin REC_ARR_TEST test 37 (aout 2026) : recaler sur la borne basse de la
+	-- tranche, meme arithmetique que la branche DN_USED_OBJECT_ID ci-dessous :
+	-- @data + (FIRST(tranche) - FIRST(prefixe)) * comp_size.  FIRST(prefixe) est
+	-- LU au bloc info ELABORE du composant (_<comp>__type anonyme du correctif
+	-- record, _<TYPE> nomme) -- aucune re-evaluation d'expression de borne.
+	-- Autres formes selectionnees (nom etendu PACK.OBJ(..)) : comportement
+	-- historique conserve tel quel.
+	  declare
+	    PFX_TYPE	: TREE	:= FULL_TYPE_VIEW( D( SM_EXP_TYPE, NAME ) );
+	    PFX_NAME	: TREE	:= D( XD_SOURCE_NAME, PFX_TYPE );
+	    IS_ANON	: BOOLEAN := D( SM_TYPE_SPEC, PFX_NAME ) /= PFX_TYPE;
+	    TYPE_LVL	: INTEGER := DI( CD_LEVEL, PFX_TYPE );
+	  begin
+	    CODE_EXP( D( AS_EXP1, DISCRETE_RANGE ) );				-- FIRST(tranche)
+
+	    PUT( tab & "LD" & tab & INTEGER'IMAGE( TYPE_LVL ) & ", " );		-- FIRST(prefixe)
+	    if  IS_ANON  then
+	      REGIONS_PATH( SEL_DEFN );
+	      PUT_LINE( '_' & PRINT_NAME( D( LX_SYMREP, SEL_DEFN ) ) & "__type._FST_1" );
+	    else
+	      REGIONS_PATH( PFX_NAME );
+	      PUT_LINE( TYPE_INFO_STR( PFX_TYPE ) & "._FST_1" );
+	    end if;
+
+	    PUT_LINE( tab & "SUB" );
+	    PUT_LINE( tab & "LI" & tab & IMAGE( COMP_SIZE / CODI.STORAGE_UNIT ) );
+	    PUT_LINE( tab & "MUL" );
+	    PUT_LINE( tab & "ADD" );
+	  end;
+        end if;
+      end;
 
     elsif  NAME.TY = DN_USED_OBJECT_ID  then
       declare
@@ -1029,17 +1268,20 @@ null;--	     declare
         DEFN_LVL		: INTEGER		:= DI( CD_LEVEL, DEFN );
         DEFN_STR		:constant STRING	:= PRINT_NAME( D( LX_SYMREP, DEFN ) );
         PREFIX_ARRAY_TYPE	: TREE		:= D( SM_EXP_TYPE, NAME );
+
 		---------------------
         procedure	PUT_PREFIX_TYPE_FIELD	( FIELD : STRING )
         is	---------------------
+
 	TYPE_NAME		: TREE		:= D( XD_SOURCE_NAME, PREFIX_ARRAY_TYPE );
---	  TYPE_NAME_STR	:constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
 	TYPE_NAME_STR	:constant STRING	:= TYPE_INFO_STR( PREFIX_ARRAY_TYPE );
         begin
 	CODI.REGIONS_PATH( TYPE_NAME );
 	PUT( TYPE_NAME_STR & FIELD );
+
         end	PUT_PREFIX_TYPE_FIELD;
 		---------------------
+
       begin
         if  PREFIX_ARRAY_TYPE.TY = DN_CONSTRAINED_ARRAY  then
 	PREFIX_ARRAY_TYPE := D( SM_BASE_TYPE, PREFIX_ARRAY_TYPE );
@@ -1050,11 +1292,11 @@ null;--	     declare
 	-- Paramètre composite : le slot -MSG_ofs contient l'adresse du doublet.
 	-- On charge le data_ptr, offset 0 du doublet.
 	PUT_LINE( tab & "LVA" & tab & IMAGE( DEFN_LVL ) & ", -" & DEFN_STR & "_ofs" );
-	PUT_LINE( tab & "LIa" & tab & ", , 0" );
+	PUT_LINE( tab & "LIA" & tab & ", , 0" );
 
         else
 	-- Variable tableau autonome : _disp contient directement data_ptr.
-	PUT( tab & "La " & IMAGE( DEFN_LVL ) & ", " );
+	PUT( tab & "LA " & IMAGE( DEFN_LVL ) & ", " );
 	REGIONS_PATH( DEFN );
 	PUT_LINE( DEFN_STR & "_disp" );
 
@@ -1067,14 +1309,14 @@ null;--	     declare
         if  DEFN.TY in CLASS_PARAM_NAME  then
 	-- Paramètre composite : use_info_ptr est à l'offset 8 du doublet.
 	PUT_LINE( tab & "LVA" & tab & IMAGE( DEFN_LVL ) & ", -" & DEFN_STR & "_ofs" );
-	PUT_LINE( tab & "LIa" & tab & ", ," & INTEGER'IMAGE( CODI.ADDR_SIZE ) );
-	PUT( tab & "Ld" & tab & ", " );
+	PUT_LINE( tab & "LIA" & tab & ", ," & INTEGER'IMAGE( CODI.ADDR_SIZE ) );
+	PUT( tab & "LD" & tab & ", " );
 	PUT_PREFIX_TYPE_FIELD( ".FST_1" );
 	NEW_LINE;
 
         else
 	-- Variable autonome : __u contient use_info_ptr.
-	PUT( tab & "LId " & IMAGE( DEFN_LVL ) & ", " );
+	PUT( tab & "LID " & IMAGE( DEFN_LVL ) & ", " );
 	REGIONS_PATH( DEFN );
 	PUT( DEFN_STR & "__u" & ", " );
 	PUT_PREFIX_TYPE_FIELD( ".FST_1" );
@@ -1087,8 +1329,46 @@ null;--	     declare
         PUT_LINE( tab & "ADD" );
       end;
 
+    elsif  ( NAME.TY = DN_INDEXED  or else  NAME.TY = DN_ALL )
+	and then  D( SM_EXP_TYPE, NAME ).TY = DN_CONSTRAINED_ARRAY  then
+			--| Chantier C6 v2 (NOTE validee + C6_decisions + correctif CD_LEVEL
+			--| du 30/07).  UN idiome pour les deux formes :
+			--|   @data(prefixe) = CODE_OBJECT_ADDRESS (regle n 112 -- reference
+			--|     de composant @data nue [FINC ALLOC_PAGE], valeur d'acces
+			--|     @data nu [HEAP_ALLOC/SQ]) ;
+			--|   FST(prefixe) : le DN_CONSTRAINED_ARRAY ne porte NI SM_RANGE ni
+			--|     bloc propre (les sous-types composants ANONYMES n'ont ni
+			--|     CD_LEVEL ni use__info -- le v1 mourait la).  Les bornes sont
+			--|     dans SM_INDEX_SUBTYPE_S, qui portent chacun SM_RANGE : meme
+			--|     idiome que l'attribut 'FIRST sur marque de tableau (site
+			--|     2400) ; emission par la regle CODE_DISCRETE_RANGE_BOUND (C2).
+			--|     Bornes STATIQUES au corpus : la re-evaluation est sure ; si
+			--|     dynamiques un jour, passer au descripteur, pas a l'expression.
+			--| Le prefixe .all NON contraint (bornes objet au tas, Q1b) tombe au
+			--| TROU ci-dessous par la garde du elsif : bruyant, pas silencieux.
+      declare
+        PREFIX_ARRAY_TYPE	: TREE		:= D( SM_EXP_TYPE, NAME );
+        PREFIX_IDX_S	: SEQ_TYPE	:= LIST( D( SM_INDEX_SUBTYPE_S, PREFIX_ARRAY_TYPE ) );
+        PREFIX_IDX_TYPE	: TREE;
+      begin
+        CODE_OBJECT_ADDRESS( NAME );									-- @data du prefixe (la regle)
+
+        CODE_EXP( D( AS_EXP1, DISCRETE_RANGE ) );								-- borne basse de la tranche
+
+        POP( PREFIX_IDX_S, PREFIX_IDX_TYPE );								-- 1ere dimension du prefixe
+        CODE_DISCRETE_RANGE_BOUND( D( SM_RANGE, PREFIX_IDX_TYPE ),						-- FST du prefixe, par la regle C2
+				   IS_LAST => FALSE );
+
+        PUT_LINE( tab & "SUB" );
+        PUT_LINE( tab & "LI" & tab & IMAGE( COMP_SIZE / CODI.STORAGE_UNIT ) );
+        PUT_LINE( tab & "MUL" );
+        PUT_LINE( tab & "ADD" );
+      end;
+
     else
-      PUT_LINE( "; CODE_SLICE : NAME.TY A FAIRE : " & NODE_NAME'IMAGE( NAME.TY ) );
+      TROU( "CODE_SLICE forme de nom", NAME );								--| vague 5 : adresse de base absente ;
+												--| reste : prefixe tranche-de-tranche, appel,
+												--| .all vers designe NON contraint (Q1b)
     end if;
 
     if  IS_DESTINATION  then										-- Taille pour un BLKMOV
@@ -1108,32 +1388,32 @@ null;--	     declare
         PUT( "namespace " & ANON_NAME );
         if  CODI.DEBUG  then PUT( tab50 & "; ensemble doublet @data/@info pour slice anonyme source" ); end if;
         NEW_LINE;
-        PUT_LINE( "VAR " & ANON_NAME & "_disp, q" );
-        PUT_LINE( "VAR " & ANON_NAME & "__u, q" );
+        PUT_LINE( "VAR " & ANON_NAME & "_disp, Q" );
+        PUT_LINE( "VAR " & ANON_NAME & "__u, Q" );
 
-        PUT_LINE( "VAR " & "SIZ, d" );
-        PUT_LINE( "VAR " & "COMP_SIZ, d" );
-        PUT_LINE( "VAR " & "_FST_1, d" );
-        PUT_LINE( "VAR " & "_LST_1, d" );
+        PUT_LINE( "VAR " & "SIZ__, D" );
+        PUT_LINE( "VAR " & "COMP_SIZ, D" );
+        PUT_LINE( "VAR " & "_FST_1, D" );
+        PUT_LINE( "VAR " & "_LST_1, D" );
 
-        PUT_LINE( tab & "Sa" & tab & IMAGE( CODI.CUR_LEVEL )  & ", " & ANON_NAME & "_disp" );
-        PUT_LINE( tab & "LVA" &  tab & IMAGE( CODI.CUR_LEVEL )  & ", SIZ" );
-        PUT_LINE( tab & "Sa" & tab & IMAGE( CODI.CUR_LEVEL )  & ", " & ANON_NAME & "__u" );
+        PUT_LINE( tab & "SA" & tab & IMAGE( CODI.CUR_LEVEL )  & ", " & ANON_NAME & "_disp" );
+        PUT_LINE( tab & "LVA" &  tab & IMAGE( CODI.CUR_LEVEL )  & ", SIZ__" );
+        PUT_LINE( tab & "SA" & tab & IMAGE( CODI.CUR_LEVEL )  & ", " & ANON_NAME & "__u" );
         PUT_LINE( tab & "LI" & tab & IMAGE( COMP_SIZE ) );							-- En bits
-        PUT_LINE( tab & "Sd" & tab & IMAGE( CODI.CUR_LEVEL )  & ", COMP_SIZ" );
+        PUT_LINE( tab & "SD" & tab & IMAGE( CODI.CUR_LEVEL )  & ", COMP_SIZ" );
         CODE_EXP( D( AS_EXP1, DISCRETE_RANGE ) );
-        PUT_LINE( tab & "Sd" & tab & IMAGE( CODI.CUR_LEVEL )  & ", _FST_1" );
+        PUT_LINE( tab & "SD" & tab & IMAGE( CODI.CUR_LEVEL )  & ", _FST_1" );
         CODE_EXP( D( AS_EXP2, DISCRETE_RANGE ) );
-        PUT_LINE( tab & "Sd" & tab & IMAGE( CODI.CUR_LEVEL )  & ", _LST_1" );
+        PUT_LINE( tab & "SD" & tab & IMAGE( CODI.CUR_LEVEL )  & ", _LST_1" );
 
-        PUT_LINE( tab & "Ld" & tab & IMAGE( CODI.CUR_LEVEL )  & ", _LST_1" );
-        PUT_LINE( tab & "Ld" & tab & IMAGE( CODI.CUR_LEVEL )  & ", _FST_1" );
+        PUT_LINE( tab & "LD" & tab & IMAGE( CODI.CUR_LEVEL )  & ", _LST_1" );
+        PUT_LINE( tab & "LD" & tab & IMAGE( CODI.CUR_LEVEL )  & ", _FST_1" );
         PUT_LINE( tab & "SUB" );
         PUT_LINE( tab & "INC" );
         PUT_LINE( tab & "CLAMP0" );
         PUT_LINE( tab & "LI" & tab & IMAGE( COMP_SIZE ) );							-- En bits
         PUT_LINE( tab & "MUL" );
-        PUT_LINE( tab & "Sd" & tab & IMAGE( CODI.CUR_LEVEL )  & ", SIZ" );
+        PUT_LINE( tab & "SD" & tab & IMAGE( CODI.CUR_LEVEL )  & ", SIZ__" );
 
         PUT_LINE( tab & "LVA" &  tab & IMAGE( CODI.CUR_LEVEL )  & ", " & ANON_NAME & "_disp" );
 
@@ -1143,6 +1423,164 @@ null;--	     declare
     end if;
   end	CODE_SLICE;
 	----------
+
+
+			--------------------------
+  procedure		PREPARE_ARRAY_RESULT_PLACE	( CALL_NODE :TREE )
+  is			--------------------------
+			--| Ex-PREPARE_ARRAY_RETURN, locale de CODE_FUNCTION_CALL, HISSEE
+			--| au body (segfault RETPKG1 / troncature NULL_PR, 04/08) : la
+			--| preparation du lieu-resultat doit etre la MEME pour un appel
+			--| PREFIXE (fonction de paquetage, CODE_SELECTED) et un appel
+			--| simple (CODE_FUNCTION_CALL).  Texte transplante tel quel,
+			--| FUNCTION_CALL parametre en CALL_NODE.
+    ANON  :constant STRING	:= ANONYMOUS_NAME_AT( CALL_NODE );
+    LVL_STR	:constant STRING	:= IMAGE( CODI.CUR_LEVEL );
+  begin
+      PUT_LINE( "VAR" & tab & ANON & "_disp, Q" );
+      PUT_LINE( "VAR" & tab & ANON & "__u,   Q" );
+      PUT_LINE( "namespace " & ANON & "_info" );
+      PUT_LINE( "  VAR SIZ__, D" );
+      PUT_LINE( "  VAR _COMP_SIZ, D" );
+      PUT_LINE( "  VAR _FST_1, D" );
+      PUT_LINE( "  VAR _LST_1, D" );
+      PUT_LINE( "end namespace" );
+
+      PUT_LINE( tab & "LVA " & LVL_STR & ", " & ANON & "_info.SIZ__" );
+      PUT_LINE( tab & "SA  " & LVL_STR & ", " & ANON & "__u" );
+    -- Empiler l'adresse du doublet comme result__ofs (dernier PRM)
+      PUT_LINE( tab & "LVA " & LVL_STR & ", " & ANON & "_disp" );
+
+  end	PREPARE_ARRAY_RESULT_PLACE;
+	--------------------------
+
+
+			-----------------------------
+  procedure		PREPARE_FUNCTION_RESULT_PLACE ( FUNC_DEF, CALL_NODE :TREE )
+  is			-----------------------------
+			--| Regle unique du lieu-resultat (segfault RETPKG1 + troncature
+			--| NULL_PR du bootstrappe, 04/08) : la branche DN_FUNCTION_ID de
+			--| CODE_SELECTED empilait LI 0 INCONDITIONNELLEMENT -- protocole
+			--| scalaire -- quel que soit le resultat ; pour un COMPOSITE, le
+			--| SIq du callee ecrivait A TRAVERS ce zero (crash net) ou a
+			--| travers un residu de pile (corruption SILENCIEUSE :
+			--| LEX.TOKEN_STRING prefixe depuis PAR_PHASE -> NULL_PR).
+			--| Quatrieme occurrence du motif "preparation dupliquee ici,
+			--| absente la" : le dispatch de CODE_FUNCTION_CALL
+			--| (DN_USED_NAME_ID) est transplante tel quel et PARTAGE par les
+			--| deux sites.  CONTEXT=TREE_VOID + resultat composite : ne peut
+			--| plus passer silencieusement (ANONYMOUS_NAME_AT aboiera).
+    FUNC_SPEC	: TREE	:= D( SM_SPEC, FUNC_DEF );
+    RET_NAME	: TREE	:= D( AS_NAME, FUNC_SPEC );	 -- nom du type de retour (DN_FUNCTION_SPEC)
+    RET_TS	: TREE	:= TREE_VOID;
+
+		----------------
+    function	RESULT_ANON_NAME	return STRING
+    is		----------------
+			--| OPDEF_TEST 7-8 / segfaults 0x45825b puis temoin : la position
+			--| d'une expression INFIXE = celle de son operande GAUCHE (meme
+			--| LX_SRCPOS sur le DN_USED_OP -- verifie au FINC du temoin :
+			--| doublet-resultat ANON_57_8 = agregat gauche ANON_57_8). Aucun
+			--| nommage positionnel ne peut les separer : suffixe par le
+			--| generateur d'etiquettes (deterministe) pour les SEULS
+			--| lieux-resultat d'appels d'operateurs -- ANON_l_c_L<n>. Les
+			--| appels non-operateurs gardent leur nom a l'octet pres.
+    begin
+      if  D( AS_NAME, CALL_NODE ).TY = DN_USED_OP  then
+	return ANONYMOUS_NAME_AT( CALL_NODE ) & '_' & NEW_LABEL;
+      else
+	return ANONYMOUS_NAME_AT( CALL_NODE );
+      end if;
+
+    end	RESULT_ANON_NAME;
+	----------------
+
+  begin
+        -- Resoudre le type de retour jusqu'au TYPE_SPEC effectif
+        if  RET_NAME /= TREE_VOID  then
+	RET_TS := D( SM_TYPE_SPEC, D( SM_DEFN, CODI.LAST_OF_SELECTED( RET_NAME ) ) );
+	while  RET_TS.TY = DN_L_PRIVATE  or  RET_TS.TY = DN_PRIVATE  loop
+	  RET_TS := D( SM_TYPE_SPEC, RET_TS );
+	end loop;
+
+	if  RET_TS.TY = DN_CONSTRAINED_RECORD  then						-- pilier 3.7 : vue contrainte -> base
+	  RET_TS := D( SM_BASE_TYPE, RET_TS );							-- (meme taille : layout additif ;
+	end if;										--  symboles .size/.use__info de la base)
+        end if;
+
+        if  RET_TS /= TREE_VOID  and then  RET_TS.TY = DN_RECORD  then
+	-- Allouer un doublet anonyme avec son espace donnees, empiler son adresse comme result__ofs
+	declare
+	  ANON_STR	: constant STRING	:= RESULT_ANON_NAME;
+	  TYPE_NAME	: TREE		:= D( XD_SOURCE_NAME, RET_TS );
+	  TN_STR		: constant STRING	:= TYPE_INFO_STR( RET_TS );
+	  LVL_STR		: constant STRING	:= IMAGE( CODI.CUR_LEVEL );
+	begin
+	  PUT_LINE( "VAR" & tab & ANON_STR & "_disp, Q" );
+	  PUT_LINE( "VAR" & tab & ANON_STR & "__u,    Q" );
+	  PUT( "VAR" & tab & ANON_STR & "__dat, " );
+	  CODI.REGIONS_PATH( TYPE_NAME );
+	  PUT_LINE( TN_STR & ".size" );
+
+	  -- Initialiser data_ptr -> adresse des donnees brutes
+	  PUT_LINE( tab & "LVA " & LVL_STR & ", " & ANON_STR & "__dat" );
+	  PUT_LINE( tab & "SA  " & LVL_STR & ", " & ANON_STR & "_disp" );
+
+	  -- Initialiser use_info_ptr
+	  PUT( tab & "LA  " & IMAGE( DI( CD_LEVEL, RET_TS ) ) & ", " );
+	  CODI.REGIONS_PATH( TYPE_NAME );
+	  PUT_LINE( TN_STR & ".use__info" );
+	  PUT_LINE( tab & "SA  " & LVL_STR & ", " & ANON_STR & "__u" );
+
+	  -- Empiler l'adresse du doublet comme result__ofs pour la fonction
+	  PUT_LINE( tab & "LVA " & LVL_STR & ", " & ANON_STR & "_disp" );
+	  if  CODI.DEBUG  then PUT( tab50 & "; doublet resultat record anonyme" ); end if;
+	  NEW_LINE;
+	end;
+
+        elsif  RET_TS /= TREE_VOID  and then  RET_TS.TY = DN_ARRAY  then
+	PREPARE_ARRAY_RESULT_PLACE( CALL_NODE );
+
+        elsif  RET_TS /= TREE_VOID  and then  RET_TS.TY = DN_CONSTRAINED_ARRAY  then
+	  declare
+	    ANON_STR	: constant STRING	:= RESULT_ANON_NAME;
+	    TYPE_NAME	: TREE		:= D( XD_SOURCE_NAME, RET_TS );
+	    TN_STR	: constant STRING	:= TYPE_INFO_STR( RET_TS );
+	    TYPE_LVL	: constant STRING	:= IMAGE( DI( CD_LEVEL, RET_TS ) );
+	    LVL_STR	: constant STRING	:= IMAGE( CODI.CUR_LEVEL );
+
+	  begin
+	    PUT_LINE( "VAR" & tab & ANON_STR & "_disp, Q" );
+	    PUT_LINE( "VAR" & tab & ANON_STR & "__u,   Q" );
+
+	    -- info du doublet := info du TYPE (bornes deja elaborees)
+	    PUT( tab & "LA  " & TYPE_LVL & ", " );
+	    CODI.REGIONS_PATH( TYPE_NAME );
+	    PUT_LINE( TN_STR & ".use__info" );
+	    PUT_LINE( tab & "SA  " & LVL_STR & ", " & ANON_STR & "__u" );
+
+	    -- data := CO_VAR( SIZ/8 ) -- taille runtime du type
+	    PUT( tab & "LD  " & TYPE_LVL & ", " );
+	    CODI.REGIONS_PATH( TYPE_NAME );
+	    PUT_LINE( TN_STR & ".SIZ__" );
+	    PUT_LINE( tab & "LI" & tab & IMAGE( CODI.STORAGE_UNIT ) );
+	    PUT_LINE( tab & "DIV" );
+	    PUT_LINE( tab & "CO_VAR" );
+	    PUT_LINE( tab & "SA  " & LVL_STR & ", " & ANON_STR & "_disp" );
+
+	    -- empiler l'adresse du doublet comme result__ofs
+	    PUT_LINE( tab & "LVA " & LVL_STR & ", " & ANON_STR & "_disp" );
+	  end;
+
+        else
+	-- Cas scalaire, array, etc. : placeholder qword nul
+	PUT( tab & "LI" & tab & "0" );
+	if  CODI.DEBUG  then PUT( tab50 & "; lieu resultat sur pile" ); end if;
+	NEW_LINE;
+        end if;
+
+  end	PREPARE_FUNCTION_RESULT_PLACE;
+	-----------------------------
 
 
 				-------------
@@ -1158,7 +1596,33 @@ null;--	     declare
     procedure		RECURSE_SELECTED	( SELECTED :TREE )
     is			----------------
 
-      NAME		: TREE		:= D( AS_NAME, SELECTED );
+      NAME	: TREE		:= D( AS_NAME, SELECTED );
+
+		-----------
+      function	ROOT_RECORD	( T :TREE )	return TREE
+      is		-----------
+      -- Racine de derivation d'une vue record : depouille les vues
+      -- (FULL_TYPE_VIEW), remonte contrainte -> base puis la chaine
+      -- SM_DERIVED. TREE_VOID si la vue n'aboutit pas a un DN_RECORD.
+        TS	: TREE	:= CODI.FULL_TYPE_VIEW( T );
+      begin
+        loop
+	if  TS = TREE_VOID  then
+	  return  TREE_VOID;
+	elsif  TS.TY = DN_CONSTRAINED_RECORD  then
+	  TS := CODI.FULL_TYPE_VIEW( D( SM_BASE_TYPE, TS ) );
+	elsif  TS.TY = DN_RECORD  and then  D( SM_DERIVED, TS ) /= TREE_VOID  then
+	  TS := CODI.FULL_TYPE_VIEW( D( SM_DERIVED, TS ) );
+	elsif  TS.TY = DN_RECORD  then
+	  return  TS;
+	else
+	  return  TREE_VOID;
+	end if;
+        end loop;
+
+      end ROOT_RECORD;
+	-----------
+
 		------------------
       procedure	PROCESS_DESIGNATOR
       is		------------------
@@ -1187,13 +1651,12 @@ null;--	     declare
 
 	elsif  D( SM_EXP_TYPE, DESIGNATOR ).TY in CLASS_SCALAR  then
 	  DESIGNATOR_LEVEL := DI( CD_LEVEL, DESIGNATOR_DEFN );
---	  PUT( tab & "L" & OPER_SIZ_CHAR( D( SM_EXP_TYPE, DESIGNATOR ) ) & tab & IMAGE( DESIGNATOR_LEVEL ) & ", " );
 	  PUT( tab & OPER_LOAD_STR( D( SM_EXP_TYPE, DESIGNATOR ) ) & tab & IMAGE( DESIGNATOR_LEVEL ) & ", " );
 	  REGIONS_PATH( DESIGNATOR_DEFN );
 	  PUT_LINE( DESIGNATOR_STR & "_disp" );
 
 	else
-	  PUT( tab & "La " & IMAGE( DI( CD_LEVEL, DESIGNATOR_DEFN ) ) & ", " );
+	  PUT( tab & "LA " & IMAGE( DI( CD_LEVEL, DESIGNATOR_DEFN ) ) & ", " );
 	  REGIONS_PATH( DESIGNATOR_DEFN );
 	  PUT_LINE( DESIGNATOR_STR & "_disp" );
 
@@ -1206,12 +1669,12 @@ null;--	     declare
 	  if  NAME.TY = DN_USED_OBJECT_ID  then
 
 	    if  D( SM_DEFN, NAME ).TY in CLASS_PARAM_NAME  then						-- Paramètre composite : le paramètre contient l'adresse doublet {data_ptr,use_info_ptr}.
-	      PUT_LINE( tab & "La " & IMAGE( DI( CD_LEVEL, D( SM_DEFN, NAME ) ) )
+	      PUT_LINE( tab & "LA " & IMAGE( DI( CD_LEVEL, D( SM_DEFN, NAME ) ) )
 			& ", " & '-' & PRINT_NAME( D( LX_SYMREP, NAME ) ) & "_ofs" );
-	      PUT_LINE( tab & "La" & tab & "-1, 0" );							-- Extraction de data_ptr depuis le doublet.
+	      PUT_LINE( tab & "LA" & tab & "-1, 0" );							-- Extraction de data_ptr depuis le doublet.
 
 	    else											-- Objet record autonome : NAME_disp contient le pointeur vers les données.
-	      PUT( tab & "La" & tab & IMAGE( DI( CD_LEVEL, D( SM_DEFN, NAME ) ) ) & ", " );
+	      PUT( tab & "LA" & tab & IMAGE( DI( CD_LEVEL, D( SM_DEFN, NAME ) ) ) & ", " );
 	      REGIONS_PATH( D( SM_DEFN, NAME ) );
 	      PUT_LINE( PRINT_NAME( D( LX_SYMREP, NAME ) ) & "_disp" );
 
@@ -1220,11 +1683,10 @@ null;--	     declare
 	  else
 	      -- NAME est déjà un préfixe composite calculé par :
 	      --	 RECURSE_SELECTED(NAME)
-	      -- ou
-	      --	 CODE_INDEXED(NAME)
-	      --
+	      -- ou	 CODE_INDEXED(NAME)
+	      -- ou	 CODE_EXP(appel) + La   (prefixe DN_FUNCTION_CALL)
 	      -- Dans ce cas l'adresse des données est déjà au sommet de pile.
-	    null;
+	    null;											-- INTENTIONNEL (cf. commentaire ci-dessus)
 	  end if;
 
 	  REPRESENTED_ITEMS.CODE_LOAD_REP_COMPONENT( DESIGNATOR_DEFN );
@@ -1234,14 +1696,13 @@ null;--	     declare
 	if  NAME.TY = DN_USED_OBJECT_ID  then
 
 	  if  D( SM_DEFN, NAME ).TY	in  CLASS_PARAM_NAME  then
-	    PUT_LINE( tab & "La " & IMAGE( DI( CD_LEVEL, D( SM_DEFN, NAME ) ) ) & ", "
+	    PUT_LINE( tab & "LA " & IMAGE( DI( CD_LEVEL, D( SM_DEFN, NAME ) ) ) & ", "
 		& '-' & PRINT_NAME( D(LX_SYMREP, NAME ) ) & "_ofs" );
 
 	    if  ( D( SM_EXP_TYPE, DESIGNATOR ).TY in CLASS_SCALAR
 			  or else D( SM_EXP_TYPE, DESIGNATOR ).TY = DN_ACCESS )
 			  and  IS_SOURCE  then
 	      PUT( tab & OPER_LOADI_STR( D( SM_EXP_TYPE, DESIGNATOR ) ) );
---	      PUT( tab & "LI" & OPER_SIZ_CHAR( D( SM_EXP_TYPE, DESIGNATOR ) ) );
 
 	    else
 	      PUT( tab & "LIVA " );
@@ -1255,7 +1716,6 @@ null;--	     declare
 	    if	( D( SM_EXP_TYPE, DESIGNATOR ).TY in CLASS_SCALAR
 			  or else D( SM_EXP_TYPE, DESIGNATOR ).TY = DN_ACCESS )
 			  and  IS_SOURCE  then
---	      PUT( tab & "LI" & OPER_SIZ_CHAR( D( SM_EXP_TYPE, DESIGNATOR ) ) );
 	      PUT( tab & OPER_LOADI_STR( D( SM_EXP_TYPE, DESIGNATOR ) ) );
 	    else
 	      PUT( tab & "LIVA " );
@@ -1275,7 +1735,6 @@ null;--	     declare
 		   or else D( SM_EXP_TYPE, DESIGNATOR ).TY = DN_ACCESS )
 		   and  IS_SOURCE  then
 	      -- Champ scalaire terminal : load direct depuis l'adresse en sommet de pile
---	    PUT( tab & "L" & OPER_SIZ_CHAR( D( SM_EXP_TYPE, DESIGNATOR ) ) );
 	    PUT( tab & OPER_LOAD_STR( D( SM_EXP_TYPE, DESIGNATOR ) ) );
 	    PUT( tab & ", " );
 	    REGIONS_PATH( DESIGNATOR_DEFN );
@@ -1291,9 +1750,27 @@ null;--	     declare
 
         elsif  DESIGNATOR_DEFN.TY = DN_CONSTANT_ID  then
 	if  IS_SOURCE  then
-	  PUT_LINE( tab & "LI" & tab & PRINT_NUM( D( SM_VALUE, DESIGNATOR ) ) );
+	  if  FULL_TYPE_VIEW( D( SM_OBJ_TYPE, DESIGNATOR_DEFN ) ).TY in CLASS_SCALAR
+	  or else  FULL_TYPE_VIEW( D( SM_OBJ_TYPE, DESIGNATOR_DEFN ) ).TY = DN_ACCESS
+	  then
+	    PUT_LINE( tab & "LI" & tab & PRINT_NUM( D( SM_VALUE, DESIGNATOR ) ) );
+	  else
+			--| Piege n 1xx (temoin EMITS.TRAITS, 26/08) : PKG.CST d'un type
+			--| COMPOSITE (record constant a agregat) n'a pas de SM_VALUE
+			--| numerique -- PRINT_NUM plantait sur DN_VOID.  CONTRAT de la
+			--| forme selectionnee (CODE_COMPOSITE_DATA_ADDRESS, regle unique
+			--| n 112) : un DN_SELECTED composite laisse @DATA, pas @doublet --
+			--| meme emission que PKG.VARIABLE composite ci-dessus (LA lvl,
+			--| X_disp = data_ptr).  Un premier remede par CODE_VC_ID laissait
+			--| @doublet : le BLKMOV appelant copiait le doublet lui-meme
+			--| (TR.PROLOGUE_SIZE = octets d'info_ptr, placement STR incoherent
+			--| P2B/P3 sur ADA_COMP).  Scalaires : LI inchange.
+	    PUT( tab & "LA " & IMAGE( DI( CD_LEVEL, DESIGNATOR_DEFN ) ) & ", " );
+	    REGIONS_PATH( DESIGNATOR_DEFN );
+	    PUT_LINE( DESIGNATOR_STR & "_disp" );
+	  end if;
 	else											-- contexte adresse (renames, ...)
-	  PUT( tab & "LVa" & tab & IMAGE( DI( CD_LEVEL, DESIGNATOR_DEFN ) ) & ", " );
+	  PUT( tab & "LVA" & tab & IMAGE( DI( CD_LEVEL, DESIGNATOR_DEFN ) ) & ", " );
 	  REGIONS_PATH( DESIGNATOR_DEFN );
 	  PUT_LINE( DESIGNATOR_STR & "_disp" );
 	end if;
@@ -1305,13 +1782,54 @@ null;--	     declare
 	end if;
 	PUT_LINE( tab & "LI" & tab & PRINT_NUM( D( SM_VALUE, DESIGNATOR ) )	);
 
-        elsif  DESIGNATOR_DEFN.TY = DN_FUNCTION_ID
+        elsif  DESIGNATOR_DEFN.TY = DN_FUNCTION_ID  or else  DESIGNATOR_DEFN.TY = DN_OPERATOR_ID
 	then
-	PUT( tab & "LI" & tab & "0" );
-	if CODI.DEBUG  then  PUT( tab50 & "; lieu resultat sur pile" ); end if;
-	NEW_LINE;
-	INSTRUCTIONS.CODE_PROCEDURE_CALL( CONTEXT, DESIGNATOR );
+	  PREPARE_FUNCTION_RESULT_PLACE( DESIGNATOR_DEFN, CONTEXT );					--| lieu-resultat selon le TYPE du resultat (ex-LI 0 inconditionnel)
+	  INSTRUCTIONS.CODE_PROCEDURE_CALL( CONTEXT, DESIGNATOR );
 
+elsif  DESIGNATOR_DEFN.TY in CLASS_PARAM_NAME  then
+  declare
+    OBJ_TYPE : TREE := D( SM_OBJ_TYPE, DESIGNATOR_DEFN );
+  begin
+    while  OBJ_TYPE.TY = DN_PRIVATE
+      or else OBJ_TYPE.TY = DN_L_PRIVATE
+    loop
+      OBJ_TYPE := D( SM_TYPE_SPEC, OBJ_TYPE );
+    end loop;
+
+    if  IS_SOURCE  then
+      LOAD_MEM( DESIGNATOR_DEFN );
+
+      if  not (OBJ_TYPE.TY in CLASS_SCALAR
+	     or else OBJ_TYPE.TY = DN_ACCESS)
+      then
+        -- LOAD_MEM(param composite) -> @doublet
+        -- CODE_SELECTED composite   -> @data
+        PUT_LINE( tab & "LA" );
+      end if;
+
+    else
+      -- expanded name employé comme destination
+      if  DESIGNATOR_DEFN.TY = DN_IN_ID  then
+        TROU( "CODE_SELECTED destination parametre IN", DESIGNATOR_DEFN );
+
+      elsif  OBJ_TYPE.TY in CLASS_SCALAR
+        or else OBJ_TYPE.TY = DN_ACCESS
+      then
+        -- out/in_out scalaire : le slot contient @destination
+        PUT_LINE( tab & "LA "
+	& IMAGE( DI( CD_LEVEL, DESIGNATOR_DEFN ) )
+	& ", -" & DESIGNATOR_STR & "_ofs" );
+
+      else
+        -- out/in_out composite : slot -> @doublet -> data_ptr
+        PUT_LINE( tab & "LA "
+	& IMAGE( DI( CD_LEVEL, DESIGNATOR_DEFN ) )
+	& ", -" & DESIGNATOR_STR & "_ofs" );
+        PUT_LINE( tab & "LA" );
+      end if;
+    end if;
+  end;
         else
 	PUT_LINE( "; CODE_SELECTED.RECURSE_SELECTED DESIGNATOR.TY PAS FAIT: " & NODE_NAME'IMAGE( DESIGNATOR_DEFN.TY	) );
         end if;
@@ -1319,6 +1837,28 @@ null;--	     declare
       end PROCESS_DESIGNATOR;
 	------------------
     begin
+      -- Prefixe en CONVERSION-VUE : TREE(X).COMP (SET_UTIL, derives
+      -- prives de TREE, famille n 117). Meme racine de derivation =
+      -- meme representation (hypothese : pas de rep propre sur les
+      -- derives) : la conversion est transparente pour l'adressage,
+      -- on rebranche NAME sur l'operande et le tri reprend. La boucle
+      -- absorbe les conversions imbriquees ; hors meme-racine : TROU.
+      while  NAME.TY = DN_CONVERSION  loop
+        declare
+	RA	: TREE	:= ROOT_RECORD( D( SM_EXP_TYPE, NAME ) );
+        begin
+	if  RA /= TREE_VOID
+	and then  RA = ROOT_RECORD( D( SM_EXP_TYPE, D( AS_EXP, NAME ) ) )
+	then
+	  NAME := D( AS_EXP, NAME );
+
+	else
+	  TROU( "RECURSE_SELECTED conversion prefixe non transparente", NAME );
+	  return;
+	end if;
+        end;
+      end loop;
+
       if  NAME.TY = DN_SELECTED  then
         RECURSE_SELECTED( NAME ) ;
         PROCESS_DESIGNATOR;
@@ -1337,7 +1877,34 @@ null;--	     declare
       elsif  NAME.TY = DN_USED_NAME_ID  then
         PROCESS_DESIGNATOR;
 
+      elsif  NAME.TY = DN_FUNCTION_CALL  then
+	-- Prefixe APPEL : F(...).COMP -- revele par la discipline
+	-- TROU (temoin IDL_MAN.HASH_SEARCH : DABS(0,TXT_T).NSIZ,
+	-- operande gauche jamais emis, CEQ sur fond de pile).
+	-- Modele de CODE_INDEXED pour F(...)(I) (l.~755) : l'appel
+	-- laisse l'@doublet du resultat anonyme (CODE_FUNCTION_CALL,
+	-- retour DN_RECORD), La en extrait data_ptr.
+	-- PROCESS_DESIGNATOR est deja outille "adresse en pile" :
+	-- represente -> CODE_LOAD_REP_COMPONENT ; ordinaire ->
+	-- "LD , CHAMP" du chemin "adresse directe sur la pile".
+        declare
+	RET_TS	: TREE	:= CODI.FULL_TYPE_VIEW( D( SM_EXP_TYPE, NAME ) );
+        begin
+	if  RET_TS.TY = DN_RECORD  or else  RET_TS.TY = DN_CONSTRAINED_RECORD  then
+	  CODE_EXP( NAME );					-- appel : laisse @doublet resultat anonyme
+	  PUT_LINE( tab & "LA" );				-- @doublet -> data_ptr (pilier 3.7)
+	  PROCESS_DESIGNATOR;
+
+	else
+	  -- Retour access (deref implicite, LRM 4.1.3) ou autre vue :
+	  -- non instruit -- verdict a payer le jour du temoin.
+	  TROU( "RECURSE_SELECTED prefixe appel non record", RET_TS );
+	end if;
+        end;
+
+      else TROU( "RECURSE_SELECTED", NAME );
       end if;
+
     end	RECURSE_SELECTED;
 	----------------
 
@@ -1366,33 +1933,33 @@ null;--	     declare
       -- Cas d’un alias déjà construit : son _disp contient l’adresse réelle.
         if  DEFN.TY in CLASS_VC_NAME  and then  DB( SM_RENAMES_OBJ, DEFN )
         then
-	PUT( tab & "La" & tab & IMAGE( DEFN_LVL ) & ", " );
+	PUT( tab & "LA" & tab & IMAGE( DEFN_LVL ) & ", " );
 	REGIONS_PATH( DEFN );
 	PUT_LINE( DEFN_STR & "_disp" );
 
         elsif  DEFN.TY in CLASS_PARAM_NAME  then
         -- Paramètre scalaire in : adresse de la copie locale.
 	if  DEFN.TY = DN_IN_ID  and then  OBJ_TYPE.TY in CLASS_SCALAR  then
-	  PUT_LINE( tab & "LVa" & tab & IMAGE( DEFN_LVL ) & ", -" & DEFN_STR & "_ofs" );
+	  PUT_LINE( tab & "LVA" & tab & IMAGE( DEFN_LVL ) & ", -" & DEFN_STR & "_ofs" );
 
         -- Paramètre out/in_out scalaire : le slot contient déjà @destination.
 	elsif  OBJ_TYPE.TY in CLASS_SCALAR  then
-	  PUT_LINE( tab & "La" & tab & IMAGE( DEFN_LVL ) & ", -" & DEFN_STR & "_ofs" );
+	  PUT_LINE( tab & "LA" & tab & IMAGE( DEFN_LVL ) & ", -" & DEFN_STR & "_ofs" );
 
         -- Paramètre composite : le slot contient @doublet ; on extrait data_ptr.
 	else
-	  PUT_LINE( tab & "La" & tab & IMAGE( DEFN_LVL ) & ", -" & DEFN_STR & "_ofs" );
-	  PUT_LINE( tab & "La" & tab & ", 0" );
+	  PUT_LINE( tab & "LA" & tab & IMAGE( DEFN_LVL ) & ", -" & DEFN_STR & "_ofs" );
+	  PUT_LINE( tab & "LA" & tab & ", 0" );
 	end if;
 
         else
         -- Variable autonome.
 	if  OBJ_TYPE.TY in CLASS_SCALAR  then
-	  PUT( tab & "LVa" & tab & IMAGE( DEFN_LVL ) & ", " );
+	  PUT( tab & "LVA" & tab & IMAGE( DEFN_LVL ) & ", " );
 	  REGIONS_PATH( DEFN );
 	  PUT_LINE( DEFN_STR & "_disp" );
 	else
-	  PUT( tab & "La" & tab & IMAGE( DEFN_LVL ) & ", " );
+	  PUT( tab & "LA" & tab & IMAGE( DEFN_LVL ) & ", " );
 	  REGIONS_PATH( DEFN );
 	  PUT_LINE( DEFN_STR & "_disp" );
 	end if;
@@ -1407,8 +1974,6 @@ null;--	     declare
       CODE_INDEXED( NAME );
 
     when DN_SLICE =>
---      PUT_LINE( "; CODE_OBJECT_ADDRESS: renames slice a traiter plus tard" );
---      raise PROGRAM_ERROR;
       -- Adresse brute du premier composant de la tranche.
       -- CODE_SLICE en mode destination laisse : @data_slice, taille_octets.
       -- Pour un calcul d'adresse d'objet, on conserve seulement @data_slice.
@@ -1434,11 +1999,45 @@ null;--	     declare
     -- Compile EXP (composite) et laisse son @DATA sur la pile, quelle que
     -- soit la forme de EXP.  Discrimination d'OPERAND_DATA_ADDRESS
     -- (CODE_RECORD_EQUALITY) erigee en regle unique.
+    --| Vague 2 (frontieres n 112) : DN_QUALIFIED AJOUTE aux producteurs
+    --| d'@doublet -- CODE_QUALIFIED composite laisse LVA _disp (doublet
+    --| anonyme), les deux sites d'affectation d'instructions le savaient
+    --| deja, la regle unique avait le trou.  Amender l'enonce n 112 :
+    --| @doublet = objet entier, appel de fonction, QUALIFIE, tranche via
+    --| CODE_EXP (commits tranches 03/08), LITTERAL de chaine (ce commit).
+    --| DN_SLICE : CODE_EXP en laisserait @data, LEN (DEUX valeurs) --
+    --| refus bruyant pose (dette AUDITS "DN_SLICE en composant d'agregat").
     begin
+      if  EXP.TY = DN_SLICE  then
+        TROU( "CODE_COMPOSITE_DATA_ADDRESS tranche (@data,LEN hors contrat)", EXP );
+      end if;
+
       CODE_EXP( EXP );
-      if  EXP.TY = DN_USED_OBJECT_ID  or else  EXP.TY = DN_FUNCTION_CALL  then
-        PUT_LINE( tab & "La  ,  0" );									-- @doublet -> data_ptr
-      end if;											-- sinon : deja @data
+      declare
+        E : TREE	:= EXP;
+      begin
+			--| n 112, 5e occurrence (UARITH "<="/">=" BOOLEAN, FINC _LE__L31,
+			--| erreur type A text_io/direct_io) : DN_PARENTHESIZED est
+			--| TRANSPARENT pour la forme du resultat (CODE_PARENTHESIZED =
+			--| CODE_EXP de l'AS_EXP) -- meme statut que la conversion C1-ter :
+			--| classer le producteur sur l'operande deballe.
+        while  E.TY = DN_CONVERSION  or else  E.TY = DN_PARENTHESIZED  loop
+			--| C1-ter (temoin CONV_DER1 30/07, echecs S1 1-3 + S3 au FINC) :
+			--| la conversion composite est une IDENTITE (C1), donc TRANSPARENTE
+			--| pour la FORME du resultat -- classer le producteur sur son
+			--| OPERANDE, comme RECURSE_SELECTED normalise la conversion-vue
+			--| (n 120b).  Avant : Y := DR(X) laissait l'@doublet SANS le La,
+			--| BLKMOV copiait le doublet lui-meme -- meme motif que le n 112
+			--| (producteur d'@doublet absent de la regle unique).
+	E := D( AS_EXP, E );
+        end loop;
+
+        if  E.TY = DN_USED_OBJECT_ID  or else  E.TY = DN_FUNCTION_CALL
+        or else  E.TY = DN_QUALIFIED  or else  E.TY = DN_STRING_LITERAL
+        then
+	PUT_LINE( tab & "LA" );									-- @doublet -> data_ptr
+        end if;										-- sinon : deja @data
+      end;
 
     end	CODE_COMPOSITE_DATA_ADDRESS;
 	---------------------------
@@ -1523,11 +2122,14 @@ null;--	     declare
   end	IS_GENERIC_FORMAL_OBJECT;
 	------------------------
 
+
 		----------------------------
   function	IS_GENERIC_FORMAL_SUBPROGRAM		( ID : TREE )	return BOOLEAN
   is		----------------------------
+
      GSEQ		: SEQ_TYPE;
      FORMAL	: TREE;
+
   begin
     if  not CODI.IN_GENERIC_BODY  or else  CODI.ENCLOSING_GENERIC = TREE_VOID  then
       return  FALSE;
@@ -1609,7 +2211,6 @@ null;--	     declare
 
     PREFIX_NAME		: TREE		:= NORMALIZED_PREFIX_NAME( RAW_PREFIX );
     PREFIX_HAS_BASE		: BOOLEAN		:= IS_BASE_ATTRIBUTE( RAW_PREFIX );
---    CHN_PREFIX		:constant STRING	:= PRINT_NAME( D( LX_SYMREP, PREFIX_NAME ) );
     CHN_PREFIX		:constant STRING	:= PREFIX_NAME_STR( PREFIX_NAME );
     subtype CHN_STD		is STRING( 1 .. CHN_ATTR_NAME'LENGTH );
     CHN_ATTR		: CHN_STD		:= CHN_ATTR_NAME;						-- NORMALISER EN STRING A FIRST=1
@@ -1647,7 +2248,8 @@ null;--	     declare
 	    TYPE_SPEC := D( SM_BASE_TYPE, TYPE_SPEC );
 
 	  when others =>
-	    null;
+	    null;							-- INTENTIONNEL : type sans vue de base a
+								-- normaliser, TYPE_SPEC reste tel quel.
 	end case;
         end if;
       end if;
@@ -1663,6 +2265,20 @@ null;--	     declare
       T : TREE := PREFIX_TYPE_SPEC;
     begin
       if T /= TREE_VOID and then T.TY = DN_FLOAT then
+
+        if  IS_GENERIC_FORMAL_TYPE( D( XD_SOURCE_NAME, T ) )  then
+	-- Type formel digits <> d'un corps generique PARTAGE : tout
+	-- actuel flottant est represente en double a l'execution
+	-- (conventions TLALOC -- FLOAT et LONG_FLOAT tous deux en
+	-- double ; CVTIF / FMUL 64 bits dans le corps).  Les
+	-- attributs MACHINE_* decrivent la representation machine :
+	-- famille 64 (53 / 1024 / -1021), meme regle "valeur
+	-- machine" que la branche 'DIGITS pour un formel non resolu.
+	-- Temoin : FLOAT_IO(LONG_FLOAT).GET -- P=24 arrondissait
+	-- 1.0E38 a 24 bits et refusait 1.0E308 (EMAX 128).
+	  return 64;
+        end if;
+
         if DI( CD_IMPL_SIZE, T ) <= 32 then
 	return 32;
         else
@@ -1811,82 +2427,89 @@ null;--	     declare
     end	CODE_FOLDED_ATTRIBUTE;
 	---------------------
 
-    procedure CODE_FLOAT_DIGITS
-    is
+		-----------------
+    procedure	CODE_FLOAT_DIGITS
+    is		-----------------
     begin
       if FLOAT_BITS <= 32 then
         PUSH_INT( 6 );
       else
         PUSH_INT( 15 );
       end if;
-    end CODE_FLOAT_DIGITS;
+    end	CODE_FLOAT_DIGITS;
+	-----------------
 
-
-    procedure CODE_FLOAT_MANTISSA
-    is
+		-------------------
+    procedure	CODE_FLOAT_MANTISSA
+    is		-------------------
     begin
       if FLOAT_BITS <= 32 then
         PUSH_INT( 24 );
       else
         PUSH_INT( 53 );
       end if;
-    end CODE_FLOAT_MANTISSA;
+    end	CODE_FLOAT_MANTISSA;
+	-------------------
 
-
-    procedure CODE_FLOAT_EPSILON
-    is
+		------------------
+    procedure	CODE_FLOAT_EPSILON
+    is		------------------
     begin
       if FLOAT_BITS <= 32 then
         PUSH_FLOAT_LITERAL( "1.1920928955078125E-7" );
       else
         PUSH_FLOAT_LITERAL( "2.2204460492503131E-16" );
       end if;
-    end CODE_FLOAT_EPSILON;
+    end	CODE_FLOAT_EPSILON;
+	------------------
 
-
-    procedure CODE_FLOAT_EMAX
-    is
+		---------------
+    procedure	CODE_FLOAT_EMAX
+    is		---------------
     begin
       if FLOAT_BITS <= 32 then
         PUSH_INT( 128 );
       else
         PUSH_INT( 1024 );
       end if;
-    end CODE_FLOAT_EMAX;
+    end	CODE_FLOAT_EMAX;
+	---------------
 
-
-    procedure CODE_FLOAT_EMIN
-    is
+		---------------
+    procedure	CODE_FLOAT_EMIN
+    is		---------------
     begin
       if FLOAT_BITS <= 32 then
         PUSH_INT( -125 );
       else
         PUSH_INT( -1021 );
       end if;
-    end CODE_FLOAT_EMIN;
+    end	CODE_FLOAT_EMIN;
+	---------------
 
-
-    procedure CODE_FLOAT_SMALL
-    is
+		----------------
+    procedure	CODE_FLOAT_SMALL
+    is		----------------
     begin
       if FLOAT_BITS <= 32 then
         PUSH_FLOAT_LITERAL( "1.1754943508222875E-38" );
       else
         PUSH_FLOAT_LITERAL( "2.2250738585072014E-308" );
       end if;
-    end CODE_FLOAT_SMALL;
+    end	CODE_FLOAT_SMALL;
+	----------------
 
-
-    procedure CODE_FLOAT_LARGE
-    is
+		----------------
+    procedure	CODE_FLOAT_LARGE
+    is		----------------
     begin
       if FLOAT_BITS <= 32 then
         PUSH_FLOAT_LITERAL( "3.4028234663852886E38" );
       else
         PUSH_FLOAT_LITERAL( "1.7976931348623157E308" );
       end if;
-    end CODE_FLOAT_LARGE;
-
+    end	CODE_FLOAT_LARGE;
+	----------------
 
 		------------
     procedure	CODE_ADDRESS
@@ -1912,13 +2535,13 @@ null;--	     declare
 
 	      if  PREFIX_DEFN.TY = DN_IN_ID  then
 	        PUT_LINE( tab & "LVA" & tab & IMAGE( PREFIX_LVL ) & ", -" & CHN_PREFIX & "_ofs" );
-	        PUT_LINE( tab & "La " & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL ) & ',' & tab & "-GFP_ofs" );
-	        PUT_LINE( tab & "La" & tab & ", -" & TYPE_STR & "__inadr_ofs" );				-- Conversion pout IN
+	        PUT_LINE( tab & "LA " & LEVEL_NUM'IMAGE( CODI.GFP_LEVEL ) & ',' & tab & "-GFP_ofs" );
+	        PUT_LINE( tab & "LA" & tab & ", -" & TYPE_STR & "__inadr_ofs" );				-- Conversion pout IN
 
 	      elsif  PREFIX_DEFN.TY  in  CLASS_PARAM_IO_O  then
 	        PUT_LINE( tab & "LVA" & tab & IMAGE( PREFIX_LVL ) & ", -" & CHN_PREFIX & "_ofs" );
-	        PUT_LINE( tab & "La " & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL ) & ',' & tab & "-GFP_ofs" );
-	        PUT_LINE( tab & "La" & tab & ", -" & TYPE_STR & "__outadr_ofs" );				-- Conversion pour OUT ou IN_OUT
+	        PUT_LINE( tab & "LA " & LEVEL_NUM'IMAGE( CODI.GFP_LEVEL ) & ',' & tab & "-GFP_ofs" );
+	        PUT_LINE( tab & "LA" & tab & ", -" & TYPE_STR & "__outadr_ofs" );				-- Conversion pour OUT ou IN_OUT
 
 	      else
 	        CODE_OBJECT_ADDRESS( RAW_PREFIX );
@@ -1957,9 +2580,8 @@ null;--	     declare
         TYPE_SPEC := D( SM_OBJ_TYPE, PREFIX_DEFN );
 
       else
-        PUT_LINE( "; ATTRIBUTE CONSTRAINED : PREFIX NON TRAITE "
-	        & NODE_NAME'IMAGE( PREFIX_DEFN.TY ) );
-        PUT_LINE( tab & "LI" & tab & "0" );
+        TROU( "CODE_CONSTRAINED prefixe non traite", PREFIX_DEFN );						--| vague 2 (cat. D) : LI 0 mentait, conserve
+        PUT_LINE( tab & "LI" & tab & "0" );								--| apres TROU pour l'equilibre en RECENSEMENT
         return;
       end if;
 
@@ -1971,8 +2593,8 @@ null;--	     declare
 	  -- Convention provisoire :
 	  -- un type formel est considere contraint ssi sa taille n'est pas -1.
 	  -- Cela couvre correctement le cas vise pour DIRECT_IO : type private contraint.
-	  PUT_LINE( tab & "La " & INTEGER'IMAGE( CODI.CUR_LEVEL ) & ',' & tab & "-GFP_ofs" );
-	  PUT_LINE( tab & "LId , -" & TYPE_STR & "__u_ofs" );
+	  PUT_LINE( tab & "LA " & INTEGER'IMAGE( CODI.GFP_LEVEL ) & ',' & tab & "-GFP_ofs" );
+	  PUT_LINE( tab & "LID , -" & TYPE_STR & "__u_ofs" );
 	  PUT_LINE( tab & "LI" & tab & "-1" );
 	  PUT_LINE( tab & "CNE" );
 	end;
@@ -2047,9 +2669,8 @@ null;--	     declare
 	  PUT_LINE( tab & "LI" & tab & "1" );
 
         when others =>
-	  PUT_LINE( "; ATTRIBUTE CONSTRAINED : TYPE NON TRAITE "
-		& NODE_NAME'IMAGE( TYPE_SPEC.TY ) );
-	  PUT_LINE( tab & "LI" & tab & "0" );
+	  TROU( "'CONSTRAINED type non traite", TYPE_SPEC );			--| vague 2 (cat. D) : LI 0 mentait, conserve
+	  PUT_LINE( tab & "LI" & tab & "0" );					--| apres TROU pour l'equilibre en RECENSEMENT
         end case;
       end if;
 
@@ -2061,12 +2682,10 @@ null;--	     declare
     procedure	CODE_SCALAR_SUBTYPE_FIRST_LAST	( SUBTYPE_ID :TREE; TYPE_SPEC  :TREE; IS_LAST :BOOLEAN )
     is		------------------------------
       SUBTYPE_STR	:constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, SUBTYPE_ID ) );
---      SUBTYPE_STR :constant STRING	:= TYPE_INFO_STR( D( LX_SYMREP, SUBTYPE_ID ) );		-- A VOIR
       TYPE_LVL	: INTEGER		:= DI( CD_LEVEL, TYPE_SPEC );
---      SIZ_CHAR	: CHARACTER	:= OPER_SIZ_CHAR( TYPE_SPEC );
+
     begin
       PUT( tab & OPER_LOAD_STR( TYPE_SPEC ) & tab & IMAGE( TYPE_LVL ) & ", " );
---      PUT( tab & 'L' & SIZ_CHAR & tab & IMAGE( TYPE_LVL ) & ", " );
 
       if  TYPE_LVL /= INTEGER( CODI.CUR_LEVEL )  or else  D( XD_REGION, SUBTYPE_ID ).TY = DN_PACKAGE_ID  then
         REGIONS_PATH( SUBTYPE_ID );
@@ -2093,65 +2712,64 @@ null;--	     declare
 
       if  PREFIX_NAME.TY = DN_USED_OBJECT_ID  then
 
-     if  PREFIX_DEFN.TY = DN_COMPONENT_ID  then
+        if  PREFIX_DEFN.TY = DN_COMPONENT_ID  then
+	declare
+	  PARENT_TYPE_SPEC  : TREE	:= D( SM_TYPE_SPEC, D( XD_REGION, PREFIX_DEFN ) );
+	begin
+	  PREFIX_LVL := DI( CD_LEVEL, PARENT_TYPE_SPEC );
+	end;
+        else
+	PREFIX_LVL := DI( CD_LEVEL, PREFIX_DEFN );
+        end if;
+
         declare
-	PARENT_TYPE_SPEC	: TREE	:= D( SM_TYPE_SPEC, D( XD_REGION, PREFIX_DEFN ) );
+	PREFIX_TYPE : TREE := D( SM_EXP_TYPE, PREFIX_NAME );
         begin
-	PREFIX_LVL := DI( CD_LEVEL, PARENT_TYPE_SPEC );
-        end;
-      else
-        PREFIX_LVL := DI( CD_LEVEL, PREFIX_DEFN );
-      end if;
+	while  PREFIX_TYPE.TY = DN_PRIVATE  or else  PREFIX_TYPE.TY = DN_L_PRIVATE  loop
+	  PREFIX_TYPE := D( SM_TYPE_SPEC, PREFIX_TYPE );
+	end loop;
 
-declare
-  PREFIX_TYPE : TREE := D( SM_EXP_TYPE, PREFIX_NAME );
-begin
-  while PREFIX_TYPE.TY = DN_PRIVATE or else PREFIX_TYPE.TY = DN_L_PRIVATE loop
-    PREFIX_TYPE := D( SM_TYPE_SPEC, PREFIX_TYPE );
-  end loop;
+	if  PREFIX_TYPE.TY = DN_ACCESS  then
+	  declare
+	    DESIG_TYPE	: TREE	:= D( SM_DESIG_TYPE, PREFIX_TYPE );
+	  begin
+	    while  DESIG_TYPE.TY = DN_PRIVATE  or else  DESIG_TYPE.TY = DN_L_PRIVATE  loop
+	      DESIG_TYPE := D( SM_TYPE_SPEC, DESIG_TYPE );
+	    end loop;
 
-  if  PREFIX_TYPE.TY = DN_ACCESS  then
-    declare
-      DESIG_TYPE : TREE := D( SM_DESIG_TYPE, PREFIX_TYPE );
-    begin
-      while DESIG_TYPE.TY = DN_PRIVATE or else DESIG_TYPE.TY = DN_L_PRIVATE loop
-        DESIG_TYPE := D( SM_TYPE_SPEC, DESIG_TYPE );
-      end loop;
+	    if  DESIG_TYPE.TY = DN_INCOMPLETE  then
+	      DESIG_TYPE := D( XD_FULL_TYPE_SPEC, DESIG_TYPE );
+	    end if;
 
-      if  DESIG_TYPE.TY = DN_INCOMPLETE  then
-        DESIG_TYPE := D( XD_FULL_TYPE_SPEC, DESIG_TYPE );
-      end if;
+	    if  DESIG_TYPE.TY = DN_CONSTRAINED_ARRAY or else DESIG_TYPE.TY = DN_ARRAY  then
+	      declare
+	        TYPE_NAME	: TREE		:= D( XD_SOURCE_NAME, DESIG_TYPE );
+	        TYPE_STR	:constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
+	        TYPE_LVL	: INTEGER		:= DI( CD_LEVEL, DESIG_TYPE );
+	        DIM_EXP	: TREE		:= D( AS_EXP, ATTRIBUTE );
+	        NUM_DIM	: INTEGER		:= 1;
+	      begin
+	        if  DIM_EXP /= TREE_VOID  then
+		NUM_DIM := DI( SM_VALUE, DIM_EXP );
+	        end if;
 
-      if  DESIG_TYPE.TY = DN_CONSTRAINED_ARRAY or else DESIG_TYPE.TY = DN_ARRAY  then
-        declare
-	TYPE_NAME : TREE := D( XD_SOURCE_NAME, DESIG_TYPE );
-	TYPE_STR  : constant STRING := '_' & PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
-	TYPE_LVL  : INTEGER := DI( CD_LEVEL, DESIG_TYPE );
-	DIM_EXP	: TREE := D( AS_EXP, ATTRIBUTE );
-	NUM_DIM	: INTEGER := 1;
-        begin
-	if DIM_EXP /= TREE_VOID then
-	  NUM_DIM := DI( SM_VALUE, DIM_EXP );
+	        PUT( tab & "LD" & tab & IMAGE( TYPE_LVL ) & ", " );
+	        REGIONS_PATH( TYPE_NAME );
+	        PUT( TYPE_STR );
+
+	        if  IS_LAST  then
+		PUT( "._LST_" );
+	        else
+		PUT( "._FST_" );
+	        end if;
+
+	        PUT_LINE( IMAGE( NUM_DIM ) );
+	        return;
+	      end;
+	    end if;
+	  end;
 	end if;
-
-	PUT( tab & "Ld" & tab & IMAGE( TYPE_LVL ) & ", " );
-	REGIONS_PATH( TYPE_NAME );
-	PUT( TYPE_STR );
-
-	if IS_LAST then
-	  PUT( "._LST_" );
-	else
-	  PUT( "._FST_" );
-	end if;
-
-	PUT_LINE( IMAGE( NUM_DIM ) );
-	return;
         end;
-      end if;
-    end;
-  end if;
-end;
-
 
         if  ( D( SM_EXP_TYPE, PREFIX_NAME ).TY = DN_CONSTRAINED_ARRAY )					-- UNE VARIABLE TABLEAU
 	or ( D( SM_EXP_TYPE, PREFIX_NAME ).TY = DN_ARRAY  and  D( SM_DEFN, PREFIX_NAME ).TY = DN_CONSTANT_ID )
@@ -2160,7 +2778,6 @@ end;
 	declare
 	  ARRAY_LVL	: INTEGER		:= PREFIX_LVL;
 	  PREFIX_TYPE	: TREE		:= D( SM_EXP_TYPE, PREFIX_NAME );
---	  TYPE_STR	:constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, PREFIX_TYPE ) ) );
 	  TYPE_STR	:constant STRING	:= TYPE_INFO_STR( PREFIX_TYPE );
 	  DIM_EXP		: TREE		:= D( AS_EXP, ATTRIBUTE );
 	  NUM_DIM		: INTEGER		:= 1;
@@ -2170,7 +2787,7 @@ end;
 	    NUM_DIM := DI( SM_VALUE, DIM_EXP );
 	  end if;
 
-	  PUT( tab & "LId" & tab & IMAGE( ARRAY_LVL ) & ", " );
+	  PUT( tab & "LID" & tab & IMAGE( ARRAY_LVL ) & ", " );
 	  REGIONS_PATH( D( SM_DEFN, PREFIX_NAME ) );
 	  PUT( CHN_PREFIX & "__u" & ", " );
 	  REGIONS_PATH( D( XD_SOURCE_NAME, PREFIX_TYPE ) );
@@ -2200,8 +2817,8 @@ end;
 	    NUM_DIM := DI( SM_VALUE, DIM_EXP );
 	  end if;
 	  PUT_LINE( tab & "LVA" & tab & IMAGE( ARRAY_LVL ) & ", -" & CHN_PREFIX & "_ofs" );
-	  PUT_LINE( tab & "LIa" & tab & ", ," & INTEGER'IMAGE( CODI.ADDR_SIZE ) );
-	  PUT( tab & "Ld" & tab & ", " & TYPE_STR );
+	  PUT_LINE( tab & "LIA" & tab & ", ," & INTEGER'IMAGE( CODI.ADDR_SIZE ) );
+	  PUT( tab & "LD" & tab & ", " & TYPE_STR );
 	  if  IS_LAST  then
 	    PUT( ".LST_"  );
 	  else
@@ -2221,10 +2838,10 @@ end;
 				GENERIC_FIRST_LAST:
 	  declare
 	    CHN_LID	:constant STRING
-			 := tab & "LId , -" & CHN_PREFIX & "__u_ofs, STANDARD._ENUM_USE_INFO";
+			 := tab & "LID , -" & CHN_PREFIX & "__u_ofs, STANDARD._ENUM_USE_INFO";
 
 	  begin
-	    PUT_LINE( tab & "La " & IMAGE( CODI.GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );
+	    PUT_LINE( tab & "LA " & IMAGE( CODI.GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );
 	    if  IS_LAST  then
 	      PUT_LINE( CHN_LID & ".LST" );
 	    else
@@ -2243,11 +2860,10 @@ end;
 	    if  TYPE_SPEC.TY = DN_FLOAT  then
 	      declare
 	        TYPE_NAME	: TREE		:= D( XD_SOURCE_NAME, TYPE_SPEC );
---	        TYPE_STR	: constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );		-- A REMPLACER PARTOUT PAR APPEL A TYPE_INFO_STR
 	        TYPE_STR	: constant STRING	:= TYPE_INFO_STR( TYPE_SPEC );
 	        TYPE_LVL	: INTEGER		:= DI( CD_LEVEL, TYPE_SPEC );
 	      begin
-	        PUT( tab & "Lq" & tab & IMAGE( TYPE_LVL ) & ", " );
+	        PUT( tab & "LQ" & tab & IMAGE( TYPE_LVL ) & ", " );
 
 	        if  TYPE_LVL /= INTEGER( CODI.CUR_LEVEL )  or else  D( XD_REGION, TYPE_NAME ).TY = DN_PACKAGE_ID
 	        then
@@ -2351,7 +2967,7 @@ end;
 	  TYPE_NAME	: TREE		:= D( XD_SOURCE_NAME, TS );
 	  TYPE_NAME_STR	:constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
 	begin
-	  PUT( tab & "La " & IMAGE( DI( CD_LEVEL, TS ) ) & ", " );
+	  PUT( tab & "LA " & IMAGE( DI( CD_LEVEL, TS ) ) & ", " );
 	  CODI.REGIONS_PATH( TYPE_NAME );
 	  PUT_LINE( TYPE_NAME_STR & ".use__info" );
 	  PUT_LINE( tab & "LI" & tab & "16" );
@@ -2376,11 +2992,6 @@ end;
 		-----------
     procedure	CODE_LENGTH
     is		-----------
-
---      PREFIX_TYPE		: TREE		:= D( SM_EXP_TYPE, PREFIX_NAME );				-- Un tableau
---      PREFIX_DEFN		: TREE		:= D( SM_DEFN, PREFIX_NAME );
-
---    begin
 
       PREFIX_DEFN		: TREE		:= D( SM_DEFN, PREFIX_NAME );					-- toujours present
       PREFIX_TYPE		: TREE		:= TREE_VOID;						-- differe : marque de type -> pas de SM_EXP_TYPE
@@ -2452,7 +3063,6 @@ end;
 	  if  DESIG_TYPE.TY = DN_CONSTRAINED_ARRAY  or else  DESIG_TYPE.TY = DN_ARRAY  then
 	    declare
 	      TYPE_NAME : TREE := D( XD_SOURCE_NAME, DESIG_TYPE );
---	      TYPE_STR  : constant STRING := '_' & PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
 	      TYPE_STR  : constant STRING := TYPE_INFO_STR( DESIG_TYPE );
 	      TYPE_LVL  : INTEGER := DI( CD_LEVEL, DESIG_TYPE );
 	      DIM_EXP   : TREE := D( AS_EXP, ATTRIBUTE );
@@ -2462,11 +3072,11 @@ end;
 	        NUM_DIM := DI( SM_VALUE, DIM_EXP );
 	      end if;
 
-	      PUT( tab & "Ld" & tab & IMAGE( TYPE_LVL ) & ", " );
+	      PUT( tab & "LD" & tab & IMAGE( TYPE_LVL ) & ", " );
 	      REGIONS_PATH( TYPE_NAME );
 	      PUT_LINE( TYPE_STR & "._LST_" & IMAGE( NUM_DIM ) );
 
-	      PUT( tab & "Ld" & tab & IMAGE( TYPE_LVL ) & ", " );
+	      PUT( tab & "LD" & tab & IMAGE( TYPE_LVL ) & ", " );
 	      REGIONS_PATH( TYPE_NAME );
 	      PUT_LINE( TYPE_STR & "._FST_" & IMAGE( NUM_DIM ) );
 
@@ -2497,23 +3107,23 @@ end;
         if  PREFIX_DEFN.TY in CLASS_PARAM_NAME  then							-- On a juste l'adresse de la VAR disp
 
 	PUT_LINE( tab & "LVA" & tab & IMAGE( ARRAY_LVL ) & ", -" & CHN_PREFIX & "_ofs" );
-	PUT_LINE( tab & "LIa" & tab & ", ," & INTEGER'IMAGE( CODI.ADDR_SIZE ) );
-	PUT_LINE( tab & "Ld" & tab & ", " & PREFIX_TYPE_STR & ".LST_" & IMAGE( NUM_DIM ) );			-- Offset LST_n
+	PUT_LINE( tab & "LIA" & tab & ", ," & INTEGER'IMAGE( CODI.ADDR_SIZE ) );
+	PUT_LINE( tab & "LD" & tab & ", " & PREFIX_TYPE_STR & ".LST_" & IMAGE( NUM_DIM ) );			-- Offset LST_n
 	PUT_LINE( tab & "LVA" & tab & IMAGE( ARRAY_LVL ) & ", -" & CHN_PREFIX & "_ofs" );
-	PUT_LINE( tab & "LIa" & tab & ", ," & INTEGER'IMAGE( CODI.ADDR_SIZE ) );
-	PUT_LINE( tab & "Ld" & tab & ", " & PREFIX_TYPE_STR & ".FST_" & IMAGE( NUM_DIM ) );			-- Offset FST_n
+	PUT_LINE( tab & "LIA" & tab & ", ," & INTEGER'IMAGE( CODI.ADDR_SIZE ) );
+	PUT_LINE( tab & "LD" & tab & ", " & PREFIX_TYPE_STR & ".FST_" & IMAGE( NUM_DIM ) );			-- Offset FST_n
 	PUT_LINE( tab & "SUB" );
 	PUT_LINE( tab & "INC" );
 	PUT_LINE( tab & "CLAMP0" );
 
         else
-	PUT( tab & "LId" & tab & IMAGE( ARRAY_LVL ) & ", " );
+	PUT( tab & "LID" & tab & IMAGE( ARRAY_LVL ) & ", " );
 	REGIONS_PATH( D( SM_DEFN, PREFIX_NAME ) );
 	PUT( CHN_PREFIX & "__u" & ", " );
 	REGIONS_PATH( D( XD_SOURCE_NAME, PREFIX_TYPE ) );
 	PUT_LINE( PREFIX_TYPE_STR & ".LST_" & IMAGE( NUM_DIM ) );
 
-	PUT( tab & "LId" & tab & IMAGE( ARRAY_LVL ) & ", " );
+	PUT( tab & "LID" & tab & IMAGE( ARRAY_LVL ) & ", " );
 	REGIONS_PATH( D( SM_DEFN, PREFIX_NAME ) );
 	PUT(  CHN_PREFIX & "__u" & ", " );
 	REGIONS_PATH( D( XD_SOURCE_NAME, PREFIX_TYPE ) );
@@ -2528,14 +3138,6 @@ end;
     end	CODE_LENGTH;
 	-----------
 
-		--------
-    procedure	CODE_POS
-    is		--------
-      PREFIX_DEFN		: TREE		:= D( SM_DEFN, PREFIX_NAME );
-    begin
-      null;
-    end	CODE_POS;
-    --------
 
 		---------
     procedure	CODE_SIZE
@@ -2550,7 +3152,7 @@ end;
         TYPE_SPEC := D( SM_OBJ_TYPE, PREFIX_DEFN );
 
       else
-        PUT_LINE( "; ATTRIBUTE SIZE : PREFIX NON TRAITE " & NODE_NAME'IMAGE( PREFIX_DEFN.TY ) );
+        TROU( "'SIZE prefixe non traite", PREFIX_DEFN );							--| vague 5 : TYPE_SPEC resterait indefini
       end if;
 			---------
 			TYPE_SIZE:
@@ -2560,16 +3162,15 @@ end;
 
       begin
         if  IS_GENERIC_FORMAL_TYPE( PREFIX_DEFN )  then							-- TYPE FORMEL GENERIQUE
-	PUT_LINE( tab & "La " & INTEGER'IMAGE( CODI.GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );
---	PUT_LINE( tab & "La " & INTEGER'IMAGE( CODI.CUR_LEVEL ) & ',' & tab & "-GFP_ofs" );
-	PUT_LINE( tab & "LId , -" & TYPE_STR & "__u_ofs" );
+	PUT_LINE( tab & "LA " & INTEGER'IMAGE( CODI.GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );
+	PUT_LINE( tab & "LID , -" & TYPE_STR & "__u_ofs" );
 
         else
 	if  TYPE_SPEC.TY = DN_PRIVATE  or  TYPE_SPEC.TY = DN_L_PRIVATE  then
 	  TYPE_SPEC := D( SM_TYPE_SPEC, TYPE_SPEC );
 	end if;
 
-	PUT( tab & "LId" & tab );
+	PUT( tab & "LID" & tab );
 	PUT( INTEGER'IMAGE( DI( CD_LEVEL, TYPE_SPEC ) ) & ", " );
 	CODI.REGIONS_PATH( TYPE_NAME );
 	PUT_LINE( '_' & TYPE_STR & ".use__info" );
@@ -2594,12 +3195,12 @@ end;
 	TYPE_NAME		: TREE		:= D( XD_SOURCE_NAME, TYPE_SPEC );
 	TYPE_STR		: constant STRING	:= PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
         begin
-	PUT_LINE( tab & "La " & IMAGE( GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );			-- Adresse de frame generique
-	PUT_LINE( tab & "LIq , -" & TYPE_STR & "__u_ofs, STANDARD._FIXED_USE_INFO.NUMER " );			-- Charge l'entier NUMER
+	PUT_LINE( tab & "LA " & IMAGE( GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );			-- Adresse de frame generique
+	PUT_LINE( tab & "LIQ , -" & TYPE_STR & "__u_ofs, STANDARD._FIXED_USE_INFO.NUMER " );			-- Charge l'entier NUMER
 	PUT_LINE( tab & "CVTIF" );
 
-	PUT_LINE( tab & "La " & IMAGE( GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );			-- Adresse de frame generique
-	PUT_LINE( tab & "LIq , -" & TYPE_STR & "__u_ofs, STANDARD._FIXED_USE_INFO.DENOM" );			-- Charge l'entier DENOM
+	PUT_LINE( tab & "LA " & IMAGE( GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );			-- Adresse de frame generique
+	PUT_LINE( tab & "LIQ , -" & TYPE_STR & "__u_ofs, STANDARD._FIXED_USE_INFO.DENOM" );			-- Charge l'entier DENOM
 	PUT_LINE( tab & "CVTIF" );
 	PUT_LINE( tab & "FDIV" );									-- / DENOM
         end;
@@ -2625,6 +3226,52 @@ end;
 
 
 		----------
+    procedure	CODE_VALUE
+    is		----------
+    -- 'VALUE des ENTIERS : appel de la primitive cachee
+    -- STANDARD.INTEGER_VALUE (reciproque de CODE_IMAGE ; une seule
+    -- primitive 64 bits pour INTEGER et LONG_INTEGER, INTG_SIZE = 8).
+    -- A l'entree, l'appelant (forme appel) a DEJA empile @doublet de
+    -- la chaine ; le lieu resultat doit passer DESSOUS (convention
+    -- fonction scalaire) : detour par un temporaire, codi n'a pas
+    -- d'echange de sommet et n'en gagnera pas (machine a pile, pas
+    -- le runtime).
+      ARG_TMP	:constant STRING	:= "VALARG_" & NEW_LABEL;
+      LVL_STR	:constant STRING	:= IMAGE( CODI.CUR_LEVEL );
+      TS  : TREE		:= PREFIX_TYPE_SPEC;
+    begin
+      -- Meme depouillement que CODE_IMAGE : vues privees puis type de
+      -- base ('VALUE est un attribut du type de base, LRM 3.5.5).
+      while  TS /= TREE_VOID
+      and then  ( TS.TY = DN_PRIVATE  or else  TS.TY = DN_L_PRIVATE )  loop
+        TS := D( SM_TYPE_SPEC, TS );
+      end loop;
+      while  TS /= TREE_VOID
+      and then  D( SM_BASE_TYPE, TS ) /= TREE_VOID
+      and then  D( SM_BASE_TYPE, TS ) /= TS  loop
+        TS := D( SM_BASE_TYPE, TS );
+      end loop;
+
+      if  TS /= TREE_VOID  and then  TS.TY = DN_INTEGER  then
+        PUT_LINE( "VAR" & tab & ARG_TMP & ", Q" );
+        PUT_LINE( tab & "SA  " & LVL_STR & ", " & ARG_TMP );			-- depiler @doublet chaine
+        PUT( tab & "LI" & tab & '0' );
+        if  CODI.DEBUG  then  PUT( tab50 & "; lieu resultat sur pile" );  end if;
+        NEW_LINE;
+        PUT_LINE( tab & "LA  " & LVL_STR & ", " & ARG_TMP );			-- re-empiler @doublet
+        PUT_LINE( tab & "CALL" & tab & "STANDARD. ,INTEGER_VALUE_L40" );		-- ATTENTION a ceci : changer synchro avec STANDARD
+
+      else
+        -- Enumere (tables de CODE_IMAGE a parcourir en inverse) et
+        -- prefixes non resolus : NON instruits -- pas de besoin corpus.
+        TROU( "CODE_ATTRIBUTE 'VALUE prefixe non entier" );
+      end if;
+
+    end	CODE_VALUE;
+	----------
+
+
+		----------
     procedure	CODE_WIDTH
     is		----------
       PREFIX_DEFN	: TREE := D( SM_DEFN, PREFIX_NAME );
@@ -2638,8 +3285,8 @@ end;
         TYPE_SPEC := D( SM_OBJ_TYPE, PREFIX_DEFN );
 
       else
-        PUT_LINE( "; ATTRIBUTE WIDTH : PREFIX NON TRAITE " & NODE_NAME'IMAGE( PREFIX_DEFN.TY ) );
-        PUT_LINE( tab & "LI" & tab & "0" );
+        TROU( "'WIDTH prefixe non traite", PREFIX_DEFN );							--| vague 2 (cat. D) : LI 0 mentait, conserve
+        PUT_LINE( tab & "LI" & tab & "0" );								--| apres TROU pour l'equilibre en RECENSEMENT
         return;
       end if;
 
@@ -2654,8 +3301,8 @@ end;
 	begin
 	  if  CODI.DEBUG  then  PUT_LINE( "; WIDTH POUR FORMAL TYPE" );  end if;
 	  PUT_LINE( tab & "LI" & tab & '0' );								-- lieu resultat sur pile
-	  PUT_LINE( tab & "La " & INTEGER'IMAGE( CODI.CUR_LEVEL ) & ',' & tab & "-GFP_ofs" );			-- Adresse de frame generique
-	  PUT_LINE( tab & "LId , -" & TYPE_STR & "__u_ofs" );						-- Charge le SIZ en bits
+	  PUT_LINE( tab & "LA " & INTEGER'IMAGE( CODI.GFP_LEVEL ) & ',' & tab & "-GFP_ofs" );			-- Adresse de frame generique
+	  PUT_LINE( tab & "LID , -" & TYPE_STR & "__u_ofs" );						-- Charge le SIZ en bits
 	  PUT_LINE( tab & "CALL" & tab & "STANDARD. ,WIDTH_L3" );						-- Calculer le nombre de chiffres plus signe
 	end;
 
@@ -2689,9 +3336,8 @@ end;
 	  PUT_LINE( tab & "LI" & tab & INTEGER'IMAGE( SIGNED_WIDTH_FROM_SIZE( BITS ) ) );
 	end;
         when others =>
-	  PUT_LINE( "; ATTRIBUTE WIDTH : TYPE NON TRAITE "
-		& NODE_NAME'IMAGE( TYPE_SPEC.TY ) );
-	  PUT_LINE( tab & "LI" & tab & "0" );
+	  TROU( "CODE_WIDTH type non traite", TYPE_SPEC );						--| vague 2 (cat. D) : LI 0 mentait, conserve
+	  PUT_LINE( tab & "LI" & tab & "0" );								--| apres TROU pour l'equilibre en RECENSEMENT
         end case;
       end if;
 
@@ -2705,9 +3351,9 @@ end;
 	-- Dette D10, volet appel : F'FIRST / F'LAST / F'LENGTH, F fonction
 	-- tableau (TOKEN'FIRST dans IDL.READ_GRMR). RM83 4.1.4 : le prefixe
 	-- est EVALUE -- l'appel remplit le doublet + bloc anonymes de
-	-- PREPARE_ARRAY_RETURN ; bornes runtime dans <anon>_info, 1-dim
+	-- PREPARE_ARRAY_RESULT_PLACE ; bornes runtime dans <anon>_info, 1-dim
 	-- (_FST_1/_LST_1 ; dette D6 pour multi-dim).
-      ANON	:constant STRING	:= ANONYMOUS_NAME_AT( PREFIX_NAME );	-- MEME nom que PREPARE_ARRAY_RETURN
+      ANON	:constant STRING	:= ANONYMOUS_NAME_AT( PREFIX_NAME );	-- MEME nom que PREPARE_ARRAY_RESULT_PLACE
       LVL_STR	:constant STRING	:= IMAGE( CODI.CUR_LEVEL );
       DIM_EXP	: TREE		:= D( AS_EXP, ATTRIBUTE );
     begin
@@ -2727,14 +3373,14 @@ end;
       PUT_LINE( tab & "DROP" );						-- bornes lues via <anon>_info, pas via le doublet
 
       if	   CHN_ATTR( 1 ) = 'F'  and then  CHN_ATTR( 2 ) = 'I'  then -- FIRST
-        PUT_LINE( tab & "Ld" & tab & LVL_STR & ", " & ANON & "_info._FST_1" );
+        PUT_LINE( tab & "LD" & tab & LVL_STR & ", " & ANON & "_info._FST_1" );
 
       elsif  CHN_ATTR( 1 ) = 'L'  and then  CHN_ATTR( 2 ) = 'A'  then -- LAST
-        PUT_LINE( tab & "Ld" & tab & LVL_STR & ", " & ANON & "_info._LST_1" );
+        PUT_LINE( tab & "LD" & tab & LVL_STR & ", " & ANON & "_info._LST_1" );
 
       elsif  CHN_ATTR( 1 ) = 'L'  and then  CHN_ATTR( 2 ) = 'E'  then -- LENGTH
-        PUT_LINE( tab & "Ld" & tab & LVL_STR & ", " & ANON & "_info._LST_1" );
-        PUT_LINE( tab & "Ld" & tab & LVL_STR & ", " & ANON & "_info._FST_1" );
+        PUT_LINE( tab & "LD" & tab & LVL_STR & ", " & ANON & "_info._LST_1" );
+        PUT_LINE( tab & "LD" & tab & LVL_STR & ", " & ANON & "_info._FST_1" );
         PUT_LINE( tab & "SUB" );
         PUT_LINE( tab & "INC" );
         PUT_LINE( tab & "CLAMP0" );					-- D7 : intervalle nul -> 0 (idiome CODE_LENGTH)
@@ -2764,12 +3410,14 @@ end;
       else CODE_FOLDED_ATTRIBUTE;						-- AFT
       end if;
 
-    when  'B' => null;							-- BASE
+    when  'B' => null;							-- INTENTIONNEL : 'BASE = identite, la vue de
+									-- base ne change pas la valeur deja empilee.
 
     when  'C' =>
-      if  CHN_ATTR( 2 ) = 'A'  then null;					-- CALLABLE
+      if  CHN_ATTR( 2 ) = 'A'  then TROU( "CODE_ATTRIBUTE 'CALLABLE (tasking)" );	-- CALLABLE
       elsif  CHN_ATTR( 2 .. 3 ) = "ON"  then CODE_CONSTRAINED;			-- CONSTRAINED
-      elsif  CHN_ATTR( 2 .. 3 ) = "OU"  then null;				-- COUNT
+      elsif  CHN_ATTR( 2 .. 3 ) = "OU"  then TROU( "CODE_ATTRIBUTE 'COUNT (tasking)" );	-- COUNT
+      else TROU( "CODE_ATTRIBUTE '" & CHN_ATTR );
       end if;
 
     when  'D' =>
@@ -2791,10 +3439,10 @@ end;
 	        PUT_LINE( tab & "LI" & tab & PRINT_NUM( ACCURACY ) );
 	      end if;
 	    else
-	      CODE_FLOAT_DIGITS;			    -- pas d'accuracy : valeur machine
+	      CODE_FLOAT_DIGITS;						 -- pas d'accuracy : valeur machine
 	    end if;
 	  else
-	    CODE_FLOAT_DIGITS;	      -- type formel / non resolu : valeur machine (comportement historique)
+	    CODE_FLOAT_DIGITS;						  -- type formel / non resolu : valeur machine (comportement historique)
 	  end if;
 	end;
         end if;
@@ -2808,23 +3456,24 @@ end;
       end if;
 
     when  'F' =>
-      if  CHN_ATTR( 2 ) = 'I'  then						-- FIRST
+      if  CHN_ATTR( 2 ) = 'I'  then									-- FIRST
         CODE_FIRST_LAST( IS_LAST => FALSE );
-      else CODE_FOLDED_ATTRIBUTE;						-- FORE
+      else CODE_FOLDED_ATTRIBUTE;									-- FORE
       end if;
 
-    when  'I' => CODE_IMAGE;							-- IMAGE
+    when  'I' => CODE_IMAGE;										-- IMAGE
 
     when  'L' =>
       if  CHN_ATTR( 2 .. 3 ) = "AR"  then
         CODE_FLOAT_LARGE;			-- LARGE
       elsif  CHN_ATTR( 2 .. 3 ) = "AS"  then
-        if  CHN_ATTR'LENGTH = 4  then						-- LAST
+        if  CHN_ATTR'LENGTH = 4  then									-- LAST
 	CODE_FIRST_LAST( IS_LAST => TRUE );
-        else null;								-- LAST_BIT
+        else TROU( "CODE_ATTRIBUTE 'LAST_BIT (rep-clauses)" );						-- LAST_BIT
         end if;
-      elsif  CHN_ATTR( 2 .. 3 ) = "EN"  then CODE_LENGTH;				-- LENGTH
+      elsif  CHN_ATTR( 2 .. 3 ) = "EN"  then CODE_LENGTH;							-- LENGTH
 
+      else TROU( "CODE_ATTRIBUTE '" & CHN_ATTR );
       end if;
 
     when  'M' =>
@@ -2842,20 +3491,37 @@ end;
         PUSH_INT( 2 );							-- MACHINE_RADIX
       elsif  CHN_ATTR( 10 ) = 'O'  then
         PUSH_INT( 1 );							-- MACHINE_ROUNDS
+
+      else TROU( "CODE_ATTRIBUTE '" & CHN_ATTR );
       end if;
 
     when  'P' =>
-      if  CHN_ATTR'LENGTH = 8  then null;					-- POSITION
+      if  CHN_ATTR'LENGTH = 8  then TROU( "CODE_ATTRIBUTE 'POSITION (rep-clauses)" );	-- POSITION
       elsif  CHN_ATTR( 2 ) = 'O'  then						-- POS
-        -- T'POS(X) : retourne le numero d'ordre (identite sans clause de rep)
-        CODE_EXP( D( AS_EXP, ATTRIBUTE ) );
+        -- T'POS(X) : numero d'ordre = identite (sans clause de rep).
+        -- CONTRAT forme appel : l'argument est evalue et empile par
+        -- CODE_FUNCTION_CALL avant d'arriver ici ; AS_EXP est vide
+        -- (recensement 28/07). Rien a emettre.
+        if  D( AS_EXP, ATTRIBUTE ) /= TREE_VOID  then
+	TROU( "CODE_ATTRIBUTE 'POS : forme directe AS_EXP imprevue" );
+        end if;
+
       elsif  CHN_ATTR( 2 ) = 'R'  then						-- PRED
-        -- T'PRED(X) : retourne X-1
-        CODE_EXP( D( AS_EXP, ATTRIBUTE ) );
+        -- T'PRED(X) = X-1 sur l'argument DEJA en pile (contrat forme
+        -- appel, cf. 'POS).
+        if  D( AS_EXP, ATTRIBUTE ) /= TREE_VOID  then
+	TROU( "CODE_ATTRIBUTE 'PRED : forme directe AS_EXP imprevue" );
+        end if;
         PUT_LINE( tab & "DEC" );
+
+      else TROU( "CODE_ATTRIBUTE '" & CHN_ATTR );
       end if;
 
-    when  'R' => null;							-- RANGE
+    when  'R' =>
+			-- 'RANGE en discrete_range est porte par
+			-- CODE_RANGE_ATTRIBUTE_BOUND ; l'atteindre ICI
+			-- = contexte expression, non modelise.
+      TROU( "CODE_ATTRIBUTE 'RANGE en contexte expression" );							-- RANGE
 
     when  'S' =>
       if  CHN_ATTR( 2 ) = 'I'		then CODE_SIZE;				-- SIZE
@@ -2875,10 +3541,15 @@ end;
 	end if;
         end;
 
-      elsif  CHN_ATTR( 2 ) = 'T'  then	 null;					-- STORAGE
+      elsif  CHN_ATTR( 2 ) = 'T'  then						-- STORAGE_SIZE
+        TROU( "CODE_ATTRIBUTE 'STORAGE_SIZE (contexte expression, rien empile)" );				--| vague 5 : n 115 survivant de la vague 1,
+												--| pris par le grep de la definition de fini
       elsif  CHN_ATTR( 2 ) = 'U'  then						-- SUCC
-        -- T'SUCC(X) : retourne X+1
-        CODE_EXP( D( AS_EXP, ATTRIBUTE ) );
+        -- T'SUCC(X) = X+1 sur l'argument DEJA en pile (contrat forme
+        -- appel, cf. 'POS).
+        if  D( AS_EXP, ATTRIBUTE ) /= TREE_VOID  then
+	TROU( "CODE_ATTRIBUTE 'SUCC : forme directe AS_EXP imprevue" );
+        end if;
         PUT_LINE( tab & "INC" );
       elsif  CHN_ATTR( 6 ) = 'E'  then
         CODE_FLOAT_EMAX;							-- SAFE_EMAX
@@ -2888,18 +3559,21 @@ end;
         CODE_FLOAT_SMALL;							-- SAFE_SMALL
       end if;
 
-    when  'T' =>	null;							-- TERMINATED
+    when  'T' =>	TROU( "CODE_ATTRIBUTE 'STORAGE_SIZE (rep/tasking)" );		-- TERMINATED
 
     when  'V' =>
-      if  CHN_ATTR'LENGTH = 5  then null;					-- VALUE
+      if  CHN_ATTR'LENGTH = 5  then CODE_VALUE;					-- VALUE
       else								-- VAL
-        -- T'VAL(N) : retourne la valeur de position N (identite sans clause de rep)
-        CODE_EXP( D( AS_EXP, ATTRIBUTE ) );
+        -- T'VAL(N) : valeur de position = identite (sans clause de
+        -- rep), argument DEJA en pile (contrat forme appel, cf. 'POS).
+        if  D( AS_EXP, ATTRIBUTE ) /= TREE_VOID  then
+	TROU( "CODE_ATTRIBUTE 'VAL : forme directe AS_EXP imprevue" );
+        end if;
       end if;
 
     when  'W' => CODE_WIDTH;							-- WIDTH
 
-    when others => null;
+    when others =>  TROU( "CODE_ATTRIBUTE '" & CHN_ATTR );				-- SIGNALER SI ANOMALIE
     end case;
 
   end	CODE_ATTRIBUTE;
@@ -2918,7 +3592,7 @@ end;
 	-- repr = Nv.Ds / (Dv.Ns) -- FORMULE UNIQUE du pilier fixed (note v1.1 §1).
 	-- CVTIX recoit I.D.N et calcule I*D/N en 128 bits intermediaires ;
 	-- le produit Dv.Ns est fait statiquement ici. Fossile F-1 : l'ancien
-	-- bail Ns /= 1 rendait la main a un appelant emetteur de Sq -> store
+	-- bail Ns /= 1 rendait la main a un appelant emetteur de SQ -> store
 	-- depuis une pile jamais alimentee (_T34.FST/LST corrompus).
     PUT_LINE( tab & "LI" & tab & PRINT_NUM( D( XD_NUMER, VALUE ) ) );			-- I = Nv
     PUT_LINE( tab & "LI" & tab & PRINT_NUM( D( XD_DENOM, SMALL ) ) );			-- D = Ds
@@ -2929,69 +3603,11 @@ end;
 	-----------------------
 
 
-		---------
-  function	FULL_VIEW ( T : TREE )	return TREE
-  is		---------
-    R	: TREE	:= T;
-  begin
-    loop
-      if  R.TY = DN_PRIVATE or else R.TY = DN_L_PRIVATE  then
-        if D( SM_TYPE_SPEC, R ) = TREE_VOID then
-	return R;
-        end if;
-
-        R := D( SM_TYPE_SPEC, R );
-
-      elsif  R.TY = DN_INCOMPLETE  then
-        if D( XD_FULL_TYPE_SPEC, R ) = TREE_VOID then
-	return R;
-        end if;
-
-        R := D( XD_FULL_TYPE_SPEC, R );
-
-      else
-        return R;
-      end if;
-    end loop;
-
-  end	FULL_VIEW;
-	---------
-
-		--------------
-    function	COMP_SIZE_BITS	( T : TREE )	return INTEGER
-    is		--------------
-      E	: TREE	:= FULL_VIEW( T );
-    begin
-      if  E.TY = DN_ACCESS  then
-        return CODI.ADDR_SIZE * CODI.STORAGE_UNIT;
-
-      elsif  E.TY = DN_FLOAT  then
-        return CODI.ADDR_SIZE * CODI.STORAGE_UNIT;
-
-      else
-        -- CD_IMPL_SIZE est la taille minimale en BITS posee par le front-end
-        -- (1 pour BOOLEAN, 3 pour un enumere a 7 valeurs...).  La convention
-        -- de stockage TLALOC est l'octet (piege n 10) : arrondir.
-        declare
-	RAW : INTEGER := DI( CD_IMPL_SIZE, E );
-        begin
-	return ( ( RAW + CODI.STORAGE_UNIT - 1 ) / CODI.STORAGE_UNIT ) * CODI.STORAGE_UNIT;
-        end;
-      end if;
-
---     else
---	return DI( CD_IMPL_SIZE, E );
---      end if;
-
-    end	COMP_SIZE_BITS;
-	--------------
-
-
 			----------------------------
 	  procedure	CODE_ARRAY_AGGREGATE_OPERAND		( AGG : TREE; ANON : STRING; CONTEXT_TYPE :TREE )
 	  is		----------------------------
 
-	  COMP_TYPE	: TREE		:= FULL_VIEW( D( SM_COMP_TYPE, D( SM_BASE_TYPE, CONTEXT_TYPE ) ) );
+	  COMP_TYPE	: TREE		:= FULL_TYPE_VIEW( D( SM_COMP_TYPE, D( SM_BASE_TYPE, CONTEXT_TYPE ) ) );
 	  COMP_BITS	: INTEGER		:= COMP_SIZE_BITS( COMP_TYPE );
 	  COMP_BYTES	: INTEGER		:= COMP_BITS / CODI.STORAGE_UNIT;
 
@@ -3050,24 +3666,24 @@ end;
 	      raise PROGRAM_ERROR;
 	    end if;
 
-	    PUT_LINE( "VAR" & tab & ANON & "_disp, q" );
-	    PUT_LINE( "VAR" & tab & ANON & "__u,   q" );
+	    PUT_LINE( "VAR" & tab & ANON & "_disp, Q" );
+	    PUT_LINE( "VAR" & tab & ANON & "__u,   Q" );
 
 	    PUT_LINE( "namespace " & ANON & "_info" );
-	    PUT_LINE( "  VAR SIZ,      d" );
-	    PUT_LINE( "  VAR _COMP_SIZ, d" );
-	    PUT_LINE( "  VAR _FST_1,    d" );
-	    PUT_LINE( "  VAR _LST_1,    d" );
+	    PUT_LINE( "  VAR SIZ__,      D" );
+	    PUT_LINE( "  VAR _COMP_SIZ, D" );
+	    PUT_LINE( "  VAR _FST_1,    D" );
+	    PUT_LINE( "  VAR _LST_1,    D" );
 	    PUT_LINE( "end namespace" );
 
 	    -- FST_1
 	    CODE_EXP( D( AS_EXP1, RNG ) );
-	    PUT_LINE( tab & "Sd  " & LVL & ", " & ANON & "_info._FST_1" );
+	    PUT_LINE( tab & "SD  " & LVL & ", " & ANON & "_info._FST_1" );
 
 	    -- LST_1, en gardant une copie pour COUNT
 	    CODE_EXP( D( AS_EXP2, RNG ) );
 	    PUT_LINE( tab & "DUP" );
-	    PUT_LINE( tab & "Sd  " & LVL & ", " & ANON & "_info._LST_1" );
+	    PUT_LINE( tab & "SD  " & LVL & ", " & ANON & "_info._LST_1" );
 
 	    -- COUNT = LST - FST + 1
 	    CODE_EXP( D( AS_EXP1, RNG ) );
@@ -3077,7 +3693,7 @@ end;
 
 	    -- COMP_SIZ en bits
 	    PUT_LINE( tab & "LI" & tab & IMAGE( COMP_BITS ) );
-	    PUT_LINE( tab & "Sd  " & LVL & ", " & ANON & "_info._COMP_SIZ" );
+	    PUT_LINE( tab & "SD  " & LVL & ", " & ANON & "_info._COMP_SIZ" );
 
 	    -- SIZ = COUNT * COMP_BITS
 	    PUT_LINE( tab & "DUP" );
@@ -3085,7 +3701,7 @@ end;
 	      PUT_LINE( tab & "LI" & tab & IMAGE( COMP_BITS ) );
 	      PUT_LINE( tab & "MUL" );
 	    end if;
-	    PUT_LINE( tab & "Sd  " & LVL & ", " & ANON & "_info.SIZ" );
+	    PUT_LINE( tab & "SD  " & LVL & ", " & ANON & "_info.SIZ__" );
 
 	    -- Allocation données : COUNT * COMP_BYTES
 	    if COMP_BYTES /= 1 then
@@ -3093,15 +3709,15 @@ end;
 	      PUT_LINE( tab & "MUL" );
 	    end if;
 	    PUT_LINE( tab & "CO_VAR" );
-	    PUT_LINE( tab & "Sa  " & LVL & ", " & ANON & "_disp" );
+	    PUT_LINE( tab & "SA  " & LVL & ", " & ANON & "_disp" );
 
 	    -- use_info du doublet temporaire
-	    PUT_LINE( tab & "LVA " & LVL & ", " & ANON & "_info.SIZ" );
-	    PUT_LINE( tab & "Sa  " & LVL & ", " & ANON & "__u" );
+	    PUT_LINE( tab & "LVA " & LVL & ", " & ANON & "_info.SIZ__" );
+	    PUT_LINE( tab & "SA  " & LVL & ", " & ANON & "__u" );
 
 	    -- Remplissage des données de l'agrégat.
 	    -- CODE_AGGREGATE attend l'adresse des données au sommet de pile.
-	    PUT_LINE( tab & "La  " & LVL & ", " & ANON & "_disp" );
+	    PUT_LINE( tab & "LA  " & LVL & ", " & ANON & "_disp" );
 	    CODE_AGGREGATE( AGG, AGG_TYPE );
 
 	    -- Résultat attendu par la concat : adresse du doublet.
@@ -3122,49 +3738,7 @@ end;
 
 	    elsif E.TY = DN_SLICE then
 	    -- CODE_EXP(slice) laisse : @data_slice, len_slice.
-	      PUT_LINE( "VAR" & tab & ANON & "_slice_data, q" );
-	      PUT_LINE( "VAR" & tab & ANON & "_slice_len,  q" );
-
-	      PUT_LINE( "VAR" & tab & ANON & "_disp, q" );
-	      PUT_LINE( "VAR" & tab & ANON & "__u,   q" );
-
-	      PUT_LINE( "namespace " & ANON & "_info" );
-	      PUT_LINE( "  VAR SIZ,      d" );
-	      PUT_LINE( "  VAR _COMP_SIZ, d" );
-	      PUT_LINE( "  VAR _FST_1,    d" );
-	      PUT_LINE( "  VAR _LST_1,    d" );
-	      PUT_LINE( "end namespace" );
-
 	      CODE_EXP( E );
-
-    -- Sauver len puis data.
-	      PUT_LINE( tab & "Sa  " & LVL & ", " & ANON & "_slice_len" );
-	      PUT_LINE( tab & "Sa  " & LVL & ", " & ANON & "_slice_data" );
-
-    -- Construire le doublet temporaire.
-	      PUT_LINE( tab & "La  " & LVL & ", " & ANON & "_slice_data" );
-	      PUT_LINE( tab & "Sa  " & LVL & ", " & ANON & "_disp" );
-
-	      PUT_LINE( tab & "LVA " & LVL & ", " & ANON & "_info.SIZ" );
-	      PUT_LINE( tab & "Sa  " & LVL & ", " & ANON & "__u" );
-
-    -- Info normalisée : bounds 1 .. len.
-	      PUT_LINE( tab & "LI" & tab & "1" );
-	      PUT_LINE( tab & "Sd  " & LVL & ", " & ANON & "_info._FST_1" );
-
-	      PUT_LINE( tab & "La  " & LVL & ", " & ANON & "_slice_len" );
-	      PUT_LINE( tab & "Sd  " & LVL & ", " & ANON & "_info._LST_1" );
-
-	      PUT_LINE( tab & "LI" & tab & "8" );
-	      PUT_LINE( tab & "Sd  " & LVL & ", " & ANON & "_info._COMP_SIZ" );
-
-	      PUT_LINE( tab & "La  " & LVL & ", " & ANON & "_slice_len" );
-	      PUT_LINE( tab & "LI" & tab & "8" );
-	      PUT_LINE( tab & "MUL" );
-	      PUT_LINE( tab & "Sd  " & LVL & ", " & ANON & "_info.SIZ" );
-
-    -- Résultat attendu par la concat : @doublet.
-	      PUT_LINE( tab & "LVA " & LVL & ", " & ANON & "_disp" );
 
 	    elsif E.TY = DN_AGGREGATE then
 	      CODE_ARRAY_AGGREGATE_OPERAND( E, ANON, CONTEXT_TYPE );
@@ -3174,48 +3748,48 @@ end;
 	    -- composant & composant.  Normalisation : tableau temporaire d'UN element
 	    -- sur la co-pile, presente comme tout autre operande par son @doublet.
 	      declare
-	        COMP_TYPE	: TREE	:= FULL_VIEW( D( SM_COMP_TYPE, D( SM_BASE_TYPE, CONTEXT_TYPE ) ) );
+	        COMP_TYPE	: TREE	:= FULL_TYPE_VIEW( D( SM_COMP_TYPE, D( SM_BASE_TYPE, CONTEXT_TYPE ) ) );
 	        COMP_BITS	: INTEGER := COMP_SIZE_BITS( COMP_TYPE );
 	        COMP_BYTES  : INTEGER := COMP_BITS / CODI.STORAGE_UNIT;
 	      begin
-	        PUT_LINE( "VAR" & tab & ANON & "_disp, q" );
-	        PUT_LINE( "VAR" & tab & ANON & "__u,   q" );
+	        PUT_LINE( "VAR" & tab & ANON & "_disp, Q" );
+	        PUT_LINE( "VAR" & tab & ANON & "__u,   Q" );
 
 	        PUT_LINE( "namespace " & ANON & "_info" );
-	        PUT_LINE( "  VAR SIZ,      d" );
-	        PUT_LINE( "  VAR _COMP_SIZ, d" );
-	        PUT_LINE( "  VAR _FST_1,    d" );
-	        PUT_LINE( "  VAR _LST_1,    d" );
+	        PUT_LINE( "  VAR SIZ__, D" );
+	        PUT_LINE( "  VAR _COMP_SIZ, D" );
+	        PUT_LINE( "  VAR _FST_1, D" );
+	        PUT_LINE( "  VAR _LST_1, D" );
 	        PUT_LINE( "end namespace" );
 
 	        CODE_EXP( E );									-- valeur scalaire du composant
 
 	        PUT_LINE( tab & "LI"  & tab & IMAGE( COMP_BYTES ) );
 	        PUT_LINE( tab & "CO_VAR" );								-- @data (1 composant)
-	        PUT_LINE( tab & "Sa  " & LVL & ", " & ANON & "_disp" );
+	        PUT_LINE( tab & "SA  " & LVL & ", " & ANON & "_disp" );
 
 	        PUT_LINE( tab & "SI" & OPER_SIZ_CHAR( COMP_TYPE )
 			& "  " & LVL & ", " & ANON & "_disp, 0" );					-- [data] := valeur
 
 	        -- Info : bornes 1 .. 1
 	        PUT_LINE( tab & "LI"  & tab & "1" );
-	        PUT_LINE( tab & "Sd  " & LVL & ", " & ANON & "_info._FST_1" );
+	        PUT_LINE( tab & "SD  " & LVL & ", " & ANON & "_info._FST_1" );
 	        PUT_LINE( tab & "LI"  & tab & "1" );
-	        PUT_LINE( tab & "Sd  " & LVL & ", " & ANON & "_info._LST_1" );
+	        PUT_LINE( tab & "SD  " & LVL & ", " & ANON & "_info._LST_1" );
 	        PUT_LINE( tab & "LI"  & tab & IMAGE( COMP_BITS ) );
-	        PUT_LINE( tab & "Sd  " & LVL & ", " & ANON & "_info._COMP_SIZ" );
+	        PUT_LINE( tab & "SD  " & LVL & ", " & ANON & "_info._COMP_SIZ" );
 	        PUT_LINE( tab & "LI"  & tab & IMAGE( COMP_BITS ) );
-	        PUT_LINE( tab & "Sd  " & LVL & ", " & ANON & "_info.SIZ" );
+	        PUT_LINE( tab & "SD  " & LVL & ", " & ANON & "_info.SIZ__" );
 
-	        PUT_LINE( tab & "LVA " & LVL & ", " & ANON & "_info.SIZ" );
-	        PUT_LINE( tab & "Sa  " & LVL & ", " & ANON & "__u" );
+	        PUT_LINE( tab & "LVA " & LVL & ", " & ANON & "_info.SIZ__" );
+	        PUT_LINE( tab & "SA  " & LVL & ", " & ANON & "__u" );
 
 	        PUT_LINE( tab & "LVA " & LVL & ", " & ANON & "_disp" );		-- @doublet, comme les autres branches
 	      end;
 
-	    elsif  ( E.TY = DN_SELECTED  or else  E.TY = DN_INDEXED )
+	    elsif  ( E.TY = DN_SELECTED  or else  E.TY = DN_INDEXED  or else  E.TY = DN_ALL )
 	      and then  D( SM_EXP_TYPE, E ) /= TREE_VOID
-	      and then  FULL_VIEW( D( SM_EXP_TYPE, E ) ).TY = DN_CONSTRAINED_ARRAY
+	      and then  FULL_TYPE_VIEW( D( SM_EXP_TYPE, E ) ).TY = DN_CONSTRAINED_ARRAY
 	    then
 	    -- OPERANDE COMPOSANT TABLEAU INLINE (H.V, HTABLE(I).HN) : un composant
 	    -- tableau d'un record -- ou l'element tableau d'un tableau de tableaux --
@@ -3228,7 +3802,7 @@ end;
 	    -- un doublet temporaire adosse a une info locale aux bornes du sous-type
 	    -- contraint du composant.
 	      declare
-	        SEL_TYPE		: TREE		:= FULL_VIEW( D( SM_EXP_TYPE, E ) );
+	        SEL_TYPE		: TREE		:= FULL_TYPE_VIEW( D( SM_EXP_TYPE, E ) );
 	        IDX_LIST		: SEQ_TYPE	:= LIST( D( SM_INDEX_SUBTYPE_S, SEL_TYPE ) );
 	        IDX_TYPE		: TREE;
 	        RANGE_FIRST		: TREE		:= TREE_VOID;
@@ -3250,55 +3824,87 @@ end;
 		end if;
 	        end;
 
-	        if  RANGE_FIRST = TREE_VOID  or else  RANGE_FIRST.TY /= DN_NUMERIC_LITERAL
-		or else  RANGE_LAST = TREE_VOID  or else  RANGE_LAST.TY  /= DN_NUMERIC_LITERAL
-	        then
-	        -- Deliberement conservateur : bornes non litterales (discriminant...)
-	        -- hors perimetre pour l'instant ; bruyant plutot que silencieusement faux.
-		PUT_LINE( "; CODE_ARRAY_OPERAND : composant tableau inline a bornes non litterales non gere" );
-		raise PROGRAM_ERROR;
-	        end if;
+					------------------
+					VALIDER_LES_BORNES:
+	        declare
+		-- Perimetre elargi (temoin REC_ARR_TEST test 30, aout 2026) : la branche
+		-- RE-EMET la borne au site d'emploi (CODE_EXP ci-dessous) -- sur ssi la
+		-- valeur n'a pas pu changer depuis l'elaboration du type : litteral,
+		-- CONSTANTE (immuable, LI plie ou Ld de sa cellule _disp -- la forme
+		-- STRING(1..MAX_STRING) de LEX.LINE_OF_SOURCE), NOMBRE NOMME (statique).
+		-- Discriminant (valeur dans l'objet parent) et variable (bornes de
+		-- composant elaborees UNE fois au type, LRM 3.7) : re-evaluer mentirait
+		-- -> refus bruyant conserve (piege n 53).  Remede DURABLE en vigilance :
+		-- pointer __u sur le bloc _<comp>__type elabore au lieu de re-evaluer.
+			--------------------
+		function  BORNE_RE_EMISSIBLE  ( B : TREE )	return BOOLEAN
+		is	--------------------
+		begin
+		  if  B = TREE_VOID  then
+		    return FALSE;
+		  elsif  B.TY = DN_NUMERIC_LITERAL  then
+		    return TRUE;
+		  elsif  B.TY = DN_USED_OBJECT_ID  or else  B.TY = DN_USED_NAME_ID  then
+		    declare
+		      DEFN	: TREE	:= D( SM_DEFN, B );
+		    begin
+		      return  DEFN.TY = DN_CONSTANT_ID  or else  DEFN.TY = DN_NUMBER_ID;
+		    end;
+		  else
+		    return FALSE;
+		  end if;
+		end	BORNE_RE_EMISSIBLE;
+			------------------
+	        begin
+		if  not BORNE_RE_EMISSIBLE( RANGE_FIRST )
+		or else  not BORNE_RE_EMISSIBLE( RANGE_LAST )
+		then
+		  PUT_LINE( "; CODE_ARRAY_OPERAND : composant tableau inline a bornes non re-emissibles (discriminant/variable) non gere" );
+		  raise PROGRAM_ERROR;
+		end if;
+	        end		VALIDER_LES_BORNES;
+				------------------
 
-	        PUT_LINE( "VAR" & tab & ANON & "_disp, q" );
-	        PUT_LINE( "VAR" & tab & ANON & "__u,   q" );
+	        PUT_LINE( "VAR" & tab & ANON & "_disp, Q" );
+	        PUT_LINE( "VAR" & tab & ANON & "__u,   Q" );
 
 	        PUT_LINE( "namespace " & ANON & "_info" );
-	        PUT_LINE( "  VAR SIZ,      d" );
-	        PUT_LINE( "  VAR _COMP_SIZ, d" );
-	        PUT_LINE( "  VAR _FST_1,    d" );
-	        PUT_LINE( "  VAR _LST_1,    d" );
+	        PUT_LINE( "  VAR SIZ__, D" );
+	        PUT_LINE( "  VAR _COMP_SIZ, D" );
+	        PUT_LINE( "  VAR _FST_1, D" );
+	        PUT_LINE( "  VAR _LST_1, D" );
 	        PUT_LINE( "end namespace" );
 
 	      -- @data du composant dans la zone du parent (DN_SELECTED ->
 	      -- CODE_SELECTED(IS_SOURCE=>FALSE), DN_INDEXED -> CODE_INDEXED).
 	        CODE_OBJECT_ADDRESS( E );
-	        PUT_LINE( tab & "Sa  " & LVL & ", " & ANON & "_disp" );
+	        PUT_LINE( tab & "SA  " & LVL & ", " & ANON & "_disp" );
 
 	      -- Info locale : bornes statiques du sous-type contraint du composant.
 	        CODE_EXP( RANGE_FIRST );
-	        PUT_LINE( tab & "Sd  " & LVL & ", " & ANON & "_info._FST_1" );
+	        PUT_LINE( tab & "SD  " & LVL & ", " & ANON & "_info._FST_1" );
 	        CODE_EXP( RANGE_LAST );
-	        PUT_LINE( tab & "Sd  " & LVL & ", " & ANON & "_info._LST_1" );
+	        PUT_LINE( tab & "SD  " & LVL & ", " & ANON & "_info._LST_1" );
 
 	        declare
-		SEL_COMP_TYPE	: TREE	:= FULL_VIEW( D( SM_COMP_TYPE, D( SM_BASE_TYPE, SEL_TYPE ) ) );
+		SEL_COMP_TYPE	: TREE	:= FULL_TYPE_VIEW( D( SM_COMP_TYPE, D( SM_BASE_TYPE, SEL_TYPE ) ) );
 		SEL_COMP_BITS	: INTEGER := COMP_SIZE_BITS( SEL_COMP_TYPE );
 	        begin
 		PUT_LINE( tab & "LI"  & tab & IMAGE( SEL_COMP_BITS ) );
-		PUT_LINE( tab & "Sd  " & LVL & ", " & ANON & "_info._COMP_SIZ" );
+		PUT_LINE( tab & "SD  " & LVL & ", " & ANON & "_info._COMP_SIZ" );
 
-		PUT_LINE( tab & "Ld  " & LVL & ", " & ANON & "_info._LST_1" );
-		PUT_LINE( tab & "Ld  " & LVL & ", " & ANON & "_info._FST_1" );
+		PUT_LINE( tab & "LD  " & LVL & ", " & ANON & "_info._LST_1" );
+		PUT_LINE( tab & "LD  " & LVL & ", " & ANON & "_info._FST_1" );
 		PUT_LINE( tab & "SUB" );
 		PUT_LINE( tab & "INC" );
 		PUT_LINE( tab & "CLAMP0" );
 		PUT_LINE( tab & "LI"  & tab & IMAGE( SEL_COMP_BITS ) );
 		PUT_LINE( tab & "MUL" );
-		PUT_LINE( tab & "Sd  " & LVL & ", " & ANON & "_info.SIZ" );
+		PUT_LINE( tab & "SD  " & LVL & ", " & ANON & "_info.SIZ__" );
 	        end;
 
-	        PUT_LINE( tab & "LVA " & LVL & ", " & ANON & "_info.SIZ" );
-	        PUT_LINE( tab & "Sa  " & LVL & ", " & ANON & "__u" );
+	        PUT_LINE( tab & "LVA " & LVL & ", " & ANON & "_info.SIZ__" );
+	        PUT_LINE( tab & "SA  " & LVL & ", " & ANON & "__u" );
 
 	        PUT_LINE( tab & "LVA " & LVL & ", " & ANON & "_disp" );		-- @doublet, comme les autres branches
 	      end;
@@ -3323,7 +3929,7 @@ end;
 -- la taille de composant et sert de repli aux agregats/litteraux sans SM_EXP_TYPE.
 -- Convention : le resultat (BOOLEAN 0/1) est laisse seul sur la pile.
 
-    COMP_TYPE	: TREE		:= FULL_VIEW( D( SM_COMP_TYPE, D( SM_BASE_TYPE, CONTEXT_TYPE ) ) );
+    COMP_TYPE	: TREE		:= FULL_TYPE_VIEW( D( SM_COMP_TYPE, D( SM_BASE_TYPE, CONTEXT_TYPE ) ) );
     COMP_BITS	: INTEGER		:= COMP_SIZE_BITS( COMP_TYPE );
     COMP_BYTES	: INTEGER		:= COMP_BITS / CODI.STORAGE_UNIT;
     LVL		:constant STRING	:= IMAGE( CODI.CUR_LEVEL );
@@ -3335,7 +3941,6 @@ end;
     LBL_END	:constant STRING	:= NEW_LABEL;
 
     TYPE_NAME	: TREE		:= D( XD_SOURCE_NAME, CONTEXT_TYPE );
---    TYPE_STR	:constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
     TYPE_STR	:constant STRING	:= TYPE_INFO_STR( CONTEXT_TYPE );
 
 		-------------
@@ -3344,22 +3949,22 @@ end;
     -- Normalise l'operande en @doublet (litteral, tranche, agregat, expression)
     -- puis en extrait data_ptr, info_ptr et la longueur en OCTETS (bornee a 0).
     begin
-      PUT_LINE( "VAR" & tab & ANON & "_data, q" );
-      PUT_LINE( "VAR" & tab & ANON & "_info, q" );
-      PUT_LINE( "VAR" & tab & ANON & "_len,  q" );
+      PUT_LINE( "VAR" & tab & ANON & "_data, Q" );
+      PUT_LINE( "VAR" & tab & ANON & "_info, Q" );
+      PUT_LINE( "VAR" & tab & ANON & "_len,  Q" );
 
       CODE_ARRAY_OPERAND( E, ANON, CONTEXT_TYPE );				-- @doublet
       PUT_LINE( tab & "DUP" );
-      PUT_LINE( tab & "La  ,  0" );
-      PUT_LINE( tab & "Sa  " & LVL & ", " & ANON & "_data" );
-      PUT_LINE( tab & "La  ,  8" );
-      PUT_LINE( tab & "Sa  " & LVL & ", " & ANON & "_info" );
+      PUT_LINE( tab & "LA  ,  0" );
+      PUT_LINE( tab & "SA  " & LVL & ", " & ANON & "_data" );
+      PUT_LINE( tab & "LA  ,  8" );
+      PUT_LINE( tab & "SA  " & LVL & ", " & ANON & "_info" );
 
       -- LEN = (LST_1 - FST_1 + 1) * COMP_BYTES
-      PUT( tab & "LId " & LVL & ", " & ANON & "_info, " );
+      PUT( tab & "LID " & LVL & ", " & ANON & "_info, " );
       CODI.REGIONS_PATH( TYPE_NAME );						-- offsets d'info : namespace du TYPE (n 99/100)
       PUT_LINE( TYPE_STR & ".LST_1" );
-      PUT( tab & "LId " & LVL & ", " & ANON & "_info, " );
+      PUT( tab & "LID " & LVL & ", " & ANON & "_info, " );
       CODI.REGIONS_PATH( TYPE_NAME );
       PUT_LINE( TYPE_STR & ".FST_1" );
 
@@ -3370,7 +3975,7 @@ end;
         PUT_LINE( tab & "LI"  & tab & IMAGE( COMP_BYTES ) );
         PUT_LINE( tab & "MUL" );
       end if;
-      PUT_LINE( tab & "Sa  " & LVL & ", " & ANON & "_len" );
+      PUT_LINE( tab & "SA  " & LVL & ", " & ANON & "_len" );
 
     end	SETUP_OPERAND;
 	-------------
@@ -3384,17 +3989,17 @@ end;
 
       -- Longueurs egales ?  Longueurs differentes => FALSE (4.5.2) : c'est un
       -- resultat, pas une erreur.  Idiome DUP/BF/DROP du court-circuit.
-      PUT_LINE( tab & "La  " & LVL & ", " & ANON_G & "_len" );
-      PUT_LINE( tab & "La  " & LVL & ", " & ANON_D & "_len" );
+      PUT_LINE( tab & "LA  " & LVL & ", " & ANON_G & "_len" );
+      PUT_LINE( tab & "LA  " & LVL & ", " & ANON_D & "_len" );
       PUT_LINE( tab & "CEQ" );
       PUT_LINE( tab & "DUP" );
       PUT_LINE( tab & "BF" & tab & LBL_END );					-- le 0 restant EST le resultat
       PUT_LINE( tab & "DROP" );
 
       -- Contenus egaux ?  Convention BLKCMP (miroir BLKMOV) : pile = @A, LEN, @B.
-      PUT_LINE( tab & "La  " & LVL & ", " & ANON_G & "_data" );
-      PUT_LINE( tab & "La  " & LVL & ", " & ANON_G & "_len"  );
-      PUT_LINE( tab & "La  " & LVL & ", " & ANON_D & "_data" );
+      PUT_LINE( tab & "LA  " & LVL & ", " & ANON_G & "_data" );
+      PUT_LINE( tab & "LA  " & LVL & ", " & ANON_G & "_len"  );
+      PUT_LINE( tab & "LA  " & LVL & ", " & ANON_D & "_data" );
       PUT_LINE( tab & "BLKCMP" );									-- empile 0/1
 
       PUT_LINE( LBL_END & ':' );
@@ -3429,10 +4034,10 @@ end;
 	SGN := "1";										-- composants signes
         end if;
 
-        PUT_LINE( tab & "La  " & LVL & ", " & ANON_G & "_data" );
-        PUT_LINE( tab & "La  " & LVL & ", " & ANON_G & "_len"  );
-        PUT_LINE( tab & "La  " & LVL & ", " & ANON_D & "_data" );
-        PUT_LINE( tab & "La  " & LVL & ", " & ANON_D & "_len"  );
+        PUT_LINE( tab & "LA  " & LVL & ", " & ANON_G & "_data" );
+        PUT_LINE( tab & "LA  " & LVL & ", " & ANON_G & "_len"  );
+        PUT_LINE( tab & "LA  " & LVL & ", " & ANON_D & "_data" );
+        PUT_LINE( tab & "LA  " & LVL & ", " & ANON_D & "_len"  );
         PUT_LINE( tab & "LEXCMP" & tab & IMAGE( COMP_BYTES ) & ", " & SGN );
       end;
 
@@ -3458,8 +4063,8 @@ end;
 
       -- Doublet resultat : les deux VAR doivent rester ADJACENTES
       -- ([@] = data_ptr, [@+8] = info_ptr).
-      PUT_LINE( "VAR" & tab & ANON_R & "_disp, q" );
-      PUT_LINE( "VAR" & tab & ANON_R & "__u,   q" );
+      PUT_LINE( "VAR" & tab & ANON_R & "_disp, Q" );
+      PUT_LINE( "VAR" & tab & ANON_R & "__u,   Q" );
 
       SETUP_OPERAND( PRM_1, ANON_G );
       if  OP_STR /= """NOT"""  then
@@ -3471,37 +4076,37 @@ end;
         -- deux tableaux nuls sont EGAUX, aucune levee (piege n 52).
         -- Effet de pile net NUL : s'insere sans toucher la suite.
         if  CODI.CHECKS_ENABLED  then
-	PUT_LINE( tab & "La  " & LVL & ", " & ANON_G & "_len" );
-	PUT_LINE( tab & "La  " & LVL & ", " & ANON_D & "_len" );
+	PUT_LINE( tab & "LA  " & LVL & ", " & ANON_G & "_len" );
+	PUT_LINE( tab & "LA  " & LVL & ", " & ANON_D & "_len" );
 	PUT_LINE( tab & "CNE" );
 	PUT_LINE( tab & "BT" & tab & "STANDARD.ce_raise_" );
         end if;
       end if;
 
       -- ---- data resultat : LEN_G octets sur la co-pile ----
-      PUT_LINE( tab & "La  " & LVL & ", " & ANON_G & "_len" );
+      PUT_LINE( tab & "LA  " & LVL & ", " & ANON_G & "_len" );
       PUT_LINE( tab & "CO_VAR" );					-- depile taille, empile @data_res
-      PUT_LINE( tab & "Sa  " & LVL & ", " & ANON_R & "_disp" );
+      PUT_LINE( tab & "SA  " & LVL & ", " & ANON_R & "_disp" );
 
       -- ---- descripteur : bornes de l'operande gauche (4.5.1) ----
-      PUT_LINE( tab & "La  " & LVL & ", " & ANON_G & "_info" );
-      PUT_LINE( tab & "Sa  " & LVL & ", " & ANON_R & "__u" );
+      PUT_LINE( tab & "LA  " & LVL & ", " & ANON_G & "_info" );
+      PUT_LINE( tab & "SA  " & LVL & ", " & ANON_R & "__u" );
 
       -- ---- copie G -> R (convention BLKMOV : @DST, LEN, @SRC) ----
-      PUT_LINE( tab & "La  " & LVL & ", " & ANON_R & "_disp" );
-      PUT_LINE( tab & "La  " & LVL & ", " & ANON_G & "_len"  );
-      PUT_LINE( tab & "La  " & LVL & ", " & ANON_G & "_data" );
+      PUT_LINE( tab & "LA  " & LVL & ", " & ANON_R & "_disp" );
+      PUT_LINE( tab & "LA  " & LVL & ", " & ANON_G & "_len"  );
+      PUT_LINE( tab & "LA  " & LVL & ", " & ANON_G & "_data" );
       PUT_LINE( tab & "BLKMOV" );
 
       -- ---- application de l'operateur sur place ----
       if  OP_STR = """NOT"""  then
-        PUT_LINE( tab & "La  " & LVL & ", " & ANON_R & "_disp" );
-        PUT_LINE( tab & "La  " & LVL & ", " & ANON_G & "_len"  );
+        PUT_LINE( tab & "LA  " & LVL & ", " & ANON_R & "_disp" );
+        PUT_LINE( tab & "LA  " & LVL & ", " & ANON_G & "_len"  );
         PUT_LINE( tab & "BLKNOT" );
       else
-        PUT_LINE( tab & "La  " & LVL & ", " & ANON_R & "_disp" );	-- @DST
-        PUT_LINE( tab & "La  " & LVL & ", " & ANON_G & "_len"  );	-- LEN
-        PUT_LINE( tab & "La  " & LVL & ", " & ANON_D & "_data" );	-- @SRC
+        PUT_LINE( tab & "LA  " & LVL & ", " & ANON_R & "_disp" );	-- @DST
+        PUT_LINE( tab & "LA  " & LVL & ", " & ANON_G & "_len"  );	-- LEN
+        PUT_LINE( tab & "LA  " & LVL & ", " & ANON_D & "_data" );	-- @SRC
         if    OP_STR = """AND"""  then  PUT_LINE( tab & "BLKAND" );
         elsif OP_STR = """OR"""   then  PUT_LINE( tab & "BLKOU"  );
         else			PUT_LINE( tab & "BLKOUX" );
@@ -3512,8 +4117,9 @@ end;
       PUT_LINE( tab & "LVA " & LVL & ", " & ANON_R & "_disp" );
 
     else
-      -- Operateur composite non reconnu : stub BRUYANT equilibre (pieges n 53
+      -- DEFAUT DOCUMENTE (vague 5) : stub BRUYANT equilibre (pieges n 53
       -- et 55) -- nature @doublet, operande gauche normalise, traceable.
+      -- Volontairement NON fatal : garder tant que les pieges le couvrent.
       PUT_LINE( "; CODE_COMPOSITE_OPERATOR : " & OP_STR & " NON TRAITE -- resultat force = operande gauche" );
       CODE_ARRAY_OPERAND( PRM_1, ANON_G, CONTEXT_TYPE );		-- @doublet
     end if;
@@ -3545,11 +4151,19 @@ end;
         raise PROGRAM_ERROR;
       end if;
 
-      CODE_EXP( E );
+			--| n 112, 5e occurrence : cette discrimination locale etait
+			--| l'ANCETRE de la regle unique (cf. en-tete de
+			--| CODE_COMPOSITE_DATA_ADDRESS) mais n'avait jamais ete
+			--| rebranchee dessus -- DN_PARENTHESIZED (motif UARITH
+			--| « ( LEFT <= RIGHT ) = U_VAL(1) ») passait sans La : le Ld
+			--| chargeait l'adresse du doublet, CEQ toujours faux.
+			--| La garde agregat ci-dessus reste locale (hors contrat regle).
+      CODE_COMPOSITE_DATA_ADDRESS( E );							-- @data par la regle n 112
 
-      if  E.TY = DN_USED_OBJECT_ID  or else  E.TY = DN_FUNCTION_CALL  then
-        PUT_LINE( tab & "La  ,  0" );							-- @doublet -> data_ptr
-      end if;
+--      CODE_EXP( E );
+--      if  E.TY = DN_USED_OBJECT_ID  or else  E.TY = DN_FUNCTION_CALL  then
+--	PUT_LINE( tab & "LA  ,  0" );							-- @doublet -> data_ptr
+--      end if;
     end	OPERAND_DATA_ADDRESS;
 	--------------------
 
@@ -3560,7 +4174,6 @@ end;
 
     declare
       BASE_NAME	: TREE		:= D( XD_SOURCE_NAME, BASE );
---      BASE_STR	:constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, BASE_NAME ) );
       BASE_STR	:constant STRING	:= TYPE_INFO_STR( BASE );
       LVL :constant STRING	:= IMAGE( CODI.CUR_LEVEL );
       VP_ROOT	: TREE		:= D( AS_VARIANT_PART, D( SM_COMP_LIST, BASE ) );
@@ -3591,9 +4204,9 @@ end;
 	and then  DI( SM_SIZE, BASE ) <= 32
         then
 	OPERAND_DATA_ADDRESS( PRM_1 );					-- @A
-	PUT_LINE( tab & "Ld" );						-- mot A	 (Ld = Ld -1, 0)
+	PUT_LINE( tab & "LD" );						-- mot A	 (Ld = Ld -1, 0)
 	OPERAND_DATA_ADDRESS( PRM_2 );					-- @B
-	PUT_LINE( tab & "Ld" );						-- mot B
+	PUT_LINE( tab & "LD" );						-- mot B
 	PUT_LINE( tab & "CEQ" );						-- empile 0/1, comme BLKCMP
         else
 	PUT_LINE( "; CODE_RECORD_EQUALITY : rep clause a trous ou multi-mots non geree" );
@@ -3645,7 +4258,6 @@ end;
 	    declare
 	      SUB_VP	: TREE		:= D( AS_VARIANT_PART, D( SM_COMP_LIST, F_TYPE ) );
 	      SUB_NAME	: TREE		:= D( XD_SOURCE_NAME, F_TYPE );
---	      SUB_STR	:constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, SUB_NAME ) );
 	      SUB_STR	:constant STRING	:= TYPE_INFO_STR( F_TYPE );
 	    begin
 	      if  SUB_VP /= TREE_VOID  and then  SUB_VP /= TREE_NIL  then
@@ -3653,14 +4265,14 @@ end;
 	        raise PROGRAM_ERROR;
 	      end if;
 
-	      PUT_LINE( tab & "La  " & LVL & ", " & A_VAR );
+	      PUT_LINE( tab & "LA  " & LVL & ", " & A_VAR );
 	      PUT( tab & "LVA" & tab & ", " );  PATH_FIELD( F_STR );	NEW_LINE; -- @A.F
 
 	      PUT( tab & "LI" & tab );
 	      CODI.REGIONS_PATH( SUB_NAME );
 	      PUT_LINE( SUB_STR & ".size" );						-- LEN
 
-	      PUT_LINE( tab & "La  " & LVL & ", " & B_VAR );
+	      PUT_LINE( tab & "LA  " & LVL & ", " & B_VAR );
 	      PUT( tab & "LVA" & tab & ", " );  PATH_FIELD( F_STR );	NEW_LINE; -- @B.F
 
 	      PUT_LINE( tab & "BLKCMP" );
@@ -3672,20 +4284,14 @@ end;
 	    raise PROGRAM_ERROR;
 
 	  else		-- scalaire, enumere, access ; float compare bit a bit (comme BLKCMP)
---	    declare
---	      C : CHARACTER := CODI.OPER_SIZ_CHAR( F_TYPE );
---	    begin
---	      PUT( tab & "LI" & C & tab & LVL & ", " & A_VAR & ", " );
 	      PUT( tab & OPER_LOADI_STR( F_TYPE ) & tab & LVL & ", " & A_VAR & ", " );
 	      PATH_FIELD( F_STR );	NEW_LINE;
 
---	      PUT( tab & "LI" & C & tab & LVL & ", " & B_VAR & ", " );
 	      PUT( tab & OPER_LOADI_STR( F_TYPE ) & tab & LVL & ", " & B_VAR & ", " );
 	      PATH_FIELD( F_STR );	NEW_LINE;
 
 	      PUT_LINE( tab & "CEQ" );
 	      PUT_LINE( tab & "ET" );
---	    end;
 	  end if;
 
 	end	EMIT_FIELD_CMP;
@@ -3726,7 +4332,6 @@ end;
 	      declare
 	        GOV_ID	: TREE		:= D( SM_DEFN, D( AS_NAME, VP ) );
 	        GOV_STR	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, GOV_ID ) );
---	        GOV_CHAR	: CHARACTER	:= CODI.OPER_SIZ_CHAR( D( SM_OBJ_TYPE, GOV_ID ) );
 	        LBL_DONE	:constant STRING	:= NEW_LABEL;
 	        VAR_S	: SEQ_TYPE	:= LIST( D( AS_VARIANT_S, VP ) );
 	        VAR_E	: TREE;
@@ -3749,7 +4354,6 @@ end;
 		        IS_OTHERS := TRUE;								-- seul et dernier (RM83 3.7.3)
 
 		      elsif  CH.TY = DN_CHOICE_EXP  then
---		        PUT( tab & "LI" & GOV_CHAR & tab & LVL & ", " & A_VAR & ", " );
 		        PUT( tab & OPER_LOADI_STR( D( SM_OBJ_TYPE, GOV_ID ) ) & tab & LVL & ", " & A_VAR & ", " );
 		        PATH_FIELD( GOV_STR );	NEW_LINE;						-- discriminant (deja verifie egal)
 
@@ -3792,14 +4396,14 @@ end;
 		-------
 
         begin
-	PUT_LINE( "VAR" & tab & A_VAR & ", q" );
-	PUT_LINE( "VAR" & tab & B_VAR & ", q" );
+	PUT_LINE( "VAR" & tab & A_VAR & ", Q" );
+	PUT_LINE( "VAR" & tab & B_VAR & ", Q" );
 
 	OPERAND_DATA_ADDRESS( PRM_1 );
-	PUT_LINE( tab & "Sa  " & LVL & ", " & A_VAR );					-- @dataA
+	PUT_LINE( tab & "SA  " & LVL & ", " & A_VAR );					-- @dataA
 
 	OPERAND_DATA_ADDRESS( PRM_2 );
-	PUT_LINE( tab & "Sa  " & LVL & ", " & B_VAR );					-- @dataB
+	PUT_LINE( tab & "SA  " & LVL & ", " & B_VAR );					-- @dataB
 
 	PUT_LINE( tab & "LI" & tab & "1" );						-- accumulateur
 
@@ -3866,12 +4470,6 @@ end;
 	CODE_STATIC_FIXED_VALUE( D( SM_VALUE, FUNCTION_CALL ), RES_TYPE );
 	return;
         end if;
-
---	POP( PRM_S, PRM_1 );
---	if  IS_EMPTY( PRM_S )  then
---	CODE_EXP( PRM_1 );
---	goto UNARY;
---	end if;
 
         POP( PRM_S, PRM_1 );
         if  IS_EMPTY( PRM_S )  then
@@ -3949,7 +4547,7 @@ end;
 				----------------------
 				CONCATENATION_OPERATOR:
 	declare
-	  COMP_TYPE	: TREE		:= FULL_VIEW( D( SM_COMP_TYPE, D( SM_BASE_TYPE, RES_TYPE ) ) );
+	  COMP_TYPE	: TREE		:= FULL_TYPE_VIEW( D( SM_COMP_TYPE, D( SM_BASE_TYPE, RES_TYPE ) ) );
 	  COMP_BITS	: INTEGER		:= COMP_SIZE_BITS( COMP_TYPE );
 	  COMP_BYTES	: INTEGER		:= COMP_BITS / CODI.STORAGE_UNIT;
 	  LVL		:constant STRING	:= IMAGE( CODI.CUR_LEVEL );
@@ -3959,43 +4557,40 @@ end;
 	  ANON_D		:constant STRING	:= ANONYMOUS_NAME_AT( PRM_2 ) & "_" & CONCAT_UID & "_D";
 	  ANON_R		:constant STRING	:= ANONYMOUS_NAME_AT( FUNCTION_CALL ) & "_" & CONCAT_UID & "_R";
 
---	    TYPE_STR	:constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, RES_TYPE ) ) );
 	  TYPE_STR	:constant STRING	:= TYPE_INFO_STR( RES_TYPE );
-
-
 
 	begin
 	  if  CODI.DEBUG  then PUT_LINE( "; CODE & concat " & TYPE_STR ); end if;
 	  -- ---- Variables de travail dans la VARzone ----
-	  PUT_LINE( "VAR" & tab & ANON_G & "_data, q" );	 -- data_ptr gauche
-	  PUT_LINE( "VAR" & tab & ANON_G & "_info, q" );	 -- info_ptr gauche
-	  PUT_LINE( "VAR" & tab & ANON_D & "_data, q" );	 -- data_ptr droit
-	  PUT_LINE( "VAR" & tab & ANON_D & "_info, q" );	 -- info_ptr droit
-	  PUT_LINE( "VAR" & tab & ANON_G & "_len,  q" );	 -- longueur g en octets
-	  PUT_LINE( "VAR" & tab & ANON_D & "_len,  q" );	 -- longueur d en octets
+	  PUT_LINE( "VAR" & tab & ANON_G & "_data, Q" );	 -- data_ptr gauche
+	  PUT_LINE( "VAR" & tab & ANON_G & "_info, Q" );	 -- info_ptr gauche
+	  PUT_LINE( "VAR" & tab & ANON_D & "_data, Q" );	 -- data_ptr droit
+	  PUT_LINE( "VAR" & tab & ANON_D & "_info, Q" );	 -- info_ptr droit
+	  PUT_LINE( "VAR" & tab & ANON_G & "_len,  Q" );	 -- longueur g en octets
+	  PUT_LINE( "VAR" & tab & ANON_D & "_len,  Q" );	 -- longueur d en octets
 	  -- Descripteur resultat
-	  PUT_LINE( "VAR" & tab & ANON_R & "_disp, q" );
-	  PUT_LINE( "VAR" & tab & ANON_R & "__u,   q" );
+	  PUT_LINE( "VAR" & tab & ANON_R & "_disp, Q" );
+	  PUT_LINE( "VAR" & tab & ANON_R & "__u,   Q" );
 	  -- Bloc info inline pour le resultat
 	  PUT_LINE( "namespace " & ANON_R & "_info" );
-	  PUT_LINE( "  VAR SIZ,      d" );
-	  PUT_LINE( "  VAR _COMP_SIZ, d" );
-	  PUT_LINE( "  VAR _FST_1,    d" );
-	  PUT_LINE( "  VAR _LST_1,    d" );
+	  PUT_LINE( "  VAR SIZ__, D" );
+	  PUT_LINE( "  VAR _COMP_SIZ, D" );
+	  PUT_LINE( "  VAR _FST_1, D" );
+	  PUT_LINE( "  VAR _LST_1, D" );
 	  PUT_LINE( "end namespace" );
 
 	  -- ---- Operande gauche ----
 	  CODE_ARRAY_OPERAND( PRM_1, ANON_G, RES_TYPE );
 	  -- @doublet_g sur pile
 	  PUT_LINE( tab & "DUP" );
-	  PUT_LINE( tab & "La  ,  0" );
-	  PUT_LINE( tab & "Sa  " & LVL & ", " & ANON_G & "_data" );
-	  PUT_LINE( tab & "La  ,  8" );
-	  PUT_LINE( tab & "Sa  " & LVL & ", " & ANON_G & "_info" );
+	  PUT_LINE( tab & "LA  ,  0" );
+	  PUT_LINE( tab & "SA  " & LVL & ", " & ANON_G & "_data" );
+	  PUT_LINE( tab & "LA  ,  8" );
+	  PUT_LINE( tab & "SA  " & LVL & ", " & ANON_G & "_info" );
 
 	  -- LEN_G = (LST_1 - FST_1 + 1) * COMP_BYTES
-	  PUT_LINE( tab & "LId " & LVL & ", " & ANON_G & "_info, " & TYPE_STR & ".LST_1" );
-	  PUT_LINE( tab & "LId " & LVL & ", " & ANON_G & "_info, " & TYPE_STR & ".FST_1" );
+	  PUT_LINE( tab & "LID " & LVL & ", " & ANON_G & "_info, " & TYPE_STR & ".LST_1" );
+	  PUT_LINE( tab & "LID " & LVL & ", " & ANON_G & "_info, " & TYPE_STR & ".FST_1" );
 	  PUT_LINE( tab & "SUB" );
 	  PUT_LINE( tab & "INC" );
 	  PUT_LINE( tab & "CLAMP0" );
@@ -4003,18 +4598,18 @@ end;
 	    PUT_LINE( tab & "LI"  & tab & IMAGE( COMP_BYTES ) );
 	    PUT_LINE( tab & "MUL" );
 	  end if;
-	  PUT_LINE( tab & "Sa  " & LVL & ", " & ANON_G & "_len" );
+	  PUT_LINE( tab & "SA  " & LVL & ", " & ANON_G & "_len" );
 
 	  -- ---- Operande droit ----
 	  CODE_ARRAY_OPERAND( PRM_2, ANON_D, RES_TYPE );
 	  PUT_LINE( tab & "DUP" );
-	  PUT_LINE( tab & "La  ,  0" );
-	  PUT_LINE( tab & "Sa  " & LVL & ", " & ANON_D & "_data" );
-	  PUT_LINE( tab & "La  ,  8" );
-	  PUT_LINE( tab & "Sa  " & LVL & ", " & ANON_D & "_info" );
+	  PUT_LINE( tab & "LA  ,  0" );
+	  PUT_LINE( tab & "SA  " & LVL & ", " & ANON_D & "_data" );
+	  PUT_LINE( tab & "LA  ,  8" );
+	  PUT_LINE( tab & "SA  " & LVL & ", " & ANON_D & "_info" );
 
-	  PUT_LINE( tab & "LId " & LVL & ", " & ANON_D & "_info, " & TYPE_STR & ".LST_1" );
-	  PUT_LINE( tab & "LId " & LVL & ", " & ANON_D & "_info, " & TYPE_STR & ".FST_1" );
+	  PUT_LINE( tab & "LID " & LVL & ", " & ANON_D & "_info, " & TYPE_STR & ".LST_1" );
+	  PUT_LINE( tab & "LID " & LVL & ", " & ANON_D & "_info, " & TYPE_STR & ".FST_1" );
 	  PUT_LINE( tab & "SUB" );
 	  PUT_LINE( tab & "INC" );
 	  PUT_LINE( tab & "CLAMP0" );
@@ -4022,60 +4617,60 @@ end;
 	    PUT_LINE( tab & "LI"  & tab & IMAGE( COMP_BYTES ) );
 	    PUT_LINE( tab & "MUL" );
 	  end if;
-	  PUT_LINE( tab & "Sa  " & LVL & ", " & ANON_D & "_len" );
+	  PUT_LINE( tab & "SA  " & LVL & ", " & ANON_D & "_len" );
 
 	  -- ---- Allouer LEN_G + LEN_D octets sur la co-pile ----
-	  PUT_LINE( tab & "La  " & LVL & ", " & ANON_G & "_len" );
-	  PUT_LINE( tab & "La  " & LVL & ", " & ANON_D & "_len" );
+	  PUT_LINE( tab & "LA  " & LVL & ", " & ANON_G & "_len" );
+	  PUT_LINE( tab & "LA  " & LVL & ", " & ANON_D & "_len" );
 	  PUT_LINE( tab & "ADD" );
 	  PUT_LINE( tab & "CO_VAR" );		    -- depile taille, empile @data_res
-	  PUT_LINE( tab & "Sa  " & LVL & ", " & ANON_R & "_disp" );
+	  PUT_LINE( tab & "SA  " & LVL & ", " & ANON_R & "_disp" );
 
 	  -- ---- Remplir le bloc info du resultat ----
 	  -- FST_1 = 1
 	  PUT_LINE( tab & "LI"  & tab & "1" );
-	  PUT_LINE( tab & "Sd  " & LVL & ", " & ANON_R & "_info._FST_1" );
+	  PUT_LINE( tab & "SD  " & LVL & ", " & ANON_R & "_info._FST_1" );
 	  -- LST_1 = (LEN_G + LEN_D) / COMP_BYTES
-	  PUT_LINE( tab & "La  " & LVL & ", " & ANON_G & "_len" );
-	  PUT_LINE( tab & "La  " & LVL & ", " & ANON_D & "_len" );
+	  PUT_LINE( tab & "LA  " & LVL & ", " & ANON_G & "_len" );
+	  PUT_LINE( tab & "LA  " & LVL & ", " & ANON_D & "_len" );
 	  PUT_LINE( tab & "ADD" );
 	  if COMP_BYTES /= 1 then
 	    PUT_LINE( tab & "LI"  & tab & IMAGE( COMP_BYTES ) );
 	    PUT_LINE( tab & "DIV" );
 	  end if;
-	  PUT_LINE( tab & "Sd  " & LVL & ", " & ANON_R & "_info._LST_1" );
+	  PUT_LINE( tab & "SD  " & LVL & ", " & ANON_R & "_info._LST_1" );
 	  -- COMP_SIZ en bits
 	  PUT_LINE( tab & "LI"  & tab & IMAGE( COMP_BITS ) );
-	  PUT_LINE( tab & "Sd  " & LVL & ", " & ANON_R & "_info._COMP_SIZ" );
+	  PUT_LINE( tab & "SD  " & LVL & ", " & ANON_R & "_info._COMP_SIZ" );
 
 -- SIZ est en bits.  Les longueurs ANON_*_len sont en octets,
 -- car elles sont aussi les compteurs de BLKMOV.
-	  PUT_LINE( tab & "La  " & LVL & ", " & ANON_G & "_len" );
-	  PUT_LINE( tab & "La  " & LVL & ", " & ANON_D & "_len" );
+	  PUT_LINE( tab & "LA  " & LVL & ", " & ANON_G & "_len" );
+	  PUT_LINE( tab & "LA  " & LVL & ", " & ANON_D & "_len" );
 	  PUT_LINE( tab & "ADD" );
 	  if CODI.STORAGE_UNIT /= 1 then
 	    PUT_LINE( tab & "LI"  & tab & IMAGE( CODI.STORAGE_UNIT ) );
 	    PUT_LINE( tab & "MUL" );
 	  end if;
-	  PUT_LINE( tab & "Sd  " & LVL & ", " & ANON_R & "_info.SIZ" );
+	  PUT_LINE( tab & "SD  " & LVL & ", " & ANON_R & "_info.SIZ__" );
 
 	  -- ---- Initialiser info_ptr du descripteur resultat ----
-	  PUT_LINE( tab & "LVA " & LVL & ", " & ANON_R & "_info.SIZ" );
-	  PUT_LINE( tab & "Sa  " & LVL & ", " & ANON_R & "__u" );
+	  PUT_LINE( tab & "LVA " & LVL & ", " & ANON_R & "_info.SIZ__" );
+	  PUT_LINE( tab & "SA  " & LVL & ", " & ANON_R & "__u" );
 
 	  -- ---- BLKMOV operande gauche -> @data_res ----
 	  -- Convention BLKMOV : pile = ... @DST, LEN, @SRC  puis POP RSI, POP RCX, POP RDI
-	  PUT_LINE( tab & "La  " & LVL & ", " & ANON_R & "_disp" );  -- @DST
-	  PUT_LINE( tab & "La  " & LVL & ", " & ANON_G & "_len"  );  -- LEN
-	  PUT_LINE( tab & "La  " & LVL & ", " & ANON_G & "_data" );  -- @SRC
+	  PUT_LINE( tab & "LA  " & LVL & ", " & ANON_R & "_disp" );  -- @DST
+	  PUT_LINE( tab & "LA  " & LVL & ", " & ANON_G & "_len"  );  -- LEN
+	  PUT_LINE( tab & "LA  " & LVL & ", " & ANON_G & "_data" );  -- @SRC
 	  PUT_LINE( tab & "BLKMOV" );
 
 	  -- ---- BLKMOV operande droit -> @data_res + LEN_G ----
-	  PUT_LINE( tab & "La  " & LVL & ", " & ANON_R & "_disp" );
-	  PUT_LINE( tab & "La  " & LVL & ", " & ANON_G & "_len"  );
+	  PUT_LINE( tab & "LA  " & LVL & ", " & ANON_R & "_disp" );
+	  PUT_LINE( tab & "LA  " & LVL & ", " & ANON_G & "_len"  );
 	  PUT_LINE( tab & "ADD" );				  -- @DST + LEN_G
-	  PUT_LINE( tab & "La  " & LVL & ", " & ANON_D & "_len"  );  -- LEN
-	  PUT_LINE( tab & "La  " & LVL & ", " & ANON_D & "_data" );  -- @SRC
+	  PUT_LINE( tab & "LA  " & LVL & ", " & ANON_D & "_len"  );  -- LEN
+	  PUT_LINE( tab & "LA  " & LVL & ", " & ANON_D & "_data" );  -- @SRC
 	  PUT_LINE( tab & "BLKMOV" );
 
 	  -- ---- Laisser @doublet_r sur la pile ----
@@ -4093,6 +4688,18 @@ end;
 	if  PRM1_TYPE = TREE_VOID  or else  PRM1_TYPE.TY = DN_VOID  then					-- litteral/agregat : regarder l'autre operande
 	  PRM1_TYPE := D( SM_EXP_TYPE, PRM_2 );
 	end if;
+----
+	if  PRM1_TYPE /= TREE_VOID
+	  and then ( PRM1_TYPE.TY = DN_PRIVATE  or else  PRM1_TYPE.TY = DN_L_PRIVATE
+			or else  PRM1_TYPE.TY = DN_INCOMPLETE )
+	  and then ( not( CODI.IN_GENERIC_BODY )
+		or else  not( IS_GENERIC_FORMAL_TYPE( D( XD_SOURCE_NAME, PRM1_TYPE ) ) ) )
+	then
+	  if CODI.DEBUG then PUT_LINE( "; F1 AVANT " & NODE_NAME'IMAGE( PRM1_TYPE.TY ) & ' ' & OP_STR ); end if;
+	  PRM1_TYPE := FULL_TYPE_VIEW( PRM1_TYPE );							--| F1 (temoin RECEQ2 11/08) : regle unique de percage --
+	  if CODI.DEBUG then PUT_LINE( "; F1 APRES " & NODE_NAME'IMAGE( PRM1_TYPE.TY ) ); end if;
+	end if;											--| suit SM_DERIVED, couvre DN_L_PRIVATE (meme garde que
+----
 	if  PRM1_TYPE /= TREE_VOID
 	  and then ( PRM1_TYPE.TY = DN_ARRAY  or  PRM1_TYPE.TY = DN_CONSTRAINED_ARRAY )
 	then
@@ -4163,20 +4770,44 @@ end;
         elsif OP_STR = """<=""" then
 	if IS_FLOAT then PUT_LINE( tab & "FCLE" ); else PUT_LINE( tab & "CLE" ); end if;
 
-        elsif OP_STR = """**""" then
-	if  IS_FLOAT  then
-	  PUT_LINE( tab & "FEXP" );
+	elsif OP_STR = """**""" then
+	  if  IS_FLOAT  then
+	    PUT_LINE( tab & "FEXP" );
+
 	elsif  PRM_1.TY = DN_NUMERIC_LITERAL  and then  DI( SM_VALUE, PRM_1 ) = 2  then
 	  PUT_LINE( tab & "DEC" );
 	  PUT_LINE( tab & "SHL" );
 	else
-	  PUT_LINE( "; CODE_DN_BLTN_OPERATOR_ID : EXPONENTIELLE ENTIERE GENERALE A FAIRE" );
-	end if;
+			--| Chantier C5 (recensement 28/07, 21 traversees ; temoin POW1) :
+			--| X**N general -> primitive Ada cachee STANDARD.INTEGER_POW
+			--| (_standrd.adb, meme famille qu'INTEGER_IMAGE / INTEGER_VALUE :
+			--| le runtime reste en Ada 83, et sa compilation par TLALOC ajoute
+			--| a la verification).  Operandes DEJA empiles [X, N] ; le lieu
+			--| resultat scalaire doit passer DESSOUS (protocole n 91/94) :
+			--| detour par temporaires, idiome de CODE_VALUE (machine a pile,
+			--| pas d'echange de sommet).  Exposant negatif : CONSTRAINT_ERROR
+			--| levee DANS la primitive (raise Ada, pilier 11).
+	    declare
+	      POW_N	:constant STRING	:= "POWN_" & NEW_LABEL;
+	      POW_X	:constant STRING	:= "POWX_" & NEW_LABEL;
+	      LVL_STR	:constant STRING	:= IMAGE( CODI.CUR_LEVEL );
+	    begin
+	      PUT_LINE( "VAR" & tab & POW_N & ", Q" );
+	      PUT_LINE( "VAR" & tab & POW_X & ", Q" );
+	      PUT_LINE( tab & "SQ  " & LVL_STR & ", " & POW_N );					-- depiler N
+	      PUT_LINE( tab & "SQ  " & LVL_STR & ", " & POW_X );					-- depiler X
+	      PUT( tab & "LI" & tab & '0' );
+	      if  CODI.DEBUG  then  PUT( tab50 & "; lieu resultat sur pile" );  end if;
+	      NEW_LINE;
+	      PUT_LINE( tab & "LQ  " & LVL_STR & ", " & POW_N );					-- re-empiler X (ordre source)
+	      PUT_LINE( tab & "LQ  " & LVL_STR & ", " & POW_X );					-- puis N (sommet)
+	      PUT_LINE( tab & "CALL" & tab & "STANDARD. ,INTEGER_POW_L63" );				-- ATTENTION a ceci : changer synchro avec STANDARD
+	    end;
+	  end if;
 
-        elsif OP_STR = """AND""" then  PUT_LINE( tab & "ET"  );
-        elsif OP_STR = """OR"""  then  PUT_LINE( tab & "OU"  );
-        elsif OP_STR = """XOR""" then  PUT_LINE( tab & "OUX" );
-
+	elsif OP_STR = """AND""" then  PUT_LINE( tab & "ET"  );
+	elsif OP_STR = """OR"""  then  PUT_LINE( tab & "OU"  );
+	elsif OP_STR = """XOR""" then  PUT_LINE( tab & "OUX" );
 
 	end if;
 	return;
@@ -4221,35 +4852,11 @@ end;
     end	CODE_DN_BLTN_OPERATOR_ID;
 	------------------------
 
-
-		--------------------
-    procedure	PREPARE_ARRAY_RETURN
-    is		--------------------
-      ANON	:constant STRING	:= ANONYMOUS_NAME_AT( FUNCTION_CALL );
-      LVL_STR	:constant STRING	:= IMAGE( CODI.CUR_LEVEL );
-    begin
-      PUT_LINE( "VAR" & tab & ANON & "_disp, q" );
-      PUT_LINE( "VAR" & tab & ANON & "__u,   q" );
-      PUT_LINE( "namespace " & ANON & "_info" );
-      PUT_LINE( "  VAR SIZ, d" );
-      PUT_LINE( "  VAR _COMP_SIZ, d" );
-      PUT_LINE( "  VAR _FST_1, d" );
-      PUT_LINE( "  VAR _LST_1, d" );
-      PUT_LINE( "end namespace" );
-
-      PUT_LINE( tab & "LVA " & LVL_STR & ", " & ANON & "_info.SIZ" );
-      PUT_LINE( tab & "Sa  " & LVL_STR & ", " & ANON & "__u" );
-    -- Empiler l'adresse du doublet comme result__ofs (dernier PRM)
-      PUT_LINE( tab & "LVA " & LVL_STR & ", " & ANON & "_disp" );
-
-    end	PREPARE_ARRAY_RETURN;
-	--------------------
-
   begin
     if  NAME.TY = DN_ATTRIBUTE  then									-- Appel de fonction sous forme d'attribut
 
       if  D( SM_EXP_TYPE, FUNCTION_CALL ).TY = DN_ARRAY  then						-- Le cas de 'IMAGE
-        PREPARE_ARRAY_RETURN;
+        PREPARE_ARRAY_RESULT_PLACE( FUNCTION_CALL );
       end if;
 
       declare
@@ -4263,107 +4870,41 @@ end;
       return;											-- On a fini pour ce cas
 
     elsif  NAME.TY = DN_USED_NAME_ID  then
-      declare
-        FUNC_DEF	: TREE	:= D( SM_DEFN, NAME );
-        FUNC_SPEC	: TREE	:= D( SM_SPEC, FUNC_DEF );
-        RET_NAME	: TREE	:= D( AS_NAME, FUNC_SPEC );	 -- nom du type de retour (DN_FUNCTION_SPEC)
-        RET_TS	: TREE	:= TREE_VOID;
-      begin
-        -- Resoudre le type de retour jusqu'au TYPE_SPEC effectif
-        if  RET_NAME /= TREE_VOID  then
-	RET_TS := D( SM_TYPE_SPEC, D( SM_DEFN, RET_NAME ) );
-	while  RET_TS.TY = DN_L_PRIVATE  or  RET_TS.TY = DN_PRIVATE  loop
-	  RET_TS := D( SM_TYPE_SPEC, RET_TS );
-	end loop;
-
-	if  RET_TS.TY = DN_CONSTRAINED_RECORD  then						-- pilier 3.7 : vue contrainte -> base
-	  RET_TS := D( SM_BASE_TYPE, RET_TS );						-- (meme taille : layout additif ;
-	end if;										--  symboles .size/.use__info de la base)
-        end if;
-
-        if  RET_TS /= TREE_VOID  and then  RET_TS.TY = DN_RECORD  then
-	-- Allouer un doublet anonyme avec son espace donnees, empiler son adresse comme result__ofs
-	declare
-	  ANON_STR  : constant STRING := ANONYMOUS_NAME_AT( FUNCTION_CALL );
-	  TYPE_NAME : TREE		:= D( XD_SOURCE_NAME, RET_TS );
---	    TN_STR    : constant STRING := '_' & PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
-	  TN_STR	  : constant STRING := TYPE_INFO_STR( RET_TS );
-	  LVL_STR	  : constant STRING := IMAGE( CODI.CUR_LEVEL );
-	begin
-	  PUT_LINE( "VAR" & tab & ANON_STR & "_disp, q" );
-	  PUT_LINE( "VAR" & tab & ANON_STR & "__u,    q" );
-	  PUT( "VAR" & tab & ANON_STR & "__dat, " );
-	  CODI.REGIONS_PATH( TYPE_NAME );
-	  PUT_LINE( TN_STR & ".size" );
-
-	  -- Initialiser data_ptr -> adresse des donnees brutes
-	  PUT_LINE( tab & "LVA " & LVL_STR & ", " & ANON_STR & "__dat" );
-	  PUT_LINE( tab & "Sa  " & LVL_STR & ", " & ANON_STR & "_disp" );
-
-	  -- Initialiser use_info_ptr
-	  PUT( tab & "La  " & IMAGE( DI( CD_LEVEL, RET_TS ) ) & ", " );
-	  CODI.REGIONS_PATH( TYPE_NAME );
-	  PUT_LINE( TN_STR & ".use__info" );
-	  PUT_LINE( tab & "Sa  " & LVL_STR & ", " & ANON_STR & "__u" );
-
-	  -- Empiler l'adresse du doublet comme result__ofs pour la fonction
-	  PUT_LINE( tab & "LVA " & LVL_STR & ", " & ANON_STR & "_disp" );
-	  if  CODI.DEBUG  then PUT( tab50 & "; doublet resultat record anonyme" ); end if;
-	  NEW_LINE;
-	end;
-
-        elsif  RET_TS /= TREE_VOID  and then  RET_TS.TY = DN_ARRAY  then
-	PREPARE_ARRAY_RETURN;
-
-        elsif  RET_TS /= TREE_VOID  and then  RET_TS.TY = DN_CONSTRAINED_ARRAY  then
-	  declare
-	    ANON_STR	: constant STRING	:= ANONYMOUS_NAME_AT( FUNCTION_CALL );
-	    TYPE_NAME	: TREE		:= D( XD_SOURCE_NAME, RET_TS );
-	    TN_STR	: constant STRING	:= TYPE_INFO_STR( RET_TS );
-	    TYPE_LVL	: constant STRING	:= IMAGE( DI( CD_LEVEL, RET_TS ) );
-	    LVL_STR	: constant STRING	:= IMAGE( CODI.CUR_LEVEL );
-	  begin
-	    PUT_LINE( "VAR" & tab & ANON_STR & "_disp, q" );
-	    PUT_LINE( "VAR" & tab & ANON_STR & "__u,   q" );
-
-	    -- info du doublet := info du TYPE (bornes deja elaborees)
-	    PUT( tab & "La  " & TYPE_LVL & ", " );
-	    CODI.REGIONS_PATH( TYPE_NAME );
-	    PUT_LINE( TN_STR & ".use__info" );
-	    PUT_LINE( tab & "Sa  " & LVL_STR & ", " & ANON_STR & "__u" );
-
-	    -- data := CO_VAR( SIZ/8 ) -- taille runtime du type
-	    PUT( tab & "Ld  " & TYPE_LVL & ", " );
-	    CODI.REGIONS_PATH( TYPE_NAME );
-	    PUT_LINE( TN_STR & ".SIZ" );
-	    PUT_LINE( tab & "LI" & tab & IMAGE( CODI.STORAGE_UNIT ) );
-	    PUT_LINE( tab & "DIV" );
-	    PUT_LINE( tab & "CO_VAR" );
-	    PUT_LINE( tab & "Sa  " & LVL_STR & ", " & ANON_STR & "_disp" );
-
-	    -- empiler l'adresse du doublet comme result__ofs
-	    PUT_LINE( tab & "LVA " & LVL_STR & ", " & ANON_STR & "_disp" );
-	  end;
-
-
-
-        else
-	-- Cas scalaire, array, etc. : placeholder qword nul
-	PUT( tab & "LI" & tab & "0" );
-	if  CODI.DEBUG  then PUT( tab50 & "; lieu resultat sur pile" ); end if;
-	NEW_LINE;
-        end if;
-      end;
+      PREPARE_FUNCTION_RESULT_PLACE( D( SM_DEFN, NAME ), FUNCTION_CALL );
       INSTRUCTIONS.CODE_PROCEDURE_CALL( FUNCTION_CALL, NAME );
 
     elsif  NAME.TY = DN_USED_OP  then
-      CODE_DN_BLTN_OPERATOR_ID;
+      declare
+        OP_DEFN	: TREE	:= D( SM_DEFN, NAME );
+      begin
+        if  OP_DEFN.TY = DN_OPERATOR_ID  then
+	OP_DEFN := SUBPROGRAM_ORIGIN( OP_DEFN );						-- renames d'un predefini : viser l'origine (LRM 8.5)
+        end if;
+        if  OP_DEFN.TY = DN_OPERATOR_ID  then
+			--| OPDEF_TEST (8/08, bootstrap _standrd, spin INTEGER_POW sur le
+			--| 2**15 de SHORT_INTEGER) : un operateur DEFINI PAR L'UTILISATEUR
+			--| (DN_OPERATOR_ID a vrai corps -- "**" d'UARITH sur TREE) etait
+			--| emis comme le PREDEFINI homonyme : CALL STANDARD.INTEGER_POW
+			--| recevait des @doublets (N = adresse de pile -> E astronomique),
+			--| et +,-,*,comparaisons d'UARITH devenaient ADD/SUB/MUL/CEQ sur
+			--| adresses -- poison silencieux de toute la semantique. Voie
+			--| normale d'appel : meme protocole (resultat record en doublet
+			--| anonyme) que les appels nommes comme D(...) ;
+			--| CODE_PROCEDURE_CALL ne lit que SM_DEFN et refait l'origine.
+			--| Les operateurs IMPLICITES des types derives restent en
+			--| emission par nom (branche else), gardes par OPDEF_TEST 5-6.
+	PREPARE_FUNCTION_RESULT_PLACE( OP_DEFN, FUNCTION_CALL );
+	INSTRUCTIONS.CODE_PROCEDURE_CALL( FUNCTION_CALL, NAME );
+        else
+	CODE_DN_BLTN_OPERATOR_ID;								-- predefini, ou renommage d'un predefini
+        end if;
+      end;
 
     elsif  NAME.TY = DN_SELECTED  then
       CODE_SELECTED( NAME, CONTEXT=> FUNCTION_CALL );
 
     else
-      PUT_LINE( "; CODE_FUNCTION_CALL NAME.TY PAS GERE : " & NODE_NAME'IMAGE( NAME.TY ) );
+      TROU( "CODE_FUNCTION_CALL forme de nom pas gere", NAME );						--| vague 5 : rien empile (contexte expression)
     end if;
 
   end	CODE_FUNCTION_CALL;
@@ -4375,11 +4916,10 @@ end;
   is				------------------------
 
     QUALIFIED	: TREE		:= D( AS_QUALIFIED, QUALIFIED_ALLOCATOR );
-    DESIG_TYPE	: TREE		:= FULL_VIEW( D( SM_EXP_TYPE, QUALIFIED ) );
+    DESIG_TYPE	: TREE		:= FULL_TYPE_VIEW( D( SM_EXP_TYPE, QUALIFIED ) );
     ANON		:constant STRING	:= "NEW_" & NEW_LABEL;
 
     DESIG_NAME	: TREE		:= D( XD_SOURCE_NAME, DESIG_TYPE );
---    DESIG_STR	:constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, DESIG_NAME ) );
     DESIG_STR	:constant STRING	:= TYPE_INFO_STR( DESIG_TYPE );
 
   begin
@@ -4388,20 +4928,43 @@ end;
       REGIONS_PATH( DESIG_NAME );
       PUT_LINE( DESIG_STR & ".size" );
     else
-      PUT( tab & "Ld" & tab & IMAGE( DI( CD_LEVEL, DESIG_TYPE ) ) & ", " );
+      PUT( tab & "LD" & tab & IMAGE( DI( CD_LEVEL, DESIG_TYPE ) ) & ", " );
       REGIONS_PATH( DESIG_NAME );
-      PUT_LINE( DESIG_STR & ".SIZ" );
+      PUT_LINE( DESIG_STR & ".SIZ__" );
       PUT_LINE( tab & "LI" & tab & IMAGE( CODI.STORAGE_UNIT ) );
       PUT_LINE( tab & "DIV" );
     end if;
     PUT_LINE( tab & "HEAP_ALLOC" );
 
     if  D( AS_EXP, QUALIFIED ).TY = DN_AGGREGATE  then
-      PUT_LINE( "VAR " & ANON & "_ptr, q" );
+      PUT_LINE( "VAR " & ANON & "_ptr, Q" );
       PUT_LINE( tab & "DUP" );
-      PUT_LINE( tab & "Sa" & tab & IMAGE( CODI.CUR_LEVEL ) & ", " & ANON & "_ptr" );
+      PUT_LINE( tab & "SA" & tab & IMAGE( CODI.CUR_LEVEL ) & ", " & ANON & "_ptr" );
       CODE_AGGREGATE( D( AS_EXP, QUALIFIED ), DESIG_TYPE );
-      PUT_LINE( tab & "La" & tab & IMAGE( CODI.CUR_LEVEL ) & ", " & ANON & "_ptr" );
+      PUT_LINE( tab & "LA" & tab & IMAGE( CODI.CUR_LEVEL ) & ", " & ANON & "_ptr" );
+
+    elsif  D( AS_EXP, QUALIFIED ).TY = DN_STRING_LITERAL  then
+			--| FIX 30/07 (paye par SLICE1, new LIN'("ABCDEFGH")) : l'init
+			--| NON-agregat etait IGNOREE en silence -- HEAP_ALLOC puis rien,
+			--| tas non initialise.  Litteral : copie en place, l'@alloc reste
+			--| en sommet comme valeur d'acces ([ptr] DUP -> [ptr,ptr] + LEN +
+			--| @SRC, BLKMOV en consomme 3).  LEN = longueur du litteral
+			--| (LX_SYMREP avec guillemets : 'LENGTH - 2).  Les autres formes
+			--| d'init restent a faire : TROU ci-dessous, bruyant desormais.
+      declare
+        LIT_LEN	:constant INTEGER	:= PRINT_NAME( D( LX_SYMREP, D( AS_EXP, QUALIFIED ) ) )'LENGTH - 2;
+        LIT_STR	:constant STRING	:= "NEWLIT_" & NEW_LABEL;
+      begin
+        PUT_LINE( tab & "DUP" );
+        PUT_LINE( tab & "LI" & tab & IMAGE( LIT_LEN ) );
+        CODE_STRING_LITERAL( D( AS_EXP, QUALIFIED ), LIT_STR );
+        PUT_LINE( tab & "LCA" & tab & LIT_STR & ".data_ptr" );
+        PUT_LINE( tab & "LA" );
+        PUT_LINE( tab & "BLKMOV" );
+      end;
+
+    elsif  D( AS_EXP, QUALIFIED ).TY /= DN_VOID  then
+      TROU( "CODE_QUALIFIED_ALLOCATOR init non faite (etait IGNOREE en silence)", D( AS_EXP, QUALIFIED ) );
     end if;
 
   end	CODE_QUALIFIED_ALLOCATOR;
@@ -4411,9 +4974,8 @@ end;
 				----------------------
   procedure			CODE_SUBTYPE_ALLOCATOR	( SUBTYPE_ALLOCATOR :TREE )
   is				----------------------
-    DESIG_TYPE	: TREE	:= FULL_VIEW( D( SM_DESIG_TYPE, SUBTYPE_ALLOCATOR ) );
+    DESIG_TYPE	: TREE	:= FULL_TYPE_VIEW( D( SM_DESIG_TYPE, SUBTYPE_ALLOCATOR ) );
     DESIG_NAME	: TREE	:= D( XD_SOURCE_NAME, DESIG_TYPE );
---    DESIG_STR	:constant STRING := '_' & PRINT_NAME( D( LX_SYMREP, DESIG_NAME ) );
     DESIG_STR	:constant STRING := TYPE_INFO_STR( DESIG_TYPE );
 
   begin
@@ -4423,9 +4985,9 @@ end;
       PUT_LINE( DESIG_STR & ".size" );
 
     else
-      PUT( tab & "Ld" & tab & IMAGE( DI( CD_LEVEL, DESIG_TYPE ) ) & ", " );
+      PUT( tab & "LD" & tab & IMAGE( DI( CD_LEVEL, DESIG_TYPE ) ) & ", " );
       REGIONS_PATH( DESIG_NAME );
-      PUT_LINE( DESIG_STR & ".SIZ" );
+      PUT_LINE( DESIG_STR & ".SIZ__" );
       PUT_LINE( tab & "LI" & tab & IMAGE( CODI.STORAGE_UNIT ) );
       PUT_LINE( tab & "DIV" );
     end if;
@@ -4439,7 +5001,7 @@ end;
 -- The procedure is still an assigning aggregate: the destination data address
 -- is expected on top of the LLIR stack and is consumed by the generated code.
 
-  procedure		CODE_ARRAY_AGGREGATE	( AGGREGATE, TYPE_SPEC :TREE )
+  procedure		CODE_ARRAY_AGGREGATE	( AGGREGATE, TYPE_SPEC :TREE; DST_SLICE_RANGE :TREE := TREE_VOID )
   is			--------------------
 
     MAX_DIMS	: constant NATURAL  := 8;
@@ -4593,7 +5155,8 @@ end;
         end if;
       end loop;
 
-      return TREE_VOID;
+      return  TREE_VOID;
+
     end	FIRST_RANGE_FROM_AGG;
 	--------------------
 
@@ -4618,7 +5181,8 @@ end;
         end if;
       end loop;
 
-      return TREE_VOID;
+      return  TREE_VOID;
+
     end	FIRST_NESTED_AGGREGATE;
 	----------------------
 
@@ -4637,8 +5201,9 @@ end;
         -- Positional aggregate or constrained index fallback.
         ADD_INDEX_DIMENSION( INDEX_NODE );
       end if;
+
     end	ADD_AGG_DIMENSION;
-	---------------------------
+	-----------------
 
 			------------------
     procedure		COLLECT_DIMENSIONS  ( AGG :TREE; TS :TREE )
@@ -4672,7 +5237,7 @@ end;
         end loop;
 
         BASE_TYPE := D( SM_BASE_TYPE, CUR_TYPE );
-        COMP_TYPE := FULL_VIEW( D( SM_COMP_TYPE, BASE_TYPE ) );
+        COMP_TYPE := FULL_TYPE_VIEW( D( SM_COMP_TYPE, BASE_TYPE ) );
         CUR_TYPE  := COMP_TYPE;
       end loop;
 
@@ -4683,10 +5248,11 @@ end;
 
       if  COMP_TYPE = TREE_VOID  then
         BASE_TYPE := D( SM_BASE_TYPE, TYPE_SPEC );
-        COMP_TYPE := FULL_VIEW( D( SM_COMP_TYPE, BASE_TYPE ) );
+        COMP_TYPE := FULL_TYPE_VIEW( D( SM_COMP_TYPE, BASE_TYPE ) );
       end if;
+
     end	COLLECT_DIMENSIONS;
-	----------------------
+	------------------
 
 			----------------
     procedure		CODE_BOUND	( EXP :TREE )
@@ -4700,78 +5266,93 @@ end;
       end loop;
 
       CODE_EXP( B );
-    end	CODE_BOUND;
-	----------------
 
-			------------------------
+    end	CODE_BOUND;
+	----------
+
+			-------------------
     procedure		DECLARE_TEMPORARIES
-    is			------------------------
+    is			-------------------
     begin
       PUT_LINE( "namespace " & ANON );
       for  I  in  1 .. NB_DIMS  loop
-        PUT_LINE( "  VAR _FST_"  & IMAGE( I ) & ", d" );
-        PUT_LINE( "  VAR _LST_"  & IMAGE( I ) & ", d" );
-        PUT_LINE( "  VAR _LEN_"  & IMAGE( I ) & ", d" );
-        PUT_LINE( "  VAR _STR_"  & IMAGE( I ) & ", d" );
-        PUT_LINE( "  VAR _PTR_"  & IMAGE( I ) & ", q" );
-        PUT_LINE( "  VAR _CNT_"  & IMAGE( I ) & ", d" );
-        PUT_LINE( "  VAR _EMIS_" & IMAGE( I ) & ", d" );
+        PUT_LINE( "  VAR _FST_"  & IMAGE( I ) & ", D" );
+        PUT_LINE( "  VAR _LST_"  & IMAGE( I ) & ", D" );
+        PUT_LINE( "  VAR _LEN_"  & IMAGE( I ) & ", D" );
+        PUT_LINE( "  VAR _STR_"  & IMAGE( I ) & ", D" );
+        PUT_LINE( "  VAR _PTR_"  & IMAGE( I ) & ", Q" );
+        PUT_LINE( "  VAR _CNT_"  & IMAGE( I ) & ", D" );
+        PUT_LINE( "  VAR _EMIS_" & IMAGE( I ) & ", D" );
       end loop;
       PUT_LINE( "end namespace" );
-    end	DECLARE_TEMPORARIES;
-	------------------------
 
-			--------------------------
+    end	DECLARE_TEMPORARIES;
+	-------------------
+
+			--------------------
     procedure		COMPUTE_DYNAMIC_DIMS
-    is			--------------------------
+    is			--------------------
     begin
       for  I  in  1 .. NB_DIMS  loop
         CODE_BOUND( DIM_TBL( I ).FST_EXP );
-        PUT_LINE( tab & "Sd  " & LVL_STR & ", " & FST_NAME( I ) );
+        PUT_LINE( tab & "SD  " & LVL_STR & ", " & FST_NAME( I ) );
 
         CODE_BOUND( DIM_TBL( I ).LST_EXP );
-        PUT_LINE( tab & "Sd  " & LVL_STR & ", " & LST_NAME( I ) );
+        PUT_LINE( tab & "SD  " & LVL_STR & ", " & LST_NAME( I ) );
 
-        PUT_LINE( tab & "Ld  " & LVL_STR & ", " & LST_NAME( I ) );
-        PUT_LINE( tab & "Ld  " & LVL_STR & ", " & FST_NAME( I ) );
+        PUT_LINE( tab & "LD  " & LVL_STR & ", " & LST_NAME( I ) );
+        PUT_LINE( tab & "LD  " & LVL_STR & ", " & FST_NAME( I ) );
         PUT_LINE( tab & "SUB" );
         PUT_LINE( tab & "INC" );
         PUT_LINE( tab & "CLAMP0" );
-        PUT_LINE( tab & "Sd  " & LVL_STR & ", " & LEN_NAME( I ) );
+        PUT_LINE( tab & "SD  " & LVL_STR & ", " & LEN_NAME( I ) );
       end loop;
 
-      PUT_LINE( tab & "LI" & tab & IMAGE( COMP_BYTES ) );
-      PUT_LINE( tab & "Sd  " & LVL_STR & ", " & STR_NAME( NB_DIMS ) );
+      if  COMP_TYPE.TY = DN_RECORD  and then  not REPRESENTED_ITEMS.HAS_RECORD_REP( COMP_TYPE )  then
+			--| SECV1 etage A (7/08) : CD_IMPL_SIZE d un record ordinaire
+			--| multi-mots est faux (64 pour 2 quadwords) -- taille SYMBOLIQUE
+			--| _TYPE.size, modele EMIT_ONE_COMPONENT ; le site longueur
+			--| (EMIT_ONE_COMP) porte la MEME garde, les deux restent d accord.
+        PUT( tab & "LI" & tab );
+        CODI.REGIONS_PATH( D( XD_SOURCE_NAME, COMP_TYPE ) );
+        PUT_LINE( TYPE_INFO_STR( COMP_TYPE ) & ".size" );
+
+      else
+        PUT_LINE( tab & "LI" & tab & IMAGE( COMP_BYTES ) );
+      end if;
+
+      PUT_LINE( tab & "SD  " & LVL_STR & ", " & STR_NAME( NB_DIMS ) );
 
       for  K  in reverse  1 .. NB_DIMS - 1  loop
-        PUT_LINE( tab & "Ld  " & LVL_STR & ", " & STR_NAME( K + 1 ) );
-        PUT_LINE( tab & "Ld  " & LVL_STR & ", " & LEN_NAME( K + 1 ) );
+        PUT_LINE( tab & "LD  " & LVL_STR & ", " & STR_NAME( K + 1 ) );
+        PUT_LINE( tab & "LD  " & LVL_STR & ", " & LEN_NAME( K + 1 ) );
         PUT_LINE( tab & "MUL" );
-        PUT_LINE( tab & "Sd  " & LVL_STR & ", " & STR_NAME( K ) );
+        PUT_LINE( tab & "SD  " & LVL_STR & ", " & STR_NAME( K ) );
       end loop;
+
     end	COMPUTE_DYNAMIC_DIMS;
-	--------------------------
+	--------------------
 
-			---------------------
+			-------------
     procedure		EMIT_INC_EMIS	( DEPTH :NATURAL )
-    is			---------------------
+    is			-------------
     begin
-      PUT_LINE( tab & "Ld  " & LVL_STR & ", " & EMIS_NAME( DEPTH ) );
+      PUT_LINE( tab & "LD  " & LVL_STR & ", " & EMIS_NAME( DEPTH ) );
       PUT_LINE( tab & "INC" );
-      PUT_LINE( tab & "Sd  " & LVL_STR & ", " & EMIS_NAME( DEPTH ) );
+      PUT_LINE( tab & "SD  " & LVL_STR & ", " & EMIS_NAME( DEPTH ) );
     end	EMIT_INC_EMIS;
-	---------------------
+	-------------
 
-			-----------------------
+			----------------
     procedure		EMIT_ADVANCE_PTR	( DEPTH :NATURAL )
-    is			-----------------------
+    is			----------------
     begin
-      PUT_LINE( tab & "La  " & LVL_STR & ", " & PTR_NAME( DEPTH ) );
-      PUT_LINE( tab & "Ld  " & LVL_STR & ", " & STR_NAME( DEPTH ) );
+      PUT_LINE( tab & "LA  " & LVL_STR & ", " & PTR_NAME( DEPTH ) );
+      PUT_LINE( tab & "LD  " & LVL_STR & ", " & STR_NAME( DEPTH ) );
       PUT_LINE( tab & "ADD" );
-      PUT_LINE( tab & "Sa  " & LVL_STR & ", " & PTR_NAME( DEPTH ) );
+      PUT_LINE( tab & "SA  " & LVL_STR & ", " & PTR_NAME( DEPTH ) );
     end	EMIT_ADVANCE_PTR;
-	-----------------------
+	----------------
 
 			-----------------
     procedure		EMIT_AGG_AT_DEPTH	( AGG :TREE; DEPTH :NATURAL );
@@ -4782,7 +5363,7 @@ end;
     is			-------------
     begin
       if  COMP.TY = DN_AGGREGATE  then
-        PUT_LINE( tab & "La  " & LVL_STR & ", " & PTR_NAME( DEPTH ) );
+        PUT_LINE( tab & "LA  " & LVL_STR & ", " & PTR_NAME( DEPTH ) );
 
         if  DEPTH < NB_DIMS  then
 	EMIT_AGG_AT_DEPTH( COMP, DEPTH + 1 );
@@ -4791,31 +5372,64 @@ end;
         end if;
 
       elsif  COMP.TY in CLASS_EXP  then
-        declare
-	CT	: TREE	:= FULL_TYPE_VIEW( COMP_TYPE );
-        begin
-	if  CT.TY = DN_RECORD
-	or else  CT.TY = DN_CONSTRAINED_RECORD
-	or else  CT.TY = DN_CONSTRAINED_ARRAY
-	then
+        if  DEPTH < NB_DIMS  then
+			--| AGGSTR_TEST (8/08, bootstrap _standrd / SHORT_INTEGER) :
+			--| COLLECT_DIMENSIONS aplatit le tableau DE tableaux en
+			--| descendant dans le type composant ; une composante
+			--| NON-agregat couvrant les dimensions restantes (litteral de
+			--| chaine "AND", objet, appel) tombait dans la voie SCALAIRE --
+			--| SId rangeait l'@DOUBLET du litteral : BLTN_TEXT_ARRAY
+			--| recevait des tranches de pointeurs (pas de 40 octets des
+			--| blocs STR successifs), rognage '!' aveugle, symboles-poison
+			--| dedupliques, deflist de "-" vide, HEAD leve.
+			--| Copie en bloc : longueur = _STR_(DEPTH), taille du bloc des
+			--| dimensions restantes deja posee par COMPUTE_DYNAMIC_DIMS
+			--| (garde record symbolique comprise) ; source = @data par la
+			--| regle unique n 112.
+	PUT_LINE( tab & "LA  " & LVL_STR & ", " & PTR_NAME( DEPTH ) );					-- destination
+	PUT_LINE( tab & "LD  " & LVL_STR & ", " & STR_NAME( DEPTH ) );					-- longueur : bloc des dims restantes
+	CODE_COMPOSITE_DATA_ADDRESS( COMP );								-- @data source (regle n 112)
+	PUT_LINE( tab & "BLKMOV" );
+        else
+	declare
+	  CT	: TREE	:= FULL_TYPE_VIEW( COMP_TYPE );
+	begin
+	  if  CT.TY = DN_RECORD
+		or else  CT.TY = DN_CONSTRAINED_RECORD
+		or else  CT.TY = DN_CONSTRAINED_ARRAY
+	  then
 	  -- Composant COMPOSITE (ex. TREE, record represente 32 bits) :
 	  -- CODE_EXP pousse une ADRESSE (convention composite) -- SId
 	  -- stockerait l'adresse tronquee en dword, pas la valeur
 	  -- (bug PAG(RP).DATA.all := (others => TREE_VIRGIN)).
 	  -- Copie de COMP_BYTES octets, meme forme que la branche
 	  -- DN_RECORD de EMIT_ONE_COMPONENT (agregat record).
-	  PUT_LINE( tab & "La  " & LVL_STR & ", " & PTR_NAME( DEPTH ) );					-- destination
-	  PUT_LINE( tab & "LI" & tab & IMAGE( COMP_BYTES ) );						-- longueur
-	  EXPRESSIONS.CODE_EXP( COMP );								-- @source
-	  PUT_LINE( tab & "BLKMOV" );
-	else
-	  EXPRESSIONS.CODE_EXP( COMP );
-	  PUT_LINE( tab & "SI" & EXP_TYPE_CHAR( COMP ) & "  " & LVL_STR & ", " & PTR_NAME( DEPTH ) & ", 0" );
-	end if;
-        end;
+	    PUT_LINE( tab & "LA  " & LVL_STR & ", " & PTR_NAME( DEPTH ) );					-- destination
+	    if  CT.TY = DN_RECORD  and then  not REPRESENTED_ITEMS.HAS_RECORD_REP( CT )  then
+	      PUT( tab & "LI" & tab );
+	      CODI.REGIONS_PATH( D( XD_SOURCE_NAME, CT ) );
+	      PUT_LINE( TYPE_INFO_STR( CT ) & ".size" );							-- longueur symbolique (cf. 7.1)
+
+	    else
+	      PUT_LINE( tab & "LI" & tab & IMAGE( COMP_BYTES ) );						-- longueur
+	    end if;
+			--| SECV1 (7/08) : CODE_EXP d un objet composite pousse l @DOUBLET
+			--| (LVA X_disp) -- BLKMOV copiait le POINTEUR data_ptr dans chaque
+			--| element (residu uniforme = bas d adresse de X__dat ; c est la
+			--| valeur [DN_ITERATION_ID,P6996,L102] des cellules "vierges" du
+			--| bootstrappe).  Regle unique n 112 : source BLKMOV = @data,
+			--| soit CODE_COMPOSITE_DATA_ADDRESS (CODE_EXP + La discrimine).
+	    CODE_COMPOSITE_DATA_ADDRESS( COMP );							-- @data source
+	    PUT_LINE( tab & "BLKMOV" );
+	  else
+	    EXPRESSIONS.CODE_EXP( COMP );
+	    PUT_LINE( tab & "SI" & EXP_TYPE_CHAR( COMP ) & "  " & LVL_STR & ", " & PTR_NAME( DEPTH ) & ", 0" );
+	  end if;
+	end;
+        end if;
 
       else
-        PUT_LINE( "; EMIT_ONE_COMP : composante non geree " & NODE_NAME'IMAGE( COMP.TY ) );
+        TROU( "agregat tableau : composante non geree", COMP );						--| vague 5 : composante non emise, donnees fausses
       end if;
 
       EMIT_ADVANCE_PTR( DEPTH );
@@ -4838,8 +5452,8 @@ end;
         PUT_LINE( tab & "CLAMP0" );
 
       elsif  CH.TY = DN_CHOICE_OTHERS  then
-        PUT_LINE( tab & "Ld  " & LVL_STR & ", " & LEN_NAME( DEPTH ) );
-        PUT_LINE( tab & "Ld  " & LVL_STR & ", " & EMIS_NAME( DEPTH ) );
+        PUT_LINE( tab & "LD  " & LVL_STR & ", " & LEN_NAME( DEPTH ) );
+        PUT_LINE( tab & "LD  " & LVL_STR & ", " & EMIS_NAME( DEPTH ) );
         PUT_LINE( tab & "SUB" );
 
       else
@@ -4849,16 +5463,16 @@ end;
     end	EMIT_COUNT_FOR_CHOICE;
 	---------------------
 
-			------------------------
+			------------------
     procedure		EMIT_REPEATED_COMP  ( COMP :TREE; CH :TREE; DEPTH :NATURAL )
-    is			------------------------
+    is			------------------
       LBL_LOOP	: constant STRING	:= NEW_LABEL;
       LBL_END	: constant STRING	:= NEW_LABEL;
     begin
       EMIT_COUNT_FOR_CHOICE( CH, DEPTH );
-      PUT_LINE( tab & "Sd  " & LVL_STR & ", " & CNT_NAME( DEPTH ) );
+      PUT_LINE( tab & "SD  " & LVL_STR & ", " & CNT_NAME( DEPTH ) );
 
-      PUT_LINE( tab & "Ld  " & LVL_STR & ", " & CNT_NAME( DEPTH ) );
+      PUT_LINE( tab & "LD  " & LVL_STR & ", " & CNT_NAME( DEPTH ) );
       PUT_LINE( tab & "LI" & tab & "0" );
       PUT_LINE( tab & "CLE" );
       PUT_LINE( tab & "BT  " & LBL_END );
@@ -4866,17 +5480,18 @@ end;
       PUT_LINE( LBL_LOOP & ':' );
       EMIT_ONE_COMP( COMP, DEPTH );
 
-      PUT_LINE( tab & "Ld  " & LVL_STR & ", " & CNT_NAME( DEPTH ) );
+      PUT_LINE( tab & "LD  " & LVL_STR & ", " & CNT_NAME( DEPTH ) );
       PUT_LINE( tab & "DEC" );
       PUT_LINE( tab & "DUP" );
-      PUT_LINE( tab & "Sd  " & LVL_STR & ", " & CNT_NAME( DEPTH ) );
+      PUT_LINE( tab & "SD  " & LVL_STR & ", " & CNT_NAME( DEPTH ) );
       PUT_LINE( tab & "LI" & tab & "0" );
       PUT_LINE( tab & "CGT" );
       PUT_LINE( tab & "BT  " & LBL_LOOP );
 
       PUT_LINE( LBL_END & ':' );
+
     end	EMIT_REPEATED_COMP;
-	------------------------
+	------------------
 
 			-----------------
     procedure		EMIT_AGG_AT_DEPTH	( AGG :TREE; DEPTH :NATURAL )
@@ -4887,10 +5502,10 @@ end;
       -- Consume the incoming data address and keep it in a depth-local
       -- temporary.  This avoids carrying the current pointer on the LLIR
       -- stack while nested dynamic loops are generated.
-      PUT_LINE( tab & "Sa  " & LVL_STR & ", " & PTR_NAME( DEPTH ) );
+      PUT_LINE( tab & "SA  " & LVL_STR & ", " & PTR_NAME( DEPTH ) );
 
       PUT_LINE( tab & "LI" & tab & "0" );
-      PUT_LINE( tab & "Sd  " & LVL_STR & ", " & EMIS_NAME( DEPTH ) );
+      PUT_LINE( tab & "SD  " & LVL_STR & ", " & EMIS_NAME( DEPTH ) );
 
       while not  IS_EMPTY( SEQ )  loop
         POP( SEQ, ASSOC );
@@ -4917,6 +5532,7 @@ end;
 	EMIT_ONE_COMP( ASSOC, DEPTH );
         end if;
       end loop;
+
     end	EMIT_AGG_AT_DEPTH;
 	-----------------
 
@@ -4932,8 +5548,23 @@ end;
     end if;
 
     COLLECT_DIMENSIONS( AGGREGATE, TYPE_SPEC );
+			--| n 146 (segfault WRITE_LIB, DONT_MOVE(H+1..MAX) := (others=>TRUE)) :
+			--| cible TRANCHE -- la contrainte applicable de l'agregat est celle
+			--| de la TRANCHE (RM83 4.3.2), pas celle du type tableau : remplir
+			--| aux bornes du type ecrasait la queue du tableau + (bas_tranche -
+			--| FST_type) octets au-dela (cellule LINK -> UNLINK segfault).
+			--| Dimension 1 seule (tranches 1-dim, RM83 4.1.2) ; dims aplaties
+			--| suivantes inchangees.  Bornes de tranche re-evaluees ici (2e fois
+			--| apres CODE_SLICE) : pures dans le corpus.
+    if  DST_SLICE_RANGE /= TREE_VOID  then
+      DIM_TBL( 1 ).FST_EXP := D( AS_EXP1, DST_SLICE_RANGE );
+      DIM_TBL( 1 ).LST_EXP := D( AS_EXP2, DST_SLICE_RANGE );
+      if  DIM_TBL( 1 ).FST_EXP = TREE_VOID  or else  DIM_TBL( 1 ).LST_EXP = TREE_VOID  then
+        TROU( "agregat vers tranche : range sans AS_EXP1/AS_EXP2", DST_SLICE_RANGE );
+      end if;
+    end if;
 
-    COMP_TYPE := FULL_VIEW( COMP_TYPE );
+    COMP_TYPE := FULL_TYPE_VIEW( COMP_TYPE );
     COMP_BITS  := COMP_SIZE_BITS( COMP_TYPE );
     COMP_BYTES := COMP_BITS / CODI.STORAGE_UNIT;
     if  COMP_BYTES = 0  then
@@ -4949,7 +5580,8 @@ end;
 
 
 				--------------
-  procedure			CODE_AGGREGATE		( AGGREGATE, TYPE_SPEC :TREE )
+  procedure			CODE_AGGREGATE		( AGGREGATE, TYPE_SPEC :TREE;
+							  DST_SLICE_RANGE :TREE := TREE_VOID )
   is				--------------
 
     EFFECTIVE_TYPE		: TREE			:= TYPE_SPEC;
@@ -4971,7 +5603,7 @@ end;
     end if;
 
     if  EFFECTIVE_TYPE.TY = DN_CONSTRAINED_ARRAY  or  TYPE_SPEC.TY = DN_ARRAY  then				-- L'adresse de debut data est deja empilee
-      CODE_ARRAY_AGGREGATE( AGGREGATE, EFFECTIVE_TYPE );
+      CODE_ARRAY_AGGREGATE( AGGREGATE, EFFECTIVE_TYPE, DST_SLICE_RANGE );
 
     elsif  EFFECTIVE_TYPE.TY = DN_RECORD  then								-- L'adresse du doublet est deja empilee
       declare
@@ -5030,8 +5662,6 @@ end;
 	    PUT_LINE( TYPE_INFO_STR( COMP_TYPE  ) & ".size" );
 
 	    CODE_COMPOSITE_DATA_ADDRESS( COMP_EXP );
---	    CODE_EXP( COMP_EXP );
---	    PUT_LINE( tab & "La  ,  0" );
 	    PUT_LINE( tab & "BLKMOV" );
 
 	  elsif  COMP_TYPE.TY = DN_CONSTRAINED_ARRAY  then
@@ -5044,7 +5674,7 @@ end;
 	      end if;
 	      PUT_LINE( tab & "LI" & tab & IMAGE( SIZ_BITS / 8 ) );
 	      CODE_EXP( COMP_EXP );									-- valeur tableau : adresse des data
-	      PUT_LINE( tab & "La  ,  0" );
+	      PUT_LINE( tab & "LA  ,  0" );
 	      PUT_LINE( tab & "BLKMOV" );								-- meme forme que la branche DN_RECORD
 	    end;
 
@@ -5058,7 +5688,7 @@ end;
 
 		------------------
 	function  LOOKUP_DISCR_VALUE  ( DISCR_DEFN : TREE ) return INTEGER
-	is		------------------
+	is	------------------
 	begin
 	  for I in 1 .. DISCR_CNT loop
 	    if  DISCR_IDS( I ) = DISCR_DEFN  then
@@ -5068,12 +5698,13 @@ end;
 
 	  PUT_LINE( "; CODE_AGGREGATE record : discriminant de variante sans valeur statique" );
 	  raise PROGRAM_ERROR;
+
 	end	LOOKUP_DISCR_VALUE;
 		------------------
 
 		---------------
 	function  VARIANT_MATCHES	( VAR_E : TREE; VAL : INTEGER ) return BOOLEAN
-	is		---------------
+	is	---------------
 	  CHOICES : SEQ_TYPE	:= LIST( D( AS_CHOICE_S, VAR_E ) );
 	  CH		: TREE;
 	begin
@@ -5095,13 +5726,14 @@ end;
 	    end if;
 	  end loop;
 
-	  return FALSE;
+	  return  FALSE;
+
 	end	VARIANT_MATCHES;
 		---------------
 
 		--------------
 	procedure WALK_COMP_LIST	( CL : TREE )
-	is		--------------
+	is	--------------
 	  V_DECL_S	: SEQ_TYPE;
 	  V_DECL  : TREE;
 	begin
@@ -5253,8 +5885,6 @@ end;
 	    PUT_LINE( TYPE_INFO_STR( FIELD_TYPE ) & ".size" );
 
 	    CODE_COMPOSITE_DATA_ADDRESS( FIELD_EXP );
---	    EXPRESSIONS.CODE_EXP( FIELD_EXP );
---	    PUT_LINE( tab & "La  ,  0" );
 	    PUT_LINE( tab & "BLKMOV" );
 
 	  else
@@ -5323,77 +5953,77 @@ SCAN_DECLS:
 	while not IS_EMPTY( COMP_DECL_S )  loop
 	  POP( COMP_DECL_S, COMP_DECL );
 
-if  COMP_DECL.TY /= DN_NULL_COMP_DECL  then
+	  if  COMP_DECL.TY /= DN_NULL_COMP_DECL  then
 
-	  declare
-	    COMP_ID_S	: SEQ_TYPE	:= LIST( D( AS_SOURCE_NAME_S, COMP_DECL ) );
-	    COMP_ID	: TREE;
+	    declare
+	      COMP_ID_S	: SEQ_TYPE	:= LIST( D( AS_SOURCE_NAME_S, COMP_DECL ) );
+	      COMP_ID	: TREE;
 
-	  begin
+	    begin
 SCAN_IDS:
-	    while  not IS_EMPTY( COMP_ID_S )  loop
-	      POP( COMP_ID_S, COMP_ID );
-	      exit SCAN_DECLS  when  IS_EMPTY( NORM_SEQ );							-- securite : agregat plus court que decls
-	      POP( NORM_SEQ, COMP_EXP );
-	      declare
-	        COMP_TYPE	: TREE		:= D( SM_OBJ_TYPE, COMP_ID );
-	        COMP_STR	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, COMP_ID ) );
+	      while  not IS_EMPTY( COMP_ID_S )  loop
+	        POP( COMP_ID_S, COMP_ID );
+	        exit SCAN_DECLS  when  IS_EMPTY( NORM_SEQ );							-- securite : agregat plus court que decls
+	        POP( NORM_SEQ, COMP_EXP );
+	        declare
+		COMP_TYPE : TREE		:= D( SM_OBJ_TYPE, COMP_ID );
+		COMP_STR  :constant STRING	:= PRINT_NAME( D( LX_SYMREP, COMP_ID ) );
 
-	      begin
-	        if  COMP_EXP.TY = DN_AGGREGATE  then
-		PUT_LINE( tab & "DUP" );
-		PUT( tab & "LVA" & tab & ", " );							-- composant composite : calculer adresse dans zone parent
-		CODI.REGIONS_PATH( TYPE_NAME );
-		PUT_LINE( TYPE_NAME_STR & "." & COMP_STR );
-		CODE_AGGREGATE( COMP_EXP, COMP_TYPE );							-- adresse du sous-composant empilée, appel récursif
+	        begin
+		if  COMP_EXP.TY = DN_AGGREGATE  then
+		  PUT_LINE( tab & "DUP" );
+		  PUT( tab & "LVA" & tab & ", " );							-- composant composite : calculer adresse dans zone parent
+		  CODI.REGIONS_PATH( TYPE_NAME );
+		  PUT_LINE( TYPE_NAME_STR & "." & COMP_STR );
+		  CODE_AGGREGATE( COMP_EXP, COMP_TYPE );							-- adresse du sous-composant empilée, appel récursif
 
-	        else
-		declare
-		  EFFECTIVE_COMP_TYPE	: TREE	:= COMP_TYPE;
-		begin
-		  while  EFFECTIVE_COMP_TYPE.TY = DN_L_PRIVATE
+		else
+		  declare
+		    EFFECTIVE_COMP_TYPE	: TREE	:= COMP_TYPE;
+		  begin
+		    while  EFFECTIVE_COMP_TYPE.TY = DN_L_PRIVATE
 			or  EFFECTIVE_COMP_TYPE.TY = DN_PRIVATE  loop
-		    EFFECTIVE_COMP_TYPE := D( SM_TYPE_SPEC, EFFECTIVE_COMP_TYPE );
-		  end loop;
+		      EFFECTIVE_COMP_TYPE := D( SM_TYPE_SPEC, EFFECTIVE_COMP_TYPE );
+		    end loop;
 
-		  if  EFFECTIVE_COMP_TYPE.TY = DN_RECORD  then
+		    if  EFFECTIVE_COMP_TYPE.TY = DN_RECORD  then
 		  -- Composante record : BLKMOV depuis les donnees de la source vers l'offset dans le parent
-		    declare
-		      CN_STR : constant STRING := TYPE_INFO_STR( EFFECTIVE_COMP_TYPE );
-		    begin
+		      declare
+		        CN_STR : constant STRING := TYPE_INFO_STR( EFFECTIVE_COMP_TYPE );
+		      begin
 		    -- @DST = adresse de la composante dans le record parent
+		        PUT_LINE( tab & "DUP" );
+		        PUT( tab & "LVA" & tab & ", " );
+		        CODI.REGIONS_PATH( TYPE_NAME );
+		        PUT_LINE( TYPE_NAME_STR & "." & COMP_STR );
+
+		        PUT( tab & "LI" & tab );
+		        CODI.REGIONS_PATH( D( XD_SOURCE_NAME, EFFECTIVE_COMP_TYPE ) );
+		        PUT_LINE( CN_STR & ".size" );	         -- LEN
+
+		        CODE_COMPOSITE_DATA_ADDRESS( COMP_EXP );
+
+		        PUT_LINE( tab & "BLKMOV" );
+		      end;
+
+		    else
+		  -- Composante scalaire : store direct
 		      PUT_LINE( tab & "DUP" );
 		      PUT( tab & "LVA" & tab & ", " );
 		      CODI.REGIONS_PATH( TYPE_NAME );
 		      PUT_LINE( TYPE_NAME_STR & "." & COMP_STR );
-
-		      PUT( tab & "LI" & tab );
-		      CODI.REGIONS_PATH( D( XD_SOURCE_NAME, EFFECTIVE_COMP_TYPE ) );
-		      PUT_LINE( CN_STR & ".size" );	         -- LEN
-
-		      CODE_COMPOSITE_DATA_ADDRESS( COMP_EXP );
---		      EXPRESSIONS.CODE_EXP( COMP_EXP );	        -- empiле @doublet source
---		      PUT_LINE( tab & "La  ,  0" );	         -- @SRC = data_ptr
-
-		      PUT_LINE( tab & "BLKMOV" );
-		    end;
-
-		  else
-		  -- Composante scalaire : store direct
-		    PUT_LINE( tab & "DUP" );
-		    PUT( tab & "LVA" & tab & ", " );
-		    CODI.REGIONS_PATH( TYPE_NAME );
-		    PUT_LINE( TYPE_NAME_STR & "." & COMP_STR );
-		    EXPRESSIONS.CODE_EXP( COMP_EXP );
-		    PUT_LINE( tab & "S" & CODI.OPER_SIZ_CHAR( EFFECTIVE_COMP_TYPE ) );
-		  end if;
-		end;
-	        end if;
-	      end;
-	    end loop		SCAN_IDS;
-	  end;
+		      EXPRESSIONS.CODE_EXP( COMP_EXP );
+		      PUT_LINE( tab & "S" & CODI.OPER_SIZ_CHAR( EFFECTIVE_COMP_TYPE ) );
+		    end if;
+		  end;
+		end if;
+	        end;
+	      end loop		SCAN_IDS;
+				--------
+	    end;
 	  end if;
 	end loop		SCAN_DECLS;
+			----------
 	PUT_LINE( tab & "DROP" );									-- Enlever l'adresse de debut data record de reference
 
         end	ASSIGN_RECORD_AGGREGATE;
@@ -5456,11 +6086,11 @@ SCAN_IDS:
 
 	  begin		-- repr = Nv.Ds / (Dv.Ns), Ds et Ns via le use__info (formule unique)
 	    PUT_LINE( tab & "LI" & tab & PRINT_NUM( D( XD_NUMER, VALUE ) ) );					-- Nv
-	    PUT_LINE( tab & "La " & IMAGE( GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );
-	    PUT_LINE( tab & "LIq , -" & TYPE_STR & "__u_ofs, STANDARD._FIXED_USE_INFO.DENOM" );			-- Ds
+	    PUT_LINE( tab & "LA " & IMAGE( GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );
+	    PUT_LINE( tab & "LIQ , -" & TYPE_STR & "__u_ofs, STANDARD._FIXED_USE_INFO.DENOM" );			-- Ds
 	    PUT_LINE( tab & "LI" & tab & PRINT_NUM( D( XD_DENOM, VALUE ) ) );					-- Dv
-	    PUT_LINE( tab & "La " & IMAGE( GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );
-	    PUT_LINE( tab & "LIq , -" & TYPE_STR & "__u_ofs, STANDARD._FIXED_USE_INFO.NUMER" );			-- Ns
+	    PUT_LINE( tab & "LA " & IMAGE( GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );
+	    PUT_LINE( tab & "LIQ , -" & TYPE_STR & "__u_ofs, STANDARD._FIXED_USE_INFO.NUMER" );			-- Ns
 	    PUT_LINE( tab & "MUL" );									-- Dv.Ns
 	    PUT_LINE( tab & "CVTIX" );
 	  end;
@@ -5590,7 +6220,7 @@ SCAN_IDS:
 	-- impose par sem est T( A * T(N) ) ; l'operande DN_CONVERSION->FIXED
 	-- d'un INTEGER est code NU (rA * N exact, meme small, zero perte).
 
-    TARGET_TYPE	: TREE		:= FULL_VIEW( D( SM_EXP_TYPE, CONVERSION ) );
+    TARGET_TYPE	: TREE		:= FULL_TYPE_VIEW( D( SM_EXP_TYPE, CONVERSION ) );
     FUNCTION_CALL	: TREE		:= D( AS_EXP, CONVERSION );
     OP_STR	:constant STRING	:= PRINT_NAME( D( LX_SYMREP, D( AS_NAME, FUNCTION_CALL ) ) );
     PRM_S : SEQ_TYPE	:= LIST( D( SM_NORMALIZED_PARAM_S, FUNCTION_CALL ) );
@@ -5625,7 +6255,7 @@ SCAN_IDS:
 		-----------
     procedure	SMALL_OF  ( PRM : TREE;  N, D_OUT : out LONG_INTEGER )
     is		-----------
-      SP  : TREE	:= D( CD_IMPL_SMALL, FULL_VIEW( D( SM_EXP_TYPE, PRM ) ) );
+      SP  : TREE	:= D( CD_IMPL_SMALL, FULL_TYPE_VIEW( D( SM_EXP_TYPE, PRM ) ) );
     begin
       N	  := LONG_INTEGER'VALUE( PRINT_NUM( D( XD_NUMER, SP ) ) );
       D_OUT := LONG_INTEGER'VALUE( PRINT_NUM( D( XD_DENOM, SP ) ) );
@@ -5741,7 +6371,7 @@ SCAN_IDS:
 	-- celui de la garde (operandes DN_FIXED) : interception >= garde
 	-- par construction. NB : SM_EXP_TYPE ABSENT sur le FUNCTION_CALL
 	-- ne se teste PAS (sentinelle VOID/NIL incertaine -- lecon F-3).
-      if  FULL_VIEW( TARGET_TYPE ).TY = DN_FIXED
+      if  FULL_TYPE_VIEW( TARGET_TYPE ).TY = DN_FIXED
       and then  SRC_EXP.TY = DN_FUNCTION_CALL
       and then  D( SM_DEFN, D( AS_NAME, SRC_EXP ) ).TY = DN_BLTN_OPERATOR_ID	-- pas un "*" utilisateur
       then
@@ -5757,8 +6387,8 @@ SCAN_IDS:
 	  T1 := D( SM_EXP_TYPE, PRM_1 );
 	  T2 := D( SM_EXP_TYPE, PRM_2 );
 	  if  T1 /= TREE_VOID  and then  T2 /= TREE_VOID
-	  and then  FULL_VIEW( T1 ).TY = DN_FIXED
-	  and then  FULL_VIEW( T2 ).TY = DN_FIXED
+	  and then  FULL_TYPE_VIEW( T1 ).TY = DN_FIXED
+	  and then  FULL_TYPE_VIEW( T2 ).TY = DN_FIXED
 	  then
 	    CODE_FIXED_MUL_DIV_CONVERSION( CONVERSION );
 	    return;
@@ -5774,13 +6404,8 @@ SCAN_IDS:
 		SRC_TYPE.TY not in DN_UNIVERSAL_INTEGER .. DN_UNIVERSAL_REAL
 		and then  not( IS_GENERIC_FORMAL_TYPE( D( XD_SOURCE_NAME, SRC_TYPE ) ) ) )
       then											-- Laisser les PRIVATE
-        if  TARGET_TYPE.TY = DN_PRIVATE  then
-	TARGET_TYPE := D( SM_TYPE_SPEC, TARGET_TYPE );
-        end if;
-
-        if  SRC_TYPE.TY = DN_PRIVATE  then
-	SRC_TYPE := D( SM_TYPE_SPEC, SRC_TYPE );
-        end if;
+        TARGET_TYPE := FULL_TYPE_VIEW( TARGET_TYPE );								--| C1-bis (temoin CONV_DER1 30/07) : regle unique de percage --
+        SRC_TYPE	:= FULL_TYPE_VIEW( SRC_TYPE );								--| suit SM_DERIVED ; couvre DN_L_PRIVATE (avant : DN_PRIVATE, un pas)
       end if;
 
       if  CODI.DEBUG  then  PUT_LINE( "; CODE CONVERSION SOURCE " & NODE_NAME'IMAGE( SRC_TYPE.TY )
@@ -5807,10 +6432,10 @@ SCAN_IDS:
 		TYPE_STR		:constant STRING := PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
 
 	        begin										-- L'entier MANTISSA est empilé
-		PUT_LINE( tab & "La " & IMAGE( GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );		-- Adresse de frame generique
-		PUT_LINE( tab & "LIq , -" & TYPE_STR & "__u_ofs, STANDARD._FIXED_USE_INFO.NUMER" );		-- Charge l'entier NUMER
-		PUT_LINE( tab & "La " & IMAGE( GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );		-- Adresse de frame generique
-		PUT_LINE( tab & "LIq , -" & TYPE_STR & "__u_ofs, STANDARD._FIXED_USE_INFO.DENOM" );		-- Charge l'entier DENOM
+		PUT_LINE( tab & "LA " & IMAGE( GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );		-- Adresse de frame generique
+		PUT_LINE( tab & "LIQ , -" & TYPE_STR & "__u_ofs, STANDARD._FIXED_USE_INFO.NUMER" );		-- Charge l'entier NUMER
+		PUT_LINE( tab & "LA " & IMAGE( GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );		-- Adresse de frame generique
+		PUT_LINE( tab & "LIQ , -" & TYPE_STR & "__u_ofs, STANDARD._FIXED_USE_INFO.DENOM" );		-- Charge l'entier DENOM
 		PUT_LINE( tab & "CVTXI" );								-- / DENOM
 	        end;
 
@@ -5851,12 +6476,12 @@ SCAN_IDS:
 		  SRC_TYPE_STR	: constant STRING	:= PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
 		begin
 		  PUT_LINE( tab & "CVTIF" );								-- La mantisse fixed est deja au sommet de la pile.
-		  PUT_LINE( tab & "La " & IMAGE( GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );		-- Adresse de frame generique
-		  PUT_LINE( tab & "LIq , -" & SRC_TYPE_STR & "__u_ofs, STANDARD._FIXED_USE_INFO.NUMER" );		-- Charge l'entier NUMER
+		  PUT_LINE( tab & "LA " & IMAGE( GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );		-- Adresse de frame generique
+		  PUT_LINE( tab & "LIQ , -" & SRC_TYPE_STR & "__u_ofs, STANDARD._FIXED_USE_INFO.NUMER" );		-- Charge l'entier NUMER
 		  PUT_LINE( tab & "CVTIF" );
 		  PUT_LINE( tab & "FMUL" );
-		  PUT_LINE( tab & "La " & IMAGE( GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );		-- Adresse de frame generique
-		  PUT_LINE( tab & "LIq , -" & SRC_TYPE_STR & "__u_ofs, STANDARD._FIXED_USE_INFO.DENOM" );		-- Charge l'entier DENOM
+		  PUT_LINE( tab & "LA " & IMAGE( GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );		-- Adresse de frame generique
+		  PUT_LINE( tab & "LIQ , -" & SRC_TYPE_STR & "__u_ofs, STANDARD._FIXED_USE_INFO.DENOM" );		-- Charge l'entier DENOM
 		  PUT_LINE( tab & "CVTIF" );
 		  PUT_LINE( tab & "FDIV" );
 
@@ -5922,12 +6547,12 @@ SCAN_IDS:
 		TYPE_NAME		: TREE		:= D( XD_SOURCE_NAME, TARGET_TYPE );
 		TARGET_TYPE_STR	: constant STRING	:= PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
 	        begin
-		PUT_LINE( tab & "La " & IMAGE( GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );		-- Adresse de frame generique
-		PUT_LINE( tab & "LIq , -" & TARGET_TYPE_STR & "__u_ofs, STANDARD._FIXED_USE_INFO.DENOM" );		-- Charge l'entier DENOM
+		PUT_LINE( tab & "LA " & IMAGE( GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );		-- Adresse de frame generique
+		PUT_LINE( tab & "LIQ , -" & TARGET_TYPE_STR & "__u_ofs, STANDARD._FIXED_USE_INFO.DENOM" );		-- Charge l'entier DENOM
 		PUT_LINE( tab & "CVTIF" );
 		PUT_LINE( tab & "FMUL" );								-- MANTISSA * DENOM
-		PUT_LINE( tab & "La " & IMAGE( GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );		-- Adresse de frame generique
-		PUT_LINE( tab & "LIq , -" & TARGET_TYPE_STR & "__u_ofs, STANDARD._FIXED_USE_INFO.NUMER" );		-- Charge l'entier NUMER
+		PUT_LINE( tab & "LA " & IMAGE( GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );		-- Adresse de frame generique
+		PUT_LINE( tab & "LIQ , -" & TARGET_TYPE_STR & "__u_ofs, STANDARD._FIXED_USE_INFO.NUMER" );		-- Charge l'entier NUMER
 		PUT_LINE( tab & "CVTIF" );
 		PUT_LINE( tab & "FDIV" );								-- / NUMER
 		PUT_LINE( tab & "CVTFIR" );
@@ -5942,10 +6567,10 @@ SCAN_IDS:
 		TYPE_NAME		: TREE		:= D( XD_SOURCE_NAME, TARGET_TYPE );
 		TARGET_TYPE_STR	: constant STRING	:= PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
 	        begin
-		PUT_LINE( tab & "La " & IMAGE( GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );		-- Adresse de frame generique
-		PUT_LINE( tab & "LIq , -" & TARGET_TYPE_STR & "__u_ofs, STANDARD._FIXED_USE_INFO.DENOM" );		-- Charge l'entier DENOM
-		PUT_LINE( tab & "La " & IMAGE( GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );		-- Adresse de frame generique
-		PUT_LINE( tab & "LIq , -" & TARGET_TYPE_STR & "__u_ofs, STANDARD._FIXED_USE_INFO.NUMER" );		-- Charge l'entier NUMER
+		PUT_LINE( tab & "LA " & IMAGE( GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );		-- Adresse de frame generique
+		PUT_LINE( tab & "LIQ , -" & TARGET_TYPE_STR & "__u_ofs, STANDARD._FIXED_USE_INFO.DENOM" );		-- Charge l'entier DENOM
+		PUT_LINE( tab & "LA " & IMAGE( GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );		-- Adresse de frame generique
+		PUT_LINE( tab & "LIQ , -" & TARGET_TYPE_STR & "__u_ofs, STANDARD._FIXED_USE_INFO.NUMER" );		-- Charge l'entier NUMER
 		PUT_LINE( tab & "CVTIX" );
 
 	        end	INTEGER_TO_FIXED_IN_GENERIC;
@@ -5960,10 +6585,10 @@ SCAN_IDS:
 		if PRINT_NUM( D( XD_NUMER, SOURCE_SMALL ) ) = PRINT_NUM( D( XD_NUMER, TARGET_SMALL ) )		-- Comparaisons de chaînes à revoir
 		   and then PRINT_NUM( D( XD_DENOM, SOURCE_SMALL ) ) = PRINT_NUM( D( XD_DENOM, TARGET_SMALL ) )
 		then
-		  null;  -- meme representation : conversion identite
+		  null;										-- INTENTIONNEL : meme representation, conversion identite
 
 		else
-		  PUT_LINE( "; FIXED TO FIXED WITH DIFFERENT SMALL A FAIRE" );
+		  TROU( "fixed vers fixed a smalls differents (valeur laissee NON convertie)" );		--| vague 5 : pilier F-D
 		end if;
 
 	        end	FIXED_TO_FIXED_IN_GENERIC;
@@ -6009,17 +6634,32 @@ SCAN_IDS:
 	        NT	: LONG_INTEGER	:= LONG_INTEGER'VALUE( PRINT_NUM( D( XD_NUMER, TARGET_SMALL ) ) );
 	        DT	: LONG_INTEGER	:= LONG_INTEGER'VALUE( PRINT_NUM( D( XD_DENOM, TARGET_SMALL ) ) );
 	      begin
-	        EMIT_FIXED_RESCALE( NS * DT, DS * NT );			-- identite si rationnels reduits egaux
+	        EMIT_FIXED_RESCALE( NS * DT, DS * NT );							-- identite si rationnels reduits egaux
 	      end;
 	    end if;
 	  end if;
-								-- A COMPLETER pour FIXED vers FIXED
+												-- A COMPLETER pour FIXED vers FIXED
 	end	FIXED_TARGET;
 		------------
 
+        when DN_RECORD | DN_CONSTRAINED_RECORD =>
+			--| INTENTIONNEL (chantier C1, recensement auto-compilation du
+			--| 28/07 -- 59 traversees ; set_util, sets prives derives) :
+			--| conversion entre type DERIVE et parent, LRM 4.6 -- MEME
+			--| representation, identite sur l'@doublet deja empile par
+			--| CODE_EXP.  CODE_RANGE_CHECK aval : no-op (garde scalaire).
+	null;											--| INTENTIONNEL (cf. ci-dessus)
+
+        when DN_CONSTRAINED_ARRAY =>
+			--| INTENTIONNEL (chantier C1, recensement 28/07 -- 1 traversee,
+			--| idl.adb) : derivation, identite sur l'@doublet.  DETTE au
+			--| carnet (ETAT_PILIERS) : glissement de bornes + verification
+			--| d'index LRM 4.6(11) NON EMIS -- non exerce par le corpus
+			--| (conversion entre sous-types de MEME profil d'index).
+	null;											--| INTENTIONNEL (cf. ci-dessus)
+
         when others =>
-	PUT_LINE( "; EXPRESSIONS.CODE_CONVERSION cible non faite " & NODE_NAME'IMAGE( TARGET_TYPE.TY ) );
-	null;
+	TROU( "CODE_CONVERSION cible non faite", TARGET_TYPE );						--| vague 5 : l'exemple du briefing, valeur laissee
         end case;
       end if;
 
@@ -6031,29 +6671,31 @@ SCAN_IDS:
 	---------------
 
 
-procedure CODE_ARRAY_AGGREGATE_DYNAMIC ( AGG, TYPE_SPEC : TREE )
-  is
-    BASE_TYPE  : TREE    := D( SM_BASE_TYPE, TYPE_SPEC );
-    COMP_TYPE  : TREE    := D( SM_COMP_TYPE, BASE_TYPE );
-    COMP_BITS  : INTEGER := DI( CD_IMPL_SIZE, COMP_TYPE );
-    COMP_BYTES : INTEGER := COMP_BITS / CODI.STORAGE_UNIT;
-    LVL	     : constant STRING := IMAGE( CODI.CUR_LEVEL );
-    TYPE_NAME  : TREE    := D( XD_SOURCE_NAME, TYPE_SPEC );
-    TYPE_STR   : constant STRING := PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
-    ANON	     : constant STRING := ANONYMOUS_NAME_AT( AGG );
+		----------------------------
+  procedure	CODE_ARRAY_AGGREGATE_DYNAMIC  ( AGG, TYPE_SPEC : TREE )
+    is		----------------------------
+
+      BASE_TYPE	: TREE		:= D( SM_BASE_TYPE, TYPE_SPEC );
+      COMP_TYPE	: TREE		:= D( SM_COMP_TYPE, BASE_TYPE );
+      COMP_BITS	: INTEGER		:= DI( CD_IMPL_SIZE, COMP_TYPE );
+      COMP_BYTES	: INTEGER		:= COMP_BITS / CODI.STORAGE_UNIT;
+      LVL		: constant STRING	:= IMAGE( CODI.CUR_LEVEL );
+      TYPE_NAME	: TREE		:= D( XD_SOURCE_NAME, TYPE_SPEC );
+      TYPE_STR	: constant STRING	:= PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
+      ANON	: constant STRING	:= ANONYMOUS_NAME_AT( AGG );
 
     -- Bornes de l'agrégat : SM_DISCRETE_RANGE ou les CHOICES du premier NAMED
-    NORM_SEQ   : SEQ_TYPE := LIST( D( SM_NORMALIZED_COMP_S, AGG ) );
+      NORM_SEQ	: SEQ_TYPE	:= LIST( D( SM_NORMALIZED_COMP_S, AGG ) );
   begin
     -- ---- Declarations ----
     PUT_LINE( "namespace " & ANON );
-    PUT_LINE( "  VAR SIZ,      d" );
-    PUT_LINE( "  VAR _COMP_SIZ, d" );
-    PUT_LINE( "  VAR _FST_1,    d" );
-    PUT_LINE( "  VAR _LST_1,    d" );
+    PUT_LINE( "  VAR SIZ__, D" );
+    PUT_LINE( "  VAR _COMP_SIZ, D" );
+    PUT_LINE( "  VAR _FST_1, D" );
+    PUT_LINE( "  VAR _LST_1, D" );
     PUT_LINE( "end namespace" );
-    PUT_LINE( "VAR" & tab & ANON & "_disp, q" );
-    PUT_LINE( "VAR" & tab & ANON & "__u,   q" );
+    PUT_LINE( "VAR" & tab & ANON & "_disp, Q" );
+    PUT_LINE( "VAR" & tab & ANON & "__u,   Q" );
 
     -- ---- Calculer et stocker FST et LST ----
     -- Pour STRING'(1..COMPL=>'0'), SM_DISCRETE_RANGE de l'agrégat
@@ -6063,28 +6705,28 @@ procedure CODE_ARRAY_AGGREGATE_DYNAMIC ( AGG, TYPE_SPEC : TREE )
     begin
       if DR /= TREE_VOID then
         CODE_EXP( D( AS_EXP1, DR ) );
-        PUT_LINE( tab & "Sd  " & LVL & ", " & ANON & "._FST_1" );
+        PUT_LINE( tab & "SD  " & LVL & ", " & ANON & "._FST_1" );
         CODE_EXP( D( AS_EXP2, DR ) );
         PUT_LINE( tab & "DUP" );
-        PUT_LINE( tab & "Sd  " & LVL & ", " & ANON & "._LST_1" );
+        PUT_LINE( tab & "SD  " & LVL & ", " & ANON & "._LST_1" );
       else
         -- Pas de range explicite : FST=1, LST=nb d'elements dans l'agrégat
         PUT_LINE( tab & "LI  1" );
-        PUT_LINE( tab & "Sd  " & LVL & ", " & ANON & "._FST_1" );
+        PUT_LINE( tab & "SD  " & LVL & ", " & ANON & "._FST_1" );
         -- LST = nombre d'associations (taille de NORM_SEQ)
         -- Pour 'others', c'est la range entière -> fallback LI 0
         PUT_LINE( tab & "LI  0" );
-        PUT_LINE( tab & "Sd  " & LVL & ", " & ANON & "._LST_1" );
+        PUT_LINE( tab & "SD  " & LVL & ", " & ANON & "._LST_1" );
       end if;
     end;
     -- COMP_SIZ
     PUT_LINE( tab & "LI"  & tab & IMAGE( COMP_BITS ) );
-    PUT_LINE( tab & "Sd  " & LVL & ", " & ANON & "._COMP_SIZ" );
+    PUT_LINE( tab & "SD  " & LVL & ", " & ANON & "._COMP_SIZ" );
 
     -- ---- Allouer (LST - FST + 1) * COMP_BYTES octets sur co-pile ----
-    PUT_LINE( tab & "Ld  " & LVL & ", " & ANON & "._LST_1" );
+    PUT_LINE( tab & "LD  " & LVL & ", " & ANON & "._LST_1" );
     PUT_LINE( tab & "INC" );
-    PUT_LINE( tab & "Ld  " & LVL & ", " & ANON & "._FST_1" );
+    PUT_LINE( tab & "LD  " & LVL & ", " & ANON & "._FST_1" );
     PUT_LINE( tab & "SUB" );
     -- SIZ total en bits
     if COMP_BITS /= CODI.STORAGE_UNIT then
@@ -6094,11 +6736,11 @@ procedure CODE_ARRAY_AGGREGATE_DYNAMIC ( AGG, TYPE_SPEC : TREE )
       PUT_LINE( tab & "DIV" );
     end if;
     PUT_LINE( tab & "DUP" );
-    PUT_LINE( tab & "Sd  " & LVL & ", " & ANON & ".SIZ" );
+    PUT_LINE( tab & "SD  " & LVL & ", " & ANON & ".SIZ__" );
     -- Re-calculer en octets pour l'allocation
-    PUT_LINE( tab & "Ld  " & LVL & ", " & ANON & "._LST_1" );
+    PUT_LINE( tab & "LD  " & LVL & ", " & ANON & "._LST_1" );
     PUT_LINE( tab & "INC" );
-    PUT_LINE( tab & "Ld  " & LVL & ", " & ANON & "._FST_1" );
+    PUT_LINE( tab & "LD  " & LVL & ", " & ANON & "._FST_1" );
     PUT_LINE( tab & "SUB" );
     if COMP_BYTES /= 1 then
       PUT_LINE( tab & "LI"  & tab & IMAGE( COMP_BYTES ) );
@@ -6106,11 +6748,11 @@ procedure CODE_ARRAY_AGGREGATE_DYNAMIC ( AGG, TYPE_SPEC : TREE )
     end if;
     PUT_LINE( tab & "CO_VAR" );	      -- @data sur pile
     PUT_LINE( tab & "DUP" );
-    PUT_LINE( tab & "Sa  " & LVL & ", " & ANON & "_disp" );  -- sauvegarder data_ptr
+    PUT_LINE( tab & "SA  " & LVL & ", " & ANON & "_disp" );  -- sauvegarder data_ptr
 
     -- ---- Remplir info_ptr ----
-    PUT_LINE( tab & "LVA " & LVL & ", " & ANON & ".SIZ" );
-    PUT_LINE( tab & "Sa  " & LVL & ", " & ANON & "__u" );
+    PUT_LINE( tab & "LVA " & LVL & ", " & ANON & ".SIZ__" );
+    PUT_LINE( tab & "SA  " & LVL & ", " & ANON & "__u" );
 
     -- ---- Appeler CODE_AGGREGATE avec @data en tête de pile ----
     -- (CO_VAR a laissé @data, DUP l'a copié, Sa l'a consommé,
@@ -6119,7 +6761,9 @@ procedure CODE_ARRAY_AGGREGATE_DYNAMIC ( AGG, TYPE_SPEC : TREE )
 
     -- ---- Laisser @doublet sur la pile ----
     PUT_LINE( tab & "LVA " & LVL & ", " & ANON & "_disp" );
-  end CODE_ARRAY_AGGREGATE_DYNAMIC;
+
+  end	CODE_ARRAY_AGGREGATE_DYNAMIC;
+	----------------------------
 
 
 				--------------
@@ -6144,9 +6788,6 @@ procedure CODE_ARRAY_AGGREGATE_DYNAMIC ( AGG, TYPE_SPEC : TREE )
       CODE_RANGE_CHECK( D( SM_EXP_TYPE, QUALIFIED ) );							-- E-D5 : gamme du sous-type qualifie (4.7)
 
     else
-
-put_line( "; CODE_QUALIFIED : DN_QUALIFIED" & NODE_NAME'IMAGE( SRC_EXP.TY ) );
-
       if  SRC_EXP.TY = DN_AGGREGATE  then
         declare
 	AGG_TYPE : TREE := D( SM_EXP_TYPE, QUALIFIED );
@@ -6184,22 +6825,22 @@ put_line( "; CODE_QUALIFIED : DN_QUALIFIED" & NODE_NAME'IMAGE( SRC_EXP.TY ) );
 
 	    -- ---- Déclarations dans la VARzone ----
 	    PUT_LINE( "namespace " & ANON & "_info" );
-	    PUT_LINE( "  VAR SIZ,      d" );
-	    PUT_LINE( "  VAR _COMP_SIZ, d" );
-	    PUT_LINE( "  VAR _FST_1,    d" );
-	    PUT_LINE( "  VAR _LST_1,    d" );
+	    PUT_LINE( "  VAR SIZ__, D" );
+	    PUT_LINE( "  VAR _COMP_SIZ, D" );
+	    PUT_LINE( "  VAR _FST_1, D" );
+	    PUT_LINE( "  VAR _LST_1, D" );
 	    PUT_LINE( "end namespace" );
-	    PUT_LINE( "VAR" & tab & ANON & "_disp, q" );
-	    PUT_LINE( "VAR" & tab & ANON & "__u,   q" );
+	    PUT_LINE( "VAR" & tab & ANON & "_disp, Q" );
+	    PUT_LINE( "VAR" & tab & ANON & "__u,   Q" );
 
 	    -- ---- Calculer et stocker FST_1 ----
 	    CODE_EXP( D( AS_EXP1, RNG ) );	         -- 1 (statique mais on le génère)
-	    PUT_LINE( tab & "Sd  " & LVL_STR & ", " & ANON & "_info._FST_1" );
+	    PUT_LINE( tab & "SD  " & LVL_STR & ", " & ANON & "_info._FST_1" );
 
 	    -- ---- Calculer et stocker LST_1 = COMPL ----
 	    CODE_EXP( D( AS_EXP2, RNG ) );	         -- COMPL (dynamique)
 	    PUT_LINE( tab & "DUP" );
-	    PUT_LINE( tab & "Sd  " & LVL_STR & ", " & ANON & "_info._LST_1" );
+	    PUT_LINE( tab & "SD  " & LVL_STR & ", " & ANON & "_info._LST_1" );
 
 	    -- ---- COUNT = LST_1 - FST_1 + 1 (LST encore en pile) ----
 	    CODE_EXP( D( AS_EXP1, RNG ) );	         -- FST_1
@@ -6208,7 +6849,7 @@ put_line( "; CODE_QUALIFIED : DN_QUALIFIED" & NODE_NAME'IMAGE( SRC_EXP.TY ) );
 	    PUT_LINE( tab & "CLAMP0" );
 	    -- ---- Stocker COMP_SIZ en bits ----
 	    PUT_LINE( tab & "LI" & tab & IMAGE( COMP_BITS ) );
-	    PUT_LINE( tab & "Sd  " & LVL_STR & ", " & ANON & "_info._COMP_SIZ" );
+	    PUT_LINE( tab & "SD  " & LVL_STR & ", " & ANON & "_info._COMP_SIZ" );
 
 	    -- ---- Stocker SIZ = COUNT * COMP_BITS ----
 	    -- COUNT encore en pile
@@ -6217,7 +6858,7 @@ put_line( "; CODE_QUALIFIED : DN_QUALIFIED" & NODE_NAME'IMAGE( SRC_EXP.TY ) );
 	      PUT_LINE( tab & "LI" & tab & IMAGE( COMP_BITS ) );
 	      PUT_LINE( tab & "MUL" );
 	    end if;
-	    PUT_LINE( tab & "Sd  " & LVL_STR & ", " & ANON & "_info.SIZ" );
+	    PUT_LINE( tab & "SD  " & LVL_STR & ", " & ANON & "_info.SIZ__" );
 
 	    -- ---- Allouer COUNT * COMP_BYTES octets sur la co-pile ----
 	    -- COUNT encore en pile
@@ -6226,15 +6867,15 @@ put_line( "; CODE_QUALIFIED : DN_QUALIFIED" & NODE_NAME'IMAGE( SRC_EXP.TY ) );
 	      PUT_LINE( tab & "MUL" );
 	    end if;
 	    PUT_LINE( tab & "CO_VAR" );	 -- depile taille, empile @data
-	    PUT_LINE( tab & "Sa  " & LVL_STR & ", " & ANON & "_disp" );
+	    PUT_LINE( tab & "SA  " & LVL_STR & ", " & ANON & "_disp" );
 
 	    -- ---- Initialiser info_ptr ----
-	    PUT_LINE( tab & "LVA " & LVL_STR & ", " & ANON & "_info.SIZ" );
-	    PUT_LINE( tab & "Sa  " & LVL_STR & ", " & ANON & "__u" );
+	    PUT_LINE( tab & "LVA " & LVL_STR & ", " & ANON & "_info.SIZ__" );
+	    PUT_LINE( tab & "SA  " & LVL_STR & ", " & ANON & "__u" );
 
 	    -- ---- Appeler CODE_AGGREGATE avec @data en tête de pile ----
 	    -- CODE_AGGREGATE(DN_ARRAY) attend @data en sommet de pile
-	    PUT_LINE( tab & "La  " & LVL_STR & ", " & ANON & "_disp" );
+	    PUT_LINE( tab & "LA  " & LVL_STR & ", " & ANON & "_disp" );
 	    CODE_AGGREGATE( SRC_EXP, AGG_TYPE );
 
 	    -- ---- Laisser @doublet sur la pile ----
@@ -6249,28 +6890,27 @@ put_line( "; CODE_QUALIFIED : DN_QUALIFIED" & NODE_NAME'IMAGE( SRC_EXP.TY ) );
 	    LVL_STR	:constant STRING	:= IMAGE( CODI.CUR_LEVEL );
 	    ANON		:constant STRING	:= ANONYMOUS_NAME_AT( SRC_EXP );
 	    TYPE_NAME	: TREE		:= D( XD_SOURCE_NAME, AGG_TYPE );
-	    TYPE_LVL	: constant STRING	:= IMAGE( DI( CD_LEVEL, AGG_TYPE ) );
- --	      TN_STR	:constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
+	    TYPE_LVL	:constant STRING	:= IMAGE( DI( CD_LEVEL, AGG_TYPE ) );
 	    TN_STR	:constant STRING	:= TYPE_INFO_STR( AGG_TYPE );
 
 	  begin
-	    PUT_LINE( "VAR" & tab & ANON & "_disp, q" );
-	    PUT_LINE( "VAR" & tab & ANON & "__u,   q" );
+	    PUT_LINE( "VAR" & tab & ANON & "_disp, Q" );
+	    PUT_LINE( "VAR" & tab & ANON & "__u,   Q" );
 
-	    PUT( tab & "La  " & TYPE_LVL & ", " );			-- __u := use__info du type
+	    PUT( tab & "LA  " & TYPE_LVL & ", " );			-- __u := use__info du type
 	    CODI.REGIONS_PATH( TYPE_NAME );
 	    PUT_LINE( TN_STR & ".use__info" );
-	    PUT_LINE( tab & "Sa  " & LVL_STR & ", " & ANON & "__u" );
+	    PUT_LINE( tab & "SA  " & LVL_STR & ", " & ANON & "__u" );
 
-	    PUT( tab & "Ld  " & TYPE_LVL & ", " );			-- data := CO_VAR( SIZ/8 )
+	    PUT( tab & "LD  " & TYPE_LVL & ", " );			-- data := CO_VAR( SIZ/8 )
 	    CODI.REGIONS_PATH( TYPE_NAME );
-	    PUT_LINE( TN_STR & ".SIZ" );
+	    PUT_LINE( TN_STR & ".SIZ__" );
 	    PUT_LINE( tab & "LI" & tab & IMAGE( CODI.STORAGE_UNIT ) );
 	    PUT_LINE( tab & "DIV" );
 	    PUT_LINE( tab & "CO_VAR" );
-	    PUT_LINE( tab & "Sa  " & LVL_STR & ", " & ANON & "_disp" );
+	    PUT_LINE( tab & "SA  " & LVL_STR & ", " & ANON & "_disp" );
 
-	    PUT_LINE( tab & "La  " & LVL_STR & ", " & ANON & "_disp" );	-- @data pour CODE_AGGREGATE
+	    PUT_LINE( tab & "LA  " & LVL_STR & ", " & ANON & "_disp" );	-- @data pour CODE_AGGREGATE
 	    CODE_AGGREGATE( SRC_EXP, AGG_TYPE );
 
 	    PUT_LINE( tab & "LVA " & LVL_STR & ", " & ANON & "_disp" );	-- @doublet
@@ -6294,25 +6934,24 @@ put_line( "; CODE_QUALIFIED : DN_QUALIFIED" & NODE_NAME'IMAGE( SRC_EXP.TY ) );
 	      ANON	:constant STRING	:= ANONYMOUS_NAME_AT( SRC_EXP );
 	      TYPE_NAME	: TREE		:= D( XD_SOURCE_NAME, REC_TS );
 	      TYPE_LVL	:constant STRING	:= IMAGE( DI( CD_LEVEL, REC_TS ) );
---	        TN_STR	:constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
 	      TN_STR	:constant STRING	:= TYPE_INFO_STR( REC_TS );
 
 	    begin
-	      PUT_LINE( "VAR" & tab & ANON & "_disp, q" );
-	      PUT_LINE( "VAR" & tab & ANON & "__u,   q" );
+	      PUT_LINE( "VAR" & tab & ANON & "_disp, Q" );
+	      PUT_LINE( "VAR" & tab & ANON & "__u,   Q" );
 	      PUT( "VAR" & tab & ANON & "__dat, " );
 	      CODI.REGIONS_PATH( TYPE_NAME );
 	      PUT_LINE( TN_STR & ".size" );
 
 	      PUT_LINE( tab & "LVA " & LVL_STR & ", " & ANON & "__dat" );
-	      PUT_LINE( tab & "Sa  " & LVL_STR & ", " & ANON & "_disp" );
+	      PUT_LINE( tab & "SA  " & LVL_STR & ", " & ANON & "_disp" );
 
-	      PUT( tab & "La  " & TYPE_LVL & ", " );			-- __u := use__info du type
+	      PUT( tab & "LA  " & TYPE_LVL & ", " );			-- __u := use__info du type
 	      CODI.REGIONS_PATH( TYPE_NAME );
 	      PUT_LINE( TN_STR & ".use__info" );
-	      PUT_LINE( tab & "Sa  " & LVL_STR & ", " & ANON & "__u" );
+	      PUT_LINE( tab & "SA  " & LVL_STR & ", " & ANON & "__u" );
 
-	      PUT_LINE( tab & "La  " & LVL_STR & ", " & ANON & "_disp" );	-- @data pour CODE_AGGREGATE
+	      PUT_LINE( tab & "LA  " & LVL_STR & ", " & ANON & "_disp" );	-- @data pour CODE_AGGREGATE
 	      CODE_AGGREGATE( SRC_EXP, AGG_TYPE );
 
 	      PUT_LINE( tab & "LVA " & LVL_STR & ", " & ANON & "_disp" );	-- @doublet
@@ -6328,19 +6967,6 @@ put_line( "; CODE_QUALIFIED : DN_QUALIFIED" & NODE_NAME'IMAGE( SRC_EXP.TY ) );
         end;
 
       -- Expression qualifiee dynamique : generer le code de l'expression
---      if  SRC_EXP.TY = DN_AGGREGATE  then
---	CODE_AGGREGATE( SRC_EXP, D( SM_EXP_TYPE, QUALIFIED ) );
---	declare
---	  AGG_TYPE : TREE := D( SM_EXP_TYPE, QUALIFIED );
---	begin
---	  if  AGG_TYPE.TY = DN_ARRAY  or  AGG_TYPE.TY = DN_CONSTRAINED_ARRAY  then
---	    -- Agrégat de tableau : calculer les bornes, allouer sur co-pile
---	    CODE_ARRAY_AGGREGATE_DYNAMIC( SRC_EXP, AGG_TYPE );
---	  else
---	    CODE_AGGREGATE( SRC_EXP, AGG_TYPE );
---	  end if;
---	end;
-
       else
         CODE_EXP( SRC_EXP );
         CODE_RANGE_CHECK( D( SM_EXP_TYPE, QUALIFIED ) );							-- E-D5 : gamme du sous-type qualifie (4.7)
@@ -6375,15 +7001,67 @@ put_line( "; CODE_QUALIFIED : DN_QUALIFIED" & NODE_NAME'IMAGE( SRC_EXP.TY ) );
       PUT_LINE( tab & "LI" & tab & "1" );
       PUT_LINE( tab & "OUX" );
     end if;
+
   end	CODE_RANGE_MEMBERSHIP;
 	---------------------
+
+
+			-------------------------
+  procedure		CODE_SCALAR_SUBTYPE_BOUND	( TYPE_SPEC :TREE; IS_LAST :BOOLEAN )
+  is			-------------------------
+
+	-- idiome CODE_SCALAR_SUBTYPE_FIRST_LAST (ex-LOAD_BOUND de CODE_RANGE_CHECK, factorise)
+    SUBTYPE_NAME	:constant TREE	:= D( XD_SOURCE_NAME, TYPE_SPEC );
+    SUBTYPE_STR	:constant STRING	:= TYPE_INFO_STR( TYPE_SPEC );
+    TYPE_LVL	:constant INTEGER	:= DI( CD_LEVEL, TYPE_SPEC );
+
+  begin
+    PUT( tab & OPER_LOAD_STR( TYPE_SPEC ) & tab & IMAGE( TYPE_LVL ) & ", " );
+    if  TYPE_LVL /= INTEGER( CODI.CUR_LEVEL )
+     or else  D( XD_REGION, SUBTYPE_NAME ).TY = DN_PACKAGE_ID  then
+      REGIONS_PATH( SUBTYPE_NAME );
+    end if;
+    PUT( SUBTYPE_STR & "." );
+    if  IS_LAST  then  PUT_LINE( "LST" );  else  PUT_LINE( "FST" );  end if;
+
+  end	CODE_SCALAR_SUBTYPE_BOUND;
+	-------------------------
 
 
 				--------------------
   procedure			CODE_TYPE_MEMBERSHIP	( TYPE_MEMBERSHIP :TREE )
   is				--------------------
+
+	-- LRM 4.5.2, forme X in MARQUE : pour un scalaire, FST <= X <= LST du sous-type designe.
+	-- MIROIR de CODE_RANGE_MEMBERSHIP. SEMANTIQUE, pas un check : PAS de garde CHECKS_ENABLED.
+	-- Piege n 80 sans objet : la marque est un NOM, jamais un sous-type anonyme.
+    EXP	: TREE	:= D( AS_EXP,  TYPE_MEMBERSHIP );
+    OP	: TREE	:= D( AS_MEMBERSHIP_OP, TYPE_MEMBERSHIP );
+    TS	: TREE	:= D( SM_TYPE_SPEC, D( SM_DEFN, D( AS_NAME, TYPE_MEMBERSHIP ) ) );
+
   begin
-    null;
+    if  TS.TY /= DN_INTEGER  and  TS.TY /= DN_ENUMERATION  then
+      PUT_LINE( "; !! CODE_TYPE_MEMBERSHIP : MARQUE NON SCALAIRE " & NODE_NAME'IMAGE( TS.TY ) );
+      raise PROGRAM_ERROR;										-- A FAIRE BRUYANT : lecon du stub
+    end if;
+
+    if  TS = D( SM_BASE_TYPE, TS )  then								-- marque = type de base, sans contrainte
+      PUT_LINE( tab & "LI" & tab & "1" );								-- statiquement VRAI, mais il faut EMPILER
+    else
+      CODE_EXP( EXP );										-- EXP >= FST
+      CODE_SCALAR_SUBTYPE_BOUND( TS, IS_LAST => FALSE );
+      PUT_LINE( tab & "CGE" );
+      CODE_SCALAR_SUBTYPE_BOUND( TS, IS_LAST => TRUE );							-- LST >= EXP
+      CODE_EXP( EXP );
+      PUT_LINE( tab & "CGE" );
+      PUT_LINE( tab & "ET" );
+    end if;
+
+    if  OP.TY = DN_NOT_IN  then
+      PUT_LINE( tab & "LI" & tab & "1" );
+      PUT_LINE( tab & "OUX" );
+    end if;
+
   end	CODE_TYPE_MEMBERSHIP;
 	--------------------
 
@@ -6393,17 +7071,13 @@ put_line( "; CODE_QUALIFIED : DN_QUALIFIED" & NODE_NAME'IMAGE( SRC_EXP.TY ) );
   is
     VC_TYPE	: TREE		:= D( SM_OBJ_TYPE, VC_ID );
     VC_LEVEL	: LEVEL_NUM	:= DI( CD_LEVEL, VC_ID );
---    VC_STR	: constant STRING	:= PRINT_NAME( D( LX_SYMREP, VC_ID ) );
     VC_STR	: constant STRING	:= PRINT_NAME( D( LX_SYMREP, VC_ID ) );
 
   begin
-    while  VC_TYPE.TY = DN_PRIVATE  or else  VC_TYPE.TY = DN_L_PRIVATE  loop
-      VC_TYPE := D( SM_TYPE_SPEC, VC_TYPE );
-    end loop;
+    VC_TYPE := FULL_TYPE_VIEW( VC_TYPE );									--| regle unique de percage (suit SM_DERIVED) -- temoin CONV_DER1
 
     if  DB( SM_RENAMES_OBJ, VC_ID )  then
       if  VC_TYPE.TY in CLASS_SCALAR  then
---	PUT( tab & "LI" & OPER_SIZ_CHAR( VC_TYPE ) & tab & IMAGE( VC_LEVEL ) & ", " );
         PUT( tab & OPER_LOADI_STR( VC_TYPE ) & tab & IMAGE( VC_LEVEL ) & ", " );
         REGIONS_PATH( VC_ID );
         PUT_LINE( VC_STR & "_disp, 0" );
@@ -6435,7 +7109,14 @@ put_line( "; CODE_QUALIFIED : DN_QUALIFIED" & NODE_NAME'IMAGE( SRC_EXP.TY ) );
 	end if;
 	PUT_LINE( PRINT_NAME( D( LX_SYMREP, VC_ID ) )  & "_disp" );
 
-	PUT_LINE( tab & "La " & IMAGE( GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );
+	-- Piege n 144 (jumeau CODE_VC_ID, temoin FLOAT_IO.GET/MAKE_FLOAT) :
+	-- GFP est un PRM du PRO COURANT (propage a chaque appel) et le
+	-- symbole GFP_ofs se resout au PRO englobant le plus proche --
+	-- niveau GFP_LEVEL. Jamais GENERIC_BASE_LEVEL+1 (faux des
+	-- l'imbrication 2 : pseudo-GFP lu dans le frame englobant -> CALLI
+	-- dans la pile), jamais CUR_LEVEL (faux dans un bloc declare : le
+	-- bloc a un frame mais pas de PRM ; segfault FLOAT_IO.PUT, ROUNDING).
+	PUT_LINE( tab & "LA " & IMAGE( CODI.GFP_LEVEL ) & ',' & tab & "-GFP_ofs" );
 
 -- VC = variable ou constante LOCALE du corps partage : son slot porte
 	-- la VALEUR (meme situation qu'un parametre in). Adaptateur INADR
@@ -6443,11 +7124,11 @@ put_line( "; CODE_QUALIFIED : DN_QUALIFIED" & NODE_NAME'IMAGE( SRC_EXP.TY ) );
 	-- valeur comme une adresse (segfault FLOAT_IO.PUT, lecture de VAL).
 	-- L'ancien test VC_ID.TY = DN_IN_ID, copie du site parametre de
 	-- CODE_USED_OBJECT_ID, etait toujours faux ici.
-	PUT_LINE( tab & "La ," & tab & '-' & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, D( SM_OBJ_TYPE, VC_ID ) ) ) ) & "__inadr_ofs" );
+	PUT_LINE( tab & "LA ," & tab & '-' & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, D( SM_OBJ_TYPE, VC_ID ) ) ) ) & "__inadr_ofs" );
 	PUT_LINE( tab & "CALLI" );
 
-	PUT_LINE( tab & "La " & IMAGE( GENERIC_BASE_LEVEL+1 ) & ',' & tab & "-GFP_ofs" );
-	PUT_LINE( tab & "La ," & tab & '-' & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, VC_TYPE ) ) )  & "__ld_ofs" );
+	PUT_LINE( tab & "LA " & IMAGE( CODI.GFP_LEVEL ) & ',' & tab & "-GFP_ofs" );
+	PUT_LINE( tab & "LA ," & tab & '-' & PRINT_NAME( D( LX_SYMREP, D( XD_SOURCE_NAME, VC_TYPE ) ) )  & "__ld_ofs" );
 	PUT_LINE( tab & "CALLI" );
 
       else
@@ -6490,7 +7171,7 @@ put_line( "; CODE_QUALIFIED : DN_QUALIFIED" & NODE_NAME'IMAGE( SRC_EXP.TY ) );
   -- Il ne faut pas prendre LAST_OF_SELECTED, car X seul est un component_id.
       if  RAW_PREFIX.TY = DN_SELECTED  then
         declare
-	PREFIX_TYPE : TREE := D( SM_EXP_TYPE, RAW_PREFIX );
+	PREFIX_TYPE	: TREE	:= D( SM_EXP_TYPE, RAW_PREFIX );
         begin
 	while  PREFIX_TYPE.TY = DN_PRIVATE  or else  PREFIX_TYPE.TY = DN_L_PRIVATE  loop
 	  PREFIX_TYPE := D( SM_TYPE_SPEC, PREFIX_TYPE );
@@ -6499,18 +7180,31 @@ put_line( "; CODE_QUALIFIED : DN_QUALIFIED" & NODE_NAME'IMAGE( SRC_EXP.TY ) );
 	if  PREFIX_TYPE.TY = DN_CONSTRAINED_ARRAY  or else  PREFIX_TYPE.TY = DN_ARRAY  then
 	  declare
 	    TYPE_NAME	: TREE		:= D( XD_SOURCE_NAME, PREFIX_TYPE );
---	    TYPE_STR	: constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
-	    TYPE_STR	: constant STRING	:= TYPE_INFO_STR( PREFIX_TYPE );
+	    TYPE_STR	:constant STRING	:= TYPE_INFO_STR( PREFIX_TYPE );
 	    TYPE_LVL	: INTEGER		:= DI( CD_LEVEL, PREFIX_TYPE );
+	    SEL_DEFN	: TREE		:= D( SM_DEFN, D( AS_DESIGNATOR, RAW_PREFIX ) );
 	  begin
-	    PUT( tab & "Ld" & tab & IMAGE( TYPE_LVL ) & ", " );
+	    PUT( tab & "LD" & tab & IMAGE( TYPE_LVL ) & ", " );
 
-	    if  TYPE_LVL /= INTEGER( CODI.CUR_LEVEL )  or else  D( XD_REGION, TYPE_NAME ).TY = DN_PACKAGE_ID
+	    if  SEL_DEFN.TY = DN_COMPONENT_ID
+	    and then  D( SM_TYPE_SPEC, TYPE_NAME ) /= PREFIX_TYPE
 	    then
-	      REGIONS_PATH( TYPE_NAME );
-	    end if;
+	      -- Composant array a sous-type contraint ANONYME (piege n 99) :
+	      -- XD_SOURCE_NAME remonte au type de BASE, dont le patron non
+	      -- contraint n'a ni _FST_n ni _LST_n.  Les bornes sont LUES au
+	      -- bloc info ELABORE du composant, _<comp>__type, meme regle
+	      -- que CODE_SLICE / CODE_INDEXED (correctif record).
+	      REGIONS_PATH( SEL_DEFN );
+	      PUT( '_' & PRINT_NAME( D( LX_SYMREP, SEL_DEFN ) ) & "__type." );
 
-	    PUT( TYPE_STR & "." );
+	    else
+	      if  TYPE_LVL /= INTEGER( CODI.CUR_LEVEL )  or else  D( XD_REGION, TYPE_NAME ).TY = DN_PACKAGE_ID
+	      then
+	        REGIONS_PATH( TYPE_NAME );
+	      end if;
+
+	      PUT( TYPE_STR & "." );
+	    end if;
 
 	    if  IS_LAST  then
 	      PUT( "_LST_" );
@@ -6550,11 +7244,10 @@ put_line( "; CODE_QUALIFIED : DN_QUALIFIED" & NODE_NAME'IMAGE( SRC_EXP.TY ) );
 	    then
 	      declare
 	        TYPE_NAME : TREE := D( XD_SOURCE_NAME, DESIG_TYPE );
---	        TYPE_STR  : constant STRING := '_' & PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
-	        TYPE_STR  : constant STRING := TYPE_INFO_STR( DESIG_TYPE );
+	        TYPE_STR  :constant STRING := TYPE_INFO_STR( DESIG_TYPE );
 	        TYPE_LVL  : INTEGER := DI( CD_LEVEL, DESIG_TYPE );
 	      begin
-	        PUT( tab & "Ld" & tab & IMAGE( TYPE_LVL ) & ", " );
+	        PUT( tab & "LD" & tab & IMAGE( TYPE_LVL ) & ", " );
 	        REGIONS_PATH( TYPE_NAME );
 	        PUT( TYPE_STR );
 
@@ -6577,23 +7270,22 @@ put_line( "; CODE_QUALIFIED : DN_QUALIFIED" & NODE_NAME'IMAGE( SRC_EXP.TY ) );
 
 	declare
 	  TYPE_NAME	: TREE		:= D( XD_SOURCE_NAME, PREFIX_TYPE );
---	  TYPE_STR	:constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
 	  TYPE_STR	:constant STRING	:= TYPE_INFO_STR( PREFIX_TYPE );
 	begin
 	  if  PREFIX_DEFN.TY in CLASS_PARAM_NAME  then
 	    PUT_LINE( tab & "LVA" & tab & IMAGE( ARRAY_LVL ) & ", -" & PREFIX_STR & "_ofs" );
-	    PUT_LINE( tab & "LIa" & tab & ", ," & INTEGER'IMAGE( CODI.ADDR_SIZE ) );
-	    PUT( tab & "Ld"  & tab & ", " & TYPE_STR & "." );
+	    PUT_LINE( tab & "LIA" & tab & ", ," & INTEGER'IMAGE( CODI.ADDR_SIZE ) );
+	    PUT( tab & "LD"  & tab & ", " & TYPE_STR & "." );
 
 	  elsif  PREFIX_DEFN.TY in CLASS_VC_NAME  then
-	    PUT( tab & "LId" & tab & IMAGE( ARRAY_LVL ) & ", " );
+	    PUT( tab & "LID" & tab & IMAGE( ARRAY_LVL ) & ", " );
 	    REGIONS_PATH( PREFIX_DEFN );
 	    PUT( PREFIX_STR & "__u, " );
 	    REGIONS_PATH( TYPE_NAME );
 	    PUT( TYPE_STR & "." );
 
 	  else
-	    PUT_LINE( "; RANGE_ATTRIBUTE: prefix object non traite " & NODE_NAME'IMAGE( PREFIX_DEFN.TY ) );
+	    TROU( "CODE_RANGE_ATTRIBUTE_BOUND prefixe objet non traite", PREFIX_DEFN );				--| vague 5 : LI 0 conserve
 	    PUT_LINE( tab & "LI" & tab & "0" );
 	    return;
 	  end if;
@@ -6628,11 +7320,10 @@ put_line( "; CODE_QUALIFIED : DN_QUALIFIED" & NODE_NAME'IMAGE( SRC_EXP.TY ) );
 	-- l'elaboration.  Meme idiome que le prefixe SELECTED ci-dessus.
 	  declare
 	    TYPE_NAME	: TREE		:= D( XD_SOURCE_NAME, TYPE_SPEC );
---	      TYPE_STR	: constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) );
 	    TYPE_STR	: constant STRING	:= TYPE_INFO_STR( TYPE_SPEC );
 	    TYPE_LVL	: INTEGER		:= DI( CD_LEVEL, TYPE_SPEC );					-- piege n 58
 	  begin
-	    PUT( tab & "Ld" & tab & IMAGE( TYPE_LVL ) & ", " );
+	    PUT( tab & "LD" & tab & IMAGE( TYPE_LVL ) & ", " );
 
 	    if  TYPE_LVL /= INTEGER( CODI.CUR_LEVEL )
 	      or else  D( XD_REGION, TYPE_NAME ).TY = DN_PACKAGE_ID
@@ -6652,14 +7343,14 @@ put_line( "; CODE_QUALIFIED : DN_QUALIFIED" & NODE_NAME'IMAGE( SRC_EXP.TY ) );
 	  end;
 
 	else
-	  PUT_LINE( "; RANGE_ATTRIBUTE: prefix type non scalaire non traite " & NODE_NAME'IMAGE( TYPE_SPEC.TY ) );
+	  TROU( "CODE_RANGE_ATTRIBUTE_BOUND prefixe type non scalaire", TYPE_SPEC );				--| vague 5 : LI 0 conserve
 	  PUT_LINE( tab & "LI" & tab & "0" );
 	end if;
         end if;
       end;
 
     else
-      PUT_LINE( "; RANGE_ATTRIBUTE: prefix non traite " & NODE_NAME'IMAGE( RAW_PREFIX.TY ) );
+      TROU( "CODE_RANGE_ATTRIBUTE_BOUND prefixe non traite", RAW_PREFIX );					--| vague 5 : LI 0 conserve
       PUT_LINE( tab & "LI" & tab & "0" );
     end if;
 
@@ -6703,7 +7394,7 @@ put_line( "; CODE_QUALIFIED : DN_QUALIFIED" & NODE_NAME'IMAGE( SRC_EXP.TY ) );
       end;
 
     else
-      PUT_LINE( "; CODE_DISCRETE_RANGE_BOUND: range non traite " & NODE_NAME'IMAGE( DISCRETE_RANGE.TY ) );
+      TROU( "CODE_DISCRETE_RANGE_BOUND forme de range", DISCRETE_RANGE );					--| vague 5 : LI 0 conserve
       PUT_LINE( tab & "LI" & tab & "0" );
     end if;
 
@@ -6751,17 +7442,14 @@ put_line( "; CODE_QUALIFIED : DN_QUALIFIED" & NODE_NAME'IMAGE( SRC_EXP.TY ) );
 
     declare
       SUBTYPE_NAME  :constant TREE	:= D( XD_SOURCE_NAME, TYPE_SPEC );
---      SUBTYPE_STR :constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, SUBTYPE_NAME ) );
       SUBTYPE_STR	:constant STRING	:= TYPE_INFO_STR( TYPE_SPEC );
       TYPE_LVL	:constant INTEGER	:= DI( CD_LEVEL, TYPE_SPEC );
---      SIZ_CHAR	:constant CHARACTER := OPER_SIZ_CHAR( TYPE_SPEC );
 
 		----------
       procedure	LOAD_BOUND	( IS_LAST :BOOLEAN )
       is		----------
       begin											-- idiome CODE_SCALAR_SUBTYPE_FIRST_LAST
         PUT( tab & OPER_LOAD_STR( TYPE_SPEC ) & tab & IMAGE( TYPE_LVL ) & ", " );
---	PUT( tab & 'L' & SIZ_CHAR & tab & IMAGE( TYPE_LVL ) & ", " );
         if  TYPE_LVL /= INTEGER( CODI.CUR_LEVEL )
          or else  D( XD_REGION, SUBTYPE_NAME ).TY = DN_PACKAGE_ID
         then
@@ -6769,6 +7457,7 @@ put_line( "; CODE_QUALIFIED : DN_QUALIFIED" & NODE_NAME'IMAGE( SRC_EXP.TY ) );
         end if;
         PUT( SUBTYPE_STR & "." );
         if  IS_LAST  then  PUT_LINE( "LST" );  else  PUT_LINE( "FST" );  end if;
+
       end LOAD_BOUND;
 	----------
 
@@ -6802,6 +7491,7 @@ put_line( "; CODE_QUALIFIED : DN_QUALIFIED" & NODE_NAME'IMAGE( SRC_EXP.TY ) );
       PUT_LINE( tab & "CEQ" );
       PUT_LINE( tab & "BT" & tab & "STANDARD.ne_raise_" );
     end if;
+
   end	CODE_ZERO_DIVIDE_CHECK;
 	----------------------
 

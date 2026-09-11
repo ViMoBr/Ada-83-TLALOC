@@ -1,0 +1,523 @@
+COMMAND_ACCESS = 'COMMAND_ACCESS'
+namespace COMMAND_ACCESS
+
+
+if defined LOOKUP_L1_
+PRO	LOOKUP_L1
+ hexa_show 'LOOKUP_L1 ', $
+PRMS
+	PRM NAME_ofs
+	PRM result__ofs
+endPRMS
+ELB 1
+ hexa_show 'var elab I ', $
+VAR I_disp, D
+	LI	0
+	LD 0,	STANDARD.CLI.CURRENT_VERB_disp
+	DUP
+	LD	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LD	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
+	LA  1,	-NAME_ofs
+	CALL	STANDARD.CLI. ,FIND_ENTRY_L19
+	DUP
+	LD	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LD	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
+	SD  1,	I_disp
+
+ hexa_show ' disp ', I_disp
+
+begin:
+
+	LD 1,	I_disp
+	LI	0
+	CEQ
+	BF	L5
+	LCA	STANDARD.CLI.COMMAND_ACCESS.NO_SUCH_NAME__exc.data_ptr
+	SA	0, STANDARD.EXCEPTIONS_CURRENT_disp
+	BRA	STANDARD.exc_raise_
+	BRA	L4
+L5:
+L4:
+	LD 1,	I_disp
+	DUP
+	LD	0, STANDARD._POSITIVE.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LD	0, STANDARD._POSITIVE.LST
+	CGT
+	BT	STANDARD.ce_raise_
+	SQ  1,	-result__ofs
+	BRA ret_lbl
+ret_lbl:
+	UNLINKR 1
+	RTD	prm_siz-8
+excep:
+endPRO
+end if
+
+if defined TOOL_NAME_L13_
+PRO	TOOL_NAME_L13
+ hexa_show 'TOOL_NAME_L13 ', $
+PRMS
+	PRM result__ofs
+endPRMS
+ELB 1
+
+begin:
+VAR	ANON_32_12_disp, Q
+VAR	ANON_32_12__u,   Q
+namespace ANON_32_12_info
+  VAR SIZ__, D
+  VAR _COMP_SIZ, D
+  VAR _FST_1, D
+  VAR _LST_1, D
+end namespace
+	LVA 1, ANON_32_12_info.SIZ__
+	SA  1, ANON_32_12__u
+	LVA 1, ANON_32_12_disp
+	LVA 0,	STANDARD.CLI.TOOL_disp
+	CALL	STANDARD.CLI. ,DEFINITION_TEXT_L11
+VAR	RET_INFO_L8, Q
+	DUP
+	LA  ,  0
+	SIQ   1, -result__ofs,  0
+	DUP
+	LA  ,  8
+	SA   1, RET_INFO_L8
+	DROP
+	LA   1, -result__ofs
+	LA  ,  8
+	LI	16
+	LA   1, RET_INFO_L8
+	BLKMOV
+	BRA ret_lbl
+ret_lbl:
+	UNLINK 1
+	RTD
+excep:
+endPRO
+end if
+
+if defined GET_VERB_L14_
+PRO	GET_VERB_L14
+ hexa_show 'GET_VERB_L14 ', $
+PRMS
+	PRM result__ofs
+endPRMS
+ELB 1
+
+begin:
+
+	LD 0,	STANDARD.CLI.CURRENT_VERB_disp
+	LI	0
+	CEQ
+	BF	L12
+STR RET_STR_L13, ""
+	LCA	RET_STR_L13.data_ptr
+VAR	RET_INFO_L14, Q
+	DUP
+	LA  ,  0
+	SIQ   1, -result__ofs,  0
+	DUP
+	LA  ,  8
+	SA   1, RET_INFO_L14
+	DROP
+	LA   1, -result__ofs
+	LA  ,  8
+	LI	16
+	LA   1, RET_INFO_L14
+	BLKMOV
+	BRA ret_lbl
+	BRA	L11
+L12:
+L11:
+VAR	ANON_45_13_disp, Q
+VAR	ANON_45_13__u,   Q
+namespace ANON_45_13_info
+  VAR SIZ__, D
+  VAR _COMP_SIZ, D
+  VAR _FST_1, D
+  VAR _LST_1, D
+end namespace
+	LVA 1, ANON_45_13_info.SIZ__
+	SA  1, ANON_45_13__u
+	LVA 1, ANON_45_13_disp
+	VAR SELARG_L15_disp, q
+	VAR SELARG_L15__u, q
+	LA	 0, STANDARD.CLI.ENTRIES_disp
+	LD 0,	STANDARD.CLI.CURRENT_VERB_disp
+	DUP
+	LID	0, STANDARD.CLI.ENTRIES__u, STANDARD.CLI._ENTRIES__type.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LID	0, STANDARD.CLI.ENTRIES__u, STANDARD.CLI._ENTRIES__type.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
+	LID	0, STANDARD.CLI.ENTRIES__u, STANDARD.CLI._ENTRIES__type.FST_1
+	SUB
+	LID	0, STANDARD.CLI.ENTRIES__u, STANDARD.CLI._ENTRIES__type.COMP_SIZ
+	LI	3
+	SAR
+	MUL
+	ADD
+	LVA	, STANDARD.CLI._ENTRY_RECORD.NAME
+	SA	1, SELARG_L15_disp
+	LA 0, STANDARD.CLI._SPAN.use__info
+	SA	1, SELARG_L15__u
+	LVA 1, SELARG_L15_disp
+	CALL	STANDARD.CLI. ,DEFINITION_TEXT_L11
+VAR	RET_INFO_L16, Q
+	DUP
+	LA  ,  0
+	SIQ   1, -result__ofs,  0
+	DUP
+	LA  ,  8
+	SA   1, RET_INFO_L16
+	DROP
+	LA   1, -result__ofs
+	LA  ,  8
+	LI	16
+	LA   1, RET_INFO_L16
+	BLKMOV
+	BRA ret_lbl
+ret_lbl:
+	UNLINK 1
+	RTD
+excep:
+endPRO
+end if
+
+if defined IS_PRESENT_L15_
+PRO	IS_PRESENT_L15
+ hexa_show 'IS_PRESENT_L15 ', $
+PRMS
+	PRM NAME_ofs
+	PRM result__ofs
+endPRMS
+ELB 1
+
+begin:
+	LA	 0, STANDARD.CLI.ENTRIES_disp
+	LI	0
+	LA  1,	-NAME_ofs
+	CALL	STANDARD.CLI.COMMAND_ACCESS. ,LOOKUP_L1
+	DUP
+	LID	0, STANDARD.CLI.ENTRIES__u, STANDARD.CLI._ENTRIES__type.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LID	0, STANDARD.CLI.ENTRIES__u, STANDARD.CLI._ENTRIES__type.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
+	LID	0, STANDARD.CLI.ENTRIES__u, STANDARD.CLI._ENTRIES__type.FST_1
+	SUB
+	LID	0, STANDARD.CLI.ENTRIES__u, STANDARD.CLI._ENTRIES__type.COMP_SIZ
+	LI	3
+	SAR
+	MUL
+	ADD
+	ULB	, STANDARD.CLI._ENTRY_RECORD.STATUS
+	LI	1
+	CEQ
+	SQ  1,	-result__ofs
+	BRA ret_lbl
+ret_lbl:
+	UNLINKR 1
+	RTD	prm_siz-8
+excep:
+endPRO
+end if
+
+if defined STATUS_OF_L16_
+PRO	STATUS_OF_L16
+ hexa_show 'STATUS_OF_L16 ', $
+PRMS
+	PRM QUALIFIER_ofs
+	PRM result__ofs
+endPRMS
+ELB 1
+
+begin:
+	LA	 0, STANDARD.CLI.ENTRIES_disp
+	LI	0
+	LA  1,	-QUALIFIER_ofs
+	CALL	STANDARD.CLI.COMMAND_ACCESS. ,LOOKUP_L1
+	DUP
+	LID	0, STANDARD.CLI.ENTRIES__u, STANDARD.CLI._ENTRIES__type.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LID	0, STANDARD.CLI.ENTRIES__u, STANDARD.CLI._ENTRIES__type.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
+	LID	0, STANDARD.CLI.ENTRIES__u, STANDARD.CLI._ENTRIES__type.FST_1
+	SUB
+	LID	0, STANDARD.CLI.ENTRIES__u, STANDARD.CLI._ENTRIES__type.COMP_SIZ
+	LI	3
+	SAR
+	MUL
+	ADD
+	ULB	, STANDARD.CLI._ENTRY_RECORD.STATUS
+	SQ  1,	-result__ofs
+	BRA ret_lbl
+ret_lbl:
+	UNLINKR 1
+	RTD	prm_siz-8
+excep:
+endPRO
+end if
+
+if defined VALUE_COUNT_L17_
+PRO	VALUE_COUNT_L17
+ hexa_show 'VALUE_COUNT_L17 ', $
+PRMS
+	PRM NAME_ofs
+	PRM result__ofs
+endPRMS
+ELB 1
+
+begin:
+	LA	 0, STANDARD.CLI.ENTRIES_disp
+	LI	0
+	LA  1,	-NAME_ofs
+	CALL	STANDARD.CLI.COMMAND_ACCESS. ,LOOKUP_L1
+	DUP
+	LID	0, STANDARD.CLI.ENTRIES__u, STANDARD.CLI._ENTRIES__type.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LID	0, STANDARD.CLI.ENTRIES__u, STANDARD.CLI._ENTRIES__type.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
+	LID	0, STANDARD.CLI.ENTRIES__u, STANDARD.CLI._ENTRIES__type.FST_1
+	SUB
+	LID	0, STANDARD.CLI.ENTRIES__u, STANDARD.CLI._ENTRIES__type.COMP_SIZ
+	LI	3
+	SAR
+	MUL
+	ADD
+	LD	, STANDARD.CLI._ENTRY_RECORD.VALUES_FOUND
+	DUP
+	LD	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LD	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
+	SQ  1,	-result__ofs
+	BRA ret_lbl
+ret_lbl:
+	UNLINKR 1
+	RTD	prm_siz-8
+excep:
+endPRO
+end if
+
+if defined GET_VALUE_L18_
+PRO	GET_VALUE_L18
+ hexa_show 'GET_VALUE_L18 ', $
+PRMS
+	PRM NAME_ofs
+	PRM INDEX_ofs
+	PRM result__ofs
+endPRMS
+ELB 1
+ hexa_show 'var elab I ', $
+VAR I_disp, D
+	LI	0
+	LA  1,	-NAME_ofs
+	CALL	STANDARD.CLI.COMMAND_ACCESS. ,LOOKUP_L1
+	DUP
+	LD	0, STANDARD._POSITIVE.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LD	0, STANDARD._POSITIVE.LST
+	CGT
+	BT	STANDARD.ce_raise_
+	SD  1,	I_disp
+
+ hexa_show ' disp ', I_disp
+ hexa_show 'var elab N ', $
+VAR N_disp, D
+	LI	0
+	DUP
+	LD	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LD	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
+	SD  1,	N_disp
+
+ hexa_show ' disp ', N_disp
+
+begin:
+
+	LD  1,	-INDEX_ofs
+	LA	 0, STANDARD.CLI.ENTRIES_disp
+	LD 1,	I_disp
+	DUP
+	LID	0, STANDARD.CLI.ENTRIES__u, STANDARD.CLI._ENTRIES__type.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LID	0, STANDARD.CLI.ENTRIES__u, STANDARD.CLI._ENTRIES__type.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
+	LID	0, STANDARD.CLI.ENTRIES__u, STANDARD.CLI._ENTRIES__type.FST_1
+	SUB
+	LID	0, STANDARD.CLI.ENTRIES__u, STANDARD.CLI._ENTRIES__type.COMP_SIZ
+	LI	3
+	SAR
+	MUL
+	ADD
+	LD	, STANDARD.CLI._ENTRY_RECORD.VALUES_FOUND
+	CGT
+	BF	L26
+	LCA	STANDARD.CLI.COMMAND_ACCESS.NO_VALUE__exc.data_ptr
+	SA	0, STANDARD.EXCEPTIONS_CURRENT_disp
+	BRA	STANDARD.exc_raise_
+	BRA	L25
+L26:
+L25:
+VAR	VL28_disp, D
+	LI	1
+	SD  1,	VL28_disp
+VAR	LMT_VL28_disp, D
+	LD 0,	STANDARD.CLI.VALUE_TOP_disp
+	SD  1,	LMT_VL28_disp
+	LD  1,	VL28_disp
+	LD  1,	LMT_VL28_disp
+	CGT
+	BT	L27
+LOOP__1:
+
+	LA	 0, STANDARD.CLI.VALUES_disp
+	LD 1,	VL28_disp
+	DUP
+	LID	0, STANDARD.CLI.VALUES__u, STANDARD.CLI._VALUES__type.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LID	0, STANDARD.CLI.VALUES__u, STANDARD.CLI._VALUES__type.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
+	LID	0, STANDARD.CLI.VALUES__u, STANDARD.CLI._VALUES__type.FST_1
+	SUB
+	LID	0, STANDARD.CLI.VALUES__u, STANDARD.CLI._VALUES__type.COMP_SIZ
+	LI	3
+	SAR
+	MUL
+	ADD
+	LD	, STANDARD.CLI._VALUE_RECORD.OWNER
+	LD 1,	I_disp
+	CEQ
+	BF	L30
+	LD 1,	N_disp
+	LI	1
+	ADD
+	DUP
+	LD	0, STANDARD._NATURAL.FST
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LD	0, STANDARD._NATURAL.LST
+	CGT
+	BT	STANDARD.ce_raise_
+	SD  1,	N_disp
+
+	LD 1,	N_disp
+	LD  1,	-INDEX_ofs
+	CEQ
+	BF	L32
+VAR	ANON_97_12_disp, Q
+VAR	ANON_97_12__u,   Q
+namespace ANON_97_12_info
+  VAR SIZ__, D
+  VAR _COMP_SIZ, D
+  VAR _FST_1, D
+  VAR _LST_1, D
+end namespace
+	LVA 1, ANON_97_12_info.SIZ__
+	SA  1, ANON_97_12__u
+	LVA 1, ANON_97_12_disp
+	VAR SELARG_L33_disp, q
+	VAR SELARG_L33__u, q
+	LA	 0, STANDARD.CLI.VALUES_disp
+	LD 1,	VL28_disp
+	DUP
+	LID	0, STANDARD.CLI.VALUES__u, STANDARD.CLI._VALUES__type.FST_1
+	CLT
+	BT	STANDARD.ce_raise_
+	DUP
+	LID	0, STANDARD.CLI.VALUES__u, STANDARD.CLI._VALUES__type.LST_1
+	CGT
+	BT	STANDARD.ce_raise_
+	LID	0, STANDARD.CLI.VALUES__u, STANDARD.CLI._VALUES__type.FST_1
+	SUB
+	LID	0, STANDARD.CLI.VALUES__u, STANDARD.CLI._VALUES__type.COMP_SIZ
+	LI	3
+	SAR
+	MUL
+	ADD
+	LVA	, STANDARD.CLI._VALUE_RECORD.TEXT
+	SA	1, SELARG_L33_disp
+	LA 0, STANDARD.CLI._SPAN.use__info
+	SA	1, SELARG_L33__u
+	LVA 1, SELARG_L33_disp
+	CALL	STANDARD.CLI. ,COMMAND_TEXT_L15
+VAR	RET_INFO_L34, Q
+	DUP
+	LA  ,  0
+	SIQ   1, -result__ofs,  0
+	DUP
+	LA  ,  8
+	SA   1, RET_INFO_L34
+	DROP
+	LA   1, -result__ofs
+	LA  ,  8
+	LI	16
+	LA   1, RET_INFO_L34
+	BLKMOV
+	BRA ret_lbl
+	BRA	L31
+L32:
+L31:
+	BRA	L29
+L30:
+L29:
+	LD  1,	VL28_disp
+	LD  1,	LMT_VL28_disp
+	CEQ
+	BT	L27
+	LD  1,	VL28_disp
+	INC
+	SD  1,	VL28_disp
+	BRA	LOOP__1
+L27:
+	LCA	STANDARD.CLI.COMMAND_ACCESS.NO_VALUE__exc.data_ptr
+	SA	0, STANDARD.EXCEPTIONS_CURRENT_disp
+	BRA	STANDARD.exc_raise_
+ret_lbl:
+	UNLINK 1
+	RTD	prm_siz-8
+excep:
+endPRO
+end if
+begin:
+end namespace 

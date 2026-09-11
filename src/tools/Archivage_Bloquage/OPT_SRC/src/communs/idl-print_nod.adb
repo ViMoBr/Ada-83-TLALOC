@@ -173,7 +173,6 @@ is
         NB_CARS		: INTEGER		:= 0;
       begin
 
---	IF DD(1) >= 10000 THEN							--| 10000 EST AJOUTE AU PREMIER POUR NB NEGATIF
         if ENTETE.ABSS = 1 then							--| ABSS 1 POUR NB NEGATIF
 	PUT( '-' );								--| CHIFFRE NEGATIF
         else
@@ -185,9 +184,6 @@ is
 	PUT( '_' );
 	PUT_LONG_DIGIT( INTEGER( DD(2) mod 10_000 ) );					--| PREMIER DIGIT 10_000 AIRE (MOD POUR LE PREMIER
 	if I /= ENTETE.NSIZ then
---	    if (I mod 8) = 1 then
---	      NEW_LINE;
---	    end if;
 	  PUT( '_' );
 	end if;
 	NB_CARS := NB_CARS + 10;

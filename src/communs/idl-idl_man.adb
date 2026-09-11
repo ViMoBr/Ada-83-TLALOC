@@ -245,18 +245,17 @@ end	SINGLETON;
 procedure			  LIST		( T :TREE; S :SEQ_TYPE )
 is			--------
 
-  A_IDX		: INTEGER := N_SPEC( T.TY ).NS_FIRST_A;
+  RANG		: ATTR_NBR;
 begin
-  for I in 1 .. N_SPEC( T.TY ).NS_SIZE loop								--| PARCOURIR LES ATTRIBUTS
-    if A_SPEC( A_IDX ).IS_LIST then									--| SI ATTRIBUT LISTE RENCONTRE
-      DABS ( I, T, S.FIRST );										--| STOCKE LA TETE DE V DANS L'ATTRIBUT I DU NOEUD POINTE PAR T
-      return;											--| C'EST BON, SORTIR
-    end if;
-    A_IDX := A_IDX + 1;										--| ATTRIBUT SUIVANT
-  end loop;
+  if  not ATTR_RANK_READY  then BUILD_ATTR_RANK; end if;
+  RANG := LIST_RANK( T.TY );										--| RANG DU PREMIER ATTRIBUT LISTE (0 : AUCUN)
+  if  RANG /= 0  then
+    DABS( RANG, T, S.FIRST );										--| STOCKE LA TETE DE S DANS L'ATTRIBUT LISTE DU NOEUD POINTE PAR T
+    return;											--| C'EST BON, SORTIR
+  end if;
 
   PUT_LINE ( "IDL.IDL_MAN.LIST : PAS DE LISTE INSCRIPTIBLE DANS " & NODE_REP ( T ) );
-  raise PROGRAM_ERROR;
+  raise  PROGRAM_ERROR;
 
 end	LIST;
 	----

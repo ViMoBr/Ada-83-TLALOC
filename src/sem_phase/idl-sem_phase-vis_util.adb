@@ -63,41 +63,6 @@ is					--------
 
   procedure FIND_SELECTED_DEFS (NAME_TYPESET : in out TYPESET_TYPE; DESIGNATOR : TREE; DEFSET : out DEFSET_TYPE);
 
-  procedure DEBUG_PRINT_DEF (DEF : TREE) is
-    HEADER         : TREE	       := D (XD_HEADER, DEF);
-    REGION         : TREE	       := D (XD_REGION_DEF, DEF);
-    PARAM_CURSOR   : PARAM_CURSOR_TYPE;
-    PAREN_OR_COMMA : String (1 .. 1) := "(";
-  begin
-
-    Put ("    ");
-    Put (NODE_REP (DEF));
-    Put (" ");
-    Put (NODE_REP (D (XD_SOURCE_NAME, DEF)));
-    Put (" IN ");
-    Put (NODE_REP (REGION));
-    Put (INTEGER'IMAGE (DI (XD_LEX_LEVEL, REGION)));
-    Put (" ");
-    Put_Line (BOOLEAN'IMAGE (DB (XD_IS_USED, REGION)));
-    if HEADER.TY in CLASS_SUBP_ENTRY_HEADER then
-      Put (ASCII.HT & "(");
-      INIT_PARAM_CURSOR (PARAM_CURSOR, LIST (D (AS_PARAM_S, HEADER)));
-      loop
-        Put (PAREN_OR_COMMA);
-        PAREN_OR_COMMA := ",";
-        ADVANCE_PARAM_CURSOR (PARAM_CURSOR);
-        exit when PARAM_CURSOR.ID = TREE_VOID;
-        Put (NODE_REP (GET_BASE_TYPE (D (SM_OBJ_TYPE, PARAM_CURSOR.ID))));
-      end loop;
-      Put (")");
-      if HEADER.TY = DN_FUNCTION_SPEC then
-        Put ("->");
-        Put (NODE_REP (GET_BASE_TYPE (D (AS_NAME, HEADER))));
-      end if;
-      New_Line;
-    end if;
-  end DEBUG_PRINT_DEF;
-
   procedure FIND_VISIBILITY (EXP : TREE; DEFSET : out DEFSET_TYPE) is
 	      -- FOR EXP, A USED_OBJECT_ID OR A SELECTED, RETURN SET
 	      -- OF DEF NODES FOR VISIBLE DECLARATIONS OF THE USED_OBJECT_ID

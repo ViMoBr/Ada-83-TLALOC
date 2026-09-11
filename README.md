@@ -8,7 +8,7 @@
                        / /o o o\ \                 |  L  o n e s o m e  |
                       \|H|H|H|H|H|/                |  A  d a            |
                      G))  Q   Q  ((G               |  L  o v i n g      |
-                      / \   "   / \                |  O  l't i m e r    |
+                      / \   "   / \                |  O  l't i m e r's  |
                      /_/  \V¨V/  \_\               |  C  o m p i l e r  |
                          \vvvvv/                   \-------______-------/
                        \ooooooooo/
@@ -16,36 +16,34 @@
 
 **Preserving the legacy of Ada 83 (MIL-STD-1815A-1983)**
 
-[![Ada 83](https://img.shields.io/badge/Ada-83-blue.svg)](https://ada83.org)
-[![License](https://img.shields.io/badge/license-check_repo-green.svg)](LICENSE)
-[![Platform](https://img.shields.io/badge/platform-Linux%20x86--64-lightgrey.svg)](https://github.com/ViMoBr/Ada83_TLALOC)
-
 ---
 
-## 🚀 Why Ada 83 Matters
+## Why Ada 83 Matters
 
 Ada 83 powered some of the most critical systems in computing history:
-- **🚀 Aerospace**: Ariane 5 launcher, space missions
-- **✈️ Aviation**: Boeing 777 flight control systems
-- **🛡️ Defense**: Military embedded systems worldwide
-- **🏭 Industrial**: Real-time control systems
+
+- **Aerospace**: Ariane 5 launcher, space missions
+- **Aviation**: Boeing 777 flight control systems
+- **Defense**: Military embedded systems worldwide
+- **Industrial**: Real-time control systems
 
 TLALOC is an experimental compiler whose aim is preserving this heritage by implementing the full Ada 83 standard using modern development tools.
 
 ---
 
-## ✨ Features
+## Intended Features
 
-- **📜 Full Ada 83 Compliance**: Implements MIL-STD-1815A-1983 standard
-- **🌳 DIANA 86 Representation**: Descriptive Intermediate Attributed Notation for Ada
-- **🔧 Modern Toolchain**: Built with GNAT 13.3.0, generates text FASM assembly
-- **📚 Separate Compilation**: Full library management with `.DCL`, `.BDY`, `.SUB` files
-- **🐛 Debug-Friendly**: Multiple compilation phases with inspection options
-- **⚡ Stack Machine Backend**: LLIR (Low Level Intermediate Representation) code generation for x86-64 and aarch64 v8
+- **Full Ada 83 Compliance**: Implements MIL-STD-1815A-1983 standard
+- **DIANA 86 Representation**: Descriptive Intermediate Attributed Notation for Ada
+- **Self Hosted**: Compiles and builts itself
+- **Modern Bootstrap Toolchain**: Built with GNAT 13.3.0, generates text FASM assembly
+- **Separate Compilation**: Full library management with `.DCL`, `.BDY`, `.SUB` files
+- **Debug-Friendly**: Multiple well separated compilation phases with inspection options
+- **Portable Stack Machine Backend**: LLIR (Low Level Intermediate Representation) with code generation for x86-64/Linux, AArch64/Linux, risc-V64/Linux.
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 ```
 Source Code (.ada)
@@ -56,9 +54,9 @@ Source Code (.ada)
         ↓
    [SEM_PHASE]  ──→  Semantic Analysis (65% of compiler)
         ↓
-   [EXPANDER]   ──→  LLIR/FASM Generation  ─────────────→  FASM (fasmg)
+   [EXPANDER]   ──→  LLIR/FASM Generation  ─────────────→  TARGET_CODE or FASM (fasmg)
         ↓                                                     ↓      
-   [WRITE_LIB]  ──→  Library Output (.DCL/.BDY/.SUB)          ELF Executable
+   [WRITE_LIB]  ──→  Library Output (.DCL/.BDY/.SUB)          ELF 64 Executable
 ```
 
 ### Key Components
@@ -66,18 +64,18 @@ Source Code (.ada)
 | Module | Lines | Role |
 |--------|-------|------|
 | **SEM_PHASE** | 22,193 | Semantic analysis (28 subunits) |
-| **EXPANDER** | 5,971 | Code generation to FASM |
+| **EXPANDER** | 5,971 | Code generation to FASM LLIR stack machine |
 | **PAR_PHASE** | 1,924 | Lexical and syntactic analysis |
 | **LIB_PHASE** | 1,230 | Library and dependency management |
 | **IDL** | 2,123 | DIANA graph management |
 
 ---
 
-## 🎯 Quick Start
+## Quick Start
 
 ### Prerequisites
 
-- **Linux** (Ubuntu 24.04 or compatible)
+- **Linux on x86** (Ubuntu 24.04 or compatible)
 - **GNAT** 13.3+ (Ada compiler for building TLALOC)
 - **FASM** (Flat Assembler - g.kd3c or compatible)
 
@@ -85,81 +83,72 @@ Source Code (.ada)
 
 ```bash
 # Clone the repository
-git clone https://github.com/ViMoBr/Ada83_TLALOC.git
-cd Ada83_TLALOC
+git clone https://git.sr.ht/~vincent_morin/Ada_83_TLALOC
+cd Ada_83_TLALOC
 # make a build directory if not already present
 mkdir ./build
-# Recompile the compiler
-make_ada_comp.sh
-
+# Recompile the compiler with gnat / fasmg to obtain T1.exe (gnat made TLALOC)
+./make_T1.sh
+# Recompile the compiler with T1 to obtain TLALOC.x86exe (TLALOC made TLALOC)
+./comp_TLALOC T1
 ```
 
-### First Program Uee
+### First Program Use
 
-In the bin directory, there is a bash script named **a83.sh**.
+Go to **bin** directory
+```bash
+# Compile and create a .FINC macro text in ./ADA__LIB with command :
 
-The **a83.sh** script launches the executable **ada_comp** (in the same bin directory) with 3 required parameters :
+./TLALOC COMPILE dis_bonjour.adb
 
- - the path to a so-called projet directory containing an **ADA__LIB** sub-directory (start with "./" that is the bin directory where you are, it contains the development **ADA__LIB**)
- - the path from the executable to the Ada 83 source text (for example **./dis_bonjour.adb** which is a french hello world)
- - a single option letter in S,s, L,l, M,m, C, c, W, w, U, A, P (the normal choice is W)
+# Create a .fas macro header file in ./ADA__LIB also.
 
-So the first command when in the **bin** directory is with option W :
+./TLALOC BIND dis_bonjour.adb
 
-<pre> ./a83.sh  ./  ./dis_bonjour.adb  W  </pre>
+# create an ELF64 executable file in ADA__LIB.
 
-(note : the first parameter ./ is the project directory path. The second path is project directory relative)
-this command compile and create a .FINC macro text in ADA__LIB
+./TLALOC CODE DIS_BONJOUR
 
-Then a second command with option B :
-<pre> ./a83.sh  ./  ./dis_bonjour.adb  B  </pre>
-create a .fas macro header file in ADA__LIB also.
+# Launch DIS_BONJOUR executable
 
-Then enter the **bin/ADA__LIB** sub-directory
+.ADA__LIB//DIS_BONJOUR
 
-<pre> cd ./ADA__LIB </pre>
+# The program displays **" Bonjour "**.
 
- It contains a **DIS_BONJOUR.fas**, a **DIS_BONJOUR.FINC** and the fasmg assembly engine executable.
+# Hope it works on your computer...
+```
 
-Enter the command :
+## Compilation verbs and qualifiers
 
-<pre>./fasmg ./DIS_BONJOUR.fas ./DIS_BONJOUR</pre>
+TLALOC uses a DCL like CLI :
 
-This creates an ELF executable **DIS_BONJOUR** in the **ADA__LIB** where you are.
+<pre>
+TLALOC HELP [verb]
+TLALOC COMPILE [/PROJECT=dir] [/STOP_PHASE[=SYNTAX|LIB|SEMANTICS|EXPAND|WRITELIB]] source
+TLALOC BIND    [/PROJECT=dir] unit
+TLALOC CODE    [/PROJECT=dir] [/TARGET=X86_64|ARM64|RISCV64] [/MAP] unit
 
-Now finally enter the command :
+TLALOC DUMP    [/PROJECT=dir] [/FORMAT[=PRETTY/UGLY|ALLTREE]]
+</pre>
 
-<pre>./DIS_BONJOUR</pre>
-
-The program displays **" Bonjour "**.
-
-Hope it works on your computer...
-
-## 📖 Compilation Options
-
-TLALOC offers fine-grained control over compilation phases:
-
-| Option | Phase | Description |
-|--------|-------|-------------|
-| **S**, **s** | Parse | Stop after syntax analysis |
-| **L**, **l** | Library | Stop after library phase |
-| **M**, **m** | Semantic | Stop after semantic analysis |
-| **C**, **c** | Expand | Generate code (no library write) |
-| **W** | Write | Full compilation with library output |
-| **w** | Write (debug) | Library write without code generation |
-| **U**, **P**, **A** | Pretty-print | Display DIANA tree (various formats). Do NOT use after w or W option which destroy the temporary DIANA used by display|
+/PROJECT_DIR has default "./" .
+The /STOP_PHASE default is WRITELIB which kills the DIANA $$$.TMP work file, DUMP then cannot operate. To dump a DIANA tree, stop must be no later than EXPAND phase.
+/TARGET defaults at X86_64
 
 ### Example: Debugging Semantic Analysis
 
+Stop after semantic phase and inspect DIANA tree
 ```bash
-# Stop after semantic phase and inspect DIANA tree
-./ada_comp ./my_project my_program.ada M
-./ada_comp ./my_project my_program.ada P  # Pretty-print DIANA
+# Compile with stop after sem phase
+./TLALOC COMPILE /STOP_PHASE=SEMANTICS my_program.ada /PROJECT=my_project
+
+# Dump DIANA tree in $$$_TREE.TXT
+./TLALOC DUMP  /FORMAT=ALLTREE  my_program.ada /PROJECT=my_project
 ```
 
 ---
 
-## 🧬 DIANA: The Heart of TLALOC
+## DIANA: The Heart of TLALOC
 
 **DIANA** (Descriptive Intermediate Attributed Notation for Ada) is a standardized graph-based intermediate representation for Ada programs.
 
@@ -175,31 +164,39 @@ DIANA enables:
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 Ada83_TLALOC/
 ├── src/
 │   ├── ada_comp/          # Main compiler driver
+│   ├── cli/               # CLI parsing and command definition
 │   ├── par_phase/         # Parsing (LEX, GRMR_OPS, GRMR_TBL)
 │   ├── sem_phase/         # Semantic analysis (28 subunits!)
-│   ├── expander/          # Code generation
+│   ├── expander/          # LLIR generation
 │   ├── pretty/            # DIANA pretty-printer
+│   ├── target_code/      # Code generation (X86, arm, riscv
 │   └── communs/           # Shared utilities (IDL management)
 ├── bin/
 │   └── idl_tools/         # DIANA node definitions
-└── examples/              # Example Ada 83 programs
+└── projects/              # Example Ada 83 programs
 ```
 
 ---
 
-## 🔬 Technical Details
+## Technical Details
 
 ### Target Platform
 - **OS**: Linux (Ubuntu 24.04+)
-- **Architecture**: x86-64
-- **Assembler**: FASM (Flat Assembler)
-- **Output**: ELF executables
+- **Processors**: x86-64, arm AArch64, RISC-V64
+- **Assembler**: fasmg (Flat Assembler) or TLALOC.TARGET_CODE
+- **Output**: ELF 64 Linux executables
+- **tested SBC**:
+
+   Orange Pi 3B with armbian
+
+   Starfive Visionfive 2 with Debian
+
 
 ### Compilation Statistics
 - **Total code**: 34,344 lines
@@ -208,15 +205,15 @@ Ada83_TLALOC/
 - **Frontend/Backend ratio**: 4.8:1 (typical for research compilers)
 
 ### Ada 83 Specifics
-- ✅ Full separate compilation model
-- ✅ Generic units and instantiation
-- ✅ Tasking (concurrent programming)
-- ✅ Representation clauses
+- Full separate compilation model
+- Generic units and instantiation
+- Tasking (concurrent programming)
+- Representation clauses
 - ❌ No Ada 95+ features (no child packages, protected types, etc.)
 
 ---
 
-## 📚 Documentation
+## Documentation
 
 - **[Ada 83 Memory Wiki](https://ada83.org/wiki/)**: Language reference and tutorials
 - **[Project Documentation](docs/)**: Compiler internals and architecture
@@ -229,16 +226,16 @@ Ada83_TLALOC/
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 TLALOC is a heritage preservation project. Contributions are welcome!
 
 ### Areas for Contribution
-- 🧪 **Testing**: Ada 83 validation suite
-- 📝 **Documentation**: User guides, tutorials
-- 🐛 **Bug fixes**: Compiler issues
-- ✨ **Features**: Optimization passes, better diagnostics
-- 🎓 **Education**: Teaching materials for compiler construction
+- **Testing**: Ada 83 validation suite
+- **Documentation**: User guides, tutorials
+- **Bug fixes**: Compiler issues
+- **Features**: Optimization passes, better diagnostics
+- **Education**: Teaching materials for compiler construction
 
 ### Getting Started
 1. Fork the repository
@@ -251,7 +248,7 @@ TLALOC is a heritage preservation project. Contributions are welcome!
 
 ---
 
-## 🎓 Educational Value
+## Educational Value
 
 TLALOC serves as an excellent resource for:
 - **Compiler Construction**: Clear phase separation, well-documented passes
@@ -260,14 +257,14 @@ TLALOC serves as an excellent resource for:
 - **Formal Methods**: Ada's design-by-contract philosophy
 
 ### Code Quality
-- **Modular Design**: 82 well-organized files
+- **Modular Design**: 99 well-organized files
 - **Clear Responsibilities**: Each subunit has a focused purpose
 - **Extensive Comments**: Comprehensive inline documentation
 - **Research-Grade**: Academic-quality implementation
 
 ---
 
-## 🌐 Related Resources
+## Related Resources
 
 - **[Ada 83 Official Site](https://ada83.org/)**: Language resources and community
 - **[Framagit Mirror](https://framagit.org/VMo/ada-83-compiler-tools)**: Alternative repository
@@ -276,7 +273,7 @@ TLALOC serves as an excellent resource for:
 
 ---
 
-## 📜 Historical Context
+## Historical Context
 
 Ada 83 was developed by the U.S. Department of Defense in the early 1980s to address the "software crisis" in embedded systems. Named after Augusta Ada Lovelace, the world's first programmer, Ada introduced revolutionary concepts:
 
@@ -290,16 +287,17 @@ TLALOC preserves this heritage by providing a working implementation of the orig
 
 ---
 
-## 📊 Project Status
+## Project Status
 
-**Current State**: ✅ Functional experimental compiler
+**Current State**: Functional experimental bootstrapped compiler self hosted (compiles itself to executable).
 
-- ✅ Parsing and lexical analysis complete
-- ✅ Semantic analysis fully implemented
-- ✅ Code generation to FASM working
-- ✅ Library management operational
-- 🔄 Ongoing: Bug fixes and validation
-- 📝 Ongoing: Documentation improvements
+- Parsing and lexical analysis complete
+- Semantic analysis fully implemented
+- LLIR code generation to FASM working
+- Library management operational
+- Auto compilation of all system ok (gnat not necessary anymore)
+- Ongoing: Bug fixes and validation
+- Ongoing: Documentation improvements
 
 ---
 
@@ -313,15 +311,24 @@ TLALOC preserves this heritage by providing a working implementation of the orig
 
 ---
 
-## 📬 Contact & Community
+## Contact & Community
 
 - **Website**: [https://ada83.org](https://ada83.org)
-- **GitHub**: [https://github.com/ViMoBr/Ada83_TLALOC](https://github.com/ViMoBr/Ada83_TLALOC)
+
+Preferred repository (light distribution)
+
+- **Source Hut**: [https://git.sr.ht/~vincent_morin/Ada_83_TLALOC](https://git.sr.ht/~vincent_morin/Ada_83_TLALOC)
+
+
+Historical repository (heavy)
 - **Framagit**: [https://framagit.org/VMo/ada-83-compiler-tools](https://framagit.org/VMo/ada-83-compiler-tools)
+
+Double of historical framagit
+- **GitHub**: [https://github.com/ViMoBr/Ada83_TLALOC](https://github.com/ViMoBr/Ada83_TLALOC)
 
 ---
 
-## ⚖️ License
+## License
 
 
 TLALOC/Ada 83 uses SPDX license identifiers in its maintained source files.
@@ -342,7 +349,7 @@ See directory [LICENSES](LICENSES) and files for details.
 
 *Preserving 1980s software engineering excellence for future generations*
 
-**[Explore the Code](https://github.com/ViMoBr/Ada83_TLALOC)** • **[Read the Docs](https://ada83.org/wiki/)** • **[Try Examples](examples/)**
+**[Explore the Code](https://git.sr.ht/~vincent_morin/Ada_83_TLALOC)** • **[Read the Docs](https://ada83.org/wiki/)** • **[Try Examples](examples/)**
 
 ---
 

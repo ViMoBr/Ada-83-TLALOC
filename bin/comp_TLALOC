@@ -1,0 +1,183 @@
+#!/bin/bash
+debutC=$(date +%s)
+
+if [ "${1:-}" = "T1" ]
+then
+  echo "          -----------------------------------------"
+  echo "          Compile TLALOC with T1 (gnat made TLALOC)"
+  echo "          -----------------------------------------"
+  AdaC="T1 COMPILE "
+else
+  echo "          -------------------------------"
+  echo "          Compile TLALOC with TLALOC (T2)"
+  echo "          -------------------------------"
+  AdaC="TLALOC COMPILE "
+fi
+
+./comp_PREDEFS $1
+#--------------------------------------------------
+#	IDL
+#--------------------------------------------------
+./$AdaC ../src/ada_comp/diana_node_attr_class_names.ads
+./$AdaC ../src/ada_comp/idl.ads
+./$AdaC ../src/ada_comp/idl.adb
+
+./$AdaC ../src/communs/idl-page_man.adb
+./$AdaC ../src/communs/idl-idl_tbl.adb
+./$AdaC ../src/communs/idl-idl_man.adb
+./$AdaC ../src/communs/idl-print_nod.adb
+./$AdaC ../src/pretty/idl-pretty_diana.adb
+#--------------------------------------------------
+#	PAR_PHASE
+#--------------------------------------------------
+./$AdaC ../src/par_phase/grmr_tbl.ads
+./$AdaC ../src/par_phase/grmr_ops.ads
+./$AdaC ../src/par_phase/grmr_ops.adb
+./$AdaC ../src/par_phase/lex.ads
+./$AdaC ../src/par_phase/lex.adb
+./$AdaC ../src/par_phase/idl-par_phase.adb
+./$AdaC ../src/par_phase/idl-par_phase-set_dflt.adb
+#--------------------------------------------------
+#	LIB_PHASE
+#--------------------------------------------------
+./$AdaC ../src/ada_comp/idl-lib_phase.adb
+#--------------------------------------------------
+#	SEM_PHASE
+#--------------------------------------------------
+./$AdaC ../src/sem_phase/idl-sem_phase.adb
+./$AdaC ../src/sem_phase/idl-sem_phase-aggreso.adb
+./$AdaC ../src/sem_phase/idl-sem_phase-att_walk.adb
+./$AdaC ../src/sem_phase/idl-sem_phase-chk_stat.adb
+./$AdaC ../src/sem_phase/idl-sem_phase-def_util.adb
+./$AdaC ../src/sem_phase/idl-sem_phase-def_walk.adb
+./$AdaC ../src/sem_phase/idl-sem_phase-derived.adb
+./$AdaC ../src/sem_phase/idl-sem_phase-eval_num.adb
+./$AdaC ../src/sem_phase/idl-sem_phase-exp_type.adb
+./$AdaC ../src/sem_phase/idl-sem_phase-expreso.adb
+./$AdaC ../src/sem_phase/idl-sem_phase-fix_pre.adb
+./$AdaC ../src/sem_phase/idl-sem_phase-fix_with.adb
+./$AdaC ../src/sem_phase/idl-sem_phase-gen_subs.adb
+./$AdaC ../src/sem_phase/idl-sem_phase-hom_unit.adb
+./$AdaC ../src/sem_phase/idl-sem_phase-instant.adb
+./$AdaC ../src/sem_phase/idl-sem_phase-make_nod.adb
+./$AdaC ../src/sem_phase/idl-sem_phase-newsnam.adb
+./$AdaC ../src/sem_phase/idl-sem_phase-nod_walk.adb
+./$AdaC ../src/sem_phase/idl-sem_phase-pra_walk.adb
+./$AdaC ../src/sem_phase/idl-sem_phase-pre_fcns.adb
+./$AdaC ../src/sem_phase/idl-sem_phase-red_subp.adb
+./$AdaC ../src/sem_phase/idl-sem_phase-rep_clau.adb
+./$AdaC ../src/sem_phase/idl-sem_phase-req_util.adb
+./$AdaC ../src/sem_phase/idl-sem_phase-sem_glob.adb
+./$AdaC ../src/sem_phase/idl-sem_phase-set_util.adb
+./$AdaC ../src/sem_phase/idl-sem_phase-stm_walk.adb
+./$AdaC ../src/sem_phase/idl-sem_phase-uarith.adb
+./$AdaC ../src/sem_phase/idl-sem_phase-univ_ops.adb
+./$AdaC ../src/sem_phase/idl-sem_phase-vis_util.adb
+#--------------------------------------------------
+#	ERR_PHASE
+#--------------------------------------------------
+./$AdaC ../src/ada_comp/idl-err_phase.adb
+#--------------------------------------------------
+#	WRITE_LIB
+#--------------------------------------------------
+./$AdaC ../src/ada_comp/idl-write_lib.adb
+#--------------------------------------------------
+#	EXPANDER
+#--------------------------------------------------
+./$AdaC ../src/expander/expander.ads
+./$AdaC ../src/expander/expander.adb
+./$AdaC ../src/expander/expander-utils.adb
+./$AdaC ../src/expander/expander-expressions.adb
+./$AdaC ../src/expander/expander-declarations.adb
+./$AdaC ../src/expander/expander-declarations-types_decls.adb
+./$AdaC ../src/expander/expander-represented_items.adb
+./$AdaC ../src/expander/expander-instructions.adb
+./$AdaC ../src/expander/expander-structures.adb
+#--------------------------------------------------
+#	CLI
+#--------------------------------------------------
+./$AdaC ../src/cli/cli.ads
+./$AdaC ../src/cli/cli.adb
+./$AdaC ../src/cli/cli-command_define.adb
+./$AdaC ../src/cli/cli-command_access.adb
+#--------------------------------------------------
+#	TARGET_CODE
+#--------------------------------------------------
+./$AdaC ../src/target_code/target_code.adb
+./$AdaC ../src/target_code/target_code-lex.adb
+./$AdaC ../src/target_code/target_code-symbols.adb
+./$AdaC ../src/target_code/target_code-ir.adb
+./$AdaC ../src/target_code/target_code-passes.adb
+./$AdaC ../src/target_code/target_code-emits.adb
+./$AdaC ../src/target_code/target_code-emits-x86_64_target.adb
+./$AdaC ../src/target_code/target_code-emits-arm64_target.adb
+./$AdaC ../src/target_code/target_code-emits-riscv64_target.adb
+#--------------------------------------------------
+#	ADA_COMP
+#--------------------------------------------------
+./$AdaC ../src/ada_comp/tlaloc.ads
+./$AdaC ../src/ada_comp/tlaloc.adb
+
+#./$AdaC ../src/ada_comp/ada_comp.adb B	ne pas faire cela ADA_COMP.fas a des ajouts manuels
+#	Rappel de ces ajouts :
+#	Sa	0, EXCEPTIONS_TOP_CTX_disp
+# if ~ definite DIRECT_IO
+# include 'DIRECT_IO.FINC'
+# end if
+# if ~ definite GRMR_TBL
+# include 'GRMR_TBL.FINC'
+# end if
+# if ~ definite GRMR_OPS
+# include 'GRMR_OPS.FINC'
+# end if
+# if ~ definite LEX
+# include 'LEX.FINC'
+# end if
+# include 'ADA_COMP.FINC'
+
+
+finC=$(date +%s)
+dureeC=$((finC - debutC))
+
+heuresC=$((dureeC / 3600))
+minutesC=$(((dureeC % 3600) / 60))
+secondesC=$((dureeC % 60))
+
+printf "Durée de compilation : %02dh %02dmin %02dsec\n" $heuresC $minutesC $secondesC
+
+
+
+debutA=$(date +%s)
+
+if [ "${1:-}" = "T1" ]
+then
+  echo "          -------------------"
+  echo "          Assemble with fasmg"
+  echo "          -------------------"
+  cd ./ADA__LIB
+
+  ./fasmg -p20 ./TLALOC.fas ./T1.exe
+  chmod u+x ./T1.exe
+  mv ./T1.exe ../
+
+else
+  echo "          -------------------------"
+  echo "          Assemble with TLALOC CODE"
+  echo "          -------------------------"
+  pwd
+  printf 'CODE /TARGET=X86_64 TLALOC\n' | ./TLALOC.x86exe
+  cd ./ADA__LIB
+  chmod u+x ./TLALOC.x86exe
+  mv ./TLALOC.x86exe ../
+fi
+
+
+
+finA=$(date +%s)
+dureeA=$((finA - debutA))
+
+heuresA=$((dureeA / 3600))
+minutesA=$(((dureeA % 3600) / 60))
+secondesA=$((dureeA % 60))
+
+printf "Durée d assemblage : %02dh %02dmin %02dsec\n" $heuresA $minutesA $secondesA

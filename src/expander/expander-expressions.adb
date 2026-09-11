@@ -554,8 +554,16 @@ is
 	      PUT_LINE( TYPE_NAME_STR & "._COMP_SIZ" );
 	    end if;
 
-	    PUT_LINE( tab & "LI" & tab & IMAGE( CODI.STORAGE_UNIT ) );
-	    PUT_LINE( tab & "DIV" );
+	    if  CODI.STORAGE_UNIT = 8  then
+	      PUT_LINE( tab & "LI" & tab & "3" );
+	      PUT_LINE( tab & "SAR" );									-- bits -> octets : /8 = >>3 (SIZ >= 0)
+	    else
+	      PUT_LINE( tab & "LI" & tab & IMAGE( CODI.STORAGE_UNIT ) );
+	      PUT_LINE( tab & "DIV" );									-- En STORAGE_UNIT
+	    end if;
+
+--	    PUT_LINE( tab & "LI" & tab & IMAGE( CODI.STORAGE_UNIT ) );
+--	    PUT_LINE( tab & "DIV" );
 	    PUT_LINE( tab & "MUL" );
 	    PUT_LINE( tab & "ADD" );
 
@@ -642,8 +650,15 @@ is
 	  PUT_LINE( TYPE_NAME_STR & "._COMP_SIZ" );
 	end if;
 
-	PUT_LINE( tab & "LI" & tab & IMAGE( CODI.STORAGE_UNIT ) );
-	PUT_LINE( tab & "DIV" );
+	if  CODI.STORAGE_UNIT = 8  then
+	  PUT_LINE( tab & "LI" & tab & "3" );
+	  PUT_LINE( tab & "SAR" );									-- bits -> octets : /8 = >>3 (SIZ >= 0)
+	else
+	  PUT_LINE( tab & "LI" & tab & IMAGE( CODI.STORAGE_UNIT ) );
+	  PUT_LINE( tab & "DIV" );									-- En STORAGE_UNIT
+	end if;
+--	PUT_LINE( tab & "LI" & tab & IMAGE( CODI.STORAGE_UNIT ) );
+--	PUT_LINE( tab & "DIV" );
 	PUT_LINE( tab & "MUL" );
 	PUT_LINE( tab & "ADD" );
 
@@ -784,10 +799,17 @@ is
 	  PUT_LINE( TYPE_NAME_STR(1 .. TYPE_NAME_LEN) & "._COMP_SIZ" );
          end if;
 
-         PUT_LINE( tab & "LI" & tab & IMAGE( CODI.STORAGE_UNIT ) );
-         PUT_LINE( tab & "DIV" );
-         PUT_LINE( tab & "MUL" );
-         PUT_LINE( tab & "ADD" );
+        if  CODI.STORAGE_UNIT = 8  then
+	PUT_LINE( tab & "LI" & tab & "3" );
+	PUT_LINE( tab & "SAR" );									-- bits -> octets : /8 = >>3 (SIZ >= 0)
+        else
+	PUT_LINE( tab & "LI" & tab & IMAGE( CODI.STORAGE_UNIT ) );
+	PUT_LINE( tab & "DIV" );									-- En STORAGE_UNIT
+        end if;
+--        PUT_LINE( tab & "LI" & tab & IMAGE( CODI.STORAGE_UNIT ) );
+--        PUT_LINE( tab & "DIV" );
+        PUT_LINE( tab & "MUL" );
+        PUT_LINE( tab & "ADD" );
 
       end INDEX;
 
@@ -867,8 +889,17 @@ is
 	PUT_LINE( tab & "LD" & tab & LVL_STR & ", " & ANON & "_info._FST_" & INDEX_NUM_IMG );
 	PUT_LINE( tab & "SUB" );
 	PUT_LINE( tab & "LD" & tab & LVL_STR & ", " & ANON & "_info._COMP_SIZ" );
-	PUT_LINE( tab & "LI" & tab & IMAGE( CODI.STORAGE_UNIT ) );
-	PUT_LINE( tab & "DIV" );
+
+	if  CODI.STORAGE_UNIT = 8  then
+	  PUT_LINE( tab & "LI" & tab & "3" );
+	  PUT_LINE( tab & "SAR" );									-- bits -> octets : /8 = >>3 (SIZ >= 0)
+	else
+	  PUT_LINE( tab & "LI" & tab & IMAGE( CODI.STORAGE_UNIT ) );
+	  PUT_LINE( tab & "DIV" );									-- En STORAGE_UNIT
+	end if;
+
+--	PUT_LINE( tab & "LI" & tab & IMAGE( CODI.STORAGE_UNIT ) );
+--	PUT_LINE( tab & "DIV" );
 	PUT_LINE( tab & "MUL" );
 	PUT_LINE( tab & "ADD" );
         end INDEX;
@@ -1069,8 +1100,15 @@ is
 
         end if;
 
-        PUT_LINE( tab & "LI" & tab & IMAGE( CODI.STORAGE_UNIT ) );
-        PUT_LINE( tab & "DIV" );									-- En STORAGE_UNIT
+        if  CODI.STORAGE_UNIT = 8  then
+	PUT_LINE( tab & "LI" & tab & "3" );
+	PUT_LINE( tab & "SAR" );									-- bits -> octets : /8 = >>3 (SIZ >= 0)
+        else
+	PUT_LINE( tab & "LI" & tab & IMAGE( CODI.STORAGE_UNIT ) );
+	PUT_LINE( tab & "DIV" );									-- En STORAGE_UNIT
+        end if;
+--        PUT_LINE( tab & "LI" & tab & IMAGE( CODI.STORAGE_UNIT ) );
+--        PUT_LINE( tab & "DIV" );									-- En STORAGE_UNIT
         PUT_LINE( tab & "MUL" );
         PUT( tab & "ADD" );
         if  CODI.DEBUG  then PUT( tab50 & "; add offset to start address" ); end if;

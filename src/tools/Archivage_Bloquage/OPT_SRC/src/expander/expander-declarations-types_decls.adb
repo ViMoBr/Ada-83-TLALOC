@@ -23,9 +23,9 @@ is
 
 
 
-			--==============--
+			--^^^^^^^^^^^^^^--
   procedure		  CODE_TYPE_DECL		( TYPE_DECL :TREE )
-  is			--==============--
+  is			------------------
 
     TYPE_NAME	: TREE	:= D( AS_SOURCE_NAME, TYPE_DECL );
     TYPE_SPEC	: TREE	:= D( SM_TYPE_SPEC, TYPE_NAME );
@@ -64,9 +64,22 @@ is
         end if;
       end			ANTICIPATE_PRIVATE_LEVEL;
 			------------------------
+
       if  CODI.DEBUG  then
-        PUT_LINE( "; EXPANDER.DECLARATIONS.CODE_TYPE_DECL : skip PRIVATE "
+        if  D( SM_TYPE_SPEC, TYPE_SPEC ) = TREE_VOID
+        and then  D( SM_DERIVED, TYPE_SPEC ) /= TREE_VOID  then
+			--| Seconde saveur : type DERIVE d'un prive (SM_TYPE_SPEC VOID,
+			--| aucune completion a attendre).  Aucun descripteur propre a
+			--| elaborer : representation du PARENT, le percage aval suit
+			--| SM_DERIVED (regle unique).  L'ancien commentaire FINC
+			--| << deferred to full type >> MENTAIT pour cette saveur.
+	PUT_LINE( "; EXPANDER.DECLARATIONS.CODE_TYPE_DECL : skip DERIVE-de-PRIVE "
+		& PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) ) & " (representation du parent, percage via SM_DERIVED)" );
+
+        else
+	PUT_LINE( "; EXPANDER.DECLARATIONS.CODE_TYPE_DECL : skip PRIVATE "
 		& PRINT_NAME( D( LX_SYMREP, TYPE_NAME ) ) & " (deferred to full type)" );
+        end if;
       end if;
 
     elsif  TYPE_SPEC.TY = DN_INCOMPLETE  then
@@ -94,7 +107,6 @@ is
 
   end	  CODE_TYPE_DECL;
 	--==============--
-
 
 
 			---------------------
@@ -142,26 +154,23 @@ is
 
     PUT_LINE( TYPE_STR & " = '" & TYPE_STR & "'" );
     PUT_LINE( "namespace " & TYPE_STR );
-    PUT_LINE( "VAR use__info, q" );
+    PUT_LINE( "VAR use__info, Q" );
 
     PUT_LINE( "BEGIN_BLOC_DEF" );
     CODE_ENUM_LITERAL_S( D( SM_LITERAL_S, TYPE_SPEC ) );
-    PUT_LINE( "END_BLOC_DEF "
-	    & IMAGE( DI( CD_IMPL_SIZE, TYPE_SPEC ) ) & ','
-	    & INTEGER'IMAGE( MIN_REP ) & ','
-	    & INTEGER'IMAGE( MAX_REP ) );
+    PUT_LINE( "END_BLOC_DEF " & IMAGE( DI( CD_IMPL_SIZE, TYPE_SPEC ) )
+			& ',' & INTEGER'IMAGE( MIN_REP ) & ',' & INTEGER'IMAGE( MAX_REP ) );
 
     if  CODI.DEBUG  then PUT( ASCII.HT & "; SIZ en bits !" ); end if;
     NEW_LINE;
 
-    PUT_LINE( tab & "LCA" & tab & "SIZ" );
-    PUT_LINE( tab & "Sa" & tab & IMAGE( CODI.CUR_LEVEL ) & ", use__info" );
+    PUT_LINE( tab & "LCA" & tab & "SIZ" );								-- SIZ defini par END_BLOC_DEF
+    PUT_LINE( tab & "SA" & tab & IMAGE( CODI.CUR_LEVEL ) & ", use__info" );
 
     PUT_LINE( "end namespace");
 
   end	CODE_ENUMERATION_DECL;
 	---------------------
-
 
 
 			-----------------
@@ -186,16 +195,17 @@ is
 
     PUT_LINE( TYPE_STR & " = '" & TYPE_STR & "'" );
     PUT_LINE( "namespace " & TYPE_STR );
-    PUT_LINE( "VAR use__info, q" );
-    PUT_LINE( "VAR SIZ, d" );
-    PUT_LINE( tab & "LVA" & tab & LVL_STR & ", SIZ" );
-    PUT_LINE( tab & "Sa" & tab & LVL_STR & ", use__info" );
+
+    PUT_LINE( "VAR use__info, Q" );
+    PUT_LINE( "VAR SIZ__, D" );									-- VAR taille de patron SIZ__
+    PUT_LINE( tab & "LVA" & tab & LVL_STR & ", SIZ__" );							-- Adresse debut patron sur SIZ__
+    PUT_LINE( tab & "SA" & tab & LVL_STR & ", use__info" );
 
     PUT_LINE( "VAR FST, " & SIZE_CHAR );
     PUT_LINE( "VAR LST, " & SIZE_CHAR );
 
     PUT_LINE( tab & "LI" & tab & IMAGE( DI( CD_IMPL_SIZE, INTEGER_SPEC ) ) );
-    PUT_LINE( tab & "Sd" & tab & LVL_STR & ", SIZ" );
+    PUT_LINE( tab & "SD" & tab & LVL_STR & ", SIZ__" );							-- Taille du patron
 
     EXPRESSIONS.CODE_EXP( EXP_FST );
     PUT_LINE( tab & 'S' & SIZE_CHAR & tab & LVL_STR & ", FST" );
@@ -226,12 +236,12 @@ is
     PUT_LINE( SUBTYPE_STR & " = '" & SUBTYPE_STR & "'" );
     PUT_LINE( "namespace " & SUBTYPE_STR );
 
-    PUT_LINE( "VAR use__info, q" );
-    PUT_LINE( "VAR SIZ, d" );
-    PUT_LINE( tab & "LVA" & tab & LVL_STR & ", SIZ" );
-    PUT_LINE( tab & "Sa" & tab & LVL_STR & ", use__info" );
+    PUT_LINE( "VAR use__info, Q" );
+    PUT_LINE( "VAR SIZ__, D" );
+    PUT_LINE( tab & "LVA" & tab & LVL_STR & ", SIZ__" );
+    PUT_LINE( tab & "SA" & tab & LVL_STR & ", use__info" );
     PUT_LINE( tab & "LI" & tab & IMAGE( DI( CD_IMPL_SIZE, TYPE_SPEC ) ) );
-    PUT_LINE( tab & "Sd" & tab & LVL_STR & ", SIZ" );
+    PUT_LINE( tab & "SD" & tab & LVL_STR & ", SIZ__" );
 
     PUT_LINE( "VAR FST, " & SIZE_CHAR );
     PUT_LINE( "VAR LST, " & SIZE_CHAR );
@@ -240,12 +250,12 @@ is
     EXPRESSIONS.CODE_STATIC_FIXED_VALUE( D( SM_VALUE, EXP_LST ), TYPE_SPEC );
     PUT_LINE( tab & 'S' & SIZE_CHAR & tab & LVL_STR & ", LST" );
 
-    PUT_LINE( "VAR NUMER, q" );
-    PUT_LINE( "VAR DENOM, q" );
+    PUT_LINE( "VAR NUMER, Q" );
+    PUT_LINE( "VAR DENOM, Q" );
     PUT_LINE( tab & "LI" & tab & PRINT_NUM( D( XD_NUMER, SMALL_VAL ) ) );
-    PUT_LINE( tab & "Sq" & tab & LVL_STR & ", NUMER" );
+    PUT_LINE( tab & "SQ" & tab & LVL_STR & ", NUMER" );
     PUT_LINE( tab & "LI" & tab & PRINT_NUM( D( XD_DENOM, SMALL_VAL ) ) );
-    PUT_LINE( tab & "Sq" & tab & LVL_STR & ", DENOM" );
+    PUT_LINE( tab & "SQ" & tab & LVL_STR & ", DENOM" );
 
     PUT_LINE( "end namespace" );
 
@@ -290,11 +300,11 @@ is
     PUT_LINE( TYPE_STR & " = '" & TYPE_STR & "'" );
     PUT_LINE( "namespace " & TYPE_STR );
 
-    PUT_LINE( "VAR use__info, q" );
+    PUT_LINE( "VAR use__info, Q" );
 
-    PUT_LINE( "VAR SIZ, d" );
-    PUT_LINE( "VAR FST, q" );
-    PUT_LINE( "VAR LST, q" );
+    PUT_LINE( "VAR SIZ__, D" );									-- VAR taille du patron
+    PUT_LINE( "VAR FST, Q" );
+    PUT_LINE( "VAR LST, Q" );
 
     declare
       FLOAT_RANGE	: TREE		:= D( SM_RANGE, FLOAT_SPEC );
@@ -302,37 +312,23 @@ is
       EXP_LST	: TREE		:= D( AS_EXP2, FLOAT_RANGE );
       LVL_STR	:constant STRING	:= IMAGE( CODI.CUR_LEVEL );
     begin
-      PUT_LINE( tab & "LVA" & tab & LVL_STR & ", SIZ" );
-      PUT_LINE( tab & "Sa"  & tab & LVL_STR & ", use__info" );
+      PUT_LINE( tab & "LVA" & tab & LVL_STR & ", SIZ__" );							-- Adresse debut de ptron
+      PUT_LINE( tab & "SA"  & tab & LVL_STR & ", use__info" );
 
       PUT_LINE( tab & "LI" & tab & INTEGER'IMAGE( DI( CD_IMPL_SIZE, FLOAT_SPEC ) ) );
-      PUT_LINE( tab & "Sd" & tab & LVL_STR & ", SIZ" );
+      PUT_LINE( tab & "SD" & tab & LVL_STR & ", SIZ__" );							-- Taille de patron
 
       EXPRESSIONS.CODE_EXP( EXP_FST );
-      PUT_LINE( tab & "Sq" & tab & LVL_STR & ", FST" );
+      PUT_LINE( tab & "SQ" & tab & LVL_STR & ", FST" );
 
       EXPRESSIONS.CODE_EXP( EXP_LST );
-      PUT_LINE( tab & "Sq" & tab & LVL_STR & ", LST" );
+      PUT_LINE( tab & "SQ" & tab & LVL_STR & ", LST" );
     end;
-
-
---    if  SIZE_CHAR = 'd'  then
---      PUT_LINE( "CST LST, " & SIZE_CHAR & ",  1.0E38" );							-- ATTENTION : CST ne sens inverse a cause de postpone
---      PUT_LINE( "CST FST, " & SIZE_CHAR & ", -1.0E38" );
---    elsif  SIZE_CHAR = 'q'  then
---      PUT_LINE( "CST LST, " & SIZE_CHAR & ",  1.0E308" );
---      PUT_LINE( "CST FST, " & SIZE_CHAR & ", -1.0E308" );
---    end if;
-
---    PUT_LINE( "CST SIZ, d," &	INTEGER'IMAGE( DI( CD_IMPL_SIZE, FLOAT_SPEC ) ) );
---    PUT_LINE( tab &	"LCA" & tab & "SIZ" );
---    PUT_LINE( tab &	"Sa" & tab & IMAGE( CODI.CUR_LEVEL ) & ", use__info" );
 
     PUT_LINE( "end namespace" );
 
   end	CODE_FLOAT_DECL;
 	---------------
-
 
 
 			-----------------------------
@@ -397,13 +393,13 @@ is
     PUT_LINE( TYPE_ID_STR & " = '" & TYPE_ID_STR & "'" );
     PUT_LINE( "namespace " & TYPE_ID_STR );
 
-    PUT_LINE( "VAR use__info, q" );
-    PUT_LINE( "VAR SIZ, d" );
-    PUT_LINE( tab & "LVA" & tab & LVL_STR & ", SIZ" );
-    PUT_LINE( tab & "Sa" & tab & LVL_STR & ", use__info" );
+    PUT_LINE( "VAR use__info, Q" );
+    PUT_LINE( "VAR SIZ__, D" );									-- VAR taille de patron
+    PUT_LINE( tab & "LVA" & tab & LVL_STR & ", SIZ__" );							-- Adresse debut de patron
+    PUT_LINE( tab & "SA" & tab & LVL_STR & ", use__info" );
     PUT_LINE( tab & "LI" & tab & '1' );
     PUT_LINE( tab & "NEG" );
-    PUT_LINE( tab & "Sd" & tab & LVL_STR & ", SIZ" );							-- SIZ=-1 UNCONSTRAINED
+    PUT_LINE( tab & "SD" & tab & LVL_STR & ", SIZ__" );							-- SIZ=-1 UNCONSTRAINED
 
     PUT( "  virtual at 4" );										-- Commence apres SIZ
     if  CODI.DEBUG  then  PUT_LINE( tab50 & "; use info offsets pour acces sur array contraint" ); end if;
@@ -420,7 +416,7 @@ is
 
 
 		------------------
-    procedure	STATIC_BOUND_VALUE  ( BOUND : TREE;  VAL : out INTEGER;  OK : out BOOLEAN )
+    procedure	STATIC_BOUND_VALUE  ( BOUND :TREE;  VAL :out INTEGER;  OK :out BOOLEAN )
     is		------------------
 	-- Valeur statique d'une borne discrete. Piege n 95a AMENDE : le
 	-- test de propriete (valeur statique presente) ne vaut que la ou
@@ -432,23 +428,26 @@ is
       DEFN	: TREE;
 
 		-------------
-      procedure	LIRE_SM_VALUE	( N : TREE;  V : out INTEGER;  FOUND : out BOOLEAN )
-      is  -------------
+      procedure	LIRE_SM_VALUE	( N :TREE;  V :out INTEGER;  FOUND :out BOOLEAN )
+      is		-------------
 	-- Prerequis : l'espece de N porte sm_value.
 	SV : TREE := D( SM_VALUE, N );
       begin
 	if  SV.PT = HI  and then  SV.NOTY = DN_NUM_VAL  then
-	  V := DI( SM_VALUE, N );		FOUND := TRUE;
+	  V := DI( SM_VALUE, N );			FOUND := TRUE;
 	elsif  SV.TY = DN_NUM_VAL  then
 	  V := INTEGER'VALUE( PRINT_NUM( SV ) );	FOUND := TRUE;
 	else
 	  V := 0;				FOUND := FALSE;
 	end if;
+
       end LIRE_SM_VALUE;
+	-------------
+
 
 		--------------
-      procedure	FOLD_BLTN_CALL	( FC : TREE;  V : out INTEGER;  FOUND : out BOOLEAN )
-      is  --------------
+      procedure	FOLD_BLTN_CALL	( FC :TREE;  V :out INTEGER;  FOUND :out BOOLEAN )
+      is		--------------
 	-- Pliage minimal des operateurs PREDEFINIS entiers +, -, *
 	-- (binaires et unaires) a operandes statiques : couvre les
 	-- idiomes N-1, N+1, 2*N des bornes. La place DURABLE de ce
@@ -467,7 +466,7 @@ is
 	  return;
 	end if;
 	DEFN := D( SM_DEFN, NAME );
-	if  DEFN.TY /= DN_BLTN_OPERATOR_ID  then		-- jamais un "-" UTILISATEUR (meme garde que F-D)
+	if  DEFN.TY /= DN_BLTN_OPERATOR_ID  then							-- jamais un "-" UTILISATEUR (meme garde que F-D)
 	  return;
 	end if;
 
@@ -479,7 +478,7 @@ is
 	  STATIC_BOUND_VALUE( P1, V1, OK1 );
 	  if  not OK1  then  return;  end if;
 
-	  if  IS_EMPTY( PRM_S )  then				-- unaire
+	  if  IS_EMPTY( PRM_S )  then									-- unaire
 	    if	OP = """-"""  then  V := -V1;  FOUND := TRUE;
 	    elsif OP = """+"""  then  V :=  V1;  FOUND := TRUE;
 	    end if;
@@ -495,7 +494,9 @@ is
 	  elsif OP = """*"""  then  V := V1 * V2;  FOUND := TRUE;
 	  end if;						-- "/" exclu : troncature a valider avant
 	end;
+
       end FOLD_BLTN_CALL;
+	--------------
 
     begin
       VAL := 0;
@@ -503,24 +504,21 @@ is
 
       case  BOUND.TY  is
 
-      when  DN_NUMERIC_LITERAL
-	  | DN_CONVERSION
-	  | DN_PARENTHESIZED
-	  | DN_FUNCTION_CALL	=>				-- especes portant sm_value
+      when  DN_NUMERIC_LITERAL  |  DN_CONVERSION  |  DN_PARENTHESIZED  |  DN_FUNCTION_CALL =>			-- especes portant sm_value
 	LIRE_SM_VALUE( BOUND, VAL, OK );
 	if  OK  then  return;  end if;
 
 	if  BOUND.TY = DN_CONVERSION  or else  BOUND.TY = DN_PARENTHESIZED  then
-	  STATIC_BOUND_VALUE( D( AS_EXP, BOUND ), VAL, OK );	-- conversion entiere statique :
-								-- valeur inchangee (LRM 4.6)
+	  STATIC_BOUND_VALUE( D( AS_EXP, BOUND ), VAL, OK );						-- conversion entiere statique :
+												-- valeur inchangee (LRM 4.6)
 	elsif  BOUND.TY = DN_FUNCTION_CALL  then
 	  FOLD_BLTN_CALL( BOUND, VAL, OK );
 	end if;
 
-      when  DN_USED_NAME_ID | DN_USED_OP			-- PAS de sm_value ici : via sm_defn
-	| DN_USED_OBJECT_ID | DN_USED_CHAR  =>		-- USED_OBJECT : sm_defn ET sm_value
+      when  DN_USED_NAME_ID | DN_USED_OP								-- PAS de sm_value ici : via sm_defn
+	| DN_USED_OBJECT_ID | DN_USED_CHAR  =>								-- USED_OBJECT : sm_defn ET sm_value
 
-	if  BOUND.TY in CLASS_USED_OBJECT  then			-- eux seuls portent sm_value
+	if  BOUND.TY in CLASS_USED_OBJECT  then								-- eux seuls portent sm_value
 	  LIRE_SM_VALUE( BOUND, VAL, OK );
 	  if  OK  then  return;  end if;
 	end if;
@@ -529,14 +527,15 @@ is
 	if  DEFN.TY = DN_ENUMERATION_ID  or else  DEFN.TY = DN_CHARACTER_ID  then
 	  VAL := DI( SM_REP, DEFN );  OK := TRUE;
 	elsif  DEFN.TY = DN_NUMBER_ID  then
-	  STATIC_BOUND_VALUE( D( SM_INIT_EXP, DEFN ), VAL, OK );	-- nombre nomme (LRM 3.2.2)
+	  STATIC_BOUND_VALUE( D( SM_INIT_EXP, DEFN ), VAL, OK );						-- nombre nomme (LRM 3.2.2)
 	end if;
 
-      when  DN_ENUMERATION_ID | DN_CHARACTER_ID  =>		-- borne = litteral DEFINISSANT
-	VAL := DI( SM_REP, BOUND );	OK := TRUE;
+      when  DN_ENUMERATION_ID  |  DN_CHARACTER_ID  =>							-- borne = litteral DEFINISSANT
+	VAL := DI( SM_REP, BOUND );
+	OK := TRUE;
 
       when  others  =>
-	null;							-- borne reellement dynamique : OK = FALSE
+	null;											-- INTENTIONNEL : borne reellement dynamique : OK = FALSE
       end case;
 
     end	STATIC_BOUND_VALUE;
@@ -563,55 +562,117 @@ is
       COMP_SIZE_TREE	: TREE			:= TREE_VOID;
       IS_STATIC		: BOOLEAN			:= COMP_SIZE_TREE /= TREE_VOID;
       ARRAY_STATIC_SIZE	: NATURAL			:= 0;
+
+      function  TYPE_SIZE_BITS	( T :TREE )	return NATURAL;
+
+		---------------------------
+      function	CONSTRAINED_ARRAY_SIZE_BITS		( ARR :TREE )	return NATURAL
+      is		---------------------------
+        ARR_SPEC		: TREE		:= CODI.FULL_TYPE_VIEW( ARR );
+        BASE_TYPE		: TREE;
+        ELEM_TYPE		: TREE;
+        IDX_S		: SEQ_TYPE;
+        IDX_TYPE		: TREE;
+        IDX_SPEC		: TREE;
+        IDX_RANGE		: TREE;
+        LO, HI		: INTEGER;
+        LO_OK, HI_OK	: BOOLEAN;
+        TOTAL		: NATURAL;
+
+      begin
+        if  ARR_SPEC = TREE_VOID  or else  ARR_SPEC = TREE_NIL
+	or else  ARR_SPEC.TY /= DN_CONSTRAINED_ARRAY
+        then
+	TROU( "CONSTRAINED_ARRAY_SIZE_BITS erreur spec", ARR_SPEC );
+	return  0;
+        end if;
+
+        if  D( CD_IMPL_SIZE, ARR_SPEC ) /= TREE_VOID
+	and then D( CD_IMPL_SIZE, ARR_SPEC ) /= TREE_NIL
+	and then DI( CD_IMPL_SIZE, ARR_SPEC ) > 0
+
+        then
+	return NATURAL( DI( CD_IMPL_SIZE, ARR_SPEC ) );
+        end if;
+
+        BASE_TYPE := D( SM_BASE_TYPE, ARR_SPEC );
+        ELEM_TYPE := D( SM_COMP_TYPE, BASE_TYPE );
+
+        TOTAL := TYPE_SIZE_BITS( ELEM_TYPE );
+
+        if  TOTAL = 0  then
+	return  0;
+        end if;
+
+        IDX_S := LIST( D( SM_INDEX_SUBTYPE_S, ARR_SPEC ) );
+        while  not IS_EMPTY( IDX_S )  loop
+	POP( IDX_S, IDX_TYPE );
+	IDX_SPEC := CODI.FULL_TYPE_VIEW( IDX_TYPE );
+	IDX_RANGE := D( SM_RANGE, IDX_SPEC );
+
+	if  IDX_RANGE = TREE_VOID  or else  IDX_RANGE = TREE_NIL  or else  IDX_RANGE.TY /= DN_RANGE
+	then return  0;
+	end if;
+
+	STATIC_BOUND_VALUE( D( AS_EXP1, IDX_RANGE ), LO, LO_OK );
+	STATIC_BOUND_VALUE( D( AS_EXP2, IDX_RANGE ), HI, HI_OK );
+
+	if  not ( LO_OK and HI_OK )  or else  HI < LO  then
+	  return  0;
+	end if;
+
+	TOTAL := TOTAL * NATURAL( HI - LO + 1 );
+        end loop;
+
+        DI( CD_IMPL_SIZE, ARR_SPEC, INTEGER( TOTAL ) );
+        return  TOTAL;
+
+      end CONSTRAINED_ARRAY_SIZE_BITS;
+	---------------------------
+
+
+		--------------
+      function	TYPE_SIZE_BITS ( T :TREE )	return NATURAL
+      is		--------------
+
+        TS	: TREE		:= CODI.FULL_TYPE_VIEW( T );
+        RAW	: INTEGER;
+
+      begin
+        if  TS.TY = DN_ACCESS  or else  TS.TY = DN_FLOAT  then
+	return  CODI.ADDR_SIZE * CODI.STORAGE_UNIT;
+
+        elsif  TS.TY = DN_CONSTRAINED_ARRAY  then
+	return  CONSTRAINED_ARRAY_SIZE_BITS( TS );
+
+        elsif  TS.TY = DN_RECORD  or else  TS.TY = DN_CONSTRAINED_RECORD  then
+	if  TS.TY = DN_CONSTRAINED_RECORD  then
+	  TS := D( SM_BASE_TYPE, TS );
+	end if;
+
+	RAW := DI( CD_IMPL_SIZE, TS );
+	if  RAW = 0  then
+	  return  0;
+	end if;
+
+	return  NATURAL( ( ( RAW + CODI.STORAGE_UNIT - 1 )
+		        / CODI.STORAGE_UNIT ) * CODI.STORAGE_UNIT );
+
+        else
+	RAW := DI( CD_IMPL_SIZE, TS );
+	return  NATURAL( ( ( RAW + CODI.STORAGE_UNIT - 1 )
+		        / CODI.STORAGE_UNIT ) * CODI.STORAGE_UNIT );
+        end if;
+
+      end TYPE_SIZE_BITS;
+	--------------
+
+
 		--------------
       function	COMP_SIZE_BITS	return NATURAL
       is		--------------
       begin
-        if  COMP_TYPE.TY = DN_ACCESS  then
-	return CODI.ADDR_SIZE * CODI.STORAGE_UNIT;
-        elsif  COMP_TYPE.TY = DN_FLOAT  then
-        -- Convention backend TLALOC : les flottants sont stockés en double 64 bits.
-	return CODI.ADDR_SIZE * CODI.STORAGE_UNIT;
-
-        elsif  COMP_TYPE.TY = DN_RECORD
-	 or  COMP_TYPE.TY = DN_CONSTRAINED_RECORD
-        then
-	-- Pilier 3.7 : composant record (contraint ou non).  La vue contrainte
-	-- anonyme (p. ex. BUF(2)) ne porte pas de CD_IMPL_SIZE : lire celui du
-	-- record de BASE, pose par CODE_RECORD_DECL (layout additif).
-	declare
-	  REC : TREE	:= COMP_TYPE;
-	  RAW : INTEGER;
-	begin
-	  if  REC.TY = DN_CONSTRAINED_RECORD  then
-	    REC := D( SM_BASE_TYPE, REC );
-	  end if;
-
-	  RAW := DI( CD_IMPL_SIZE, REC );
-
-	  if  RAW = 0  then
-	  -- Vue complete pas encore compilee (type prive, ACVC A7xxx) : la
-	  -- taille n'est pas connaissable par l'expander A CE POINT du flux,
-	  -- mais le symbole <rec>.size sera defini plus loin dans le FINC.
-	  -- Retourner 0 : le site d'emission bascule sur le symbole (fasm
-	  -- resout les references avant definition) et IS_STATIC tombe.
-	    return 0;
-	  end if;
-
-	  return ( ( RAW + CODI.STORAGE_UNIT - 1 ) / CODI.STORAGE_UNIT ) * CODI.STORAGE_UNIT;
-	end;
-
-        else
-        -- CD_IMPL_SIZE est la taille minimale en BITS posee par le front-end
-        -- (1 pour BOOLEAN, 3 pour un enumere a 7 valeurs...).  La convention
-        -- de stockage TLALOC est l'octet (piege n 10) : arrondir.
-	declare
-	  RAW : INTEGER := DI( CD_IMPL_SIZE, COMP_TYPE );
-	begin
-	  return ( ( RAW + CODI.STORAGE_UNIT - 1 ) / CODI.STORAGE_UNIT ) * CODI.STORAGE_UNIT;
-	end;
-
-        end if;
+        return TYPE_SIZE_BITS( COMP_TYPE );
 
       end COMP_SIZE_BITS;
 	--------------
@@ -624,20 +685,24 @@ is
       -- Le code d'initialisation du descripteur reste dynamique et continue
       -- d'utiliser CODE_DISCRETE_RANGE_BOUND ; seule la decision de poser
       -- CD_IMPL_SIZE est modifiee.
-      function IS_STATIC_INTEGER_BOUND ( EXP : TREE ) return BOOLEAN
-      is
-      begin
-        return EXP /= TREE_VOID and then EXP.TY = DN_NUMERIC_LITERAL;
-      end IS_STATIC_INTEGER_BOUND;
 
-      procedure STATIC_RANGE_BOUNDS
-        ( RNG	: in  TREE;
-	IS_STATIC : out BOOLEAN;
-	LO	: out INTEGER;
-	HI	: out INTEGER )
-      is
-        EXP1 : TREE := TREE_VOID;
-        EXP2 : TREE := TREE_VOID;
+		-----------------------
+      function	IS_STATIC_INTEGER_BOUND	( EXP :TREE )	return BOOLEAN
+      is		-----------------------
+      begin
+        return  EXP /= TREE_VOID  and then  EXP.TY = DN_NUMERIC_LITERAL;
+
+      end IS_STATIC_INTEGER_BOUND;
+	-----------------------
+
+
+		-------------------
+      procedure	STATIC_RANGE_BOUNDS ( RNG :in  TREE; IS_STATIC :out BOOLEAN; LO, HI :out INTEGER )
+      is		-------------------
+
+        EXP1	: TREE	:= TREE_VOID;
+        EXP2	: TREE	:= TREE_VOID;
+
       begin
         IS_STATIC := FALSE;
         LO := 0;
@@ -655,12 +720,14 @@ is
 	  IS_STATIC := TRUE;
 	end if;
         end if;
-      end STATIC_RANGE_BOUNDS;
 
-      procedure MULTIPLY_STATIC_DIMENSION
-        ( LO : in INTEGER;
-	HI : in INTEGER )
-      is
+      end STATIC_RANGE_BOUNDS;
+	-------------------
+
+
+		-------------------------
+      procedure	MULTIPLY_STATIC_DIMENSION	( LO, HI :in INTEGER )
+      is		-------------------------
         LEN : NATURAL;
       begin
         if HI < LO then
@@ -670,16 +737,20 @@ is
         end if;
 
         ARRAY_STATIC_SIZE := LEN * ARRAY_STATIC_SIZE;
+
       end MULTIPLY_STATIC_DIMENSION;
+	-------------------------
 
 
 		----------------------------
     procedure	COMPILE_ARRAY_TYPE_DIMENSION		( IDX_TYPE_LIST, RANGE_LIST :in out SEQ_TYPE;
 						  HAS_RANGES :BOOLEAN )
-    is
+    is		----------------------------
+
       IDX_TYPE		: TREE;
       SRC_RANGE		: TREE		:= TREE_VOID;
       DIM_NBR_STR		:constant STRING	:= IMAGE( DIM_NBR+1 );
+
     begin
       POP( IDX_TYPE_LIST, IDX_TYPE );
       if  HAS_RANGES  then
@@ -693,9 +764,9 @@ is
 	ELEMENT_SIZ_STR		:constant STRING	:= IMAGE( ELEMENT_SIZ );				-- IMAGE DE TAILLE EN BITS
         begin
 	ARRAY_STATIC_SIZE := ELEMENT_SIZ;
-	PUT_LINE( "VAR _COMP_SIZ, d" );
-	PUT_LINE( "VAR _FST_" & DIM_NBR_STR & ", d" );
-	PUT_LINE( "VAR _LST_" & DIM_NBR_STR & ", d" );
+	PUT_LINE( "VAR _COMP_SIZ, D" );
+	PUT_LINE( "VAR _FST_" & DIM_NBR_STR & ", D" );
+	PUT_LINE( "VAR _LST_" & DIM_NBR_STR & ", D" );
 
 	if  ELEMENT_SIZ = 0
 	  and then ( COMP_TYPE.TY = DN_RECORD  or else  COMP_TYPE.TY = DN_CONSTRAINED_RECORD )
@@ -728,20 +799,20 @@ is
 	  PUT_LINE(	tab & "LI" & tab & ELEMENT_SIZ_STR );						-- TAILLE D'UN ELEMENT DU TABLEAU
 	end if;
 
-	PUT_LINE( tab & "Sd" & tab & LVL_STR & ", _COMP_SIZ" );						-- DWORD COMP_SIZ
-	PUT_LINE( tab & "Ld" & tab & LVL_STR & ", _COMP_SIZ" );						-- recharge pour MUL suivant
+	PUT_LINE( tab & "SD" & tab & LVL_STR & ", _COMP_SIZ" );						-- DWORD COMP_SIZ
+	PUT_LINE( tab & "LD" & tab & LVL_STR & ", _COMP_SIZ" );						-- recharge pour MUL suivant
         end;
 
       else
         COMPILE_ARRAY_TYPE_DIMENSION( IDX_TYPE_LIST, RANGE_LIST, HAS_RANGES );
 
-        PUT_LINE( "VAR _SIZ_" & DIM_NBR_STR & ", d" );
-        PUT_LINE( "VAR _FST_" & DIM_NBR_STR & ", d" );
-        PUT_LINE( "VAR _LST_" & DIM_NBR_STR & ", d" );
+        PUT_LINE( "VAR _SIZ_" & DIM_NBR_STR & ", D" );
+        PUT_LINE( "VAR _FST_" & DIM_NBR_STR & ", D" );
+        PUT_LINE( "VAR _LST_" & DIM_NBR_STR & ", D" );
 
         PUT_LINE( tab & "MUL" );
-        PUT_LINE( tab & "Sd" & tab & LVL_STR & ", _SIZ_" & DIM_NBR_STR );					-- METTRE LA TAILLE TRANCHE A CELLE LAISSEE PAR LE CALCUL SUR LA DIM PRECEDENTE
-        PUT_LINE( tab & "Ld" & tab & LVL_STR & ", _SIZ_" & DIM_NBR_STR );					-- recharge pour MUL suivant
+        PUT_LINE( tab & "SD" & tab & LVL_STR & ", _SIZ_" & DIM_NBR_STR );					-- METTRE LA TAILLE TRANCHE A CELLE LAISSEE PAR LE CALCUL SUR LA DIM PRECEDENTE
+        PUT_LINE( tab & "LD" & tab & LVL_STR & ", _SIZ_" & DIM_NBR_STR );					-- recharge pour MUL suivant
       end if;
 
       if  HAS_RANGES  and then  SRC_RANGE /= TREE_VOID  then
@@ -761,10 +832,10 @@ is
         end;
 
         EXPRESSIONS.CODE_DISCRETE_RANGE_BOUND( SRC_RANGE, IS_LAST => FALSE );
-        PUT_LINE( tab & "Sd" & tab & LVL_STR & ", _FST_" & DIM_NBR_STR );
+        PUT_LINE( tab & "SD" & tab & LVL_STR & ", _FST_" & DIM_NBR_STR );
 
         EXPRESSIONS.CODE_DISCRETE_RANGE_BOUND( SRC_RANGE, IS_LAST => TRUE );
-        PUT_LINE( tab & "Sd" & tab & LVL_STR & ", _LST_" & DIM_NBR_STR );
+        PUT_LINE( tab & "SD" & tab & LVL_STR & ", _LST_" & DIM_NBR_STR );
 
       elsif  IDX_TYPE.TY = DN_INTEGER  then
         declare
@@ -779,9 +850,9 @@ is
 	end if;
 
 	EXPRESSIONS.CODE_EXP( RANGE_FIRST );
-	PUT_LINE( tab & "Sd" & tab & LVL_STR & ", _FST_" & DIM_NBR_STR );
+	PUT_LINE( tab & "SD" & tab & LVL_STR & ", _FST_" & DIM_NBR_STR );
 	EXPRESSIONS.CODE_EXP( RANGE_LAST );
-	PUT_LINE( tab & "Sd" & tab & LVL_STR & ", _LST_" & DIM_NBR_STR );
+	PUT_LINE( tab & "SD" & tab & LVL_STR & ", _LST_" & DIM_NBR_STR );
 
 	if  IS_STATIC  then
 	  ARRAY_STATIC_SIZE := ( DI( SM_VALUE, RANGE_LAST ) + 1 - DI( SM_VALUE, RANGE_FIRST ) ) * ARRAY_STATIC_SIZE;
@@ -814,7 +885,7 @@ is
 	  IS_STATIC := FALSE;
 	  EXPRESSIONS.CODE_EXP( RANGE_FIRST );
 	end if;
-	PUT_LINE( tab & "Sd" & tab & LVL_STR & ", _FST_" & DIM_NBR_STR );
+	PUT_LINE( tab & "SD" & tab & LVL_STR & ", _FST_" & DIM_NBR_STR );
 
 	if  OK_LST  then
 	  PUT_LINE( tab & "LI" & tab & IMAGE( V_LST ) );
@@ -822,7 +893,7 @@ is
 	  IS_STATIC := FALSE;
 	  EXPRESSIONS.CODE_EXP( RANGE_LAST );
 	end if;
-	PUT_LINE( tab & "Sd" & tab & LVL_STR & ", _LST_" & DIM_NBR_STR );
+	PUT_LINE( tab & "SD" & tab & LVL_STR & ", _LST_" & DIM_NBR_STR );
 
 	if  IS_STATIC  then
 	  ARRAY_STATIC_SIZE := ( V_LST + 1 - V_FST ) * ARRAY_STATIC_SIZE;
@@ -831,12 +902,11 @@ is
 
       else
         IS_STATIC := FALSE;
-        PUT_LINE( "; PROCESS_CONSTRAINED_ARRAY_TYPE_SPEC : index type non integer non traite "
-	        & NODE_NAME'IMAGE( IDX_TYPE.TY ) );
+        CODI.TROU( "PROCESS_CONSTRAINED_ARRAY_TYPE_SPEC index non entier", IDX_TYPE );				--| vague 5 : bornes symboliques douteuses en aval
       end if;
 
-      PUT_LINE( tab & "Ld" & tab & LVL_STR & ", _LST_" & DIM_NBR_STR );
-      PUT_LINE( tab & "Ld" & tab & LVL_STR & ", _FST_" & DIM_NBR_STR );
+      PUT_LINE( tab & "LD" & tab & LVL_STR & ", _LST_" & DIM_NBR_STR );
+      PUT_LINE( tab & "LD" & tab & LVL_STR & ", _FST_" & DIM_NBR_STR );
       PUT_LINE( tab & "SUB" );
       PUT_LINE( tab & "INC" );
       PUT_LINE( tab & "CLAMP0" );
@@ -876,7 +946,6 @@ is
 	--------------------
 
   begin
---    if  COMP_TYPE.TY = DN_ACCESS  or else  COMP_TYPE.TY = DN_FLOAT  then
     if  COMP_TYPE.TY = DN_ACCESS  or else  COMP_TYPE.TY in CLASS_SCALAR  then
       IS_STATIC := TRUE;
     else
@@ -886,10 +955,10 @@ is
 
     DI( CD_LEVEL, TYPE_SPEC, INTEGER( LVL ) );
 
-    PUT_LINE( "VAR use__info, q" );
-    PUT_LINE( "VAR SIZ, d" );
-    PUT_LINE( tab & "LVA" & tab & LVL_STR & ", SIZ" );
-    PUT_LINE( tab & "Sa" & tab & LVL_STR & ", use__info" );
+    PUT_LINE( "VAR use__info, Q" );
+    PUT_LINE( "VAR SIZ__, D" );									-- VAR taille de patron
+    PUT_LINE( tab & "LVA" & tab & LVL_STR & ", SIZ__" );							-- Adresse debut de patron
+    PUT_LINE( tab & "SA" & tab & LVL_STR & ", use__info" );
 
 			-------------------
 			DESCRIPTOR_ON_STACK:
@@ -911,7 +980,7 @@ is
       end if;
 
       PUT_LINE( tab & "MUL" );
-      PUT_LINE( tab & "Sd" & tab & LVL_STR & ", SIZ" );
+      PUT_LINE( tab & "SD" & tab & LVL_STR & ", SIZ__" );							-- Taille de patron
 
       if  IS_STATIC  then
         DI( CD_IMPL_SIZE,	TYPE_SPEC,  ARRAY_STATIC_SIZE );
@@ -934,9 +1003,8 @@ is
     DB( CD_COMPILED, TYPE_SPEC, TRUE );
     end;
 
-  end	  PROCESS_CONSTRAINED_ARRAY_TYPE_SPEC;
-	--===================================--
-
+  end	PROCESS_CONSTRAINED_ARRAY_TYPE_SPEC;
+	-----------------------------------
 
 
 			---------------------------
@@ -1162,58 +1230,14 @@ is
 	-----------------------
 
 
-		------------------
-    procedure	STATIC_BOUND_VALUE_OLD		( BOUND :TREE; VAL :out INTEGER; OK :out BOOLEAN )
-    is		------------------
-	-- Valeur statique d'une borne discrete : litteral, nombre nomme,
-	-- litteral d'enumeration, ou toute expression statique annotee
-	-- par sem (SM_VALUE). Piege n 95a : on teste la PROPRIETE
-	-- (valeur statique PRESENTE), jamais l'espece du noeud ni une
-	-- sentinelle d'absence -- les VOID/NIL echouent d'eux-memes au
-	-- test positif. NB Ada 83 : pas de out sur fonction -> procedure.
-      SV		: TREE	:= D( SM_VALUE, BOUND );
-      DEFN	: TREE;
-    begin
-      VAL := 0;
-      OK  := TRUE;
-
-      if  SV.PT = HI  and then  SV.NOTY = DN_NUM_VAL  then							-- valeur immediate
-	VAL := DI( SM_VALUE, BOUND );
-	return;
-      elsif  SV.TY = DN_NUM_VAL  then									-- valeur longue
-	VAL := INTEGER'VALUE( PRINT_NUM( SV ) );
-	return;
-      end if;
-
-      if  BOUND.TY = DN_ENUMERATION_ID  or else  BOUND.TY = DN_CHARACTER_ID  then
-	VAL := DI( SM_REP, BOUND );									-- borne = litteral DEFINISSANT
-	return;											-- (SM_REP : coherent avec LI SM_REP du runtime)
-      end if;
-
-      DEFN := D( SM_DEFN, BOUND );									-- borne = used name ?
-      if  DEFN /= TREE_VOID  and then  DEFN /= TREE_NIL  then
-	if  DEFN.TY = DN_ENUMERATION_ID  or else  DEFN.TY = DN_CHARACTER_ID  then
-	  VAL := DI( SM_REP, DEFN );
-	  return;
-	elsif  DEFN.TY = DN_NUMBER_ID  then								-- nombre nomme (LRM 3.2.2)
-	  STATIC_BOUND_VALUE( D( SM_INIT_EXP, DEFN ), VAL, OK );
-	  return;
-	end if;
-      end if;
-
-      OK := FALSE;											-- borne reellement dynamique
-
-    end	STATIC_BOUND_VALUE_OLD;
-	------------------
-
-
-			-----------------------
+			-------------------
     function		STATIC_INDEX_LENGTH		( IDX_TYPE : TREE ) return NATURAL
-    is			-----------------------
-      IDX_SPEC : TREE := FULL_TYPE_VIEW( IDX_TYPE );
-      IDX_RANGE : TREE;
-      FST	      : TREE;
-      LST	      : TREE;
+    is			-------------------
+
+      IDX_SPEC	: TREE	:= FULL_TYPE_VIEW( IDX_TYPE );
+      IDX_RANGE	: TREE;
+      FST		: TREE;
+      LST		: TREE;
     begin
       if  IDX_SPEC = TREE_VOID  or else  IDX_SPEC = TREE_NIL  then
         return 0;
@@ -1223,9 +1247,7 @@ is
         IDX_RANGE := D( SM_RANGE, IDX_SPEC );
 
         if  IDX_RANGE = TREE_VOID  or else  IDX_RANGE = TREE_NIL  then
-
-put_line( "; SIL : SM_RANGE absent sur " & NODE_NAME'IMAGE( IDX_SPEC.TY ) );
-
+	TROU( "STATIC_INDEX_LENGTH range vide", IDX_RANGE );
 	return 0;
         end if;
 
@@ -1244,25 +1266,22 @@ put_line( "; SIL : SM_RANGE absent sur " & NODE_NAME'IMAGE( IDX_SPEC.TY ) );
 	STATIC_BOUND_VALUE( LST, HI, HI_OK );
 
 	if  not( LO_OK and HI_OK )  then
+	  return  0;										-- INTENTIONNEL : borne dynamique -> record non
+												-- statique (perimetre ci-dessus). Le refus
+												-- bruyant reste en aval : CHAMPS_REGULIERS
+												-- "offset non statique" (piege n 121d).
 
-put_line( "; SIL : borne KO fst " & NODE_NAME'IMAGE( FST.TY ) & " lst " & NODE_NAME'IMAGE( LST.TY ) );
-
-	  return 0;
 	elsif  HI < LO  then
-
-put_line( "; SIL : HI < LO " & NODE_NAME'IMAGE( IDX_SPEC.TY ) );
-
-	  return 0;										-- tableau vide (garde existante)
+	  TROU( "STATIC_INDEX_LENGTH HI < LO", IDX_SPEC );
+	  return  0;										-- tableau vide (garde existante)
 	else
 	  return NATURAL( HI + 1 - LO );
 	end if;
         end;
+
       else
-
-put_line( "; SIL : idx_spec inattendu " & NODE_NAME'IMAGE( IDX_SPEC.TY ) );
-
-	return 0;
-
+        TROU( "STATIC_INDEX_LENGTH idx_spec inattendu", IDX_SPEC );
+        return  0;
       end if;
 
     end	STATIC_INDEX_LENGTH;
@@ -1336,8 +1355,18 @@ put_line( "; SIL : idx_spec inattendu " & NODE_NAME'IMAGE( IDX_SPEC.TY ) );
     is			---------------------
       TS : TREE := FULL_TYPE_VIEW( T );
     begin
+	--| CONTRAT DU 0 (vague 2, triage 28/07) : 0 = "taille non calculable
+	--| STATIQUEMENT", sentinelle contractuelle.  Appelants verifies le
+	--| 28/07 : ADD_DISCRIMINANTS et ADD_COMP_LIST (UNKNOWN := TRUE),
+	--| STATIC_CONSTRAINED_ARRAY_SIZE_BITS (propagation), IS_STATIC :=
+	--| FALSE (insert use__info), et le garde COMP_SIZE = 0 -> raise du
+	--| layout represente.  Les 0 LEGITIMES : type vide (garde d'entree),
+	--| DN_ARRAY non contraint.  Les 0 d'IGNORANCE (scalaire sans
+	--| CD_IMPL_SIZE, noeud hors classes) passent par TROU : en STRICT ils
+	--| levent, en RECENSEMENT ils rendent 0 (= chemin dynamique) apres
+	--| comptage.
       if  TS = TREE_VOID  or else  TS = TREE_NIL  then
-        return  0;
+        return  0;											-- INTENTIONNEL : vue vide -> non statique
       end if;
 
       if  TS.TY = DN_ACCESS  then
@@ -1355,16 +1384,18 @@ put_line( "; SIL : idx_spec inattendu " & NODE_NAME'IMAGE( IDX_SPEC.TY ) );
         return  STATIC_CONSTRAINED_ARRAY_SIZE_BITS( TS );
 
       elsif  TS.TY = DN_ARRAY  then
-        return  0;
+        return  0;											-- INTENTIONNEL : non contraint -> non statique
 
       elsif  TS.TY in CLASS_SCALAR  or else  TS.TY in CLASS_CONSTRAINED  then
         if  D( CD_IMPL_SIZE, TS ) /= TREE_VOID  then
 	return  NATURAL( DI( CD_IMPL_SIZE, TS ) );
         else
+	CODI.TROU( "STATIC_TYPE_SIZE_BITS scalaire sans CD_IMPL_SIZE", TS );					-- vague 2 : le front-end aurait du le poser
 	return  0;
         end if;
 
       else
+        CODI.TROU( "STATIC_TYPE_SIZE_BITS", TS );								-- vague 2 : noeud hors classes, 0 mentait
         return 0;
       end if;
 
@@ -1378,6 +1409,12 @@ put_line( "; SIL : idx_spec inattendu " & NODE_NAME'IMAGE( IDX_SPEC.TY ) );
     -- Scalaire : la taille de son conteneur. Tableau : l'alignement de son
     -- composant (recursif : tableau de tableaux d'octets -> 1). Record,
     -- access, inconnu : 8, conservateur (= comportement STATOFS historique).
+    --| DEFAUT DOCUMENTE (vague 2, triage 28/07 cat. D) : le 8 par defaut
+    --| n'est PAS un trou, c'est le miroir du STATOFS fasmg (piege n 110) --
+    --| mais il est a CROISER OBLIGATOIREMENT avec le chantier n 117
+    --| (alignement 8 impose aux records representes) le jour ou l'un des
+    --| deux cotes bouge.  Ne pas resserrer ici sans son test-miroir.
+
       TS  : TREE	:= FULL_TYPE_VIEW( T );
     begin
       if  TS = TREE_VOID  or else  TS = TREE_NIL  then
@@ -1386,9 +1423,9 @@ put_line( "; SIL : idx_spec inattendu " & NODE_NAME'IMAGE( IDX_SPEC.TY ) );
 
       if  TS.TY = DN_INTEGER  or else  TS.TY = DN_ENUMERATION  or else  TS.TY = DN_FIXED  then
         case  OPER_SIZ_CHAR( TS )  is
-	when 'b'  =>  return 1;
-	when 'w'  =>  return 2;
-	when 'd'  =>  return 4;
+	when 'B'		=>  return 1;
+	when 'W'		=>  return 2;
+	when 'D'		=>  return 4;
 	when others	=>  return 8;
         end case;
       end if;
@@ -1400,12 +1437,16 @@ put_line( "; SIL : idx_spec inattendu " & NODE_NAME'IMAGE( IDX_SPEC.TY ) );
 	if  BASE = TREE_VOID  or else  BASE = TREE_NIL  then
 	  BASE := TS;
 	end if;
+    -- Un tableau PACKED ne doit pas introduire l'alignement naturel
+    -- de son type composant entre ses composants ni lorsqu'il est
+    -- lui-même composant d'un record.
+	if  BASE.TY = DN_ARRAY  and then  DB( SM_IS_PACKED, BASE )  then
+	  return 1;
+	end if;
+
 	return  STATIC_TYPE_ALIGN_BYTES( D( SM_COMP_TYPE, BASE ) );
         end;
       end if;
---     if  TS.TY = DN_ARRAY  then
---	return  STATIC_TYPE_ALIGN_BYTES( D( SM_COMP_TYPE, TS ) );
---      end if;
 
       return 8;								-- DN_FLOAT, DN_ACCESS, DN_RECORD, autres
 
@@ -1435,10 +1476,10 @@ put_line( "; SIL : idx_spec inattendu " & NODE_NAME'IMAGE( IDX_SPEC.TY ) );
     PUT_LINE( TYPE_ID_STR & " = '" & TYPE_ID_STR & "'" );
     PUT_LINE( "namespace " & TYPE_ID_STR );
 
-    PUT_LINE( "VAR use__info, q" );
-    PUT_LINE( "VAR SIZ, d" );
-    PUT_LINE( tab & "LVA" & tab & LVL_STR & ", SIZ" );
-    PUT_LINE( tab & "Sa" & tab & LVL_STR & ", use__info" );
+    PUT_LINE( "VAR use__info, Q" );
+    PUT_LINE( "VAR SIZ__, D" );									-- Var taille de patron
+    PUT_LINE( tab & "LVA" & tab & LVL_STR & ", SIZ__" );							-- Adresse de debut de patron
+    PUT_LINE( tab & "SA" & tab & LVL_STR & ", use__info" );
 
 			------------------------
 			INSERE_LES_DISCRIMINANTS:
@@ -1461,7 +1502,7 @@ put_line( "; SIL : idx_spec inattendu " & NODE_NAME'IMAGE( IDX_SPEC.TY ) );
 	    DISCRIMINANT_TYPE_STR	:constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, DISCRIMINANT_TYPE_NAME ) );
 	  begin
 	    PUT( "USEINFO " & LVL_STR & ", " & DISCRIMINANT_STR & ", " );
-	    PUT( tab & "La " & IMAGE( DI( CD_LEVEL, DISCRIMINANT_TYPE_SPEC ) ) & ", " );
+	    PUT( tab & "LA " & IMAGE( DI( CD_LEVEL, DISCRIMINANT_TYPE_SPEC ) ) & ", " );
 	    REGIONS_PATH( D( XD_SOURCE_NAME, DISCRIMINANT_TYPE_SPEC ) );
 	    PUT_LINE( DISCRIMINANT_TYPE_STR & ".use__info" );
 	  end;
@@ -1511,24 +1552,54 @@ put_line( "; SIL : idx_spec inattendu " & NODE_NAME'IMAGE( IDX_SPEC.TY ) );
 	        COMP_TYPE_NAME	: TREE		:= D( XD_SOURCE_NAME, COMP_TYPE );
 	        COMP_TYPE_STR	:constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, COMP_TYPE_NAME ) );
 	        COMP_ID_STR		:constant STRING	:= PRINT_NAME( D( LX_SYMREP, COMP_ID ) );
+	        COMP_TYPE_DEF	: TREE		:= D( AS_TYPE_DEF, V_DECL );
+	        LOCAL_INFO_STR	:constant STRING	:= '_' & COMP_ID_STR & "__type";
 
 	      begin
-
 	        if  COMP_TYPE.TY = DN_CONSTRAINED_ARRAY  then
-		if  not DB( CD_COMPILED, COMP_TYPE )  then
-		  PUT_LINE( COMP_ID_STR & " = '" & COMP_ID_STR & "'" );
-		  PUT_LINE( " namespace " & COMP_TYPE_STR );
-		  PROCESS_CONSTRAINED_ARRAY_TYPE_SPEC( COMP_TYPE );
-		end if;
+		--| Piege n 46 generalise aux COMPOSANTS (session 5 aout) : le noeud
+		--| DN_CONSTRAINED_ARRAY anonyme revient CD_COMPILED=TRUE au compile du
+		--| CORPS (rechargement DCL apres la spec) -> le bloc info imbrique
+		--| sautait ; et le USEINFO retombait dans les DEUX unites sur
+		--| STANDARD._<base> (patron NON contraint, SIZ=-1) via XD_SOURCE_NAME.
+		--| Remede aligne sur COMPILE_ARRAY_VAR (journal A21001A) : descripteur
+		--| LOCAL _<comp>__type des qu'il y a contrainte anonyme, INDEPENDANT de
+		--| CD_COMPILED ; le USEINFO pointe le bloc local au niveau courant.
+		--| Type/sous-type NOMME : chemin REGIONS_PATH inchange.
+		declare
+		  COMP_CONSTRAINT	: TREE	:= TREE_VOID;
+		  USE_LOCAL_INFO	: BOOLEAN := FALSE;
+		begin
+		  if  COMP_TYPE_DEF /= TREE_VOID  and then  COMP_TYPE_DEF.TY = DN_SUBTYPE_INDICATION  then
+		    COMP_CONSTRAINT := D( AS_CONSTRAINT, COMP_TYPE_DEF );
+		  end if;
 
-		PUT( "USEINFO " & LVL_STR & ", " & COMP_ID_STR & ", " );
-		PUT( tab & "La " & IMAGE( DI( CD_LEVEL, COMP_TYPE ) ) & ", " );
-		REGIONS_PATH( D( XD_SOURCE_NAME, D( SM_TYPE_SPEC, COMP_TYPE_NAME ) ) );
-		PUT_LINE( COMP_TYPE_STR & ".use__info" );
+--		  if  COMP_CONSTRAINT /= TREE_VOID  or else  not DB( CD_COMPILED, COMP_TYPE )  then
+--		    USE_LOCAL_INFO := TRUE;
+		  if  COMP_CONSTRAINT /= TREE_VOID
+		  or else  D( SM_TYPE_SPEC, COMP_TYPE_NAME ) /= COMP_TYPE				-- ANONYME : le nom remonte au type de base (piege n 99)
+		  then
+		    USE_LOCAL_INFO := TRUE;
+		    DI( CD_LEVEL, COMP_TYPE, INTEGER( CODI.CUR_LEVEL ) );				-- niveau du bloc local, lu par CODE_INDEXED (TYPE_LVL)
+
+		    PUT_LINE( LOCAL_INFO_STR & " = '" & LOCAL_INFO_STR & "'" );
+		    PUT_LINE( " namespace " & LOCAL_INFO_STR );
+		    PROCESS_CONSTRAINED_ARRAY_TYPE_SPEC( COMP_TYPE );
+		  end if;
+
+		  PUT( "USEINFO " & LVL_STR & ", " & COMP_ID_STR & ", " );
+		  if  USE_LOCAL_INFO  then
+		    PUT_LINE( tab & "LA " & LVL_STR & ", " & LOCAL_INFO_STR & ".use__info" );
+		  else
+		    PUT( tab & "LA " & IMAGE( DI( CD_LEVEL, COMP_TYPE ) ) & ", " );
+		    REGIONS_PATH( D( XD_SOURCE_NAME, D( SM_TYPE_SPEC, COMP_TYPE_NAME ) ) );
+		    PUT_LINE( COMP_TYPE_STR & ".use__info" );
+		  end if;
+		end;
 
 	        else
 		PUT( "USEINFO " & LVL_STR & ", " & COMP_ID_STR & ", " );
-		PUT( tab & "La " & IMAGE( DI( CD_LEVEL, COMP_TYPE ) ) & ", " );
+		PUT( tab & "LA " & IMAGE( DI( CD_LEVEL, COMP_TYPE ) ) & ", " );
 		REGIONS_PATH( COMP_TYPE_NAME );
 		PUT_LINE( COMP_TYPE_STR & ".use__info" );
 	        end if;
@@ -1688,7 +1759,7 @@ put_line( "; SIL : idx_spec inattendu " & NODE_NAME'IMAGE( IDX_SPEC.TY ) );
 			   + CODI.STORAGE_UNIT * ( ( COMP_SIZE + CODI.STORAGE_UNIT - 1 ) / CODI.STORAGE_UNIT );
 
 	        else
-		PUT_LINE( "; OFFSET NON STATIQUE A FAIRE" );
+		CODI.TROU( "CHAMPS_REGULIERS : offset non statique (les offsets SUIVANTS seraient faux)" );	--| vague 5, cat. D
 	        end if;
 	      end;
 	    end loop;
@@ -1728,7 +1799,7 @@ put_line( "; SIL : idx_spec inattendu " & NODE_NAME'IMAGE( IDX_SPEC.TY ) );
         PUT_LINE( "size = $" );
         PUT_LINE( "end virtual" );
         PUT_LINE( tab & "LI" & tab & " size*" & IMAGE( CODI.STORAGE_UNIT ) );
-        PUT_LINE( tab & "Sd" & tab & LVL_STR & ", SIZ" );
+        PUT_LINE( tab & "SD" & tab & LVL_STR & ", SIZ__" );							-- Taille du patron
         DI( CD_IMPL_SIZE, TYPE_SPEC, STATIC_SIZE );
       end if;
 
@@ -1762,9 +1833,9 @@ put_line( "; SIL : idx_spec inattendu " & NODE_NAME'IMAGE( IDX_SPEC.TY ) );
     LVL_STR	:constant STRING	:= IMAGE( CODI.CUR_LEVEL );
 
 
-  BASE_REC  : TREE := ROOT_RECORD( TYPE_SPEC );
-  BASE_NAME : TREE := D( XD_SOURCE_NAME, BASE_REC );
-  BASE_STR  : constant STRING := '_' & PRINT_NAME( D( LX_SYMREP, BASE_NAME ) );
+    BASE_REC	: TREE		:= ROOT_RECORD( TYPE_SPEC );
+    BASE_NAME	: TREE		:= D( XD_SOURCE_NAME, BASE_REC );
+    BASE_STR	: constant STRING	:= '_' & PRINT_NAME( D( LX_SYMREP, BASE_NAME ) );
 
   procedure EMIT_BASE_PREFIX is
   begin
@@ -1839,10 +1910,6 @@ begin
     DI( CD_IMPL_SIZE, TYPE_SPEC, DI( CD_IMPL_SIZE, BASE_REC ) );
   end if;
 
---  if D( CD_ALIGNMENT, BASE_REC ) /= TREE_VOID then		-- A VOIR
---    DI( CD_ALIGNMENT, TYPE_SPEC, DI( CD_ALIGNMENT, BASE_REC ) );
---  end if;
-
   if CODI.DEBUG then
     NEW_LINE;
     PUT_LINE( tab50 & "; " & TYPE_STR & " CONSTRAINED RECORD VIEW" );
@@ -1857,7 +1924,7 @@ begin
 
   PUT( "SIZ = " );
   EMIT_BASE_PREFIX;
-  PUT_LINE( ".SIZ" );
+  PUT_LINE( ".SIZ__" );
 
   PUT( "size = " );
   EMIT_BASE_PREFIX;
@@ -1907,7 +1974,7 @@ begin
     DI( CD_LEVEL,	   TYPE_SPEC, INTEGER( CODI.CUR_LEVEL ) );
     DB( CD_COMPILED,   TYPE_SPEC, TRUE );
 
---  Le type access lui-même est complet immédiatement :
+  --  Le type access lui-même est complet immédiatement :
   --  sa représentation est toujours un pointeur machine.
   --  En revanche, le type désigné peut encore être une vue privée
   --  ou un incomplete.
@@ -1946,13 +2013,9 @@ begin
 	and then DESIG_TYPE.TY /= DN_L_PRIVATE
 	and then DESIG_TYPE.TY /= DN_INCOMPLETE
     then
-put_line( "; CODE_ACCESS_DECL cd_level void ? " & boolean'image( D( CD_LEVEL, DESIG_TYPE )= TREE_VOID ) );
       if  D( CD_LEVEL, DESIG_TYPE ).PT = P  and then  D( CD_LEVEL, DESIG_TYPE ).TY = DN_VIRGIN  then
       --  Cas : access vers un full type connu sémantiquement,
       --  mais déclaré/codé plus loin dans la même région.
-
-put_line( "; CODE_ACCESS_DECL cd_level rempli" );
-
         DI( CD_LEVEL, DESIG_TYPE, INTEGER( CODI.CUR_LEVEL ) );
         DESIG_IS_FORWARD := TRUE;
       end if;
@@ -1966,14 +2029,14 @@ put_line( "; CODE_ACCESS_DECL cd_level rempli" );
     PUT_LINE( TYPE_STR & " = '" & TYPE_STR & "'" );
     PUT_LINE( "namespace " & TYPE_STR );
 
-    PUT_LINE( "VAR use__info, q" );
-    PUT_LINE( "VAR SIZ, d" );
-    PUT_LINE( tab & "LVA" & tab & LVL_STR & ", SIZ" );
-    PUT_LINE( tab & "Sa"  & tab & LVL_STR & ", use__info" );
+    PUT_LINE( "VAR use__info, Q" );
+    PUT_LINE( "VAR SIZ__, D" );									-- VAR taille de patron
+    PUT_LINE( tab & "LVA" & tab & LVL_STR & ", SIZ__" );							-- Adresse debut de patron
+    PUT_LINE( tab & "SA"  & tab & LVL_STR & ", use__info" );
     PUT_LINE( tab & "LI"  & tab & IMAGE( CODI.ADDR_SIZE * CODI.STORAGE_UNIT ) );
-    PUT_LINE( tab & "Sd"  & tab & LVL_STR & ", SIZ" );
+    PUT_LINE( tab & "SD"  & tab & LVL_STR & ", SIZ__" );							-- Taille de patron
 
-    PUT_LINE( "VAR DESIG__u, q" );
+    PUT_LINE( "VAR DESIG__u, Q" );
 
     if  DESIG_TYPE.TY = DN_PRIVATE  or else  DESIG_TYPE.TY = DN_L_PRIVATE
 	or else  DESIG_TYPE.TY = DN_INCOMPLETE  or else  DESIG_TYPE = TREE_VOID
@@ -1994,29 +2057,28 @@ put_line( "; CODE_ACCESS_DECL cd_level rempli" );
          --  Le code de TA est exécuté avant l'initialisation de TD.use__info.
          --  On stocke donc directement le pointeur vers le bloc use_info.
 	if  DESIG_TYPE.TY = DN_ENUMERATION  then
-	  PUT( tab & "LCA" & tab );
+	  PUT( tab & "LCA" & tab );									-- CONSTANTE
 	  REGIONS_PATH( DESIG_NAME );
-	  PUT_LINE( DESIG_STR & ".SIZ" );
+	  PUT_LINE( DESIG_STR & ".SIZ" );								-- Defini par STR
 	else
 	  PUT( tab & "LVA" & tab & IMAGE( DESIG_LVL ) & ", " );
 	  REGIONS_PATH( DESIG_NAME );
-	  PUT_LINE( DESIG_STR & ".SIZ" );
+	  PUT_LINE( DESIG_STR & ".SIZ__" );								-- SIZ__ en patron
 	end if;
 
         else
-	PUT( tab & "La " & IMAGE( DI( CD_LEVEL, DESIG_TYPE ) ) & ", " );
+	PUT( tab & "LA " & IMAGE( DI( CD_LEVEL, DESIG_TYPE ) ) & ", " );
 	REGIONS_PATH( DESIG_NAME );
 	PUT_LINE( DESIG_STR & ".use__info" );
         end if;
       end;
     end if;
 
-    PUT_LINE( tab & "Sa" & tab & LVL_STR & ", DESIG__u" );
+    PUT_LINE( tab & "SA" & tab & LVL_STR & ", DESIG__u" );
     PUT_LINE( "end namespace" );
 
   end	CODE_ACCESS_DECL;
 	----------------
-
 
 
 				--^^^^^^^^^^^^^^^^^--
@@ -2072,14 +2134,14 @@ put_line( "; CODE_ACCESS_DECL cd_level rempli" );
         PUT_LINE( SUBTYPE_STR & " = '" & SUBTYPE_STR & "'" );
         PUT_LINE( "namespace " & SUBTYPE_STR );
 
-        PUT_LINE( "VAR use__info, q" );
-        PUT_LINE( "VAR SIZ, d" );
-        PUT_LINE( tab & "LVA" & tab & LVL_STR & ", SIZ" );
-        PUT_LINE( tab & "Sa" & tab & LVL_STR & ", use__info" );
+        PUT_LINE( "VAR use__info, Q" );
+        PUT_LINE( "VAR SIZ__, D" );									-- VAR taille de patron
+        PUT_LINE( tab & "LVA" & tab & LVL_STR & ", SIZ__" );						-- Adresse debut de patron
+        PUT_LINE( tab & "SA" & tab & LVL_STR & ", use__info" );
         PUT_LINE( "VAR FST, " & SIZE_CHAR );
         PUT_LINE( "VAR LST, " & SIZE_CHAR );
         PUT_LINE( tab & "LI" & tab & IMAGE( DI( CD_IMPL_SIZE, TYPE_SPEC ) ) );
-        PUT_LINE( tab & "Sd" & tab & LVL_STR & ", SIZ" );
+        PUT_LINE( tab & "SD" & tab & LVL_STR & ", SIZ__" );
 
         EXPRESSIONS.CODE_EXP( EXP_FST );
         PUT_LINE( tab & 'S' & SIZE_CHAR & tab & LVL_STR & ", FST" );
@@ -2087,11 +2149,11 @@ put_line( "; CODE_ACCESS_DECL cd_level rempli" );
         EXPRESSIONS.CODE_EXP( EXP_LST );
         PUT_LINE( tab & 'S' & SIZE_CHAR & tab & LVL_STR & ", LST" );
 
-        PUT_LINE( "VAR PARENT__u, q" );
-        PUT( tab & "La" & tab & IMAGE( DI( CD_LEVEL, BASE_TYPE ) ) & ", " );
+        PUT_LINE( "VAR PARENT__u, Q" );
+        PUT( tab & "LA" & tab & IMAGE( DI( CD_LEVEL, BASE_TYPE ) ) & ", " );
         REGIONS_PATH( D( XD_SOURCE_NAME, D( SM_BASE_TYPE, TYPE_SPEC ) ) );
         PUT_LINE(  BASETYPE_STR & ".use__info"	);
-        PUT_LINE( tab & "Sa" & tab & LVL_STR & ", PARENT__u" );
+        PUT_LINE( tab & "SA" & tab & LVL_STR & ", PARENT__u" );
 
         PUT_LINE( "end namespace" );
 
@@ -2117,15 +2179,15 @@ put_line( "; CODE_ACCESS_DECL cd_level rempli" );
         PUT_LINE( SUBTYPE_STR & " = '" & SUBTYPE_STR & "'" );
         PUT_LINE( "namespace " & SUBTYPE_STR );
 
-        PUT_LINE( "VAR use__info, q" );
-        PUT_LINE( "VAR SIZ, d" );
-        PUT_LINE( tab & "LVA" & tab & LVL_STR & ", SIZ" );
-        PUT_LINE( tab & "Sa" & tab & LVL_STR & ", use__info" );
+        PUT_LINE( "VAR use__info, Q" );
+        PUT_LINE( "VAR SIZ__, D" );									-- VAR taille de patron
+        PUT_LINE( tab & "LVA" & tab & LVL_STR & ", SIZ__" );						-- Adresse debut patron
+        PUT_LINE( tab & "SA" & tab & LVL_STR & ", use__info" );
 
         PUT_LINE( "VAR FST, " & SIZE_CHAR );
         PUT_LINE( "VAR LST, " & SIZE_CHAR );
         PUT_LINE( tab & "LI" & tab & IMAGE( DI( CD_IMPL_SIZE, TYPE_SPEC ) ) );
-        PUT_LINE( tab & "Sd" & tab & LVL_STR & ", SIZ" );
+        PUT_LINE( tab & "SD" & tab & LVL_STR & ", SIZ__" );							-- Taille patron
 
         EXPRESSIONS.CODE_EXP( EXP_FST );
         PUT_LINE( tab & 'S' & SIZE_CHAR & tab & LVL_STR & ", FST" );
@@ -2133,11 +2195,11 @@ put_line( "; CODE_ACCESS_DECL cd_level rempli" );
         EXPRESSIONS.CODE_EXP( EXP_LST );
         PUT_LINE( tab & 'S' & SIZE_CHAR & tab & LVL_STR & ", LST" );
 
-        PUT_LINE( "VAR PARENT__u, q" );
-        PUT( tab & "La " & IMAGE( DI( CD_LEVEL, BASE_TYPE ) ) & tab & ", " );
+        PUT_LINE( "VAR PARENT__u, Q" );
+        PUT( tab & "LA " & IMAGE( DI( CD_LEVEL, BASE_TYPE ) ) & tab & ", " );
         REGIONS_PATH( D( XD_SOURCE_NAME, BASE_TYPE ) );
         PUT_LINE(  BASETYPE_STR & ".use__info"	);
-        PUT_LINE( tab & "Sa" & tab & LVL_STR & ", PARENT__u" );
+        PUT_LINE( tab & "SA" & tab & LVL_STR & ", PARENT__u" );
 
         PUT_LINE( "end namespace" );
 
@@ -2163,13 +2225,6 @@ put_line( "; CODE_ACCESS_DECL cd_level rempli" );
       -- propre n'est généré.
       DB( CD_COMPILED, TYPE_SPEC, TRUE );
 
-      -- Option utile si CD_IMPL_SIZE n'est pas posé par la sémantique :
---      if BASE_TYPE /= TREE_VOID and then BASE_TYPE.TY = DN_FLOAT then
---	if HAS_ATTR( CD_IMPL_SIZE, BASE_TYPE ) then   -- pseudo, selon tes utilitaires
---	  DI( CD_IMPL_SIZE, TYPE_SPEC, DI( CD_IMPL_SIZE, BASE_TYPE ) );
---	end if;
---      end if;
-
       return;
     end if;
 
@@ -2193,28 +2248,28 @@ put_line( "; CODE_ACCESS_DECL cd_level rempli" );
         PUT_LINE( SUBTYPE_STR & " = '" & SUBTYPE_STR & "'" );
         PUT_LINE( "namespace " & SUBTYPE_STR );
 
-        PUT_LINE( "VAR use__info, q" );
-        PUT_LINE( "VAR SIZ, d" );
-        PUT_LINE( "VAR FST, q" );
-        PUT_LINE( "VAR LST, q" );
+        PUT_LINE( "VAR use__info, Q" );
+        PUT_LINE( "VAR SIZ__, D" );									-- VAR taille patron
+        PUT_LINE( "VAR FST, Q" );
+        PUT_LINE( "VAR LST, Q" );
 
-        PUT_LINE( tab & "LVA" & tab & LVL_STR & ", SIZ" );
-        PUT_LINE( tab & "Sa"  & tab & LVL_STR & ", use__info" );
+        PUT_LINE( tab & "LVA" & tab & LVL_STR & ", SIZ__" );						-- Adresse debut patron
+        PUT_LINE( tab & "SA"  & tab & LVL_STR & ", use__info" );
 
         PUT_LINE( tab & "LI" & tab & IMAGE( DI( CD_IMPL_SIZE, TYPE_SPEC ) ) );
-        PUT_LINE( tab & "Sd" & tab & LVL_STR & ", SIZ" );
+        PUT_LINE( tab & "SD" & tab & LVL_STR & ", SIZ__" );							-- Taille patron
 
         EXPRESSIONS.CODE_EXP( EXP_FST );
-        PUT_LINE( tab & "Sq" & tab & LVL_STR & ", FST" );
+        PUT_LINE( tab & "SQ" & tab & LVL_STR & ", FST" );
 
         EXPRESSIONS.CODE_EXP( EXP_LST );
-        PUT_LINE( tab & "Sq" & tab & LVL_STR & ", LST" );
+        PUT_LINE( tab & "SQ" & tab & LVL_STR & ", LST" );
 
-        PUT_LINE( "VAR PARENT__u, q" );
-        PUT( tab & "La " & IMAGE( DI( CD_LEVEL, BASE_TYPE ) ) & tab & ", " );
+        PUT_LINE( "VAR PARENT__u, Q" );
+        PUT( tab & "LA " & IMAGE( DI( CD_LEVEL, BASE_TYPE ) ) & tab & ", " );
         REGIONS_PATH( D( XD_SOURCE_NAME, BASE_TYPE ) );
         PUT_LINE( BASETYPE_STR & ".use__info" );
-        PUT_LINE( tab & "Sa" & tab & LVL_STR & ", PARENT__u" );
+        PUT_LINE( tab & "SA" & tab & LVL_STR & ", PARENT__u" );
 
         PUT_LINE( "end namespace" );
 

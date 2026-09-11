@@ -13,19 +13,19 @@ is					-------
   TREE_HASH	: TREE		:= (P, TY=> DN_HASH, PG=> 2, LN=> 0 );
 
 
-			--=--
-function			ARITY		( T :TREE )		return ARITIES
-is			--=--
+			--^^^^^--
+function			  ARITY		( T :TREE )		return ARITIES
+is			---------
 begin
   return N_SPEC( T.TY ).NS_ARITY;									--| RETOURNER L'ARITE SUIVANT LES SPECIFS DU TYPE DE NOEUD ARBRE
 
 end	ARITY;
-	--=--
+	-----
 
 
-			--=--
-function			SON_1		( T :TREE )		return TREE
-is			--=--
+			--^^^^^--
+function			  SON_1		( T :TREE )		return TREE
+is			---------
 begin
   if N_SPEC( T.TY ).NS_ARITY in UNARY .. TERNARY then							--| SI L'ARITE LE PERMET
     return DABS ( 1, T );										--| RETOURNER LE PREMIER SOUS ARBRE DE T
@@ -34,12 +34,12 @@ begin
   PUT_LINE ( "IDL.IDL_MAN.SON_1 : PAS DE FILS 1 LISIBLE POUR " & NODE_REP ( T ) );
   raise PROGRAM_ERROR;
 end	SON_1;
-	--=--
+	-----
 
 
-			--=--
-procedure			SON_1		( T :TREE; V :TREE )
-is			--=--
+			--^^^^^--
+procedure			  SON_1		( T :TREE; V :TREE )
+is			---------
 begin
   if N_SPEC( T.TY ).NS_ARITY in UNARY .. TERNARY then							--| SI L'ARITE LE PERMET
     DABS ( 1, T, V );										--| STOCKER V COMME PREMIER SOUS ARBRE DE T
@@ -48,12 +48,12 @@ begin
     raise PROGRAM_ERROR;
   end if;
 end	SON_1;
-	--=--
+	-----
 
 
-			--=--
-function			SON_2		( T :TREE )	return TREE
-is			--=--
+			--^^^^^--
+function			  SON_2		( T :TREE )	return TREE
+is			---------
 begin
   if N_SPEC( T.TY ).NS_ARITY in BINARY .. TERNARY then
     return DABS ( 2, T );
@@ -63,12 +63,12 @@ begin
   raise PROGRAM_ERROR;
 
 end	SON_2;
-	--=--
+	-----
 
 
-			--=--
-procedure			SON_2		( T :TREE; V :TREE )
-is			--=--
+			--^^^^^--
+procedure			  SON_2		( T :TREE; V :TREE )
+is			---------
 begin
   if N_SPEC( T.TY ).NS_ARITY in BINARY .. TERNARY then
     DABS ( 2, T, V );
@@ -77,12 +77,12 @@ begin
     raise PROGRAM_ERROR;
   end if;
 end	SON_2;
-	--=--
+	-----
 
 
-			--=--
-function			SON_3		( T :TREE )	return TREE
-is			--=--
+			--^^^^^--
+function			  SON_3		( T :TREE )	return TREE
+is			---------
 begin
   if N_SPEC( T.TY ).NS_ARITY = TERNARY then
     return DABS(3, T);
@@ -92,12 +92,12 @@ begin
   raise PROGRAM_ERROR;
 
 end	SON_3;
-	--=--
+	-----
 
 
-			--=--
-procedure			SON_3		( T	:TREE; V :TREE )
-is			--=--
+			--^^^^^--
+procedure			  SON_3		( T	:TREE; V :TREE )
+is			---------
 begin
   if N_SPEC( T.TY ).NS_ARITY = TERNARY then
     DABS ( 3, T, V );
@@ -107,12 +107,12 @@ begin
   end if;
 
 end	SON_3;
-	--=--
+	-----
 
 
-			--==--
-function			 HEAD		( S :SEQ_TYPE )	return TREE
-is			--==--
+			--^^^^--
+function			  HEAD		( S :SEQ_TYPE )	return TREE
+is			--------
 begin
   if S.FIRST.TY = DN_LIST then									--| LA SEQ CONTIENT UNE LISTE
     return DABS ( 1, S.FIRST );									--| RENDRE LE PREMIER CHAMP DU NOEUD LISTE
@@ -123,13 +123,13 @@ begin
   PUT_LINE ( "IDL.IDL-MAN.HEAD : TETE DE SEQUENCE SEQ.FIRST = TREE_NIL !" );
   raise PROGRAM_ERROR;
 
-end	 HEAD;
-	--==--
+end	HEAD;
+	----
 
 
-			--==--
-function			 TAIL		( S :SEQ_TYPE )	return SEQ_TYPE				--| RETOURNE UN SEQ SUITE DE LISTE
-is			--==--
+			--^^^^--
+function			  TAIL		( S :SEQ_TYPE )	return SEQ_TYPE				--| RETOURNE UN SEQ SUITE DE LISTE
+is			--------
 begin
   if S.FIRST.TY = DN_LIST then									--| LISTE A PLUSIEURS ELEMENTS
     declare
@@ -147,13 +147,13 @@ begin
   PUT_LINE ( "IDL.IDL-MAN.TAIL : LISTE VIDE S.FIRST = TREE_NIL !" );
   raise PROGRAM_ERROR;
 
-end	 TAIL;
-	--==--
+end	TAIL;
+	----
 
 
-			--==--
-function			INSERT		( S :SEQ_TYPE; T :TREE )	return SEQ_TYPE			--| INSERTION D'UN SEQ EN TETE DE SEQUENCE
-is			--==--
+			--^^^^^^--
+function			  INSERT		( S :SEQ_TYPE; T :TREE )	return SEQ_TYPE			--| INSERTION D'UN SEQ EN TETE DE SEQUENCE
+is			----------
 begin
   if S.FIRST = TREE_NIL then										--| SEQUENCE VIDE
     return (FIRST=> T , NEXT=> TREE_NIL );								--| RETOURNER UN SEQ A UN ELEMENT
@@ -173,84 +173,97 @@ begin
   end;
 
 end	INSERT;
-	--==--
+	------
 
 
-			--==--
-function			APPEND	( S :SEQ_TYPE; T :TREE )	return SEQ_TYPE
-is			--==--
+			--^^^^^^--
+function			  APPEND		( S :SEQ_TYPE; T :TREE )	return SEQ_TYPE
+is			----------
 
   T_SEQ		: SEQ_TYPE;
 begin
+  if  DEBUG_IDL  then PUT_LINE( "@AP0 S.FIRST=" & NODE_REP( S.FIRST ) & " S.NEXT=" & NODE_REP( S.NEXT )
+	& " T=" & NODE_REP( T ) );
+  end if;
   if S.FIRST = TREE_NIL then										--| LISTE VIDE
     return ( FIRST=> T , NEXT=> TREE_NIL );								--| SEQUENCE T EN TETE RIEN DERRIERE
 
   elsif S.FIRST.TY /= DN_LIST then									--| SEQUENCE A 1 ELEMENT (PAS DE LISTE EN S.FIRST)
-    T_SEQ.FIRST  := MAKE ( DN_LIST );									--| FABRIQUER UNE LISTE
-    DABS ( 1, T_SEQ.FIRST, S.FIRST );									--| L'ELEMENT DE S EST EN TETE
-    DABS ( 2, T_SEQ.FIRST, T );									--| T SUIT EN FIN
+    T_SEQ.FIRST  := MAKE( DN_LIST );									--| FABRIQUER UNE LISTE
+    DABS( 1, T_SEQ.FIRST, S.FIRST );									--| L'ELEMENT DE S EST EN TETE
+    DABS( 2, T_SEQ.FIRST, T );									--| T SUIT EN FIN
     T_SEQ.NEXT := T_SEQ.FIRST;									--| SEQUENCE TETE ET SUITE CONFONDUES
+    if  DEBUG_IDL  then PUT_LINE( "@APe liste creee =" & NODE_REP( T_SEQ.FIRST ) ); end if;
 
   else												--| S EST UNE LISTE A PLUS D'UN ELEMENT
     declare
       T_TAIL	: TREE		:= S.NEXT;
       T_END	: TREE;
     begin
+      if  DEBUG_IDL  then PUT_LINE( "@AP1 T_TAIL=" & NODE_REP( T_TAIL ) ); end if;
       if S.NEXT = TREE_NIL then									--| LA SEQUENCE S N'A QU'UNE TETE
         T_TAIL := S.FIRST;										--| LA QUEUE EST LE DEBUT
       end if;
       loop
-        T_END := DABS ( 2, T_TAIL );									--| TREE DE FIN DE S
+        if  DEBUG_IDL  then PUT_LINE( "@AP2 lecture DABS 2 de " & NODE_REP( T_TAIL ) ); end if;
+        T_END := DABS( 2, T_TAIL );									--| TREE DE FIN DE S
+        if  DEBUG_IDL  then PUT_LINE( "@AP3 T_END=" & NODE_REP( T_END ) ); end if;
         exit when T_END.TY /= DN_LIST;									--| SORTIE EN FIN DE LISTE (SIMPLE POINTEUR A UN ELEMENT)
         T_TAIL := T_END;										--| SUIVRE LA LISTE
       end loop;
+      if  DEBUG_IDL  then
+        PUT_LINE( "@AP4 sortie boucle T_TAIL=" & NODE_REP( T_TAIL )
+	& " T_END=" & NODE_REP( T_END ) );
+      end if;
       T_SEQ.FIRST := S.FIRST;
-      T_SEQ.NEXT := MAKE ( DN_LIST );									--| FABRIQUER UN ELEMENT DE LISTE
-      DABS ( 1, T_SEQ.NEXT, T_END );									--| TETE DE LISTE
-      DABS ( 2, T_SEQ.NEXT, T );									--| QUEUE DE LISTE
-      DABS ( 2, T_TAIL, T_SEQ.NEXT );									--| CHAINAGE
+      T_SEQ.NEXT := MAKE( DN_LIST );									--| FABRIQUER UN ELEMENT DE LISTE
+      if  DEBUG_IDL  then PUT_LINE( "@AP5 nouvel elmt=" & NODE_REP( T_SEQ.NEXT ) ); end if;
+      DABS( 1, T_SEQ.NEXT, T_END );									--| TETE DE LISTE
+      DABS( 2, T_SEQ.NEXT, T );									--| QUEUE DE LISTE
+      if  DEBUG_IDL  then PUT_LINE( "@AP6 ecritures 1-2 faites" ); end if;
+      DABS( 2, T_TAIL, T_SEQ.NEXT );									--| CHAINAGE
+      if  DEBUG_IDL  then PUT_LINE( "@AP7 chainage fait" ); end if;
     end;
   end if;
 
   return T_SEQ;
 
 end	APPEND;
-	--==--
+	------
 
 
-			--=====--
-function			SINGLETON		( T :TREE )	return SEQ_TYPE
-is			--=====--
+			--^^^^^^^^^--
+function			  SINGLETON	( T :TREE )	return SEQ_TYPE
+is			-------------
 begin
   return ( FIRST=> T , NEXT=> TREE_NIL );
 end	SINGLETON;
-	--=====--
+	---------
 
 
-			--==--
-procedure			 LIST		( T :TREE; S :SEQ_TYPE )
-is			--==--
+			--^^^^--
+procedure			  LIST		( T :TREE; S :SEQ_TYPE )
+is			--------
 
-  A_IDX		: INTEGER := N_SPEC( T.TY ).NS_FIRST_A;
+  RANG		: ATTR_NBR;
 begin
-  for I in 1 .. N_SPEC( T.TY ).NS_SIZE loop								--| PARCOURIR LES ATTRIBUTS
-    if A_SPEC( A_IDX ).IS_LIST then									--| SI ATTRIBUT LISTE RENCONTRE
-      DABS ( I, T, S.FIRST );										--| STOCKE LA TETE DE V DANS L'ATTRIBUT I DU NOEUD POINTE PAR T
-      return;											--| C'EST BON, SORTIR
-    end if;
-    A_IDX := A_IDX + 1;										--| ATTIBUT SUIVANT
-  end loop;
+  if  not ATTR_RANK_READY  then BUILD_ATTR_RANK; end if;
+  RANG := LIST_RANK( T.TY );										--| RANG DU PREMIER ATTRIBUT LISTE (0 : AUCUN)
+  if  RANG /= 0  then
+    DABS( RANG, T, S.FIRST );										--| STOCKE LA TETE DE S DANS L'ATTRIBUT LISTE DU NOEUD POINTE PAR T
+    return;											--| C'EST BON, SORTIR
+  end if;
 
   PUT_LINE ( "IDL.IDL_MAN.LIST : PAS DE LISTE INSCRIPTIBLE DANS " & NODE_REP ( T ) );
-  raise PROGRAM_ERROR;
+  raise  PROGRAM_ERROR;
 
-end	 LIST;
-	--==--
+end	LIST;
+	----
 
 
-			--==--
-procedure			 DABS		( RANG :ATTR_NBR; T :TREE; VAL :TREE )
-is			--==--
+			--^^^^--
+procedure			  DABS		( RANG :ATTR_NBR; T :TREE; VAL :TREE )
+is			--------
   RN		: RPG_IDX;
 begin
   if T.PG /= CUR_VP then										--| LA PAGE QUI NOUS INTERESSE N'EST PAS COURANTE
@@ -266,13 +279,13 @@ begin
   PAG( CUR_RP ).DATA.all( T.LN + RANG ) := VAL;								--| ECRIRE
   PAG( CUR_RP ).CHANGED := TRUE;									--| MENTIONNEE CHANGEE (ON Y A ECRIT ! )
 
-end	 DABS;
-	--==--
+end	DABS;
+	----
 
 
-			--==--
-function			 DABS		( RANG :ATTR_NBR; T :TREE	)	return TREE
-is			--==--
+			--^^^^--
+function			  DABS		( RANG :ATTR_NBR; T :TREE	)	return TREE
+is			--------
 
   RN		: RPG_IDX;
 begin
@@ -287,13 +300,13 @@ begin
   end if;
   return PAG( CUR_RP ).DATA.all( T.LN + RANG );								--| LIRE
 
-end	 DABS;
-	--==--
+end	DABS;
+	----
 
 
-			--======--
-function			STORE_TEXT	( S :STRING ) return TREE					--| STOCKE UNE REPRESENTATION TEXTE
-is			--======--
+			--^^^^^^^^^^--
+function			  STORE_TEXT	( S :STRING )	return TREE				--| STOCKE UNE REPRESENTATION TEXTE
+is			--------------
   NB_TREES	: LINE_IDX
 		:= LINE_IDX( ( (S'LENGTH+1) * CHARACTER'SIZE + TREE'SIZE-1) / TREE'SIZE );			--| NOMBRE DE TREES POUR CONTENIR LES CARACTERES DE S ET UN OCTET DE LONGUEUR
   NB_CARS		: NATURAL
@@ -318,12 +331,12 @@ begin
   end;
 
 end	STORE_TEXT;
-	--======--
+	----------
 
 
-			--=======--
-function			HASH_SEARCH	( S :STRING )	return TREE
-is			--=======--
+			--^^^^^^^^^^^--
+function			  HASH_SEARCH	( S :STRING )	return TREE
+is			---------------
 
   NB_TREES		: ATTR_NBR
 				:= ATTR_NBR( ( (S'LENGTH+1) * CHARACTER'SIZE + TREE'SIZE-1) / TREE'SIZE );	--| NOMBRE DE TREES POUR CONTENIR LES CARACTERES DE S ET UN OCTET DE LONGUEUR
@@ -379,12 +392,12 @@ begin
   end;
 
 end	HASH_SEARCH;
-	--=======--
+	-----------
 
 
-			--=====--
-function			STORE_SYM ( S :STRING ) return	TREE					--| INSERE UN SYMBOLE ACCESSIBLE A LA RECHERCHE
-is			--=====--
+			--^^^^^^^^^--
+function			  STORE_SYM	( S :STRING )	return TREE				--| INSERE UN SYMBOLE ACCESSIBLE A LA RECHERCHE
+is			-------------
 
   TR		: TREE		:= HASH_SEARCH( S );
 begin
@@ -408,7 +421,7 @@ begin
   end if;
 
 end	STORE_SYM;
-	--=====--
+	---------
 
 
 			--====--
@@ -429,9 +442,9 @@ end	FIND_SYM;
 	--====--
 
 
-			--================--
-function			MAKE_SOURCE_POSITION	( T: TREE; COL :SRCCOL_IDX )  return TREE		--| FABRIQUE UN ELEMENT S CONTENANT LA COLONNE AVEC UN POINTEUR DE LIGNE
-is			--================--
+			--^^^^^^^^^^^^^^^^^^^^--
+function			  MAKE_SOURCE_POSITION	( T: TREE; COL :SRCCOL_IDX )  return TREE		--| FABRIQUE UN ELEMENT S CONTENANT LA COLONNE AVEC UN POINTEUR DE LIGNE
+is			------------------------
 begin
   if T.TY = DN_SOURCELINE then									--| POINTEUR DE SOURCE_LINE
     return (S, COL=> COL, SPG=> T.PG, SLN=> T.LN );
@@ -441,12 +454,12 @@ begin
   end if;
 
 end	MAKE_SOURCE_POSITION;
-	--================--
+	--------------------
 
 
-			--===========--
-function			GET_SOURCE_LINE	( T :TREE )	return TREE				--| RAMENE LE POINTEUR DE LIGNE ASSOCIE A UN ELEMENT S
-is			--===========--
+			--^^^^^^^^^^^^^^^--
+function			  GET_SOURCE_LINE	( T :TREE )	return TREE				--| RAMENE LE POINTEUR DE LIGNE ASSOCIE A UN ELEMENT S
+is			-------------------
 begin
   if T.PT = S then
     return (P, TY=> DN_SOURCELINE, PG=> T.SPG, LN=> T.SLN );
@@ -456,17 +469,17 @@ begin
   end if;
 
 end	GET_SOURCE_LINE;
-	--===========--
+	---------------
 
 
-			--==========--
-function			GET_SOURCE_COL	( T :TREE )	return SRCCOL_IDX
-is			--==========--
+			--^^^^^^^^^^^^^^--
+function			  GET_SOURCE_COL	( T :TREE )	return SRCCOL_IDX
+is			------------------
 begin
   return T.COL;
 
 end	GET_SOURCE_COL;
-	--==========--
+	--------------
 
 
 			----------
@@ -490,9 +503,9 @@ end	GET_SOURCE_COL;
 	----------
 
 
-				--=--
-  procedure			ERROR			( T :TREE; MSG :STRING )
-				--=--
+				--^^^^^--
+  procedure			  ERROR			( T :TREE; MSG :STRING )
+				---------
   is
   begin
     if  PRAGMA_CONTEXT /= TREE_VOID  then
@@ -510,22 +523,22 @@ end	GET_SOURCE_COL;
     end if;
 
   end	ERROR;
-	--=--
+	-----
 
 
-				--===--
-  procedure			WARNING			( T :TREE; MSG :STRING )
-  is
+				--^^^^^^^--
+  procedure			  WARNING			( T :TREE; MSG :STRING )
+  is				-----------
   begin
     EMIT_ERROR( T, "(Warning) " & MSG );
 
   end	WARNING;
-	--===--
+	-------
 
 
-			--==--
-function			 MAKE	( NN :NODE_NAME; NB_ATTR :ATTR_NBR; AR :AREA_IDX )	return TREE
-is			--==--
+			--^^^^--
+function			  MAKE	( NN :NODE_NAME; NB_ATTR :ATTR_NBR; AR :AREA_IDX )	return TREE
+is			--------
 
   FREE_IDX	: LINE_NBR		:= AREA( AR ).FREE_LINE;					--| EMPLACEMENT UTILISABLE
   NB_FREE		: LINE_NBR		:= LINE_NBR( LINE_IDX'LAST ) - FREE_IDX + 1;			--| NB EMPLACEMENTS LIBRES
@@ -547,88 +560,87 @@ exception
 	& " vp=" & VPG_IDX'IMAGE( CUR_VP )
 	& " rp=" & RPG_IDX'IMAGE( ASSOC_PAGE( CUR_VP ) ) & " area=" & AREA_IDX'IMAGE( AR ) );
     raise;
-    return TREE_NIL;
-end	 MAKE;
-	--==--
+    return  TREE_NIL;
+
+end	MAKE;
+	----
 
 
-			--==--
-function			 MAKE		( NN :NODE_NAME; NB_ATTR :ATTR_NBR )	return TREE
-is
+			--^^^^--
+function			  MAKE		( NN :NODE_NAME; NB_ATTR :ATTR_NBR )	return TREE
+is			--------
 begin
   return MAKE( NN,  NB_ATTR, AR=> 1 );
 
 end	 MAKE;
-	--==--
+	------
 
 
-			--======--
-function			LAST_BLOCK	return VPG_IDX
-is			--======--
+			--^^^^^^^^^^--
+function			  LAST_BLOCK	return VPG_IDX
+is			--------------
 begin
   return HIGH_VPG;
+
 end	LAST_BLOCK;
-	--======--
+	----------
 
 
-			--======--
-function			PRINT_NAME	( PG :VPG_IDX; LN :LINE_IDX )		return STRING
-is			--======--
+			--^^^^^^^^^^--
+function			  PRINT_NAME	( PG :VPG_IDX; LN :LINE_IDX )		return STRING
+is			--------------
 begin
   return PRINT_NAME ( (P, TY=> DN_TXTREP, PG=> PG, LN=> LN ) );
 
 end	PRINT_NAME;
-	--======--
+	----------
 
 
---|-------------------------------------------------------------------------------------------------
---|		FUNCTION INT_IMAGE_NOBLANK
---|
 			-----------------
 function			INT_IMAGE_NOBLANK	( V :INTEGER )	return STRING
 is			-----------------
   IM		: constant STRING		:= INTEGER'IMAGE( V );					--| FABRIQUER L'IMAGE DU NOMBRE
 begin
   if V >= 0 then											--| VALEUR POSITIVE (IL Y A UN BLANC A LA PLACE DU SIGNE)
-    return IM( 2..IM'LENGTH );									--| RENVOYER L'IMAGE SANS BLANC
+    return  IM( 2..IM'LENGTH );									--| RENVOYER L'IMAGE SANS BLANC
   else												--| VALEUR NEGATIVE
-    return IM;											--| RENVOYER L'IMAGE (QUI A LE SIGNE - INCLUS)
+    return  IM;											--| RENVOYER L'IMAGE (QUI A LE SIGNE - INCLUS)
   end if;
 
 end	INT_IMAGE_NOBLANK;
 	-----------------
---||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
---|		FUNCTION NODE_REP
---|
-			--====--
-function			NODE_REP		( T :TREE )	return STRING
-is			--====--
+
+
+			--^^^^^^^^--
+function			  NODE_REP		( T :TREE )	return STRING
+is			------------
 
   function NODE_NAME_IMAGE return STRING is
   begin
-    return '{' & NODE_NAME'IMAGE ( T.TY ) & '}';
+    return  '{' & NODE_NAME'IMAGE ( T.TY ) & '}';
   end;
 
 begin
   case T.PT is
   when HI =>
-    return '['	& NODE_NAME'IMAGE ( T.NOTY )
+    return  '['	& NODE_NAME'IMAGE ( T.NOTY )
 		& " NSIZ=" & ATTR_NBR'IMAGE( T.NSIZ )
 		& " ABSS=" & POSITIVE_SHORT'IMAGE( T.ABSS )	& ']' ;
 
   when S =>
-    return "[COL="  & SRCCOL_IDX'IMAGE( T.COL )
+    return  "[COL="  & SRCCOL_IDX'IMAGE( T.COL )
 		& " <" & PAGE_IDX'IMAGE( T.SPG ) & '.' & LINE_IDX'IMAGE( T.SLN ) & '>';
   when P | L =>
 
-    if T = TREE_VIRGIN then return "[___]"; end if;
+    if  T = TREE_VIRGIN  then return  "[___]"; end if;
 
-    return '['	& NODE_NAME'IMAGE(T.TY)
+    return  '['	& NODE_NAME'IMAGE(T.TY)
 		& '<' & INT_IMAGE_NOBLANK ( INTEGER( T.PG ) )
 		& '.' & INT_IMAGE_NOBLANK ( INTEGER( T.LN ) ) & "]>";
   end case;
+
 end	NODE_REP;
-	--====--
+	--------
 
 
 	-------

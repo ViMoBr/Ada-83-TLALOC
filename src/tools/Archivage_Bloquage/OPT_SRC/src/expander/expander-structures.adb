@@ -17,9 +17,9 @@ is
 
   procedure CODE_TRANS_WITH_INCLUDES ( COMPILATION_UNIT :TREE );
 
-			--=====================--
+			--^^^^^^^^^^^^^^^^^^^^^--
   procedure		  CODE_COMPILATION_UNIT	( COMPILATION_UNIT :TREE )
-  is			--=====================--
+  is			-------------------------
 
     UNIT_ALL_DECL		: TREE	:= D( AS_ALL_DECL, COMPILATION_UNIT );
   begin
@@ -55,13 +55,54 @@ is
       CODE_PACKAGE_BODY( UNIT_ALL_DECL );
 
     when  DN_SUBUNIT		=>
-      CODE_SUBUNIT_BODY( D( AS_SUBUNIT_BODY, UNIT_ALL_DECL )  );
+			--| Niveau de depart du subunit : reprendre le niveau enregistre par
+			--| l'unite PARENTE sur la premiere declaration (stub ou spec), meme
+			--| canal bibliotheque que CD_LABEL.  Invariant : CD_LEVEL d'un id de
+			--| sous-programme = niveau d'EXECUTION de son corps (pose apres
+			--| INC_LEVEL).  Un package separe n'a PAS de cd_level (schema DIANA :
+			--| dn_package_id n'en porte aucun) ; sans frame, son niveau = celui du
+			--| sous-programme englobant le plus proche (remontee XD_REGION, les
+			--| packages sont transparents ; TREE_VOID = bibliotheque).  Demarrer a 0
+			--| n'etait juste que pour les subunits de bibliotheque (parent sans
+			--| frame) : un subunit de SOUS-PROGRAMME (idl-sem_phase-*.adb) se
+			--| compilait un cran trop haut et son LINK ecrasait le display du
+			--| parent -- segfault ENUM_IMAGE de FIX_PRE (La 1, use__info -> 0).
+      declare
+        SUB_BODY		: TREE	:= D( AS_SUBUNIT_BODY, UNIT_ALL_DECL );
+        FIRST_DECL_ID	: TREE	:= D( SM_FIRST, D( AS_SOURCE_NAME, SUB_BODY ) );
+      begin
+        if  SUB_BODY.TY = DN_SUBPROGRAM_BODY  then
+	CODI.CUR_LEVEL := DI( CD_LEVEL, FIRST_DECL_ID ) - 1;					-- l'INC_LEVEL du corps retablira CD_LEVEL ; -1 sur une valeur non posee (0) => CONSTRAINT_ERROR : bruyant
 
-    when others			=> raise PROGRAM_ERROR;
+        elsif  SUB_BODY.TY = DN_PACKAGE_BODY  then
+	declare
+	  REGION : TREE := D( XD_REGION, FIRST_DECL_ID );
+	begin
+	  while  REGION /= TREE_VOID  and then  REGION.TY = DN_PACKAGE_ID  loop		-- packages transparents (y compris STANDARD -> TREE_VOID ensuite)
+	    REGION := D( XD_REGION, REGION );
+	  end loop;
+	  if  REGION = TREE_VOID  then
+	    CODI.CUR_LEVEL := 0;								-- chaine de packages jusqu'a la bibliotheque : cas test_subunit, inchange
+	  elsif  REGION.TY = DN_PROCEDURE_ID  or  REGION.TY = DN_FUNCTION_ID
+	     or  REGION.TY = DN_OPERATOR_ID  then
+	    CODI.CUR_LEVEL := DI( CD_LEVEL, REGION );						-- niveau d'execution du frame du sous-programme = niveau de ses declarations
+	  else
+	    CODI.TROU( "CODE_COMPILATION_UNIT region de subunit package", REGION );		-- generique / task : hors corpus, refus bruyant
+	  end if;
+	end;
+
+       else
+	CODI.TROU( "CODE_COMPILATION_UNIT subunit non couvert", SUB_BODY );			-- task body separe : hors corpus, refus bruyant
+        end if;
+        CODE_SUBUNIT_BODY( SUB_BODY );
+      end;
+
+    when others			=> CODI.TROU( "CODE_COMPILATION_UNIT", UNIT_ALL_DECL );			--| vague 4 : levait deja, enrichi du message TROU
+
     end case;
 
   end	CODE_COMPILATION_UNIT;
-	--=================--
+	---------------------
 
 
 
@@ -284,6 +325,8 @@ is
 	end loop;
         end;
 
+      else
+        CODI.TROU( "CODE_GENERIC_FRAME_OFFSETS parametre generique", GPRM );					--| vague 4, HORS LISTE : un formel non couvert
       end if;
 
     end	INVERSE_RECURSE;
@@ -314,6 +357,7 @@ is
     SAVE_IN_GENERIC_BODY	: BOOLEAN		:= CODI.IN_GENERIC_BODY;
     SAVE_ENCLOSING_GENERIC	: TREE		:= CODI.ENCLOSING_GENERIC;
     SAVE_GENERIC_BASE_LEVEL	: LEVEL_NUM	:= CODI.GENERIC_BASE_LEVEL;
+    SAVE_GFP_LEVEL		: LEVEL_NUM	:= CODI.GFP_LEVEL;
     SAVE_GOTO_BASE		: GOTO_LBL_IDX	:= CODI.GOTO_BODY_BASE;
     SAVE_GOTO_TOP		: GOTO_LBL_IDX	:= CODI.GOTO_LBL_TOP;
     SAVE_GOTO_PEND_BASE	: GOTO_LBL_IDX	:= CODI.GOTO_PEND_BASE;
@@ -321,6 +365,7 @@ is
 
   begin
     INC_LEVEL;
+    CODI.GFP_LEVEL := CODI.CUR_LEVEL;									-- ce PRO porte le PRM GFP_ofs vu par ses blocs
     CODI.GOTO_BODY_BASE := CODI.GOTO_LBL_TOP;								-- ouvrir le perimetre goto de CE corps
     CODI.GOTO_PEND_BASE := CODI.GOTO_PEND_TOP;
     if  DECL_ID.TY /= DN_GENERIC_ID  then
@@ -389,11 +434,13 @@ is
       CODE_BLOCK_BODY( SUB_BODY );
 
       PUT_LINE( "ret_lbl:" );
-      PUT_LINE( tab & "UNLINK" & LEVEL_NUM'IMAGE( CODI.CUR_LEVEL ) );
+      PUT_LINE( tab & CODI.EXIT_UNLINK_MNEMONIC( D( AS_HEADER, SUBPROGRAM_BODY ) )		-- chantier co-pile (n 163) : UNLINKR rend la
+		& LEVEL_NUM'IMAGE( CODI.CUR_LEVEL ) );					-- co-pile, sauf resultat TABLEAU (n 147)
 
       PUT( tab & "RTD" );
       if  CODI.NO_SUBP_PARAMS = FALSE  then  PUT( tab & "prm_siz" );
-        if  SOURCE_NAME.TY = DN_FUNCTION_ID  then
+--	if  SOURCE_NAME.TY = DN_FUNCTION_ID  then
+        if  SOURCE_NAME.TY = DN_FUNCTION_ID  or  SOURCE_NAME.TY = DN_OPERATOR_ID  then
 	PUT( INTEGER'IMAGE( - STACK_ELEMENT_SIZE ) );							-- POUR UNE FONCTION NE PAS LIBERER LE RESULTAT
         end if;
       end if;
@@ -420,6 +467,7 @@ is
     CODI.IN_GENERIC_BODY    := SAVE_IN_GENERIC_BODY;
     CODI.ENCLOSING_GENERIC  := SAVE_ENCLOSING_GENERIC;
     CODI.GENERIC_BASE_LEVEL := SAVE_GENERIC_BASE_LEVEL;
+    CODI.GFP_LEVEL	        := SAVE_GFP_LEVEL;
 
   end	CODE_SUBPROGRAM_BODY;
 	--------------------
@@ -439,8 +487,10 @@ is
     if  PACK_DEF.TY = DN_GENERIC_ID  then
       declare
         SAVE_GENERIC_LEVEL	:LEVEL_NUM	:= CODI.GENERIC_BASE_LEVEL;
+        SAVE_GFP_LEVEL	:LEVEL_NUM	:= CODI.GFP_LEVEL;
       begin
       CODI.GENERIC_BASE_LEVEL := CUR_LEVEL;
+      CODI.GFP_LEVEL := CUR_LEVEL;									-- code d'elaboration du corps : meme niveau qu'avant (CUR_LEVEL)
 
       CODI.IN_GENERIC_BODY := TRUE;
       CODI.ENCLOSING_GENERIC := PACK_DEF;
@@ -506,6 +556,7 @@ is
       NEW_LINE;
       CODI.IN_GENERIC_BODY := FALSE;
       CODI.GENERIC_BASE_LEVEL := SAVE_GENERIC_LEVEL;
+      CODI.GFP_LEVEL := SAVE_GFP_LEVEL;
       end;
     else
 
@@ -582,6 +633,8 @@ is
       elsif  ITEM.TY in CLASS_SUBUNIT_BODY
       then  CODE_SUBUNIT_BODY( ITEM );
 
+      else
+        CODI.TROU( "CODE_ITEM_S", ITEM );							--| vague 4 : dispatch muet (fossile n 115)
       end if;
 
     end loop;
@@ -633,19 +686,21 @@ is
     begin
       if  HAS_HANDLERS  then
         if  IS_PACK_BODY  then
-	PUT_LINE( ";ANOMALIE : handlers sur corps de package non modelises" );					-- bruyant -- exceptions d'elaboration, differe
+	PUT_LINE( ";ANOMALIE : handlers sur corps de package non modelises" );				--| DEFAUT DOCUMENTE (vague 5) : bruyant volontairement
+												--| non fatal -- exceptions d'elaboration, differe
+												--| (croiser pilier 11)
 
         else
 			-- PILIER 11 : frame porteur -> contexte de reprise (push a begin:, apres
 			-- l'elaboration : LRM 11.4.2 gratuit).  Publication d'EXC_TOP en DERNIER.
 	PUT_LINE( "VAR" & tab & CTX_NAME & ", q," & INTEGER'IMAGE( 8 + CODI.CUR_LEVEL ) );			-- 7 en-tete + (lvl+1) display
-	PUT_LINE( tab & "La" & tab & "0, STANDARD.EXCEPTIONS_TOP_CTX_disp" );
-	PUT_LINE( tab & "Sa " & LVL_STR & ',' & tab & CTX_NAME );						-- PREV_CTX
+	PUT_LINE( tab & "LA" & tab & "0, STANDARD.EXCEPTIONS_TOP_CTX_disp" );
+	PUT_LINE( tab & "SA " & LVL_STR & ',' & tab & CTX_NAME );						-- PREV_CTX
 	PUT_LINE( tab & "LCA" & tab & DSP_LBL );
-	PUT_LINE( tab & "Sa " & LVL_STR & ',' & tab & CTX_NAME & " + STANDARD._EXCEPTION_CONTEXT.DISPATCH" );	-- offset symbolique : suit le record Ada
+	PUT_LINE( tab & "SA " & LVL_STR & ',' & tab & CTX_NAME & " + STANDARD._EXCEPTION_CONTEXT.DISPATCH" );	-- offset symbolique : suit le record Ada
 	PUT_LINE( tab & "EXC_MACH " & LVL_STR & ',' & tab & CTX_NAME );					-- RBP RSP R13 R14 NXT_LVL FP(0..lvl)
 	PUT_LINE( tab & "LVA " & LVL_STR & ',' & tab & CTX_NAME );
-	PUT_LINE( tab & "Sa" & tab & "0, STANDARD.EXCEPTIONS_TOP_CTX_disp" );
+	PUT_LINE( tab & "SA" & tab & "0, STANDARD.EXCEPTIONS_TOP_CTX_disp" );
 	CODI.HANDLER_CTX_AT( CODI.CUR_LEVEL ) := TRUE;							-- pour les pops de CODE_RETURN / CODE_EXIT
         end if;
       end if;
@@ -659,8 +714,8 @@ is
         PUT_LINE( tab & "BRA" & tab & POST_LBL );								-- sauter la section dispatch+handlers
 
         PUT_LINE( DSP_LBL & ':' );									-- LRM 11.3 : memoriser l'exception qui a cause le transfert, par ACTIVATION -- dans PREV_CTX (+0), mort depuis le pop.
-        PUT_LINE( tab & "La" & tab & "0, STANDARD.EXCEPTIONS_CURRENT_disp" );
-        PUT_LINE( tab & "Sa " & LVL_STR & ',' & tab & CTX_NAME );
+        PUT_LINE( tab & "LA" & tab & "0, STANDARD.EXCEPTIONS_CURRENT_disp" );
+        PUT_LINE( tab & "SA " & LVL_STR & ',' & tab & CTX_NAME );
 
         declare
 	OLD_LVL	:constant INTEGER		:= CODI.HANDLER_LVL;
@@ -707,7 +762,8 @@ is
   procedure		CODE_TASK_BODY ( TASK_BODY :TREE )
   is
   begin
-    null;
+    CODI.TROU( "CODE_TASK_BODY (tasking hors perimetre)", TASK_BODY );					--| vague 4 : corps vide, le corps de tache etait avale
+
   end	CODE_TASK_BODY;
 	--------------
 
@@ -748,7 +804,7 @@ is
 	declare
 	  EXCEPTION_ID	: TREE	:= CODI.EXCEPTION_ID_OF( D( AS_EXP, CHOICE ) );				-- resout selected + renames (LRM 8.5);
 	begin											-- when X =>  (choix multiple : une paire par choix)
-	  PUT_LINE( tab & "La" & tab & "0, STANDARD.EXCEPTIONS_CURRENT_disp" );
+	  PUT_LINE( tab & "LA" & tab & "0, STANDARD.EXCEPTIONS_CURRENT_disp" );
 	  PUT( tab & "LCA" & tab );
 	  CODI.REGIONS_PATH( EXCEPTION_ID );
 	  PUT_LINE( PRINT_NAME( D( LX_SYMREP, EXCEPTION_ID ) ) & "__exc.data_ptr" );
@@ -760,7 +816,8 @@ is
 	IS_OTHERS := TRUE;  SEEN_OTHERS := TRUE;							-- sem : others seul dans son choix, et dernier
 
         elsif  CHOICE.TY = DN_CHOICE_RANGE  then
-	PUT_LINE( "ANOMALIE : CHOICE_RANGE in EXCEPTIONS" );
+	PUT_LINE( "CODE_ALTERNATIVE ANOMALIE : CHOICE_RANGE in EXCEPTIONS" );					--| DEFAUT DOCUMENTE (vague 5) : ceinture
+												--| d'impossible (sem : choix = noms ou others)
         end if;
       end loop;
 
@@ -784,7 +841,7 @@ is
         CODE_ALTERNATIVE( ALTERNATIVE_ELEM );
 
       elsif  ALTERNATIVE_ELEM.TY = DN_ALTERNATIVE_PRAGMA  then
-        PUT_LINE( "ANOMALIE : DN_ALTERNATIVE_PRAGMA in EXCEPTIONS" );
+        PUT_LINE( "CODE_EXCEPTIONS_ALTERNATIVE_S ANOMALIE : DN_ALTERNATIVE_PRAGMA in EXCEPTIONS" );			--| DEFAUT DOCUMENTE (vague 5) : ceinture bruyante
       end if;
     end loop;
 
