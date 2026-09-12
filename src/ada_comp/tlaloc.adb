@@ -67,6 +67,7 @@ is
 
     ADD_VERB( "BIND" );
     ADD_PARAMETER( "UNIT" );
+    ADD_QUALIFIER( "TARGET", "X86_64,ARM64,RISCV64", DEFAULT=> "X86_64" );
 
     ADD_VERB( "DUMP" );
     ADD_QUALIFIER( "FORMAT", "PRETTY,UGLY,ALLTREE", IMPLICIT_FIRST_VALUE=> TRUE );
@@ -198,7 +199,7 @@ is
   procedure		DO_BIND
   is			-------
   begin
-    EXPANDER( GET_VALUE( "UNIT" ) );									--| writes the fasmg main .fas
+    EXPANDER( GET_VALUE( "UNIT" ), GET_VALUE( "TARGET" ) );							--| writes the fasmg main .fas
 
   end	DO_BIND;
 	-------

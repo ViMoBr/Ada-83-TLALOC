@@ -103,7 +103,7 @@ Go to **bin** directory
 
 # Create a .fas macro header file in ./ADA__LIB also.
 
-./TLALOC BIND dis_bonjour.adb
+./TLALOC BIND DIS_BONJOUR
 
 # create an ELF64 executable file in ADA__LIB.
 

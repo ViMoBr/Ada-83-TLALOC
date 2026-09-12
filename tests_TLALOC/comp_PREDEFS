@@ -1,0 +1,42 @@
+#!/bin/bash
+
+# le diana.bin est incompatible entre T1 (TLALOC T1.exe construit par gnat) et TLALOC.x86exe construit par TLALOC
+# il est recontruit à partir de diana.tbl qui doit être dans le répertoire de l'exécutable
+rm ./diana.bin
+
+if [ "${1:-}" = "T1" ]
+then
+  AdaC="T1 COMPILE "
+  echo "          ----------------------------"
+  echo "          Compile PREDEF UNITS with T1"
+  echo "          ----------------------------"
+else
+  AdaC="TLALOC COMPILE "
+  echo "          -------------------------------------"
+  echo "          Compile PREDEF UNITS with TLALOC (T2)"
+  echo "          -------------------------------------"
+fi
+
+rm -f ./ADA__LIB/*.DCL
+rm -f ./ADA__LIB/*.BDY
+rm -f ./ADA__LIB/*.SUB
+rm -f ./ADA__LIB/*.FINC
+
+./$AdaC _standrd.ads
+./$AdaC system.ads
+./$AdaC machine_code.ads
+./$AdaC calendar.ads
+./$AdaC io_exceptions.ads
+./$AdaC text_io.ads
+./$AdaC direct_io.ads
+./$AdaC sequential_io.ads
+./$AdaC unchecked_conversion.ads
+./$AdaC unchecked_deallocation.ads
+
+./$AdaC _standrd.adb
+./$AdaC calendar.adb
+./$AdaC text_io.adb
+./$AdaC direct_io.adb
+./$AdaC sequential_io.adb
+#./T1 ./ unchecked_conversion.adb W		intrinsèque expander ne pas compiler !
+#./T1 ./ unchecked_deallocation.adb W	A VOIR

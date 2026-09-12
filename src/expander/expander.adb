@@ -7,7 +7,8 @@
 with DIANA_NODE_ATTR_CLASS_NAMES, IDL, TEXT_IO;
 use  DIANA_NODE_ATTR_CLASS_NAMES, IDL, TEXT_IO;
 					--------
-			procedure		EXPANDER		( NOM_TEXTE :STRING := "" )
+			procedure		EXPANDER		( NOM_TEXTE :STRING := "";
+							  CPU_NAME :STRING := "X86_64" )
 					--------
 is
 
@@ -592,7 +593,15 @@ FIND_DOT_IF_ANY_AND_UPCASE:
 	CREATE( F, OUT_FILE, IDL.LIB_PATH( 1 .. IDL.LIB_PATH_LENGTH )					-- Le créer
 			& NOM_FAS & ".fas" );
 	SET_OUTPUT( F );
-	PUT_LINE( tab & "include '../../src/expander/fasmg/codi_x86_64.finc'" );				-- Il faudra modifier le chemin pour plus de généralité
+
+	if  CPU_NAME = "X86_64"  then
+	  PUT_LINE( tab & "include '../../src/expander/fasmg/codi_x86_64.finc'" );				-- Il faudra modifier le chemin pour plus de généralité
+	elsif  CPU_NAME = "ARM64"  then
+	  PUT_LINE( tab & "include '../../src/expander/fasmg/codi_arm64.finc'" );
+	elsif  CPU_NAME = "RISCV64"  then
+	  PUT_LINE( tab & "include '../../src/expander/fasmg/codi_riscv64.finc'" );
+	end if;
+
 	PUT_LINE( "STANDARD = 'STANDARD'" );
 	PUT_LINE( "namespace STANDARD" );
 	PUT_LINE( "  virtual at 8" );

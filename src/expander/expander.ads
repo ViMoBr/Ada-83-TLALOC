@@ -5,7 +5,8 @@
 --	1	2	3	4	5	6	7	8	9	0	1	2
 
 					--------
-			procedure		EXPANDER		( NOM_TEXTE :STRING := "" );
+			procedure		EXPANDER		( NOM_TEXTE :STRING := "";
+							  CPU_NAME :STRING := "X86_64" );
 					--------
 
 --	1	2	3	4	5	6	7	8	9	0	1	2
