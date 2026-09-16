@@ -1,9 +1,16 @@
-with TEXT_IO; use TEXT_IO;
-procedure GET_CHAR is
+with TEXT_IO;
+use TEXT_IO;
+		--------
+procedure		GET_CHAR
+is		--------
   C	: CHARACTER;
 begin
-  PUT( "Tapez un caractere : " );
+  PUT( "Tape un caractere : " );
   GET( C );
-  PUT( '<' ); PUT( C ); PUT( '>' );
+  PUT_LINE( "" );
+  PUT( "Lu = " );
+  PUT( C );
   NEW_LINE;
-end GET_CHAR;
+
+end	GET_CHAR;
+	--------

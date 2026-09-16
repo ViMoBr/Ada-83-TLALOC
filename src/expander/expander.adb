@@ -8,7 +8,9 @@ with DIANA_NODE_ATTR_CLASS_NAMES, IDL, TEXT_IO;
 use  DIANA_NODE_ATTR_CLASS_NAMES, IDL, TEXT_IO;
 					--------
 			procedure		EXPANDER		( NOM_TEXTE :STRING := "";
-							  CPU_NAME :STRING := "X86_64" )
+							  CPU_NAME :STRING := "X86_64";
+							  OS_NAME :STRING := "LINUX"
+ 							)
 					--------
 is
 
@@ -582,25 +584,29 @@ FIND_DOT_IF_ANY_AND_UPCASE:
       declare
         F		: FILE_TYPE;
         NOM_FAS	: STRING renames UPPER_NAME( UPPER_NAME'FIRST .. LAST_NAME_CHAR );
-
+        PATH_NAME	:constant STRING	:= IDL.LIB_PATH( 1 .. IDL.LIB_PATH_LENGTH )
+					& NOM_FAS & '.' & CPU_NAME & OS_NAME( OS_NAME'FIRST ) & "FAS";
       begin
-        OPEN( F, IN_FILE, IDL.LIB_PATH( 1 .. IDL.LIB_PATH_LENGTH )						-- Tenter l'ouverture pour voir s'il existe déjà
-			& NOM_FAS  & ".fas" );
+        OPEN( F, IN_FILE, PATH_NAME );
         CLOSE( F );
-        PUT_LINE( "TLALOC/Ada 83 - " & IDL.LIB_PATH( 1 .. IDL.LIB_PATH_LENGTH ) & NOM_FAS  & ".fas already exists" );
+        PUT_LINE( "TLALOC/Ada 83 - " & PATH_NAME & " already exists" );
+
       exception
-        when NAME_ERROR =>										-- Le .fas n'existe pas
-	CREATE( F, OUT_FILE, IDL.LIB_PATH( 1 .. IDL.LIB_PATH_LENGTH )					-- Le créer
-			& NOM_FAS & ".fas" );
+        when NAME_ERROR =>										-- Le FAS n'existe pas
+	CREATE( F, OUT_FILE, PATH_NAME );
 	SET_OUTPUT( F );
 
+	PUT( tab & "include '../../src/expander/fasmg/codi_" );
 	if  CPU_NAME = "X86_64"  then
-	  PUT_LINE( tab & "include '../../src/expander/fasmg/codi_x86_64.finc'" );				-- Il faudra modifier le chemin pour plus de généralité
+	  PUT( "x86_64" & OS_NAME( OS_NAME'FIRST ) );
+
 	elsif  CPU_NAME = "ARM64"  then
-	  PUT_LINE( tab & "include '../../src/expander/fasmg/codi_arm64.finc'" );
+	  PUT( "arm64" );
+
 	elsif  CPU_NAME = "RISCV64"  then
-	  PUT_LINE( tab & "include '../../src/expander/fasmg/codi_riscv64.finc'" );
+	  PUT( "riscv64" );
 	end if;
+	PUT_LINE( ".finc'" );
 
 	PUT_LINE( "STANDARD = 'STANDARD'" );
 	PUT_LINE( "namespace STANDARD" );
@@ -657,7 +663,8 @@ FIND_DOT_IF_ANY_AND_UPCASE:
 	PUT_LINE( "end namespace" );
 	CLOSE( F );
 	SET_OUTPUT( STANDARD_OUTPUT );
-	PUT_LINE( "TLALOC/Ada 83 - " & IDL.LIB_PATH( 1 .. IDL.LIB_PATH_LENGTH ) & NOM_FAS  & ".fas created" );
+	PUT_LINE( "TLALOC/Ada 83 - " & IDL.LIB_PATH( 1 .. IDL.LIB_PATH_LENGTH )
+		& NOM_FAS & '.' & CPU_NAME & "FAS created" );
       end;
     end		CREATE_FAS_MAIN_FILE;
 		--------------------

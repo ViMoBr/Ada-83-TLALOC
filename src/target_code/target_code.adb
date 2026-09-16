@@ -42,7 +42,7 @@ with TEXT_IO, SEQUENTIAL_IO, IDL;
 use  TEXT_IO;
 
 					-----------
-procedure					TARGET_CODE	( CPU_NAME, UNIT_NAME :STRING;
+procedure					TARGET_CODE	( CPU_NAME, OS_NAME, UNIT_NAME :STRING;
 							  MAP :BOOLEAN := FALSE )
 is					-----------
   --| CPU_NAME : X86_64, ARM64 ou RISCV64 (forme canonique rendue par CLI).
@@ -339,8 +339,18 @@ is					-----------
   is			---------
   begin
     case  TARGET_CPU  is
-      when X86_64  => return "x86_64.finc";
+      when X86_64  =>
+        if  OS_NAME = "LINUX"  then
+	return "x86_64L.finc";
+
+        elsif  OS_NAME = "WINDOWS"  then
+	return "x86_64W.finc";
+
+        else return "x86_64.finc";
+        end if;
+
       when ARM64   => return "arm64.finc";
+
       when RISCV64 => return "riscv64.finc";
     end case;
   end	CODI_NAME;
@@ -351,10 +361,18 @@ is					-----------
   is			-------
   begin
     case  TARGET_CPU  is
-      when X86_64  => return ".fas";
-      when ARM64   => return ".arm64fas";
-      when RISCV64 => return ".riscv64fas";
+      when X86_64  =>
+        if  OS_NAME = "LINUX"  then
+	return ".X86_64LFAS";
+        elsif  OS_NAME = "WINDOWS"  then
+	return ".X86_64WFAS";
+        else
+	return ".X86_64FAS";
+        end if;
+      when ARM64   => return ".ARM64FAS";
+      when RISCV64 => return ".RISCV64FAS";
     end case;
+
   end	FAS_EXT;
 	-------
 
@@ -367,6 +385,7 @@ is					-----------
       when ARM64   => return ".arm64exe";
       when RISCV64 => return ".riscv64exe";
     end case;
+
   end	EXE_EXT;
 	-------
 

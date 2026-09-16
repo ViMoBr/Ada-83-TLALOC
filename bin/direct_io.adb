@@ -125,6 +125,7 @@ is					----------
 	------------------
 
   begin
+    CLOSE( FILE );
     ERR_CODE := DELETE_SYSTEM_CALL( FILE.NAME( 1 .. FILE.NAME_LEN ) );
     FILE.IS_OPENED := FALSE;
 

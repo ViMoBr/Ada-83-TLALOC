@@ -22,7 +22,7 @@
 		-- TLALOC COMPILE [/PROJECT=dir] [/STOP_PHASE[=WRITELIB|SYNTAX|LIB|SEMANTICS|EXPAND]] source
 		-- TLALOC BIND    [/PROJECT=dir] unit			-- writes the fasmg main .fas
 		-- TLALOC DUMP    [/PROJECT=dir] [/FORMAT[=U|P|A]]	-- DIANA tree of $$$.TMP
-		-- TLALOC CODE    [/PROJECT=dir] [/TARGET=X86_64|ARM64|RISCV64] [/MAP] unit
+		-- TLALOC CODE    [/PROJECT=dir] [/TARGET_CPU=X86_64|ARM64|RISCV64] [/MAP] unit
 		--
 		-- /PROJECT : directory holding ADA__LIB, relative to the executable or
 		-- absolute, default "./". SOURCE is relative to the project or absolute.
@@ -67,13 +67,15 @@ is
 
     ADD_VERB( "BIND" );
     ADD_PARAMETER( "UNIT" );
-    ADD_QUALIFIER( "TARGET", "X86_64,ARM64,RISCV64", DEFAULT=> "X86_64" );
+    ADD_QUALIFIER( "TARGET_CPU", "X86_64,ARM64,RISCV64", DEFAULT=> "X86_64" );
+    ADD_QUALIFIER( "TARGET_OS", "LINUX,WINDOWS", DEFAULT=> "LINUX" );
 
     ADD_VERB( "DUMP" );
     ADD_QUALIFIER( "FORMAT", "PRETTY,UGLY,ALLTREE", IMPLICIT_FIRST_VALUE=> TRUE );
 
     ADD_VERB( "CODE" );
-    ADD_QUALIFIER( "TARGET", "X86_64,ARM64,RISCV64", DEFAULT=> "X86_64" );
+    ADD_QUALIFIER( "TARGET_CPU", "X86_64,ARM64,RISCV64", DEFAULT=> "X86_64" );
+    ADD_QUALIFIER( "TARGET_OS", "LINUX,WINDOWS", DEFAULT=> "LINUX" );
     ADD_QUALIFIER( "MAP" );
     ADD_PARAMETER( "UNIT" );
 
@@ -199,7 +201,7 @@ is
   procedure		DO_BIND
   is			-------
   begin
-    EXPANDER( GET_VALUE( "UNIT" ), GET_VALUE( "TARGET" ) );							--| writes the fasmg main .fas
+    EXPANDER( GET_VALUE( "UNIT" ), GET_VALUE( "TARGET_CPU" ), GET_VALUE( "TARGET_OS" ) );				--| writes the fasmg main .fas
 
   end	DO_BIND;
 	-------
@@ -221,9 +223,9 @@ is
   procedure		DO_CODE
   is			-------
   begin
-    TARGET_CODE( CPU_NAME=>  GET_VALUE( "TARGET" ),
+    TARGET_CODE( CPU_NAME=> GET_VALUE( "TARGET_CPU" ), OS_NAME=> GET_VALUE( "TARGET_OS" ),
 		 UNIT_NAME=> GET_VALUE( "UNIT" ),
-		 MAP=>	     IS_PRESENT( "MAP" ) );
+		 MAP=> IS_PRESENT( "MAP" ) );
 
   end	DO_CODE;
 	-------

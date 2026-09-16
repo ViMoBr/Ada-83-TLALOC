@@ -588,10 +588,10 @@ is					---
       POS := POS + 1;
       SKIP_BLANKS;
 
-      if  POS <= LEN  and then  LINE( POS ) = '''  then								--| garde n 97 : seul "defini" compte
+      if  POS <= LEN  and then  LINE( POS ) = '''  then							--| garde n 97 : seul "defini" compte
         SYMBOLS.DECLARE_SYM( LINE( WF .. WL ), SYMBOLS.GUARD );
 
-      else								--| affectation generale : IR, evaluee en P2
+      else											--| affectation generale : IR, evaluee en P2
         IR.NEW_ELT( IR.ASSIGNMENT, STORE( LINE( WF .. WL ) ) );
         IR.ADD_OP( IR.EXPR_OP, STORE( LINE( POS .. LEN ) ), 0, 0.0 );
       end if;

@@ -259,6 +259,7 @@ is					-------
 
   begin
     if  FILE.IS_OPENED = FALSE  then raise STATUS_ERROR; end if;
+    CLOSE( FILE );
     ERR_CODE := DELETE_SYSTEM_CALL( FILE.NAME( 1 .. FILE.NAME_LEN ) );
     RESET_BUFFER( FILE.ID );								-- rien a ecrire : le fichier n'existe plus
     FILE.IS_OPENED := FALSE;
